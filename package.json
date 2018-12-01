@@ -1,0 +1,15 @@
+{
+  "name": "mmjs",
+  "version": "1.0.0",
+  "description": "Math Minion JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Craig Morris",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "i18next": "^12.1.0",
+    "react": "^16.6.3"
+  }
+}
