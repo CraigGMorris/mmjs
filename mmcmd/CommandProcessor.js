@@ -44,7 +44,7 @@
  * @member {function} warningCallBack - (message: string) => void
  * @member {function} errorCallBack - (message: string) => void
 */
-/* export */ class CommandProcessor {
+class CommandProcessor {
 	/** @constructs */
 	constructor() {
 		this.root = undefined;
@@ -146,10 +146,9 @@
 	 * commands is a string that could be made up of many commands separated by newline or semicolon
 	 * characters.  This function splits them up and processes them one at a time and returns the
 	 *concatenation of all their result strings
-	 * @returns {Command} a Command or null
+	 * @returns {Command[]} a list of Commands or null
 	 */
 	processCommandString(commands) {
-
 		let results = [];
 		commands = commands.trim();
 		if (commands.length > 0) {
@@ -241,7 +240,7 @@
 		let resultObject = startObject;
 		for (let part of parts) {
 			if (part.length > 0 && resultObject instanceof CommandParent) {
-				resultObject = resultObjec.childNamed(part);
+				resultObject = resultObject.childNamed(part);
 			}
 			if (!resultObject) {
 				break;

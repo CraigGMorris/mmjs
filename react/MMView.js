@@ -27,7 +27,7 @@ export class MMView extends React.Component {
 		this.pipe.doCommand(cmd, (cmds) => {
 			console.log('Main (myWorker.onmessage): Message received from worker');
 			for (let r of cmds) {
-				let output = r.results;
+				let output = r;
 				if (typeof output != 'string') {
 					output = JSON.stringify(output, null, ' ');
 				}
