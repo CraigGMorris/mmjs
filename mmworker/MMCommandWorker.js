@@ -1,10 +1,10 @@
 
-importScripts('/mmcmd/CommandProcessor.js');
+importScripts('MMCommandProcessor.js');
 
-class CommandWorker {
+class MMCommandWorker {
   constructor() {
-    this.processor = new CommandProcessor();
-    let root = new CommandParent('root', this.processor, 'CommandParent')
+    this.processor = new MMCommandProcessor();
+    let root = new MMCommandParent('root', this.processor, 'MMCommandParent')
 
  	  this.processor.setErrorCallBack((message) => {
       const msg = {
@@ -32,7 +32,7 @@ class CommandWorker {
   }
 }
 
-var worker = new CommandWorker();
+var worker = new MMCommandWorker();
 ;
 onmessage = function(e) {
   console.log('Worker: Message received from main script');

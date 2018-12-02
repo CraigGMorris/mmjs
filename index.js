@@ -1,5 +1,5 @@
 'use strict';
-import {CommandPipe} from '/mmcmd/CommandPipe.js';
+import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
 import {MMView} from '/react/MMView.js';
 
 const e = React.createElement;
@@ -35,7 +35,7 @@ class LikeButton extends React.Component {
 
 	render() {
 		if (this.state.liked) {
-			let pipe = new CommandPipe();
+			let pipe = new MMCommandPipe();
 			pipe.doCommand('list', (msg) => {
 				console.log('Main (myWorker.onmessage): Message received from worker');
 				console.log(msg.data); 

@@ -1,12 +1,13 @@
 /**
- * @class CommandPipe
+ * @class MMCommandPipe
+ * Creates and communicates with the worker
  * @member {Worker} cmdWorker
  */
-export class CommandPipe {
+export class MMCommandPipe {
 	/** @constructor */
 	constructor() {
 		if (window.Worker) { // Check if Browser supports the Worker api.
-			this.cmdWorker = new Worker("/mmcmd/CommandWorker.js");
+			this.cmdWorker = new Worker("/mmworker/MMCommandWorker.js");
 		}
 		else {
 			alert('No worker support');

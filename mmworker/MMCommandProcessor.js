@@ -1,17 +1,17 @@
-/** @class Command
+/** @class MMCommand
 	 * @member {string} expression 
 	 * @member {string} subject 
 	 * @member {string} verb 
 	 * @member {string} args 
 	 * @member {Object} results 
 */
-/* export */ class Command {
+/* export */ class MMCommand {
 	/**
 	 * @param {string} expression
 	 */
 	constructor(expression) {
 		this.expression = expression;
-		// other members will be supplied by CommandProcessor.processCommand
+		// other members will be supplied by MMCommandProcessor.processCommand
 		this.subject = undefined;
 		this.verb = undefined;
 		this.args = undefined;
@@ -19,12 +19,12 @@
 	}
 }
 
-/** @class CommandMessage
+/** @class MMCommandMessage
  * encapsulates message key and arguments for i18next
  * @member {string} msgKey
  * @member {Object} args
  */
-/* export */ class CommandMessage {
+/* export */ class MMCommandMessage {
 	/** @constructs
 	 * @param {string} msgKey
 	 * @param {Object} args
@@ -35,16 +35,16 @@
 	}
 }
 
-/** @class CommandProcessor
- * @member {CommandParent} root
+/** @class MMCommandProcessor
+ * @member {MMCommandParent} root
  * @member {boolean} useLineContinuation - if true, an underscore at line end means concatenate next line
- * @member {CommandObject} defaultObject
+ * @member {MMCommandObject} defaultObject
  * @member {string} currentExpression
  * @member {function} statusCallBack - (message: string) => void
  * @member {function} warningCallBack - (message: string) => void
  * @member {function} errorCallBack - (message: string) => void
 */
-class CommandProcessor {
+class MMCommandProcessor {
 	/** @constructs */
 	constructor() {
 		this.root = undefined;
@@ -56,14 +56,14 @@ class CommandProcessor {
 		this.errorCallBack = undefined;
 	}
 
-	/**  @param {CommandParent} root - CommandParent */
+	/**  @param {MMCommandParent} root - MMCommandParent */
 	setRoot(root) {
 		this.root = root;
 		this.defaultObject = root;
 	}
 
 	/**  @param {string} path
-	 * @returns {CommandObject} CommandObject at path
+	 * @returns {MMCommandObject} MMCommandObject at path
 	 */
 	setDefaultToPath(path) {
 		let newObject = this.getObjectFromPath(path);
@@ -92,7 +92,7 @@ class CommandProcessor {
 		this.warningCallBack = cb;
 	}
 
-	/** @param {Command} command
+	/** @param {MMCommand} command
 	 * @returns {boolean} true if successful
 	 */
 	processCommand(command) {
@@ -146,7 +146,7 @@ class CommandProcessor {
 	 * commands is a string that could be made up of many commands separated by newline or semicolon
 	 * characters.  This function splits them up and processes them one at a time and returns the
 	 *concatenation of all their result strings
-	 * @returns {Command[]} a list of Commands or null
+	 * @returns {MMCommand[]} a list of MMCommands or null
 	 */
 	processCommandString(commands) {
 		let results = [];
@@ -174,7 +174,7 @@ class CommandProcessor {
 				}
 				
 				if (cmd.length > 0) {
-					let action = new Command(cmd);
+					let action = new MMCommand(cmd);
 					if (this.processCommand(action)) {
 						results.push(action);
 					}
@@ -185,7 +185,7 @@ class CommandProcessor {
 			}
 
 			if (continuedCmd.length > 0) {
-				let action = new Command(continuedCmd);
+				let action = new MMCommand(continuedCmd);
 				this.processCommand(action);
 				results.push(action);
 			}
@@ -232,14 +232,14 @@ class CommandProcessor {
 
 	/**
 	 * @param {string} path 
-	 * @param {CommandObject} startObject 
-	 * @returns {CommandObject} returns found object or nil
+	 * @param {MMCommandObject} startObject 
+	 * @returns {MMCommandObject} returns found object or nil
 	 */
 	followPath(path, startObject) {
 		let parts = path.split('.');
 		let resultObject = startObject;
 		for (let part of parts) {
-			if (part.length > 0 && resultObject instanceof CommandParent) {
+			if (part.length > 0 && resultObject instanceof MMCommandParent) {
 				resultObject = resultObject.childNamed(part);
 			}
 			if (!resultObject) {
@@ -251,7 +251,7 @@ class CommandProcessor {
 
 	/**
 	 * @param {string} path
-	 * @returns {CommandObject} found object or nil
+	 * @returns {MMCommandObject} found object or nil
 	 */
 	getObjectFromPath(path) {
 		if (path.length > 0) {
@@ -301,18 +301,18 @@ class CommandProcessor {
  * @property {boolean} readOnly;
  */
 
-/** @class CommandProcessor
+/** @class MMCommandProcessor
  *	@member {string} name
  *	@member {string} className
- *	@member {CommandProcessor} processor - can be nil
- *	@member {CommandParent} parent - can be nil
+ *	@member {MMCommandProcessor} processor - can be nil
+ *	@member {MMCommandParent} parent - can be nil
  *	@member {Object} properties - [string}: PropertyInfo
  *	@member {Object} - [string]: (string) => any
 */
-/* export */ class CommandObject {
+/* export */ class MMCommandObject {
 	/** @constructor
 	 * @param {string} name
-	 * @param {CommandParent} parent
+	 * @param {MMCommandParent} parent
 	 * @param {string} className
 	*/
 	constructor( name, parent, className) {
@@ -399,7 +399,7 @@ class CommandProcessor {
 	 * @returns {string}
 	 */
 	t(key, args) {
-		return new CommandMessage(key, args);
+		return new MMCommandMessage(key, args);
 	}
 
 	/** @returns {string} returns path of this object */
@@ -550,26 +550,26 @@ class CommandProcessor {
 	}
 }
 
-/** @class CommandParent
- * @member {Object} children - {string: CommandObject}
+/** @class MMCommandParent
+ * @member {Object} children - {string: MMCommandObject}
 */
-/* export */ class CommandParent extends CommandObject {
+/* export */ class MMCommandParent extends MMCommandObject {
 
 	/**
 	 * @constructor
 	 * @param {string} name 
-	 * @param {Object} anyParam - can be CommandProcessor or CommandParent
-	 * should be CommandProcessor for root object, otherwise the parent object
+	 * @param {Object} anyParam - can be MMCommandProcessor or MMCommandParent
+	 * should be MMCommandProcessor for root object, otherwise the parent object
 	 * @param {string} className 
 	 */
 	constructor(name, anyParam, className) {
-		if (anyParam instanceof CommandProcessor) {
+		if (anyParam instanceof MMCommandProcessor) {
 			super(name, undefined, className);  // doesn't have parent
 			let cmdProcessor = anyParam;
 			this.processor = cmdProcessor;
 			cmdProcessor.setRoot(this);			// no parent so this must be root
 		}
-		else if (anyParam instanceof CommandParent) {
+		else if (anyParam instanceof MMCommandParent) {
 			super(name, anyParam, className);
 		}
 		this.children = {};
@@ -596,14 +596,14 @@ class CommandProcessor {
 	 * as implemented here, only useful for testing
 	 * @param {string} className 
 	 * @param {string} name 
-	 * @returns {CommandObject} - CommandObject created
+	 * @returns {MMCommandObject} - MMCommandObject created
 	 */
 	createChild(className, name) {
 		switch(className) {
-			case 'CommandObject':
-				return new CommandObject(name, this, className);
-			case 'CommandParent':
-				return new CommandParent(name, this, className);
+			case 'MMCommandObject':
+				return new MMCommandObject(name, this, className);
+			case 'MMCommandParent':
+				return new MMCommandParent(name, this, className);
 			default:
 				throw(this.t('cmd:unknownClass', {className: className}));
 		}
@@ -662,7 +662,7 @@ class CommandProcessor {
 	/**
 	 * adds child to the children of this object
 	 * @param {string} name 
-	 * @param {CommandObject} child 
+	 * @param {MMCommandObject} child 
 	 */
 	childCreated(name, child) {
 		this.children[name] = child;
@@ -670,7 +670,7 @@ class CommandProcessor {
 
 	/**
 	 * @param {string} name
-	 * @returns {CommandObject} - returns child CommandObject or nil
+	 * @returns {MMCommandObject} - returns child MMCommandObject or nil
 	 */
 	childNamed(name) {
 		return this.children[name];

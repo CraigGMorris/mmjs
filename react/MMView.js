@@ -1,4 +1,4 @@
-import {CommandPipe} from '/mmcmd/CommandPipe.js';
+import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
 
 const e = React.createElement;
@@ -10,8 +10,8 @@ const e = React.createElement;
 export class MMView extends React.Component {
 	constructor(props) {
 		super(props);
-		/** @memeber {CommandPipe} - pipe to worker */
-		this.pipe = new CommandPipe();
+		/** @memeber {MMCommandPipe} - pipe to worker */
+		this.pipe = new MMCommandPipe();
 		this.state = {
 			output: '',
 		}
