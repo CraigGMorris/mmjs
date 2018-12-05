@@ -289,12 +289,12 @@ class MMCommandProcessor {
  * @readonly
  * @enum {string}
  */
-/* export */ const PropertyType = {
+/* export */ const PropertyType = Object.freeze({
 	string: 'string',
 	int: 'int',
 	float: 'float',
 	boolean: 'boolean'
-}
+});
 /** Interface for property info
  * @interface PropertyInfo	
  * @property {PropertyType} type;
@@ -306,7 +306,7 @@ class MMCommandProcessor {
  *	@member {string} className
  *	@member {MMCommandProcessor} processor - can be nil
  *	@member {MMCommandParent} parent - can be nil
- *	@member {Object} properties - [string}: PropertyInfo
+ *	@member {Object} properties - {string: PropertyInfo}
  *	@member {Object} - [string]: (string) => any
 */
 /* export */ class MMCommandObject {
@@ -323,7 +323,7 @@ class MMCommandProcessor {
 		this.parent = parent;
 		if (parent) {
 			this.processor = parent.processor;
-			parent.childCreated(name, this);
+			parent.addChild(name, this);
 		}
 
 		this.properties = {
@@ -422,6 +422,7 @@ class MMCommandProcessor {
 	 */
 	setValue(propertyName, value) {
 		if (propertyName.length > 0 && propertyName[0] == "_") {
+			propertyName = propertyName.substring(1);
 			if ( value.length > 0) {
 				this[propertyName] = value;
 				this.properties[propertyName] = { type: PropertyType.string, readOnly: false};
@@ -466,7 +467,7 @@ class MMCommandProcessor {
 	 */
 	getValue(propertyName) {
 		if (propertyName.length > 0 && propertyName[0] == "_") {
-			let v = this[propertyName];
+			let v = this[propertyName.substring(1)];
 			if (v)
 				return v;
 		}
@@ -664,7 +665,7 @@ class MMCommandProcessor {
 	 * @param {string} name 
 	 * @param {MMCommandObject} child 
 	 */
-	childCreated(name, child) {
+	addChild(name, child) {
 		this.children[name] = child;
 	}
 

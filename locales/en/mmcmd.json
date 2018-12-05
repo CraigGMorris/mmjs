@@ -1,0 +1,5 @@
+{
+	"duplicateUnit": "Cannot add unit {{name:} as that name is already used",
+	"operatorInBase": "Cannot have operator in base unit {{name}",
+	"badUnitDescription": "I could not interpret the description for unit {{name} - {{description}"
+}

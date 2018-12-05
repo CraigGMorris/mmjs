@@ -11,7 +11,7 @@ let i18n = i18next
 			lng: 'en',
 			fallbackLng: 'en',
 			debug: false,
-			ns: ['cmd', 'idx', 'usage', 'lib'],
+			ns: ['cmd', 'mmcmd', 'usage'],
 			defaultNS: 'cmd',
 			interpolation: { escapeValue: false },	// not html - if output is used for html, then escape
 			backend: {

@@ -1,10 +1,14 @@
 
-importScripts('MMCommandProcessor.js');
+importScripts(
+  'MMCommandProcessor.js',
+  'MMSession.js',
+  'mmunits/MMUnitSystem.js'
+);
 
 class MMCommandWorker {
   constructor() {
     this.processor = new MMCommandProcessor();
-    let root = new MMCommandParent('root', this.processor, 'MMCommandParent')
+    let root = new MMSession(this.processor)
 
  	  this.processor.setErrorCallBack((message) => {
       const msg = {
@@ -33,7 +37,7 @@ class MMCommandWorker {
 }
 
 var worker = new MMCommandWorker();
-;
+
 onmessage = function(e) {
   console.log('Worker: Message received from main script');
   let result = worker.processor.processCommandString(e.data);
