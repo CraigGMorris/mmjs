@@ -1,5 +1,5 @@
 {
-	"??": "Usage: ? [command you want usage for]\nWithout an argument returns list of all commands\n",
+	"?help": "Usage: help [command you want usage for]\nWithout an argument returns list of all commands\n",
 	"?cd": "Change default subject for commands\nUsage: cd pathToObject\n",
 	"?getinfo": "get information (class and path) about the subject or its properties\nUsage: getinfo [properties]\n",
 	"?getvalue": "retrieve the value for a property\nUsage: getvalue propertyName\n",

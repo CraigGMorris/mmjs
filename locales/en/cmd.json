@@ -1,9 +1,8 @@
 {
-	"hello": "hello {{world}}",
 	"action": "A",
  	"cannotChangeDefault": "Can't change the default to {{path}}",
 	"cannotOpenFile": "Cannot open the file at path {{path}}",
-	"cannotRenameTo": "You cannot rename {{name}}",
+	"cannotRenameTo": "You cannot rename {{name}} to {{newName}}",
 	"changedDefault": "changed default to {{path}}",
 	"childNotFound": "{{parent}} does not have a child named {{child}}",
 	"childRemoved": "{{child}} was removed from {{parent}}",

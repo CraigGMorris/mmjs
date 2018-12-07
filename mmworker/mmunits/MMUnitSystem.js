@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @enum {number} MMDimensionType
  */
@@ -76,6 +78,8 @@ class MMUnitSystem extends MMCommandParent {
  * 		and thus pressure is (-1, 1, -2, 0, 0, 0, 0)
  * 		Energy is (2, 1, -2, 0, 0, 0, 0)
  * 
+ * @member {string} dimensionString - read only string version of dimensions
+ * 
  * @member {MMUnitCalcType} calcType
  * 		integer (enum MMUnitCalcType) indicating how the conversion is calculated
  * 		COMPOUND (0) or SCALE (1) - simple scaling.
@@ -117,6 +121,17 @@ class MMUnit extends MMCommandObject {
 		super(name, parent, 'MMUnit');
 	}
 
+	get properties() {
+		let d = super.properties;
+		d['scale'] = {type: PropertyType.float, readOnly: false};
+		d['offset'] = {type: PropertyType.float, readOnly: false};
+		d['notes'] = {type: PropertyType.string, readOnly: false};
+		d['isMaster'] = {type: PropertyType.boolean, readOnly: true};
+		d['calcType'] = {type: PropertyType.int, readOnly: true};
+		d['dimensionString'] = {type: PropertyType.string, readOnly: true};
+		return d;
+	}
+
 	/** @method initWithDescription
 	 * @param {boolean} isMaster - false for user added
 	 * @param {string} description - either a compound unit or string of space separated numbers
@@ -141,7 +156,7 @@ class MMUnit extends MMCommandObject {
 				
 				// convert the dimension string to numbers
 				this.dimensions = [];
-				for (let i = 1; i <+ MMUnitDimensionType.NUMDIMS; i++) {
+				for (let i = 1; i <= MMUnitDimensionType.NUMDIMS; i++) {
 					this.dimensions.push(parseInt(parts[i]));
 				}
 
@@ -166,8 +181,8 @@ class MMUnit extends MMCommandObject {
 		return this;
 	}
 
-	/** @method dimensionString - returns string version of dimensions */
-	dimensionString() {
+	/** @member dimensionString - returns string version of dimensions */
+	get dimensionString() {
 		return MMUnit.stringFromDimensions(this.dimensions);
 	}
 }
@@ -194,7 +209,7 @@ class MMUnitsContainer extends MMCommandParent {
 	 * @param {MMUnit}
 	 */
 	registerDimensionsOfUnit(unit) {
-		let dimensionString = unit.dimensionString();
+		let dimensionString = unit.dimensionString;
 		let unitArray = this.dimensionsDictionary[dimensionString];
 		if (!unitArray) {
 			unitArray = [];

@@ -5,7 +5,7 @@
 	 * @member {string} args 
 	 * @member {Object} results 
 */
-/* export */ class MMCommand {
+class MMCommand {
 	/**
 	 * @param {string} expression
 	 */
@@ -136,7 +136,12 @@ class MMCommandProcessor {
 			command.results = localResults;
 		}
 		catch(e) {
-			this.errorCallBack(JSON.stringify(e));
+			if (typeof e == 'string') {
+				this.errorCallBack(e)
+			}
+			else {
+				this.errorCallBack(e.message);
+			}
 			return false;
 		}
 		return true;
@@ -301,13 +306,13 @@ class MMCommandProcessor {
  * @property {boolean} readOnly;
  */
 
-/** @class MMCommandProcessor
+/** @class MMCommandObject
  *	@member {string} name
  *	@member {string} className
  *	@member {MMCommandProcessor} processor - can be nil
  *	@member {MMCommandParent} parent - can be nil
  *	@member {Object} properties - {string: PropertyInfo}
- *	@member {Object} - [string]: (string) => any
+ *	@member {Object} verbs - [string]: (string) => any
 */
 /* export */ class MMCommandObject {
 	/** @constructor
@@ -325,70 +330,25 @@ class MMCommandProcessor {
 			this.processor = parent.processor;
 			parent.addChild(name, this);
 		}
+	}
 
-		this.properties = {
+	get verbs() {
+		return {
+			help: this.help,
+			cd: this.changeDefaultTo,
+			info: this.getInfo,
+			renameto: this.renameto,
+			get: this.getProperty,
+			set: this.setProperty
+		}
+	}
+
+	get properties() {
+		return {
 			/** @property {PropertyInfo} name  */
 			'name': {type: PropertyType.string, readOnly: true},
 			/** @property {PropertyInfo} className */
 			'className': {type: PropertyType.string, readOnly: true}
-		};
-
-		this.commands = {
-			'?': (args) => { return this.help(args)},
-			'cd': (args) => { return this.changeDefaultTo(args); },
-			'info': (args) => { return this.getInfo(args); },
-			'read': (args) => { return this.processor.readCommandsFromFile(args); },
-			'renameto': (args) => {
-				if (this.parent) {
-					let oldPath = this.getPath()
-					this.parent.renameChild(this.name, args);
-					return this.t('cmd:childRenamed', {fromPath: oldPath, toName: this.name});
-				}
-				else {
-					return this.t('cmd:cannotRenameTo', {name: this.name});
-				}	
-			},
-			'get': (args) => {
-				if (args === 'properties') {
-					let props = {};
-					for (let key in this.properties) {
-						props[key] = this[key];
-					}
-					return props;
-				}
-				return this.getValue(args);
-			},
-			'set': (args) => {
-				let argValues = this.splitArgsString(args);
-				/** @var {string} propertyName */
-				let propertyName;
-				/** @var {string valueString} */
-				let valueString;
-				switch(argValues.length) {
-					case 0:
-						throw(this.t('usage:?setValue'));
-					case 1:
-						propertyName = argValues[0];
-						valueString = '';
-						break;
-					default:
-						propertyName = argValues[0];
-						valueString = argValues[1];
-				}
-				if (propertyName === 'properties') {
-					console.log(valueString);
-					let props = JSON.parse(valueString);
-					for (let propName in props) {
-						if (this.properties[propName]) {
-							this[propName] = props[propName];
-						}
-					}
-					return propertyName + ' set';
-				}
-
-				this.setValue(propertyName, valueString);
-				return propertyName + ' = ' + valueString;
-			},
 		}
 	}
 
@@ -400,6 +360,72 @@ class MMCommandProcessor {
 	 */
 	t(key, args) {
 		return new MMCommandMessage(key, args);
+	}
+
+	/**
+	 * @method renameTo
+	 * @param {string} newName 
+	 */
+	renameto(newName) {
+		if (this.parent) {
+			let oldPath = this.getPath()
+			this.parent.renameChild(this.name, newName);
+			return this.t('cmd:childRenamed', {fromPath: oldPath, toName: this.name});
+		}
+		else {
+			return this.t('cmd:cannotRenameTo', {name: this.name, newName: newName});
+		}	
+	}
+
+	/**
+	 * @method getProperty
+	 * @param {string} args 
+	 */
+	getProperty(args) {
+		if (args === 'properties') {
+			let props = {};
+			for (let key in this.properties) {
+				props[key] = this[key];
+			}
+			return props;
+		}
+		return this.getValue(args);
+	}
+
+	/**
+	 * @method setProperty
+	 * @param {string} args 
+	 */
+	setProperty(args) {
+		let argValues = this.splitArgsString(args);
+		/** @var {string} propertyName */
+		let propertyName;
+		/** @var {string valueString} */
+		let valueString;
+		switch(argValues.length) {
+			case 0:
+				throw(this.t('usage:?setValue'));
+			case 1:
+				propertyName = argValues[0];
+				valueString = '';
+				break;
+			default:
+				propertyName = argValues[0];
+				valueString = argValues[1];
+		}
+		if (propertyName === 'properties') {
+			console.log(valueString);
+			let props = JSON.parse(valueString);
+			for (let propName in props) {
+				if (this.properties[propName]) {
+					this[propName] = props[propName];
+				}
+			}
+			return propertyName + ' set';
+		}
+
+		this.setValue(propertyName, valueString);
+		return propertyName + ' = ' + valueString;
 	}
 
 	/** @returns {string} returns path of this object */
@@ -521,7 +547,7 @@ class MMCommandProcessor {
 		if (cmd.length > 0) {
 			return this.t('usage:?'+cmd.toLowerCase());
 		}
-		return Object.keys(this.commands).map(cmd=> cmd+': ' +this.t('usage:?'+cmd.toLowerCase())).sort().join('\n');
+		return Object.keys(this.verbs).map(cmd=> cmd+': ' +this.t('usage:?'+cmd.toLowerCase())).sort().join('\n');
 	}
 
 	/**
@@ -537,13 +563,14 @@ class MMCommandProcessor {
 	/**
 	 * this will overridden by derived classes, but they should call the super method if they can't
 	 * respond to the command
-	 * @param {string} command 
+	 * @param {string} verb 
 	 * @param {string} args
 	 * @returns {Object} 
 	 */
-	performCommand(command, args) {
-		let f = this.commands[command];
+	performCommand(verb, args) {
+		let f = this.verbs[verb];
 		if (f) {
+			f = f.bind(this);
 			return f(args);
 		}
 
@@ -574,22 +601,14 @@ class MMCommandProcessor {
 			super(name, anyParam, className);
 		}
 		this.children = {};
+	}
 
-		this.commands['list'] = (args) => {return this.listChildNames(args);};
-
-		this.commands['createchild'] = (args) => {
-				let argValues = this.splitArgsString(args);
-				if (argValues.length < 2) {
-					throw(this.t('usage:?createChild'));
-				}
-				let child = this.createChild(argValues[0], argValues[1]);
-				return [this.t('cmd:createdChild', {className: argValues[0], name: argValues[1]})];				
-			};
-
-			this.commands['removechild'] = (args) => {
-				this.removeChildNamed(args);
-				return [this.t('childRemoved', {parent: this.getPath(), child: args})];				
-			};
+	get verbs() {
+		let actions = super.verbs;
+		actions['list'] = this.listChildNames;
+		actions['createChild'] = this.createChildFromArgs;
+		actions['removeChild'] = this.removeChild;
+		return actions;
 	}
 
 	/**
@@ -609,6 +628,21 @@ class MMCommandProcessor {
 				throw(this.t('cmd:unknownClass', {className: className}));
 		}
 	}
+
+	/**
+	 * @method createChildFromArgs
+	 * parses args string and then calls createChild
+	 * @param {string} args 
+	 */
+	createchildFromArgs(args) {
+		let argValues = this.splitArgsString(args);
+		if (argValues.length < 2) {
+			throw(this.t('usage:?createChild'));
+		}
+		let child = this.createChild(argValues[0], argValues[1]);
+		return [this.t('cmd:createdChild', {className: argValues[0], name: argValues[1]})];				
+	}
+
 
 	/**
 	 * @param {string} name 
