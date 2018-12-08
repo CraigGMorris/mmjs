@@ -136,7 +136,7 @@ class MMCommandProcessor {
 			command.results = localResults;
 		}
 		catch(e) {
-			if (typeof e == 'string') {
+			if (typeof e == 'string' || e instanceof MMCommandMessage) {
 				this.errorCallBack(e)
 			}
 			else {
@@ -328,7 +328,7 @@ class MMCommandProcessor {
 		this.parent = parent;
 		if (parent) {
 			this.processor = parent.processor;
-			parent.addChild(name, this);
+			parent.addChild(name.toLowerCase(), this);
 		}
 	}
 
@@ -648,8 +648,9 @@ class MMCommandProcessor {
 	 * @param {string} name 
 	 */
 	removeChildNamed(name) {
-		if (this.children[name]) {
-			delete this.children[name];
+		let lcName = name.toLowerCase();
+		if (this.children[lcName]) {
+			delete this.children[lcName];
 		}
 		else {
 			throw(this.t('cmd:childNotFound', {parent: this.getPath(), child: name}));
@@ -679,19 +680,21 @@ class MMCommandProcessor {
 	 * @param {string} toName 
 	 */
 	renameChild(fromName, toName) {
-		let child = this.children[fromName];
+		let lcFromName = fromName.toLowerCase();
+		let lcToName = toName.toLowerCase();
+		let child = this.children[lcFromName];
 		if (!child) {
 			throw(this.t('childNotFound', {parent: this.getPath(), fromName}));
 		}
 
-		let newChild = this.children[toName];
+		let newChild = this.children[lcToName];
 		if (newChild) {
 			throw(this.t('nameAlreadyUsed', {name: toName, parent: this.getPath()}));
 		}
 
-		this.children[toName] = child;
+		this.children[lcToName] = child;
 		child.name = toName;
-		delete this.children[fromName];
+		delete this.children[lcFromName];
 	}
 
 	/**
@@ -700,7 +703,7 @@ class MMCommandProcessor {
 	 * @param {MMCommandObject} child 
 	 */
 	addChild(name, child) {
-		this.children[name] = child;
+		this.children[name.toLowerCase()] = child;
 	}
 
 	/**
@@ -708,7 +711,7 @@ class MMCommandProcessor {
 	 * @returns {MMCommandObject} - returns child MMCommandObject or nil
 	 */
 	childNamed(name) {
-		return this.children[name];
+		return this.children[name.toLowerCase()];
 	}
 }
 

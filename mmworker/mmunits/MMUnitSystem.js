@@ -53,6 +53,80 @@ class MMUnitSystem extends MMCommandParent {
 		super('unitsystem',  session, 'MMUnitSystem');
 		new MMUnitsContainer(this);
 	}
+
+	get units() {
+		return this.children['units'];
+	}
+
+	/** @method findNamePartsInString
+	 * Parses the term (either a numerator or denominator of a compound unit)
+	 * and returns and array of parts, each consisting of a tuple containing a
+	 * unit and its exponent
+	 * @param {string} term
+	 */
+	findNamePartsInString(term) {
+		let parts = [];
+		if (term.length == 0) {
+			return parts;
+		}
+		let tokens = term.split('-');
+		for (let token of tokens) {
+			let exponent = 1.0;
+			let exponentParts = token.split('-');
+			let exponentPartsCount = exponentParts.length;
+			if (exponentPartsCount > 2) {
+				throw(this.t('mmcmd:unitExponentError', {term: term}));
+			}
+			else if (exponentPartsCount == 2) {
+				exponent = parseFloat(exponentParts[1]);
+			}
+			let consituentUnit = this.unitNamed(exponentParts[0]);
+			if (consituentUnit) {
+				if (consituentUnit.calcType == MMUnitCalcType.COMPOUND ||
+					consituentUnit.calcType == MMUnitCalcType.SCALE)
+				{
+					parts.push([consituentUnit, exponent]);
+				}
+				else {
+					throw(this.t('mmcmd:unitPartInvalid', {term: exponentParts[0]}));
+				}
+			}
+			else if (exponentParts[0] !== '1') {
+				throw(this.t('mmcmd:unitPartInvalid', {term: exponentParts[0]}));
+			}
+		}
+		return parts;
+	}
+
+	/** @method unitNamed
+	 * @param {string} name
+	 * @returns {MMUnit}
+	*/
+	unitNamed(name) {
+		if (!name) {
+			return null;
+		}
+
+		let unit = this.units.childNamed(name);
+		if (unit) {
+			return unit;
+		}
+
+		// see if unit can be built
+		let parts = MMUnit.compoundRegex.split(name);
+		for (let part of parts) {
+			let value = Number(part);
+			if ( value ==NaN && !this.units.childNamed(part)) {
+				return null;
+			}
+		}
+		return this.units.addUnit(name, '0', true);
+	}
+
+	/** @member dimensionString - returns string version of dimensions */
+	get dimensionString() {
+		return MMUnit.stringFromDimensions(this.dimensions);
+	}
 }
 
 /**
@@ -145,12 +219,12 @@ class MMUnit extends MMCommandObject {
 			this.scale = 1.0;		// default values
 			this.offset = 0.0;
 			let parts = description.split(' ');
-			self.calcType = parseInt(parts[0]);
+			this.calcType = parseInt(parts[0]);
 			if (this.calcType == MMUnitCalcType.COMPOUND) {	// construct from base units
 				this.initCompoundWithDescription(description);
 			}
 			else {  // base unit - name should not contain operators
-				if (this.compoundRegex.test(self.name)) {
+				if (this.compoundRegex.test(this.name)) {
 					throw(this.t('mmcmd:operatorInBase', {name: this.name}));
 				}
 				
@@ -175,16 +249,173 @@ class MMUnit extends MMCommandObject {
 				throw(e);
 			}
 			else {
-				throw(this.t('mmcmd:operatorInBase', {name: this.name, description: description}));
+				throw(this.t('mmcmd:badUnitDescription', {name: this.name, description: description}));
 			}
 		}
 		return this;
 	}
 
-	/** @member dimensionString - returns string version of dimensions */
-	get dimensionString() {
-		return MMUnit.stringFromDimensions(this.dimensions);
+	/** @method initWithOperation
+	 * @param {boolean} isMaster
+	 * @param {MMUnitCalcType} calcType
+	 * @param {string} dimensionString
+	 * @param {number} scale
+	 * @param {number} offset
+	 */
+	initWithOperation(isMaster, calcType, dimensionString, scale, offset) {
+		this.isMaster = isMaster
+		this.calcType = calcType
+
+		try {
+			if (calcType === MMUnitCalcType.COMPOUND) {	// construct from base units
+				this.scale = 1.0;	// default units
+				this.offset = 0.0;
+				this.initCompoundWithDescription(this.name)
+			}
+			else {	// base unit - should not contain operators
+				if (this.compoundRegex.test(this.name)) {
+					throw(this.t('mmcmd:operatorInBase', {name: this.name}));
+				}
+				// convert the dimension string to numbers
+				this.dimensions = [];
+				for (let i = 1; i <= MMUnitDimensionType.NUMDIMS; i++) {
+					this.dimensions.push(parseInt(parts[i]));
+					this.scale = scale;
+					this.offset = offset;
+				}
+			}
+		}
+		catch(e) {
+			if (e instanceof MMCommandMessage) {
+				throw(e);
+			}
+			else {
+				throw(this.t('mmcmd:badUnitDescription', {name: this.name, description: description}));
+			}
+		}
+		return this;
 	}
+
+	/** @method initWithUserDefinition
+	 * @param {number} value - multiplier of scale defined by definition
+	 * @param {string} definition - should resolve to a unit
+	 */
+
+	initWithUserDefinition(value, definition) {
+		this.isMaster = false;
+		this.calcType = MMUnitCalcType.COMPOUND;	// construct from base units
+		this.scale = 1.0;
+		this.offset = 0.0;
+
+		if (!this.parseDefinition(definition)) {
+			throw(this.t('mmcmd:unitParseError', {definition: definition}));
+		}
+		this.scale *= value;
+		return this;
+	}
+
+	/** @method initCompoundWithDescription
+	 * @param {string} description - compound unit name
+	 */
+
+	initCompoundWithDescription(description) {
+		if (!this.compoundRegex.test(description)) {
+			throw(this.t('mmcmd:noOpInCompoundUnit', {name: description}));
+		}
+		if (!this.parseDefinition(description)) {
+			throw(this.t('mmcmd:unitParseError', {definition: description}));
+		}
+		return this;
+	}
+
+	/** @method parseDefinition
+	 * @param {string} definition
+	 * @returns {boolean}
+	 * Attempts to determine the scale and dimensions from the definition part
+	 * 
+	 * a compound definition can have at most one / dividing the numerator from the denominator
+	 * individual parts of the numerator and denominator are separated by - characters, which are
+	 * interpreted as unit multiplys.  A unit part can be followed by a ^ symbols and a power
+	 */
+	parseDefinition(definition) {
+		if ( this.calcType != MMUnitCalcType.COMPOUND) {
+			return true;	// no parsing needed (or allowed)
+		}
+		let parts = definition.split('/');
+		let count = parts.length;
+		let numerator = '';
+		let denominator = '';
+		if (count > 2) {
+			throw(this.t('mmcmd:unitSlashError', {definition: definition}));
+		}
+		else if (count == 2) {
+			numerator = parts[0];
+			denominator = parts[1];
+		}
+		else {
+			numerator = parts[0];
+		}
+	
+		let numeratorParts = null;
+		let denominatorParts = null;
+		try {
+			numeratorParts = this.parent.parent.findNamePartsInString(numerator);
+			denominatorParts = this.parent.parent.findNamePartsInString(denominator);
+		}
+		catch (e) {
+			return false;
+		}
+
+		if (numeratorParts.length == 0 && denominatorParts.length == 0) {
+			throw(this.t('mmcmd:unitDefinitionInvalid', {definition: definition}));
+		}
+
+		this.scale = 1.0;
+		this.dimensions = [0, 0, 0, 0, 0, 0, 0];
+		for (let part of numeratorParts) {
+			let unit = part[0];
+			let exponent = part[1];
+			if (exponent == 0.0) {
+				throw(this.t('mmcmd:unitExponentZero', {definition: definition}));
+			}
+			this.scale *= Math.pow(unit.scale, exponent);
+			for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
+				this.dimensions[i] += unit.dimensions[i] * exponent;
+			}
+		}
+	
+		for (let part of denominatorParts) {
+			let unit = part[0];
+			let exponent = part[1];
+			if (exponent == 0.0) {
+				throw(this.t('mmcmd:unitExponentZero', {definition: definition}));
+			}
+			this.scale /= Math.pow(unit.scale, exponent);
+			for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
+				this.dimensions[i] -= unit.dimensions[i] * exponent;
+			}
+		}
+		return true;
+	}
+}
+
+/** @class MMUnitSet
+ * 
+ * @member {Object} unitsDictionary -key dimension value unit
+ * @member {Object} typesDictionary - key dimension value typeName
+ * @member {Object} dimensionsDictionary - key typeName value dimension
+ * @member {boolean} isMaster
+ */
+class MMUnitSet extends MMCommandObject {
+		/** @constructor
+	 * @param {string} name
+	 * @param {MMSetsContainer} parent
+	 * result will need to have one of the init methods called on it
+	*/
+	constructor(name, parent) {
+		super(name, parent, 'MMUnitSet');
+	}
+
 }
 
 /**
@@ -202,6 +433,12 @@ class MMUnitsContainer extends MMCommandParent {
 		super('units',  unitSystem, 'MMUnitsContainer');
 		this.dimensionsDictionary = {};
 		this.loadMasterUnits();
+	}
+
+	get verbs() {
+		let verbs = super.verbs;
+		verbs['adduserunit'] = this.addUserDefinition;
+		return verbs;
 	}
 
 	/** @method registerDimensionsOfUnit
@@ -234,6 +471,38 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addChild(name, newUnit);
 		this.registerDimensionsOfUnit(newUnit);
 		return newUnit;
+	}
+
+	/** @method addUserDefinition
+	 * @param {string} definition - should be name = scale * existingUnit
+	 * example - workday = 8 h
+	 * existingUnit can be a previously undefined compound unit
+	 * @returns {MMUnit} - the new unit
+	*/
+	addUserDefinition(definition) {
+		let parts = definition.split(/\s*=\s*|\s+/);
+		if (parts.length != 3) {
+			throw(this.t('mmcmd:unitDefinitionError', {definition: definition}));
+		}
+		let unitName = parts[0];
+		let value = Number(parts[1]);
+		if (value == NaN) {
+			throw(this.t('mmcmd:unitUserDefValueError', {definition: definition}))
+		}
+		let lowerName = unitName.toLowerCase();
+		let newUnit = this.children[lowerName];
+		if (newUnit) {
+			if (newUnit.isMaster) {
+				throw(this.t('mmcmd:unitNameInUse', {name: unitName}));
+			}
+			newUnit.parseDefinition(parts[2]);
+			newUnit.scale *= value;
+		}
+		else {
+			newUnit = new MMUnit(unitName, this).initWithUserDefinition(value, parts[2]);
+			this.registerDimensionsOfUnit(newUnit);
+		}
+		return newUnit.name;
 	}
 
 	/** @method loadMasterUnits
