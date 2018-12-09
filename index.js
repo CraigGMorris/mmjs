@@ -37,8 +37,8 @@ class LikeButton extends React.Component {
 		if (this.state.liked) {
 			let pipe = new MMCommandPipe();
 			pipe.doCommand('list', (msg) => {
-				console.log('Main (myWorker.onmessage): Message received from worker');
-				console.log(msg.data); 
+				// console.log('Main (myWorker.onmessage): Message received from worker');
+				// console.log(msg.data); 
 			});
 			return e(
 				'h2', null, i18n.t('cmd:hello', {world: 'craig'})

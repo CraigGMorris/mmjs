@@ -20,7 +20,7 @@ export class MMCommandPipe {
 	doCommand(command, callBack) {
 		if (this.cmdWorker) {
 			this.cmdWorker.postMessage(command); // Sending message as an array to the worker
-			console.log('Main (first.onchange): Message posted to worker');
+			// console.log('Main (first.onchange): Message posted to worker');
 
 			this.cmdWorker.onmessage = function(e) {
 				callBack(e.data);

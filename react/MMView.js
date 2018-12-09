@@ -6,49 +6,45 @@ const e = React.createElement;
 /**
  * @class MMView
  * the main Math Minion window
+ * @member {MMCommandPipe} pipe - pipe to worker
  */
 export class MMView extends React.Component {
 	constructor(props) {
 		super(props);
-		/** @memeber {MMCommandPipe} - pipe to worker */
 		this.pipe = new MMCommandPipe();
-		this.state = {
-			output: '',
-		}
 		this.doCommand = this.doCommand.bind(this);
+ 		this.views = {
+			'console': ConsoleView
+		}
+		this.state = {
+			infoView: 'console',
+		}
 	}
 
 	/**
 	 * @method doCommand - sends command to worker
 	 * @param {string} cmd
-	 * @param {function} - (cmds[]) => {}
+	 * @param {function} callBack - (cmds[]) => {}
 	 */
-	doCommand(cmd) {
+	doCommand(cmd, callBack) {
 		this.pipe.doCommand(cmd, (cmds) => {
-			console.log('Main (myWorker.onmessage): Message received from worker');
-			for (let r of cmds) {
-				let output = r;
-				if (typeof output != 'string') {
-					output = JSON.stringify(output, null, ' ');
-				}
-				this.setState((state) => { return {output: output};});
-			}
+			// might check here for results needing new view states
+			callBack(cmds);
 		});
 	}
 	
 	render() {
-		let consoleView = e(ConsoleView,
+		let infoView = e(this.views[this.state.infoView],
 			{
-				className: 'mmview-console',
+				className: 'mmview-' + this.state.infoView.toLowerCase(),
 				doCommand: this.doCommand,
-				output: this.state.output
 			}
 		);
 		return e('div', {className: 'mmview-wrapper'},
 			e('div', {className: 'mmview-diagram'}, 'diagram'),
 			e('div', {className: 'mmview-info-wrapper'},
 				e('div', {className: 'mmview-info-content'},
-					consoleView
+					infoView
 				),
 				e('div', {className: 'mmview-info-tools'},
 					e('button', {

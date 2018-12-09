@@ -39,12 +39,12 @@ class MMCommandWorker {
 var worker = new MMCommandWorker();
 
 onmessage = function(e) {
-  console.log('Worker: Message received from main script');
+  // console.log('Worker: Message received from main script');
   let result = worker.processor.processCommandString(e.data);
   if (result) {
-    console.log('Worker: Posting message back to main script');
+    // console.log('Worker: Posting message back to main script');
     postMessage(result);
   } else {
-    console.log('Worker: No result');
+    // console.log('Worker: No result');
   }
 }

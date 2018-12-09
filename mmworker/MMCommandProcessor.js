@@ -414,7 +414,7 @@ class MMCommandProcessor {
 				valueString = argValues[1];
 		}
 		if (propertyName === 'properties') {
-			console.log(valueString);
+			// console.log(valueString);
 			let props = JSON.parse(valueString);
 			for (let propName in props) {
 				if (this.properties[propName]) {
