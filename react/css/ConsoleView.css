@@ -3,7 +3,7 @@
 	display: grid;
 	--inputHeight: 20px;
 	grid-template-columns: 320px;
-	grid-template-rows: calc(100vh - 20px - var(--inputHeight)) var(--inputHeight);;
+	grid-template-rows: calc(100vh - 40px - var(--inputHeight)) var(--inputHeight);;
 }
 
 .console-result {

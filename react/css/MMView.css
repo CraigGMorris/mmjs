@@ -14,7 +14,26 @@
 	border-right: 1px solid;
 }
 
-.mmview-info {
+.mmview-info-wrapper {
 	grid-column: 2;
 	grid-row: 1;
+	--toolHeight: 40px;
+	grid-template-rows: calc(100% - 20px - var(--toolHeight)) var(--toolHeight);
 }
+
+.mmview-info-content {
+	height: 100%;
+	grid-column: 1;
+	grid-row: 1;
+}
+
+.mmview-info-tools {
+	height: 40px;
+	grid-column: 1;
+	grid-row: 2;
+}
+
+.mmview-info-tools button {
+	margin-top: 10px;
+}
+

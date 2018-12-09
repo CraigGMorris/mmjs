@@ -37,19 +37,28 @@ export class MMView extends React.Component {
 	}
 	
 	render() {
-		let infoView = e(ConsoleView,
+		let consoleView = e(ConsoleView,
 			{
-				className: 'mmview-info',
+				className: 'mmview-console',
 				doCommand: this.doCommand,
 				output: this.state.output
 			}
 		);
-		return e(
-			'div', {className: 'mmview-wrapper'},
-			e(
-				'div', {className: 'mmview-diagram'}, 'diagram'
-			),
-			infoView
+		return e('div', {className: 'mmview-wrapper'},
+			e('div', {className: 'mmview-diagram'}, 'diagram'),
+			e('div', {className: 'mmview-info-wrapper'},
+				e('div', {className: 'mmview-info-content'},
+					consoleView
+				),
+				e('div', {className: 'mmview-info-tools'},
+					e('button', {
+						className:'mmview-unit-button',
+						value:'Units'}, 'Units'),
+					e('button', {
+						className:'mmview-console-button',
+						type	:'button'}, 'Console')
+				)
+			)
 		);
 	}
 }

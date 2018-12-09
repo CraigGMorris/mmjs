@@ -1,5 +1,3 @@
-import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
-
 const e = React.createElement;
 
 /**
