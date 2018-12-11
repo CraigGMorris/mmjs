@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @class MMCommandPipe
  * Creates and communicates with the worker
@@ -19,6 +21,7 @@ export class MMCommandPipe {
 	 */
 	doCommand(command, callBack) {
 		if (this.cmdWorker) {
+			console.log(command);
 			this.cmdWorker.postMessage(command); // Sending message as an array to the worker
 			// console.log('Main (first.onchange): Message posted to worker');
 

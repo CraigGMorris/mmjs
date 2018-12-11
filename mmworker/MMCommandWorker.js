@@ -1,3 +1,4 @@
+'use strict';
 
 importScripts(
   'MMCommandProcessor.js',
@@ -32,7 +33,7 @@ class MMCommandWorker {
         results: message
       }
       postMessage([msg]);
-    });
+    });  
   }
 }
 

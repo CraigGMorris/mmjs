@@ -1,3 +1,5 @@
+'use strict';
+
 import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
 
@@ -7,6 +9,7 @@ const e = React.createElement;
  * @class MMView
  * the main Math Minion window
  * @member {MMCommandPipe} pipe - pipe to worker
+ * @member {i18ni18next} i18n - localization
  */
 export class MMView extends React.Component {
 	constructor(props) {
@@ -38,6 +41,7 @@ export class MMView extends React.Component {
 			{
 				className: 'mmview-' + this.state.infoView.toLowerCase(),
 				doCommand: this.doCommand,
+				i18n: this.props.i18n
 			}
 		);
 		return e('div', {className: 'mmview-wrapper'},

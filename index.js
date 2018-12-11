@@ -1,4 +1,5 @@
 'use strict';
+
 import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
 import {MMView} from '/react/MMView.js';
 
@@ -21,7 +22,7 @@ let i18n = i18next
 		(err, t) => {
 			// initialized and ready to go!
 			const domContainer = document.querySelector('#root');
-			ReactDOM.render(e(MMView), domContainer);
+			ReactDOM.render(e(MMView, {i18n: i18n}), domContainer);
 		}
 	);
 

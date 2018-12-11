@@ -1,3 +1,5 @@
+'use strict';
+
 const e = React.createElement;
 
 /**
@@ -13,6 +15,7 @@ export class ConsoleView extends React.Component {
 		};
 		this.handleChange = this.handleChange.bind(this);
 		this.handleKeyPress = this.handleKeyPress.bind(this);
+		this.readCommandFile = this.readCommandFile.bind(this);
 		this.callBack = this.callBack.bind(this);
 		this.props.doCommand('info', this.callBack);
 	}
@@ -25,7 +28,12 @@ export class ConsoleView extends React.Component {
 		for (let r of cmds) {
 			let output = r;
 			if (typeof output != 'string') {
-				output = JSON.stringify(output, null, ' ');
+				if (output.verb == 'help' && output.args) {
+					output = this.props.i18n.t(output.results.msgKey, output.results.args);
+				}
+				else {
+					output = JSON.stringify(output, null, ' ');
+				}
 			}
 			lines.push(output);
 		}
@@ -46,18 +54,34 @@ export class ConsoleView extends React.Component {
 	 */
 	handleKeyPress(event) {
 		if (event.key == 'Enter') {
-			this.props.doCommand(this.state.input, (cmds) => {
-				let lines = []
-				for (let r of cmds) {
-					let output = r;
-					if (typeof output != 'string') {
-						output = JSON.stringify(output, null, ' ');
-					}
-					lines.push(output);
-				}
-				this.setState((state) => { return {output: lines.join('\n')};});
-			});
+			this.props.doCommand(this.state.input, this.callBack);
 			this.setState({input:''});
+		}
+	}
+
+	readCommandFile(event) {
+		//Retrieve the first (and only!) File from the FileList object
+		var f = event.target.files[0]; 
+
+		if (f) {
+			let r = new FileReader();
+			r.onload = (e) => { 
+				let contents = e.target.result;
+				this.props.doCommand(contents, (cmds) => {
+					let lines = []
+					for (let r of cmds) {
+						let output = r;
+						if (typeof output != 'string') {
+							output = JSON.stringify(output, null, ' ');
+						}
+						lines.push(output);
+					}
+					this.setState((state) => { return {output: lines.join('\n')};});
+				});
+			};
+			r.readAsText(f);
+		} else { 
+			alert("Failed to load file");
 		}
 	}
 	
@@ -72,7 +96,16 @@ export class ConsoleView extends React.Component {
 					value: this.state.input,
 					onChange: this.handleChange,
 					onKeyPress: this.handleKeyPress
-				})
+				}),
+				e('div', {id: 'readdiv'},
+					e('label', {htmlFor: 'readfile'}, 'Read Commands'),
+					e('input', {
+						type: 'file',
+						id: 'readfile',
+						onChange: this.readCommandFile,
+						placeholder: 'Read Command File'
+					})
+				)
 			)
 		);
 	}

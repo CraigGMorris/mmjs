@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @class MMSession - base Math Minion class
  * @member {MMUnitSystem} unitSystem

@@ -1,14 +1,20 @@
 {
 	"badUnitDescription": "I could not interpret the description for unit {{name} - {{description}",
 	"duplicateUnit": "Cannot add unit {{name:} as that name is already used",
+	"duplicateUnitSet": "Cannot add unit set {{name:} as that name is already used",
+	"duplicateUnitTypeName": "There is already a unit type named {{name}}",
 	"operatorInBase": "Cannot have operator in base unit {{name}",
 	"noOpInCompoundUnit": "Unit {{name}} designated COMPOUND, but has no operators",
+	"unitAddTypeError": "Add type arguments '{{args}}' not of form 'typeName unitName'",
 	"unitDefinitionError": "Unit definition {{definition} not of form: name = value existing_unit",
 	"unitDefinitionInvalid": "Unit definition {{definition}} is not valid",
 	"unitExponentError": "The term {{term}} has an illegal exponent expression",
 	"unitNameInUse": "Cannot add unit {{name}} as that name is already used by standard unit",
 	"unitParseError": "The unit definition {{definition}} could not be parsed into base units correctly",
 	"unitPartInvalid": "The term {{term}} is a not valid part of a composite unit",
+	"unitSetDuplicateDimensions": "There is already a type named {{name}} with the same dimensions",
+	"unitSetNotFound": "Could not find set named {{name}}",
+	"unitSetTypeRenameError": "Unit set renameTo argument error. Should be 'fromName toName', but was {{args}}",
 	"unitSlashError": "Unit definition {{definition}} has more than one slash operator",
 	"unitUserDefValueError": "Bad value in user unit definition {{definition}"
 }

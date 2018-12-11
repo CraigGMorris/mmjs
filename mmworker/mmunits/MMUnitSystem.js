@@ -43,6 +43,7 @@ const MMUnitCalcType = Object.freeze({
  * There should only be on / dividing the unit into numerator and denominator
  * The - seporates terms in the numerator and denominator (effectively times)
  * The ^ is used to raise a basic unit to an integer or real power (i.e. m^3)
+ * @member {MMUnitsContainer} units
  */
 class MMUnitSystem extends MMCommandParent {
 	/**
@@ -50,10 +51,12 @@ class MMUnitSystem extends MMCommandParent {
 	 * @param {Object} session - MMSession - parent session
 	 */
 	constructor(session) {
-		super('unitsystem',  session, 'MMUnitSystem');
+		super('unitsys',  session, 'MMUnitSystem');
 		new MMUnitsContainer(this);
+		new MMUnitSetsContainer(this);
 	}
 
+	/** @returns {MMUnitsContainer} */
 	get units() {
 		return this.children['units'];
 	}
@@ -72,7 +75,7 @@ class MMUnitSystem extends MMCommandParent {
 		let tokens = term.split('-');
 		for (let token of tokens) {
 			let exponent = 1.0;
-			let exponentParts = token.split('-');
+			let exponentParts = token.split('^');
 			let exponentPartsCount = exponentParts.length;
 			if (exponentPartsCount > 2) {
 				throw(this.t('mmcmd:unitExponentError', {term: term}));
@@ -80,8 +83,8 @@ class MMUnitSystem extends MMCommandParent {
 			else if (exponentPartsCount == 2) {
 				exponent = parseFloat(exponentParts[1]);
 			}
-			let consituentUnit = this.unitNamed(exponentParts[0]);
-			if (consituentUnit) {
+			let consituentUnit = this.units.childNamed(exponentParts[0]);
+			if (consituentUnit || exponentParts[0] != '1') {
 				if (consituentUnit.calcType == MMUnitCalcType.COMPOUND ||
 					consituentUnit.calcType == MMUnitCalcType.SCALE)
 				{
@@ -113,19 +116,16 @@ class MMUnitSystem extends MMCommandParent {
 		}
 
 		// see if unit can be built
-		let parts = MMUnit.compoundRegex.split(name);
-		for (let part of parts) {
-			let value = Number(part);
-			if ( value ==NaN && !this.units.childNamed(part)) {
-				return null;
+		if (MMUnit.compoundRegex.test(name)) {
+			let parts = name.split(MMUnit.compoundRegex);
+			for (let part of parts) {
+				let value = Number(part);
+				if ( value ==NaN && !this.units.childNamed(part)) {
+					return null;
+				}
 			}
 		}
 		return this.units.addUnit(name, '0', true);
-	}
-
-	/** @member dimensionString - returns string version of dimensions */
-	get dimensionString() {
-		return MMUnit.stringFromDimensions(this.dimensions);
 	}
 }
 
@@ -171,12 +171,13 @@ class MMUnitSystem extends MMCommandParent {
  * @member {string} notes - any text comment on origin of unit etc.
  * @member {boolean} isMaster - boolean designating that the unit is part of the set distributed with the program
  * 		non master units are user units that will not be disturbed when the program is updated
+ * @member {MMUnitSystem} unitSystem;
  */
 class MMUnit extends MMCommandObject {
 	/** @static compoundRegex
 	 * compound unit operators
 	 */
-	get compoundRegex() {return /[/\\-\\^]/};
+	static get compoundRegex() {return /[/\-\^]/};
 
 	/** @static stringFromDimensions
 	 * creates dimensions string from Number array
@@ -188,13 +189,21 @@ class MMUnit extends MMCommandObject {
 
 	/** @constructor
 	 * @param {string} name
-	 * @param {MMUnitsContainer} parent
+	 * @param {MMUnitsContainer} unitsContainer
 	 * result will need to have one of the init methods called on it
 	*/
-	constructor(name, parent) {
-		super(name, parent, 'MMUnit');
+	constructor(name, unitsContainer) {
+		super(name, unitsContainer, 'MMUnit');
 	}
 
+	get unitSystem() {
+		return this.parent.unitSystem;
+	}
+
+	get dimensionString() {
+		return MMUnit.stringFromDimensions(this.dimensions);
+	}
+	
 	get properties() {
 		let d = super.properties;
 		d['scale'] = {type: PropertyType.float, readOnly: false};
@@ -221,10 +230,10 @@ class MMUnit extends MMCommandObject {
 			let parts = description.split(' ');
 			this.calcType = parseInt(parts[0]);
 			if (this.calcType == MMUnitCalcType.COMPOUND) {	// construct from base units
-				this.initCompoundWithDescription(description);
+				this.initCompoundWithDescription(this.name);
 			}
 			else {  // base unit - name should not contain operators
-				if (this.compoundRegex.test(this.name)) {
+				if (MMUnit.compoundRegex.test(this.name)) {
 					throw(this.t('mmcmd:operatorInBase', {name: this.name}));
 				}
 				
@@ -247,6 +256,9 @@ class MMUnit extends MMCommandObject {
 		catch(e) {
 			if (e instanceof MMCommandMessage) {
 				throw(e);
+			}
+			else if (e instanceof Error) {
+				throw(e.message);
 			}
 			else {
 				throw(this.t('mmcmd:badUnitDescription', {name: this.name, description: description}));
@@ -273,7 +285,7 @@ class MMUnit extends MMCommandObject {
 				this.initCompoundWithDescription(this.name)
 			}
 			else {	// base unit - should not contain operators
-				if (this.compoundRegex.test(this.name)) {
+				if (MMUnit.compoundRegex.test(this.name)) {
 					throw(this.t('mmcmd:operatorInBase', {name: this.name}));
 				}
 				// convert the dimension string to numbers
@@ -319,7 +331,7 @@ class MMUnit extends MMCommandObject {
 	 */
 
 	initCompoundWithDescription(description) {
-		if (!this.compoundRegex.test(description)) {
+		if (!MMUnit.compoundRegex.test(description)) {
 			throw(this.t('mmcmd:noOpInCompoundUnit', {name: description}));
 		}
 		if (!this.parseDefinition(description)) {
@@ -405,34 +417,210 @@ class MMUnit extends MMCommandObject {
  * @member {Object} typesDictionary - key dimension value typeName
  * @member {Object} dimensionsDictionary - key typeName value dimension
  * @member {boolean} isMaster
+ * @member {MMUnitSystem} unitSystem;
  */
 class MMUnitSet extends MMCommandObject {
 		/** @constructor
 	 * @param {string} name
-	 * @param {MMSetsContainer} parent
-	 * result will need to have one of the init methods called on it
+	 * @param {MMUnitSetsContainer} setsContainer
+	 * @param {boolean} isMaster
 	*/
-	constructor(name, parent) {
-		super(name, parent, 'MMUnitSet');
+	constructor(name, setsContainer, isMaster) {
+		super(name, setsContainer, 'MMUnitSet');
+		this.isMaster = isMaster;
+		this.unitsDictionary = {};
+		this.dimensionsDictionary = {};
+		this.typesDictionary = {};
 	}
 
+	get unitSystem() {
+		return this.parent.unitSystem;
+	}
+
+	get verbs() {
+		let verbs = super.verbs;
+		verbs['addtype'] = this.addTypeVerb;
+		verbs['renametype'] = this.renameType;
+		verbs['removetype'] = this.removeType;
+		verbs['unitfortype'] = this.unitForType;
+		verbs['typenames'] = this.allTypeNames;
+		return verbs;
+	}
+
+
+	/** @method setUnitForTypeNamed
+	 * @param {MMUnit} unit
+	 * @param {string} typeName
+	 */
+	setUnitForTypeNamed(unit, typeName) {
+		let dimensionString = unit.dimensionString;
+		let oldDimensionString = this.dimensionsDictionary[typeName];
+		let oldTypeName = this.typesDictionary[dimensionString];
+		// check if type of those dimensions already exists
+		if ( oldTypeName ) {
+			if (oldTypeName != typeName) {
+				throw(this.t('mmcmd:unitSetDuplicateDimensions', {name: typeName}));
+			}
+			this.dimensionsDictionary[typeName] = dimensionString;
+			if (oldDimensionString) {
+				delete this.unitsDictionary[oldDimensionString];
+				delete this.typesDictionary[oldDimensionString];
+			}
+			this.unitsDictionary[dimensionString] = unit;
+			this.typesDictionary[dimensionString] = typeName;
+		}
+		else {
+			if (oldDimensionString) {
+				// type name already exists with different dimensions
+				delete this.unitsDictionary[oldDimensionString];
+				delete this.typesDictionary[oldDimensionString];
+			}
+			// adding new type
+			this.dimensionsDictionary[typeName] = dimensionString;
+			this.typesDictionary[dimensionString] = typeName;
+			this.unitsDictionary[dimensionString] = unit;
+		}
+	}
+
+	/** @method addTypeVerb
+	 * @param {string} args
+	 * args consists of a type name and the name of a unit associated with it
+	 */
+	addTypeVerb(args) {
+		let parts = args.split(/\s/);
+		if (parts.length != 2) {
+			throw(this.t('mmcmd:unitAddTypeError', {args: args}));
+		}
+		let unit = this.unitSystem.unitNamed(parts[1]);
+		this.setUnitForTypeNamed(unit, parts[0]);
+	}
+
+	/** @method renameType
+	 * verb
+	 * @param {string} args - should be 'fromName toName'
+	*/
+	renameType(args) {
+		let parts = args.split(/\s/);
+		if (parts.length != 2) {
+			throw(this.t('mmcmd:unitSetTypeRenameError', {args: args}));
+		}
+		let fromName = parts[0];
+		let toName = parts[1];
+		if (toName != fromName) {
+			if (this.dimensionsDictionary[toName]) {
+				throw(this.t('mmcmd:duplicateUnitTypeName', {name: toName}));
+			}
+			let dimensionString = this.dimensionsDictionary[fromName];
+			this.typesDictionary[dimensionString] = toName;
+			this.dimensionsDictionary[toName] = dimensionString;
+			delete this.dimensionsDictionary[fromName];
+			return true;
+		}
+		return false;
+	}
+
+	/** @method removeType
+	 * @param {string} name
+	 * - verb
+	 */
+	removeType(name) {
+		let dimensionString = this.dimensionsDictionary[name];
+		if (dimensionString) {
+			delete this.unitsDictionary[dimensionString];
+			delete this.typesDictionary[dimensionString];
+			delete this.dimensionsDictionary[name];
+			return true
+		}
+		return false;
+	}
+
+	/** @method unitForType - verb
+	 * @param {string} typeName
+	 * @returns {string} - unit name
+	*/
+	unitForType(typeName) {
+		let dimensionString = this.dimensionsDictionary[typeName];
+		if (dimensionString) {
+			return this.unitsDictionary[dimensionString].name;
+		}
+		return null;
+	}
+
+	/** @method unitForDimensions
+	 * @param {number[]} dimensions
+	 * @returns {MMUnit}
+	 */
+	unitForDimensions(dimensions) {
+		let dimensionString = MMUnit.stringFromDimensions(dimensions);
+		if (dimensionString) {
+			return this.unitsDictionary[dimensionString];
+		}
+		return null;
+	}
+
+	/** @method typeNameForDimensions
+	 * @param {number[]} dimensions
+	 * @returns {string}
+	 */
+	typeNameForDimensions(dimensions) {
+		let dimensionString = MMUnit.stringFromDimensions(dimensions);
+		if (dimensionString) {
+			let typeName = this.typesDictionary[dimensionString];
+			if (typeName) {
+				return typeName;
+			}
+		}
+		return 'Unknown type';
+	}
+
+	/** @method dimensionStringForTypeName
+	 * @param {string} typeName
+	 * @returns {string}
+	 */
+	dimensionStringForTypeName(typeName) {
+		return this.dimensionsDictionary[typeName];
+	}
+
+	/** @method allTypeNames
+	 * returns {string[]}
+	 */
+	allTypeNames() {
+		return Object.values(this.typesDictionary);
+	}
+
+	/** @method loadFromJsonObjects
+	 * @param {Object} objects
+	 */
+	loadFromJsonObjects(objects) {
+		let types = objects['units'];
+		for (let typeName in types) {
+			let unitName = types[typeName];
+			let unit = this.unitSystem.unitNamed(unitName);
+			this.setUnitForTypeNamed(unit, typeName);
+		}
+	}
 }
 
 /**
  * @class MMUnitsContainer
  * Serves as container for units
  * @member {Object} dimensionsDictionary
- * key is dimensionString, value is array of units with those dimesions
+ * key is dimensionString, value is array of units with those dimensions
+ * @member {MMUnitSystem} unitSystem;
  */
 class MMUnitsContainer extends MMCommandParent {
 	/**
 	 * @constructor
-	 * @param {Object} unitSystem - MMUnitSystem - parent
+	 * @param {MMUnitSystem} unitSystem - parent
 	 */
 	constructor(unitSystem) {
 		super('units',  unitSystem, 'MMUnitsContainer');
 		this.dimensionsDictionary = {};
 		this.loadMasterUnits();
+	}
+
+	get unitSystem() {
+		return this.parent;
 	}
 
 	get verbs() {
@@ -669,7 +857,260 @@ class MMUnitsContainer extends MMCommandParent {
 	}
 }
 
+/** MMUnitSetContainer
+ * @member {MMUnitSet} defaultSet;
+ * @member {MMUnitSystem} unitSystem;
+ */
+class MMUnitSetsContainer extends MMCommandParent {
+	/**
+	 * @constructor
+	 * @param {MMUnitSystem} unitSystem - parent
+	 */
+	constructor(unitSystem) {
+		super('sets', unitSystem, 'MMUnitSetsContainer');
+		this.loadMasterSets();
+	}
 
+	get unitSystem() {
+		return this.parent;
+	}
 
+	get verbs() {
+		let verbs = super.verbs;
+		verbs['clone'] = this.cloneSet;
+		verbs['remove'] = this.removeSetNamed;
+		return verbs;
+	}
 
+	/** @method addSet
+	 * @param {string} name
+	 * @param {boolean} isMaster
+	 * @returns {MMUnitSet}
+	 */
+	addSet(name, isMaster) {
+		let lowerCaseName = name.toLowerCase();
+		if (this.children[lowerCaseName]) {
+			throw(this.t('mmcmd:duplicateUnitSet', {name: name}));
+		}
+		let newSet = new MMUnitSet(name, this, isMaster);
+		this.addChild(name, newSet);
+		return newSet;
+	}
 
+	/** @method  cloneSet
+	 * @param {string} originalName
+	 * @returns {string} - new set name
+	*/
+	cloneSet(originalName) {
+		let original = this.childNamed(originalName);
+		if (!original) {
+			throw(this.t('mmcmd:unitSetNotFound', {name: originalName}));
+		}
+		let i = 2;
+		let newName = `${original.name}_${i}`;
+		while (this.childNamed(newName)) {
+			newName = `${original.name}_${++i}`;
+		}
+		let clone = new MMUnitSet(newName, this, false);
+		clone.unitsDictionary = Object.assign({}, original.unitsDictionary);
+		clone.typesDictionary = Object.assign({}, original.typesDictionary);
+		clone.dimensionsDictionary = Object.assign({}, original.dimensionsDictionary);
+		return newName;
+	}
+
+	/** @method removeSetNamed
+	 * @param {string} name
+	 */
+	removeSetNamed(name) {
+		let set = this.childNamed(name);
+		if (set && set.isMaster) {
+			this.removeChildNamed(name);
+			if (set === this.defaultSet) {
+				this.defaultSet = this.childNamed['SI'];
+			}
+		}
+	}
+
+	/** @method loadFromJsonObjects
+	 * @param {Object} sets
+	 * @param {boolean} isMaster
+	 */
+	loadFromJsonObjects(sets, isMaster) {
+		for (let setName in sets) {
+			let set = this.addSet(setName, isMaster);
+			set.loadFromJsonObjects(sets[setName]);
+		}
+	}
+
+	/** @method loadMasterSets */
+	loadMasterSets() {
+		let sets = {
+			"PureSI" : {
+				"units" : {
+					"Acceleration" : "m/s^2",
+					"Area" : "m^2",
+					"Capacitance" : "A^2-s^4/kg-m^2",
+					"Density" : "kg/m^3",
+					"Dimensionless" : "Fraction",
+					"DipoleMoment" : "A-s-m",
+					"ElectricCharge" : "A-s",
+					"ElectricCurrent" : "A",
+					"Energy" : "kg-m^2/s^2",
+					"Force" : "kg-m/s^2",
+					"Frequency" : "1/s",
+					"HeatFlux" : "kg/s^3",
+					"HeatTransferCoeff" : "kg/s^3-K",
+					"Inductance" : "kg-m^2/A^2-s^2",
+					"IsoThermalCompressibility" : "m-s^2/kg",
+					"JouleThomson" : "K-m-s^2/kg",
+					"KinematicViscosity" : "m^2/s",
+					"Length" : "m",
+					"LuminousIntensity" : "cd",
+					"MagneticFlux" : "kg-m^2/A-s^2",
+					"Mass" : "kg",
+					"MassEnthalpy" : "m^2/s^2",
+					"MassFlow" : "kg/s",
+					"MassSpecificHeat" : "m^2/s^2-K",
+					"MassVolume" : "m^3/kg",
+					"MolarConcentration" : "mol/m^3",
+					"MolarEnthalpy" : "kg-m^2/s^2-mol",
+					"MolarSpecificHeat" : "kg-m^2/s^2-mol-K",
+					"MolarVolume" : "m^3/mol",
+					"MolecularWeight" : "kg/mol",
+					"MoleFlow" : "mol/s",
+					"Moles" : "mol",
+					"Permeability" : "mol-s/kg",
+					"Power" : "kg-m^2/s^3",
+					"Pressure/MolarVolume" : "kg-mol/m^4-s^2",
+					"Pressure" : "kg/m-s^2",
+					"ReactionRateCat" : "mol/s-kg",
+					"ReactionRateVol" : "mol/s-m^3",
+					"Resistance" : "kg-m^2/A^2-s^3",
+					"SolubilityParameter" : "kg^0.5/s-m^0.5",
+					"SurfaceTension" : "kg/s^2",
+					"Temperature" : "K",
+					"ThermalConductivity" : "kg-m/s^3-K",
+					"ThermalExpansion" : "1/K",
+					"Time" : "s",
+					"UA" : "kg-m^2/s^3-K",
+					"Velocity" : "m/s",        
+					"Viscosity" : "kg/m-s",        
+					"Voltage" : "kg-m^2/A-s^3",
+					"Volume" : "m^3",
+					"VolumetricFlow" : "m^3/s"
+				}
+			},
+			"SI" : {
+				"units" : {
+					"Acceleration" : "m/s^2",
+					"Area" : "m^2",
+					"Capacitance" : "uF",
+					"Density" : "kg/m^3",
+					"Dimensionless" : "Fraction",
+					"DipoleMoment" : "C-m",
+					"ElectricCharge" : "C",
+					"ElectricCurrent" : "A",
+					"Energy" : "kJ",
+					"Force" : "N",
+					"Frequency" : "1/s",
+					"HeatTransferCoeff" : "W/m^2-K",
+					"HeatFlux" : "W/m^2",
+					"Inductance" : "Henry",
+					"IsoThermalCompressibility" : "1/kPa",
+					"JouleThomson" : "K/kPa",
+					"KinematicViscosity" : "m^2/s",
+					"Length" : "m",
+					"LuminousIntensity" : "cd",
+					"MagneticFlux" : "Wb",
+					"Mass" : "kg",
+					"MassEnthalpy" : "kJ/kg",
+					"MassFlow" : "kg/h",
+					"MassVolume" : "m^3/kg",
+					"MassSpecificHeat" : "kJ/kg-K",
+					"MolarConcentration" : "kmol/m^3",
+					"MolarEnthalpy" : "kJ/kmol",
+					"MolarSpecificHeat" : "kJ/kmol-K",
+					"MolarVolume" : "m^3/kmol",
+					"MolecularWeight" : "kg/kmol",
+					"MoleFlow" : "kmol/h",
+					"Moles" : "mol",
+					"Permeability" : "kmol/s-m-kPa",
+					"Power" : "W",
+					"Pressure" : "kPa",
+					"Pressure/MolarVolume" : "kPa-kmol/m^3",
+					"ReactionRateCat" : "kmol/s-kg",
+					"ReactionRateVol" : "kmol/s-m^3",
+					"Resistance" : "ohm",
+					"SolubilityParameter" : "J^0.5/m^1.5",
+					"SurfaceTension" : "N/m",
+					"Temperature" : "degC",
+					"ThermalConductivity" : "W/m-K",
+					"ThermalExpansion" : "1/K",
+					"Time" : "s",
+					"UA" : "W/K",
+					"Velocity" : "m/s",
+					"Viscosity" : "Pa-s",
+					"Voltage" : "volt",
+					"Volume" : "m^3",
+					"VolumetricFlow" : "m^3/s"
+				}
+			},
+			"US" : {
+				"units" : {
+			"Acceleration" : "ft/s^2",
+					"Area" : "ft^2",
+					"Capacitance" : "uF",
+					"Density" : "lb/ft^3",
+					"Dimensionless" : "Fraction",
+					"DipoleMoment" : "debye",
+					"ElectricCharge" : "C",
+					"ElectricCurrent" : "A",
+					"Energy" : "Btu",
+					"Force" : "lbf",
+					"Frequency" : "1/s",
+					"HeatFlux" : "Btu/h-ft^2",
+					"HeatTransferCoeff" : "Btu/h-ft^2-deltaF",
+					"Inductance" : "Henry",
+					"IsoThermalCompressibility" : "1/psia",
+					"JouleThomson" : "deltaF/psia",
+					"KinematicViscosity" : "centistoke",
+					"Length" : "ft",
+					"LuminousIntensity" : "cd",
+					"MagneticFlux" : "Wb",
+					"Mass" : "lb",
+					"MassEnthalpy" : "Btu/lb",
+					"MassFlow" : "lb/h",
+					"MassVolume" : "ft^3/lb",
+					"MassSpecificHeat" : "Btu/lb-deltaF",
+					"MolarConcentration" : "lbmol/ft^3",
+					"MolarEnthalpy" : "Btu/lbmol",
+					"MolarSpecificHeat" : "Btu/lbmol-deltaF",
+					"MolarVolume" : "ft^3/lbmol",
+					"MolecularWeight" : "lb/lbmol",
+					"MoleFlow" : "lbmol/h",
+					"Moles" : "lbmol",
+					"Permeability" : "lbmol/h-ft-psia",
+					"Power" : "Btu/h",
+					"Pressure" : "psia",
+					"Pressure/MolarVolume" : "psia-lbmol/ft^3",
+					"ReactionRateCat" : "lbmol/h-lb",
+					"ReactionRateVol" : "lbmol/h-ft^3",
+					"Resistance" : "ohm",
+					"SolubilityParameter" : "Btu^0.5/ft^1.5",
+					"SurfaceTension" : "lbf/ft",
+					"Temperature" : "degF",
+					"ThermalConductivity" : "Btu/h-ft-deltaF",
+					"ThermalExpansion" : "1/degR",
+					"Time" : "h",
+					"UA" : "Btu/h-deltaF",
+					"Velocity" : "ft/s",
+					"Viscosity" : "cp",
+					"Voltage" : "volt",
+					"Volume" : "ft^3",
+					"VolumetricFlow" : "ft^3/h"
+				}
+			}
+		}
+		this.loadFromJsonObjects(sets, true);
+	}
+}

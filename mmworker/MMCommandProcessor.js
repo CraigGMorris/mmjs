@@ -1,3 +1,5 @@
+'use strict';
+
 /** @class MMCommand
 	 * @member {string} expression 
 	 * @member {string} subject 
@@ -547,7 +549,7 @@ class MMCommandProcessor {
 		if (cmd.length > 0) {
 			return this.t('usage:?'+cmd.toLowerCase());
 		}
-		return Object.keys(this.verbs).map(cmd=> cmd+': ' +this.t('usage:?'+cmd.toLowerCase())).sort().join('\n');
+		return Object.keys(this.verbs).sort();
 	}
 
 	/**
@@ -574,7 +576,7 @@ class MMCommandProcessor {
 			return f(args);
 		}
 
-		throw(this.t('cmd:commandNotFound', {className: this.className, path: this.getPath(), cmd: command}));
+		throw(this.t('cmd:commandNotFound', {className: this.className, path: this.getPath(), cmd: verb}));
 	}
 }
 

@@ -1,0 +1,10 @@
+cd .unitsys.sets
+clone si
+.si_2 renameto mySI
+.mySI addtype bozo kg-m/s
+cd .mySI
+typenames
+renametype bozo BigBozo
+unitfortype BigBozo
+removetype BigBozo
+typenames
