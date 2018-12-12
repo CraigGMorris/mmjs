@@ -1,4 +1,5 @@
 'use strict';
+import {MMViewComponent} from './MMViewComponent.js';
 
 const e = React.createElement;
 
@@ -6,7 +7,7 @@ const e = React.createElement;
  * @class ConsoleView
  * accepts command line inputs and displays result
  */
-export class ConsoleView extends React.Component {
+export class ConsoleView extends MMViewComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -91,7 +92,7 @@ export class ConsoleView extends React.Component {
 					onKeyPress: this.handleKeyPress
 				}),
 				e('div', {id: 'readdiv'},
-					e('label', {htmlFor: 'readfile'}, 'Read Commands'),
+					e('label', {htmlFor: 'readfile'}, this.t('react:readCommands')),
 					e('input', {
 						type: 'file',
 						id: 'readfile',
