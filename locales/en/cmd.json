@@ -21,5 +21,17 @@
 	"table": "T",
 	"unchanged": "Value unchanged",
 	"unknownClass": "Cannot create unknown class {{className}}",
-	"warning": "WARNING "
+	"unknownCommand": "I don't know the command {{command}}",
+	"warning": "WARNING ",
+	"?help": "Usage: help [command you want usage for]\nWithout an argument returns list of all commands\n",
+	"?cd": "Change default subject for commands\nUsage: cd pathToObject\n",
+	"?info": "get information (class and path) about the subject or its properties\nUsage: info [properties]\n",
+	"?get": "retrieve the value for a property\nUsage: get propertyName\n",
+	"?read": "read commands from file\nUsage: read filePath\n",
+	"?renameto": "renames the subject\nUsage: renameto newName\n",
+	"?set": "sets a property value or removes if value not given\nUsage: set propertyName [propertyValue]\n",	
+	"?createchild": "Usage: createchild className childName\n",
+	"?list": "list the children of subject\nUsage: list [pattern_to_match_in_name]\n",
+	"?removechild": "deletes the named child from subject\nUsage: removechild pathToChild\n"
+
 }

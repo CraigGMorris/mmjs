@@ -8,3 +8,15 @@ renametype bozo BigBozo
 unitfortype BigBozo
 removetype BigBozo
 typenames
+cd /unitsys.sets
+remove mysi
+cd ^.units
+adduserunit workday = 8 h
+.workday get scale
+.workday get properties
+.workday info properties
+.workday get offset
+.workday set offset 3.14
+.workday info properties
+remove workday
+list

@@ -437,16 +437,39 @@ class MMUnitSet extends MMCommandObject {
 		return this.parent.unitSystem;
 	}
 
+	/** @override */
 	get verbs() {
 		let verbs = super.verbs;
-		verbs['addtype'] = this.addTypeVerb;
-		verbs['renametype'] = this.renameType;
-		verbs['removetype'] = this.removeType;
+		if (!this.isMaster) {
+			verbs['addtype'] = this.addTypeVerb;
+			verbs['renametype'] = this.renameType;
+			verbs['removetype'] = this.removeType;
+		}
 		verbs['unitfortype'] = this.unitForType;
 		verbs['typenames'] = this.allTypeNames;
 		return verbs;
 	}
 
+	/** @method getVerbUsageKey
+	 * @override
+	 * @param {string} command - command to get the usage key for
+	 * @returns {string} - the i18n key, if it exists
+	 */
+	getVerbUsageKey(command) {
+		let key = {
+			addtype: 			'mmcmd:?addtype',
+			renametype: 	'mmcmd:?renametype',
+			removetype: 	'mmcmd:?removetype',
+			unitfortype:	'mmcmd:?unitfortype',
+			typenames:		'mmcmd:?typenames'
+		}[command];
+		if (key) {
+			return key;
+		}
+		else {
+			return super.getVerbUsageKey(command);
+		}
+	}
 
 	/** @method setUnitForTypeNamed
 	 * @param {MMUnit} unit
@@ -623,10 +646,31 @@ class MMUnitsContainer extends MMCommandParent {
 		return this.parent;
 	}
 
+	/** @override */
 	get verbs() {
 		let verbs = super.verbs;
-		verbs['adduserunit'] = this.addUserDefinition;
+		if (!this.isMaster) {
+			verbs['adduserunit'] = this.addUserDefinition;
+			verbs['remove'] = this.removeChildNamed;
+		}
 		return verbs;
+	}
+
+	/** @method getVerbUsageKey
+	 * @override
+	 * @param {string} command - command to get the usage key for
+	 * @returns {string} - the i18n key, if it exists
+	 */
+	getVerbUsageKey(command) {
+		let key = {
+			adduserunit: 'mmcmd:?adduserunit'
+		}[command];
+		if (key) {
+			return key;
+		}
+		else {
+			return super.getVerbUsageKey(command);
+		}
 	}
 
 	/** @method registerDimensionsOfUnit
@@ -875,11 +919,30 @@ class MMUnitSetsContainer extends MMCommandParent {
 		return this.parent;
 	}
 
+	/** @override */
 	get verbs() {
 		let verbs = super.verbs;
 		verbs['clone'] = this.cloneSet;
 		verbs['remove'] = this.removeSetNamed;
 		return verbs;
+	}
+
+	/** @method getVerbUsageKey
+	 * @override
+	 * @param {string} command - command to get the usage key for
+	 * @returns {string} - the i18n key, if it exists
+	 */
+	getVerbUsageKey(command) {
+		let key = {
+			clone:	'mmcmd:?cloneset',
+			remove:	'mmcmd:?removeset'
+		}[command];
+		if (key) {
+			return key;
+		}
+		else {
+			return super.getVerbUsageKey(command);
+		}
 	}
 
 	/** @method addSet
@@ -923,7 +986,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 	 */
 	removeSetNamed(name) {
 		let set = this.childNamed(name);
-		if (set && set.isMaster) {
+		if (set && !set.isMaster) {
 			this.removeChildNamed(name);
 			if (set === this.defaultSet) {
 				this.defaultSet = this.childNamed['SI'];

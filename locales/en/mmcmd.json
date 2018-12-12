@@ -16,5 +16,13 @@
 	"unitSetNotFound": "Could not find set named {{name}}",
 	"unitSetTypeRenameError": "Unit set renameTo argument error. Should be 'fromName toName', but was {{args}}",
 	"unitSlashError": "Unit definition {{definition}} has more than one slash operator",
-	"unitUserDefValueError": "Bad value in user unit definition {{definition}"
+	"unitUserDefValueError": "Bad value in user unit definition {{definition}",
+	"?addtype": "usage: addtype typeName unitName\nunitName can be a compound unit",
+	"?adduserunit": "usage: adduserunit definition\nwhee definition should be\nname = scale * existingUnit\nexample - workday = 8 h\nexistingUnit can be a previously undefined compound unit",
+	"?cloneset": "usage: clone setName\nreturns new set name",
+	"?removeset": "usage: remove setName",
+	"?removetype": "usage: removetype typeName",
+	"?renametype": "usage: renametype fromName toName",
+	"?typenames": "usage: typenames\nreturns all the types defined in the set",
+	"?unitfortype": "usage: unitfortype typeName\nreturns the unit for type in the set"
 }

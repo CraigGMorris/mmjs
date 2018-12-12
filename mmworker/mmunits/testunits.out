@@ -1,0 +1,601 @@
+diagram
+{
+ "expression": "cd .unitsys.sets",
+ "subject": "root",
+ "verb": "cd",
+ "args": ".unitsys.sets",
+ "results": {
+  "msgKey": "cmd:changedDefault",
+  "args": {
+   "path": "/.unitsys.sets"
+  }
+ }
+}
+{
+ "expression": "clone si",
+ "subject": "sets",
+ "verb": "clone",
+ "args": "si",
+ "results": "SI_2"
+}
+{
+ "expression": ".si_2 renameto mySI",
+ "subject": "SI_2",
+ "verb": "renameto",
+ "args": "mySI",
+ "results": {
+  "msgKey": "cmd:childRenamed",
+  "args": {
+   "fromPath": "/.unitsys.sets.SI_2",
+   "toName": "mySI"
+  }
+ }
+}
+{
+ "expression": ".mySI addtype bozo kg-m/s",
+ "subject": "mySI",
+ "verb": "addtype",
+ "args": "bozo kg-m/s"
+}
+{
+ "expression": "cd .mySI",
+ "subject": "sets",
+ "verb": "cd",
+ "args": ".mySI",
+ "results": {
+  "msgKey": "cmd:changedDefault",
+  "args": {
+   "path": "/.unitsys.sets.mySI"
+  }
+ }
+}
+{
+ "expression": "typenames",
+ "subject": "mySI",
+ "verb": "typenames",
+ "args": "",
+ "results": [
+  "Acceleration",
+  "Area",
+  "Capacitance",
+  "Density",
+  "Dimensionless",
+  "DipoleMoment",
+  "ElectricCharge",
+  "ElectricCurrent",
+  "Energy",
+  "Force",
+  "Frequency",
+  "HeatTransferCoeff",
+  "HeatFlux",
+  "Inductance",
+  "IsoThermalCompressibility",
+  "JouleThomson",
+  "KinematicViscosity",
+  "Length",
+  "LuminousIntensity",
+  "MagneticFlux",
+  "Mass",
+  "MassEnthalpy",
+  "MassFlow",
+  "MassVolume",
+  "MassSpecificHeat",
+  "MolarConcentration",
+  "MolarEnthalpy",
+  "MolarSpecificHeat",
+  "MolarVolume",
+  "MolecularWeight",
+  "MoleFlow",
+  "Moles",
+  "Permeability",
+  "Power",
+  "Pressure",
+  "Pressure/MolarVolume",
+  "ReactionRateCat",
+  "ReactionRateVol",
+  "Resistance",
+  "SolubilityParameter",
+  "SurfaceTension",
+  "Temperature",
+  "ThermalConductivity",
+  "ThermalExpansion",
+  "Time",
+  "UA",
+  "Velocity",
+  "Viscosity",
+  "Voltage",
+  "Volume",
+  "VolumetricFlow",
+  "bozo"
+ ]
+}
+{
+ "expression": "renametype bozo BigBozo",
+ "subject": "mySI",
+ "verb": "renametype",
+ "args": "bozo BigBozo",
+ "results": true
+}
+{
+ "expression": "unitfortype BigBozo",
+ "subject": "mySI",
+ "verb": "unitfortype",
+ "args": "BigBozo",
+ "results": "kg-m/s"
+}
+{
+ "expression": "removetype BigBozo",
+ "subject": "mySI",
+ "verb": "removetype",
+ "args": "BigBozo",
+ "results": true
+}
+{
+ "expression": "typenames",
+ "subject": "mySI",
+ "verb": "typenames",
+ "args": "",
+ "results": [
+  "Acceleration",
+  "Area",
+  "Capacitance",
+  "Density",
+  "Dimensionless",
+  "DipoleMoment",
+  "ElectricCharge",
+  "ElectricCurrent",
+  "Energy",
+  "Force",
+  "Frequency",
+  "HeatTransferCoeff",
+  "HeatFlux",
+  "Inductance",
+  "IsoThermalCompressibility",
+  "JouleThomson",
+  "KinematicViscosity",
+  "Length",
+  "LuminousIntensity",
+  "MagneticFlux",
+  "Mass",
+  "MassEnthalpy",
+  "MassFlow",
+  "MassVolume",
+  "MassSpecificHeat",
+  "MolarConcentration",
+  "MolarEnthalpy",
+  "MolarSpecificHeat",
+  "MolarVolume",
+  "MolecularWeight",
+  "MoleFlow",
+  "Moles",
+  "Permeability",
+  "Power",
+  "Pressure",
+  "Pressure/MolarVolume",
+  "ReactionRateCat",
+  "ReactionRateVol",
+  "Resistance",
+  "SolubilityParameter",
+  "SurfaceTension",
+  "Temperature",
+  "ThermalConductivity",
+  "ThermalExpansion",
+  "Time",
+  "UA",
+  "Velocity",
+  "Viscosity",
+  "Voltage",
+  "Volume",
+  "VolumetricFlow"
+ ]
+}
+{
+ "expression": "cd /unitsys.sets",
+ "subject": "mySI",
+ "verb": "cd",
+ "args": "/unitsys.sets",
+ "results": {
+  "msgKey": "cmd:changedDefault",
+  "args": {
+   "path": "/.unitsys.sets"
+  }
+ }
+}
+{
+ "expression": "remove mysi",
+ "subject": "sets",
+ "verb": "remove",
+ "args": "mysi"
+}
+{
+ "expression": "cd ^.units",
+ "subject": "sets",
+ "verb": "cd",
+ "args": "^.units",
+ "results": {
+  "msgKey": "cmd:changedDefault",
+  "args": {
+   "path": "/.unitsys.units"
+  }
+ }
+}
+{
+ "expression": "adduserunit workday = 8 h",
+ "subject": "units",
+ "verb": "adduserunit",
+ "args": "workday = 8 h",
+ "results": "workday"
+}
+{
+ "expression": ".workday get scale",
+ "subject": "workday",
+ "verb": "get",
+ "args": "scale",
+ "results": 28800
+}
+{
+ "expression": ".workday get properties",
+ "subject": "workday",
+ "verb": "get",
+ "args": "properties",
+ "results": {
+  "name": "workday",
+  "className": "MMUnit",
+  "scale": 28800,
+  "offset": 0,
+  "isMaster": false,
+  "calcType": 0,
+  "dimensionString": "0 0 1 0 0 0 0"
+ }
+}
+{
+ "expression": ".workday info properties",
+ "subject": "workday",
+ "verb": "info",
+ "args": "properties",
+ "results": {
+  "name": {
+   "type": "string",
+   "readOnly": true,
+   "value": "workday"
+  },
+  "className": {
+   "type": "string",
+   "readOnly": true,
+   "value": "MMUnit"
+  },
+  "scale": {
+   "type": "float",
+   "readOnly": false,
+   "value": 28800
+  },
+  "offset": {
+   "type": "float",
+   "readOnly": false,
+   "value": 0
+  },
+  "notes": {
+   "type": "string",
+   "readOnly": false
+  },
+  "isMaster": {
+   "type": "boolean",
+   "readOnly": true,
+   "value": false
+  },
+  "calcType": {
+   "type": "int",
+   "readOnly": true,
+   "value": 0
+  },
+  "dimensionString": {
+   "type": "string",
+   "readOnly": true,
+   "value": "0 0 1 0 0 0 0"
+  }
+ }
+}
+{
+ "expression": ".workday get offset",
+ "subject": "workday",
+ "verb": "get",
+ "args": "offset",
+ "results": 0
+}
+{
+ "expression": ".workday set offset 3.14",
+ "subject": "workday",
+ "verb": "set",
+ "args": "offset 3.14",
+ "results": "offset = 3.14"
+}
+{
+ "expression": ".workday info properties",
+ "subject": "workday",
+ "verb": "info",
+ "args": "properties",
+ "results": {
+  "name": {
+   "type": "string",
+   "readOnly": true,
+   "value": "workday"
+  },
+  "className": {
+   "type": "string",
+   "readOnly": true,
+   "value": "MMUnit"
+  },
+  "scale": {
+   "type": "float",
+   "readOnly": false,
+   "value": 28800
+  },
+  "offset": {
+   "type": "float",
+   "readOnly": false,
+   "value": 3.14
+  },
+  "notes": {
+   "type": "string",
+   "readOnly": false
+  },
+  "isMaster": {
+   "type": "boolean",
+   "readOnly": true,
+   "value": false
+  },
+  "calcType": {
+   "type": "int",
+   "readOnly": true,
+   "value": 0
+  },
+  "dimensionString": {
+   "type": "string",
+   "readOnly": true,
+   "value": "0 0 1 0 0 0 0"
+  }
+ }
+}
+{
+ "expression": "remove workday",
+ "subject": "units",
+ "verb": "remove",
+ "args": "workday"
+}
+{
+ "expression": "list",
+ "subject": "units",
+ "verb": "list",
+ "args": "",
+ "results": [
+  "%",
+  "1/degr",
+  "1/k",
+  "1/kpa",
+  "1/psia",
+  "1/s",
+  "a",
+  "a-s",
+  "a-s-m",
+  "a^2-s^4/kg-m^2",
+  "acre",
+  "angstrom",
+  "api60",
+  "arcmin",
+  "arcsec",
+  "atm",
+  "bar",
+  "barg",
+  "bbl",
+  "btu",
+  "btu/h",
+  "btu/h-deltaf",
+  "btu/h-ft-deltaf",
+  "btu/h-ft^2",
+  "btu/h-ft^2-deltaf",
+  "btu/lb",
+  "btu/lb-deltaf",
+  "btu/lbmol",
+  "btu/lbmol-deltaf",
+  "btu^0.5/ft^1.5",
+  "c",
+  "c-m",
+  "cal",
+  "cd",
+  "centistoke",
+  "cm",
+  "cmhg0c",
+  "cp",
+  "d",
+  "darcy",
+  "date",
+  "dated",
+  "datem",
+  "debye",
+  "degc",
+  "degf",
+  "degr",
+  "degree",
+  "deltac",
+  "deltaf",
+  "deltaf/psia",
+  "dyne",
+  "erg",
+  "f",
+  "fathom",
+  "feeth2o4c",
+  "fluidoz",
+  "fraction",
+  "ft",
+  "ft/s",
+  "ft/s^2",
+  "ft^2",
+  "ft^3",
+  "ft^3/h",
+  "ft^3/lb",
+  "ft^3/lbmol",
+  "g",
+  "gal",
+  "gm",
+  "gmol",
+  "grain",
+  "gw",
+  "h",
+  "hectre",
+  "henry",
+  "horsepower",
+  "hp",
+  "hz",
+  "impgal",
+  "impquart",
+  "in",
+  "inhg32f",
+  "j",
+  "j^0.5/m^1.5",
+  "k",
+  "k-m-s^2/kg",
+  "k/kpa",
+  "kcal",
+  "kg",
+  "kg-m/s",
+  "kg-m/s^2",
+  "kg-m/s^3-k",
+  "kg-m^2/a-s^2",
+  "kg-m^2/a-s^3",
+  "kg-m^2/a^2-s^2",
+  "kg-m^2/a^2-s^3",
+  "kg-m^2/s^2",
+  "kg-m^2/s^2-mol",
+  "kg-m^2/s^2-mol-k",
+  "kg-m^2/s^3",
+  "kg-m^2/s^3-k",
+  "kg-mol/m^4-s^2",
+  "kg/h",
+  "kg/kmol",
+  "kg/m-s",
+  "kg/m-s^2",
+  "kg/m^3",
+  "kg/mol",
+  "kg/s",
+  "kg/s^2",
+  "kg/s^3",
+  "kg/s^3-k",
+  "kg^0.5/s-m^0.5",
+  "kgf",
+  "kj",
+  "kj/kg",
+  "kj/kg-k",
+  "kj/kmol",
+  "kj/kmol-k",
+  "km",
+  "kmol",
+  "kmol/h",
+  "kmol/m^3",
+  "kmol/s-kg",
+  "kmol/s-m-kpa",
+  "kmol/s-m^3",
+  "knot",
+  "kpa",
+  "kpa-kmol/m^3",
+  "kpag",
+  "kph",
+  "kw",
+  "l",
+  "lb",
+  "lb/ft^3",
+  "lb/h",
+  "lb/lbmol",
+  "lbf",
+  "lbf/ft",
+  "lbmol",
+  "lbmol/ft^3",
+  "lbmol/h",
+  "lbmol/h-ft-psia",
+  "lbmol/h-ft^3",
+  "lbmol/h-lb",
+  "lightc",
+  "liter",
+  "litre",
+  "longton",
+  "ly",
+  "m",
+  "m-s^2/kg",
+  "m/s",
+  "m/s^2",
+  "m^2",
+  "m^2/s",
+  "m^2/s^2",
+  "m^2/s^2-k",
+  "m^3",
+  "m^3/kg",
+  "m^3/kmol",
+  "m^3/mol",
+  "m^3/s",
+  "megatontnt",
+  "metrichp",
+  "mg",
+  "micron",
+  "micropoise",
+  "mile",
+  "milliliter",
+  "min",
+  "ml",
+  "mm",
+  "mmbtu",
+  "mmhg0c",
+  "mmscf",
+  "mmscm",
+  "mol",
+  "mol-s/kg",
+  "mol/m^3",
+  "mol/s",
+  "mol/s-kg",
+  "mol/s-m^3",
+  "mpa",
+  "mph",
+  "mscf",
+  "mscm",
+  "mw",
+  "mx",
+  "n",
+  "n/m",
+  "nf",
+  "ohm",
+  "ounce",
+  "pa",
+  "pa-s",
+  "pf",
+  "poise",
+  "poundal",
+  "ppm",
+  "psi",
+  "psia",
+  "psia-lbmol/ft^3",
+  "psig",
+  "quart",
+  "radian",
+  "rpm",
+  "s",
+  "scf",
+  "scm",
+  "sg[60]",
+  "slug",
+  "st",
+  "ton",
+  "tonne",
+  "troyoz",
+  "uf",
+  "ug",
+  "usgal",
+  "v",
+  "volt",
+  "w",
+  "w/k",
+  "w/m-k",
+  "w/m^2",
+  "w/m^2-k",
+  "wb",
+  "yard",
+  "year"
+ ]
+}

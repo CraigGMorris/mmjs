@@ -31,6 +31,9 @@ export class ConsoleView extends React.Component {
 				if (output.verb == 'help' && output.args) {
 					output = this.props.i18n.t(output.results.msgKey, output.results.args);
 				}
+				else if (output.verb == 'error' && output.results.msgKey) {
+					output = this.props.i18n.t(output.results.msgKey, output.results.args);
+				}
 				else {
 					output = JSON.stringify(output, null, ' ');
 				}
@@ -67,17 +70,7 @@ export class ConsoleView extends React.Component {
 			let r = new FileReader();
 			r.onload = (e) => { 
 				let contents = e.target.result;
-				this.props.doCommand(contents, (cmds) => {
-					let lines = []
-					for (let r of cmds) {
-						let output = r;
-						if (typeof output != 'string') {
-							output = JSON.stringify(output, null, ' ');
-						}
-						lines.push(output);
-					}
-					this.setState((state) => { return {output: lines.join('\n')};});
-				});
+				this.props.doCommand(contents, this.callBack);
 			};
 			r.readAsText(f);
 		} else { 

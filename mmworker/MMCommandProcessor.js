@@ -79,6 +79,16 @@ class MMCommandProcessor {
 		 return newObject
 	}
 
+/**
+	 * shortcut translate call
+	 * @param {string} key
+	 * @param {Object} options
+	 * @returns {string}
+	 */
+	t(key, args) {
+		return new MMCommandMessage(key, args);
+	}
+
 	/** @param {function} cb - msgKey: string => void */
 	setErrorCallBack(cb) {
 		this.errorCallBack = cb;
@@ -344,6 +354,23 @@ class MMCommandProcessor {
 			set: this.setProperty
 		}
 	}
+	
+	/** @method getVerbUsageKey
+	 * derived classes that have verbs should override and call
+	 * super if they don't have a matching command
+	 * @param {string} command - command to get the usage key for
+	 * @returns {string} - the i18n key, if it exists
+	 */
+	getVerbUsageKey(command) {
+		return {
+			help: 		"cmd:?help",
+			cd: 			"cmd:?cd",
+			info: 		"cmd:?info",
+			renameto:	"cmd:?renameto",
+			get: 			"cmd:?get",
+			set: 			"cmd:?set"
+		}[command];
+	}
 
 	get properties() {
 		return {
@@ -547,7 +574,13 @@ class MMCommandProcessor {
 	 */
 	help(cmd) {
 		if (cmd.length > 0) {
-			return this.t('usage:?'+cmd.toLowerCase());
+			let key = this.getVerbUsageKey(cmd.toLowerCase());
+			if (key) {
+				return this.t(key);
+			}
+			else {
+				return this.t('cmd:unknownCommand', {command: cmd});
+			}
 		}
 		return Object.keys(this.verbs).sort();
 	}
@@ -605,12 +638,32 @@ class MMCommandProcessor {
 		this.children = {};
 	}
 
+	/** @override */
 	get verbs() {
 		let actions = super.verbs;
 		actions['list'] = this.listChildNames;
 		actions['createChild'] = this.createChildFromArgs;
 		actions['removeChild'] = this.removeChild;
 		return actions;
+	}
+
+	/** @method getVerbUsageKey
+	 * @override
+	 * @param {string} command - command to get the usage key for
+	 * @returns {string} - the i18n key, if it exists
+	 */
+	getVerbUsageKey(command) {
+		let key = {
+			list:					'cmd:?list',
+			createchild:	'cmd:?createchild',
+			removechild:	'cmd:?removechild'
+		}[command];
+		if (key) {
+			return key;
+		}
+		else {
+			return super.getVerbUsageKey(command);
+		}
 	}
 
 	/**
