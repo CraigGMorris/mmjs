@@ -1,5 +1,7 @@
 {
-	"unitButtonValue": "Units",
 	"consoleButtonValue": "Console",
-	"readCommands": "'Read Commands"
+	"customSetsButtonValue": "Custom Sets",
+	"customUnitsButtonValue": "Custom Units",
+	"readCommands": "'Read Commands",
+	"unitButtonValue": "Units"
 }
