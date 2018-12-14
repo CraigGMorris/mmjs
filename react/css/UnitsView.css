@@ -1,0 +1,25 @@
+.units-view {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 40px 1fr;
+	grid-template-areas:
+		"customunits customsets"
+		"setslist setslist";
+	grid-gap: 10px 10px;
+}
+
+.units-view button {
+	justify-self: center;
+	font-size: 10pt;
+}
+.unitsview-customunits-button {
+	grid-area: customunits;
+}
+
+.unitsview-customsets-button {
+	grid-area: customsets;
+}
+
+.setslist {
+	grid-area: setslist;
+}

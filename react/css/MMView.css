@@ -1,39 +1,58 @@
 @import "ConsoleView.css";
+@import "UnitsView.css";
+
+body {
+	height: calc(100vh - 30px);
+}
+
+#root {
+	height: 100%;
+	width: 100%;
+	border: solid 1px;
+}
 
 .mmview-wrapper {
 	font-size: 1em;
+	height: 100%;
 	display: grid;
 	--infoWidth: 320px;
-	grid-template-columns: calc(100% - var(--infoWidth)) var(--infoWidth);
+	--toolHeight: 40px;
+	grid-template-columns: 1fr var(--infoWidth);
+	grid-template-rows: 1fr var(--toolHeight);
+	grid-template-areas:
+		"diagram info"
+		"diagram infotools";
 }
 
 .mmview-diagram {
-	grid-column: 1;
-	grid-row: 1;
+	grid-area: diagram;
 	background-color: rgb(238,255,238);
 	border-right: 1px solid;
 }
 
-.mmview-info-wrapper {
-	grid-column: 2;
-	grid-row: 1;
-	--toolHeight: 40px;
-	grid-template-rows: calc(100% - 20px - var(--toolHeight)) var(--toolHeight);
-}
-
 .mmview-info-content {
 	height: 100%;
-	grid-column: 1;
-	grid-row: 1;
+	grid-area: info;
 }
 
 .mmview-info-tools {
-	height: 40px;
-	grid-column: 1;
-	grid-row: 2;
+	grid-area: infotools;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	justify-items: center;
+	align-items: center;
 }
 
 .mmview-info-tools button {
-	margin-top: 10px;
+	width: calc(100% - 10px);
+	height: calc(100% - 10px);
+}
+
+#mmview-unit-button {
+	grid-column: 1;
+}
+
+#mmview-console-button {
+	grid-column: 4;
 }
 

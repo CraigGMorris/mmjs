@@ -43,27 +43,25 @@ export class MMView extends MMViewComponent {
 
 		return e('div', {className: 'mmview-wrapper'},
 			e('div', {className: 'mmview-diagram'}, 'diagram'),
-			e('div', {className: 'mmview-info-wrapper'},
 				e('div', {className: 'mmview-info-content'},
 					infoView
 				),
 				e('div', {className: 'mmview-info-tools'},
 					e('button', {
-							className:'mmview-unit-button',
+							id:'mmview-unit-button',
 							value:'units',
 							onClick: this.switchView
 						},
 						this.t('react:unitButtonValue')
 					),
 					e('button', {
-							className:'mmview-console-button',
+							id:'mmview-console-button',
 							value:'console',
 							onClick: this.switchView
 						},
 						this.t('react:consoleButtonValue')
 					)
 				)
-			)
 		);
 	}
 }

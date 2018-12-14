@@ -81,26 +81,29 @@ export class ConsoleView extends MMViewComponent {
 	
 	render() {
 		return e('div', {className:'console-view'},
-			e('div', {className:'console-result'},
-				this.state.output,
-			),
-			e('div', {className:'console-input'},
+				e('textarea',{
+					id: 'console-result-field',
+					value: this.state.output,
+					readOnly: true
+				}),
 				e('input', {
 					id: 'console-input-field',
 					value: this.state.input,
 					onChange: this.handleChange,
 					onKeyPress: this.handleKeyPress
 				}),
-				e('div', {id: 'readdiv'},
-					e('label', {htmlFor: 'readfile'}, this.t('react:readCommands')),
-					e('input', {
-						type: 'file',
-						id: 'readfile',
-						onChange: this.readCommandFile,
-						placeholder: 'Read Command File'
-					})
-				)
-			)
+			e('label', {
+				id: 'readlabel',
+				htmlFor: 'readfile'
+			},
+				this.t('react:readCommands')
+			),
+			e('input', {
+				type: 'file',
+				id: 'readfile',
+				onChange: this.readCommandFile,
+				placeholder: 'Read Command File'
+			})
 		);
 	}
 }
