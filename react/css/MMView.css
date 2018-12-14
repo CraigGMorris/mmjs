@@ -18,10 +18,16 @@ body {
 	--infoWidth: 320px;
 	--toolHeight: 40px;
 	grid-template-columns: 1fr var(--infoWidth);
-	grid-template-rows: 1fr var(--toolHeight);
+	grid-template-rows: 40px 1fr var(--toolHeight);
 	grid-template-areas:
+		"diagram nav"
 		"diagram info"
 		"diagram infotools";
+}
+
+.mmview-info-nav {
+	grid-area: nav;
+	align-items: center;
 }
 
 .mmview-diagram {

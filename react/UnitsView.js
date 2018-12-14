@@ -12,6 +12,7 @@ export class UnitsView extends MMViewComponent {
 		super(props);
 		this.state = {
 		};
+		this.props.setTitle(this.props.t('react:unitsTitle'));
 	}
 
 	render() {
@@ -19,12 +20,12 @@ export class UnitsView extends MMViewComponent {
 			e('button', {
 				className:'unitsview-customunits-button',
 				},
-				this.t('react:customUnitsButtonValue')
+				this.props.t('react:customUnitsButtonValue')
 			),
 			e('button', {
 				className:'unitsview-customsets-button',
 				},
-				this.t('react:customSetsButtonValue')
+				this.props.t('react:customSetsButtonValue')
 			),
 			e('div', {
 				className:'setslist'

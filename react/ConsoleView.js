@@ -18,6 +18,7 @@ export class ConsoleView extends MMViewComponent {
 		this.handleKeyPress = this.handleKeyPress.bind(this);
 		this.readCommandFile = this.readCommandFile.bind(this);
 		this.callBack = this.callBack.bind(this);
+		this.props.setTitle(this.props.t('react:consoleTitle'));
 		this.props.doCommand('info', this.callBack);
 	}
 
@@ -30,10 +31,10 @@ export class ConsoleView extends MMViewComponent {
 			let output = r;
 			if (typeof output != 'string') {
 				if (output.verb == 'help' && output.args) {
-					output = this.props.i18n.t(output.results.msgKey, output.results.args);
+					output = this.props.t(output.results.msgKey, output.results.args);
 				}
 				else if (output.verb == 'error' && output.results.msgKey) {
-					output = this.props.i18n.t(output.results.msgKey, output.results.args);
+					output = this.props.t(output.results.msgKey, output.results.args);
 				}
 				else {
 					output = JSON.stringify(output, null, ' ');
@@ -96,7 +97,7 @@ export class ConsoleView extends MMViewComponent {
 				id: 'readlabel',
 				htmlFor: 'readfile'
 			},
-				this.t('react:readCommands')
+				this.props.t('react:readCommands')
 			),
 			e('input', {
 				type: 'file',

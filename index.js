@@ -22,40 +22,7 @@ let i18n = i18next
 		(err, t) => {
 			// initialized and ready to go!
 			const domContainer = document.querySelector('#root');
-			ReactDOM.render(e(MMView, {i18n: i18n}), domContainer);
+			ReactDOM.render(e(MMView, {t: t}), domContainer);
 		}
 	);
 
-// early test code of Worker - just keeping it for reference until actual code implemented
-
-class LikeButton extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = { liked: false };
-	}
-
-	render() {
-		if (this.state.liked) {
-			let pipe = new MMCommandPipe();
-			pipe.doCommand('list', (msg) => {
-				// console.log('Main (myWorker.onmessage): Message received from worker');
-				// console.log(msg.data); 
-			});
-			return e(
-				'h2', null, i18n.t('cmd:hello', {world: 'craig'})
-			);
-		}
-
-		return e(
-			'div', null,
-				e(
-					'button',
-					{ onClick: () => this.setState({ liked: true }) },
-					'Like'
-				),
-				e(
-					'p', null, 'A paragraph'
-				)
-		);
-	}
-}

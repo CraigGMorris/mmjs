@@ -9,7 +9,7 @@ const e = React.createElement;
 /**
  * @class MMView
  * the main Math Minion window
- * @member {Object.<string,MMViewComponent>} infoViews 
+ * @member {Object.<string,MMViewComponent>} infoViews
  */
 export class MMView extends MMViewComponent {
 	constructor(props) {
@@ -19,49 +19,60 @@ export class MMView extends MMViewComponent {
 			'units': UnitsView
 		}
 		this.state = {
-			infoView: 'console',
+			infoView: 'console Console',
+			title: 'A Title'
 		}
-		this.switchView = this.switchView.bind(this);
+		this.pushView = this.pushView.bind(this);
+		this.setTitle = this.setTitle.bind(this);
 	}
 
-	/** @method switchView
-	 * changes the info view
+	/** @method pushView
+	 * changes the info view, pushing it onto the infoStack
 	 * @param {string} viewName
 	 */
-	switchView(event) {
+	pushView(event) {
 		this.setState({infoView: event.target.value});
 	}
-	
+
+	setTitle(title) {
+		this.setState({title:title});
+	}
+
 	render() {
-		let infoView = e(this.infoViews[this.state.infoView],
+		let infoParts = this.state.infoView.split(' ');
+		let infoView = e(this.infoViews[infoParts[0]],
 			{
 				className: 'mmview-' + this.state.infoView.toLowerCase(),
 				doCommand: this.doCommand,
-				i18n: this.props.i18n
+				setTitle: this.setTitle,
+				t: this.props.t
 			}
 		);
 
 		return e('div', {className: 'mmview-wrapper'},
 			e('div', {className: 'mmview-diagram'}, 'diagram'),
-				e('div', {className: 'mmview-info-content'},
-					infoView
+			e('div', {className: 'mmview-info-nav'},
+				this.state.title
+			),
+			e('div', {className: 'mmview-info-content'},
+				infoView
+			),
+			e('div', {className: 'mmview-info-tools'},
+				e('button', {
+						id:'mmview-unit-button',
+						value:'units Units',
+						onClick: this.pushView
+					},
+					this.props.t('react:unitButtonValue')
 				),
-				e('div', {className: 'mmview-info-tools'},
-					e('button', {
-							id:'mmview-unit-button',
-							value:'units',
-							onClick: this.switchView
-						},
-						this.t('react:unitButtonValue')
-					),
-					e('button', {
-							id:'mmview-console-button',
-							value:'console',
-							onClick: this.switchView
-						},
-						this.t('react:consoleButtonValue')
-					)
+				e('button', {
+						id:'mmview-console-button',
+						value:'console Console',
+						onClick: this.pushView
+					},
+					this.props.t('react:consoleButtonValue')
 				)
+			)
 		);
 	}
 }

@@ -5,12 +5,14 @@
 	grid-template-areas:
 		"customunits customsets"
 		"setslist setslist";
-	grid-gap: 10px 10px;
+	gap: 10px 10px;
 }
 
 .units-view button {
 	justify-self: center;
+	align-self: center;
 	font-size: 10pt;
+	height: 30px;
 }
 .unitsview-customunits-button {
 	grid-area: customunits;

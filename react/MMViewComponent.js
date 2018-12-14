@@ -13,6 +13,7 @@ export class MMViewComponent extends React.Component {
 		super(props);
 		this.pipe = new MMCommandPipe();
 		this.doCommand = this.doCommand.bind(this);
+//		this.t = this.t.bind(this);
 	}
 
 	/**
@@ -25,15 +26,5 @@ export class MMViewComponent extends React.Component {
 			// might check here for results needing new view states
 			callBack(cmds);
 		});
-	}
-
-	/** @method
-	 * redirect to i18n.t
-	 * @param {string} key
-	 * @param {Object} args
-	 * @returns {string}
-	 */
-	t(key, args) {
-		return this.props.i18n.t(key, args);
 	}
 }
