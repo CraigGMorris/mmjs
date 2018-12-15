@@ -12,7 +12,6 @@ export class UnitsView extends MMViewComponent {
 		super(props);
 		this.state = {
 		};
-		this.props.setTitle(this.props.t('react:unitsTitle'));
 	}
 
 	render() {

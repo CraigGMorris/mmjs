@@ -27,7 +27,20 @@ body {
 
 .mmview-info-nav {
 	grid-area: nav;
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	grid-template-rows: 1fr;
+	grid-template-areas:
+		"back title";
 	align-items: center;
+}
+
+.mmview-info-navback {
+	grid-area: back;
+}
+
+.mmview-info-title {
+	grid-area: title;
 }
 
 .mmview-diagram {

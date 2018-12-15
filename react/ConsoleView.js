@@ -18,8 +18,6 @@ export class ConsoleView extends MMViewComponent {
 		this.handleKeyPress = this.handleKeyPress.bind(this);
 		this.readCommandFile = this.readCommandFile.bind(this);
 		this.callBack = this.callBack.bind(this);
-		this.props.setTitle(this.props.t('react:consoleTitle'));
-		this.props.doCommand('info', this.callBack);
 	}
 
 	/** @method callBack - called when the worker completes command
