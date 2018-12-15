@@ -15,7 +15,7 @@ const e = React.createElement;
  */
 
 /**
- * @class MMView @extends MMViewCOmponent
+ * @class MMView @extends MMViewComponent
  * the main Math Minion window
  * @member {Object.<string,MMViewComponent>} infoViews
  * @member {Object.<string,InfoState>[]} infoStack

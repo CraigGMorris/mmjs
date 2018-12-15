@@ -1,5 +1,6 @@
 {
 	"consoleButtonValue": "Console",
+	"consoleReadPlaceHolder": "Enter command",
 	"consoleTitle": "Console",
 	"customSetsButtonValue": "Custom Sets",
 	"customUnitsButtonValue": "Custom Units",

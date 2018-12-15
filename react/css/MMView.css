@@ -23,7 +23,8 @@ body {
 		"diagram nav"
 		"diagram info"
 		"diagram infotools";
-}
+		background-color: rgb(243,243,243);
+	}
 
 .mmview-info-nav {
 	grid-area: nav;
@@ -33,6 +34,8 @@ body {
 	grid-template-areas:
 		"back title";
 	align-items: center;
+	background-color: rgb(243,243,243);
+	border-bottom: solid 1px black;
 }
 
 .mmview-info-navback {
@@ -60,6 +63,7 @@ body {
 	grid-template-columns: repeat(4, 1fr);
 	justify-items: center;
 	align-items: center;
+	border-top: solid 1px black;
 }
 
 .mmview-info-tools button {

@@ -2,12 +2,12 @@
 	height: 100%;
 	font-size: 1em;
 	display: grid;
-	grid-template-columns: 40px 1fr;
+	grid-template-columns: 1fr;
 	grid-template-rows: 1fr 30px 40px;
 	grid-template-areas:
-		"result result"
-		"input input"
-		"readlabel readinput";
+		"result"
+		"input"
+		"readfile";
 	}
 
 .console-result {
@@ -37,10 +37,21 @@
 	justify-self: center;
 	font-size: 12pt;
 	width: calc(100% - 10px);
+	border: solid 1px;
 }
 
+#console-readfile-background {
+	grid-area: readfile;
+	display: grid;
+	grid-template-columns: 40px 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas:
+		"readlabel readinput";
+	background-color: rgb(243,243,243);
+	}
+
 #readlabel {
-	font-size: 10pt;
+	font-size: 11pt;
 	grid-area: readlabel;
 	align-self: center;
 	justify-self: center;
