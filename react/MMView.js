@@ -74,11 +74,12 @@ export class MMView extends MMViewComponent {
 		}
 
 	render() {
+		let t = this.props.t;
 		let infoView = e(this.infoViews[this.state.infoState.viewKey],
 			{
 				className: 'mmview-' + this.state.infoState.viewKey.toLowerCase(),
-				doCommand: this.doCommand,
-				t: this.props.t
+				actions: this.actions,
+				t: t
 			}
 		);
 		let previousTitle = this.state.infoState.previousTitle;
@@ -89,10 +90,10 @@ export class MMView extends MMViewComponent {
 				e('div',{
 					className: 'mmview-info-navback',
 					onClick: this.popView
-				}, previousTitle ? '< ' + this.props.t(previousTitle) : ''),
+				}, previousTitle ? '< ' + t(previousTitle) : ''),
 				e('div',{
 					className: 'mmview-info-title'
-				}, this.props.t(this.state.infoState.title))				
+				}, t(this.state.infoState.title))				
 			),
 			e('div', {className: 'mmview-info-content'},
 				infoView
@@ -103,14 +104,14 @@ export class MMView extends MMViewComponent {
 						value:'units react:unitsTitle /units',
 						onClick: this.pushView
 					},
-					this.props.t('react:unitButtonValue')
+					t('react:unitButtonValue')
 				),
 				e('button', {
 						id:'mmview-console-button',
 						value:'console react:consoleTitle',
 						onClick: this.pushView
 					},
-					this.props.t('react:consoleButtonValue')
+					t('react:consoleButtonValue')
 				)
 			)
 		);

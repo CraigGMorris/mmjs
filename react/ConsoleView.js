@@ -24,15 +24,16 @@ export class ConsoleView extends MMViewComponent {
 	 * @param {MMCommand[]} cmds
 	 */
 	callBack(cmds) {
-		let lines = []
+		let t = this.props.t;
+		let lines = [];
 		for (let r of cmds) {
 			let output = r;
 			if (typeof output != 'string') {
 				if (output.verb == 'help' && output.args) {
-					output = this.props.t(output.results.msgKey, output.results.args);
+					output = t(output.results.msgKey, output.results.args);
 				}
 				else if (output.verb == 'error' && output.results.msgKey) {
-					output = this.props.t(output.results.msgKey, output.results.args);
+					output = t(output.results.msgKey, output.results.args);
 				}
 				else {
 					output = JSON.stringify(output, null, ' ');
@@ -57,7 +58,7 @@ export class ConsoleView extends MMViewComponent {
 	 */
 	handleKeyPress(event) {
 		if (event.key == 'Enter') {
-			this.props.doCommand(this.state.input, this.callBack);
+			this.props.actions.doCommand(this.state.input, this.callBack);
 			this.setState({input:''});
 		}
 	}
@@ -70,7 +71,7 @@ export class ConsoleView extends MMViewComponent {
 			let r = new FileReader();
 			r.onload = (e) => { 
 				let contents = e.target.result;
-				this.props.doCommand(contents, this.callBack);
+				this.props.actions.doCommand(contents, this.callBack);
 			};
 			r.readAsText(f);
 		} else { 
@@ -79,6 +80,7 @@ export class ConsoleView extends MMViewComponent {
 	}
 	
 	render() {
+		let t = this.props.t;
 		return e('div', {className:'console-view'},
 			e('textarea',{
 				id: 'console-result-field',
@@ -88,7 +90,7 @@ export class ConsoleView extends MMViewComponent {
 			e('input', {
 				id: 'console-input-field',
 				value: this.state.input,
-				placeholder: this.props.t('react:consoleReadPlaceHolder'),
+				placeholder: t('react:consoleReadPlaceHolder'),
 				onChange: this.handleChange,
 				onKeyPress: this.handleKeyPress
 			}),
@@ -99,7 +101,7 @@ export class ConsoleView extends MMViewComponent {
 					id: 'readlabel',
 					htmlFor: 'readfile'
 				},
-					this.props.t('react:readCommands')
+					t('react:readCommands')
 				),
 				e('input', {
 					type: 'file',
