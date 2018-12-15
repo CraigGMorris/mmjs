@@ -6,11 +6,19 @@ import {UnitsView} from './UnitsView.js';
 
 const e = React.createElement;
 
+/** @interface InfoState
+ * item used to keep track of views pushed and pop on info pane
+ * @member {string} viewKey
+ * @member {string} title
+ * @member {string} infoPath
+ * @member {string} previousTitle
+ */
+
 /**
  * @class MMView @extends MMViewCOmponent
  * the main Math Minion window
  * @member {Object.<string,MMViewComponent>} infoViews
- * @member {Object.<string,InfoStackItem>[]} infoStack
+ * @member {Object.<string,InfoState>[]} infoStack
  */
 export class MMView extends MMViewComponent {
 	constructor(props) {
@@ -19,11 +27,16 @@ export class MMView extends MMViewComponent {
 			'console': ConsoleView,
 			'units': UnitsView
 		}
-		this.state = {
+
+		let initialInfo = {
 			viewKey: 'console',
 			title: 'react:consoleTitle',
 			infoPath: '',
 			previousTitle: ''
+		}
+
+		this.state = {
+			infoState: initialInfo
 		}
 		this.infoStack = [];
 		this.pushView = this.pushView.bind(this);
@@ -36,16 +49,16 @@ export class MMView extends MMViewComponent {
 	 */
 	pushView(event) {
 		let parts = event.target.value.split(' ');
-		let stackItem = {
+		let newInfoState = {
 			viewKey: parts[0],
 			title: (parts[1] ? parts[1] : ''),
 			infoPath: (parts[2] ? parts[2] : '')
 		}
 
 		this.setState((state) => {
-			this.infoStack.push(state);
-			stackItem['previousTitle'] = state.title;
-			return stackItem;
+			this.infoStack.push(state.infoState);
+			newInfoState['previousTitle'] = state.infoState.title;
+			return {infoState: newInfoState};
 		});
 	}
 
@@ -56,19 +69,19 @@ export class MMView extends MMViewComponent {
 		popView() {
 			if (this.infoStack.length) {
 				let state = this.infoStack.pop();
-				this.setState(state);
+				this.setState({infoState: state});
 			}
 		}
 
 	render() {
-		let infoView = e(this.infoViews[this.state.viewKey],
+		let infoView = e(this.infoViews[this.state.infoState.viewKey],
 			{
-				className: 'mmview-' + this.state.viewKey.toLowerCase(),
+				className: 'mmview-' + this.state.infoState.viewKey.toLowerCase(),
 				doCommand: this.doCommand,
 				t: this.props.t
 			}
 		);
-		let previousTitle = this.state.previousTitle;
+		let previousTitle = this.state.infoState.previousTitle;
 
 		return e('div', {className: 'mmview-wrapper'},
 			e('div', {className: 'mmview-diagram'}, 'diagram'),
@@ -76,10 +89,10 @@ export class MMView extends MMViewComponent {
 				e('div',{
 					className: 'mmview-info-navback',
 					onClick: this.popView
-				}, previousTitle ? '< ' + this.props.t(this.state.previousTitle) : ''),
+				}, previousTitle ? '< ' + this.props.t(previousTitle) : ''),
 				e('div',{
 					className: 'mmview-info-title'
-				}, this.props.t(this.state.title))				
+				}, this.props.t(this.state.infoState.title))				
 			),
 			e('div', {className: 'mmview-info-content'},
 				infoView
