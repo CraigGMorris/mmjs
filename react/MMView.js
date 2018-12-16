@@ -31,35 +31,39 @@ export class MMView extends MMViewComponent {
 		let initialInfo = {
 			viewKey: 'console',
 			title: 'react:consoleTitle',
-			infoPath: '',
-			previousTitle: ''
+			path: ''
 		}
 
 		this.state = {
 			infoState: initialInfo
 		}
 		this.infoStack = [];
-		this.pushView = this.pushView.bind(this);
+		this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.popView = this.popView.bind(this);
 	}
 
-	/** @method pushView
-	 * changes the info view, pushing it onto the infoStack
-	 * @param {string} viewName
-	 */
-	pushView(event) {
+	handleButtonClick(event) {
 		let parts = event.target.value.split(' ');
-		let newInfoState = {
-			viewKey: parts[0],
-			title: (parts[1] ? parts[1] : ''),
-			infoPath: (parts[2] ? parts[2] : '')
-		}
+		this.pushInfoView(parts[0], parts[1], parts[3], );
+	}
 
+	/** @method pushInfoView
+	 * changes the info view, pushing it onto the infoStack
+	 * @param {string} viewKey - key to view class in infoViews
+	 * @param {string} title
+	 * @param	{string} path - command path to object to display (if applicable)
+	 */
+	pushInfoView(viewKey, title, path) {
+		let newInfoState = {
+			viewKey: viewKey,
+			title: (title ? title : ''),
+			path: (path ? path : '')
+		};
 		this.setState((state) => {
 			this.infoStack.push(state.infoState);
-			newInfoState['previousTitle'] = state.infoState.title;
+			newInfoState['previousTitle'] = this.state.infoState.title;
 			return {infoState: newInfoState};
-		});
+		})
 	}
 
 	/** @method popView
@@ -102,14 +106,14 @@ export class MMView extends MMViewComponent {
 				e('button', {
 						id:'mmview-unit-button',
 						value:'units react:unitsTitle /units',
-						onClick: this.pushView
+						onClick: this.handleButtonClick
 					},
 					t('react:unitButtonValue')
 				),
 				e('button', {
 						id:'mmview-console-button',
 						value:'console react:consoleTitle',
-						onClick: this.pushView
+						onClick: this.handleButtonClick
 					},
 					t('react:consoleButtonValue')
 				)

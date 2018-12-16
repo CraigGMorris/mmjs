@@ -41,7 +41,9 @@ export class ConsoleView extends MMViewComponent {
 			}
 			lines.push(output);
 		}
-		this.setState((state) => { return {output: lines.join('\n')};});
+		this.setState((state) => {
+			return {output: lines.join('\n')}
+		});
 	}
 	
 	/** @method handleChange
@@ -49,7 +51,7 @@ export class ConsoleView extends MMViewComponent {
 	 * @param {Event} event
 	 */
   handleChange(event) {
-    this.setState({input: event.target.value});
+		this.setState({input: event.target.value});
 	}
 	
 	/** @method handleKeyPress
