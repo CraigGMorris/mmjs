@@ -1,5 +1,4 @@
 'use strict';
-import {MMViewComponent} from './MMViewComponent.js';
 
 const e = React.createElement;
 
@@ -7,7 +6,7 @@ const e = React.createElement;
  * @class UnitsView
  * select unit sets or customize units or unit sets
  */
-export class UnitsView extends MMViewComponent {
+export class UnitsView extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {

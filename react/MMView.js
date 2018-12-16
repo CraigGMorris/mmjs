@@ -1,6 +1,6 @@
 'use strict';
 
-import {MMViewComponent} from './MMViewComponent.js';
+import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
 import {UnitsView} from './UnitsView.js';
 
@@ -15,14 +15,22 @@ const e = React.createElement;
  */
 
 /**
- * @class MMView @extends MMViewComponent
+ * @class MMView
  * the main Math Minion window
+ * @member {MMCommandPipe} pipe - pipe to worker
+ * @member {method[]} actions
  * @member {Object.<string,MMViewComponent>} infoViews
  * @member {Object.<string,InfoState>[]} infoStack
  */
-export class MMView extends MMViewComponent {
+export class MMView extends React.Component {
 	constructor(props) {
 		super(props);
+		this.pipe = new MMCommandPipe();
+		this.doCommand = this.doCommand.bind(this);
+		this.actions = {
+			doCommand: this.doCommand
+		};
+
  		this.infoViews = {
 			'console': ConsoleView,
 			'units': UnitsView
@@ -42,9 +50,16 @@ export class MMView extends MMViewComponent {
 		this.popView = this.popView.bind(this);
 	}
 
-	handleButtonClick(event) {
-		let parts = event.target.value.split(' ');
-		this.pushInfoView(parts[0], parts[1], parts[3], );
+		/**
+	 * @method doCommand - sends command to worker
+	 * @param {string} cmd
+	 * @param {function} callBack - (cmds[]) => {}
+	 */
+	doCommand(cmd, callBack) {
+		this.pipe.doCommand(cmd, (cmds) => {
+			// might check here for results needing new view states
+			callBack(cmds);
+		});
 	}
 
 	/** @method pushInfoView
@@ -76,6 +91,11 @@ export class MMView extends MMViewComponent {
 				this.setState({infoState: state});
 			}
 		}
+
+	handleButtonClick(event) {
+		let parts = event.target.value.split(' ');
+		this.pushInfoView(parts[0], parts[1], parts[3], );
+	}
 
 	render() {
 		let t = this.props.t;

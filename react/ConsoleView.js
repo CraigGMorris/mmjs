@@ -1,13 +1,11 @@
 'use strict';
-import {MMViewComponent} from './MMViewComponent.js';
-
 const e = React.createElement;
 
 /**
  * @class ConsoleView
  * accepts command line inputs and displays result
  */
-export class ConsoleView extends MMViewComponent {
+export class ConsoleView extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
