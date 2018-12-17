@@ -6,21 +6,14 @@ import {UnitsView} from './UnitsView.js';
 
 const e = React.createElement;
 
-/** @interface InfoState
- * item used to keep track of views pushed and pop on info pane
- * @member {string} viewKey
- * @member {string} title
- * @member {string} infoPath
- * @member {string} previousTitle
- */
-
 /**
  * @class MMView
  * the main Math Minion window
  * @member {MMCommandPipe} pipe - pipe to worker
  * @member {method[]} actions
- * @member {Object.<string,MMViewComponent>} infoViews
- * @member {Object.<string,InfoState>[]} infoStack
+ * methods passed to components
+ * @member {Object} infoViews
+ * classes of info views used to construct the react component appearing in the info view
  */
 export class MMView extends React.Component {
 	constructor(props) {
@@ -28,7 +21,9 @@ export class MMView extends React.Component {
 		this.pipe = new MMCommandPipe();
 		this.doCommand = this.doCommand.bind(this);
 		this.actions = {
-			doCommand: this.doCommand
+			doCommand: this.doCommand,
+			pushView: this.pushView,
+			popView: this.popView
 		};
 
  		this.infoViews = {
@@ -36,18 +31,21 @@ export class MMView extends React.Component {
 			'units': UnitsView
 		}
 
-		let initialInfo = {
+		// information need to generate an information view component
+		let initialInfoState = {
 			viewKey: 'console',
 			title: 'react:consoleTitle',
 			path: ''
 		}
 
 		this.state = {
-			infoState: initialInfo
+			/** @desc infoStack keeps the information necessary to render all the info views pushed */
+			infoStack: [initialInfoState]
 		}
-		this.infoStack = [];
+
 		this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.popView = this.popView.bind(this);
+		this.pushView = this.pushView.bind(this);
 	}
 
 		/**
@@ -62,51 +60,72 @@ export class MMView extends React.Component {
 		});
 	}
 
-	/** @method pushInfoView
-	 * changes the info view, pushing it onto the infoStack
+	/** @method pushView
+	 * pushes the creation information for a new info view onto the infoStack
 	 * @param {string} viewKey - key to view class in infoViews
 	 * @param {string} title
 	 * @param	{string} path - command path to object to display (if applicable)
 	 */
-	pushInfoView(viewKey, title, path) {
+	pushView(viewKey, title, path) {
 		let newInfoState = {
 			viewKey: viewKey,
 			title: (title ? title : ''),
 			path: (path ? path : '')
 		};
 		this.setState((state) => {
-			this.infoStack.push(state.infoState);
-			newInfoState['previousTitle'] = this.state.infoState.title;
-			return {infoState: newInfoState};
+			let stack = state.infoStack;
+			stack.push(newInfoState);
+			return {infoStack: stack};
 		})
 	}
 
 	/** @method popView
-	 * if more than one thing on info stack, it pops the last one and
-	 * makes it the current info view
+	 * if more than one thing on info stack, it pops the last one
 	 */
 		popView() {
-			if (this.infoStack.length) {
-				let state = this.infoStack.pop();
-				this.setState({infoState: state});
+			let stack = this.state.infoStack;
+			if (stack.length) {
+				stack.pop();
+				this.setState({infoStack: stack});
 			}
 		}
 
 	handleButtonClick(event) {
 		let parts = event.target.value.split(' ');
-		this.pushInfoView(parts[0], parts[1], parts[3], );
+		this.pushView(parts[0], parts[1], parts[3], );
 	}
 
 	render() {
 		let t = this.props.t;
-		let infoView = e(this.infoViews[this.state.infoState.viewKey],
-			{
-				className: 'mmview-' + this.state.infoState.viewKey.toLowerCase(),
-				actions: this.actions,
-				t: t
-			}
-		);
-		let previousTitle = this.state.infoState.previousTitle;
+		/** @desc infoComponents is array of info views created from the information on the state.infoStack
+		 * Only the last one will be visible, but the others will retain their information when popped back to
+		 */
+		let infoComponents = [];
+		let previousTitle = '';
+		let title = '';
+		let infoStack = this.state.infoStack;
+		for (let i = 0; i < infoStack.length; i++) {
+			previousTitle = i > 0 ? infoStack[i-1].title : '';
+			let viewInfo =this.state.infoStack[i];
+			title = viewInfo.title;
+			let infoView = e('div', {
+					className: 'mmview-info-content',
+					key: i,
+					style: {
+						zIndex: i,
+						/** @desc hide lower views in case upper one has transparent areas */
+						visibility: i < infoStack.length - 1 ? 'hidden' : 'visible'
+					}
+				},
+				e(this.infoViews[viewInfo.viewKey],
+					{
+						className: 'mmview-' + viewInfo.viewKey.toLowerCase(),
+						actions: this.actions,
+						t: t
+					})
+			);
+			infoComponents.push(infoView);
+		}
 
 		return e('div', {className: 'mmview-wrapper'},
 			e('div', {className: 'mmview-diagram'}, 'diagram'),
@@ -117,11 +136,9 @@ export class MMView extends React.Component {
 				}, previousTitle ? '< ' + t(previousTitle) : ''),
 				e('div',{
 					className: 'mmview-info-title'
-				}, t(this.state.infoState.title))				
+				}, t(title))				
 			),
-			e('div', {className: 'mmview-info-content'},
-				infoView
-			),
+			infoComponents,
 			e('div', {className: 'mmview-info-tools'},
 				e('button', {
 						id:'mmview-unit-button',
