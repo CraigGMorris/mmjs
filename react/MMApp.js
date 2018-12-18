@@ -7,7 +7,7 @@ import {UnitsView} from './UnitsView.js';
 const e = React.createElement;
 
 /**
- * @class MMView
+ * @class MMApp
  * the main Math Minion window
  * @member {MMCommandPipe} pipe - pipe to worker
  * @member {method[]} actions
@@ -15,7 +15,7 @@ const e = React.createElement;
  * @member {Object} infoViews
  * classes of info views used to construct the react component appearing in the info view
  */
-export class MMView extends React.Component {
+export class MMApp extends React.Component {
 	constructor(props) {
 		super(props);
 		this.pipe = new MMCommandPipe();
@@ -109,7 +109,7 @@ export class MMView extends React.Component {
 			let viewInfo =this.state.infoStack[i];
 			title = viewInfo.title;
 			let infoView = e('div', {
-					className: 'mmview-info-content',
+					className: 'mmapp-info-content',
 					key: i,
 					style: {
 						zIndex: i,
@@ -119,7 +119,7 @@ export class MMView extends React.Component {
 				},
 				e(this.infoViews[viewInfo.viewKey],
 					{
-						className: 'mmview-' + viewInfo.viewKey.toLowerCase(),
+						className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
 						actions: this.actions,
 						t: t
 					})
@@ -127,33 +127,54 @@ export class MMView extends React.Component {
 			infoComponents.push(infoView);
 		}
 
-		return e('div', {className: 'mmview-wrapper'},
-			e('div', {className: 'mmview-diagram'}, 'diagram'),
-			e('div', {className: 'mmview-info-nav'},
+		return e('div', {className: 'mmapp-wrapper'},
+			e('div', {className: 'mmapp-diagram'}, 'diagram'),
+			e('div', {className: 'mmapp-info-nav'},
 				e('div',{
-					className: 'mmview-info-navback',
+					className: 'mmapp-info-navback',
 					onClick: this.popView
 				}, previousTitle ? '< ' + t(previousTitle) : ''),
 				e('div',{
-					className: 'mmview-info-title'
+					className: 'mmapp-info-title'
 				}, t(title))				
 			),
 			infoComponents,
-			e('div', {className: 'mmview-info-tools'},
+			e('div', {className: 'mmapp-info-tools'},
 				e('button', {
-						id:'mmview-unit-button',
+					id:'mmapp-expand-button',
+					value:'expand',
+					onClick: this.handleButtonClick
+					},
+					'⇤'
+				),
+				e('button', {
+					id:'mmapp-undo-button',
+					value:'undo',
+					onClick: this.handleButtonClick
+					},
+					'Undo'
+				),
+				e('button', {
+					id:'mmapp-redo-button',
+					value:'redo',
+					onClick: this.handleButtonClick
+					},
+					'Redo'
+				),
+				e('button', {
+						id:'mmapp-unit-button',
 						value:'units react:unitsTitle /units',
 						onClick: this.handleButtonClick
 					},
 					t('react:unitButtonValue')
 				),
 				e('button', {
-						id:'mmview-console-button',
+						id:'mmapp-console-button',
 						value:'console react:consoleTitle',
 						onClick: this.handleButtonClick
 					},
 					t('react:consoleButtonValue')
-				)
+				),
 			)
 		);
 	}

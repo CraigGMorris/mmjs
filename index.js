@@ -1,7 +1,7 @@
 'use strict';
 
 import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
-import {MMView} from '/react/MMView.js';
+import {MMApp} from '/react/MMApp.js';
 
 const e = React.createElement;
 
@@ -22,7 +22,7 @@ let i18n = i18next
 		(err, t) => {
 			// initialized and ready to go!
 			const domContainer = document.querySelector('#root');
-			ReactDOM.render(e(MMView, {t: t}), domContainer);
+			ReactDOM.render(e(MMApp, {t: t}), domContainer);
 		}
 	);
 

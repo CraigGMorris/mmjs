@@ -11,7 +11,7 @@ body {
 	border: solid 1px;
 }
 
-.mmview-wrapper {
+.mmapp-wrapper {
 	font-size: 1em;
 	height: 100%;
 	display: grid;
@@ -26,7 +26,7 @@ body {
 		background-color: rgb(243,243,243);
 	}
 
-.mmview-info-nav {
+.mmapp-info-nav {
 	grid-area: nav;
 	display: grid;
 	grid-template-columns: 1fr 2fr;
@@ -38,44 +38,64 @@ body {
 	border-bottom: solid 1px black;
 }
 
-.mmview-info-navback {
+.mmapp-info-navback {
 	grid-area: back;
 }
 
-.mmview-info-title {
+.mmapp-info-title {
 	grid-area: title;
 }
 
-.mmview-diagram {
+.mmapp-diagram {
 	grid-area: diagram;
 	background-color: rgb(238,255,238);
 	border-right: 1px solid;
 }
 
-.mmview-info-content {
+.mmapp-info-content {
 	height: 100%;
 	grid-area: info;
 }
 
-.mmview-info-tools {
+.mmapp-info-tools {
 	grid-area: infotools;
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(5, 1fr);
+	grid-template-rows: 1fr;
+	grid-template-areas: "expand sessions undo redo units";
 	justify-items: center;
 	align-items: center;
 	border-top: solid 1px black;
 }
 
-.mmview-info-tools button {
+.mmapp-info-tools button {
 	width: calc(100% - 10px);
 	height: calc(100% - 10px);
+	color: blue;
+	background: transparent;
+	border: 0;
+	font-size: 10pt;
 }
 
-#mmview-unit-button {
-	grid-column: 1;
+#mmapp-expand-button {
+	grid-area: expand;
+	font-size: 24pt;
+	padding-bottom: 10px;
 }
 
-#mmview-console-button {
-	grid-column: 4;
+#mmapp-undo-button {
+	grid-area: undo;
+}
+
+#mmapp-redo-button {
+	grid-area: redo;
+}
+
+#mmapp-console-button {
+	grid-area: sessions;
+}
+
+#mmapp-unit-button {
+	grid-area: units;
 }
 
