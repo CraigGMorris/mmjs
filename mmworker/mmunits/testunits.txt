@@ -3,11 +3,11 @@ clone si
 .si_2 renameto mySI
 .mySI addtype bozo kg-m/s
 cd .mySI
-typenames
+listtypes
 renametype bozo BigBozo
 unitfortype BigBozo
 removetype BigBozo
-typenames
+listtypes
 cd /unitsys.sets
 remove mysi
 cd ^.units

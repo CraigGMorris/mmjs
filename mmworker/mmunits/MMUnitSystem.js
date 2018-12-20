@@ -446,7 +446,7 @@ class MMUnitSet extends MMCommandObject {
 			verbs['removetype'] = this.removeType;
 		}
 		verbs['unitfortype'] = this.unitForType;
-		verbs['typenames'] = this.allTypeNames;
+		verbs['listtypes'] = this.allTypeNames;
 		return verbs;
 	}
 
@@ -461,7 +461,7 @@ class MMUnitSet extends MMCommandObject {
 			renametype: 	'mmcmd:?renametype',
 			removetype: 	'mmcmd:?removetype',
 			unitfortype:	'mmcmd:?unitfortype',
-			typenames:		'mmcmd:?typenames'
+			listtypes:		'mmcmd:?listtypes'
 		}[command];
 		if (key) {
 			return key;
@@ -477,14 +477,15 @@ class MMUnitSet extends MMCommandObject {
 	 */
 	setUnitForTypeNamed(unit, typeName) {
 		let dimensionString = unit.dimensionString;
-		let oldDimensionString = this.dimensionsDictionary[typeName];
+		let lcTypeName = typeName.toLowerCase();
+		let oldDimensionString = this.dimensionsDictionary[lcTypeName];
 		let oldTypeName = this.typesDictionary[dimensionString];
 		// check if type of those dimensions already exists
 		if ( oldTypeName ) {
 			if (oldTypeName != typeName) {
 				throw(this.t('mmcmd:unitSetDuplicateDimensions', {name: typeName}));
 			}
-			this.dimensionsDictionary[typeName] = dimensionString;
+			this.dimensionsDictionary[lcTypeName] = dimensionString;
 			if (oldDimensionString) {
 				delete this.unitsDictionary[oldDimensionString];
 				delete this.typesDictionary[oldDimensionString];
@@ -499,74 +500,97 @@ class MMUnitSet extends MMCommandObject {
 				delete this.typesDictionary[oldDimensionString];
 			}
 			// adding new type
-			this.dimensionsDictionary[typeName] = dimensionString;
+			this.dimensionsDictionary[lcTypeName] = dimensionString;
 			this.typesDictionary[dimensionString] = typeName;
 			this.unitsDictionary[dimensionString] = unit;
 		}
 	}
 
 	/** @method addTypeVerb
-	 * @param {string} args
-	 * args consists of a type name and the name of a unit associated with it
+	 * @param {MMCommand} command
+	 * command.args consists of a type name and the name of a unit associated with it
 	 */
-	addTypeVerb(args) {
+	addTypeVerb(command) {
+		let args = command.args;
 		let parts = args.split(/\s/);
 		if (parts.length != 2) {
 			throw(this.t('mmcmd:unitAddTypeError', {args: args}));
 		}
 		let unit = this.unitSystem.unitNamed(parts[1]);
 		this.setUnitForTypeNamed(unit, parts[0]);
+		command.results = true;
+		command.undo = this.getPath() + ' removetype ' + parts[0];
 	}
 
 	/** @method renameType
 	 * verb
-	 * @param {string} args - should be 'fromName toName'
+	 * @param {MMCommand} command command.args - should be 'fromName toName'
 	*/
-	renameType(args) {
+	renameType(command) {
+		let args = command.args;
 		let parts = args.split(/\s/);
 		if (parts.length != 2) {
 			throw(this.t('mmcmd:unitSetTypeRenameError', {args: args}));
 		}
 		let fromName = parts[0];
 		let toName = parts[1];
+		let lcFromName = fromName.toLowerCase();
+		let lcToName = toName.toLowerCase();
 		if (toName != fromName) {
-			if (this.dimensionsDictionary[toName]) {
+			if (this.dimensionsDictionary[lcToName]) {
 				throw(this.t('mmcmd:duplicateUnitTypeName', {name: toName}));
 			}
-			let dimensionString = this.dimensionsDictionary[fromName];
+			if (!this.dimensionsDictionary[lcFromName]) {
+				throw(this.t('mmcmd:unitUnknownTypeName', {name: fromName}));
+			}
+			let dimensionString = this.dimensionsDictionary[lcFromName];
 			this.typesDictionary[dimensionString] = toName;
-			this.dimensionsDictionary[toName] = dimensionString;
-			delete this.dimensionsDictionary[fromName];
-			return true;
+			this.dimensionsDictionary[lcToName] = dimensionString;
+			delete this.dimensionsDictionary[lcFromName];
+			command.results = true;
+			command.undo = `${this.getPath()} renametype ${toName} ${fromName}`;
 		}
-		return false;
+		else {
+			command.results = false;
+		}
 	}
 
 	/** @method removeType
-	 * @param {string} name
+	 * @param {MMCommand} command command.args = name
 	 * - verb
 	 */
-	removeType(name) {
-		let dimensionString = this.dimensionsDictionary[name];
+	removeType(command) {
+		let name = command.args;
+		let lcName = name.toLowerCase();
+		let dimensionString = this.dimensionsDictionary[lcName];
 		if (dimensionString) {
+			let definitionUnit = this.unitsDictionary[dimensionString];
 			delete this.unitsDictionary[dimensionString];
 			delete this.typesDictionary[dimensionString];
-			delete this.dimensionsDictionary[name];
-			return true
+			delete this.dimensionsDictionary[lcName];
+			command.results = true;
+			if (definitionUnit) {
+				command.undo = `${this.getPath()} addtype ${name} ${definitionUnit.name}`;
+			}
 		}
-		return false;
+		else {
+			throw(this.t('mmcmd:unitUnknownTypeName', {name: name}));
+		}
 	}
 
 	/** @method unitForType - verb
-	 * @param {string} typeName
-	 * @returns {string} - unit name
+	 * @param {MMCommand} command command.args = typeName
+	 * command.results = unit name
 	*/
-	unitForType(typeName) {
-		let dimensionString = this.dimensionsDictionary[typeName];
+	unitForType(command) {
+		let typeName = command.args;
+		let dimensionString = this.dimensionsDictionary[typeName.toLowerCase()];
 		if (dimensionString) {
-			return this.unitsDictionary[dimensionString].name;
+			command.results = this.unitsDictionary[dimensionString].name;
 		}
-		return null;
+		else {
+			throw(this.t('mmcmd:unitUnknownTypeName', {name: typeName}));
+		}
 	}
 
 	/** @method unitForDimensions
@@ -601,14 +625,15 @@ class MMUnitSet extends MMCommandObject {
 	 * @returns {string}
 	 */
 	dimensionStringForTypeName(typeName) {
-		return this.dimensionsDictionary[typeName];
+		return this.dimensionsDictionary[typeName.toLowerCase()];
 	}
 
 	/** @method allTypeNames
-	 * returns {string[]}
+	 * @param {MMCommand} command - does not require command.args
+	 * command.results = array of names
 	 */
-	allTypeNames() {
-		return Object.values(this.typesDictionary);
+	allTypeNames(command) {
+		command.results = Object.values(this.typesDictionary);
 	}
 
 	/** @method loadFromJsonObjects
@@ -651,7 +676,7 @@ class MMUnitsContainer extends MMCommandParent {
 		let verbs = super.verbs;
 		if (!this.isMaster) {
 			verbs['adduserunit'] = this.addUserDefinition;
-			verbs['remove'] = this.removeChildNamed;
+			verbs['remove'] = this.removeUserDefinition;
 		}
 		return verbs;
 	}
@@ -706,12 +731,13 @@ class MMUnitsContainer extends MMCommandParent {
 	}
 
 	/** @method addUserDefinition
-	 * @param {string} definition - should be name = scale * existingUnit
+	 * @param {MMCommand} command - command args should be name = scale * existingUnit
 	 * example - workday = 8 h
 	 * existingUnit can be a previously undefined compound unit
-	 * @returns {MMUnit} - the new unit
+	 * command.results is set to the new unit name
 	*/
-	addUserDefinition(definition) {
+	addUserDefinition(command) {
+		let definition = command.args;
 		let parts = definition.split(/\s*=\s*|\s+/);
 		if (parts.length != 3) {
 			throw(this.t('mmcmd:unitDefinitionError', {definition: definition}));
@@ -734,7 +760,29 @@ class MMUnitsContainer extends MMCommandParent {
 			newUnit = new MMUnit(unitName, this).initWithUserDefinition(value, parts[2]);
 			this.registerDimensionsOfUnit(newUnit);
 		}
-		return newUnit.name;
+		newUnit.definition = definition;	// save the definiton - useful for undoing remove
+		command.results = newUnit.name;
+		command.undo = `${this.getPath()} remove ${newUnit.name}`;
+	}
+
+	/** @method removeUserDefinition
+	 * @param {MMCommand} command - command args should be name = scale * existingUnit
+	*/
+	removeUserDefinition(command) {
+		let name = command.args;
+		let lcName = name.toLowerCase();
+		let unit = this.children[lcName];
+		if (!unit) {
+			throw(this.t('mmcmd:unknownUnit', {name: name}));
+		}
+		if (unit.isMaster) {
+			throw(this.t('mmcmd:unitCannotRemoveMaster', {name: name}));
+		}
+		let definition = unit.definition;	// for undo if available
+		this.removeChildNamed(command);
+		if (definition) {
+			command.undo = `${this.getPath()} adduserunit ${definition}`;
+		}
 	}
 
 	/** @method loadMasterUnits
@@ -961,10 +1009,11 @@ class MMUnitSetsContainer extends MMCommandParent {
 	}
 
 	/** @method  cloneSet
-	 * @param {string} originalName
-	 * @returns {string} - new set name
+	 * @param {command} command - args should be originalName
+	 * command.results set to new set name
 	*/
-	cloneSet(originalName) {
+	cloneSet(command) {
+		let originalName = command.args;
 		let original = this.childNamed(originalName);
 		if (!original) {
 			throw(this.t('mmcmd:unitSetNotFound', {name: originalName}));
@@ -978,16 +1027,18 @@ class MMUnitSetsContainer extends MMCommandParent {
 		clone.unitsDictionary = Object.assign({}, original.unitsDictionary);
 		clone.typesDictionary = Object.assign({}, original.typesDictionary);
 		clone.dimensionsDictionary = Object.assign({}, original.dimensionsDictionary);
-		return newName;
+		command.results = newName;
+		command.undo = `${this.getPath()} remove ${newName}`;
 	}
 
 	/** @method removeSetNamed
-	 * @param {string} name
+	 * @param {MMCommand} command args should be name
 	 */
-	removeSetNamed(name) {
+	removeSetNamed(command) {
+		let name = command.args;
 		let set = this.childNamed(name);
 		if (set && !set.isMaster) {
-			this.removeChildNamed(name);
+			this.removeChildNamed(command);
 			if (set === this.defaultSet) {
 				this.defaultSet = this.childNamed['SI'];
 			}

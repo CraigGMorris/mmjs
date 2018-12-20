@@ -144,8 +144,7 @@ class MMCommandProcessor {
 		command.args = terms[1];
 
 		try {
-			let localResults = subject.performCommand(verb, terms[1]);
-			command.results = localResults;
+			subject.performCommand(command);
 		}
 		catch(e) {
 			if (typeof e == 'string' || e instanceof MMCommandMessage) {
@@ -393,40 +392,45 @@ class MMCommandProcessor {
 
 	/**
 	 * @method renameTo
-	 * @param {string} newName 
+	 * @param {MMCommand} command 
 	 */
-	renameto(newName) {
+	renameto(command) {
+		let newName = command.args;
 		if (this.parent) {
 			let oldPath = this.getPath()
+			let oldName = this.name;
 			this.parent.renameChild(this.name, newName);
-			return this.t('cmd:childRenamed', {fromPath: oldPath, toName: this.name});
+			command.results = this.t('cmd:childRenamed', {fromPath: oldPath, toName: this.name});
+			command.undo = this.getPath() + ' renameTo ' + oldName;
 		}
 		else {
-			return this.t('cmd:cannotRenameTo', {name: this.name, newName: newName});
+			command.results = this.t('cmd:cannotRenameTo', {name: this.name, newName: newName});
 		}	
 	}
 
 	/**
 	 * @method getProperty
-	 * @param {string} args 
+	 * @param {MMCommand} command 
 	 */
-	getProperty(args) {
-		if (args === 'properties') {
+	getProperty(command) {
+		if (command.args === 'properties') {
 			let props = {};
 			for (let key in this.properties) {
 				props[key] = this[key];
 			}
-			return props;
+			command.results = props;
 		}
-		return this.getValue(args);
+		else {
+			command.results = this.getValue(command.args);
+		}
 	}
 
 	/**
 	 * @method setProperty
-	 * @param {string} args 
+	 * @param {MMCommand} command 
 	 */
-	setProperty(args) {
-		let argValues = this.splitArgsString(args);
+	setProperty(command) {
+		let argValues = this.splitArgsString(command.args);
 		/** @var {string} propertyName */
 		let propertyName;
 		/** @var {string valueString} */
@@ -450,11 +454,17 @@ class MMCommandProcessor {
 					this[propName] = props[propName];
 				}
 			}
-			return propertyName + ' set';
+			command.results =  propertyName + ' set';
 		}
-
-		this.setValue(propertyName, valueString);
-		return propertyName + ' = ' + valueString;
+		else {
+			let oldValue = this[propertyName];
+			if (oldValue == undefined || oldValue == null) {
+				oldValue = '';
+			}
+			this.setValue(propertyName, valueString);
+			command.results = propertyName + ' = ' + valueString;
+			command.undo = this.getPath() + ' set ' + propertyName + ' ' + oldValue;
+		}
 	}
 
 	/** @returns {string} returns path of this object */
@@ -537,10 +547,11 @@ class MMCommandProcessor {
 
 	/**
 	 * 
-	 * @param {string} argument
+	 * @param {MMCommand} command
 	 * @returns {Object} 
 	 */
-	getInfo(argument) {
+	getInfo(command) {
+		let argument = command.args;
 		let fields = argument.split(".");
 		switch(fields[0]) {
 			case "properties":
@@ -553,9 +564,10 @@ class MMCommandProcessor {
 						value: this[propName]
 					};
 				}
-				return returnValue;
+				command.results = returnValue;
+				break;
 			default:
-				return this.t('cmd:classAndPath', {className: this.className, path: this.getPath()});
+				command.results = this.t('cmd:classAndPath', {className: this.className, path: this.getPath()});
 		}
 	}
 
@@ -563,26 +575,30 @@ class MMCommandProcessor {
 	 * @param {string} newPath
 	 * @returns {string}
 	 */
-	changeDefaultTo(newPath) {
-		let newObject = this.processor.setDefaultToPath(newPath);
-		return this.t('cmd:changedDefault', {path: newObject.getPath()});
+	changeDefaultTo(command) {
+		let undoCmd = 'cd ' + this.processor.defaultObject.getPath();
+		let newObject = this.processor.setDefaultToPath(command.args);
+		command['undo'] = undoCmd;
+		command.results = this.t('cmd:changedDefault', {path: newObject.getPath()});
 	}
 
 	/**
-	 * @param {string} cmd
-	 * @returns {string}
+	 * @param {MMCommand} command
 	 */
-	help(cmd) {
+	help(command) {
+		let cmd = command.args;
 		if (cmd.length > 0) {
 			let key = this.getVerbUsageKey(cmd.toLowerCase());
 			if (key) {
-				return this.t(key);
+				command.results = this.t(key);
 			}
 			else {
-				return this.t('cmd:unknownCommand', {command: cmd});
+				command.results = this.t('cmd:unknownCommand', {command: cmd});
 			}
 		}
-		return Object.keys(this.verbs).sort();
+		else {
+			command.results = Object.keys(this.verbs).sort();
+		}
 	}
 
 	/**
@@ -598,18 +614,16 @@ class MMCommandProcessor {
 	/**
 	 * this will overridden by derived classes, but they should call the super method if they can't
 	 * respond to the command
-	 * @param {string} verb 
-	 * @param {string} args
+	 * @param {MMCommand} command 
 	 * @returns {Object} 
 	 */
-	performCommand(verb, args) {
-		let f = this.verbs[verb];
-		if (f) {
-			f = f.bind(this);
-			return f(args);
+	performCommand(command) {
+		let f = this.verbs[command.verb];
+		if (!f) {
+			throw(this.t('cmd:commandNotFound', {className: this.className, path: this.getPath(), cmd: command.verb}));
 		}
-
-		throw(this.t('cmd:commandNotFound', {className: this.className, path: this.getPath(), cmd: verb}));
+		f = f.bind(this);
+		f(command);
 	}
 }
 
@@ -642,8 +656,8 @@ class MMCommandProcessor {
 	get verbs() {
 		let actions = super.verbs;
 		actions['list'] = this.listChildNames;
-		actions['createChild'] = this.createChildFromArgs;
-		actions['removeChild'] = this.removeChild;
+		actions['createchild'] = this.createChildFromArgs;
+		actions['removechild'] = this.removeChildNamed;
 		return actions;
 	}
 
@@ -687,25 +701,29 @@ class MMCommandProcessor {
 	/**
 	 * @method createChildFromArgs
 	 * parses args string and then calls createChild
-	 * @param {string} args 
+	 * @param {MMCommand} command 
 	 */
-	createchildFromArgs(args) {
-		let argValues = this.splitArgsString(args);
+	createChildFromArgs(command) {
+		let argValues = this.splitArgsString(command.args);
 		if (argValues.length < 2) {
 			throw(this.t('usage:?createChild'));
 		}
-		let child = this.createChild(argValues[0], argValues[1]);
-		return [this.t('cmd:createdChild', {className: argValues[0], name: argValues[1]})];				
+		let name = argValues[1];
+		let child = this.createChild(argValues[0], name);
+		command.results = [this.t('cmd:createdChild', {className: argValues[0], name: argValues[1]})];
+		command.undo = this.getPath() + ' removechild ' + name;			
 	}
 
 
 	/**
-	 * @param {string} name 
+	 * @param {MMCommand} command 
 	 */
-	removeChildNamed(name) {
+	removeChildNamed(command) {
+		let name = command.args;
 		let lcName = name.toLowerCase();
 		if (this.children[lcName]) {
 			delete this.children[lcName];
+			command.results = this.t('cmd:removedChild', {name: name})
 		}
 		else {
 			throw(this.t('cmd:childNotFound', {parent: this.getPath(), child: name}));
@@ -713,10 +731,10 @@ class MMCommandProcessor {
 	}
 
 	/**
-	 * @param {string} pattern
-	 * @returns {string[]} 
+	 * @param {MMCommand} command
 	 */
-	listChildNames(pattern) {
+	listChildNames(command) {
+		let pattern = command.args;
 		let names = [];
 		let re = new RegExp(pattern);
 		for (let name in this.children) {
@@ -727,7 +745,7 @@ class MMCommandProcessor {
 				names.push(name);
 			}				
 		}
-		return names.sort();
+		command.results = names.sort();
 	}
 
 	/**
