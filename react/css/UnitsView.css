@@ -22,6 +22,21 @@
 	grid-area: customsets;
 }
 
-.setslist {
+#unitsview-setslist {
 	grid-area: setslist;
 }
+
+.unitsview-defaultset {
+	margin-left: 15px;
+	margin-right: 25px;
+}
+
+.unitsview-defaultset + label {
+	font-weight: bold;
+	color: gray;
+	width: 100%;
+}
+
+.unitsview-defaultset:checked + label {
+  color: black;
+} 

@@ -738,11 +738,12 @@ class MMCommandProcessor {
 		let names = [];
 		let re = new RegExp(pattern);
 		for (let name in this.children) {
+			let child = this.children[name];
 			if (pattern.length == 0) {
-				names.push(name);
+				names.push(child.name);
 			}
 			else if (name.search(re) != -1) {
-				names.push(name);
+				names.push(child.name);
 			}				
 		}
 		command.results = names.sort();

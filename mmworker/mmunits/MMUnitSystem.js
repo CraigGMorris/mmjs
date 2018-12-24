@@ -445,7 +445,7 @@ class MMUnitSet extends MMCommandObject {
 			verbs['renametype'] = this.renameType;
 			verbs['removetype'] = this.removeType;
 		}
-		verbs['unitfortype'] = this.unitForType;
+		verbs['unitfortype'] = this.unitNameForType;
 		verbs['listtypes'] = this.allTypeNames;
 		return verbs;
 	}
@@ -578,11 +578,11 @@ class MMUnitSet extends MMCommandObject {
 		}
 	}
 
-	/** @method unitForType - verb
+	/** @method unitNameForType - verb
 	 * @param {MMCommand} command command.args = typeName
 	 * command.results = unit name
 	*/
-	unitForType(command) {
+	unitNameForType(command) {
 		let typeName = command.args;
 		let dimensionString = this.dimensionsDictionary[typeName.toLowerCase()];
 		if (dimensionString) {
@@ -961,6 +961,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 	constructor(unitSystem) {
 		super('sets', unitSystem, 'MMUnitSetsContainer');
 		this.loadMasterSets();
+		this.defaultSet = this.childNamed('SI');
 	}
 
 	get unitSystem() {
@@ -973,6 +974,24 @@ class MMUnitSetsContainer extends MMCommandParent {
 		verbs['clone'] = this.cloneSet;
 		verbs['remove'] = this.removeSetNamed;
 		return verbs;
+	}
+
+	get properties() {
+		let d = super.properties;
+		d['default'] = {type: PropertyType.string, readOnly: false};
+		return d;
+	}
+
+	get default() {
+		return this.defaultSet.name;
+	}
+
+	set default(name) {
+		let newDefault = this.childNamed(name);
+		if (!newDefault) {
+			throw(this.t('mmcmd:unitSetNotFound', {name: name}));
+		}
+		this.defaultSet = newDefault;
 	}
 
 	/** @method getVerbUsageKey

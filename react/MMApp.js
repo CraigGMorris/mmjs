@@ -14,6 +14,8 @@ const e = React.createElement;
  * methods passed to components
  * @member {Object} infoViews
  * classes of info views used to construct the react component appearing in the info view
+ * @member {string[]} undoStack;
+ * @member {string[]} redoStack;
  */
 export class MMApp extends React.Component {
 	constructor(props) {
@@ -38,6 +40,9 @@ export class MMApp extends React.Component {
 			path: ''
 		}
 
+		this.undoStack = [];
+		this.redoStack = [];
+
 		this.state = {
 			/** @desc infoStack keeps the information necessary to render all the info views pushed */
 			infoStack: [initialInfoState]
@@ -56,7 +61,9 @@ export class MMApp extends React.Component {
 	doCommand(cmd, callBack) {
 		this.pipe.doCommand(cmd, (cmds) => {
 			// might check here for results needing new view states
-			callBack(cmds);
+			if (callBack) {
+				callBack(cmds);
+			}
 		});
 	}
 
@@ -106,7 +113,7 @@ export class MMApp extends React.Component {
 		let infoStack = this.state.infoStack;
 		for (let i = 0; i < infoStack.length; i++) {
 			previousTitle = i > 0 ? infoStack[i-1].title : '';
-			let viewInfo =this.state.infoStack[i];
+			let viewInfo = this.state.infoStack[i];
 			title = viewInfo.title;
 			let infoView = e('div', {
 					className: 'mmapp-info-content',
