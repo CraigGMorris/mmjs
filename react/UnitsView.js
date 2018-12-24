@@ -13,48 +13,46 @@ export class UnitsView extends React.Component {
 			setsList: [],
 			defaultSet: ''
 		};
-		this.handleUpdateState = this.handleUpdateState.bind(this);
-		this.updateState();
-
+		//this.updateState();
 	}
 
-	updateState() {
-		this.props.actions.doCommand(
+	componentDidMount() {
+		this.props.actions.setUpdateCommands(this.props.viewInfo.stackIndex,
 			`/unitsys.sets list
-			/unitsys.sets get default`,
-			(cmd) => {
-			if (cmd.length > 1 && cmd[0].results) {
-				let defaultName = cmd[1].results;
-				this.setState({defaultSet: (defaultName) ? defaultName.toLowerCase() : ''});
-				let list = [];
-				let handleChange = (event) => {
-					let newName = event.target.value;
-					this.props.actions.doCommand(`/unitsys.sets set default ${newName}`, (cmd) => {
-						this.updateState();
-					});
-				}
-				for(let set of cmd[0].results) {
-					let id = 'radio-' + set;
-					let comp = e('div', { key: set },
-						e('input', {
-							id: id,
-							onChange: handleChange,
-							checked: (this.state.defaultSet == set.toLowerCase()),
-							type: 'radio',
-							name: 'defaultSet',
-							className: 'unitsview-defaultset',
-							value: set
-						}),
-						e('label', {
-							id: 'readlabel',
-							htmlFor: id
-						}, set)
-					);
-					list.push(comp);
-				}
-				this.setState({setsList: list});
+			/unitsys.sets get default`);
+	}
+
+	setsList(results) {
+		let list = [];
+		if (results.length > 1 && results[0].results) {
+			let defaultName = results[1].results.toLowerCase();
+			let handleChange = (event) => {
+				let newName = event.target.value;
+				this.props.actions.doCommand(`/unitsys.sets set default ${newName}`, (cmd) => {
+						this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+				});
 			}
-		})
+			for(let set of results[0].results) {
+				let id = 'radio-' + set;
+				let comp = e('div', { key: set },
+					e('input', {
+						id: id,
+						onChange: handleChange,
+						checked: (defaultName == set.toLowerCase()),
+						type: 'radio',
+						name: 'defaultSet',
+						className: 'unitsview-defaultset',
+						value: set
+					}),
+					e('label', {
+						id: 'readlabel',
+						htmlFor: id
+					}, set)
+				);
+				list.push(comp);
+			}
+		}
+		return list;
 	}
 
 	render() {
@@ -73,7 +71,7 @@ export class UnitsView extends React.Component {
 			e('div', {
 				id:'unitsview-setslist'
 			},
-				this.state.setsList
+				this.setsList(this.props.viewInfo.updateResults)
 			)
 	);
 	}

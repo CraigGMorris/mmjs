@@ -21,11 +21,14 @@ export class MMApp extends React.Component {
 	constructor(props) {
 		super(props);
 		this.pipe = new MMCommandPipe();
-		this.doCommand = this.doCommand.bind(this);
+		//this.doCommand = this.doCommand.bind(this);
+		//this.setUpdateCommands = this.setUpdateCommands.bind(this);
 		this.actions = {
-			doCommand: this.doCommand,
-			pushView: this.pushView,
-			popView: this.popView
+			doCommand: this.doCommand.bind(this),
+			pushView: this.pushView.bind(this),
+			popView: this.popView.bind(this),
+			setUpdateCommands: this.setUpdateCommands.bind(this),
+			updateViewState: this.updateViewState.bind(this)
 		};
 
  		this.infoViews = {
@@ -37,7 +40,10 @@ export class MMApp extends React.Component {
 		let initialInfoState = {
 			viewKey: 'console',
 			title: 'react:consoleTitle',
-			path: ''
+			path: '',
+			stackIndex: 0,
+			updateCommands: '',
+			updateResults: ''
 		}
 
 		this.undoStack = [];
@@ -77,7 +83,10 @@ export class MMApp extends React.Component {
 		let newInfoState = {
 			viewKey: viewKey,
 			title: (title ? title : ''),
-			path: (path ? path : '')
+			path: (path ? path : ''),
+			stackIndex: this.state.infoStack.length,
+			updateCommands: '',			// commands used to update the view state
+			updateResults: ''		// result of doCommand on the updateCommands
 		};
 		this.setState((state) => {
 			let stack = state.infoStack;
@@ -86,16 +95,52 @@ export class MMApp extends React.Component {
 		})
 	}
 
-	/** @method popView
-	 * if more than one thing on info stack, it pops the last one
+	/** @method updateViewState
+	 * @param {Number} stackIndex = info stack position of view
+	 * call doCommand with updateCommands to update th info view state
 	 */
-		popView() {
-			let stack = this.state.infoStack;
-			if (stack.length) {
-				stack.pop();
+	updateViewState(stackIndex) {
+		let stack = this.state.infoStack;
+		if (stackIndex < stack.length) {
+			let top = stack[stackIndex];
+			if (top.updateCommands) {
+				this.doCommand(top.updateCommands, (cmds) => {
+					top.updateResults = cmds;
+					this.setState({infoStack: stack});
+				});
+			}
+			else {
 				this.setState({infoStack: stack});
 			}
 		}
+	}
+
+	/** @method popView
+	 * if more than one thing on info stack, it pops the last one
+	 */
+	popView() {
+		let stack = this.state.infoStack;
+		if (stack.length) {
+			stack.pop();
+			this.updateViewState(stack.length-1);
+		}
+	}
+
+	/** @method setUpdateCommands
+	 * @param {Number} stackIndex - index of view in infoStack
+	 * @param {string} commands - commands to be run to update state
+	 */
+	setUpdateCommands(stackIndex, commands) {
+		let stack = this.state.infoStack;
+		if (stackIndex < stack.length) {
+			let top = stack[stack.length-1];
+			this.doCommand(commands, (cmds) => {
+				top.updateCommands = commands;
+				top.updateResults = cmds;
+				this.setState({infoStack: stack});
+			});
+		}
+	}
 
 	handleButtonClick(event) {
 		let parts = event.target.value.split(' ');
@@ -128,6 +173,7 @@ export class MMApp extends React.Component {
 					{
 						className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
 						actions: this.actions,
+						viewInfo: viewInfo,
 						t: t
 					})
 			);
