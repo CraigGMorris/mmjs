@@ -61,6 +61,11 @@ class MMUnitSystem extends MMCommandParent {
 		return this.children['units'];
 	}
 
+	/** @returns {MMSetsContaioner} */
+	get sets() {
+		return this.children['sets'];
+	}
+
 	/** @method findNamePartsInString
 	 * Parses the term (either a numerator or denominator of a compound unit)
 	 * and returns and array of parts, each consisting of a tuple containing a
@@ -676,6 +681,7 @@ class MMUnitsContainer extends MMCommandParent {
 		let verbs = super.verbs;
 		if (!this.isMaster) {
 			verbs['adduserunit'] = this.addUserDefinition;
+			verbs['listuserunits'] = this.listUserUnits;
 			verbs['remove'] = this.removeUserDefinition;
 		}
 		return verbs;
@@ -763,6 +769,26 @@ class MMUnitsContainer extends MMCommandParent {
 		newUnit.definition = definition;	// save the definiton - useful for undoing remove
 		command.results = newUnit.name;
 		command.undo = `${this.getPath()} remove ${newUnit.name}`;
+	}
+
+	/** @method listUserUnits
+	 * @param {MMCommand} command - command args should be name = scale * existingUnit
+	 * command.results = list of user unit names
+	*/
+	listUserUnits(command) {
+		let list = [];
+		for (let name in this.children) {
+			let child = this.children[name];
+			if (!child.isMaster) {
+				let unitType = this.unitSystem.sets.defaultSet.typeNameForDimensions(child.dimensions);
+				list.push({
+					name: child.name,
+					unitType: unitType,
+					definition: child.definition
+				});
+			}
+		}
+		command.results = list;
 	}
 
 	/** @method removeUserDefinition

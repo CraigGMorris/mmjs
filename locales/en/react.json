@@ -6,5 +6,10 @@
 	"customUnitsButtonValue": "Custom Units",
 	"readCommands": "Read",
 	"unitButtonValue": "Units",
-	"unitsTitle": "Units"
+	"unitsTitle": "Units",
+	"userUnitsDefinition": "Definition",
+	"userUnitsDelete": "Delete",
+	"userUnitsExample": "Example: myUnit = 2 kg-m/s^2",
+	"userUnitsPlaceHolder": "myName = value existing unit",
+	"userUnitsTitle": "Custom Units"
 }

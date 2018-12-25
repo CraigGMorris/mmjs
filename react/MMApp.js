@@ -2,7 +2,7 @@
 
 import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
-import {UnitsView} from './UnitsView.js';
+import {UnitsView, UserUnitsView} from './UnitsView.js';
 
 const e = React.createElement;
 
@@ -33,7 +33,8 @@ export class MMApp extends React.Component {
 
  		this.infoViews = {
 			'console': ConsoleView,
-			'units': UnitsView
+			'units': UnitsView,
+			'userunits': UserUnitsView
 		}
 
 		// information need to generate an information view component
@@ -43,7 +44,7 @@ export class MMApp extends React.Component {
 			path: '',
 			stackIndex: 0,
 			updateCommands: '',
-			updateResults: ''
+			updateResults: []
 		}
 
 		this.undoStack = [];
@@ -86,7 +87,7 @@ export class MMApp extends React.Component {
 			path: (path ? path : ''),
 			stackIndex: this.state.infoStack.length,
 			updateCommands: '',			// commands used to update the view state
-			updateResults: ''		// result of doCommand on the updateCommands
+			updateResults: []		// result of doCommand on the updateCommands
 		};
 		this.setState((state) => {
 			let stack = state.infoStack;
