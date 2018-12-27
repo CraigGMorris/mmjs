@@ -11,5 +11,12 @@
 	"userUnitsDelete": "Delete",
 	"userUnitsExample": "Example: myUnit = 2 kg-m/s^2",
 	"userUnitsPlaceHolder": "myName = value existing unit",
-	"userUnitsTitle": "Custom Units"
+	"userUnitsTitle": "Custom Units",
+
+	"unitsSetsClone": "Clone",
+	"unitsSetsInfo": "i",
+	"unitsSetsMaster": "Library",
+	"unitsSetName": "Name",
+	"unitsSetsTitle": "Unit Sets",
+	"unitsSetsUser": "User"
 }

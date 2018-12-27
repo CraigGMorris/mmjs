@@ -32,12 +32,12 @@
 }
 
 .unitsview-defaultset + label {
-	font-weight: bold;
-	color: gray;
+	color: blue;
 	width: 100%;
 }
 
 .unitsview-defaultset:checked + label {
+	font-weight: bold;
   color: black;
 }
 
@@ -112,4 +112,86 @@
 .userunits-delete {
 	grid-area: delete;
 	font-size: 10pt;
+}
+
+#usersets-view {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 60px 1fr;
+	grid-template-areas:
+		"inputsection"
+		"unitslist";
+	height: 100%;
+}
+
+#usersets-input-section {
+	grid-area: inputsection;
+	display: grid;
+	grid-template-columns: 1fr 5fr 1f;
+	grid-template-rows: 30px;
+	grid-template-areas: "label input clone";
+}
+
+#usersets-name-field {
+	grid-area: input;
+	justify-self: center;
+	font-size: 10pt;
+	width: calc(100% - 25px);
+	padding-left: 5px;
+	margin-left: 10px;
+	margin-top: 5px;
+	border: solid 1px;
+}
+
+#usersets-name-label {
+	grid-area: label;
+	margin-left: 10px;
+	margin-top: 10px;
+}
+
+#usersets-info {
+	grid-area: info;
+}
+
+#usersets-list {
+	background-color: white;
+	height: 100%;
+	border-top: solid 1px;
+}
+
+.usersets-item-div {
+	border-bottom: solid 1px;
+	display: grid;
+	grid-template-columns: 1fr 40px;
+	grid-template-rows: 1fr 1fr;
+	grid-template-areas:
+		"name info"
+		"settype info";
+}
+
+.usersets-item-name {
+	grid-area: name;
+	margin-left: 10px;
+	font-size: 14pt;
+}
+
+.usersets-item-type {
+	grid-area: settype;
+	margin-left: 10px;
+	color: darkgray;
+}
+
+.usersets-info {
+	grid-area: info;
+	height: 100%;
+}
+
+.usersets-info button {
+	margin-top: 15px;
+	font-size: 10pt;
+	font-weight: bold;
+}
+
+.usersets-selected {
+	background-color: lightgray;
 }

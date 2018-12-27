@@ -2,7 +2,7 @@
 
 import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
-import {UnitsView, UserUnitsView} from './UnitsView.js';
+import {UnitsView, UserUnitsView, UnitSetsView} from './UnitsView.js';
 
 const e = React.createElement;
 
@@ -34,7 +34,8 @@ export class MMApp extends React.Component {
  		this.infoViews = {
 			'console': ConsoleView,
 			'units': UnitsView,
-			'userunits': UserUnitsView
+			'userunits': UserUnitsView,
+			'unitsets': UnitSetsView
 		}
 
 		// information need to generate an information view component
@@ -185,7 +186,7 @@ export class MMApp extends React.Component {
 			e('div', {className: 'mmapp-diagram'}, 'diagram'),
 			e('div', {className: 'mmapp-info-nav'},
 				e('div',{
-					className: 'mmapp-info-navback',
+					className: 'mmapp-info-navback clickable',
 					onClick: this.popView
 				}, previousTitle ? '< ' + t(previousTitle) : ''),
 				e('div',{

@@ -71,7 +71,6 @@ body {
 .mmapp-info-tools button {
 	width: calc(100% - 10px);
 	height: calc(100% - 10px);
-	color: blue;
 	background: transparent;
 	border: 0;
 	font-size: 10pt;
@@ -99,3 +98,18 @@ body {
 	grid-area: units;
 }
 
+.clickable {
+	color: blue;
+}
+
+button {
+	color: blue;
+}
+
+input:read-only {
+	color: gray;
+}
+
+button:disabled {
+	color: gray;
+}

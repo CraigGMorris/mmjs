@@ -422,7 +422,7 @@ class MMUnit extends MMCommandObject {
  * @member {Object} typesDictionary - key dimension value typeName
  * @member {Object} dimensionsDictionary - key typeName value dimension
  * @member {boolean} isMaster
- * @member {MMUnitSystem} unitSystem;
+ * @member {MMUnitSystem} unitSystem
  */
 class MMUnitSet extends MMCommandObject {
 		/** @constructor
@@ -999,6 +999,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 		let verbs = super.verbs;
 		verbs['clone'] = this.cloneSet;
 		verbs['remove'] = this.removeSetNamed;
+		verbs['listsettypes'] = this.listSetTypes;
 		return verbs;
 	}
 
@@ -1088,6 +1089,19 @@ class MMUnitSetsContainer extends MMCommandParent {
 				this.defaultSet = this.childNamed['SI'];
 			}
 		}
+	}
+
+	/** @method listSetTypes
+	 * @param {MMCommand} command
+	 * command.results = [{name: isMaster:}]
+	 */
+	listSetTypes(command) {
+		let results = [];
+		for (let name in this.children) {
+			let set = this.children[name];
+			results.push({name: set.name, isMaster: set.isMaster});
+		}
+		command.results = results;
 	}
 
 	/** @method loadFromJsonObjects
