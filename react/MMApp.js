@@ -21,8 +21,6 @@ export class MMApp extends React.Component {
 	constructor(props) {
 		super(props);
 		this.pipe = new MMCommandPipe();
-		//this.doCommand = this.doCommand.bind(this);
-		//this.setUpdateCommands = this.setUpdateCommands.bind(this);
 		this.actions = {
 			doCommand: this.doCommand.bind(this),
 			pushView: this.pushView.bind(this),
@@ -68,10 +66,27 @@ export class MMApp extends React.Component {
 	 * @param {function} callBack - (cmds[]) => {}
 	 */
 	doCommand(cmd, callBack) {
-		this.pipe.doCommand(cmd, (cmds) => {
-			// might check here for results needing new view states
+		this.pipe.doCommand(cmd, (results) => {
+			if (results.error) {
+				let error = results.error;
+				if (error.msgKey) {
+					alert(this.props.t(error.msgKey, error.args));
+				}
+				else {
+					alert(error);
+				}
+			}
+			else if (results.warning) {
+				let warning = results.warning;
+				if (warning.msgKey) {
+					alert(this.props.t(warning.msgKey, warning.args));
+				}
+				else {
+					alert(warning.error);
+				}
+			}
 			if (callBack) {
-				callBack(cmds);
+				callBack(results);
 			}
 		});
 	}

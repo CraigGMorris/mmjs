@@ -20,20 +20,12 @@ export class MMCommandPipe {
 	 * @param {function} callBack
 	 */
 	doCommand(command, callBack) {
-		if (this.cmdWorker) {
-			console.log(command);
-			this.cmdWorker.postMessage(command); // Sending message as an array to the worker
-			// console.log('Main (first.onchange): Message posted to worker');
+		console.log(command);
+		this.cmdWorker.postMessage(command); // Sending message as an array to the worker
+		// console.log('Main (first.onchange): Message posted to worker');
 
-			this.cmdWorker.onmessage = function(e) {
-				callBack(e.data);
-			}
-		}
-		else {
-			let results = this.processor.processCommandString(command);
-			if (results) {
-				callBack(results);
-			}
+		this.cmdWorker.onmessage = function(e) {
+			callBack(e.data);
 		}
 	}
 }

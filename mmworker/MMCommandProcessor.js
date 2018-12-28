@@ -4,7 +4,9 @@
 	 * @member {string} expression 
 	 * @member {string} subject 
 	 * @member {string} verb 
-	 * @member {string} args 
+	 * @member {string} args
+	 * @member {string} error - undefined if no error
+	 * @member {string} waring - undefined if no warning
 	 * @member {Object} results 
 */
 class MMCommand {
@@ -14,10 +16,6 @@ class MMCommand {
 	constructor(expression) {
 		this.expression = expression;
 		// other members will be supplied by MMCommandProcessor.processCommand
-		this.subject = undefined;
-		this.verb = undefined;
-		this.args = undefined;
-		this.results = undefined;
 	}
 }
 
@@ -43,8 +41,6 @@ class MMCommand {
  * @member {MMCommandObject} defaultObject
  * @member {string} currentExpression
  * @member {function} statusCallBack - (message: string) => void
- * @member {function} warningCallBack - (message: string) => void
- * @member {function} errorCallBack - (message: string) => void
 */
 class MMCommandProcessor {
 	/** @constructs */
@@ -54,8 +50,6 @@ class MMCommandProcessor {
 		this.defaultObject = undefined;
 		this.currentExpression = undefined;
 		this.statusCallBack = undefined;
-		this.warningCallBack = undefined;
-		this.errorCallBack = undefined;
 	}
 
 	/**  @param {MMCommandParent} root - MMCommandParent */
@@ -90,18 +84,8 @@ class MMCommandProcessor {
 	}
 
 	/** @param {function} cb - msgKey: string => void */
-	setErrorCallBack(cb) {
-		this.errorCallBack = cb;
-	}
-
-	/** @param {function} cb - msgKey: string => void */
 	setStatusCallBack(cb) {
 		this.statusCallBack = cb;
-	}
-
-	/** @param {function} cb - msgKey: string => void */
-	setWarningCallBack(cb) {
-		this.warningCallBack = cb;
 	}
 
 	/** @param {MMCommand} command
@@ -143,18 +127,7 @@ class MMCommandProcessor {
 		command.verb = verb;
 		command.args = terms[1];
 
-		try {
-			subject.performCommand(command);
-		}
-		catch(e) {
-			if (typeof e == 'string' || e instanceof MMCommandMessage) {
-				this.errorCallBack(e)
-			}
-			else {
-				this.errorCallBack(e.message);
-			}
-			return false;
-		}
+		subject.performCommand(command);
 		return true;
 	}
 
@@ -166,45 +139,52 @@ class MMCommandProcessor {
 	 */
 	processCommandString(commands) {
 		let results = [];
-		commands = commands.trim();
-		if (commands.length > 0) {
-			// cmds are separated by either \n or ;
-			// two ; are replaced by a single one
-			commands = commands.replace(/([^;]);([^;])/,'$1\n$2');
-			commands = commands.replace(/;;/, ';');
-			let cmdLines = commands.split('\n');
-			let continuedCmd = '';
-			for( let cmd of cmdLines) {
-				cmd = continuedCmd + cmd.trim();
-				if (this.useLineContinuation) {
-					continuedCmd = '';
-					if (cmd.endsWith('__')) {
-						cmd = cmd.substr(0, cmd.length-1);   // escaped end underscore - leave one behind
+		try {
+			commands = commands.trim();
+			if (commands.length > 0) {
+				// cmds are separated by either \n or ;
+				// two ; are replaced by a single one
+				commands = commands.replace(/([^;]);([^;])/,'$1\n$2');
+				commands = commands.replace(/;;/, ';');
+				let cmdLines = commands.split('\n');
+				let continuedCmd = '';
+				for( let cmd of cmdLines) {
+					cmd = continuedCmd + cmd.trim();
+					if (this.useLineContinuation) {
+						continuedCmd = '';
+						if (cmd.endsWith('__')) {
+							cmd = cmd.substr(0, cmd.length-1);   // escaped end underscore - leave one behind
+						}
+						else {
+							if (cmd.endsWith('_')) {
+								continuedCmd = cmd.substr(0, cmd.length-1) + '\n';
+								continue;
+							}
+						}
 					}
-					else {
-						if (cmd.endsWith('_')) {
-							continuedCmd = cmd.substr(0, cmd.length-1) + '\n';
+					
+					if (cmd.length > 0) {
+						let action = new MMCommand(cmd);
+						if (this.processCommand(action)) {
+							results.push(action);
+						}
+						else {
 							continue;
 						}
 					}
 				}
-				
-				if (cmd.length > 0) {
-					let action = new MMCommand(cmd);
+
+				if (continuedCmd.length > 0) {
+					let action = new MMCommand(continuedCmd);
 					if (this.processCommand(action)) {
 						results.push(action);
 					}
-					else {
-						return null;
-					}
 				}
 			}
-
-			if (continuedCmd.length > 0) {
-				let action = new MMCommand(continuedCmd);
-				this.processCommand(action);
-				results.push(action);
-			}
+		}
+		catch(e) {
+			let message = (e instanceof Error) ? `Internal Error\n${e.message}` : e;
+			results.error = message;
 		}
 
 		return results;
@@ -283,20 +263,9 @@ class MMCommandProcessor {
 		return undefined;
 	}
 
-
-	/** @param {string} message */
-	showError(message) {
-		this.errorCallBack(message);
-	}
-
 	/** @param {string} message */
 	showStatus(messag) {
 		this.statusCallBack(message);
-	}
-
-	/** @param {string} message */
-	showWarning(message) {
-		this.warningCallBack(message);
 	}
 }
 

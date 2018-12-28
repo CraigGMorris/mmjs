@@ -11,22 +11,6 @@ class MMCommandWorker {
     this.processor = new MMCommandProcessor();
     let root = new MMSession(this.processor)
 
- 	  this.processor.setErrorCallBack((message) => {
-      const msg = {
-        verb: 'error',
-        results: message
-      }
-      postMessage([msg]);
-    });
-
-	  this.processor.setWarningCallBack((message) => {
-      const msg = {
-        verb: 'warning',
-        results: message
-      }
-      postMessage([msg]);
-    });
-
     this.processor.setStatusCallBack((message) => {
       const msg = {
         verb: 'status',

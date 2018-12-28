@@ -418,7 +418,7 @@ export class UnitSetView extends React.Component {
 			let unit = this.state.unitInput;
 			if (name.length && unit.length) {
 				this.props.actions.doCommand(`${this.props.viewInfo.path} addtype ${name} ${unit}`, (cmds) => {
-					if (cmds[0].verb != 'error') {
+					if (!cmds.error) {
 						this.setState({
 							selected: '',
 							nameInput: '',
