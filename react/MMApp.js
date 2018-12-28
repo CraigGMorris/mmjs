@@ -2,7 +2,7 @@
 
 import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
-import {UnitsView, UserUnitsView, UnitSetsView} from './UnitsView.js';
+import {UnitsView, UserUnitsView, UnitSetsView, UnitSetView} from './UnitsView.js';
 
 const e = React.createElement;
 
@@ -35,7 +35,8 @@ export class MMApp extends React.Component {
 			'console': ConsoleView,
 			'units': UnitsView,
 			'userunits': UserUnitsView,
-			'unitsets': UnitSetsView
+			'unitsets': UnitSetsView,
+			"unitset": UnitSetView
 		}
 
 		// information need to generate an information view component

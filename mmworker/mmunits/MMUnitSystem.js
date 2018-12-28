@@ -451,7 +451,7 @@ class MMUnitSet extends MMCommandObject {
 			verbs['removetype'] = this.removeType;
 		}
 		verbs['unitfortype'] = this.unitNameForType;
-		verbs['listtypes'] = this.allTypeNames;
+		verbs['listtypes'] = this.listTypeNameUnit;
 		return verbs;
 	}
 
@@ -488,7 +488,7 @@ class MMUnitSet extends MMCommandObject {
 		// check if type of those dimensions already exists
 		if ( oldTypeName ) {
 			if (oldTypeName != typeName) {
-				throw(this.t('mmcmd:unitSetDuplicateDimensions', {name: typeName}));
+				throw(this.t('mmcmd:unitSetDuplicateDimensions', {name: oldTypeName}));
 			}
 			this.dimensionsDictionary[lcTypeName] = dimensionString;
 			if (oldDimensionString) {
@@ -633,12 +633,27 @@ class MMUnitSet extends MMCommandObject {
 		return this.dimensionsDictionary[typeName.toLowerCase()];
 	}
 
-	/** @method allTypeNames
+	/** @method listTypeNameUnit
 	 * @param {MMCommand} command - does not require command.args
-	 * command.results = array of names
+	 * command.results = [{name: unit}]
 	 */
-	allTypeNames(command) {
-		command.results = Object.values(this.typesDictionary);
+	listTypeNameUnit(command) {
+		let results = [];
+		for (let key in this.typesDictionary) {
+			results.push({name: this.typesDictionary[key], unit: this.unitsDictionary[key].name});
+		}
+		results.sort((a, b) => {
+			let aName = a.name.toLowerCase();
+			let bName = b.name.toLowerCase();
+			if (aName < bName) {
+				return -1;
+			}
+			if (aName > bName) {
+				return 1;
+			}
+			return 0;
+		});
+		command.results = results;
 	}
 
 	/** @method loadFromJsonObjects

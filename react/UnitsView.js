@@ -141,7 +141,7 @@ export class UserUnitsView extends React.Component {
 	* click on unit puts definition in input
 	*/
 	handleSelectClick(event) {
-		this.setState({input: event.target.innerText});
+		this.setState({input: event.target.dataset.definition});
 	}
 
 	render() {
@@ -159,11 +159,15 @@ export class UserUnitsView extends React.Component {
 					e('div', {
 						className: 'userunits-item-definition clickable',
 						onClick: this.handleSelectClick,
-						value: unit.definition	
+						'data-definition': unit.definition	
 					},
 						unit.definition
 					),
-					e('div', { className: 'userunits-item-type'},
+					e('div', {
+						className: 'userunits-item-type clickable',
+						onClick: this.handleSelectClick,
+						'data-definition': unit.definition	
+					},
 						unit.unitType
 					),
 					e('button', {
@@ -203,7 +207,7 @@ export class UserUnitsView extends React.Component {
 
 /**
  * @class UnitSetsView
- * add or edit user units
+ * clone or edit unit sets
  */
 export class UnitSetsView extends React.Component {
 	constructor(props) {
@@ -274,7 +278,7 @@ export class UnitSetsView extends React.Component {
 	* click on set selects it
 	*/
 	handleSelectClick(event) {
-		let name = event.target.innerText;
+		let name = event.target.dataset.name;
 		this.setState({selected: name, input: name});
 		event.stopPropagation();
 	}
@@ -309,10 +313,15 @@ export class UnitSetsView extends React.Component {
 					e('div', {
 						className: 'usersets-item-name clickable',
 						onClick: this.handleSelectClick,
+						'data-name': set.name
 					},
 						set.name
 					),
-					e('div', { className: 'usersets-item-type'},
+					e('div', {
+						className: 'usersets-item-type',
+						onClick: this.handleSelectClick,
+						'data-name': set.name
+					},
 						set.isMaster ? t('react:unitsSetsMaster') : t('react:unitsSetsUser')
 					),
 					set.isMaster ? '' :
@@ -355,6 +364,217 @@ export class UnitSetsView extends React.Component {
 				onClick: this.handleClearClick
 			},
 				setList
+			)
+		);
+	}
+}
+
+/**
+ * @class UnitSetView
+ * edit user unit set
+ */
+export class UnitSetView extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			selected: '',
+			nameInput: '',
+			unitInput: ''
+		};
+		this.handleChange = this.handleChange.bind(this);
+		this.handleKeyPress = this.handleKeyPress.bind(this);
+		this.handleAddTypeClick = this.handleAddTypeClick.bind(this);
+		this.handleDeleteSetClick = this.handleDeleteSetClick.bind(this);
+		this.handleDeleteTypeClick = this.handleDeleteTypeClick.bind(this);
+		this.handleSelectClick = this.handleSelectClick.bind(this);
+	}
+
+	componentDidMount() {
+		let viewInfo = this.props.viewInfo;
+		this.props.actions.setUpdateCommands(viewInfo.stackIndex,
+			`${viewInfo.path} listtypes`);
+	}
+
+		/** @method handleChange
+	 * keeps input field in sync
+	 * @param {Event} event
+	 */
+  handleChange(event) {
+		if (event.target.id == 'userset-name-field') {
+			this.setState({nameInput: event.target.value});
+		}
+		else {
+			this.setState({unitInput: event.target.value});
+		}
+	}
+
+	/** @method handleKeyPress
+	 * watches for Enter and sends command when it see it
+	 * @param {Event} event
+	 */
+	handleKeyPress(event) {
+		if (event.key == 'Enter') {
+			let name = this.state.nameInput;
+			let unit = this.state.unitInput;
+			if (name.length && unit.length) {
+				this.props.actions.doCommand(`${this.props.viewInfo.path} addtype ${name} ${unit}`, (cmds) => {
+					if (cmds[0].verb != 'error') {
+						this.setState({
+							selected: '',
+							nameInput: '',
+							unitInput: ''				
+						});
+					}
+					this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+				});
+			}
+		}
+	}
+
+	/** @method handleAddTypeClick
+	* click to clear the input fields so new type can be defined
+	*/
+	handleAddTypeClick(event) {
+		this.setState({
+			selected: '',
+			nameInput: '',
+			unitInput: ''
+		});
+		event.stopPropagation();
+	}
+
+	/** @method handleDeleteSetClick
+	* click to delete the user set
+	*/
+	handleDeleteSetClick(event) {
+		let pathParts = this.props.viewInfo.path.split('.');
+		let name = pathParts[pathParts.length - 1];
+		this.props.actions.doCommand(`/unitsys.sets remove ${name}`, (cmds) => {
+			this.props.actions.popView();
+		});
+		event.stopPropagation();
+	}
+
+	/** @method handleSelectClick
+	* click to select the unit type and fill in the input fields
+	*/
+	handleSelectClick(event) {
+		let name = event.target.dataset.name;
+		let unit = event.target.dataset.unit;
+		this.setState({
+			selected: name,
+			nameInput: name,
+			unitInput: unit
+		});
+		event.stopPropagation();
+	}
+
+	/** @method handleDeleteTypeClick
+	* click to delete the unit type
+	*/
+	handleDeleteTypeClick(event) {
+		let name = event.target.value;
+		if (name == this.state.selected) {
+			this.setState({selected: '',
+				nameInput: '',
+				unitInput: ''
+			});
+		}
+		this.props.actions.doCommand(`${this.props.viewInfo.path} removetype ${name}`, (cmds) => {
+			this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+		});
+		event.stopPropagation();
+	}
+
+	render() {
+		let t = this.props.t;
+		let typeList = [];
+		let results = this.props.viewInfo.updateResults;
+		if (results && results.length) {
+			let types = results[0].results;
+			for (let i = 0; i < types.length; i++) {
+				let unitType = types[i];
+				let containerClass = 'userset-item-div';
+				if (this.state.selected == unitType.name) 	{
+					containerClass += ' userset-selected';
+				}
+				let cmp = e('div', {
+					key: unitType.name,
+					className: containerClass,
+					},
+					e('div', {
+						className: 'userset-item-type clickable',
+						'data-name': unitType.name,
+						'data-unit': unitType.unit,
+						onClick: this.handleSelectClick,
+					},
+						unitType.name
+					),
+					e('div', {
+						className: 'userset-item-unit clickable',
+						'data-name': unitType.name,
+						'data-unit': unitType.unit,
+						onClick: this.handleSelectClick,
+					},
+						unitType.unit
+					),
+					e('div', {
+						className: 'userset-delete-type',
+					},
+						e('button', {
+							value: unitType.name,
+							onClick: this.handleDeleteTypeClick						
+						}, t('react:unitsSetDeleteType'))
+					)
+				);
+				typeList.push(cmp);
+			}
+		}
+		return e('div', {id:'userset-view'},
+			e('div', {id: 'userset-input-section'},
+				e('label', {
+					id: 'userset-name-label',
+					htmlFor: 'userset-name-field'
+				}, t('react:unitsSetTypeName')
+				),
+				e('input', {
+					id: 'userset-name-field',
+					value: this.state.nameInput,
+					placeholder: '',
+					onChange: this.handleChange,
+					onKeyPress: this.handleKeyPress,
+				}),
+				e('label', {
+					id: 'userset-unit-label',
+					htmlFor: 'userset-unit-field'
+				}, t('react:unitsSetUnitName')
+				),
+				e('input', {
+					id: 'userset-unit-field',
+					value: this.state.unitInput,
+					placeholder: '',
+					onChange: this.handleChange,
+					onKeyPress: this.handleKeyPress,
+				}),
+				e('div', {
+					id: 'userset-buttons'
+				},
+					e('button', {
+						id: 'userset-deleteset-button',
+						onClick: this.handleDeleteSetClick,
+					}, t('react:unitsSetDeleteSet')
+					),
+					e('button', {
+						id: 'userset-addtype-button',
+						onClick: this.handleAddTypeClick,
+					}, t('react:unitsSetAddType')
+					)
+				)
+			),
+			e('div', {
+				id: 'userset-list',
+			},
+				typeList
 			)
 		);
 	}

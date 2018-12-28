@@ -18,5 +18,11 @@
 	"unitsSetsMaster": "Library",
 	"unitsSetName": "Name",
 	"unitsSetsTitle": "Unit Sets",
-	"unitsSetsUser": "User"
+	"unitsSetsUser": "User",
+
+	"unitsSetAddType": "Clear Selection",
+	"unitsSetDeleteSet": "Delete Set",
+	"unitsSetDeleteType": "Delete",
+	"unitsSetTypeName": "Name",
+	"unitsSetUnitName": "Unit"
 }
