@@ -399,22 +399,22 @@ class MMCommandProcessor {
 	 * @param {MMCommand} command 
 	 */
 	setProperty(command) {
-		let argValues = this.splitArgsString(command.args);
-		/** @var {string} propertyName */
-		let propertyName;
-		/** @var {string valueString} */
-		let valueString;
-		switch(argValues.length) {
-			case 0:
-				throw(this.t('usage:?setValue'));
-			case 1:
-				propertyName = argValues[0];
-				valueString = '';
-				break;
-			default:
-				propertyName = argValues[0];
-				valueString = argValues[1];
+		let args = command.args;
+		if (!args) {
+			throw(this.t('usage:?setValue'));
 		}
+		let firstSpace = args.indexOf(' ');
+		let propertyName;
+		let valueString;
+		if (firstSpace == -1) {
+			propertyName = args;
+			valueString = '';
+		}
+		else {
+			propertyName = args.slice(0, firstSpace);
+			valueString = args.slice(firstSpace + 1);
+		}
+		
 		if (propertyName === 'properties') {
 			// console.log(valueString);
 			let props = JSON.parse(valueString);
