@@ -3,7 +3,9 @@
 importScripts(
   'MMCommandProcessor.js',
   'MMSession.js',
-  'mmunits/MMUnitSystem.js'
+  'mmunits/MMUnitSystem.js',
+  'MMModel.js',
+  "MMExpression.js"
 );
 
 class MMCommandWorker {
