@@ -534,28 +534,14 @@ class MMFormula extends MMCommandObject {
 
 	/**
 	 * @method syntaxError
+	 * @param {MMCommandMessage} child - optional
 	 */
-	syntaxError() {
+	syntaxError(child) {
 		this.isInError = true;
 		this.setError('mmcmd:formulaSyntaxError', {
 			path: this.parent.getPath(),
 			formula: this.truncatedFormula()
-		});
-	}
-
-	/**
-	 * @method syntaxErrorWithMessage
-	 * @param {String} key - to this.t
-	 * @param {Object} args
-	 */
-	syntaxErrorWithMessage(key, args) {
-		this.isInError = true;
-		if (!args) {
-			args = {};
-		}
-		args['path'] = this.parent.getPath();
-		args['formula'] = this.truncatedFormula();
-		this.setError(this.t(key, args));
+		}, child);
 	}
 
 	/**
@@ -600,6 +586,13 @@ class MMFormula extends MMCommandObject {
 		let operandStack = [];
 
 		// helper functions
+		function filterFloat(value) {
+			if (/^(\-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/
+				.test(value))
+				return Number(value);
+			return NaN;
+		}
+
 		/** @function addParenOp */
 		function addParenOp() {
 			operatorStack.push(new MMParenthesisOperator());
@@ -691,7 +684,7 @@ class MMFormula extends MMCommandObject {
 			let tokens = workingFormula.split(/\s/);
 			let tokenCount = tokens.length;
 			if (tokenCount == 2 || (tokenCount > 2 && tokens[2] == "'")) {
-				let value = parseFloat(tokens[0]);
+				let value = filterFloat(tokens[0]);
 				if (!isNaN(value)) {
 					let unitName = tokens[1];
 					if (unitName.startsWith('"') && unitName.length > 1) {
@@ -766,9 +759,9 @@ class MMFormula extends MMCommandObject {
 							let nextToken2 = tokens[++i];
 							token = nextToken1 + nextToken2;
 						}
-						let scalarValue = parseFloat(token);
+						let scalarValue = filterFloat(token);
 						if (isNaN(scalarValue)) {
-							this.syntaxErrorWithMessage('mmcmd:formulaInvalidNumber');
+							this.syntaxError(this.t('mmcmd:formulaInvalidNumber'));
 							return null;
 						}
 
@@ -791,7 +784,7 @@ class MMFormula extends MMCommandObject {
 							if (unitToken) {
 								let unit = theMMSession.unitSystem.unitNamed(unitToken);
 								if (!unit) {
-									this.syntaxErrorWithMessage('mmcmd:formulaBadUnit');
+									this.syntaxError(this.t('mmcmd:formulaBadUnit'));
 									return null;
 								}
 								i++;  // consume the token

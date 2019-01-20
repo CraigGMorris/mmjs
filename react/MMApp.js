@@ -98,9 +98,17 @@ export class MMApp extends React.Component {
 					}
 				}
 			}
+			let stringify = (msg) => {
+				let s = this.props.t(msg.msgKey, msg.args);
+				if (msg.child) {
+					s += '\n' + stringify(msg.child);
+				}
+				return s;
+			}
+
 			if (error) {
 				if (error.msgKey) {
-					this.errorAlert(this.props.t(error.msgKey, error.args));
+					this.errorAlert(stringify(error));
 				}
 				else {
 					this.errorAlert(error);
@@ -108,7 +116,7 @@ export class MMApp extends React.Component {
 			}
 			else if (warning) {
 				if (warning.msgKey) {
-					this.warningAlert(this.props.t(warning.msgKey, warning.args));
+					this.warningAlert(stringify(warning));
 				}
 				else {
 					this.warningAlert(warning);

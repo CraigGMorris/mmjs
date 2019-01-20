@@ -23,15 +23,20 @@ class MMCommand {
  * encapsulates message key and arguments for i18next
  * @member {string} msgKey
  * @member {Object} args
+ * @member {MMCommandMessage} child - optional
  */
 /* export */ class MMCommandMessage {
 	/** @constructs
 	 * @param {string} msgKey
 	 * @param {Object} args
+	 * @param {MMCommandMessage} child - optional
 	 */
-	constructor(msgKey, args) {
+	constructor(msgKey, args, child) {
 		this.msgKey = msgKey;
 		this.args = args;
+		if (child) {
+			this.child = child;
+		}
 	}
 }
 
@@ -361,22 +366,24 @@ class MMCommandProcessor {
 	/**
 	 * shortcut translate call
 	 * @param {string} key
-	 * @param {Object} args
+	 * @param {Object} args - optional
+	 * @param {MMCommandObject} child - optional
 	 * @returns {string}
 	 */
-	t(key, args) {
-		return new MMCommandMessage(key, args);
+	t(key, args, child) {
+		return new MMCommandMessage(key, args, child);
 	}
 
 	/**
 	 * @method setError
 	 * @param {String} key
-	 * @param {Object} args
+	 * @param {Object} args - optional
+	 * @param {MMCommandMessage} child - optional
 	 */
-	setError(key, args) {
+	setError(key, args, child) {
 		// ignore if error already set so first error is reported
 		if (this.command && !this.command.error) {
-			this.command.error = this.t(key, args);
+			this.command.error = this.t(key, args, child);
 		}
 	}
 
