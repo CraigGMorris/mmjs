@@ -1,17 +1,24 @@
 'use strict';
 
+/**
+ * @global theMMSession
+ */
+var theMMSession;
+
 importScripts(
   'MMCommandProcessor.js',
   'MMSession.js',
   'mmunits/MMUnitSystem.js',
   'MMModel.js',
-  "MMExpression.js"
+  "MMExpression.js",
+  "MMFormula.js",
+  "MMValue.js"
 );
 
 class MMCommandWorker {
   constructor() {
     this.processor = new MMCommandProcessor();
-    let root = new MMSession(this.processor)
+    theMMSession = new MMSession(this.processor)
 
     this.processor.setStatusCallBack((message) => {
       const msg = {

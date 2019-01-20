@@ -28,6 +28,16 @@ const MMUnitCalcType = Object.freeze({
 });
 
 /**
+ * @enum MMUnitDataType
+ * how date value is represented
+ */
+const MMUnitDateType = Object.freeze({
+	YYYYMMDD: 0,
+	DDMMYYYY: 1,
+	MMDDYYYY: 2
+});
+
+/**
  * @class MMUnitSystem
  * This class implements a physical unit conversion system based
  * on every unit having defined exponents of the seven fundemental properties
@@ -46,6 +56,43 @@ const MMUnitCalcType = Object.freeze({
  * @member {MMUnitsContainer} units
  */
 class MMUnitSystem extends MMCommandParent {
+	/** @static areDimensionsEqual
+	 * @param {Number[]} dim1
+	 * @param {Number[]} dim2
+	 * @return {boolean}  true if equal
+	 */
+	static areDimensionsEqual(dim1, dim2) {
+		if (dim1 === dim2 ) {
+			return true;
+		}
+	
+	if ( !dim1 && dim2) {  // nil should equate to all dimensions being 0
+		for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
+			if ( dim2[i] != 0.0 )
+				return false;
+		}
+		return true;
+	}
+		
+	if ( !dim2 && dim1 ) {
+		for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
+			if (dim1[i] != 0.0 )
+				return false;
+		}
+		return true;
+	}
+
+	// both dimensions have values
+	for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
+		if ( dim1[i] != dim2[i] )
+			return false;
+	}
+	
+	return true;
+
+	}
+
+
 	/**
 	 * @constructor
 	 * @param {Object} session - MMSession - parent session
@@ -129,8 +176,95 @@ class MMUnitSystem extends MMCommandParent {
 					return null;
 				}
 			}
+			unit = this.units.addUnit(name, '0', true);
 		}
-		return this.units.addUnit(name, '0', true);
+		return unit;
+	}
+
+	/**
+	 * @method defaultSet
+	 * @returns MMUnitSet 
+	 */
+	defaultSet() {
+		return this.sets.defaultSet;
+	}
+	
+	/**
+	 * @method baseUnitWithDimensions
+	 * construct a unit name from the base units and dimensions
+	 * if a unit corresponding to the name does not exist - create it
+	 * @param {Number[]} dimensions
+	 * @returns {MMUnit}
+	 */
+	baseUnitWithDimensions(dimensions) {
+		let baseNames = ['m', 'kg', 's', 'A', 'K', 'mol', 'cd'];
+		let numerator = '';
+		let denominator = '';
+		for(let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
+			let dim = dimensions[i];
+			if (dim != 0.0) {
+				if (dim > 0.0) {
+					if (numerator.length > 0) {
+						numerator += '-';
+					}
+					numerator += baseNames[i];
+					if (dim != 1.0) {
+						numerator += `^${dim}`;
+					}
+				}
+				else {
+					dim = -dim;
+					if (denominator.length > 0) {
+						denominator += '-';
+					}
+					denominator += baseNames[i];
+					if (dim != 1.0) {
+						denominator += `^${dim}`;
+					}
+				}
+			}
+		}
+		
+		if (numerator.length == 0 && denominator.length == 0) {
+			numerator += 'fraction';
+		}
+		else if (numerator.length == 0) {
+			numerator += '1/';
+		}
+		else if (denominator.length > 0) {
+			numerator += '/';
+		}
+		
+		numerator += denominator;
+		let unitName = numerator;  // switch variable names for clarity
+	
+		let calcType = MMUnitCalcType.SCALE;  // figure out if compound unit or not
+		let compoundRegex = /[/\\-\\^]/;  // compound unit operators		
+		if (unitName.search(compoundRegex) != -1) {
+			calcType = MMUnitCalcType.COMPOUND;
+		}
+			
+		let unit = this.unitNamed(unitName);
+		if (!unit) {
+			// unit doesn't exist - create it
+			unit = MMUnit(unitName, this.units).initWithOperation(
+				fales, calcType, MMUnit.stringFromDimensions(dimensions), 1.0, 0.0
+				);
+		}
+		return unit;
+	}
+
+	/**
+	 * @method defaultUnitWithDimensions
+	 * @param {Number[]} dimensions
+	 * @returns {MMUnit}
+	 */
+	defaultUnitWithDimensions(dimensions) {
+		let unit = this.sets.defaultSet.unitForDimensions(dimensions);
+		if(!unit) {
+			unit = this.baseUnitWithDimensions(dimensions);
+		}
+		return unit;
 	}
 }
 
@@ -179,6 +313,7 @@ class MMUnitSystem extends MMCommandParent {
  * @member {MMUnitSystem} unitSystem;
  */
 class MMUnit extends MMCommandObject {
+
 	/** @static compoundRegex
 	 * compound unit operators
 	 */
@@ -190,6 +325,111 @@ class MMUnit extends MMCommandObject {
 	 */
 	static stringFromDimensions(dimensions) {
 		return dimensions.map(n => String(n)).join(' ');
+	}
+
+		/**
+	 * @static convertDateToSeconds
+	 * @param {Number} dateValue
+	 * @param {MMUnitDataType} typeFlag
+	 * @returns {Number}
+	 */
+	static convertDateToSeconds(dateValue, typeFlag) {
+		let isBC = false;
+		if(dateValue < 0.0) {
+			dateValue = -dateValue;
+			isBC = true;
+		}
+
+		let year = 0, month = 0, day = 0;
+		switch (typeFlag) {
+			case MMUnitDateType.YYYYMMDD:
+				year = Math.floor(dateValue / 10000.0 + 0.01);
+				dateValue -= year * 10000;
+				
+				month = Math.floor(dateValue / 100.0 + 0.01);
+				dateValue -= month * 100.0;
+				
+				day = Math.floor(dateValue + 0.01);
+				dateValue -= day;
+				break;
+			case MMUnitDateType.DDMMYYYY:
+				day = Math.floor(dateValue / 1000000.0 + 0.01);
+				dateValue -= day * 1000000;
+				
+				month = Math.floor(dateValue / 10000.0 + 0.01);
+				dateValue -= month * 10000.0;
+				
+				year = Math.floor(dateValue + 0.01);
+				dateValue -= year;
+				break;
+			case MMUnitDateType.MMDDYYYY:
+				month = Math.floor(dateValue / 1000000.0 + 0.01);
+				dateValue -= month * 1000000;
+				
+				day = Math.floor(dateValue / 10000.0 + 0.01);
+				dateValue -= day * 10000.0;
+				
+				year = Math.floor(dateValue + 0.01);
+				dateValue -= year;
+				break;
+			default:
+				month = 1;
+				dateValue = dateValue - Math.floor(dateValue);
+				break;
+		}
+
+		let hour = 0.0, minute = 0.0, seconds = 0.0;
+		dateValue *= 1000000.0;
+	
+		hour = Math.floor(dateValue  / 10000.0 + 0.01);
+		dateValue -= hour * 10000.0;
+		
+		minute = Math.floor(dateValue / 100.0 + 0.01);
+		dateValue -= minute * 100.0;
+		
+		seconds = Math.floor(dateValue + 0.01);
+
+		if (isBC) {
+			year = -year;
+		}
+		let date = new Date(year, month - 1, day, hour, minute, seconds);
+		
+		return Math.floor(date/1000);
+	}
+
+	/**
+	 * @static convertSecondsToDate
+	 * @param {Number} seconds
+	 * @param {MMUnitDataType} typeFlag
+	 * @returns {Number}
+	 */
+	static convertSecondsToDate(seconds, typeFlag) {
+		let date = new Date(seconds * 1000);
+		let result = 0;
+		let year = date.getFullYear();
+		let month = date.getMonth() + 1;
+		let day = date.getDate();
+		let isBC = false;
+		if (year < 0) {
+			year = -year;
+			isBC = true;
+		}
+		switch (typeFlag) {
+			case MMUnitDateType.YYYYMMDD:
+				result = year * 10000. + month * 100.0 + day;
+				break;
+			case MMUnitDateType.DDMMYYY:
+				result = day * 1000000. + month * 10000.0 + dyear;
+				break;
+			case MMUnitDateType.MMDDYYYY:
+				result = month * 1000000. + day * 10000.0 + year;
+				break;
+		}
+		result += date.getHours() / 100.0 + date.getMinutes() / 10000. + date.getSeconds() / 1000000.0;
+		if (isBC) {
+			result = -result;
+		}
+		return result;
 	}
 
 	/** @constructor
@@ -207,6 +447,24 @@ class MMUnit extends MMCommandObject {
 
 	get dimensionString() {
 		return MMUnit.stringFromDimensions(this.dimensions);
+	}
+
+	set dimensionString(newDimensions) {
+		if (this.calcType != MMUnitCalcType.COMPOUND) {
+			// convert the dimension string to doubles
+			let parts = newDimensions.split(/[, ]+/);
+			for(let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
+				this.dimensions[i] = parseFloat(parts[i]);
+			}
+		}
+	}
+
+	get descriptionString() {
+		return `${this.calcType} ${this.dimensionString}`;
+	}	
+
+	get displayName() {
+		return (this.name == 'Fraction') ? '' : this.name;
 	}
 	
 	get properties() {
@@ -413,6 +671,75 @@ class MMUnit extends MMCommandObject {
 			}
 		}
 		return true;
+	}
+
+	// conversion routines
+	/**
+	 * @method convertToBase
+	 * @param {Number} value
+	 * @returns {Number}
+	 */
+	convertToBase(value) {
+		switch (this.calcType) {
+			case MMUnitCalcType.COMPOUND:
+			case MMUnitCalcType.SCALE:
+				return value * this.scale;
+			case MMUnitCalcType.OFFSET:
+				return value * this.scale + this.offset;
+			case MMUnitCalcType.INVERSE:
+				return this.scale / (value + this.offset);
+			case MMUnitCalcType.DATETIME: {
+				return MMUnit.convertDateToSeconds(value, this.scale);
+			}
+		}		
+		return -12321;  // should never happen
+	}
+
+	/**
+	 * @method convertFromBase
+	 * @param {Number} value
+	 * @returns {Number}
+	 */
+	convertFromBase(value) {
+		switch (this.calcType) {
+			case MMUnitCalcType.COMPOUND:
+			case MMUnitCalcType.SCALE:
+				return value / this.scale;
+			case MMUnitCalcType.OFFSET:
+				return (value - this.offset) / this.scale;;
+			case MMUnitCalcType.INVERSE:
+				return (this.scale / value) - this.offset;
+			case MMUnitCalcType.DATETIME: {
+				return MMUnit.convertSecondsToDate(value, this.scale);
+			}
+		}		
+		return -12321;  // should never happen
+	}
+
+	/**
+	 * @method stringForValue
+	 * display string for value converted to unit
+	 * @param {Number} value
+	 * @returns {String}
+	 */
+	 stringForValue(value) {	
+		value = this.convertFromBase(value)
+		if (value != 0.0 && (Math.abs(value) > 100000000.0 || Math.abs(value) < 0.01)) {
+			return value.toExponential(6).padStart(14, ' ');
+		}
+		else {
+			return value.toFixed(5).padStart(14, ' ');
+		}
+	}
+
+		/**
+	 * @method stringForValueWithUnit
+	 * the value converted to unit with unit name
+	 * @param {Number} value
+	 * @returns {String}
+	 */
+	stringForValueWithUnit(value) {	
+		return `${this.stringForValue(value)} ${this.displayName}`;
 	}
 }
 
@@ -1024,11 +1351,11 @@ class MMUnitSetsContainer extends MMCommandParent {
 		return d;
 	}
 
-	get default() {
+	get defaultSetName() {
 		return this.defaultSet.name;
 	}
 
-	set default(name) {
+	set defaultSetName(name) {
 		let newDefault = this.childNamed(name);
 		if (!newDefault) {
 			throw(this.t('mmcmd:unitSetNotFound', {name: name}));

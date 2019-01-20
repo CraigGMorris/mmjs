@@ -4,6 +4,7 @@
  * @class MMModel - Math Minion tool contaioner
  * @extends MMTool
  * @member {Number} nextToolNumber
+ * @member {boolean} isMissingObject
  */
 class MMModel extends MMTool {
 	/** @constructor
@@ -13,6 +14,7 @@ class MMModel extends MMTool {
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Model');
 		this.nextToolNumber = 1;
+		this.isMissingObject = false;
 	}
 
 	/** @override */
@@ -40,21 +42,6 @@ class MMModel extends MMTool {
 	}
 
 	/** @method addTool
-	 * verb
-	 * creates a new tool of designated type
-	 * @param {string} typeName
-	 * @returns {MMTool}
-	 */
-	/*
-	addTool(typeName) {
-		let initialName = `x${this.nextToolNumber++}`;
-		while ( this.childNamed(initialName) ) {
-			initialName = `x${this.nextToolNumber++}`;
-		}
-		return this.addToolNamed(initialName, typeName);
-	}*/
-
-	/** @method addTool
 	 * creates new Tool with supplied type and name
 	 *@param {MMCommand} command command.args - should be typeName and optionally name
 	 * @returns {MMTool}
@@ -76,6 +63,19 @@ class MMModel extends MMTool {
 		if(!toolType) {
 			throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: typeName}));
 		}
-		return toolType.factory(name, this);
+		if(toolType.factory(name, this)) {
+			command.result = true;
+			command.undo = this.getPath() + ' removechild ' + name;
+		}
+	}
+
+	/**
+	 * @method forgetAllCalculations
+	 */
+	forgetAllCalculations() {
+		super.forgetAllCalculations();
+		for(let key in this.children) {
+			this.children[key].forgetAllCalculations();
+		}
 	}
 }

@@ -6,7 +6,7 @@
 	 * @member {string} verb 
 	 * @member {string} args
 	 * @member {string} error - undefined if no error
-	 * @member {string} waring - undefined if no warning
+	 * @member {string} warning - undefined if no warning
 	 * @member {Object} results 
 */
 class MMCommand {
@@ -293,6 +293,7 @@ class MMCommandProcessor {
  *	@member {MMCommandParent} parent - can be nil
  *	@member {Object} properties - {string: PropertyInfo}
  *	@member {Object} verbs - [string]: (string) => any
+ *	@member {MMCommand} _command
 */
 /* export */ class MMCommandObject {
 	/** @constructor
@@ -304,6 +305,7 @@ class MMCommandProcessor {
 		this.name = name;
 		this.className = className;
 		this.processor = undefined;
+//		this._command = undefined;
 
 		this.parent = parent;
 		if (parent) {
@@ -349,14 +351,45 @@ class MMCommandProcessor {
 		}
 	}
 
+	get command() {
+		if (!this._command && this.parent) {
+			return this.parent.command;
+		}
+		return this._command;
+	}
+
 	/**
 	 * shortcut translate call
 	 * @param {string} key
-	 * @param {Object} options
+	 * @param {Object} args
 	 * @returns {string}
 	 */
 	t(key, args) {
 		return new MMCommandMessage(key, args);
+	}
+
+	/**
+	 * @method setError
+	 * @param {String} key
+	 * @param {Object} args
+	 */
+	setError(key, args) {
+		// ignore if error already set so first error is reported
+		if (this.command && !this.command.error) {
+			this.command.error = this.t(key, args);
+		}
+	}
+
+	/**
+	 * @method setWarning
+	 * @param {String} key
+	 * @param {Object} args
+	 */
+	setWarning(key, args) {
+		// ignore if error already set so first error is reported
+		if (this.command && !this.command.warning) {
+			this.command.warning = this.t(key, args);
+		}
 	}
 
 	/**
@@ -581,18 +614,25 @@ class MMCommandProcessor {
 	}
 
 	/**
+	 * @method performCommand
 	 * this will overridden by derived classes, but they should call the super method if they can't
 	 * respond to the command
 	 * @param {MMCommand} command 
 	 * @returns {Object} 
 	 */
 	performCommand(command) {
-		let f = this.verbs[command.verb];
-		if (!f) {
-			throw(this.t('cmd:commandNotFound', {className: this.className, path: this.getPath(), cmd: command.verb}));
+		this._command = command; // temporary so warnings can be set
+		try {
+			let f = this.verbs[command.verb];
+			if (!f) {
+				throw(this.t('cmd:commandNotFound', {className: this.className, path: this.getPath(), cmd: command.verb}));
+			}
+			f = f.bind(this);
+			f(command);
 		}
-		f = f.bind(this);
-		f(command);
+		finally {
+			delete this._command;  // remove temporary assignment
+		}
 	}
 }
 

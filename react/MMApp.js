@@ -60,29 +60,58 @@ export class MMApp extends React.Component {
 		this.pushView = this.pushView.bind(this);
 	}
 
-		/**
+	/**
+	 * @method errorAlert
+	 * @param {String} msg
+	 */
+	errorAlert(msg) {
+		let s = `${this.props.t('mmcmd:error')}\n${msg}`;
+		alert(s);
+	}
+
+	/**
+	 * @method warningAlert
+	 * @param {String} msg
+	 */
+	warningAlert(msg) {
+		let s = `${this.props.t('mmcmd:warning')}\n${msg}`;
+		alert(s);
+	}
+
+	/**
 	 * @method doCommand - sends command to worker
 	 * @param {string} cmd
 	 * @param {function} callBack - (cmds[]) => {}
 	 */
 	doCommand(cmd, callBack) {
 		this.pipe.doCommand(cmd, (results) => {
-			if (results.error) {
-				let error = results.error;
-				if (error.msgKey) {
-					alert(this.props.t(error.msgKey, error.args));
-				}
-				else {
-					alert(error);
+			let error = results.error;
+			let warning;
+			if (!error) {
+				for (let result of results) {
+					if (result.error) {
+						error = result.error;
+						break;
+					}
+					if (!warning && result.warning) {
+						warning = result.warning;
+					}
 				}
 			}
-			else if (results.warning) {
-				let warning = results.warning;
-				if (warning.msgKey) {
-					alert(this.props.t(warning.msgKey, warning.args));
+			if (error) {
+				if (error.msgKey) {
+					this.errorAlert(this.props.t(error.msgKey, error.args));
 				}
 				else {
-					alert(warning.error);
+					this.errorAlert(error);
+				}
+			}
+			else if (warning) {
+				if (warning.msgKey) {
+					this.warningAlert(this.props.t(warning.msgKey, warning.args));
+				}
+				else {
+					this.warningAlert(warning);
 				}
 			}
 			if (callBack) {

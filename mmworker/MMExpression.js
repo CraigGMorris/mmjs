@@ -3,7 +3,6 @@
 /**
  * @class MMExpression
  * @extends MMTool
- * @member {MMFormula} formula
  */
 class MMExpression extends MMTool {
 	/** @constructor
@@ -12,6 +11,7 @@ class MMExpression extends MMTool {
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Expression');
+		new MMFormula('formula', this);
 	}
 
 	/** @override */
