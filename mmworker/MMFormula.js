@@ -505,7 +505,7 @@ class MMFormula extends MMCommandObject {
 	 * @param {e} formula 
 	 */
 	setExceptionError(e) {
-		this.setError('mmcmd:formulaExceptioj', {
+		this.setError('mmcmd:formulaException', {
 			formula: this.truncatedFormula(),
 			path: this.parent.getPath(),
 			e: e
