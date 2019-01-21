@@ -446,23 +446,25 @@ class MMSession extends MMCommandParent {
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 
 				let expr = new MMExpression('x1', this.rootModel);
+				let expr2 = new MMExpression('x2', this.rootModel);
 				this.rootModel.forgetAllCalculations();
 
 				let f = expr.childNamed('formula');
-				let f2 = new MMFormula('f2', expr);
+				let f2 = expr2.childNamed('formula');
 				f.formula = '2 + 3';
 				f2.formula = '2 + 3'
 				results.push(`f == f: ${f.isEqualToFormula(f)}`);
 				results.push(`f == f2: ${f.isEqualToFormula(f2)}`);
-				f2.formula = '2 h + 3 x';
+				f2.formula = '2 h + -3 s';
 				results.push(`f == f2: ${f.isEqualToFormula(f2)}`);
 				let u = unitSystem.unitNamed('s');
 				results.push(`f2 value: ${f2.value.stringWithUnit(u)}`);
 				f2.formula = "' just a comment which should become string";
-				results.push(`f2 string: ${f2.value.valueAtRowColumn(1,1)}`)
-				f2.formula = '$';
-				results.push(`f2 object: ${f2.value.valueAtRowColumn(1,1).name}`)
-				f2.formula = '2 + 3';
+				results.push(`f2 string: ${f2.value.valueAtRowColumn(1,1)}`);
+				f2.formula = 'x1.myName';
+				results.push(`f2 object: ${f2.value.valueAtRowColumn(1,1)}`);
+				f2.formula = 'x1 + 3';
+				results.push(`f2 object: ${f2.value.valueAtRowColumn(1,1)}`);
 			}
 				break;
 
@@ -609,7 +611,16 @@ class MMTool extends MMCommandParent {
 	}
 
 	/**
-	 * overrided by appropriate tools - should call super if no match with description
+	 * @method addRequestor
+	 * @param {MMTool} requestor
+	 * short cut method
+	 */
+	addRequestor(requestor) {
+		this.valueRequstors.add(requestor);
+	}
+
+	/**
+	 * override by appropriate tools - should call super if no match with description
 	 * @method valueDescribedBy
 	 * @param {String} description
 	 * @param {MMTool} requestor

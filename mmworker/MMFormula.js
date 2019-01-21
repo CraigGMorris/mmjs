@@ -238,6 +238,7 @@ class MMToolReferenceOperator extends MMFormulaOperator {
 			let returnValue;
 			this.recusionCount++;
 			try {
+				this.recursionCount++;
 				returnValue = tool.valueDescribedBy(args, this.formula.parent);
 			}
 			finally {
@@ -586,7 +587,7 @@ class MMFormula extends MMCommandObject {
 		let operandStack = [];
 
 		// helper functions
-		function filterFloat(value) {
+		let filterFloat = (value) => {
 			if (/^(\-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/
 				.test(value))
 				return Number(value);
@@ -594,7 +595,7 @@ class MMFormula extends MMCommandObject {
 		}
 
 		/** @function addParenOp */
-		function addParenOp() {
+		let addParenOp = () => {
 			operatorStack.push(new MMParenthesisOperator());
 			parenCount++
 		}
@@ -603,7 +604,7 @@ class MMFormula extends MMCommandObject {
 		 * @function processTopOperator
 		 * @returns {boolean}
 		 */
-		function processTopOperator() {
+		let processTopOperator = () => {
 			/*
 	 			take the top operator off of the stack and connect it appropriately
 	 			with its operand(s) then push it back onto operand stack
@@ -638,7 +639,7 @@ class MMFormula extends MMCommandObject {
 		 * @function processParenthesis
 		 * @returns {boolean}
 		 */
-		function processParenthesis() {
+		let processParenthesis = () => {
 			// work back up operator stack until matching '(' is found
 			while (1) {
 				let stackCount = operatorStack.length;
@@ -719,10 +720,10 @@ class MMFormula extends MMCommandObject {
 					}
 					treatMinusAsUnary = false;
 				}
-				else if (token == '$') {
+				else if (/^[$[a-zA-Z]/.test(token)) {
 					// object reference
 					let op = new MMToolReferenceOperator(token, this);
-					operatorStack.push(op);
+					operandStack.push(op);
 					treatMinusAsUnary = false;
 				}
 				else {
