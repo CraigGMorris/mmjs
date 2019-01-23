@@ -496,7 +496,12 @@ class MMSession extends MMCommandParent {
 
 				f2.formula = '{array 3, 2, 21:23}';
 				r = f2.value();
-				if (r) r.logValueWithHeader(`{array 5, 3, 21:23}`, results);
+				if (r) r.logValueWithHeader(`x2 = {array 5, 3, 21:23}`, results);
+
+				f.formula = 'x2[3,2]';
+				r = f.value();
+				if (r) r.logValueWithHeader(`x2[3,2]`, results);
+				
 			}
 				break;
 

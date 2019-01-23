@@ -371,6 +371,88 @@ class MMScalarWithUnitOperator extends MMFormulaOperator {
 }
 
 /**
+ * @class MMIndexOperator
+ * @extends MMFormulaOperator
+ * @member {MMFormula} formula
+ * @member {MMFormulaOperator} sourceArgument
+ * @member {MMFormulaOperator} rowArgument
+ * @member {MMFormulaOperator} columnArgument
+ */
+class MMIndexOperator extends MMFormulaOperator {
+	/**
+	 * @constructor
+	 * @param {MMFormula} formula
+	 */
+	constructor(formula) {
+		super();
+		this.formula = formula;
+	}
+
+	/**
+	 * @method processArguments
+	 * @override
+	 * @param {MMFormulaOperator[]} operandStack
+	 * @returns {Boolean}
+	 */
+	processArguments(operandStack) {
+		if (operandStack.length < 3) {
+			return false;
+		}
+		this.columnArgument = operandStack.pop();
+		let arg = operandStack.pop();
+		if (arg instanceof MMOperandMarker) {
+			this.rowArgument = this.columnArgument;
+			this.columnArgument = null;
+		}
+		else {
+			this.rowArgument = arg;
+			arg = operandStack.pop();
+			if (!(arg instanceof MMOperandMarker)) {
+				return false;
+			}
+		}
+		this.sourceArgument = operandStack.pop();
+		return true;
+	}
+
+	/**
+	 * @method value
+	 * @override
+	 * @returns {MMValue}
+	 */
+	value() {
+		const sourceValue = this.sourceArgument.value();
+		if (sourceValue instanceof MMToolValue) {
+			const rowValue = this.rowArgument.value();
+			if (rowValue instanceof MMStringValue) {
+				const tool = sourceValue.valueAtRowColumn(1, 1);
+				const valueDescription = rowValue.valueAtRowColumn(1, 1);
+				return tool.valueDescribedBy(valueDescription, this.formula.owner);
+			}
+		}
+		else if (sourceValue instanceof MMValue) {
+			const rowValue = this.rowArgument.value();
+			const columnValue = this.columnArgument.value();
+			return sourceValue.valueForIndexRowColumn(rowValue, columnValue);
+		}
+		return null;
+	}
+
+	/**
+	 * @method addInputSourcesToSet
+	 * @override
+	 * @param  {Set} sources
+	 */
+	addInputSourcesToSet(sources) {
+		if (this.argument) {
+			this.sources.addInputSourcesToSet(sources);
+			this.rowArgument.addInputSourcesToSet(sources);
+			this.columnArgument.addInputSourcesToSet(sources);
+		}
+	}
+ }
+
+/**
  * @class MMAddOperator
  * @extends MMDyadicOperator
  */
@@ -1197,6 +1279,39 @@ class MMFormula extends MMCommandObject {
 			}
 		}
 
+		/**
+		 * @function processIndex
+		 * @returns {boolean}
+		 */
+		let processIndex = () => {
+			// work back up operator stack until '[' is found
+			while (1) {
+				if (operatorStack.length > 0) {
+					let op = operatorStack.pop();
+					if (op instanceof MMIndexOperator) {
+						if (!op.processArguments(operandStack)) {
+							this.argumentCountError();
+							return false;
+						}
+						else {
+							operandStack.push(op);
+							return true;
+						}
+					}
+					else {
+						operatorStack.push(op);
+						if (!processTopOperator()) {
+							return false;
+						}
+					}
+				}
+				else {
+					this.indexMismatch();
+					return false;
+				}
+			}
+		}
+
 		// end helper functions start actual parse
 
 		if (this.isInError) {
@@ -1269,6 +1384,23 @@ class MMFormula extends MMCommandObject {
 					}
 					addParenOp();
 					treatMinusAsUnary = true;
+				}
+				else if (token == '[') {
+					const indexOp = new MMIndexOperator(this);
+					operatorStack.push(indexOp);
+					treatMinusAsUnary = true;
+					const op = new MMOperandMarker();
+					operandStack.push(op);
+					addParenOp();
+				}
+				else if (token == ']') {
+					if (!processParenthesis()) {
+						return nil;
+					}
+					if (!processIndex()) {
+						return nil;
+					}
+					treatMinusAsUnary = false;
 				}
 				else if (token == '{') {
 					if (++i < nTokens) {

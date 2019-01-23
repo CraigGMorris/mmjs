@@ -972,9 +972,10 @@ class MMToolValue extends MMValue {
 }
 
 /**
- * @class MMTablelValue
+ * @class MMTableValue
  * @extends MMValue
  */
 class MMTableValue extends MMValue {
-	// just placekeeper until implemented
+	// just unimplemented placeholder
 }
+
