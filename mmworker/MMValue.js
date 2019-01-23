@@ -120,7 +120,7 @@ class MMValue {
 	*/
 
 	/**
-	 * @member dyadicNumberResult
+	 * @method dyadicNumberResult
 	 * creates MMNumberValue with size of other parameter and unitDimesions
 	 * @param {MMNumberValue} other
 	 * @param {Number[]} unitDimensions
@@ -135,7 +135,7 @@ class MMValue {
 	}
 
 	/**
-	 * @member dyadicStringResult
+	 * @method dyadicStringResult
 	 * creates MMStringValue with size of other parameter
 	 * @param {MMStringValue} other
 	 * @returns {MMStringValue}
@@ -146,7 +146,15 @@ class MMValue {
 		let newRowCount = (rowCount > this.rowCount) ? rowCount : this.rowCount;
 		let newColumnCount = (columnCount > this.columnCount ) ? columnCount : this.columnCount;
 		return new MMStringValue(newRowCount, newColumnCount);
-	}	
+	}
+
+	/**
+	 * @method numeric
+	 * @returns MMNumberValue
+	 */
+	numeric() {
+		return null;
+	}
 }
 
 /**
@@ -420,7 +428,7 @@ class MMNumberValue extends MMValue {
 	 */
 
 	/**
-	 * @member add
+	 * @method add
 	 * returns the sum of this and value
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
@@ -448,7 +456,7 @@ class MMNumberValue extends MMValue {
 	}
 
 	/**
-	 * @member subtract
+	 * @method subtract
 	 * returns the difference of this and value
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
@@ -476,7 +484,7 @@ class MMNumberValue extends MMValue {
 	}
 
 	/**
-	 * @member multiply
+	 * @method multiply
 	 * returns the product of this and value
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
@@ -504,7 +512,7 @@ class MMNumberValue extends MMValue {
 	}
 
 	/**
-	 * @member divide
+	 * @method divide
 	 * returns the division of this by value
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
@@ -532,7 +540,7 @@ class MMNumberValue extends MMValue {
 	}
 
 	/**
-	 * @member mod
+	 * @method mod
 	 * returns the remainder of this divided by value
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
@@ -565,7 +573,16 @@ class MMNumberValue extends MMValue {
 	}
 
 	/**
-	 * @member power
+	 * @method numeric
+	 * @override
+	 * @returns MMNumberValue
+	 */
+	numeric() {
+		return this;
+	}
+
+	/**
+	 * @method power
 	 * returns this raise to the power of value
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
@@ -610,8 +627,20 @@ class MMNumberValue extends MMValue {
 	}
 
 	/**
+	 * @member ln
+	 * returns natural log of this value
+	 * @returns {MMNumberValue}
+	 */
+	ln() {
+		this.checkUnitDimensionsAreEqualTo();
+		let rv = this.monadicResultWithUnitDimensions();
+		rv._values = this._values.map(Math.log);
+		return rv;
+	}
+
+	/**
 	 * @member negative
-	 * returns this time -1
+	 * returns this times -1
 	 * @returns {MMNumberValue}
 	 */
 	negative() {
@@ -715,6 +744,15 @@ class MMStringValue extends MMValue {
 	}
 
 	/**
+	 * @method setValueAtCount
+	 * @param {String} value
+	 * @param {Number} count
+	 */
+	setValueAtCount(value, count) {
+		this._values[count] = value || '';
+	}
+
+	/**
 	 * @method valueAtRowColumn
 	 * @param {Number} row
 	 * @param {Number} column
@@ -763,6 +801,26 @@ class MMStringValue extends MMValue {
 				let cValue = j % valueColumnCount;
 				v1[i*columnCount+j] = this._values[rMine*this.columnCount + cMine] +
 					v2[rValue*valueColumnCount + cValue];
+			}
+		}
+		return rv;
+	}
+
+	/**
+	 * @method numeric
+	 * @override
+	 * @returns MMNumberValue
+	 */
+	numeric() {
+		let rv = new MMNumberValue(this.rowCount, this.columnCount);
+		const count = this.valueCount;
+		for (let i = 0; i < count; i++) {
+			let x = parseFloat(this._values[i]);
+			if (x && isFinite(x)) {
+				this._values[i] = x;
+			}
+			else {
+				this._values[i] = 0.0;
 			}
 		}
 		return rv;
@@ -911,4 +969,12 @@ class MMToolValue extends MMValue {
 		}
 		return rv;
 	}
+}
+
+/**
+ * @class MMTablelValue
+ * @extends MMValue
+ */
+class MMTableValue extends MMValue {
+	// just placekeeper until implemented
 }

@@ -1,5 +1,7 @@
 'use strict';
 
+// formula operators
+
 /**
  * @class MMFormulaOperator
  * super class for all formula operators
@@ -29,8 +31,19 @@ class MMFormulaOperator {
 }
 
 var MMFormulaOpDictionary = {
-	'+': () => {return new MMAddOperator()}
+	'+': () => {return new MMAddOperator()},
+	'-': () => {return new MMSubtractOperator()},
+	'*': () => {return new MMMultiplyOperator()},
+	'/': () => {return new MMDivideOperator()},
+	'%': () => {return new MMModOperator()},
+	'^': () => {return new MMPowerOperator()},
+	':': () => {return new MMRangeOperator()}
 };
+
+var mmFunctionDictionary = {
+	'ln': (f) => {return new MMLnFunction(f)},
+	'array': (f) => {return new MMArrayFunction(f)}
+}
 
 /**
  * @class MMParenthesisOperator
@@ -38,6 +51,13 @@ var MMFormulaOpDictionary = {
  * @extends MMFormulaOperator
  */
 class MMParenthesisOperator extends MMFormulaOperator {
+}
+
+/**
+ * @class MMOperandMarker
+ * @extends MMFormulaOperator
+ */
+class MMOperandMarker extends MMFormulaOperator {
 }
 
 /**
@@ -375,6 +395,465 @@ class MMAddOperator extends MMDyadicOperator {
 }
 
 /**
+ * @class MMSubtractOperator
+ * @extends MMDyadicOperator
+ */
+class MMSubtractOperator extends MMDyadicOperator {
+	/**
+	 * @override operationOn
+	 * @param {MMNumberValue} firstValue;
+	 * @param {MMNumberValue} secondValue;
+	 * @returns {MMNumberValue}
+	 */
+	operationOn(firstValue, secondValue) {
+		return firstValue.subtract(secondValue);
+	}
+
+	/**
+	 * @override precedence
+	 * @returns {Number}
+	 */
+	precedence() {
+		return 20;
+	}
+}
+
+/**
+ * @class MMMultiplyOperator
+ * @extends MMDyadicOperator
+ */
+class MMMultiplyOperator extends MMDyadicOperator {
+	/**
+	 * @override operationOn
+	 * @param {MMNumberValue} firstValue;
+	 * @param {MMNumberValue} secondValue;
+	 * @returns {MMNumberValue}
+	 */
+	operationOn(firstValue, secondValue) {
+		return firstValue.multiply(secondValue);
+	}
+
+	/**
+	 * @override precedence
+	 * @returns {Number}
+	 */
+	precedence() {
+		return 30;
+	}
+}
+
+/**
+ * @class MMDivideOperator
+ * @extends MMDyadicOperator
+ */
+class MMDivideOperator extends MMDyadicOperator {
+	/**
+	 * @override operationOn
+	 * @param {MMNumberValue} firstValue;
+	 * @param {MMNumberValue} secondValue;
+	 * @returns {MMNumberValue}
+	 */
+	operationOn(firstValue, secondValue) {
+		return firstValue.divide(secondValue);
+	}
+
+	/**
+	 * @override precedence
+	 * @returns {Number}
+	 */
+	precedence() {
+		return 30;
+	}
+}
+
+/**
+ * @class MMModOperator
+ * @extends MMDyadicOperator
+ */
+class MMModOperator extends MMDyadicOperator {
+	/**
+	 * @override operationOn
+	 * @param {MMNumberValue} firstValue;
+	 * @param {MMNumberValue} secondValue;
+	 * @returns {MMNumberValue}
+	 */
+	operationOn(firstValue, secondValue) {
+		return firstValue.mod(secondValue);
+	}
+
+	/**
+	 * @override precedence
+	 * @returns {Number}
+	 */
+	precedence() {
+		return 30;
+	}
+}
+
+/**
+ * @class MMPowerOperator
+ * @extends MMDyadicOperator
+ */
+class MMPowerOperator extends MMDyadicOperator {
+	/**
+	 * @override operationOn
+	 * @param {MMNumberValue} firstValue;
+	 * @param {MMNumberValue} secondValue;
+	 * @returns {MMNumberValue}
+	 */
+	operationOn(firstValue, secondValue) {
+		return firstValue.power(secondValue);
+	}
+
+	/**
+	 * @override precedence
+	 * @returns {Number}
+	 */
+	precedence() {
+		return 40;
+	}
+}
+
+/**
+ * @class MMRangeOperator
+ * @extends MMDyadicOperator
+ */
+class MMRangeOperator extends MMDyadicOperator {
+	/**
+	 * @method value
+	 * @override
+	 * @returns MMValue
+	 */
+	value() {
+		let rv = null;
+		let v1 = this.firstInput.value();
+		if (v1 instanceof MMNumberValue) {
+			let v2 = this.secondInput.value();
+			if (v2 instanceof MMNumberValue) {
+				if (v1.hasUnitDimensions() || v2.hasUnitDimensions()) {
+					this.formula.setError('mmcmd:formulaRangeUnits', {
+						path: this.formula.parent.getPath(),
+						formula: this.formula.truncatedFormula()
+					});
+					return null;
+				}
+				const start = v1.valueAtRowColumn(1, 1);
+				const end = v2.valueAtRowColumn(1, 1);
+				if (start < end) {
+					const nRows = end - start + 1;
+					const nColumns = 1;
+					rv = new MMNumberValue(nRows, nColumns);
+					for (let i = start; i <= end; i++) {
+						rv.setValue(i, i - start + 1, 1);
+					}
+				}
+				else {
+					const nRows = start - end + 1;
+					const nColumns = 1;
+					rv = new MMNumberValue(nRows, nColumns);
+					for (let i = start; i >= end; i--) {
+						rv.setValue(i, start - i + 1, 1);
+					}
+				}
+			}
+		}
+		return rv;
+	}
+
+	/**
+	 * @override precedence
+	 * @returns {Number}
+	 */
+	precedence() {
+		return 50;
+	}
+}
+
+/**
+ * @class MMFunctionOperator
+ * @extends MMFormulaOperator
+ * base class for different functions
+ */
+class MMFunctionOperator extends MMFormulaOperator {
+	/**
+	 * @constructor
+	 * @param {MMFormula} formula
+	 */
+	constructor(formula) {
+		super();
+		this.formula = formula;
+	}
+
+	/**
+	 * @function processArguments
+	 * @param {MMFormulaOperator[]} operandStack
+	 * @returns {boolean}
+	 */
+	processArguments(operandStack) {
+		// override for each function
+		return false;
+	}
+
+	precedence() {
+		return 100;
+	}
+}
+
+// function operator classeses
+/**
+ * @class MMSingleValueFunction
+ * @extends MMFunctionOperator
+ * @member {MMFormulaOperator} argument
+ * @member {boolean} needsNumericArgument
+ */
+class MMSingleValueFunction extends MMFunctionOperator {
+	/**
+	 * @constructor
+	 * @param {MMFormula} formula
+	 */
+	constructor(formula) {
+		super(formula);
+		this.needsNumericArgument = true;
+		this.argument = null;
+	}
+
+	/**
+	 * @override
+	 * @function processArguments
+	 * @param {MMFormulaOperator[]} operandStack
+	 * @returns {boolean}
+	 */
+	processArguments(operandStack) {
+		if (operandStack.length < 1) {
+			return false;
+		}
+		this.argument = operandStack.pop();
+		if (operandStack.length > 0 && operandStack[operandStack.length - 1] instanceof MMOperandMarker) {
+			operandStack.pop()
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @method value
+	 * @override
+	 * @returns {MMValue}
+	 */
+	value() {
+		let v = this.argument ? this.argument.value() : null;
+		if (v instanceof MMNumberValue) {
+			return this.operationOn(v);
+		}
+		else if (v instanceof MMStringValue) {
+			return this.operationOnString(v);
+		}
+		else if (v instanceof MMTableValue) {
+			return this.operationOnTable(v);
+		}
+		return null;
+	}
+
+	/**
+	 * @method operationOn
+	 * @param {MMNumberValue} value
+	 * @returns {MMValue}
+	 */
+	operationOn(value) {
+		return null;
+	}
+
+		/**
+	 * @method operationOnString
+	 * @param {MMStringValue} value
+	 * @returns {MMValue}
+	 */
+	operationOnString(value) {
+		return null;
+	}
+
+	/**
+	 * @method operationOnTable
+	 * @param {MMTablerValue} value
+	 * @returns {MMValue}
+	 */
+	operationOn(value) {
+		// unimplemented
+		return null;
+	}
+
+	/**
+	 * @method addInputSourcesToSet
+	 * @override
+	 * @param  {Set} sources
+	 */
+	addInputSourcesToSet(sources) {
+		if (this.argument) {
+			this.argument.addInputSourcesToSet(sources);
+		}
+	}
+}
+
+/**
+ * @class MMLnFunction
+ * @extends MMSingleValueFunction
+ */
+class MMLnFunction extends MMSingleValueFunction {
+	/**
+	 * @method operationOn
+	 * @override
+	 * @param {MMNumberValue} value
+	 * @returns {MMValue}
+	 */
+	operationOn(value) {
+		return value.ln();
+	}
+}
+
+/**
+ * @class MMMultipleArgunebtFunction
+ * @extends MMFunctionOperator
+ * @member {MMFormulaOperator[]} arguments
+ */
+class MMMultipleArgumentFunction extends MMFunctionOperator {
+	/**
+	 * @constructor
+	 * @param {MMFormula} formula
+	 */
+	constructor(formula) {
+		super(formula);
+		this.arguments = [];
+	}
+
+	/**
+	 * @override
+	 * @function processArguments
+	 * @param {MMFormulaOperator[]} operandStack
+	 * @returns {boolean}
+	 */
+	processArguments(operandStack) {
+		if (operandStack.length < 1) {
+			return false;
+		}
+		let arg = operandStack.pop();
+		let foundMarker = arg instanceof MMOperandMarker;
+		if (foundMarker) {
+			return true;  // no arguments
+		}
+
+		while (!(arg instanceof MMOperandMarker)) {
+			this.arguments.push(arg);
+			if (!operandStack.length) {
+				this.arguments = [];
+				return false;
+			}
+			arg = operandStack.pop();
+		}
+		operandStack.pop();
+		return true;
+	}
+
+	/**
+	 * @method addInputSourcesToSet
+	 * @override
+	 * @param  {Set} sources
+	 */
+	addInputSourcesToSet(sources) {
+		for (let arg of this.arguments()) {
+			arg.addInputSourcesToSet(sources);
+		}
+	}
+}
+
+/**
+ * @class MMArrayFunction
+ * @extends MMMultipleArgumentFunction
+ */
+class MMArrayFunction extends MMMultipleArgumentFunction {
+
+	/**
+	 * @override
+	 * @function processArguments
+	 * @param {MMFormulaOperator[]} operandStack
+	 * @returns {boolean}
+	 */
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length < 2) {
+			return false; // needs at least two arguments
+		}
+		return rv;
+	}
+
+	/**
+	 * @method value
+	 * @override
+	 * @returns {MMValue}
+	 */
+	value() {
+		let argCount = this.arguments.length;
+		let initValue = this.arguments[0].value();
+		if (!initValue || !initValue.valueCount) {
+			return null;
+		}
+
+		let columnCount = 1, rowCount = 1, rowArg = 1;
+		if (argCount > 2) {
+			let v = this.arguments[1].value();
+			if (!v || !v.valueCount) {
+				return null;
+			}
+			columnCount = Math.floor(v._values[0] + 0.0001);
+			rowArg = 2;
+		}
+
+		let v = this.arguments[rowArg].value();
+		v = v && v.numeric();
+		if (!v.valueCount) {
+			return null;
+		}
+		rowCount = Math.floor(v._values[0] + 0.0001);
+
+		let rv = null;
+		if (initValue instanceof MMNumberValue) {
+			rv = new MMNumberValue(rowCount, columnCount, initValue.unitDimensions);
+			const initCount = initValue.valueCount;
+			if (initCount == 1) {
+				rv.setAllValuesTo(initValue._values[0]);
+			}
+			else {
+				const valueCount = rv.valueCount;
+				const vRv = rv._values;
+				const vInit = initValue._values;
+				for (let i = 0; i < valueCount; i++) {
+					vRv[i] = vInit[i % initCount];
+				}
+			}
+		}
+		else if (initValue instanceof MMStringValue) {
+			rv = new MMStringValue(rowCount, columnCount);
+			const initCount = rv.valueCount;
+			if (initCount == 1) {
+				rv.setAllValuesTo(initValue._values[0]);
+			}
+			else {
+				const valueCount = rv.valueCount;
+				const vInit = initValue._values;
+				for (let i = 0; i < valueCount; i++) {
+					const s = vInit[i % initCount];
+					rv.setValueAtCount(s, i);
+				}
+			}
+		}
+		else {
+			this.formula.functionError('Array', 'mmcmd:formulaArrayInitError');
+			return null;
+		}
+		return rv;
+	}
+}
+
+/**
  * @class MMFormula
  * @extends MMCommandObject
  * @member {string} formula
@@ -448,8 +927,6 @@ class MMFormula extends MMCommandObject {
 		}
 	}
 
-
-
 	/** @override */
 	get verbs() {
 		let verbs = super.verbs;
@@ -487,9 +964,10 @@ class MMFormula extends MMCommandObject {
 	}
 
 	/**
-	 * @type {MMValue}
+	 * @method value
+	 * @returns {MMValue}
 	 */
-	get value() {
+	value() {
 		try {
 			if (this._resultOperator) {
 				return this._resultOperator.value();
@@ -506,11 +984,20 @@ class MMFormula extends MMCommandObject {
 	 * @param {e} formula 
 	 */
 	setExceptionError(e) {
+		let child;
+		if (e instanceof MMCommandMessage) {
+			child = e
+		}
+		else if (e instanceof Error) {
+			child = this.t('mmcmd:formulaJSError', {error: e.message});
+		}
+		else {
+			child = this.t('mmcmd:formulaJSError', {error: e});
+		}
 		this.setError('mmcmd:formulaException', {
 			formula: this.truncatedFormula(),
 			path: this.parent.getPath(),
-			e: e
-		});
+		}, child);
 	}
 
 	/**
@@ -576,6 +1063,20 @@ class MMFormula extends MMCommandObject {
 			path: this.parent.getPath(),
 			formula: this.truncatedFormula()
 		});
+	}
+
+	/**
+	 * @method functionError
+	 * @param {String} funcName
+	 * @param {String} msgKey
+	 * @param {Object} msgArgs
+	 */
+	functionError(funcName, msgKey, msgArgs) {
+		this.setError('mmcmd:formulaFunctionError', {
+			name: funcName,
+			path: this.parent.getPath(),
+			formula: this.truncatedFormula()
+		}, this.t(msgKey, msgArgs));
 	}
 
 	/**
@@ -663,6 +1164,39 @@ class MMFormula extends MMCommandObject {
 			}
 		}
 
+		/**
+		 * @function processFunction
+		 * @returns {boolean}
+		 */
+		let processFunction = () => {
+			// work back up operator stack until function operator is found
+			while (1) {
+				if (operatorStack.length > 0) {
+					let op = operatorStack.pop();
+					if (op instanceof MMFunctionOperator) {
+						if (!op.processArguments(operandStack)) {
+							this.argumentCountError();
+							return false;
+						}
+						else {
+							operandStack.push(op);
+							return true;
+						}
+					}
+					else {
+						operatorStack.push(op);
+						if (!processTopOperator()) {
+							return false;
+						}
+					}
+				}
+				else {
+					this.syntaxError(this.t('mmcmd:formulaBraceMismatch'));
+					return false;
+				}
+			}
+		}
+
 		// end helper functions start actual parse
 
 		if (this.isInError) {
@@ -720,6 +1254,51 @@ class MMFormula extends MMCommandObject {
 					}
 					treatMinusAsUnary = false;
 				}
+				else if (token.startsWith('"')) {
+					token = token.replace(/"/g, '');
+					let op = new MMConstantOperator(MMStringValue.scalarValue(token));
+					operandStack.push(op);
+					treatMinusAsUnary = false;
+				}
+				else if (token == "'") {
+					break; // start of comment
+				}
+				else if (token == ",") {
+					if (!processParenthesis()) {
+						return null;
+					}
+					addParenOp();
+					treatMinusAsUnary = true;
+				}
+				else if (token == '{') {
+					if (++i < nTokens) {
+						token = tokens[i];
+						let f = mmFunctionDictionary[token];
+						if (f) {
+							let op = f(this);
+							operatorStack.push(op);
+							treatMinusAsUnary = true;
+							op = new MMOperandMarker();
+							operandStack.push(op);
+							addParenOp();
+						}
+						else {
+							this.syntaxError(this.t('mmcmd:formulaUnknownFunction', {
+								f: token
+							}));
+							return null;
+						}
+					}
+				}
+				else if (token == '}') {
+					if (!processParenthesis()) {
+						return null;
+					}
+					if (!processFunction()) {
+						return null;
+					}
+					treatMinusAsUnary = false;
+				}
 				else if (/^[$[a-zA-Z]/.test(token)) {
 					// object reference
 					let op = new MMToolReferenceOperator(token, this);
@@ -736,11 +1315,11 @@ class MMFormula extends MMCommandObject {
 						if (opFactory) {
 							op = opFactory();
 							let prevOp = operatorStack[operatorStack.length - 1];
-							while (!prevOp instanceof MMParenthesisOperator &&
-								!prevOp instanceof MMFunctionOperator &&
+							while (!(prevOp instanceof MMParenthesisOperator) &&
+								!(prevOp instanceof MMFunctionOperator) &&
 								prevOp.precedence() >= op.precedence())
 							{
-								if (!this.processTopOperator()) {
+								if (!processTopOperator()) {
 									return null;
 								}
 								prevOp = operatorStack[operatorStack.length - 1];
@@ -804,7 +1383,7 @@ class MMFormula extends MMCommandObject {
 						// check for previous unary minus (comes up in functions)
 						let prevOp = operatorStack[operatorStack.length - 1];
 						if (prevOp instanceof MMUnaryMinusOperator) {
-							if (!this.processTopOperator()) {
+							if (!processTopOperator()) {
 								return null;
 							}
 						}

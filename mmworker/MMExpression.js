@@ -45,7 +45,7 @@ class MMExpression extends MMTool {
 	 */
 	valueForRequestor(requestor) {
 		if (!this.cachedValue) {
-			this.cachedValue = this.formula.value;
+			this.cachedValue = this.formula.value();
 		}
 		if (requestor && this.cachedValue) {
 			this.addRequestor(requestor);

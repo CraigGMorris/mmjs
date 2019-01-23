@@ -458,13 +458,45 @@ class MMSession extends MMCommandParent {
 				f2.formula = '2 h + -3 s';
 				results.push(`f == f2: ${f.isEqualToFormula(f2)}`);
 				let u = unitSystem.unitNamed('s');
-				results.push(`f2 value: ${f2.value.stringWithUnit(u)}`);
+				results.push(`f2 value: ${f2.value().stringWithUnit(u)}`);
 				f2.formula = "' just a comment which should become string";
-				results.push(`f2 string: ${f2.value.valueAtRowColumn(1,1)}`);
+				results.push(`f2 string: ${f2.value().valueAtRowColumn(1,1)}`);
+				f2.formula = '10^2 + 3';
+				results.push(`f2 10^2 + 3: ${f2.value().valueAtRowColumn(1,1)}`);
+				f2.formula = '10 * (2 + 3)';
+				results.push(`f2 10 * (2 + 3): ${f2.value().valueAtRowColumn(1,1)}`);
+				f2.formula = '10 / (5-3)';
+				results.push(`f2 10 / (5-3): ${f2.value().valueAtRowColumn(1,1)}`);
+				f2.formula = '10 % (5-2)';
+				results.push(`f2 10 % (5-2): ${f2.value().valueAtRowColumn(1,1)}`);
+				f2.formula = 'x1';
+				results.push(`f2 x1: ${f2.value().valueAtRowColumn(1,1)}`);
 				f2.formula = 'x1.myName';
-				results.push(`f2 object: ${f2.value.valueAtRowColumn(1,1)}`);
-				f2.formula = 'x1 + 3';
-				results.push(`f2 object: ${f2.value.valueAtRowColumn(1,1)}`);
+				results.push(`f2 x1.myName: ${f2.value().valueAtRowColumn(1,1)}`);
+				f2.formula = "10 + x1^2 ' with comment";
+				results.push(`f2 10 + x1^210 + x1^2 ' with comment: ${f2.value().valueAtRowColumn(1,1)}`);
+				f2.formula = '"string constant"';
+				results.push(`f2 "string constant": ${f2.value().valueAtRowColumn(1,1)}`);
+
+				f2.formula = '{ln 5*2}';
+				r = f2.value();
+				if (r) results.push(`f2 {ln 10}: r.valueAtRowColumn(1,1)}`);
+
+				f2.formula = '3:5';
+				r = f2.value();
+				if (r) r.logValueWithHeader(`3:5`, results);
+
+				f2.formula = '5:3';
+				r = f2.value();
+				if (r) r.logValueWithHeader(`5:3`, results);
+
+				f2.formula = '{array 3, 2, 5}';
+				r = f2.value();
+				if (r) r.logValueWithHeader(`{array 5, 3, 2}`, results);
+
+				f2.formula = '{array 3, 2, 21:23}';
+				r = f2.value();
+				if (r) r.logValueWithHeader(`{array 5, 3, 21:23}`, results);
 			}
 				break;
 
@@ -545,16 +577,13 @@ class MMTool extends MMCommandParent {
 		let toolType = MMToolTypes[this.typeName];
 		return this.t(toolType.displayName);
 	}
-/*
-	get notes() {
-		return this.notes;
-	}
 
-	set notes(newNote) {
-		this.notes = newNote;
-	}
-*/
-	get description() {
+	/**
+	 * @method description
+	 * @returns {String}
+	 * returns notes, but truncated to 50 chars if longer
+	 */
+	description() {
 		if (this.notes) {
 			let maxLength = 50;
 			if ( this.notes.length <= maxLength) {
