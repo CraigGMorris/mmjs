@@ -1,9 +1,9 @@
-diagram
 {
  "expression": "cd .unitsys.sets",
- "subject": "root",
+ "subject": "session",
  "verb": "cd",
  "args": ".unitsys.sets",
+ "undo": "cd /",
  "results": {
   "msgKey": "cmd:changedDefault",
   "args": {
@@ -16,7 +16,8 @@ diagram
  "subject": "sets",
  "verb": "clone",
  "args": "si",
- "results": "SI_2"
+ "results": "SI_2",
+ "undo": "/.unitsys.sets remove SI_2"
 }
 {
  "expression": ".si_2 renameto mySI",
@@ -29,19 +30,23 @@ diagram
    "fromPath": "/.unitsys.sets.SI_2",
    "toName": "mySI"
   }
- }
+ },
+ "undo": "/.unitsys.sets.mySI renameTo SI_2"
 }
 {
  "expression": ".mySI addtype bozo kg-m/s",
  "subject": "mySI",
  "verb": "addtype",
- "args": "bozo kg-m/s"
+ "args": "bozo kg-m/s",
+ "results": true,
+ "undo": "/.unitsys.sets.mySI removetype bozo"
 }
 {
  "expression": "cd .mySI",
  "subject": "sets",
  "verb": "cd",
  "args": ".mySI",
+ "undo": "cd /.unitsys.sets",
  "results": {
   "msgKey": "cmd:changedDefault",
   "args": {
@@ -50,63 +55,219 @@ diagram
  }
 }
 {
- "expression": "typenames",
+ "expression": "listtypes",
  "subject": "mySI",
- "verb": "typenames",
+ "verb": "listtypes",
  "args": "",
  "results": [
-  "Acceleration",
-  "Area",
-  "Capacitance",
-  "Density",
-  "Dimensionless",
-  "DipoleMoment",
-  "ElectricCharge",
-  "ElectricCurrent",
-  "Energy",
-  "Force",
-  "Frequency",
-  "HeatTransferCoeff",
-  "HeatFlux",
-  "Inductance",
-  "IsoThermalCompressibility",
-  "JouleThomson",
-  "KinematicViscosity",
-  "Length",
-  "LuminousIntensity",
-  "MagneticFlux",
-  "Mass",
-  "MassEnthalpy",
-  "MassFlow",
-  "MassVolume",
-  "MassSpecificHeat",
-  "MolarConcentration",
-  "MolarEnthalpy",
-  "MolarSpecificHeat",
-  "MolarVolume",
-  "MolecularWeight",
-  "MoleFlow",
-  "Moles",
-  "Permeability",
-  "Power",
-  "Pressure",
-  "Pressure/MolarVolume",
-  "ReactionRateCat",
-  "ReactionRateVol",
-  "Resistance",
-  "SolubilityParameter",
-  "SurfaceTension",
-  "Temperature",
-  "ThermalConductivity",
-  "ThermalExpansion",
-  "Time",
-  "UA",
-  "Velocity",
-  "Viscosity",
-  "Voltage",
-  "Volume",
-  "VolumetricFlow",
-  "bozo"
+  {
+   "name": "Acceleration",
+   "unit": "m/s^2"
+  },
+  {
+   "name": "Area",
+   "unit": "m^2"
+  },
+  {
+   "name": "bozo",
+   "unit": "kg-m/s"
+  },
+  {
+   "name": "Capacitance",
+   "unit": "uF"
+  },
+  {
+   "name": "Density",
+   "unit": "kg/m^3"
+  },
+  {
+   "name": "Dimensionless",
+   "unit": "Fraction"
+  },
+  {
+   "name": "DipoleMoment",
+   "unit": "C-m"
+  },
+  {
+   "name": "ElectricCharge",
+   "unit": "C"
+  },
+  {
+   "name": "ElectricCurrent",
+   "unit": "A"
+  },
+  {
+   "name": "Energy",
+   "unit": "kJ"
+  },
+  {
+   "name": "Force",
+   "unit": "N"
+  },
+  {
+   "name": "Frequency",
+   "unit": "1/s"
+  },
+  {
+   "name": "HeatFlux",
+   "unit": "W/m^2"
+  },
+  {
+   "name": "HeatTransferCoeff",
+   "unit": "W/m^2-K"
+  },
+  {
+   "name": "Inductance",
+   "unit": "Henry"
+  },
+  {
+   "name": "IsoThermalCompressibility",
+   "unit": "1/kPa"
+  },
+  {
+   "name": "JouleThomson",
+   "unit": "K/kPa"
+  },
+  {
+   "name": "KinematicViscosity",
+   "unit": "m^2/s"
+  },
+  {
+   "name": "Length",
+   "unit": "m"
+  },
+  {
+   "name": "LuminousIntensity",
+   "unit": "cd"
+  },
+  {
+   "name": "MagneticFlux",
+   "unit": "Wb"
+  },
+  {
+   "name": "Mass",
+   "unit": "kg"
+  },
+  {
+   "name": "MassEnthalpy",
+   "unit": "kJ/kg"
+  },
+  {
+   "name": "MassFlow",
+   "unit": "kg/h"
+  },
+  {
+   "name": "MassSpecificHeat",
+   "unit": "kJ/kg-K"
+  },
+  {
+   "name": "MassVolume",
+   "unit": "m^3/kg"
+  },
+  {
+   "name": "MolarConcentration",
+   "unit": "kmol/m^3"
+  },
+  {
+   "name": "MolarEnthalpy",
+   "unit": "kJ/kmol"
+  },
+  {
+   "name": "MolarSpecificHeat",
+   "unit": "kJ/kmol-K"
+  },
+  {
+   "name": "MolarVolume",
+   "unit": "m^3/kmol"
+  },
+  {
+   "name": "MolecularWeight",
+   "unit": "kg/kmol"
+  },
+  {
+   "name": "MoleFlow",
+   "unit": "kmol/h"
+  },
+  {
+   "name": "Moles",
+   "unit": "mol"
+  },
+  {
+   "name": "Permeability",
+   "unit": "kmol/s-m-kPa"
+  },
+  {
+   "name": "Power",
+   "unit": "W"
+  },
+  {
+   "name": "Pressure",
+   "unit": "kPa"
+  },
+  {
+   "name": "Pressure/MolarVolume",
+   "unit": "kPa-kmol/m^3"
+  },
+  {
+   "name": "ReactionRateCat",
+   "unit": "kmol/s-kg"
+  },
+  {
+   "name": "ReactionRateVol",
+   "unit": "kmol/s-m^3"
+  },
+  {
+   "name": "Resistance",
+   "unit": "Ohm"
+  },
+  {
+   "name": "SolubilityParameter",
+   "unit": "J^0.5/m^1.5"
+  },
+  {
+   "name": "SurfaceTension",
+   "unit": "N/m"
+  },
+  {
+   "name": "Temperature",
+   "unit": "degC"
+  },
+  {
+   "name": "ThermalConductivity",
+   "unit": "W/m-K"
+  },
+  {
+   "name": "ThermalExpansion",
+   "unit": "1/K"
+  },
+  {
+   "name": "Time",
+   "unit": "s"
+  },
+  {
+   "name": "UA",
+   "unit": "W/K"
+  },
+  {
+   "name": "Velocity",
+   "unit": "m/s"
+  },
+  {
+   "name": "Viscosity",
+   "unit": "Pa-s"
+  },
+  {
+   "name": "Voltage",
+   "unit": "volt"
+  },
+  {
+   "name": "Volume",
+   "unit": "m^3"
+  },
+  {
+   "name": "VolumetricFlow",
+   "unit": "m^3/s"
+  }
  ]
 }
 {
@@ -114,7 +275,8 @@ diagram
  "subject": "mySI",
  "verb": "renametype",
  "args": "bozo BigBozo",
- "results": true
+ "results": true,
+ "undo": "/.unitsys.sets.mySI renametype BigBozo bozo"
 }
 {
  "expression": "unitfortype BigBozo",
@@ -128,65 +290,219 @@ diagram
  "subject": "mySI",
  "verb": "removetype",
  "args": "BigBozo",
- "results": true
+ "results": true,
+ "undo": "/.unitsys.sets.mySI addtype BigBozo kg-m/s"
 }
 {
- "expression": "typenames",
+ "expression": "listtypes",
  "subject": "mySI",
- "verb": "typenames",
+ "verb": "listtypes",
  "args": "",
  "results": [
-  "Acceleration",
-  "Area",
-  "Capacitance",
-  "Density",
-  "Dimensionless",
-  "DipoleMoment",
-  "ElectricCharge",
-  "ElectricCurrent",
-  "Energy",
-  "Force",
-  "Frequency",
-  "HeatTransferCoeff",
-  "HeatFlux",
-  "Inductance",
-  "IsoThermalCompressibility",
-  "JouleThomson",
-  "KinematicViscosity",
-  "Length",
-  "LuminousIntensity",
-  "MagneticFlux",
-  "Mass",
-  "MassEnthalpy",
-  "MassFlow",
-  "MassVolume",
-  "MassSpecificHeat",
-  "MolarConcentration",
-  "MolarEnthalpy",
-  "MolarSpecificHeat",
-  "MolarVolume",
-  "MolecularWeight",
-  "MoleFlow",
-  "Moles",
-  "Permeability",
-  "Power",
-  "Pressure",
-  "Pressure/MolarVolume",
-  "ReactionRateCat",
-  "ReactionRateVol",
-  "Resistance",
-  "SolubilityParameter",
-  "SurfaceTension",
-  "Temperature",
-  "ThermalConductivity",
-  "ThermalExpansion",
-  "Time",
-  "UA",
-  "Velocity",
-  "Viscosity",
-  "Voltage",
-  "Volume",
-  "VolumetricFlow"
+  {
+   "name": "Acceleration",
+   "unit": "m/s^2"
+  },
+  {
+   "name": "Area",
+   "unit": "m^2"
+  },
+  {
+   "name": "Capacitance",
+   "unit": "uF"
+  },
+  {
+   "name": "Density",
+   "unit": "kg/m^3"
+  },
+  {
+   "name": "Dimensionless",
+   "unit": "Fraction"
+  },
+  {
+   "name": "DipoleMoment",
+   "unit": "C-m"
+  },
+  {
+   "name": "ElectricCharge",
+   "unit": "C"
+  },
+  {
+   "name": "ElectricCurrent",
+   "unit": "A"
+  },
+  {
+   "name": "Energy",
+   "unit": "kJ"
+  },
+  {
+   "name": "Force",
+   "unit": "N"
+  },
+  {
+   "name": "Frequency",
+   "unit": "1/s"
+  },
+  {
+   "name": "HeatFlux",
+   "unit": "W/m^2"
+  },
+  {
+   "name": "HeatTransferCoeff",
+   "unit": "W/m^2-K"
+  },
+  {
+   "name": "Inductance",
+   "unit": "Henry"
+  },
+  {
+   "name": "IsoThermalCompressibility",
+   "unit": "1/kPa"
+  },
+  {
+   "name": "JouleThomson",
+   "unit": "K/kPa"
+  },
+  {
+   "name": "KinematicViscosity",
+   "unit": "m^2/s"
+  },
+  {
+   "name": "Length",
+   "unit": "m"
+  },
+  {
+   "name": "LuminousIntensity",
+   "unit": "cd"
+  },
+  {
+   "name": "MagneticFlux",
+   "unit": "Wb"
+  },
+  {
+   "name": "Mass",
+   "unit": "kg"
+  },
+  {
+   "name": "MassEnthalpy",
+   "unit": "kJ/kg"
+  },
+  {
+   "name": "MassFlow",
+   "unit": "kg/h"
+  },
+  {
+   "name": "MassSpecificHeat",
+   "unit": "kJ/kg-K"
+  },
+  {
+   "name": "MassVolume",
+   "unit": "m^3/kg"
+  },
+  {
+   "name": "MolarConcentration",
+   "unit": "kmol/m^3"
+  },
+  {
+   "name": "MolarEnthalpy",
+   "unit": "kJ/kmol"
+  },
+  {
+   "name": "MolarSpecificHeat",
+   "unit": "kJ/kmol-K"
+  },
+  {
+   "name": "MolarVolume",
+   "unit": "m^3/kmol"
+  },
+  {
+   "name": "MolecularWeight",
+   "unit": "kg/kmol"
+  },
+  {
+   "name": "MoleFlow",
+   "unit": "kmol/h"
+  },
+  {
+   "name": "Moles",
+   "unit": "mol"
+  },
+  {
+   "name": "Permeability",
+   "unit": "kmol/s-m-kPa"
+  },
+  {
+   "name": "Power",
+   "unit": "W"
+  },
+  {
+   "name": "Pressure",
+   "unit": "kPa"
+  },
+  {
+   "name": "Pressure/MolarVolume",
+   "unit": "kPa-kmol/m^3"
+  },
+  {
+   "name": "ReactionRateCat",
+   "unit": "kmol/s-kg"
+  },
+  {
+   "name": "ReactionRateVol",
+   "unit": "kmol/s-m^3"
+  },
+  {
+   "name": "Resistance",
+   "unit": "Ohm"
+  },
+  {
+   "name": "SolubilityParameter",
+   "unit": "J^0.5/m^1.5"
+  },
+  {
+   "name": "SurfaceTension",
+   "unit": "N/m"
+  },
+  {
+   "name": "Temperature",
+   "unit": "degC"
+  },
+  {
+   "name": "ThermalConductivity",
+   "unit": "W/m-K"
+  },
+  {
+   "name": "ThermalExpansion",
+   "unit": "1/K"
+  },
+  {
+   "name": "Time",
+   "unit": "s"
+  },
+  {
+   "name": "UA",
+   "unit": "W/K"
+  },
+  {
+   "name": "Velocity",
+   "unit": "m/s"
+  },
+  {
+   "name": "Viscosity",
+   "unit": "Pa-s"
+  },
+  {
+   "name": "Voltage",
+   "unit": "volt"
+  },
+  {
+   "name": "Volume",
+   "unit": "m^3"
+  },
+  {
+   "name": "VolumetricFlow",
+   "unit": "m^3/s"
+  }
  ]
 }
 {
@@ -194,6 +510,7 @@ diagram
  "subject": "mySI",
  "verb": "cd",
  "args": "/unitsys.sets",
+ "undo": "cd /.unitsys.sets.mySI",
  "results": {
   "msgKey": "cmd:changedDefault",
   "args": {
@@ -205,13 +522,20 @@ diagram
  "expression": "remove mysi",
  "subject": "sets",
  "verb": "remove",
- "args": "mysi"
+ "args": "mysi",
+ "results": {
+  "msgKey": "cmd:removedChild",
+  "args": {
+   "name": "mysi"
+  }
+ }
 }
 {
  "expression": "cd ^.units",
  "subject": "sets",
  "verb": "cd",
  "args": "^.units",
+ "undo": "cd /.unitsys.sets",
  "results": {
   "msgKey": "cmd:changedDefault",
   "args": {
@@ -224,7 +548,8 @@ diagram
  "subject": "units",
  "verb": "adduserunit",
  "args": "workday = 8 h",
- "results": "workday"
+ "results": "workday",
+ "undo": "/.unitsys.units remove workday"
 }
 {
  "expression": ".workday get scale",
@@ -307,7 +632,8 @@ diagram
  "subject": "workday",
  "verb": "set",
  "args": "offset 3.14",
- "results": "offset = 3.14"
+ "results": "offset = 3.14",
+ "undo": "/.unitsys.units.workday set offset 0"
 }
 {
  "expression": ".workday info properties",
@@ -360,7 +686,14 @@ diagram
  "expression": "remove workday",
  "subject": "units",
  "verb": "remove",
- "args": "workday"
+ "args": "workday",
+ "results": {
+  "msgKey": "cmd:removedChild",
+  "args": {
+   "name": "workday"
+  }
+ },
+ "undo": "/.unitsys.units adduserunit workday = 8 h"
 }
 {
  "expression": "list",
@@ -369,18 +702,63 @@ diagram
  "args": "",
  "results": [
   "%",
-  "1/degr",
-  "1/k",
-  "1/kpa",
+  "1/K",
+  "1/degR",
+  "1/kPa",
   "1/psia",
   "1/s",
-  "a",
-  "a-s",
-  "a-s-m",
-  "a^2-s^4/kg-m^2",
+  "A",
+  "A-s",
+  "A-s-m",
+  "API60",
+  "A^2-s^4/kg-m^2",
+  "Btu/h",
+  "Btu/h-deltaF",
+  "Btu/h-ft-deltaF",
+  "Btu/h-ft^2",
+  "Btu/h-ft^2-deltaF",
+  "Btu/lb",
+  "Btu/lb-deltaF",
+  "Btu/lbmol",
+  "Btu/lbmol-deltaF",
+  "Btu^0.5/ft^1.5",
+  "C",
+  "C-m",
+  "F",
+  "Fraction",
+  "Henry",
+  "Hz",
+  "J",
+  "J^0.5/m^1.5",
+  "K",
+  "K-m-s^2/kg",
+  "K/kPa",
+  "L",
+  "MMSCF",
+  "MMSCM",
+  "MPa",
+  "MSCF",
+  "MSCM",
+  "Mile",
+  "Mx",
+  "N",
+  "N/m",
+  "Ohm",
+  "Pa",
+  "Pa-s",
+  "SCF",
+  "SCM",
+  "SG[60]",
+  "St",
+  "V",
+  "W",
+  "W/K",
+  "W/m-K",
+  "W/m^2",
+  "W/m^2-K",
+  "Wb",
   "acre",
   "angstrom",
-  "api60",
   "arcmin",
   "arcsec",
   "atm",
@@ -388,23 +766,11 @@ diagram
   "barg",
   "bbl",
   "btu",
-  "btu/h",
-  "btu/h-deltaf",
-  "btu/h-ft-deltaf",
-  "btu/h-ft^2",
-  "btu/h-ft^2-deltaf",
-  "btu/lb",
-  "btu/lb-deltaf",
-  "btu/lbmol",
-  "btu/lbmol-deltaf",
-  "btu^0.5/ft^1.5",
-  "c",
-  "c-m",
   "cal",
   "cd",
   "centistoke",
   "cm",
-  "cmhg0c",
+  "cmHg0C",
   "cp",
   "d",
   "darcy",
@@ -412,20 +778,18 @@ diagram
   "dated",
   "datem",
   "debye",
-  "degc",
-  "degf",
-  "degr",
+  "degC",
+  "degF",
+  "degR",
   "degree",
-  "deltac",
-  "deltaf",
-  "deltaf/psia",
+  "deltaC",
+  "deltaF",
+  "deltaF/psia",
   "dyne",
   "erg",
-  "f",
   "fathom",
-  "feeth2o4c",
+  "feetH2O4C",
   "fluidoz",
-  "fraction",
   "ft",
   "ft/s",
   "ft/s^2",
@@ -435,40 +799,42 @@ diagram
   "ft^3/lb",
   "ft^3/lbmol",
   "g",
+  "gW",
   "gal",
   "gm",
   "gmol",
   "grain",
-  "gw",
   "h",
   "hectre",
-  "henry",
   "horsepower",
   "hp",
-  "hz",
   "impgal",
   "impquart",
   "in",
-  "inhg32f",
-  "j",
-  "j^0.5/m^1.5",
-  "k",
-  "k-m-s^2/kg",
-  "k/kpa",
+  "inHg32F",
+  "kJ",
+  "kJ/kg",
+  "kJ/kg-K",
+  "kJ/kmol",
+  "kJ/kmol-K",
+  "kPa",
+  "kPa-kmol/m^3",
+  "kPag",
+  "kW",
   "kcal",
   "kg",
   "kg-m/s",
   "kg-m/s^2",
-  "kg-m/s^3-k",
-  "kg-m^2/a-s^2",
-  "kg-m^2/a-s^3",
-  "kg-m^2/a^2-s^2",
-  "kg-m^2/a^2-s^3",
+  "kg-m/s^3-K",
+  "kg-m^2/A-s^2",
+  "kg-m^2/A-s^3",
+  "kg-m^2/A^2-s^2",
+  "kg-m^2/A^2-s^3",
   "kg-m^2/s^2",
   "kg-m^2/s^2-mol",
-  "kg-m^2/s^2-mol-k",
+  "kg-m^2/s^2-mol-K",
   "kg-m^2/s^3",
-  "kg-m^2/s^3-k",
+  "kg-m^2/s^3-K",
   "kg-mol/m^4-s^2",
   "kg/h",
   "kg/kmol",
@@ -479,28 +845,18 @@ diagram
   "kg/s",
   "kg/s^2",
   "kg/s^3",
-  "kg/s^3-k",
+  "kg/s^3-K",
   "kg^0.5/s-m^0.5",
   "kgf",
-  "kj",
-  "kj/kg",
-  "kj/kg-k",
-  "kj/kmol",
-  "kj/kmol-k",
   "km",
   "kmol",
   "kmol/h",
   "kmol/m^3",
   "kmol/s-kg",
-  "kmol/s-m-kpa",
+  "kmol/s-m-kPa",
   "kmol/s-m^3",
   "knot",
-  "kpa",
-  "kpa-kmol/m^3",
-  "kpag",
   "kph",
-  "kw",
-  "l",
   "lb",
   "lb/ft^3",
   "lb/h",
@@ -513,7 +869,7 @@ diagram
   "lbmol/h-ft-psia",
   "lbmol/h-ft^3",
   "lbmol/h-lb",
-  "lightc",
+  "lightC",
   "liter",
   "litre",
   "longton",
@@ -522,10 +878,12 @@ diagram
   "m-s^2/kg",
   "m/s",
   "m/s^2",
+  "mL",
+  "mW",
   "m^2",
   "m^2/s",
   "m^2/s^2",
-  "m^2/s^2-k",
+  "m^2/s^2-K",
   "m^3",
   "m^3/kg",
   "m^3/kmol",
@@ -536,35 +894,21 @@ diagram
   "mg",
   "micron",
   "micropoise",
-  "mile",
   "milliliter",
   "min",
-  "ml",
   "mm",
+  "mmHg0C",
   "mmbtu",
-  "mmhg0c",
-  "mmscf",
-  "mmscm",
   "mol",
   "mol-s/kg",
   "mol/m^3",
   "mol/s",
   "mol/s-kg",
   "mol/s-m^3",
-  "mpa",
   "mph",
-  "mscf",
-  "mscm",
-  "mw",
-  "mx",
-  "n",
-  "n/m",
-  "nf",
-  "ohm",
+  "nF",
   "ounce",
-  "pa",
-  "pa-s",
-  "pf",
+  "pF",
   "poise",
   "poundal",
   "ppm",
@@ -576,25 +920,14 @@ diagram
   "radian",
   "rpm",
   "s",
-  "scf",
-  "scm",
-  "sg[60]",
   "slug",
-  "st",
   "ton",
   "tonne",
-  "troyoz",
-  "uf",
+  "troyOz",
+  "uF",
   "ug",
   "usgal",
-  "v",
   "volt",
-  "w",
-  "w/k",
-  "w/m-k",
-  "w/m^2",
-  "w/m^2-k",
-  "wb",
   "yard",
   "year"
  ]

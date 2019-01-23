@@ -130,7 +130,7 @@ class MMUnitSystem extends MMCommandParent {
 			let exponentParts = token.split('^');
 			let exponentPartsCount = exponentParts.length;
 			if (exponentPartsCount > 2) {
-				throw(this.t('mmcmd:unitExponentError', {term: term}));
+				throw(this.t('mmunit:exponentError', {term: term}));
 			}
 			else if (exponentPartsCount == 2) {
 				exponent = parseFloat(exponentParts[1]);
@@ -143,11 +143,11 @@ class MMUnitSystem extends MMCommandParent {
 					parts.push([consituentUnit, exponent]);
 				}
 				else {
-					throw(this.t('mmcmd:unitPartInvalid', {term: exponentParts[0]}));
+					throw(this.t('mmunit:partInvalid', {term: exponentParts[0]}));
 				}
 			}
 			else if (exponentParts[0] !== '1') {
-				throw(this.t('mmcmd:unitPartInvalid', {term: exponentParts[0]}));
+				throw(this.t('mmunit:partInvalid', {term: exponentParts[0]}));
 			}
 		}
 		return parts;
@@ -497,7 +497,7 @@ class MMUnit extends MMCommandObject {
 			}
 			else {  // base unit - name should not contain operators
 				if (MMUnit.compoundRegex.test(this.name)) {
-					throw(this.t('mmcmd:operatorInBase', {name: this.name}));
+					throw(this.t('mmunit:operatorInBase', {name: this.name}));
 				}
 				
 				// convert the dimension string to numbers
@@ -524,7 +524,7 @@ class MMUnit extends MMCommandObject {
 				throw(e.message);
 			}
 			else {
-				throw(this.t('mmcmd:badUnitDescription', {name: this.name, description: description}));
+				throw(this.t('mmunit:badDescription', {name: this.name, description: description}));
 			}
 		}
 		return this;
@@ -549,7 +549,7 @@ class MMUnit extends MMCommandObject {
 			}
 			else {	// base unit - should not contain operators
 				if (MMUnit.compoundRegex.test(this.name)) {
-					throw(this.t('mmcmd:operatorInBase', {name: this.name}));
+					throw(this.t('mmunit:operatorInBase', {name: this.name}));
 				}
 				// convert the dimension string to numbers
 				this.dimensions = [];
@@ -565,7 +565,7 @@ class MMUnit extends MMCommandObject {
 				throw(e);
 			}
 			else {
-				throw(this.t('mmcmd:badUnitDescription', {name: this.name, description: description}));
+				throw(this.t('mmunit:badDescription', {name: this.name, description: description}));
 			}
 		}
 		return this;
@@ -583,7 +583,7 @@ class MMUnit extends MMCommandObject {
 		this.offset = 0.0;
 
 		if (!this.parseDefinition(definition)) {
-			throw(this.t('mmcmd:unitParseError', {definition: definition}));
+			throw(this.t('mmunit:parseError', {definition: definition}));
 		}
 		this.scale *= value;
 		return this;
@@ -595,10 +595,10 @@ class MMUnit extends MMCommandObject {
 
 	initCompoundWithDescription(description) {
 		if (!MMUnit.compoundRegex.test(description)) {
-			throw(this.t('mmcmd:noOpInCompoundUnit', {name: description}));
+			throw(this.t('mmunit:noOpInCompoundUnit', {name: description}));
 		}
 		if (!this.parseDefinition(description)) {
-			throw(this.t('mmcmd:unitParseError', {definition: description}));
+			throw(this.t('mmunit:parseError', {definition: description}));
 		}
 		return this;
 	}
@@ -621,7 +621,7 @@ class MMUnit extends MMCommandObject {
 		let numerator = '';
 		let denominator = '';
 		if (count > 2) {
-			throw(this.t('mmcmd:unitSlashError', {definition: definition}));
+			throw(this.t('mmunit:slashError', {definition: definition}));
 		}
 		else if (count == 2) {
 			numerator = parts[0];
@@ -642,7 +642,7 @@ class MMUnit extends MMCommandObject {
 		}
 
 		if (numeratorParts.length == 0 && denominatorParts.length == 0) {
-			throw(this.t('mmcmd:unitDefinitionInvalid', {definition: definition}));
+			throw(this.t('mmunit:definitionInvalid', {definition: definition}));
 		}
 
 		this.scale = 1.0;
@@ -651,7 +651,7 @@ class MMUnit extends MMCommandObject {
 			let unit = part[0];
 			let exponent = part[1];
 			if (exponent == 0.0) {
-				throw(this.t('mmcmd:unitExponentZero', {definition: definition}));
+				throw(this.t('mmunit:exponentZero', {definition: definition}));
 			}
 			this.scale *= Math.pow(unit.scale, exponent);
 			for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
@@ -663,7 +663,7 @@ class MMUnit extends MMCommandObject {
 			let unit = part[0];
 			let exponent = part[1];
 			if (exponent == 0.0) {
-				throw(this.t('mmcmd:unitExponentZero', {definition: definition}));
+				throw(this.t('mmunit:exponentZero', {definition: definition}));
 			}
 			this.scale /= Math.pow(unit.scale, exponent);
 			for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
@@ -789,11 +789,11 @@ class MMUnitSet extends MMCommandObject {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			addtype: 			'mmcmd:?addtype',
-			renametype: 	'mmcmd:?renametype',
-			removetype: 	'mmcmd:?removetype',
-			unitfortype:	'mmcmd:?unitfortype',
-			listtypes:		'mmcmd:?listtypes'
+			addtype: 			'mmunit:?addtype',
+			renametype: 	'mmunit:?renametype',
+			removetype: 	'mmunit:?removetype',
+			unitfortype:	'mmunit:?unitfortype',
+			listtypes:		'mmunit:?listtypes'
 		}[command];
 		if (key) {
 			return key;
@@ -815,7 +815,7 @@ class MMUnitSet extends MMCommandObject {
 		// check if type of those dimensions already exists
 		if ( oldTypeName ) {
 			if (oldTypeName != typeName) {
-				throw(this.t('mmcmd:unitSetDuplicateDimensions', {name: oldTypeName}));
+				throw(this.t('mmunit:setDuplicateDimensions', {name: oldTypeName}));
 			}
 			this.dimensionsDictionary[lcTypeName] = dimensionString;
 			if (oldDimensionString) {
@@ -846,7 +846,7 @@ class MMUnitSet extends MMCommandObject {
 		let args = command.args;
 		let parts = args.split(/\s/);
 		if (parts.length != 2) {
-			throw(this.t('mmcmd:unitAddTypeError', {args: args}));
+			throw(this.t('mmunit:addTypeError', {args: args}));
 		}
 		let unit = this.unitSystem.unitNamed(parts[1]);
 		this.setUnitForTypeNamed(unit, parts[0]);
@@ -862,7 +862,7 @@ class MMUnitSet extends MMCommandObject {
 		let args = command.args;
 		let parts = args.split(/\s/);
 		if (parts.length != 2) {
-			throw(this.t('mmcmd:unitSetTypeRenameError', {args: args}));
+			throw(this.t('mmunit:setTypeRenameError', {args: args}));
 		}
 		let fromName = parts[0];
 		let toName = parts[1];
@@ -870,10 +870,10 @@ class MMUnitSet extends MMCommandObject {
 		let lcToName = toName.toLowerCase();
 		if (toName != fromName) {
 			if (this.dimensionsDictionary[lcToName]) {
-				throw(this.t('mmcmd:duplicateUnitTypeName', {name: toName}));
+				throw(this.t('mmunit:duplicateUnitTypeName', {name: toName}));
 			}
 			if (!this.dimensionsDictionary[lcFromName]) {
-				throw(this.t('mmcmd:unitUnknownTypeName', {name: fromName}));
+				throw(this.t('mmunit:unknownTypeName', {name: fromName}));
 			}
 			let dimensionString = this.dimensionsDictionary[lcFromName];
 			this.typesDictionary[dimensionString] = toName;
@@ -906,7 +906,7 @@ class MMUnitSet extends MMCommandObject {
 			}
 		}
 		else {
-			throw(this.t('mmcmd:unitUnknownTypeName', {name: name}));
+			throw(this.t('mmunit:unknownTypeName', {name: name}));
 		}
 	}
 
@@ -921,7 +921,7 @@ class MMUnitSet extends MMCommandObject {
 			command.results = this.unitsDictionary[dimensionString].name;
 		}
 		else {
-			throw(this.t('mmcmd:unitUnknownTypeName', {name: typeName}));
+			throw(this.t('mmunit:unknownTypeName', {name: typeName}));
 		}
 	}
 
@@ -1036,7 +1036,7 @@ class MMUnitsContainer extends MMCommandParent {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			adduserunit: 'mmcmd:?adduserunit'
+			adduserunit: 'mmunit:?adduserunit'
 		}[command];
 		if (key) {
 			return key;
@@ -1070,7 +1070,7 @@ class MMUnitsContainer extends MMCommandParent {
 	addUnit(name, description, isMaster) {
 		let lowerCaseName = name.toLowerCase();
 		if (this.children[lowerCaseName]) {
-			throw(this.t('mmcmd:duplicateUnit', {name: name}));
+			throw(this.t('mmunit:duplicateUnit', {name: name}));
 		}
 		let newUnit = new MMUnit(name, this).initWithDescription(isMaster, description);
 		this.addChild(name, newUnit);
@@ -1088,18 +1088,18 @@ class MMUnitsContainer extends MMCommandParent {
 		let definition = command.args;
 		let parts = definition.split(/\s*=\s*|\s+/);
 		if (parts.length != 3) {
-			throw(this.t('mmcmd:unitDefinitionError', {definition: definition}));
+			throw(this.t('mmunit:definitionError', {definition: definition}));
 		}
 		let unitName = parts[0];
 		let value = Number(parts[1]);
 		if (value == NaN) {
-			throw(this.t('mmcmd:unitUserDefValueError', {definition: definition}))
+			throw(this.t('mmunit:userDefValueError', {definition: definition}))
 		}
 		let lowerName = unitName.toLowerCase();
 		let newUnit = this.children[lowerName];
 		if (newUnit) {
 			if (newUnit.isMaster) {
-				throw(this.t('mmcmd:unitNameInUse', {name: unitName}));
+				throw(this.t('mmunit:nameInUse', {name: unitName}));
 			}
 			newUnit.parseDefinition(parts[2]);
 			newUnit.scale *= value;
@@ -1141,10 +1141,10 @@ class MMUnitsContainer extends MMCommandParent {
 		let lcName = name.toLowerCase();
 		let unit = this.children[lcName];
 		if (!unit) {
-			throw(this.t('mmcmd:unknownUnit', {name: name}));
+			throw(this.t('mmunit:unknownUnit', {name: name}));
 		}
 		if (unit.isMaster) {
-			throw(this.t('mmcmd:unitCannotRemoveMaster', {name: name}));
+			throw(this.t('mmunit:cannotRemoveMaster', {name: name}));
 		}
 		let definition = unit.definition;	// for undo if available
 		this.removeChildNamed(command);
@@ -1358,7 +1358,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 	set defaultSetName(name) {
 		let newDefault = this.childNamed(name);
 		if (!newDefault) {
-			throw(this.t('mmcmd:unitSetNotFound', {name: name}));
+			throw(this.t('mmunit:setNotFound', {name: name}));
 		}
 		this.defaultSet = newDefault;
 	}
@@ -1370,8 +1370,8 @@ class MMUnitSetsContainer extends MMCommandParent {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			clone:	'mmcmd:?cloneset',
-			remove:	'mmcmd:?removeset'
+			clone:	'mmunit:?cloneset',
+			remove:	'mmunit:?removeset'
 		}[command];
 		if (key) {
 			return key;
@@ -1389,7 +1389,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 	addSet(name, isMaster) {
 		let lowerCaseName = name.toLowerCase();
 		if (this.children[lowerCaseName]) {
-			throw(this.t('mmcmd:duplicateUnitSet', {name: name}));
+			throw(this.t('mmunit:duplicateUnitSet', {name: name}));
 		}
 		let newSet = new MMUnitSet(name, this, isMaster);
 		this.addChild(name, newSet);
@@ -1404,7 +1404,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 		let originalName = command.args;
 		let original = this.childNamed(originalName);
 		if (!original) {
-			throw(this.t('mmcmd:unitSetNotFound', {name: originalName}));
+			throw(this.t('mmunit:setNotFound', {name: originalName}));
 		}
 		let i = 2;
 		let newName = `${original.name}_${i}`;
