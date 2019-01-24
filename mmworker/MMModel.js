@@ -31,7 +31,7 @@ class MMModel extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			addTool: 'mmcmd:?modelUseAddTool'
+			addtool: 'mmcmd:?modelUseAddTool'
 		}[command];
 		if (key) {
 			return key;

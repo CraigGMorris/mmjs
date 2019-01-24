@@ -1036,7 +1036,9 @@ class MMUnitsContainer extends MMCommandParent {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			adduserunit: 'mmunit:?adduserunit'
+			adduserunit: 'mmunit:?adduserunit',
+			listuserunits: 'mmunit:?listuserunits',
+			remove: 'mmunit:?removeuserunit'
 		}[command];
 		if (key) {
 			return key;
@@ -1341,13 +1343,32 @@ class MMUnitSetsContainer extends MMCommandParent {
 		let verbs = super.verbs;
 		verbs['clone'] = this.cloneSet;
 		verbs['remove'] = this.removeSetNamed;
-		verbs['listsettypes'] = this.listSetTypes;
+		verbs['listsets'] = this.listSets;
 		return verbs;
+	}
+
+	/** @method getVerbUsageKey
+	 * @override
+	 * @param {string} command - command to get the usage key for
+	 * @returns {string} - the i18n key, if it exists
+	 */
+	getVerbUsageKey(command) {
+		let key = {
+			clone:	'mmunit:?cloneset',
+			remove:	'mmunit:?removeset',
+			listsets: 'mmunit:?listsets'
+		}[command];
+		if (key) {
+			return key;
+		}
+		else {
+			return super.getVerbUsageKey(command);
+		}
 	}
 
 	get properties() {
 		let d = super.properties;
-		d['default'] = {type: PropertyType.string, readOnly: false};
+		d['defaultSetName'] = {type: PropertyType.string, readOnly: false};
 		return d;
 	}
 
@@ -1361,24 +1382,6 @@ class MMUnitSetsContainer extends MMCommandParent {
 			throw(this.t('mmunit:setNotFound', {name: name}));
 		}
 		this.defaultSet = newDefault;
-	}
-
-	/** @method getVerbUsageKey
-	 * @override
-	 * @param {string} command - command to get the usage key for
-	 * @returns {string} - the i18n key, if it exists
-	 */
-	getVerbUsageKey(command) {
-		let key = {
-			clone:	'mmunit:?cloneset',
-			remove:	'mmunit:?removeset'
-		}[command];
-		if (key) {
-			return key;
-		}
-		else {
-			return super.getVerbUsageKey(command);
-		}
 	}
 
 	/** @method addSet
@@ -1433,11 +1436,11 @@ class MMUnitSetsContainer extends MMCommandParent {
 		}
 	}
 
-	/** @method listSetTypes
+	/** @method listSets
 	 * @param {MMCommand} command
 	 * command.results = [{name: isMaster:}]
 	 */
-	listSetTypes(command) {
+	listSets(command) {
 		let results = [];
 		for (let name in this.children) {
 			let set = this.children[name];

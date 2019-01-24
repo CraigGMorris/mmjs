@@ -583,12 +583,7 @@ class MMTool extends MMCommandParent {
 		return this.t(toolType.displayName);
 	}
 
-	/**
-	 * @method description
-	 * @returns {String}
-	 * returns notes, but truncated to 50 chars if longer
-	 */
-	description() {
+	get description() {
 		if (this.notes) {
 			let maxLength = 50;
 			if ( this.notes.length <= maxLength) {

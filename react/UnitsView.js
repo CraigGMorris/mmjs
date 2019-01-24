@@ -19,7 +19,7 @@ export class UnitsView extends React.Component {
 	componentDidMount() {
 		this.props.actions.setUpdateCommands(this.props.viewInfo.stackIndex,
 			`/unitsys.sets list
-			/unitsys.sets get default`);
+			/unitsys.sets get defaultSetName`);
 	}
 
 	handleButtonClick(event) {
@@ -226,7 +226,7 @@ export class UnitSetsView extends React.Component {
 
 	componentDidMount() {
 		this.props.actions.setUpdateCommands(this.props.viewInfo.stackIndex,
-			`/unitsys.sets listsettypes`);
+			`/unitsys.sets listsets`);
 	}
 
 		/** @method handleChange

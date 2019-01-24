@@ -20,7 +20,7 @@
 	"modelDisplayName": "Model",
 	"modelInvalidToolType": "Cannot create {{name}} as there is no tool with type {{typeName}}",
 	"modelShortDescription": "Container for other tools",
-	"modelUseAddTool": "usage: addTool typeName [name]",
+	"?modelUseAddTool": "usage: addTool typeName [name]",
 	"valueMatrixBoundsError": "Index [{{row}},{{column}}] out of bounds [{{rowCount}},{{columnCount}}]",
 	"valuePowerHasUnits": "Exponent cannot have units",
 	"valuePowerOfArrayWithUnits": "Exponent cannot be an array if the raised value has units",
