@@ -930,7 +930,7 @@ class MMArrayFunction extends MMMultipleArgumentFunction {
 		}
 		else if (initValue instanceof MMStringValue) {
 			rv = new MMStringValue(rowCount, columnCount);
-			const initCount = rv.valueCount;
+			const initCount = initValue.valueCount;
 			if (initCount == 1) {
 				rv.setAllValuesTo(initValue._values[0]);
 			}
