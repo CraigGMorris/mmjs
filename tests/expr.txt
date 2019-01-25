@@ -3,4 +3,8 @@ addtool Expression x
 .x.formula set formula 1:1000000 * 1 ft + 3 in
 addtool Expression y
 .y.formula set formula x[3:7]
+.y set displayUnit in
 .y value
+addtool Expression s
+.s.formula set formula {array 2, 3, "hello"}
+.s value

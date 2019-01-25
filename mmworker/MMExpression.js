@@ -178,24 +178,7 @@ class MMExpression extends MMTool {
 		let value = this.valueForRequestor();
 		let rv = {}
 		if (value) {
-			if (value instanceof MMNumberValue) {
-				if (this._displayUnit) {
-					const unit = this._displayUnit;
-					rv['unit'] = unit.name;
-					rv['v'] = Array.from(value._values).map(x => unit.convertFromBase(x));
-				}
-				else {
-					rv['v'] = Array.from(value._values);
-					rv['unit'] = theMMSession.unitSystem.baseUnitWithDimensions(value.unitDimensions).name;
-				}
-				rv['t'] = 'n';
-			}
-			else if (value instanceof MMStringValue) {
-				rv['t'] = 's';
-				rv['v'] = value._values;
-			} else {
-				throw(this.t('mmcmd:unimplemented'));
-			}
+			rv = value.jsonValue(this._displayUnit);
 		}
 		command.results = rv;
 	}

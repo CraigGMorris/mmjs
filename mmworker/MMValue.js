@@ -155,6 +155,15 @@ class MMValue {
 	numeric() {
 		return null;
 	}
+
+	/**
+	 * @method jsonValue
+	 * @param {MMUnit} displayUnit
+	 * @returns {String} - json representation of value using unit
+	 */
+	jsonValue(unit) {
+		this.exceptionWith('mmcmd:unimplemented');
+	}
 }
 
 /**
@@ -651,6 +660,28 @@ class MMNumberValue extends MMValue {
 		}
 		return rv;
 	}
+
+	/**
+	 * @method jsonValue
+	 * @override
+	 * @param {MMUnit} displayUnit
+	 * @returns {String} - json representation of value using unit
+	 */
+	jsonValue(unit) {
+		let rv = {}
+		if (unit) {
+			rv['unit'] = unit.name;
+			rv['v'] = Array.from(this._values).map(x => unit.convertFromBase(x));
+			}
+		else {
+			rv['v'] = Array.from(this._values);
+			rv['unit'] = theMMSession.unitSystem.baseUnitWithDimensions(this.unitDimensions).name;
+		}
+		rv['t'] = 'n';
+		rv['nr'] = this.rowCount;
+		rv['nc'] = this.columnCount;
+		return rv;
+	}
 }
 
 /**
@@ -824,6 +855,21 @@ class MMStringValue extends MMValue {
 			}
 		}
 		return rv;
+	}
+
+	/**
+	 * @method jsonValue
+	 * @override
+	 * @param {MMUnit} displayUnit
+	 * @returns {String} - json representation of value using unit
+	 */
+	jsonValue() {
+		return {
+			t: 's',
+			v: this._values,
+			nr: this.rowCount,
+			nc: this.columnCount
+		}
 	}
 }
 
