@@ -4,6 +4,9 @@
  * @class MMExpression
  * @extends MMTool
  * @member {MMValue} cachedValue;
+ * @member {MMUnit} _displayUnit
+ * @member {Boolean} isInput;
+ * @member {Boolean} isOutput;
  */
 class MMExpression extends MMTool {
 	/** @constructor
@@ -14,11 +17,57 @@ class MMExpression extends MMTool {
 		super(name, parentModel, 'Expression');
 		this.formula = new MMFormula('formula', this);
 		this.cachedValue = null;
+		this._displayUnit = null;
+		this._isInput = false;
+		this._isOutput = false;
+	}
+
+	/** @override */
+	get properties() {
+		let d = super.properties;
+		d['isInput'] = {type: PropertyType.boolean, readOnly: false};
+		d['isOutput'] = {type: PropertyType.boolean, readOnly: false};
+		d['displayUnit'] = {type: PropertyType.string, readOnly: false};
+		return d;
+	}
+
+	get isInput() {
+		return this._isInput;
+	}
+
+	set isInput(newValue) {
+		this._isInput = (newValue) ? true : false;
+	}
+	
+	get isOutput() {
+		return this._isOutput;
+	}
+
+	set isOutput(newValue) {
+		this._isOutput = (newValue) ? true : false;
+	}
+	
+	get displayUnit() {
+		return (this._displayUnit) ? this._displayUnit.name : null;
+	}
+
+	set displayUnit(unitName) {
+		if (!unitName) {
+			this._displayUnit = null;
+		}
+		else {
+			const unit = theMMSession.unitSystem.unitNamed(unitName);
+			if (!unit) {
+				throw(this.t('mmunit:unknownUnit', {name: unitName}));
+			}
+			this._displayUnit = unit;
+		}
 	}
 
 	/** @override */
 	get verbs() {
 		let verbs = super.verbs;
+		verbs['value'] = this.jsonValue;
 		return verbs;
 	}
 
@@ -29,7 +78,7 @@ class MMExpression extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-//			addTool: 'mmcmd:?modelUseAddTool'
+			value: 'mmcmd:?exprUseJsonValue'
 		}[command];
 		if (key) {
 			return key;
@@ -39,9 +88,10 @@ class MMExpression extends MMTool {
 		}
 	}
 
-		/**
+	/**
 	 * @method valueForRequestor
-	 * @param {MMTool} requestor 
+	 * @param {MMTool} requestor
+	 * @returns {MMValue}
 	 */
 	valueForRequestor(requestor) {
 		if (!this.cachedValue) {
@@ -118,5 +168,35 @@ class MMExpression extends MMTool {
 			}
 		}
 		return value;
+	}
+
+	/**
+	 * @method jsonValue
+	 * command.results = json
+	 */
+	jsonValue(command) {
+		let value = this.valueForRequestor();
+		let rv = {}
+		if (value) {
+			if (value instanceof MMNumberValue) {
+				if (this._displayUnit) {
+					const unit = this._displayUnit;
+					rv['unit'] = unit.name;
+					rv['v'] = Array.from(value._values).map(x => unit.convertFromBase(x));
+				}
+				else {
+					rv['v'] = Array.from(value._values);
+					rv['unit'] = theMMSession.unitSystem.baseUnitWithDimensions(value.unitDimensions).name;
+				}
+				rv['t'] = 'n';
+			}
+			else if (value instanceof MMStringValue) {
+				rv['t'] = 's';
+				rv['v'] = value._values;
+			} else {
+				throw(this.t('mmcmd:unimplemented'));
+			}
+		}
+		command.results = rv;
 	}
 }

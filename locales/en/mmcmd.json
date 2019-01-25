@@ -2,6 +2,7 @@
 	"error": "Error",
 	"exprDisplayName": "Expression",
 	"exprShortDescription": "Single constant or formula",
+	"?exprUseJsonValue": "usage: jsonValue - returns value as json",
 	"formulaArgCountError": "Incorrect number of arguments\nin: {{path}}\nformula: {{formula}}",
 	"formulaArrayInitError": "The intialization variable for the array function must be numeric or a string",
 	"formulaBadUnit": "Unrecognized unit in formula",

@@ -1,0 +1,6 @@
+cd .root
+addtool Expression x
+.x.formula set formula 1:1000000 * 1 ft + 3 in
+addtool Expression y
+.y.formula set formula x[3:7]
+.y value

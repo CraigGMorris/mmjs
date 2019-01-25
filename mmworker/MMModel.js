@@ -64,7 +64,7 @@ class MMModel extends MMTool {
 			throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: typeName}));
 		}
 		if(toolType.factory(name, this)) {
-			command.result = true;
+			command.results = true;
 			command.undo = this.getPath() + ' removechild ' + name;
 		}
 	}

@@ -572,7 +572,7 @@ class MMTool extends MMCommandParent {
 
 	get properties() {
 		let d = super.properties;
-		d['displayName'] = {type: PropertyType.string, reaoOnly: true};
+		d['displayName'] = {type: PropertyType.string, readOnly: true};
 		d['description'] = {type: PropertyType.string, readOnly: true};
 		d['notes'] = {type: PropertyType.string, readOnly: false};
 		return d;

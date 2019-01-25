@@ -37,7 +37,7 @@ var MMFormulaOpDictionary = {
 	'/': () => {return new MMDivideOperator()},
 	'%': () => {return new MMModOperator()},
 	'^': () => {return new MMPowerOperator()},
-	':': () => {return new MMRangeOperator()}
+	':': (f) => {return new MMRangeOperator(f)}
 };
 
 var mmFunctionDictionary = {
@@ -79,7 +79,7 @@ class MMMonadicOperator extends MMFormulaOperator {
 	 * @returns MMNumberValue
 	 */
 	value() {
-		let v = (this.input) ? this.input.value() : null;
+		const v = (this.input) ? this.input.value() : null;
 		if (v) {
 			if (v instanceof MMNumberValue) {
 				return this.operationOn(v);
@@ -145,11 +145,17 @@ class MMDyadicOperator extends MMFormulaOperator {
 	 */
 	value() {
 		if (this.firstInput && this.secondInput) {
-			let v1 = this.firstInput.value();
-			if (v1 && v1.valueCount) {
-				let v2 = this.secondInput.value();
-				if (v2 && v2.valueCount) {
-					return this.valueFor(v1, v2);
+			const input1 = this.firstInput;
+			if (input1) {
+				const v1 = input1.value();
+				if (v1 && v1.valueCount) {
+					const input2 = this.secondInput;
+					if (input2) {
+						const v2 = input2.value();
+						if (v2 && v2.valueCount) {
+							return this.valueFor(v1, v2);
+						}
+					}
 				}
 			}
 		}
@@ -431,8 +437,8 @@ class MMIndexOperator extends MMFormulaOperator {
 			}
 		}
 		else if (sourceValue instanceof MMValue) {
-			const rowValue = this.rowArgument.value();
-			const columnValue = this.columnArgument.value();
+			const rowValue = this.rowArgument ? this.rowArgument.value() : null;
+			const columnValue = this.columnArgument ? this.columnArgument.value() : null;
 			return sourceValue.valueForIndexRowColumn(rowValue, columnValue);
 		}
 		return null;
@@ -575,6 +581,7 @@ class MMModOperator extends MMDyadicOperator {
 /**
  * @class MMPowerOperator
  * @extends MMDyadicOperator
+ * @member {MMFormula} formula
  */
 class MMPowerOperator extends MMDyadicOperator {
 	/**
@@ -601,6 +608,15 @@ class MMPowerOperator extends MMDyadicOperator {
  * @extends MMDyadicOperator
  */
 class MMRangeOperator extends MMDyadicOperator {
+	/**
+	 * @constructor
+	 * @param {MMFormula} formula
+	 */
+	constructor(formula) {
+		super();
+		this.formula = formula;
+	}
+
 	/**
 	 * @method value
 	 * @override
@@ -958,7 +974,7 @@ class MMFormula extends MMCommandObject {
 	/** @override */
 	get properties() {
 		let d = super.properties;
-		d['formula'] = {type: PropertyType.string, reaoOnly: false};
+		d['formula'] = {type: PropertyType.string, readOnly: false};
 		return d;
 	}
 
@@ -1445,7 +1461,7 @@ class MMFormula extends MMCommandObject {
 					else {
 						let opFactory = MMFormulaOpDictionary[token];
 						if (opFactory) {
-							op = opFactory();
+							op = opFactory(this);
 							let prevOp = operatorStack[operatorStack.length - 1];
 							while (!(prevOp instanceof MMParenthesisOperator) &&
 								!(prevOp instanceof MMFunctionOperator) &&

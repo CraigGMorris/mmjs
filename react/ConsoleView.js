@@ -40,7 +40,11 @@ export class ConsoleView extends React.Component {
 			lines.push(output);
 		}
 		this.setState((state) => {
-			return {output: lines.join('\n')}
+			lines = lines.join('\n');
+			if (lines.length > 100000) {
+				lines = lines.substr(0, 100000) + '\nTRUNCATED at 100000 chars';
+			}
+			return {output: lines}
 		});
 	}
 	
