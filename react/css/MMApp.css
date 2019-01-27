@@ -1,5 +1,6 @@
 @import "ConsoleView.css";
 @import "UnitsView.css";
+@import "Diagram.css";
 
 body {
 	height: calc(100vh - 30px);
@@ -48,7 +49,8 @@ body {
 
 .mmapp-diagram {
 	grid-area: diagram;
-	background-color: rgb(238,255,238);
+	background-color:rgb(238,255,238);
+	/*overflow: hidden;*/
 	border-right: 1px solid;
 }
 

@@ -2,6 +2,7 @@
 
 import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
+import {Diagram} from './Diagram.js';
 import {UnitsView, UserUnitsView, UnitSetsView, UnitSetView} from './UnitsView.js';
 
 const e = React.createElement;
@@ -236,7 +237,7 @@ export class MMApp extends React.Component {
 		}
 
 		return e('div', {className: 'mmapp-wrapper'},
-			e('div', {className: 'mmapp-diagram'}, 'diagram'),
+			e('div', {className: 'mmapp-diagram'}, e(Diagram, {})),
 			e('div', {className: 'mmapp-info-nav'},
 				e('div',{
 					className: 'mmapp-info-navback clickable',

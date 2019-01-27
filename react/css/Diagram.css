@@ -1,0 +1,9 @@
+#dgm-svg-main {
+	background-color: rgb(238,255,238);
+	height: 100%;
+	width: 100%;
+}
+
+#dgm-svg-bg {
+	fill: blue;
+}

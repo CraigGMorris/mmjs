@@ -5,6 +5,7 @@ addtool Expression y
 .y.formula set formula x[3:7]
 .y set displayUnit in
 .y value
+' test that formula json values work
 addtool Expression s
 .s.formula set formula {array 2, 3, "hello"}
 .s value

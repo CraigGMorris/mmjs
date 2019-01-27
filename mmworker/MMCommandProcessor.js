@@ -154,6 +154,9 @@ class MMCommandProcessor {
 				let cmdLines = commands.split('\n');
 				let continuedCmd = '';
 				for( let cmd of cmdLines) {
+					if (cmd.startsWith("'") && !continuedCmd) {
+						continue;
+					}
 					cmd = continuedCmd + cmd.trim();
 					if (this.useLineContinuation) {
 						continuedCmd = '';
