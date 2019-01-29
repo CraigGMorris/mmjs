@@ -19,6 +19,8 @@
 	"formulaSyntaxError": "Formula syntax Error\nin: {{path}}\nformula: {{formula}}",
 	"formulaUnknownFunction": "Unknown function {{f}}",
 	"modelDisplayName": "Model",
+	"modelInvalidPosition": "Invalid position parameter {{pos}}\nfor tool {{name}}",
+	"modelInvalidToolName": "{{name}} is not a valid name for an added tool",
 	"modelInvalidToolType": "Cannot create {{name}} as there is no tool with type {{typeName}}",
 	"modelShortDescription": "Container for other tools",
 	"?modelUseAddTool": "usage: addTool typeName [name]",
