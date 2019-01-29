@@ -105,12 +105,12 @@ class MMUnitSystem extends MMCommandParent {
 
 	/** @returns {MMUnitsContainer} */
 	get units() {
-		return this.children['units'];
+		return this.children.get('units');
 	}
 
 	/** @returns {MMSetsContaioner} */
 	get sets() {
-		return this.children['sets'];
+		return this.children.get('sets');
 	}
 
 	/** @method findNamePartsInString
@@ -1071,7 +1071,7 @@ class MMUnitsContainer extends MMCommandParent {
 	 */
 	addUnit(name, description, isMaster) {
 		let lowerCaseName = name.toLowerCase();
-		if (this.children[lowerCaseName]) {
+		if (this.children.has(lowerCaseName)) {
 			throw(this.t('mmunit:duplicateUnit', {name: name}));
 		}
 		let newUnit = new MMUnit(name, this).initWithDescription(isMaster, description);
@@ -1098,7 +1098,7 @@ class MMUnitsContainer extends MMCommandParent {
 			throw(this.t('mmunit:userDefValueError', {definition: definition}))
 		}
 		let lowerName = unitName.toLowerCase();
-		let newUnit = this.children[lowerName];
+		let newUnit = this.children.get(lowerName);
 		if (newUnit) {
 			if (newUnit.isMaster) {
 				throw(this.t('mmunit:nameInUse', {name: unitName}));
@@ -1121,8 +1121,7 @@ class MMUnitsContainer extends MMCommandParent {
 	*/
 	listUserUnits(command) {
 		let list = [];
-		for (let name in this.children) {
-			let child = this.children[name];
+		for (let [name, child] of this.children) {
 			if (!child.isMaster) {
 				let unitType = this.unitSystem.sets.defaultSet.typeNameForDimensions(child.dimensions);
 				list.push({
@@ -1141,7 +1140,7 @@ class MMUnitsContainer extends MMCommandParent {
 	removeUserDefinition(command) {
 		let name = command.args;
 		let lcName = name.toLowerCase();
-		let unit = this.children[lcName];
+		let unit = this.children.get(lcName);
 		if (!unit) {
 			throw(this.t('mmunit:unknownUnit', {name: name}));
 		}
@@ -1391,7 +1390,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 	 */
 	addSet(name, isMaster) {
 		let lowerCaseName = name.toLowerCase();
-		if (this.children[lowerCaseName]) {
+		if (this.children.has(lowerCaseName)) {
 			throw(this.t('mmunit:duplicateUnitSet', {name: name}));
 		}
 		let newSet = new MMUnitSet(name, this, isMaster);
@@ -1442,8 +1441,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 	 */
 	listSets(command) {
 		let results = [];
-		for (let name in this.children) {
-			let set = this.children[name];
+		for (let set of this.children.values()) {
 			results.push({name: set.name, isMaster: set.isMaster});
 		}
 		command.results = results;

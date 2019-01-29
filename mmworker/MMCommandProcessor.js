@@ -647,7 +647,7 @@ class MMCommandProcessor {
 }
 
 /** @class MMCommandParent
- * @member {Object} children - {string: MMCommandObject}
+ * @member {Map} children - {string: MMCommandObject}
 */
 /* export */ class MMCommandParent extends MMCommandObject {
 
@@ -668,7 +668,7 @@ class MMCommandProcessor {
 		else if (anyParam instanceof MMCommandParent) {
 			super(name, anyParam, className);
 		}
-		this.children = {};
+		this.children = new Map();
 	}
 
 	/** @override */
@@ -740,8 +740,7 @@ class MMCommandProcessor {
 	removeChildNamed(command) {
 		let name = command.args;
 		let lcName = name.toLowerCase();
-		if (this.children[lcName]) {
-			delete this.children[lcName];
+		if (this.children.delete(lcName)) {
 			command.results = this.t('cmd:removedChild', {name: name})
 		}
 		else {
@@ -756,8 +755,7 @@ class MMCommandProcessor {
 		let pattern = command.args;
 		let names = [];
 		let re = new RegExp(pattern);
-		for (let name in this.children) {
-			let child = this.children[name];
+		for (let [name, child] of this.children) {
 			if (pattern.length == 0) {
 				names.push(child.name);
 			}
@@ -775,19 +773,19 @@ class MMCommandProcessor {
 	renameChild(fromName, toName) {
 		let lcFromName = fromName.toLowerCase();
 		let lcToName = toName.toLowerCase();
-		let child = this.children[lcFromName];
+		let child = this.children.get(lcFromName);
 		if (!child) {
 			throw(this.t('childNotFound', {parent: this.getPath(), fromName}));
 		}
 
-		let newChild = this.children[lcToName];
+		let newChild = this.children.get(lcToName);
 		if (newChild) {
 			throw(this.t('nameAlreadyUsed', {name: toName, parent: this.getPath()}));
 		}
 
-		this.children[lcToName] = child;
+		this.children.set(lcToName, child);
 		child.name = toName;
-		delete this.children[lcFromName];
+		this.children.delete(lcFromName);
 	}
 
 	/**
@@ -796,7 +794,7 @@ class MMCommandProcessor {
 	 * @param {MMCommandObject} child 
 	 */
 	addChild(name, child) {
-		this.children[name.toLowerCase()] = child;
+		this.children.set(name.toLowerCase(), child);
 	}
 
 	/**
@@ -804,7 +802,7 @@ class MMCommandProcessor {
 	 * @returns {MMCommandObject} - returns child MMCommandObject or nil
 	 */
 	childNamed(name) {
-		return this.children[name.toLowerCase()];
+		return this.children.get(name.toLowerCase());
 	}
 }
 

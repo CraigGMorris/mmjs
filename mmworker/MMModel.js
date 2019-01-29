@@ -127,8 +127,8 @@ class MMModel extends MMTool {
 	 */
 	forgetAllCalculations() {
 		super.forgetAllCalculations();
-		for(let key in this.children) {
-			this.children[key].forgetAllCalculations();
+		for(let child of this.children.values()) {
+			child.forgetAllCalculations();
 		}
 	}
 }
