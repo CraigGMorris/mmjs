@@ -21,6 +21,7 @@ class MMModel extends MMTool {
 	get verbs() {
 		let verbs = super.verbs;
 		verbs['addtool'] = this.addTool;
+		verbs['dgminfo'] = this.diagramInfo;
 
 		return verbs;
 	}
@@ -32,7 +33,8 @@ class MMModel extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			addtool: 'mmcmd:?modelUseAddTool'
+			addtool: 'mmcmd:?modelAddTool',
+			dgminfo: 'mmcmd:?modelDgmInfo'
 		}[command];
 		if (key) {
 			return key;
@@ -44,8 +46,8 @@ class MMModel extends MMTool {
 
 	/** @method addTool
 	 * creates new Tool with supplied type and name
-	 * @param {MMCommand} command command.args
-	 * args should be typeName and optionally name and x,y position
+	 * @param {MMCommand} command
+	 * command.args should be typeName and optionally name and x,y position
 	 * if second argument starts with a number, it is asumed to be x coordinate
 	 * @returns {MMTool}
 	 */
@@ -117,10 +119,33 @@ class MMModel extends MMTool {
 
 	/**
 	 * @method diagramInfo
+	 * @param {MMCommand} command
 	 * @return {Object}
 	 * returns object containing the info needed for model diagram
 	 */
-	diagramInfo() {}
+	diagramInfo(command) {
+		let info = [];
+		for (const [name, child] of this.children) {
+			let toolInfo = {
+				toolClass: child.className,
+				name: name,
+				position: child.position,
+				notes: child.notes
+			}
+			if (child instanceof MMExpression) {
+				toolInfo['formula'] = child.formula.formula;
+				if (child.cachedValue) {
+					const v = child.cachedValue.stringWithUnit(this.child.displayUnit);
+					if (v) {
+						toolInfo['result'] = v;
+					}
+				}
+			}
+			info.push(toolInfo);
+		}
+
+		command.results = info;
+	}
 
 	/**
 	 * @method forgetAllCalculations

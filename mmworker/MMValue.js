@@ -115,6 +115,15 @@ class MMValue {
 		return rv;
 	}
 
+	/**
+	 * @method stringWithUnit
+	 * @param {MMUnit} unit - optional
+	 * @returns {String} 
+	 */
+	stringWithUnit(unit) {
+		return '---';
+	}
+
 	/*
 	dyadic functions
 	*/
@@ -806,6 +815,24 @@ class MMStringValue extends MMValue {
 		});
 	}
 
+	/**
+	 * @method stringWithUnit
+	 * @param {MMUnit} unit - optional
+	 * @returns {String} 
+	 */
+	stringWithUnit(unit) {
+		// ignore unit
+		if (this.valueCount == 1) {
+			return this._values[0];
+		}
+		else if (this.valueCount > 1) {
+			return `${this._values[0]}...[${this.rowCount}, ${this.columnCount}]`
+		}
+		else {
+			return '---';
+		}
+	}
+
 	/*
 	 * dyadic functions
 	 */
@@ -983,6 +1010,24 @@ class MMToolValue extends MMValue {
 		return this.valueForIndexRowColumnFactory(rowIndex, columnIndex, (nRows, nColumns) => {
 			return new MMToolValue(nRows, nColumns);
 		});
+	}
+
+		/**
+	 * @method stringWithUnit
+	 * @param {MMUnit} unit - optional
+	 * @returns {String} 
+	 */
+	stringWithUnit(unit) {
+	// ignore unit
+		if (this.valueCount == 1) {
+			return this._values[0].name;
+		}
+		else if (this.valueCount > 1) {
+			return `this._values[0].name...[${this.rowCount}, ${this.columnCount}]`
+		}
+		else {
+			return '---';
+		}
 	}
 
 	/*

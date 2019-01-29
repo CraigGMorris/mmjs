@@ -1,0 +1,6 @@
+cd .root
+addtool Expression fred 80 200
+addtool Expression 90 210
+addtool Model jack
+addtool Model
+addtool Model tom -10 -200
