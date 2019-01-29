@@ -125,10 +125,11 @@ class MMModel extends MMTool {
 	 */
 	diagramInfo(command) {
 		let info = [];
-		for (const [name, child] of this.children) {
+		for (const key in this.children) {
+			const child = this.children[key];
 			let toolInfo = {
 				toolClass: child.className,
-				name: name,
+				name: child.name,
 				position: child.position,
 				notes: child.notes
 			}
@@ -152,8 +153,8 @@ class MMModel extends MMTool {
 	 */
 	forgetAllCalculations() {
 		super.forgetAllCalculations();
-		for(let child of this.children.values()) {
-			child.forgetAllCalculations();
+		for(let key in this.children) {
+			this.children[key].forgetAllCalculations();
 		}
 	}
 }
