@@ -1,9 +1,29 @@
 #dgm-svg-main {
-	background-color: rgb(238,255,238);
+	background-color: rgba(238,255,238,1);
 	height: 100%;
 	width: 100%;
 }
 
-#dgm-svg-bg {
+.dgm-svg-tool {
+	stroke: black;
 	fill: blue;
+}
+
+text {
+	fill: black;
+	stroke-width: 1;
+	pointer-events: none;
+}
+
+.dgm-tooltype {
+	fill: rgb(0,182,0);
+	font-style: italic;
+}
+
+.dgm-Expression {
+	fill: rgba(247,247,230,.8);
+}
+
+.dgm-Model {
+	fill: rgba(230,255,255,.8);
 }

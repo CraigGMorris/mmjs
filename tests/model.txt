@@ -1,6 +1,8 @@
 cd .root
 addtool Expression fred 80 200
-addtool Expression 90 210
+.fred.formula set formula 18 m
+.fred value
+addtool Expression 190 210
+addtool Model tom 100 500
 addtool Model jack
 addtool Model
-addtool Model tom -10 -200

@@ -4,7 +4,7 @@
  * @class MMExpression
  * @extends MMTool
  * @member {MMValue} cachedValue;
- * @member {MMUnit} _displayUnit
+ * @member {MMUnit} displayUnit
  * @member {Boolean} isInput;
  * @member {Boolean} isOutput;
  */
@@ -17,7 +17,7 @@ class MMExpression extends MMTool {
 		super(name, parentModel, 'Expression');
 		this.formula = new MMFormula('formula', this);
 		this.cachedValue = null;
-		this._displayUnit = null;
+		this.displayUnit = null;
 		this._isInput = false;
 		this._isOutput = false;
 	}
@@ -27,7 +27,7 @@ class MMExpression extends MMTool {
 		let d = super.properties;
 		d['isInput'] = {type: PropertyType.boolean, readOnly: false};
 		d['isOutput'] = {type: PropertyType.boolean, readOnly: false};
-		d['displayUnit'] = {type: PropertyType.string, readOnly: false};
+		d['outputUnit'] = {type: PropertyType.string, readOnly: false};
 		return d;
 	}
 
@@ -47,20 +47,20 @@ class MMExpression extends MMTool {
 		this._isOutput = (newValue) ? true : false;
 	}
 	
-	get displayUnit() {
-		return (this._displayUnit) ? this._displayUnit.name : null;
+	get outputUnit() {
+		return (this.displayUnit) ? this.displayUnit.name : null;
 	}
 
-	set displayUnit(unitName) {
+	set outputUnit(unitName) {
 		if (!unitName) {
-			this._displayUnit = null;
+			this.displayUnit = null;
 		}
 		else {
 			const unit = theMMSession.unitSystem.unitNamed(unitName);
 			if (!unit) {
 				throw(this.t('mmunit:unknownUnit', {name: unitName}));
 			}
-			this._displayUnit = unit;
+			this.displayUnit = unit;
 		}
 	}
 
@@ -178,7 +178,7 @@ class MMExpression extends MMTool {
 		let value = this.valueForRequestor();
 		let rv = {}
 		if (value) {
-			rv = value.jsonValue(this._displayUnit);
+			rv = value.jsonValue(this.displayUnit);
 		}
 		command.results = rv;
 	}

@@ -37,12 +37,30 @@ class MMSession extends MMCommandParent {
 		this.currentModel = this.rootModel;
 	}
 
-		/** @override */
-		get verbs() {
-			let verbs = super.verbs;
-			verbs['test'] = this.test;
-			return verbs;
+	/** @override */
+	get verbs() {
+		let verbs = super.verbs;
+		verbs['test'] = this.test;
+		verbs['dgminfo'] = this.diagramInfo;
+		return verbs;
+	}
+
+	/** @method getVerbUsageKey
+	 * @override
+	 * @param {string} command - command to get the usage key for
+	 * @returns {string} - the i18n key, if it exists
+	 */
+	getVerbUsageKey(command) {
+		let key = {
+			dgminfo: 'mmcmd:?modelDgmInfo'
+		}[command];
+		if (key) {
+			return key;
 		}
+		else {
+			return super.getVerbUsageKey(command);
+		}
+	}
 	
 	get	session() {
 		return this;
@@ -53,7 +71,7 @@ class MMSession extends MMCommandParent {
 	}
 
 	get unknownPosition() {
-		return new MMPoint(-12321, -12321);
+		return new MMPoint(0, 0);
 	}
 
 	// MMModel related methods
@@ -76,6 +94,16 @@ class MMSession extends MMCommandParent {
 		if (this.modelStack.length > 0) {
 			this.currentModel = this.modelStack.pop();
 		}
+	}
+
+	/**
+	 * @method diagramInfo
+	 * verb
+	 * @param {MMCommand} command
+	 * command.results contains the info needed for model diagram
+	 */
+	diagramInfo(command) {
+		command.results = this.currentModel.diagramInfo();
 	}
 
 	// testing method
@@ -528,13 +556,13 @@ const MMToolTypes = {
 		factory: (name, parent) => { return new MMModel(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:modelDisplayName'),
 		shortDescription: new MMCommandMessage('mmcmd:modelShortDescription'),
-		rgbaColor: [.9, 1, 1, .8]
+		fillColor: [.9, 1, 1, .8]
 	},
 	"Expression": {
 		factory: (name, parent) => {return new MMExpression(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:exprDisplayName'),
 		shortDescription: new MMCommandMessage('mmcmd:exprShortDescription'),
-		rgbaColor: [.97, .97, .9, .8]
+		fillColor: [.97, .97, .9, .8]
 	}
 };
 
@@ -629,14 +657,6 @@ class MMTool extends MMCommandParent {
 		if (!theMMSession.isLoadingCase) {
 			this.forgetCalculated();
 		}
-	}
-
-	/**
-	 * @method displayUnit
-	 * @returns {MMUnit}
-	 */
-	displayUnit() {
-		return null;  // overridded as necessary
 	}
 
 	/**

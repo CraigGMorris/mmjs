@@ -172,6 +172,19 @@ export class Diagram extends React.Component {
 		const viewBox = [0, 0, width, height];
 		const toolX = (0 + this.state.translateX)*this.state.scale;
 		const toolY = (0 + this.state.translateY)*this.state.scale;
+		const tools = this.props.dgmInfo.tools;
+		let toolList = [];
+		for (const toolInfo of tools) {
+			const cmp = e(ToolIcon, {
+				key: toolInfo.name,
+				info: toolInfo,
+				transX: this.state.translateX,
+				transY: this.state.translateY,
+				scale: this.state.scale
+			});
+			toolList.push(cmp);
+		}
+
 		/*
 		console.log(viewBox);
 		console.log(`toolX ${toolX} toolY ${toolY}`);
@@ -184,17 +197,12 @@ export class Diagram extends React.Component {
 				onMouseDown: this.onMouseDown,
 				onWheel: this.onWheel,
 			},
-				e(ToolIcon, {
-					transX: this.state.translateX,
-					transY: this.state.translateY,
-					scale: this.state.scale
-				}),
-				e('rect', {
-					x: toolX,
-					y: toolY,
-					width: 10*this.state.scale,
-					height: 20*this.state.scale
-				})
+				e('text', {
+					x: 15,
+					y: 15,
+					style: {font: '10px sans-serif'}
+				}, this.props.dgmInfo.path),
+				toolList
 			)
 		);
 	}
@@ -210,12 +218,7 @@ export class ToolIcon extends React.Component {
 		//this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.state = {
 			dragging: false,
-			toolClass: 'Expression',
-			name: 'x1',
-			position: {x: 150, y: 200},
-			notes: '',
-			formula: 'pi * 2',
-			result: '6.28'
+			position: this.props.info.position,
 		};
 
 		this.onMouseDown = this.onMouseDown.bind(this);
@@ -311,13 +314,71 @@ export class ToolIcon extends React.Component {
 
 	render() {
 		let t = this.props.t;
-		return e('rect', {
-			id: 'dgm-svg-bg',
-			onMouseDown: this.onMouseDown,
-			x: (this.state.position.x + this.props.transX)*this.props.scale,
-			y: (this.state.position.y + this.props.transY)*this.props.scale,
-			width: 60*this.props.scale,
-			height: 20*this.props.scale
-		});
+		const info = this.props.info;
+		const x = this.state.position.x;
+		const y = this.state.position.y;
+		const transX = this.props.transX;
+		const transY = this.props.transY;
+		const scale = this.props.scale;
+		let textComponents;
+		if (info.toolTypeName === 'Expression') {
+			textComponents = e('g', {},
+				e('text', {
+					className: 'dgm-name',
+					x: (x + 3 + transX)*scale,
+					y: (y + 7 + transY)*scale,
+					style: {fontSize: `${6*scale}px`}
+					}, info.name
+				),
+				e('text', {
+					className: 'dgm-formula',
+					x: (x + 3 + transX)*scale,
+					y: (y + 12.5 + transY)*scale,
+					style: {fontSize: `${5*scale}px`}
+					}, info.formula
+				),
+				e('text', {
+					className: 'dgm-result',
+					x: (x + 3 + transX)*scale,
+					y: (y + 18 + transY)*scale,
+					style: {
+						fontSize: `${5*scale}px`,
+						fill: (info.result) ? 'black' : 'red'
+					}
+					}, info.result ? info.result.trim() : '?'
+				),
+			);
+		}
+		else {
+			textComponents = e('g', {},
+			e('text', {
+				className: 'dgm-tooltype',
+				x: (x + 3 + transX)*scale,
+				y: (y + 8 + transY)*scale,
+				style: {fontSize: `${9*scale}px`}
+				}, info.toolTypeName + ':'
+			),
+			e('text', {
+					className: 'dgm-name',
+					x: (x + 3 + transX)*scale,
+					y: (y + 16 + transY)*scale,
+					style: {fontSize: `${7*scale}px`}
+					}, info.name
+				),
+			);
+		}
+
+		return e('g', {
+			className: `dgm-svg-tool dgm-${info.toolTypeName}`,
+		},
+			e('rect', {
+				onMouseDown: this.onMouseDown,
+				x: (x + transX)*scale,
+				y: (y + transY)*scale,
+				width: 60*scale,
+				height: 20*scale
+			}),
+			textComponents
+		);
 	}
 }

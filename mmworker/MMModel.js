@@ -21,7 +21,7 @@ class MMModel extends MMTool {
 	get verbs() {
 		let verbs = super.verbs;
 		verbs['addtool'] = this.addTool;
-		verbs['dgminfo'] = this.diagramInfo;
+		verbs['dgminfo'] = this.diagramInfoCommand;
 
 		return verbs;
 	}
@@ -112,6 +112,26 @@ class MMModel extends MMTool {
 			if (position) {
 				newTool.position = position;
 			}
+			else {
+				let maxX = 10, maxY = 10;
+				for (const key in this.children) {
+					const tool = this.children[key];
+					if (tool.position.y > maxY) {
+						maxY = tool.position.y;
+						maxX = tool.position.x;
+					}
+					else if (tool.position.y == maxY && tool.position.x > maxX) {
+						maxX = tool.position.x;
+					}
+				}
+
+				if (maxX < 500) {
+					newTool.position = {x: maxX + 70, y: maxY};
+				}
+				else {
+					newTool.position = {x: 10, y: maxY + 30};
+				}
+			}
 			command.results = true;
 			command.undo = this.getPath() + ' removechild ' + name;
 		}
@@ -120,15 +140,24 @@ class MMModel extends MMTool {
 	/**
 	 * @method diagramInfo
 	 * @param {MMCommand} command
-	 * @return {Object}
+	 * command.results contains the info needed for model diagram
+	 */
+	diagramInfoCommand(command) {
+		command.results = this.diagramInfo()
+	}
+
+	/**
+	 * @method diagramInfo
+	 * @param {MMCommand} command
+	 * @returns {Object}
 	 * returns object containing the info needed for model diagram
 	 */
-	diagramInfo(command) {
-		let info = [];
+	diagramInfo() {
+		let tools = [];
 		for (const key in this.children) {
 			const child = this.children[key];
 			let toolInfo = {
-				toolClass: child.className,
+				toolTypeName: child.className.substring(2),
 				name: child.name,
 				position: child.position,
 				notes: child.notes
@@ -136,16 +165,19 @@ class MMModel extends MMTool {
 			if (child instanceof MMExpression) {
 				toolInfo['formula'] = child.formula.formula;
 				if (child.cachedValue) {
-					const v = child.cachedValue.stringWithUnit(this.child.displayUnit);
+					const v = child.cachedValue.stringWithUnit(child.displayUnit);
 					if (v) {
 						toolInfo['result'] = v;
 					}
 				}
 			}
-			info.push(toolInfo);
+			tools.push(toolInfo);
 		}
 
-		command.results = info;
+		return {
+			path: this.getPath(),
+			tools: tools
+		};
 	}
 
 	/**

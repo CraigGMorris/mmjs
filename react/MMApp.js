@@ -45,7 +45,7 @@ export class MMApp extends React.Component {
 			path: '',
 			stackIndex: 0,
 			updateCommands: '',
-			updateResults: []
+			updateResults: [],
 		}
 
 		this.undoStack = [];
@@ -53,8 +53,12 @@ export class MMApp extends React.Component {
 
 		this.state = {
 			/** @desc infoStack keeps the information necessary to render all the info views pushed */
-			infoStack: [initialInfoState]
+			infoStack: [initialInfoState],
+			dgmInfo: {path: '', tools: []}
 		}
+
+		this.updateDiagram = this.updateDiagram.bind(this);
+		this.updateDiagram();
 
 		this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.popView = this.popView.bind(this);
@@ -171,6 +175,21 @@ export class MMApp extends React.Component {
 		}
 	}
 
+	/**
+	 * @method updateDiagram
+	 */
+	updateDiagram() {
+		this.doCommand('/ dgminfo', (results) => {
+			if (results.length && results[0].results) {
+				const dgmInfo = results[0].results;
+				this.setState((state) => {
+					return {dgmInfo: dgmInfo};
+				})
+			}
+		});
+	}
+
+
 	/** @method popView
 	 * if more than one thing on info stack, it pops the last one
 	 */
@@ -230,6 +249,7 @@ export class MMApp extends React.Component {
 						className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
 						actions: this.actions,
 						viewInfo: viewInfo,
+						updateDiagram: this.updateDiagram,
 						t: t
 					})
 			);
@@ -237,7 +257,9 @@ export class MMApp extends React.Component {
 		}
 
 		return e('div', {className: 'mmapp-wrapper'},
-			e('div', {className: 'mmapp-diagram'}, e(Diagram, {})),
+			e('div', {className: 'mmapp-diagram'},
+				e(Diagram, {dgmInfo: this.state.dgmInfo})
+			),
 			e('div', {className: 'mmapp-info-nav'},
 				e('div',{
 					className: 'mmapp-info-navback clickable',

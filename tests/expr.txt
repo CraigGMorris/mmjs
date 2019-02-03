@@ -3,7 +3,7 @@ addtool Expression x
 .x.formula set formula 1:1000000 * 1 ft + 3 in
 addtool Expression y
 .y.formula set formula x[3:7]
-.y set displayUnit in
+.y set outputUnit in
 .y value
 ' test that formula json values work
 addtool Expression s

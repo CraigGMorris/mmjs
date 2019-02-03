@@ -46,6 +46,8 @@ export class ConsoleView extends React.Component {
 			}
 			return {output: lines}
 		});
+
+		this.props.updateDiagram();
 	}
 	
 	/** @method handleChange
