@@ -2,6 +2,34 @@
 
 const e = React.createElement;
 
+	/**
+	 * @function snapPosition
+	 * @param {Object} pos 
+	 * @returns {Object}
+	 */
+	function snapPosition(pos) {
+		let newX, newY;
+		
+		if (pos.x > 0) {
+			newX = Math.floor((pos.x + 2.5) / 5);
+		}
+		else {
+			newX = Math.floor((pos.x - 2.5) / 5);
+		}
+		newX *= 5;
+		
+		if (pos.y > 0) {
+			newY = Math.floor((pos.y + 2) / 5);
+		}
+		else {
+			newY = Math.floor((pos.y - 2) / 5);
+		}
+		newY *= 5;
+		return {x: newX, y: newY};
+	}
+	
+
+
 /**
  * @class Diagram
  * the main mind map diagram
@@ -164,7 +192,7 @@ export class Diagram extends React.Component {
 			this.pinch = null;
 		}
 	}
-	
+
 	render() {
 		let t = this.props.t;
 		const width = window.innerWidth - this.state.infoWidth;
@@ -260,7 +288,13 @@ export class ToolIcon extends React.Component {
   }
 
 	onMouseUp(e) {
-    this.setState({dragging: false})
+		this.setState((state) => {
+			const newPosition = snapPosition(state.position);
+			return {
+				dragging: false,
+				position: newPosition
+			};
+		});
     e.stopPropagation()
     e.preventDefault()
 	}
@@ -309,6 +343,10 @@ export class ToolIcon extends React.Component {
 	onTouchEnd(e) {
 		if (e.changedTouches.length == 1) {
 			e.target.removeEventListener('touchmove', this.onTouchMove);
+			this.setState((state) => {
+				const newPosition = snapPosition(state.position);
+				return newPosition;
+			});
 		}
 	}
 
