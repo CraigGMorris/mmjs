@@ -1,8 +1,11 @@
 cd .root
-addtool Expression fred 80 200
-.fred.formula set formula 18 m
-.fred value
-addtool Expression 190 210
-addtool Model tom 100 500
+addtool Expression length 80 200
+.length.formula set formula 18 ft
+.length value
+addtool Expression area 190 210
+.area.formula set formula length^2
+addtool Expression cube 100 300
+.cube.formula set formula length*area
+.cube value
 addtool Model jack
 addtool Model

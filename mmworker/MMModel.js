@@ -153,30 +153,48 @@ class MMModel extends MMTool {
 	 * returns object containing the info needed for model diagram
 	 */
 	diagramInfo() {
-		let tools = [];
+		let tools = {};
 		for (const key in this.children) {
-			const child = this.children[key];
-			let toolInfo = {
-				toolTypeName: child.className.substring(2),
-				name: child.name,
-				position: child.position,
-				notes: child.notes
+			let requestors = [];
+			const tool = this.children[key];
+			for (const requestor of tool.valueRequstors) {
+				if (requestor !== tool) {
+					requestors.push(requestor.name);
+				}
 			}
-			if (child instanceof MMExpression) {
-				toolInfo['formula'] = child.formula.formula;
-				if (child.cachedValue) {
-					const v = child.cachedValue.stringWithUnit(child.displayUnit);
+			let toolInfo = {
+				toolTypeName: tool.className.substring(2),
+				name: tool.name,
+				position: tool.position,
+				requestors: requestors,
+				notes: tool.notes
+			}
+			if (tool instanceof MMExpression) {
+				toolInfo['formula'] = tool.formula.formula;
+				if (tool.cachedValue) {
+					const v = tool.cachedValue.stringWithUnit(tool.displayUnit);
 					if (v) {
 						toolInfo['result'] = v;
 					}
 				}
 			}
-			tools.push(toolInfo);
+			tools[tool.name] = toolInfo;
+/*
+			for (const requestor of tool.valueRequstors) {
+				if (requestor !== tool) {
+					const connection = {
+						origin: tool.position,
+						dest: requestor.position
+					}
+					connections.push(connection);
+				}
+			}*/
 		}
 
 		return {
 			path: this.getPath(),
-			tools: tools
+			tools: tools,
+//			connections: connections
 		};
 	}
 

@@ -28,7 +28,20 @@ const e = React.createElement;
 		return {x: newX, y: newY};
 	}
 	
+const objectHeight = 20;
+const objectWidth = 60;
 
+/**
+ * Enum for drag state.
+ * @readonly
+ * @enum {Number}
+ */
+const DragState = Object.freeze({
+	none: 0,
+	pan: 1,
+	tool: 2,
+	multiple: 3
+});
 
 /**
  * @class Diagram
@@ -39,13 +52,14 @@ export class Diagram extends React.Component {
 		super(props);
 		//this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.state = {
-			dragging: false,
+			dragging: DragState.none,
 			translateX: 0,
 			translateY: 0,
 			scale: .5,
 			infoWidth: 320
 		};
 
+		
 		this.touch0 = {x:0, y:0};
 
 		this.onMouseDown = this.onMouseDown.bind(this);
@@ -57,11 +71,11 @@ export class Diagram extends React.Component {
 		this.onTouchEnd = this.onTouchEnd.bind(this);
 	}
 
-	componentDidUpdate(props, state) {
-		if (this.state.dragging && !state.dragging) {
+	componentDidUpdate(precProps, prevState) {
+		if (this.state.dragging == DragState.pan && prevState.dragging != DragState.pan) {
 			document.addEventListener('mousemove', this.onMouseMove);
       document.addEventListener('mouseup', this.onMouseUp);
-		} else if (!this.state.dragging && state.dragging) {
+		} else if (this.state.dragging != DragState.pan && prevState.dragging == DragState.pan) {
       document.removeEventListener('mousemove', this.onMouseMove);
 			document.removeEventListener('mouseup', this.onMouseUp);
 		}
@@ -77,24 +91,34 @@ export class Diagram extends React.Component {
 		ReactDOM.findDOMNode(this).removeEventListener('touchend', this.onTouchEnd);
 	}
 
+	/**
+	 * @method setDragState
+	 * @param {DragState} dragState 
+	 */
+	setDragState(dragState) {
+		this
+	}
+
 	onMouseDown(e) {
     // only left mouse button
 		if (e.button !== 0) return;
     this.setState({
-      dragging: true
+      dragging: DragState.pan
     })
     e.stopPropagation()
     e.preventDefault()
   }
 
 	onMouseUp(e) {
-    this.setState({dragging: false})
+    this.setState({dragging: DragState.none})
     e.stopPropagation()
     e.preventDefault()
 	}
 	
   onMouseMove(e) {
-		if (!this.state.dragging) return
+		if (this.state.dragging != DragState.pan) {
+			return
+		}
     this.setState((state) => {
       return {
         translateX: state.translateX + e.movementX/state.scale,
@@ -198,26 +222,167 @@ export class Diagram extends React.Component {
 		const width = window.innerWidth - this.state.infoWidth;
 		const height = window.innerHeight;
 		const viewBox = [0, 0, width, height];
-		const toolX = (0 + this.state.translateX)*this.state.scale;
-		const toolY = (0 + this.state.translateY)*this.state.scale;
+		const tx = this.state.translateX;
+		const ty = this.state.translateY;
+		const scale = this.state.scale;
+		const toolX = (0 + tx)*scale;
+		const toolY = (0 + ty)*scale;
 		const tools = this.props.dgmInfo.tools;
 		let toolList = [];
-		for (const toolInfo of tools) {
+		let connectList = [];
+		for (const toolName in tools) {
+			const toolInfo  = tools[toolName];
 			const cmp = e(ToolIcon, {
-				key: toolInfo.name,
+				key: toolName,
 				info: toolInfo,
-				transX: this.state.translateX,
-				transY: this.state.translateY,
-				scale: this.state.scale
+				transX: tx,
+				transY: ty,
+				scale: scale
 			});
 			toolList.push(cmp);
+
+			const d = toolInfo.position;
+			for (const requestorName of toolInfo.requestors) {
+				const o = tools[requestorName].position;
+
+				let ox, oy, dx, dy, deltay;
+				let cpox, cpoy, cpdx, cpdy;
+				let cpx = objectHeight / 2;
+				let cpy = cpx;
+
+				if (d.x > o.x + objectWidth) {
+					// tool is completely to right of origin
+					ox = o.x + objectWidth;
+					oy = o.y;
+					dx = d.x;
+					dy = d.y + cpy;
+					if (dy > oy + cpy) {
+						oy += objectHeight;
+					}
+
+					cpox = ox + cpx;
+					cpdx = dx - cpx;
+					
+					if (oy == dy) {
+						cpoy = oy;
+						cpdy = dy;
+					}
+					else if (oy > dy) {
+						cpoy = oy - cpy;
+						cpdy = dy + cpy;
+					}
+					else {
+						cpoy = oy + cpy;
+						cpdy = dy - cpy;
+					}
+				}
+				else if (d.x + objectWidth < o.x) {
+					// tool is completely to the left of origin
+					ox = o.x;
+					oy = o.y;
+					dx = d.x + objectWidth;
+					dy = d.y + objectHeight/2;
+					
+					if (dy > oy + cpy) {
+						oy += objectHeight;
+					}
+					
+					cpox = ox - cpx;
+					cpdx = dx + cpx;
+					
+					if (oy == dy) {
+						cpoy = oy;
+						cpdy = dy;
+					}
+					else if (oy > dy) {
+						cpoy = oy - cpy;
+						cpdy = dy + cpy;
+					}
+					else {
+						cpoy = oy + cpy;
+						cpdy = dy - cpy;
+					}
+				}
+				else if (d.y < o.y) {
+					// tool is above origin
+					ox = o.x;
+					oy = o.y;
+					dx = d.x;
+					dy = d.y + cpy;
+					deltay = (oy - dy);
+					
+					// switch sides if destination is to left of source
+					let correction = 1.0;
+					if (dx > ox) {
+						ox = o.x + objectWidth;
+						dx = d.x + objectWidth;
+						correction = -1.0;
+					}
+					if (deltay < objectHeight) {
+						cpx = deltay * 0.8 * correction;
+						cpox = ox - cpx;
+						cpdx = dx - cpx;
+						cpoy = oy;
+						cpdy = dy;
+					}
+					else {
+						cpx = deltay * 0.2 * correction;
+						cpox = ox - cpx;
+						cpdx = dx - cpx;
+						cpoy = oy - cpy;
+						cpdy = dy + cpy;
+					}
+				}
+				else {
+					// assume tool is below origin
+					ox = o.x + objectWidth;
+					oy = o.y + objectHeight;
+					dx = d.x + objectWidth;
+					dy = d.y + cpy;
+					deltay = (dy - oy);
+					
+					// switch sides if destination is to right of origin
+					let correction = 1.0;
+					if (dx > ox) {
+						ox = o.x;
+						dx = d.x;
+						correction = -1.0;
+					}
+
+					if (deltay < objectHeight) {
+						cpx = deltay * 0.8 * correction;
+						cpox = ox + cpx;
+						cpdx = dx + cpx;
+						cpoy = oy;
+						cpdy = dy;
+					}
+					else {
+						cpx = deltay * 0.2 * correction;
+						cpox = ox + cpx;
+						cpdx = dx + cpx;
+						cpoy = oy + cpy;
+						cpdy = dy - cpy;
+					}
+				}
+				
+				ox = (ox + tx)*scale;
+				oy = (oy + ty)*scale;
+				cpox = (cpox + tx)*scale;
+				cpoy = (cpoy + ty)*scale;
+				dx = (dx + tx)*scale;
+				dy = (dy + ty)*scale;
+				cpdx = (cpdx + tx)*scale;
+				cpdy = (cpdy + ty)*scale;
+				const cmp = e('path', {
+					key: `${ox}${oy}-${dx}${dy}`,
+					fill: 'transparent',
+					stroke: 'black',
+					d: `M${ox} ${oy} C${cpox} ${cpoy} ${cpdx} ${cpdy} ${dx} ${dy}`
+				});
+				connectList.push(cmp);
+			}
 		}
 
-		/*
-		console.log(viewBox);
-		console.log(`toolX ${toolX} toolY ${toolY}`);
-		console.log(`scale ${this.state.scale} transX ${this.state.translateX} transY ${this.state.translateY}`);
-		*/
 		return e('div', {id:'dgm-main'},
 			e('svg', {
 				id: 'dgm-svg-main',
@@ -230,7 +395,8 @@ export class Diagram extends React.Component {
 					y: 15,
 					style: {font: '10px sans-serif'}
 				}, this.props.dgmInfo.path),
-				toolList
+				toolList,
+				connectList
 			)
 		);
 	}
@@ -245,7 +411,7 @@ export class ToolIcon extends React.Component {
 		super(props);
 		//this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.state = {
-			dragging: false,
+			dragging: DragState.none,
 			position: this.props.info.position,
 		};
 
@@ -413,8 +579,8 @@ export class ToolIcon extends React.Component {
 				onMouseDown: this.onMouseDown,
 				x: (x + transX)*scale,
 				y: (y + transY)*scale,
-				width: 60*scale,
-				height: 20*scale
+				width: objectWidth*scale,
+				height: objectHeight*scale
 			}),
 			textComponents
 		);
