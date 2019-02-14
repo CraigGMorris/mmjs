@@ -32,39 +32,30 @@ const objectHeight = 20;
 const objectWidth = 60;
 
 /**
- * Enum for drag state.
- * @readonly
- * @enum {Number}
- */
-const DragState = Object.freeze({
-	none: 0,
-	pan: 1,
-	tool: 2,
-	multiple: 3
-});
-
-/**
  * @class Diagram
  * the main mind map diagram
  */
 export class Diagram extends React.Component {
 	constructor(props) {
 		super(props);
-		//this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.state = {
-			dragging: DragState.none,
+			dragging: null,
+			selected: [],
+			selectionBox: null,
 			translateX: 0,
 			translateY: 0,
-			scale: .5,
+			scale: 1.0,
 			infoWidth: 320
 		};
 
-		
-		this.touch0 = {x:0, y:0};
+		this.panSum = 0;
 
+		this.setDragObject = this.setDragObject.bind(this);
+		this.dragBy = this.dragBy.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
+		this.onClick = this.onClick.bind(this);
 		this.onWheel = this.onWheel.bind(this);
 		this.onTouchStart = this.onTouchStart.bind(this);
 		this.onTouchMove = this.onTouchMove.bind(this);
@@ -72,16 +63,17 @@ export class Diagram extends React.Component {
 	}
 
 	componentDidUpdate(precProps, prevState) {
-		if (this.state.dragging == DragState.pan && prevState.dragging != DragState.pan) {
+		if (this.state.dragging == this && prevState.dragging != this) {
 			document.addEventListener('mousemove', this.onMouseMove);
       document.addEventListener('mouseup', this.onMouseUp);
-		} else if (this.state.dragging != DragState.pan && prevState.dragging == DragState.pan) {
+		} else if (this.state.dragging != this && prevState.dragging == this) {
       document.removeEventListener('mousemove', this.onMouseMove);
 			document.removeEventListener('mouseup', this.onMouseUp);
 		}
 	}
 
 	componentDidMount() {
+		this.boundingBox = document.getElementById('dgm-main').getBoundingClientRect();
 		ReactDOM.findDOMNode(this).addEventListener('touchstart', this.onTouchStart, {passive: false});
 		ReactDOM.findDOMNode(this).addEventListener('touchend', this.onTouchEnd, {passive: false});
 	}
@@ -92,39 +84,87 @@ export class Diagram extends React.Component {
 	}
 
 	/**
-	 * @method setDragState
-	 * @param {DragState} dragState 
+	 * @method setDragObject
+	 * @param {any} dragObject 
 	 */
-	setDragState(dragState) {
-		this
+	setDragObject(dragObject) {
+		this.setState({dragging: dragObject});
+	}
+
+	/**
+	 * @method dragBy
+	 * @param {Number} dx 
+	 * @param {Number} dy 
+	 */
+	dragBy(dx, dy) {
+		if (this.state.dragging == this ) {
+			this.setState((state) => {
+				return {
+					translateX: state.translateX + dx/state.scale,
+					translateY: state.translateY + dy/state.scale
+				}
+			});
+		}
+		else if (this.state.dragging instanceof SelectionBox) {
+			this.setState((state) => {
+				const topLeft = state.selectionBox.topLeft;
+				const bottomRight = state.selectionBox.bottomRight;
+				const scale = state.scale;
+				return {
+					selectionBox: {
+						topLeft: {x: topLeft.x + dx/scale, y: topLeft.y + dy/scale},
+						bottomRight: {x: bottomRight.x + dx/scale, y: bottomRight.y + dy/scale}
+					}
+				}
+			});
+		}
 	}
 
 	onMouseDown(e) {
     // only left mouse button
 		if (e.button !== 0) return;
+		this.panSum = 0;
     this.setState({
-      dragging: DragState.pan
+      dragging: this
     })
     e.stopPropagation()
     e.preventDefault()
   }
 
 	onMouseUp(e) {
-    this.setState({dragging: DragState.none})
+    this.setState({dragging: null})
     e.stopPropagation()
     e.preventDefault()
 	}
 	
   onMouseMove(e) {
-		if (this.state.dragging != DragState.pan) {
+		if (this.state.dragging != this) {
 			return
 		}
-    this.setState((state) => {
-      return {
-        translateX: state.translateX + e.movementX/state.scale,
-        translateY: state.translateY + e.movementY/state.scale
-      }
-    })
+		console.log(`position ${e.clientX} ${e.clientY}`);
+		console.log(`move ${e.movementX} ${e.movementY}`);
+		this.panSum += Math.abs(e.movementX) + Math.abs(e.movementY);
+
+		this.dragBy( e.movementX, e.movementY);
+    e.stopPropagation()
+    e.preventDefault()
+	}
+
+	onClick(e) {
+		if (this.panSum == 0) {
+			const scale = this.state.scale;
+			const topLeftX = e.clientX / scale - this.state.translateX;
+			const topLeftY = e.clientY / scale - this.state.translateY;
+			this.setState((state) => {
+				return {
+					selectionBox: (state.selectionBox) ? null : {
+						topLeft: {x: topLeftX, y: topLeftY},
+						bottomRight: {x: topLeftX + 150/scale, y: topLeftY + 80/scale}
+					}
+				}
+			});
+		}
+		this.panSum = 0;
     e.stopPropagation()
     e.preventDefault()
 	}
@@ -219,14 +259,18 @@ export class Diagram extends React.Component {
 
 	render() {
 		let t = this.props.t;
-		const width = window.innerWidth - this.state.infoWidth;
-		const height = window.innerHeight;
-		const viewBox = [0, 0, width, height];
+		let viewBox;
+		if (this.boundingBox) {
+			viewBox = [this.boundingBox.left, this.boundingBox.top, this.boundingBox.width, this.boundingBox.height];
+		}
+		else {
+			const width = window.innerWidth - this.state.infoWidth;
+			const height = window.innerHeight;
+			viewBox = [0, 0, width, height];
+		}
 		const tx = this.state.translateX;
 		const ty = this.state.translateY;
 		const scale = this.state.scale;
-		const toolX = (0 + tx)*scale;
-		const toolY = (0 + ty)*scale;
 		const tools = this.props.dgmInfo.tools;
 		let toolList = [];
 		let connectList = [];
@@ -383,12 +427,28 @@ export class Diagram extends React.Component {
 			}
 		}
 
-		return e('div', {id:'dgm-main'},
+		let selectionBox = null;
+		if (this.state.selectionBox) {
+			selectionBox = e(SelectionBox, {
+				selectionBox: this.state.selectionBox,
+				setDragObject: this.setDragObject,
+				dragBy: this.dragBy,
+				transX: tx,
+				transY: ty,
+				scale: scale
+			})
+		}
+
+		return e('div', {
+				id:'dgm-main',
+				className: this.state.dragging ? 'hide-cursor' : 'show-cursor'
+			},
 			e('svg', {
 				id: 'dgm-svg-main',
 				viewBox: viewBox,
 				onMouseDown: this.onMouseDown,
 				onWheel: this.onWheel,
+				onClick: this.onClick,
 			},
 				e('text', {
 					x: 15,
@@ -396,8 +456,9 @@ export class Diagram extends React.Component {
 					style: {font: '10px sans-serif'}
 				}, this.props.dgmInfo.path),
 				toolList,
-				connectList
-			)
+				connectList,
+				selectionBox
+			),
 		);
 	}
 }
@@ -406,18 +467,21 @@ export class Diagram extends React.Component {
  * @class ToolIcon
  * the main mind map diagram
  */
-export class ToolIcon extends React.Component {
+class ToolIcon extends React.Component {
 	constructor(props) {
 		super(props);
 		//this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.state = {
-			dragging: DragState.none,
+			dragging: null,
 			position: this.props.info.position,
 		};
+
+		this.panSum = 0;
 
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
+		this.onClick = this.onClick.bind(this);
 		this.onTouchStart = this.onTouchStart.bind(this);
 		this.onTouchMove = this.onTouchMove.bind(this);
 		this.onTouchEnd = this.onTouchEnd.bind(this);
@@ -446,7 +510,8 @@ export class ToolIcon extends React.Component {
 	onMouseDown(e) {
     // only left mouse button
 		if (e.button !== 0) return;
-    this.setState({
+		this.panSum = 0;
+		this.setState({
       dragging: true
     })
     e.stopPropagation()
@@ -467,6 +532,7 @@ export class ToolIcon extends React.Component {
 	
   onMouseMove(e) {
 		if (!this.state.dragging) return
+		this.panSum += Math.abs(e.movementX) + Math.abs(e.movementY);
     this.setState((state) => {
 			const x = state.position.x + e.movementX/this.props.scale;
 			const y = state.position.y + e.movementY/this.props.scale;
@@ -474,6 +540,13 @@ export class ToolIcon extends React.Component {
         position: {x: x, y: y}
       }
     })
+    e.stopPropagation()
+    e.preventDefault()
+	}
+
+	onClick(e) {
+		console.log(`Tool click panSum ${this.panSum}`);
+		this.panSum = 0;
     e.stopPropagation()
     e.preventDefault()
 	}
@@ -577,12 +650,163 @@ export class ToolIcon extends React.Component {
 		},
 			e('rect', {
 				onMouseDown: this.onMouseDown,
+				onClick: this.onClick,
 				x: (x + transX)*scale,
 				y: (y + transY)*scale,
 				width: objectWidth*scale,
 				height: objectHeight*scale
 			}),
 			textComponents
+		);
+	}
+}
+
+/**
+ * @class SelectionBox
+ * the main mind map diagram
+ */
+class SelectionBox extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			dragging: null,
+		};
+
+		this.panSum = 0;
+
+		this.onMouseDown = this.onMouseDown.bind(this);
+		this.onMouseUp = this.onMouseUp.bind(this);
+		this.onMouseMove = this.onMouseMove.bind(this);
+		this.onClick = this.onClick.bind(this);
+		this.onTouchStart = this.onTouchStart.bind(this);
+		this.onTouchMove = this.onTouchMove.bind(this);
+		this.onTouchEnd = this.onTouchEnd.bind(this);
+	}
+
+	componentDidUpdate(props, state) {
+		if (this.state.dragging && !state.dragging) {
+			document.addEventListener('mousemove', this.onMouseMove);
+      document.addEventListener('mouseup', this.onMouseUp);
+		} else if (!this.state.dragging && state.dragging) {
+      document.removeEventListener('mousemove', this.onMouseMove);
+			document.removeEventListener('mouseup', this.onMouseUp);
+		}
+	}
+
+	componentDidMount() {
+		ReactDOM.findDOMNode(this).addEventListener('touchstart', this.onTouchStart, {passive: false});
+		ReactDOM.findDOMNode(this).addEventListener('touchend', this.onTouchEnd, {passive: false});
+	}
+
+	componentWillUnmount() {
+		ReactDOM.findDOMNode(this).removeEventListener('touchstart', this.onTouchStart);
+		ReactDOM.findDOMNode(this).removeEventListener('touchend', this.onTouchEnd);
+	}
+
+	onMouseDown(e) {
+    // only left mouse button
+		if (e.button !== 0) return;
+		this.panSum = 0;
+		this.setState({
+      dragging: true
+		})
+		this.props.setDragObject(this);
+    e.stopPropagation()
+    e.preventDefault()
+  }
+
+	onMouseUp(e) {
+		this.setState((state) => {
+			return {
+				dragging: false,
+				};
+		});
+		this.props.setDragObject(null);
+    e.stopPropagation()
+    e.preventDefault()
+	}
+	
+  onMouseMove(e) {
+		if (!this.state.dragging) {
+			return;
+		}
+		this.panSum += Math.abs(e.movementX) + Math.abs(e.movementY);
+		this.props.dragBy(e.movementX, e.movementY);
+    e.stopPropagation()
+    e.preventDefault()
+	}
+
+	onClick(e) {
+		console.log(`selection box click panSum ${this.panSum}`);
+		this.panSum = 0;
+    e.stopPropagation()
+    e.preventDefault()
+	}
+
+	onTouchStart(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (e.changedTouches.length == 1) {
+			const touch = e.changedTouches[0];
+			this.touch0 = {x: touch.pageX, y: touch.pageY};
+			e.target.addEventListener('touchmove', this.onTouchMove, {passive: false});
+			this.props.setDragObject(this);
+		}
+	}
+
+	onTouchMove(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (e.changedTouches.length == 1) {
+			const touch = e.changedTouches[0];
+			let deltaX = touch.pageX - this.touch0.x;
+			let deltaY = touch.pageY - this.touch0.y;
+			this.touch0 = {x: touch.pageX, y: touch.pageY};
+			this.props.dragBy(deltaX, deltaY);
+		}
+	}
+
+	onTouchEnd(e) {
+		if (e.changedTouches.length == 1) {
+			e.target.removeEventListener('touchmove', this.onTouchMove);
+			this.props.setDragObject(null);
+		}
+	}
+
+	render() {
+		let t = this.props.t;
+		const box = this.props.selectionBox;
+		const scale = this.props.scale;
+		const topLeftX = box.topLeft.x;
+		const topLeftY = box.topLeft.y;
+		const x = (topLeftX + this.props.transX) * scale;
+		const y = (topLeftY + this.props.transY) * scale;
+		const width = (box.bottomRight.x - topLeftX) * scale;
+		const height = (box.bottomRight.y - topLeftY) * scale;
+
+		return e('g', {
+			className: `dgm-svg-selectbox`,
+		},
+			e('rect', {
+				onMouseDown: this.onMouseDown,
+				onClick: this.onClick,
+				x: x,
+				y: y,
+				width: width,
+				height: height
+			}),
+			e('line', {
+				x1: x + 8,
+				x2: x,
+				y1: y,
+				y2: y + 8
+			}),
+			e('line', {
+				x1: x + width - 8,
+				x2: x + width,
+				y1: y + height,
+				y2: y + height - 8
+			}),
 		);
 	}
 }

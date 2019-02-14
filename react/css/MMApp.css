@@ -15,6 +15,7 @@ body {
 .mmapp-wrapper {
 	font-size: 1em;
 	height: 100%;
+	width: 100%;
 	display: grid;
 	--infoWidth: 320px;
 	--toolHeight: 40px;

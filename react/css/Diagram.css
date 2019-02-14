@@ -1,7 +1,21 @@
+#dgm-main {
+	height: 100%;
+	width: 100%;
+}
+
+.hide-cursor {
+	cursor: none;
+}
+
 #dgm-svg-main {
 	background-color: rgba(238,255,238,1);
 	height: 100%;
 	width: 100%;
+}
+
+.dgm-svg-selectbox {
+	stroke: blue;
+	fill: transparent;
 }
 
 .dgm-svg-tool {
