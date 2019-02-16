@@ -57,6 +57,7 @@ export class MMApp extends React.Component {
 			dgmInfo: {path: '', tools: []}
 		}
 
+		this.doCommand = this.doCommand.bind(this);
 		this.updateDiagram = this.updateDiagram.bind(this);
 		this.updateDiagramPositions = this.updateDiagramPositions.bind(this);
 
@@ -279,7 +280,9 @@ export class MMApp extends React.Component {
 			e('div', {className: 'mmapp-diagram'},
 				e(Diagram, {
 					dgmInfo: this.state.dgmInfo,
-					updateDiagramPositions: this.updateDiagramPositions
+					updateDiagramPositions: this.updateDiagramPositions,
+					updateDiagram: this.updateDiagram,
+					doCommand: this.doCommand
 				})
 			),
 			e('div', {className: 'mmapp-info-nav'},

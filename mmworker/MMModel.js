@@ -22,6 +22,7 @@ class MMModel extends MMTool {
 		let verbs = super.verbs;
 		verbs['addtool'] = this.addTool;
 		verbs['dgminfo'] = this.diagramInfoCommand;
+		verbs['setpositions'] = this.setPositions;
 
 		return verbs;
 	}
@@ -34,7 +35,8 @@ class MMModel extends MMTool {
 	getVerbUsageKey(command) {
 		let key = {
 			addtool: 'mmcmd:?modelAddTool',
-			dgminfo: 'mmcmd:?modelDgmInfo'
+			dgminfo: 'mmcmd:?modelDgmInfo',
+			setpositions: 'mmcmd?modelSetPositions'
 		}[command];
 		if (key) {
 			return key;
@@ -179,23 +181,34 @@ class MMModel extends MMTool {
 				}
 			}
 			tools[tool.name] = toolInfo;
-/*
-			for (const requestor of tool.valueRequstors) {
-				if (requestor !== tool) {
-					const connection = {
-						origin: tool.position,
-						dest: requestor.position
-					}
-					connections.push(connection);
-				}
-			}*/
 		}
 
 		return {
 			path: this.getPath(),
 			tools: tools,
-//			connections: connections
 		};
+	}
+
+	/**
+	 * @method setPositions
+	 * @param {String} command
+	 * command should be a series of toolname x y values 
+	 */
+	setPositions(command) {
+		let parts = command.args.split(/\s/);
+		let i = 0;
+		while (i + 2 < parts.length) {
+			const toolName = parts[i++];
+			let tool = this.children[toolName];
+			const x = parseFloat(parts[i++]);
+			const y = parseFloat(parts[i++]);
+			if (tool && !isNaN(x) && !isNaN(y)) {
+				tool.position = new MMPoint(x, y);
+			}
+			else {
+				throw(this.t('mmcmd:modelSetPosition', {command: command, tool: toolName}));
+			}
+		}
 	}
 
 	/**

@@ -63,7 +63,6 @@ export class Diagram extends React.Component {
 		this.panSum = 0;
 
 		this.setDragType = this.setDragType.bind(this);
-		this.setSelected = this.setSelected.bind(this);
 		this.draggedTo = this.draggedTo.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
@@ -99,22 +98,52 @@ export class Diagram extends React.Component {
 	/**
 	 * @method setDragType
 	 * @param {DiagramDragType} dragType
-	 * @param {Object} lastMousePosition 
+	 * @param {Object} lastMousePosition
+	 * @param {String} toolName - optional, only supplied when dragging single tool
 	 */
-	setDragType(dragType, lastMousePosition) {
-		this.setState({
-			dragType: dragType,
-			lastMouse: lastMousePosition
-		});
-	}
+	setDragType(dragType, lastMousePosition, toolName) {
+		this.setState((state) => {
+			if (dragType == null) {
+				if (state.dragType === 'tool') {
+					const toolInfo = this.props.dgmInfo.tools[toolName];
+					const position = toolInfo.position;
 
-	/**
-	 * @method setSelected
-	 * @param {Map} selected
-	 * selected is keyed by tool name and has as values position objects
-	 */
-	setSelected(selected) {
-		this.setState({selected: selected});
+					if (toolInfo && position) {
+						const command = `${this.props.dgmInfo.path} setpositions ${toolName} ${position.x} ${position.y}`
+						this.props.doCommand(command, (cmds) => {
+							this.props.updateDiagram();
+						})
+					}
+					return {
+						dragType: null,
+						lastMouse: null,
+						selected: null
+					};
+				}
+				else {
+					return {
+						dragType: null,
+						lastMouse: null
+					};
+				}
+			}
+
+			let sb = state.selectionBox;
+			let selected = state.selected;
+			const tools = this.props.dgmInfo.tools;
+			if (toolName) {
+				const tool = tools[toolName];
+				selected = new Map();
+				selected.set(toolName, tool.position);
+				sb = null;
+			}
+			return {
+				dragType: dragType,
+				lastMouse: lastMousePosition,
+				selectionBox: sb,
+				selected: selected
+			}
+		});
 	}
 
 	/**
@@ -329,7 +358,6 @@ export class Diagram extends React.Component {
 				translate: this.state.translate,
 				scale: scale,
 				setDragType: this.setDragType,
-				setSelected: this.setSelected,
 				draggedTo: this.draggedTo,	
 			});
 			toolList.push(cmp);
@@ -481,7 +509,6 @@ export class Diagram extends React.Component {
 			selectionBox = e(SelectionBox, {
 				selectionBox: this.state.selectionBox,
 				setDragType: this.setDragType,
-				setSelected: this.setSelected,
 				draggedTo: this.draggedTo,
 				translate: this.state.translate,
 				scale: scale
@@ -560,10 +587,7 @@ class ToolIcon extends React.Component {
     // only left mouse button
 		if (e.button !== 0) return;
 		this.panSum = 0;
-		let selected = new Map();
-		selected.set(this.props.info.name, this.props.info.position);
-		this.props.setSelected(selected);
-		this.props.setDragType( DiagramDragType.tool, {x: e.clientX, y: e.clientY });
+		this.props.setDragType( DiagramDragType.tool, {x: e.clientX, y: e.clientY }, this.props.info.name);
 		this.setState({dragging: true});
     e.stopPropagation()
     e.preventDefault()
@@ -575,6 +599,7 @@ class ToolIcon extends React.Component {
 				dragging: false,
 			};
 		});
+		this.props.setDragType(null, null, this.props.info.name);
     e.stopPropagation()
     e.preventDefault()
 	}
