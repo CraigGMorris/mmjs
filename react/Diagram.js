@@ -53,7 +53,7 @@ export class Diagram extends React.Component {
 		super(props);
 		this.state = {
 			dragType: null,
-			selected: null,
+			dragSelection: null,
 			selectionBox: null,
 			translate: {x: 0, y: 0},
 			scale: 1.0,
@@ -117,7 +117,7 @@ export class Diagram extends React.Component {
 					return {
 						dragType: null,
 						lastMouse: null,
-						selected: null
+						dragSelection: null
 					};
 				}
 				else {
@@ -129,19 +129,19 @@ export class Diagram extends React.Component {
 			}
 
 			let sb = state.selectionBox;
-			let selected = state.selected;
+			let dragSelection = state.dragSelection;
 			const tools = this.props.dgmInfo.tools;
 			if (toolName) {
 				const tool = tools[toolName];
-				selected = new Map();
-				selected.set(toolName, tool.position);
+				dragSelection = new Map();
+				dragSelection.set(toolName, tool.position);
 				sb = null;
 			}
 			return {
 				dragType: dragType,
 				lastMouse: lastMousePosition,
 				selectionBox: sb,
-				selected: selected
+				dragSelection: dragSelection
 			}
 		});
 	}
@@ -165,16 +165,16 @@ export class Diagram extends React.Component {
 				};
 			}
 			else if (state.dragType == DiagramDragType.tool) {
-				if (this.state.selected) {
-					let selected = new Map();
-					for (const [name, position] of this.state.selected) {
+				if (this.state.dragSelection) {
+					let dragSelection = new Map();
+					for (const [name, position] of this.state.dragSelection) {
 						const newPosition = {
 							x: position.x + dx/state.scale,
 							y: position.y + dy/state.scale
 						}
-						selected.set(name, newPosition);
+						dragSelection.set(name, newPosition);
 					}
-					this.props.updateDiagramPositions(selected);
+					this.props.updateDiagramPositions(dragSelection);
 				}
 			}
 			else if (state.dragType == DiagramDragType.selectionBox) {
