@@ -58,6 +58,8 @@ export class MMApp extends React.Component {
 		}
 
 		this.updateDiagram = this.updateDiagram.bind(this);
+		this.updateDiagramPositions = this.updateDiagramPositions.bind(this);
+
 		this.updateDiagram();
 
 		this.handleButtonClick = this.handleButtonClick.bind(this);
@@ -189,6 +191,23 @@ export class MMApp extends React.Component {
 		});
 	}
 
+	/**
+	 * @method updateDiagramPositions
+	 * @param {Map} positions
+	 */
+	updateDiagramPositions(positions) {
+		this.setState((state) => {
+			let dgmInfo = Object.assign({}, state.dgmInfo);
+			dgmInfo.tools = Object.assign({}, state.dgmInfo.tools);
+			for (const [name, position] of positions) {
+				const toolInfo  = dgmInfo.tools[name];
+				if (toolInfo) {
+					toolInfo.position = position;
+				}
+			}
+			return {dgmInfo: dgmInfo};
+		});
+	}
 
 	/** @method popView
 	 * if more than one thing on info stack, it pops the last one
@@ -258,7 +277,10 @@ export class MMApp extends React.Component {
 
 		return e('div', {className: 'mmapp-wrapper'},
 			e('div', {className: 'mmapp-diagram'},
-				e(Diagram, {dgmInfo: this.state.dgmInfo})
+				e(Diagram, {
+					dgmInfo: this.state.dgmInfo,
+					updateDiagramPositions: this.updateDiagramPositions
+				})
 			),
 			e('div', {className: 'mmapp-info-nav'},
 				e('div',{
