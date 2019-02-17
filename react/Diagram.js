@@ -57,7 +57,6 @@ export class Diagram extends React.Component {
 			selectionBox: null,
 			translate: {x: 0, y: 0},
 			scale: 1.0,
-			infoWidth: 320
 		};
 
 		this.panSum = 0;
@@ -410,7 +409,7 @@ export class Diagram extends React.Component {
 			viewBox = [this.boundingBox.left, this.boundingBox.top, this.boundingBox.width, this.boundingBox.height];
 		}
 		else {
-			const width = window.innerWidth - this.state.infoWidth;
+			const width = window.innerWidth - this.props.infoWidth;
 			const height = window.innerHeight;
 			viewBox = [0, 0, width, height];
 		}
@@ -577,7 +576,7 @@ export class Diagram extends React.Component {
 		let selectionBox = null;
 		if (this.state.selectionBox) {
 			selectionBox = e(SelectionBox, {
-				selectionBox: this.state.selectionBox,
+				rect: this.state.selectionBox,
 				setDragType: this.setDragType,
 				draggedTo: this.draggedTo,
 				translate: this.state.translate,
@@ -920,7 +919,7 @@ class SelectionBox extends React.Component {
 
 	render() {
 		let t = this.props.t;
-		const box = this.props.selectionBox;
+		const box = this.props.rect;
 		const scale = this.props.scale;
 		const x = (box.left + this.props.translate.x) * scale;
 		const y = (box.top + this.props.translate.y) * scale;

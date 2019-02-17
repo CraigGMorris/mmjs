@@ -275,15 +275,17 @@ export class MMApp extends React.Component {
 			);
 			infoComponents.push(infoView);
 		}
+		this.diagram = e(Diagram, {
+			dgmInfo: this.state.dgmInfo,
+			infoWidth: 320,
+			updateDiagramPositions: this.updateDiagramPositions,
+			updateDiagram: this.updateDiagram,
+			doCommand: this.doCommand
+		});
 
 		return e('div', {className: 'mmapp-wrapper'},
 			e('div', {className: 'mmapp-diagram'},
-				e(Diagram, {
-					dgmInfo: this.state.dgmInfo,
-					updateDiagramPositions: this.updateDiagramPositions,
-					updateDiagram: this.updateDiagram,
-					doCommand: this.doCommand
-				})
+				this.diagram
 			),
 			e('div', {className: 'mmapp-info-nav'},
 				e('div',{
