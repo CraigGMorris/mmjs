@@ -71,6 +71,25 @@ export class Diagram extends React.Component {
 		this.onTouchStart = this.onTouchStart.bind(this);
 		this.onTouchMove = this.onTouchMove.bind(this);
 		this.onTouchEnd = this.onTouchEnd.bind(this);
+
+		this.getModelInfo();
+	}
+
+	/**
+	 * @method getModelInfo
+	 */
+	getModelInfo() {
+		this.props.doCommand('/ dgminfo', (results) => {
+			if (results.length && results[0].results) {
+				const modelInfo = results[0].results;
+				this.setState((state) => {
+					return {
+						path: modelInfo.path,
+						tools: modelInfo.tools
+					};
+				})
+			}
+		});
 	}
 
 	componentDidUpdate(precProps, prevState) {
@@ -113,7 +132,7 @@ export class Diagram extends React.Component {
 	
 				case DiagramDragType.tool: {
 					if (options && options.name) {
-						const tool = this.props.dgmInfo.tools[options.name];
+						const tool = this.state.tools[options.name];
 						let dragSelection = new Map();
 						dragSelection.set(tool.name, tool.position);
 						return {
@@ -135,27 +154,41 @@ export class Diagram extends React.Component {
 				break;
 
 				default: {
-					if (state.dragType === 'tool') {
-						const toolInfo = this.props.dgmInfo.tools[options.name];
-						const position = toolInfo.position;
+					switch (state.dragType) {
+						case DiagramDragType.tool:/*
+							const toolInfo = this.state.tools[options.name];
+							const position = toolInfo.position;
 
-						if (toolInfo && position) {
-							const command = `${this.props.dgmInfo.path} setpositions ${options.name} ${position.x} ${position.y}`
-							this.props.doCommand(command, (cmds) => {
-								this.props.updateDiagram();
-							})
+							if (toolInfo && position) {
+								const command = `${this.state.path} setpositions ${options.name} ${position.x} ${position.y}`
+								this.props.doCommand(command, (cmds) => {
+									this.getModelInfo();
+								})
+							}
+							return {
+								dragType: null,
+								lastMouse: null,
+								dragSelection: null
+							};*/
+						case DiagramDragType.selectionBox: {
+							let terms = [`${state.path} setpositions`];
+							for (const [name, position] of state.dragSelection) {
+								terms.push(`${name} ${position.x} ${position.y}`);
+							}
+							this.props.doCommand(terms.join(' '), (cmds) => {
+								this.getModelInfo();
+							});				
+							return {
+								dragType: null,
+								lastMouse: null,
+								dragSelection: null
+							};
 						}
-						return {
-							dragType: null,
-							lastMouse: null,
-							dragSelection: null
-						};
-					}
-					else {
-						return {
-							dragType: null,
-							lastMouse: null
-						};
+						default: 
+							return {
+								dragType: null,
+								lastMouse: null
+							};
 					}
 				}
 				break;
@@ -197,16 +230,23 @@ export class Diagram extends React.Component {
 				case DiagramDragType.tool: 
 					if (this.state.dragSelection) {
 						let dragSelection = updateDragSelection(this.state.dragSelection);
-						this.props.updateDiagramPositions(dragSelection);
+						const tools = this.updateToolPositions(dragSelection, state);
+						return {
+							tools: tools,
+							lastMouse: {x: x, y: y},
+							dragSelection: dragSelection
+						}
 					}
 					break;
 
 				case DiagramDragType.selectionBox: {
 					const sb = state.selectionBox;
 					const scale = state.scale;
-					let dragSelection = updateDragSelection(this.state.dragSelection);
-					this.props.updateDiagramPositions(dragSelection);
+					const dragSelection = updateDragSelection(this.state.dragSelection);
+					const tools = this.updateToolPositions(dragSelection, state);
 					return {
+						tools: tools,
+						dragSelection: dragSelection,
 						selectionBox: {
 							left: sb.left + dx/scale,
 							top: sb.top + dy/scale,
@@ -239,7 +279,7 @@ export class Diagram extends React.Component {
 							 r2.bottom < r1.top);
 		}
 
-		const tools = this.props.dgmInfo.tools;
+		const tools = this.state.tools;
 		let dragSelection = new Map();
 		for (const toolName in tools) {
 			const toolInfo  = tools[toolName];
@@ -257,6 +297,25 @@ export class Diagram extends React.Component {
 		}
 		return dragSelection;
 	}
+
+	/**
+	 * @method updateToolPositions
+	 * @param {Map} positions
+	 * @param {Object} state
+	 * @returns {Object} new tools object
+	 */
+	updateToolPositions(positions, state) {
+		let tools = Object.assign({}, state.tools);
+		for (const [name, position] of positions) {
+			const toolInfo  = tools[name];
+			if (toolInfo) {
+				toolInfo.position = position;
+			}
+		}
+		return tools;
+	}
+
+
 
 	onMouseDown(e) {
     // only left mouse button
@@ -414,7 +473,7 @@ export class Diagram extends React.Component {
 			viewBox = [0, 0, width, height];
 		}
 		const scale = this.state.scale;
-		const tools = this.props.dgmInfo.tools;
+		const tools = this.state.tools;
 		const tx = this.state.translate.x;
 		const ty = this.state.translate.y;
 		let toolList = [];
@@ -599,7 +658,7 @@ export class Diagram extends React.Component {
 					x: 15,
 					y: 25,
 					style: {font: '10px sans-serif'}
-				}, this.props.dgmInfo.path),
+				}, this.state.path),
 				toolList,
 				connectList,
 				selectionBox
@@ -742,6 +801,7 @@ class ToolIcon extends React.Component {
 		const info = this.props.info;
 		const x = info.position.x;
 		const y = info.position.y;
+
 		const translate = this.props.translate;
 		const scale = this.props.scale;
 		let textComponents;

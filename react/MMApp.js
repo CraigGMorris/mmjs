@@ -53,16 +53,13 @@ export class MMApp extends React.Component {
 
 		this.state = {
 			/** @desc infoStack keeps the information necessary to render all the info views pushed */
-			infoStack: [initialInfoState],
-			dgmInfo: {path: '', tools: []}
+			infoStack: [initialInfoState]
 		}
+
+		this.diagram = React.createRef();
 
 		this.doCommand = this.doCommand.bind(this);
 		this.updateDiagram = this.updateDiagram.bind(this);
-		this.updateDiagramPositions = this.updateDiagramPositions.bind(this);
-
-		this.updateDiagram();
-
 		this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.popView = this.popView.bind(this);
 		this.pushView = this.pushView.bind(this);
@@ -182,32 +179,9 @@ export class MMApp extends React.Component {
 	 * @method updateDiagram
 	 */
 	updateDiagram() {
-		this.doCommand('/ dgminfo', (results) => {
-			if (results.length && results[0].results) {
-				const dgmInfo = results[0].results;
-				this.setState((state) => {
-					return {dgmInfo: dgmInfo};
-				})
-			}
-		});
-	}
-
-	/**
-	 * @method updateDiagramPositions
-	 * @param {Map} positions
-	 */
-	updateDiagramPositions(positions) {
-		this.setState((state) => {
-			let dgmInfo = Object.assign({}, state.dgmInfo);
-			dgmInfo.tools = Object.assign({}, state.dgmInfo.tools);
-			for (const [name, position] of positions) {
-				const toolInfo  = dgmInfo.tools[name];
-				if (toolInfo) {
-					toolInfo.position = position;
-				}
-			}
-			return {dgmInfo: dgmInfo};
-		});
+		if (this.diagram.current) {
+			this.diagram.current.getModelInfo();
+		}
 	}
 
 	/** @method popView
@@ -275,17 +249,14 @@ export class MMApp extends React.Component {
 			);
 			infoComponents.push(infoView);
 		}
-		this.diagram = e(Diagram, {
-			dgmInfo: this.state.dgmInfo,
-			infoWidth: 320,
-			updateDiagramPositions: this.updateDiagramPositions,
-			updateDiagram: this.updateDiagram,
-			doCommand: this.doCommand
-		});
 
 		return e('div', {className: 'mmapp-wrapper'},
 			e('div', {className: 'mmapp-diagram'},
-				this.diagram
+				e(Diagram, {
+					ref: this.diagram,
+					infoWidth: 320,
+					doCommand: this.doCommand
+				})
 			),
 			e('div', {className: 'mmapp-info-nav'},
 				e('div',{
