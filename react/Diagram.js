@@ -99,49 +99,67 @@ export class Diagram extends React.Component {
 	 * @method setDragType
 	 * @param {DiagramDragType} dragType
 	 * @param {Object} lastMousePosition
-	 * @param {String} toolName - optional, only supplied when dragging single tool
+	 * @param {Object} options
+	 * if type is tool, options should contain tool name
+	 * if type is selectionBox, options should contain topLeft and
 	 */
-	setDragType(dragType, lastMousePosition, toolName) {
+	setDragType(dragType, lastMousePosition, options) {
 		this.setState((state) => {
-			if (dragType == null) {
-				if (state.dragType === 'tool') {
-					const toolInfo = this.props.dgmInfo.tools[toolName];
-					const position = toolInfo.position;
-
-					if (toolInfo && position) {
-						const command = `${this.props.dgmInfo.path} setpositions ${toolName} ${position.x} ${position.y}`
-						this.props.doCommand(command, (cmds) => {
-							this.props.updateDiagram();
-						})
+			switch (dragType) {
+				case DiagramDragType.pan: 
+					return {
+						dragType: dragType,
+						lastMouse: lastMousePosition,
 					}
-					return {
-						dragType: null,
-						lastMouse: null,
-						dragSelection: null
-					};
+	
+				case DiagramDragType.tool: {
+					if (options && options.name) {
+						const tool = this.props.dgmInfo.tools[options.name];
+						let dragSelection = new Map();
+						dragSelection.set(tool.name, tool.position);
+						return {
+							dragType: dragType,
+							lastMouse: lastMousePosition,
+							selectionBox: null,
+							dragSelection: dragSelection
+						}
+					}
 				}
-				else {
-					return {
-						dragType: null,
-						lastMouse: null
-					};
-				}
-			}
+				break;
 
-			let sb = state.selectionBox;
-			let dragSelection = state.dragSelection;
-			const tools = this.props.dgmInfo.tools;
-			if (toolName) {
-				const tool = tools[toolName];
-				dragSelection = new Map();
-				dragSelection.set(toolName, tool.position);
-				sb = null;
-			}
-			return {
-				dragType: dragType,
-				lastMouse: lastMousePosition,
-				selectionBox: sb,
-				dragSelection: dragSelection
+				case DiagramDragType.selectionBox: {
+					return {
+						dragType: dragType,
+						lastMouse: lastMousePosition,
+					}
+				}
+				break;
+
+				default: {
+					if (state.dragType === 'tool') {
+						const toolInfo = this.props.dgmInfo.tools[options.name];
+						const position = toolInfo.position;
+
+						if (toolInfo && position) {
+							const command = `${this.props.dgmInfo.path} setpositions ${options.name} ${position.x} ${position.y}`
+							this.props.doCommand(command, (cmds) => {
+								this.props.updateDiagram();
+							})
+						}
+						return {
+							dragType: null,
+							lastMouse: null,
+							dragSelection: null
+						};
+					}
+					else {
+						return {
+							dragType: null,
+							lastMouse: null
+						};
+					}
+				}
+				break;
 			}
 		});
 	}
@@ -155,44 +173,90 @@ export class Diagram extends React.Component {
 		this.setState((state) => {
 			const dx = x - state.lastMouse.x;
 			const dy = y - state.lastMouse.y;
-			if (state.dragType == DiagramDragType.pan ) {
-				return {
-					translate: {
-						x: state.translate.x + dx/state.scale,
-						y: state.translate.y + dy/state.scale,
-					},
-					lastMouse: {x: x, y: y}
-				};
-			}
-			else if (state.dragType == DiagramDragType.tool) {
-				if (this.state.dragSelection) {
-					let dragSelection = new Map();
-					for (const [name, position] of this.state.dragSelection) {
-						const newPosition = {
-							x: position.x + dx/state.scale,
-							y: position.y + dy/state.scale
-						}
-						dragSelection.set(name, newPosition);
+			function updateDragSelection(dragSelection) {
+				let newSelection = new Map();
+				for (const [name, position] of dragSelection) {
+					const newPosition = {
+						x: position.x + dx/state.scale,
+						y: position.y + dy/state.scale
 					}
-					this.props.updateDiagramPositions(dragSelection);
+					newSelection.set(name, newPosition);
 				}
+				return newSelection;
 			}
-			else if (state.dragType == DiagramDragType.selectionBox) {
-				const topLeft = state.selectionBox.topLeft;
-				const bottomRight = state.selectionBox.bottomRight;
-				const scale = state.scale;
-				return {
-					selectionBox: {
-						topLeft: {x: topLeft.x + dx/scale, y: topLeft.y + dy/scale},
-						bottomRight: {x: bottomRight.x + dx/scale, y: bottomRight.y + dy/scale}
-					},
-					lastMouse: {x: x, y: y}
-				};
-			}
-			else {
-				return {};
+
+			switch (state.dragType) { 
+				case DiagramDragType.pan:
+					return {
+						translate: {
+							x: state.translate.x + dx/state.scale,
+							y: state.translate.y + dy/state.scale,
+						},
+						lastMouse: {x: x, y: y}
+					};
+
+				case DiagramDragType.tool: 
+					if (this.state.dragSelection) {
+						let dragSelection = updateDragSelection(this.state.dragSelection);
+						this.props.updateDiagramPositions(dragSelection);
+					}
+					break;
+
+				case DiagramDragType.selectionBox: {
+					const sb = state.selectionBox;
+					const scale = state.scale;
+					let dragSelection = updateDragSelection(this.state.dragSelection);
+					this.props.updateDiagramPositions(dragSelection);
+					return {
+						selectionBox: {
+							left: sb.left + dx/scale,
+							top: sb.top + dy/scale,
+							right: sb.right + dx/scale,
+							bottom: sb.bottom + dy/scale
+						},
+						lastMouse: {x: x, y: y}
+					};
+				}
+				break;
+
+				default:
+					return {};
 			}
 		})
+	}
+
+	/**
+	 * @method toolsInBox
+	 * @param {Object} selectionBox 
+	 * @returns {Map}
+	 * returns a drag selection map of all tools found in rectangle
+	 * described by top left and bottom positions
+	 */
+	toolsInBox(selectionBox) {
+		function intersectRect(r1, r2) {
+			return !(r2.left > r1.right || 
+							 r2.right < r1.left || 
+							 r2.top > r1.bottom ||
+							 r2.bottom < r1.top);
+		}
+
+		const tools = this.props.dgmInfo.tools;
+		let dragSelection = new Map();
+		for (const toolName in tools) {
+			const toolInfo  = tools[toolName];
+			const x = toolInfo.position.x;
+			const y = toolInfo.position.y;
+			const toolRect = {
+				left: x,
+				top: y,
+				right: x + objectWidth,
+				bottom: y + objectHeight
+			}
+			if (intersectRect(selectionBox, toolRect)) {
+				dragSelection.set(toolName, {x: x, y: y});
+			}
+		}
+		return dragSelection;
 	}
 
 	onMouseDown(e) {
@@ -205,7 +269,7 @@ export class Diagram extends React.Component {
   }
 
 	onMouseUp(e) {
-    this.setDragType(null, null);
+    this.setDragType(null);
     e.stopPropagation()
     e.preventDefault()
 	}
@@ -227,12 +291,18 @@ export class Diagram extends React.Component {
 				x: e.clientX / scale - this.state.translate.x,
 				y: e.clientY / scale - this.state.translate.y
 			};
+			const sb = {
+				left: topLeft.x,
+				top: topLeft.y,
+				right: topLeft.x + 150/scale,
+				bottom: topLeft.y + 80/scale
+			}
+
+			const dragSelection = this.toolsInBox(sb);
 			this.setState((state) => {
 				return {
-					selectionBox: (state.selectionBox) ? null : {
-						topLeft: topLeft,
-						bottomRight: {x: topLeft.x + 150/scale, y: topLeft.y + 80/scale}
-					}
+					selectionBox: (state.selectionBox) ? null : sb,
+					dragSelection: dragSelection
 				}
 			});
 		}
@@ -587,7 +657,10 @@ class ToolIcon extends React.Component {
     // only left mouse button
 		if (e.button !== 0) return;
 		this.panSum = 0;
-		this.props.setDragType( DiagramDragType.tool, {x: e.clientX, y: e.clientY }, this.props.info.name);
+		this.props.setDragType( DiagramDragType.tool,
+			{x: e.clientX, y: e.clientY }, 
+			{name: this.props.info.name}
+		);
 		this.setState({dragging: true});
     e.stopPropagation()
     e.preventDefault()
@@ -599,7 +672,7 @@ class ToolIcon extends React.Component {
 				dragging: false,
 			};
 		});
-		this.props.setDragType(null, null, this.props.info.name);
+		this.props.setDragType(null, null, {name: this.props.info.name});
     e.stopPropagation()
     e.preventDefault()
 	}
@@ -796,7 +869,7 @@ class SelectionBox extends React.Component {
 				dragging: false,
 				};
 		});
-		this.props.setDragType(null, null);
+		this.props.setDragType(null);
     e.stopPropagation()
     e.preventDefault()
 	}
@@ -849,11 +922,10 @@ class SelectionBox extends React.Component {
 		let t = this.props.t;
 		const box = this.props.selectionBox;
 		const scale = this.props.scale;
-		const topLeft = box.topLeft;
-		const x = (topLeft.x + this.props.translate.x) * scale;
-		const y = (topLeft.y + this.props.translate.y) * scale;
-		const width = (box.bottomRight.x - topLeft.x) * scale;
-		const height = (box.bottomRight.y - topLeft.y) * scale;
+		const x = (box.left + this.props.translate.x) * scale;
+		const y = (box.top + this.props.translate.y) * scale;
+		const width = (box.right - box.left) * scale;
+		const height = (box.bottom - box.top) * scale;
 
 		return e('g', {
 			className: `dgm-svg-selectbox`,
