@@ -20,13 +20,21 @@
 
 .dgm-svg-tool {
 	stroke: black;
-	fill: blue;
+}
+
+.dgm-svg-tool-highlight {
+	stroke: blue;
 }
 
 text {
 	fill: black;
 	stroke-width: 1;
 	pointer-events: none;
+}
+
+.dgm-highlight-name {
+	fill: blue;
+	stroke: blue;
 }
 
 .dgm-tooltype {

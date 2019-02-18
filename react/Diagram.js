@@ -145,43 +145,50 @@ export class Diagram extends React.Component {
 				}
 				break;
 
-				case DiagramDragType.selectionBox: {
+				case DiagramDragType.selectionBox: 
+				case DiagramDragType.topLeftSB:
+				case DiagramDragType.bottomRightSB: {
+					const dragSelection = this.toolsInBox(state.selectionBox, state.tools);
 					return {
 						dragType: dragType,
 						lastMouse: lastMousePosition,
+						dragSelectin: dragSelection
 					}
 				}
-				break;
 
 				default: {
 					switch (state.dragType) {
-						case DiagramDragType.tool:/*
-							const toolInfo = this.state.tools[options.name];
-							const position = toolInfo.position;
-
-							if (toolInfo && position) {
-								const command = `${this.state.path} setpositions ${options.name} ${position.x} ${position.y}`
-								this.props.doCommand(command, (cmds) => {
+						case DiagramDragType.tool: {
+							let terms = [`${state.path} setpositions`];
+							if (state.dragSelection) {
+								for (const [name, position] of state.dragSelection) {
+									const p = snapPosition(position);
+									terms.push(`${name} ${p.x} ${p.y}`);
+								}
+								this.props.doCommand(terms.join(' '), (cmds) => {
 									this.getModelInfo();
-								})
-							}
+								});
+							}			
 							return {
 								dragType: null,
 								lastMouse: null,
 								dragSelection: null
-							};*/
+							};
+						}
 						case DiagramDragType.selectionBox: {
 							let terms = [`${state.path} setpositions`];
-							for (const [name, position] of state.dragSelection) {
-								terms.push(`${name} ${position.x} ${position.y}`);
-							}
-							this.props.doCommand(terms.join(' '), (cmds) => {
-								this.getModelInfo();
-							});				
+							if (state.dragSelection) {
+								for (const [name, position] of state.dragSelection) {
+									const p = snapPosition(position);
+									terms.push(`${name} ${p.x} ${p.y}`);
+								}
+								this.props.doCommand(terms.join(' '), (cmds) => {
+									this.getModelInfo();
+								});
+							}			
 							return {
 								dragType: null,
-								lastMouse: null,
-								dragSelection: null
+								lastMouse: null
 							};
 						}
 						default: 
@@ -206,6 +213,9 @@ export class Diagram extends React.Component {
 			const dx = x - state.lastMouse.x;
 			const dy = y - state.lastMouse.y;
 			function updateDragSelection(dragSelection) {
+				if (!dragSelection) {
+					return null;
+				}
 				let newSelection = new Map();
 				for (const [name, position] of dragSelection) {
 					const newPosition = {
@@ -228,8 +238,8 @@ export class Diagram extends React.Component {
 					};
 
 				case DiagramDragType.tool: 
-					if (this.state.dragSelection) {
-						let dragSelection = updateDragSelection(this.state.dragSelection);
+					if (state.dragSelection) {
+						let dragSelection = updateDragSelection(state.dragSelection);
 						const tools = this.updateToolPositions(dragSelection, state);
 						return {
 							tools: tools,
@@ -242,7 +252,7 @@ export class Diagram extends React.Component {
 				case DiagramDragType.selectionBox: {
 					const sb = state.selectionBox;
 					const scale = state.scale;
-					const dragSelection = updateDragSelection(this.state.dragSelection);
+					const dragSelection = updateDragSelection(state.dragSelection);
 					const tools = this.updateToolPositions(dragSelection, state);
 					return {
 						tools: tools,
@@ -256,7 +266,32 @@ export class Diagram extends React.Component {
 						lastMouse: {x: x, y: y}
 					};
 				}
-				break;
+
+				case DiagramDragType.topLeftSB: {
+					let sb = state.selectionBox;
+					const scale = state.scale;
+					sb.left = sb.left + dx/scale;
+					sb.top = sb.top + dy/scale;
+					const dragSelection = this.toolsInBox(sb, state.tools);
+					return {
+						dragSelection: dragSelection,
+						selectionBox: sb,
+						lastMouse: {x: x, y: y}
+					}
+				}
+
+				case DiagramDragType.bottomRightSB: {
+					let sb = state.selectionBox;
+					const scale = state.scale;
+					sb.right = sb.right + dx/scale;
+					sb.bottom = sb.bottom + dy/scale;
+					const dragSelection = this.toolsInBox(sb, state.tools);
+					return {
+						dragSelection: dragSelection,
+						selectionBox: sb,
+						lastMouse: {x: x, y: y}
+					}
+				}
 
 				default:
 					return {};
@@ -266,12 +301,13 @@ export class Diagram extends React.Component {
 
 	/**
 	 * @method toolsInBox
-	 * @param {Object} selectionBox 
+	 * @param {Object} selectionBox
+	 * @param {Object} tools - toolInfos
 	 * @returns {Map}
 	 * returns a drag selection map of all tools found in rectangle
 	 * described by top left and bottom positions
 	 */
-	toolsInBox(selectionBox) {
+	toolsInBox(selectionBox, tools) {
 		function intersectRect(r1, r2) {
 			return !(r2.left > r1.right || 
 							 r2.right < r1.left || 
@@ -279,7 +315,6 @@ export class Diagram extends React.Component {
 							 r2.bottom < r1.top);
 		}
 
-		const tools = this.state.tools;
 		let dragSelection = new Map();
 		for (const toolName in tools) {
 			const toolInfo  = tools[toolName];
@@ -306,10 +341,12 @@ export class Diagram extends React.Component {
 	 */
 	updateToolPositions(positions, state) {
 		let tools = Object.assign({}, state.tools);
-		for (const [name, position] of positions) {
-			const toolInfo  = tools[name];
-			if (toolInfo) {
-				toolInfo.position = position;
+		if (positions) {
+			for (const [name, position] of positions) {
+				const toolInfo  = tools[name];
+				if (toolInfo) {
+					toolInfo.position = position;
+				}
 			}
 		}
 		return tools;
@@ -333,8 +370,6 @@ export class Diagram extends React.Component {
 	}
 	
   onMouseMove(e) {
-		console.log(`position ${e.clientX} ${e.clientY}`);
-		console.log(`move ${e.movementX} ${e.movementY}`);
 		this.panSum += Math.abs(e.movementX) + Math.abs(e.movementY);
 
 		this.draggedTo( e.clientX, e.clientY);
@@ -356,8 +391,8 @@ export class Diagram extends React.Component {
 				bottom: topLeft.y + 80/scale
 			}
 
-			const dragSelection = this.toolsInBox(sb);
 			this.setState((state) => {
+				const dragSelection = this.toolsInBox(sb, state.tools);
 				return {
 					selectionBox: (state.selectionBox) ? null : sb,
 					dragSelection: dragSelection
@@ -480,9 +515,15 @@ export class Diagram extends React.Component {
 		let connectList = [];
 		for (const toolName in tools) {
 			const toolInfo  = tools[toolName];
+			let highlight = false;
+			if (this.state.dragSelection && this.state.dragSelection.has(toolInfo.name)) {
+				highlight = true;
+			}
+
 			const cmp = e(ToolIcon, {
 				key: toolName,
 				info: toolInfo,
+				highlight: highlight,
 				translate: this.state.translate,
 				scale: scale,
 				setDragType: this.setDragType,
@@ -739,14 +780,7 @@ class ToolIcon extends React.Component {
 		if (!this.state.dragging) return
 		this.panSum += Math.abs(e.movementX) + Math.abs(e.movementY);
 		this.props.draggedTo(e.clientX, e.clientY);
-		/*
-    this.setState((state) => {
-			const x = state.position.x + e.movementX/this.props.scale;
-			const y = state.position.y + e.movementY/this.props.scale;
-      return {
-        position: {x: x, y: y}
-      }
-    })*/
+
     e.stopPropagation();
     e.preventDefault();
 	}
@@ -808,7 +842,6 @@ class ToolIcon extends React.Component {
 		if (info.toolTypeName === 'Expression') {
 			textComponents = e('g', {},
 				e('text', {
-					className: 'dgm-name',
 					x: (x + 3 + translate.x)*scale,
 					y: (y + 7 + translate.y)*scale,
 					style: {fontSize: `${6*scale}px`}
@@ -843,8 +876,7 @@ class ToolIcon extends React.Component {
 				}, info.toolTypeName + ':'
 			),
 			e('text', {
-					className: 'dgm-name',
-					x: (x + 3 + translate.x)*scale,
+				x: (x + 3 + translate.x)*scale,
 					y: (y + 16 + translate.y)*scale,
 					style: {fontSize: `${7*scale}px`}
 					}, info.name
@@ -852,8 +884,9 @@ class ToolIcon extends React.Component {
 			);
 		}
 
+		this.props.highlight 
 		return e('g', {
-			className: `dgm-svg-tool dgm-${info.toolTypeName}`,
+			className: `${this.props.highlight ? 'dgm-svg-tool-highlight' : 'dgm-svg-tool'} dgm-${info.toolTypeName}`,
 		},
 			e('rect', {
 				onMouseDown: this.onMouseDown,
@@ -917,7 +950,23 @@ class SelectionBox extends React.Component {
 		this.setState({
       dragging: true
 		})
-		this.props.setDragType(DiagramDragType.selectionBox, {x: e.clientX, y: e.clientY});
+
+		const scale = this.props.scale;
+		const x = e.clientX/scale - this.props.translate.x;
+		const y = e.clientY/scale - this.props.translate.y;
+		const box = this.props.rect;
+		const corner = 10;
+		let dragType;
+		if (x >= box.left && x <= box.left + corner && y >= box.top && y <= box.top + corner) {
+			dragType = DiagramDragType.topLeftSB
+		}
+		else if (x <= box.right && x >= box.right - corner && y <= box.bottom && y >= box.bottom - corner) {
+			dragType = DiagramDragType.bottomRightSB;
+		}
+		else {
+			dragType = DiagramDragType.selectionBox;
+		}
+		this.props.setDragType(dragType, {x: e.clientX, y: e.clientY});
     e.stopPropagation()
     e.preventDefault()
   }
