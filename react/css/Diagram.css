@@ -28,17 +28,18 @@
 
 text {
 	fill: black;
-	stroke-width: 1;
+	stroke-width: .4;
 	pointer-events: none;
 }
 
-.dgm-highlight-name {
+.dgm-svg-tool-highlight text {
 	fill: blue;
 	stroke: blue;
 }
 
 .dgm-tooltype {
-	fill: rgb(0,182,0);
+	fill: rgb(0,102,0);
+	stroke: rgb(0,102,0);
 	font-style: italic;
 }
 

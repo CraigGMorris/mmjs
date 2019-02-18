@@ -427,9 +427,10 @@ export class Diagram extends React.Component {
 		e.preventDefault();
 		e.stopPropagation();
 		if (e.touches.length == 1) {
+			this.panSum = 0;
 			const touch = e.touches[0];
 			this.touch0 = {x: touch.pageX, y: touch.pageY};
-			e.target.addEventListener('touchmove', this.onTouchMove, {passive: false});
+			this.setDragType( DiagramDragType.pan, this.touch0);
 		}
 		else if (e.touches.length == 2) {
 			const pinch = Math.hypot(
@@ -440,6 +441,7 @@ export class Diagram extends React.Component {
 				this.pinch = pinch;
 			}
 		}
+		e.target.addEventListener('touchmove', this.onTouchMove, {passive: false});
 	}
 
 	onTouchMove(e) {
@@ -449,15 +451,9 @@ export class Diagram extends React.Component {
 			const touch = e.touches[0];
 			let deltaX = touch.pageX - this.touch0.x;
 			let deltaY = touch.pageY - this.touch0.y;
+			this.panSum += Math.abs(deltaX) + Math.abs(deltaY);
 			this.touch0 = {x: touch.pageX, y: touch.pageY};
-			this.setState((state) => {
-				return {
-					translate: {
-						x: state.translate.x + deltaX/state.scale,
-						y: state.translate.y + deltaY/state.scale
-					}
-				}
-			});
+			this.draggedTo( touch.pageX, touch.pageY);
 		}
 		else if (e.touches.length == 2 && this.pinch) {
 			const newPinch = Math.hypot(
@@ -489,11 +485,12 @@ export class Diagram extends React.Component {
 
 	onTouchEnd(e) {
 		if (e.touches.length == 1) {
-			e.target.removeEventListener('touchmove', this.onTouchMove);
+			this.setDragType(null);
 		}
 		else if (e.touches.length == 2) {
 			this.pinch = null;
 		}
+		e.target.removeEventListener('touchmove', this.onTouchMove);
 	}
 
 	render() {
@@ -798,7 +795,12 @@ class ToolIcon extends React.Component {
 		if (e.changedTouches.length == 1) {
 			const touch = e.changedTouches[0];
 			this.touch0 = {x: touch.pageX, y: touch.pageY};
-			e.target.addEventListener('touchmove', this.onTouchMove, {passive: false});
+			this.panSum = 0;
+			this.props.setDragType( DiagramDragType.tool,
+				this.touch0, 
+				{name: this.props.info.name}
+			);
+		e.target.addEventListener('touchmove', this.onTouchMove, {passive: false});
 		}
 	}
 
@@ -810,23 +812,15 @@ class ToolIcon extends React.Component {
 			let deltaX = touch.pageX - this.touch0.x;
 			let deltaY = touch.pageY - this.touch0.y;
 			this.touch0 = {x: touch.pageX, y: touch.pageY};
-			this.setState((state) => {
-				const x = state.position.x + deltaX/this.props.scale;
-				const y = state.position.y + deltaY/this.props.scale;
-				return {
-					position: {x: x, y: y}
-				}
-			});
+			this.panSum += Math.abs(deltaX) + Math.abs(deltaY);
+			this.props.draggedTo(touch.pageX, touch.pageY);
 		}
 	}
 
 	onTouchEnd(e) {
+		e.target.removeEventListener('touchmove', this.onTouchMove);
 		if (e.changedTouches.length == 1) {
-			e.target.removeEventListener('touchmove', this.onTouchMove);
-			this.setState((state) => {
-				const newPosition = snapPosition(state.position);
-				return newPosition;
-			});
+			this.props.setDragType(null, null, {name: this.props.info.name});
 		}
 	}
 
