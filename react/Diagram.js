@@ -384,6 +384,7 @@ export class Diagram extends React.Component {
     // only left mouse button
 		if (e.button !== 0) return;
 		this.panSum = 0;
+		this.pointerStartTime = new Date().getTime();
     this.setDragType( DiagramDragType.pan, {x: e.clientX, y: e.clientY });
     e.stopPropagation()
     e.preventDefault()
@@ -407,7 +408,14 @@ export class Diagram extends React.Component {
     e.stopPropagation()
     e.preventDefault()
 		if (this.panSum == 0) {
-			this.createSelectionBox(e.clientX, e.clientY);
+			const t = new Date().getTime();
+			if (t - this.pointerStartTime > 500) {
+				this.createSelectionBox(e.clientX, e.clientY);
+			}
+			else {
+				console.log('should pop menu');
+				this.setState({selectionBox: null});
+			}
 		}
 		this.panSum = 0;
 	}
@@ -436,6 +444,7 @@ export class Diagram extends React.Component {
 		e.stopPropagation();
 		if (e.touches.length == 1) {
 			this.panSum = 0;
+			this.pointerStartTime = new Date().getTime();
 			const touch = e.touches[0];
 			this.touch0 = {x: touch.clientX, y: touch.clientY};
 			this.setDragType( DiagramDragType.pan, this.touch0);
@@ -497,8 +506,14 @@ export class Diagram extends React.Component {
 			this.setDragType(null);
 			if (this.panSum <= 5) {
 				const touch = e.changedTouches[0];
-				console.log(`background tap at ${touch.clientX} ${touch.clientY}`);
-				this.createSelectionBox(touch.clientX, touch.clientY);
+				const t = new Date().getTime();
+				if (t - this.pointerStartTime > 500) {
+					this.createSelectionBox(touch.clientX, touch.clientY);
+				}
+				else {
+					console.log('should pop menu');
+					this.setState({selectionBox: null});
+				}
 			}
 		}
 		this.pinch = null;
@@ -764,6 +779,7 @@ class ToolIcon extends React.Component {
     // only left mouse button
 		if (e.button !== 0) return;
 		this.panSum = 0;
+		this.pointerStartTime = new Date().getTime();
 		this.props.setDragType( DiagramDragType.tool,
 			{x: e.clientX, y: e.clientY }, 
 			{name: this.props.info.name}
@@ -794,7 +810,13 @@ class ToolIcon extends React.Component {
 	}
 
 	onClick(e) {
-		console.log(`Tool click panSum ${this.panSum}`);
+		const t = new Date().getTime();
+		if (t - this.pointerStartTime > 500) {
+			console.log('tool long press')
+		}
+		else {
+			console.log(`Tool click panSum ${this.panSum}`);
+		}
 		this.panSum = 0;
     e.stopPropagation()
     e.preventDefault()
@@ -804,9 +826,10 @@ class ToolIcon extends React.Component {
 		e.preventDefault();
 		e.stopPropagation();
 		if (e.changedTouches.length == 1) {
+			this.panSum = 0;
+			this.pointerStartTime = new Date().getTime();
 			const touch = e.changedTouches[0];
 			this.touch0 = {x: touch.clientX, y: touch.clientY};
-			this.panSum = 0;
 			this.props.setDragType( DiagramDragType.tool,
 				this.touch0, 
 				{name: this.props.info.name}
@@ -835,9 +858,16 @@ class ToolIcon extends React.Component {
 		if (e.changedTouches.length == 1) {
 			this.props.setDragType(null, null, {name: this.props.info.name});
 			if (this.panSum <= 5) {
-				console.log('tool tap')
+				const t = new Date().getTime();
+				if (t - this.pointerStartTime > 500) {
+					console.log(`tool long touch  ${this.panSum}`);
+				}
+				else {
+					console.log(`Tool tap panSum ${this.panSum}`);
+				}
 			}
 		}
+		this.panSum = 0;
 	}
 
 	render() {
@@ -981,6 +1011,7 @@ class SelectionBox extends React.Component {
     // only left mouse button
 		if (e.button !== 0) return;
 		this.panSum = 0;
+		this.pointerStartTime = new Date().getTime();
 		this.setState({
       dragging: true
 		})
@@ -1009,16 +1040,24 @@ class SelectionBox extends React.Component {
 	}
 
 	onClick(e) {
-		console.log(`selection box click panSum ${this.panSum}`);
 		this.panSum = 0;
     e.stopPropagation()
     e.preventDefault()
-	}
+		const t = new Date().getTime();
+		if (t - this.pointerStartTime > 500) {
+			console.log(`sb long press  ${this.panSum}`);
+		}
+		else {
+			console.log(`sb click panSum ${this.panSum}`);
+		}
+}
 
 	onTouchStart(e) {
 		e.preventDefault();
 		e.stopPropagation();
 		if (e.changedTouches.length == 1) {
+			this.panSum = 0;
+			this.pointerStartTime = new Date().getTime();
 			const touch = e.changedTouches[0];
 			this.touch0 = {x: touch.clientX, y: touch.clientY};
 			const dragType = this.determineDragType(touch.clientX, touch.clientY, 20);
@@ -1032,7 +1071,10 @@ class SelectionBox extends React.Component {
 		e.stopPropagation();
 		if (e.changedTouches.length == 1) {
 			const touch = e.changedTouches[0];
+			let deltaX = touch.clientX - this.touch0.x;
+			let deltaY = touch.clientY - this.touch0.y;
 			this.touch0 = {x: touch.clientX, y: touch.clientY};
+			this.panSum += Math.abs(deltaX) + Math.abs(deltaY);
 			this.props.draggedTo(touch.clientX, touch.clientY);
 		}
 	}
@@ -1043,6 +1085,15 @@ class SelectionBox extends React.Component {
 		if (e.changedTouches.length == 1) {
 			e.target.removeEventListener('touchmove', this.onTouchMove);
 			this.props.setDragType(null, null);
+			if (this.panSum <= 5) {
+				const t = new Date().getTime();
+				if (t - this.pointerStartTime > 500) {
+					console.log(`sb long touch  ${this.panSum}`);
+				}
+				else {
+					console.log(`sb tap panSum ${this.panSum}`);
+				}
+			}
 		}
 	}
 
