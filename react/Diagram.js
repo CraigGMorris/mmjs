@@ -270,8 +270,8 @@ export class Diagram extends React.Component {
 				case DiagramDragType.topLeftSB: {
 					let sb = state.selectionBox;
 					const scale = state.scale;
-					sb.left = sb.left + dx/scale;
-					sb.top = sb.top + dy/scale;
+					sb.left = Math.min(sb.left + dx/scale, sb.right - 60);
+					sb.top = Math.min(sb.top + dy/scale, sb.bottom - 40);
 					const dragSelection = this.toolsInBox(sb, state.tools);
 					return {
 						dragSelection: dragSelection,
@@ -283,8 +283,8 @@ export class Diagram extends React.Component {
 				case DiagramDragType.bottomRightSB: {
 					let sb = state.selectionBox;
 					const scale = state.scale;
-					sb.right = sb.right + dx/scale;
-					sb.bottom = sb.bottom + dy/scale;
+					sb.right = Math.max(sb.right + dx/scale, sb.left + 60);
+					sb.bottom = Math.max(sb.bottom + dy/scale, sb.top + 40);
 					const dragSelection = this.toolsInBox(sb, state.tools);
 					return {
 						dragSelection: dragSelection,
@@ -352,7 +352,33 @@ export class Diagram extends React.Component {
 		return tools;
 	}
 
+	/**
+	 * @method createSelectionBox
+	 * @param {Number} x 
+	 * @param {Number} y 
+	 * x, y is top left corner
+	 */
+	createSelectionBox(x, y) {
+		this.setState((state) => {
+			const scale = state.scale;
+			const topLeft = {
+				x: x / scale - state.translate.x,
+				y: y / scale - state.translate.y
+			};
+			const sb = {
+				left: topLeft.x,
+				top: topLeft.y,
+				right: topLeft.x + 150/scale,
+				bottom: topLeft.y + 80/scale
+			}
 
+			const dragSelection = this.toolsInBox(sb, state.tools);
+			return {
+				selectionBox: (state.selectionBox) ? null : sb,
+				dragSelection: dragSelection
+			}
+		});
+	}
 
 	onMouseDown(e) {
     // only left mouse button
@@ -378,30 +404,12 @@ export class Diagram extends React.Component {
 	}
 
 	onClick(e) {
-		if (this.panSum == 0) {
-			const scale = this.state.scale;
-			const topLeft = {
-				x: e.clientX / scale - this.state.translate.x,
-				y: e.clientY / scale - this.state.translate.y
-			};
-			const sb = {
-				left: topLeft.x,
-				top: topLeft.y,
-				right: topLeft.x + 150/scale,
-				bottom: topLeft.y + 80/scale
-			}
-
-			this.setState((state) => {
-				const dragSelection = this.toolsInBox(sb, state.tools);
-				return {
-					selectionBox: (state.selectionBox) ? null : sb,
-					dragSelection: dragSelection
-				}
-			});
-		}
-		this.panSum = 0;
     e.stopPropagation()
     e.preventDefault()
+		if (this.panSum == 0) {
+			this.createSelectionBox(e.clientX, e.clientY);
+		}
+		this.panSum = 0;
 	}
 
 	onWheel(e) {
@@ -429,13 +437,13 @@ export class Diagram extends React.Component {
 		if (e.touches.length == 1) {
 			this.panSum = 0;
 			const touch = e.touches[0];
-			this.touch0 = {x: touch.pageX, y: touch.pageY};
+			this.touch0 = {x: touch.clientX, y: touch.clientY};
 			this.setDragType( DiagramDragType.pan, this.touch0);
 		}
 		else if (e.touches.length == 2) {
 			const pinch = Math.hypot(
-				e.touches[0].pageX - e.touches[1].pageX,
-				e.touches[0].pageY - e.touches[1].pageY
+				e.touches[0].clientX - e.touches[1].clientX,
+				e.touches[0].clientY - e.touches[1].clientY
 			);
 			if (pinch > 0) {
 				this.pinch = pinch;
@@ -449,16 +457,16 @@ export class Diagram extends React.Component {
 		e.stopPropagation();
 		if (e.touches.length == 1) {
 			const touch = e.touches[0];
-			let deltaX = touch.pageX - this.touch0.x;
-			let deltaY = touch.pageY - this.touch0.y;
+			let deltaX = touch.clientX - this.touch0.x;
+			let deltaY = touch.clientY - this.touch0.y;
 			this.panSum += Math.abs(deltaX) + Math.abs(deltaY);
-			this.touch0 = {x: touch.pageX, y: touch.pageY};
-			this.draggedTo( touch.pageX, touch.pageY);
+			this.touch0 = {x: touch.clientX, y: touch.clientY};
+			this.draggedTo( touch.clientX, touch.clientY);
 		}
 		else if (e.touches.length == 2 && this.pinch) {
 			const newPinch = Math.hypot(
-				e.touches[0].pageX - e.touches[1].pageX,
-				e.touches[0].pageY - e.touches[1].pageY
+				e.touches[0].clientX - e.touches[1].clientX,
+				e.touches[0].clientY - e.touches[1].clientY
 			);
 
 			let ratio = 1;
@@ -466,14 +474,14 @@ export class Diagram extends React.Component {
 				ratio = newPinch/this.pinch;
 				this.pinch = newPinch;
 			}
-			const pageX = (e.touches[0].pageX + e.touches[1].pageX) / 2;
-			const pageY = (e.touches[0].pageY + e.touches[1].pageY) / 2;
+			const clientX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+			const clientY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
 
 			this.setState((state) => {
 				const newScale = Math.max(0.1, state.scale * ratio);
 				const newTranslate = {
-					x: pageX/newScale - pageX/state.scale + state.translate.x,
-					y: pageY/newScale - pageY/state.scale + state.translate.y
+					x: clientX/newScale - clientX/state.scale + state.translate.x,
+					y: clientY/newScale - clientY/state.scale + state.translate.y
 				}
 				return {
 					scale: newScale,
@@ -484,13 +492,16 @@ export class Diagram extends React.Component {
 	}
 
 	onTouchEnd(e) {
-		if (e.touches.length == 1) {
-			this.setDragType(null);
-		}
-		else if (e.touches.length == 2) {
-			this.pinch = null;
-		}
 		e.target.removeEventListener('touchmove', this.onTouchMove);
+	if (e.changedTouches.length == 1 && this.pinch == null) {
+			this.setDragType(null);
+			if (this.panSum <= 5) {
+				const touch = e.changedTouches[0];
+				console.log(`background tap at ${touch.clientX} ${touch.clientY}`);
+				this.createSelectionBox(touch.clientX, touch.clientY);
+			}
+		}
+		this.pinch = null;
 	}
 
 	render() {
@@ -794,7 +805,7 @@ class ToolIcon extends React.Component {
 		e.stopPropagation();
 		if (e.changedTouches.length == 1) {
 			const touch = e.changedTouches[0];
-			this.touch0 = {x: touch.pageX, y: touch.pageY};
+			this.touch0 = {x: touch.clientX, y: touch.clientY};
 			this.panSum = 0;
 			this.props.setDragType( DiagramDragType.tool,
 				this.touch0, 
@@ -809,18 +820,23 @@ class ToolIcon extends React.Component {
 		e.stopPropagation();
 		if (e.changedTouches.length == 1) {
 			const touch = e.changedTouches[0];
-			let deltaX = touch.pageX - this.touch0.x;
-			let deltaY = touch.pageY - this.touch0.y;
-			this.touch0 = {x: touch.pageX, y: touch.pageY};
+			let deltaX = touch.clientX - this.touch0.x;
+			let deltaY = touch.clientY - this.touch0.y;
+			this.touch0 = {x: touch.clientX, y: touch.clientY};
 			this.panSum += Math.abs(deltaX) + Math.abs(deltaY);
-			this.props.draggedTo(touch.pageX, touch.pageY);
+			this.props.draggedTo(touch.clientX, touch.clientY);
 		}
 	}
 
 	onTouchEnd(e) {
+		e.preventDefault();
+		e.stopPropagation();
 		e.target.removeEventListener('touchmove', this.onTouchMove);
 		if (e.changedTouches.length == 1) {
 			this.props.setDragType(null, null, {name: this.props.info.name});
+			if (this.panSum <= 5) {
+				console.log('tool tap')
+			}
 		}
 	}
 
@@ -937,19 +953,17 @@ class SelectionBox extends React.Component {
 		ReactDOM.findDOMNode(this).removeEventListener('touchend', this.onTouchEnd);
 	}
 
-	onMouseDown(e) {
-    // only left mouse button
-		if (e.button !== 0) return;
-		this.panSum = 0;
-		this.setState({
-      dragging: true
-		})
-
+	/**
+	 * @method determineDragType
+	 * @param {Number} clientX 
+	 * @param {Number} clientY
+	 * @returns {DiagramDragType}
+	 */
+	determineDragType(clientX, clientY, corner) {
 		const scale = this.props.scale;
-		const x = e.clientX/scale - this.props.translate.x;
-		const y = e.clientY/scale - this.props.translate.y;
+		const x = clientX/scale - this.props.translate.x;
+		const y = clientY/scale - this.props.translate.y;
 		const box = this.props.rect;
-		const corner = 10;
 		let dragType;
 		if (x >= box.left && x <= box.left + corner && y >= box.top && y <= box.top + corner) {
 			dragType = DiagramDragType.topLeftSB
@@ -960,6 +974,17 @@ class SelectionBox extends React.Component {
 		else {
 			dragType = DiagramDragType.selectionBox;
 		}
+		return dragType
+	}
+
+	onMouseDown(e) {
+    // only left mouse button
+		if (e.button !== 0) return;
+		this.panSum = 0;
+		this.setState({
+      dragging: true
+		})
+		const dragType = this.determineDragType(e.clientX, e.clientY, 20);
 		this.props.setDragType(dragType, {x: e.clientX, y: e.clientY});
     e.stopPropagation()
     e.preventDefault()
@@ -995,9 +1020,10 @@ class SelectionBox extends React.Component {
 		e.stopPropagation();
 		if (e.changedTouches.length == 1) {
 			const touch = e.changedTouches[0];
-			this.touch0 = {x: touch.pageX, y: touch.pageY};
+			this.touch0 = {x: touch.clientX, y: touch.clientY};
+			const dragType = this.determineDragType(touch.clientX, touch.clientY, 20);
+			this.props.setDragType(dragType, this.touch0);
 			e.target.addEventListener('touchmove', this.onTouchMove, {passive: false});
-			this.props.setDragType(DiagramDragType, this.touch0);
 		}
 	}
 
@@ -1006,14 +1032,14 @@ class SelectionBox extends React.Component {
 		e.stopPropagation();
 		if (e.changedTouches.length == 1) {
 			const touch = e.changedTouches[0];
-			let deltaX = touch.pageX - this.touch0.x;
-			let deltaY = touch.pageY - this.touch0.y;
-			this.touch0 = {x: touch.pageX, y: touch.pageY};
-			this.props.dragBy(deltaX, deltaY);
+			this.touch0 = {x: touch.clientX, y: touch.clientY};
+			this.props.draggedTo(touch.clientX, touch.clientY);
 		}
 	}
 
 	onTouchEnd(e) {
+		e.preventDefault();
+		e.stopPropagation();
 		if (e.changedTouches.length == 1) {
 			e.target.removeEventListener('touchmove', this.onTouchMove);
 			this.props.setDragType(null, null);
