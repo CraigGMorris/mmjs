@@ -71,24 +71,69 @@ export class Diagram extends React.Component {
 		this.onTouchStart = this.onTouchStart.bind(this);
 		this.onTouchMove = this.onTouchMove.bind(this);
 		this.onTouchEnd = this.onTouchEnd.bind(this);
+		this.popModel = this.popModel.bind(this);
+		this.pushModel = this.pushModel.bind(this);
 
 		this.getModelInfo();
 	}
 
 	/**
 	 * @method getModelInfo
+	 * @param {Boolean} rescale
 	 */
-	getModelInfo() {
+	getModelInfo(rescale = false) {
 		this.props.doCommand('/ dgminfo', (results) => {
 			if (results.length && results[0].results) {
 				const modelInfo = results[0].results;
-				this.setState((state) => {
-					return {
-						path: modelInfo.path,
-						tools: modelInfo.tools
-					};
-				})
+				let newState = {
+					path: modelInfo.path,
+					tools: modelInfo.tools
+				};
+
+				if (rescale) {
+					let maxX = -1.e6;
+					let maxY = -1.e6;
+					let minX = 1.e6;
+					let minY = 1.e6;
+					for (const toolName in modelInfo.tools) {
+						const toolInfo  = modelInfo.tools[toolName];
+						const position = toolInfo.position;
+						maxX = (position.x > maxX ) ? position.x : maxX;
+						maxY = (position.y > maxY ) ? position.y : maxY;
+						minX = (position.x > minX ) ? minX : position.x;
+						minY = (position.y > minY ) ? minY : position.y;
+					}
+					if ( maxX != -1.e6 ) { // no objects, don't change
+						maxX += 1.5 *objectWidth;
+						maxY += 5 * objectHeight;
+						
+						const box = this.boundingBox;
+						const widthScale = (box.right - box.left -30) / ( maxX - minX );
+						const heightScale = (box.bottom - box.top - 40) / ( maxY - minY);
+						let scale =  ( widthScale < heightScale ) ? widthScale : heightScale;
+						if ( scale > 3.0 ) {
+							scale = 3.0;
+						}
+						newState['scale'] = scale;
+						newState['translate'] = {x: -minX + 30 / scale, y: -minY + 40 /scale};
+//						newState['translate'] = {x: -minX + objectHeight / 2, y: -minY + 20 / scale};
+					}
+				}
+
+				this.setState(newState);
 			}
+		});
+	}
+
+	/**
+	 * @method doCommand
+	 * @param {String} command
+	 * @param {Boolean} rescale - true if diagram should be rescaled
+	 * shortcut to props.doCommand with automatic getModelInfo
+	 */
+	doCommand(command, rescale) {
+		this.props.doCommand(command, (cmds) => {
+			this.getModelInfo(rescale);
 		});
 	}
 
@@ -165,9 +210,7 @@ export class Diagram extends React.Component {
 									const p = snapPosition(position);
 									terms.push(`${name} ${p.x} ${p.y}`);
 								}
-								this.props.doCommand(terms.join(' '), (cmds) => {
-									this.getModelInfo();
-								});
+								this.doCommand(terms.join(' '));
 							}			
 							return {
 								dragType: null,
@@ -182,9 +225,7 @@ export class Diagram extends React.Component {
 									const p = snapPosition(position);
 									terms.push(`${name} ${p.x} ${p.y}`);
 								}
-								this.props.doCommand(terms.join(' '), (cmds) => {
-									this.getModelInfo();
-								});
+								this.props.doCommand(terms.join(' '));
 							}			
 							return {
 								dragType: null,
@@ -413,8 +454,19 @@ export class Diagram extends React.Component {
 				this.createSelectionBox(e.clientX, e.clientY);
 			}
 			else {
-				console.log('should pop menu');
-				this.setState({selectionBox: null});
+				if (e.clientY - this.boundingBox.top < 15) {
+					if (e.clientX - this.boundingBox.left < this.boundingBox.width/2) {
+						this.popModel();
+						this.setState({selectionBox: null});
+					}
+					else {
+						this.getModelInfo(true);
+					}
+				}
+				else {
+					console.log('should pop menu');
+					this.setState({selectionBox: null});
+				}
 			}
 		}
 		this.panSum = 0;
@@ -482,6 +534,7 @@ export class Diagram extends React.Component {
 			if (newPinch) {
 				ratio = newPinch/this.pinch;
 				this.pinch = newPinch;
+				this.panSum += this.pinch;
 			}
 			const clientX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
 			const clientY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
@@ -502,6 +555,7 @@ export class Diagram extends React.Component {
 
 	onTouchEnd(e) {
 		e.target.removeEventListener('touchmove', this.onTouchMove);
+		console.log(`touch end length ${e.changedTouches.length} pinch ${this.pinch}`);
 	if (e.changedTouches.length == 1 && this.pinch == null) {
 			this.setDragType(null);
 			if (this.panSum <= 5) {
@@ -511,12 +565,33 @@ export class Diagram extends React.Component {
 					this.createSelectionBox(touch.clientX, touch.clientY);
 				}
 				else {
-					console.log('should pop menu');
-					this.setState({selectionBox: null});
+					if (touch.clientX - this.boundingBox.top < 100 && touch.clientY - this.boundingBox.top < 15) {
+						this.popModel();
+						this.setState({selectionBox: null});
+					}
+					else {
+						console.log('should pop menu');
+						this.setState({selectionBox: null});
+					}
 				}
 			}
 		}
 		this.pinch = null;
+	}
+
+	/**
+	 * @method pushModel
+	 * @param {string} modelName 
+	 */
+	pushModel(modelName) {
+		this.doCommand(`/ pushmodel ${modelName}`, true);
+	}
+
+	/**
+	 * @method popModel 
+	 */
+	popModel() {
+		this.doCommand('/ popmodel', true);
 	}
 
 	render() {
@@ -550,7 +625,8 @@ export class Diagram extends React.Component {
 				translate: this.state.translate,
 				scale: scale,
 				setDragType: this.setDragType,
-				draggedTo: this.draggedTo,	
+				draggedTo: this.draggedTo,
+				pushModel: this.pushModel
 			});
 			toolList.push(cmp);
 
@@ -707,6 +783,29 @@ export class Diagram extends React.Component {
 			})
 		}
 
+		let textList = [];
+		if (this.state.path) {
+			const pathParts = this.state.path.split('.');
+			if (pathParts.length > 2) {
+				textList.push(
+					e('text', {
+						id: 'dgm-parent-name',
+						key: 'parent',
+						x: 15,
+						y: 25,
+					}, `< ${pathParts[pathParts.length-2]}`)
+				)
+			}
+			textList.push(
+				e('text', {
+					id: 'dgm-model-name',
+					key: 'name',
+					x: this.boundingBox.width/2,
+					y: 25,
+				}, pathParts[pathParts.length-1])
+			)
+		}
+
 		return e('div', {
 				id:'dgm-main',
 //				className: this.state.dragType ? 'hide-cursor' : 'show-cursor'
@@ -718,14 +817,16 @@ export class Diagram extends React.Component {
 				onWheel: this.onWheel,
 				onClick: this.onClick,
 			},
+/*
 				e('text', {
 					x: 15,
 					y: 25,
-					style: {font: '10px sans-serif'}
-				}, this.state.path),
+					style: {font: '15px sans-serif'},
+				}, this.state.path),*/
 				toolList,
 				connectList,
-				selectionBox
+				selectionBox,
+				textList
 			),
 		);
 	}
@@ -815,6 +916,9 @@ class ToolIcon extends React.Component {
 			console.log('tool long press')
 		}
 		else {
+			if (this.props.info.toolTypeName === "Model") {
+				this.props.pushModel(this.props.info.name);
+			}
 			console.log(`Tool click panSum ${this.panSum}`);
 		}
 		this.panSum = 0;
@@ -863,7 +967,10 @@ class ToolIcon extends React.Component {
 					console.log(`tool long touch  ${this.panSum}`);
 				}
 				else {
-					console.log(`Tool tap panSum ${this.panSum}`);
+					if (this.props.info.toolTypeName === "Model") {
+						this.props.pushModel(this.props.info.name);
+						console.log(`Tool tap panSum ${this.panSum}`);
+					}
 				}
 			}
 		}

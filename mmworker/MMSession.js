@@ -35,6 +35,7 @@ class MMSession extends MMCommandParent {
 		//this.rootModel = new MMModel('root', this);
 		this.rootModel = MMToolTypes['Model'].factory('root', this);
 		this.currentModel = this.rootModel;
+		this.modelStack = [this.currentModel];
 	}
 
 	/** @override */
@@ -42,6 +43,8 @@ class MMSession extends MMCommandParent {
 		let verbs = super.verbs;
 		verbs['test'] = this.test;
 		verbs['dgminfo'] = this.diagramInfo;
+		verbs['pushmodel'] = this.pushModelCommand;
+		verbs['popmodel'] = this.popModelCommand;
 		return verbs;
 	}
 
@@ -89,9 +92,10 @@ class MMSession extends MMCommandParent {
 
 	/**
 	 * @method popModel
+	 * @param count - the number of times to pop
 	 */
-	popModel() {
-		if (this.modelStack.length > 0) {
+	popModel(count=1) {
+		while (this.modelStack.length > 0 && count-- > 0) {
 			this.currentModel = this.modelStack.pop();
 		}
 	}
@@ -104,6 +108,38 @@ class MMSession extends MMCommandParent {
 	 */
 	diagramInfo(command) {
 		command.results = this.currentModel.diagramInfo();
+	}
+
+	/**
+	 * @method pushModelCommand
+	 * verb
+	 * @param {MMCommand} command
+	 * command.args contains the name of the model to be pushed
+	 * command.results contains name new current model
+	 */
+	pushModelCommand(command) {
+		const model = this.currentModel.childNamed(command.args);
+		if (model instanceof MMModel) {
+			this.pushModel(model);	
+		}
+
+		command.results = this.currentModel.name;
+	}
+
+	/**
+	 * @method popModelCommand
+	 * verb
+	 * @param {MMCommand} command
+	 * command.results contains name new current model
+	 */
+	popModelCommand(command) {
+		if (command.args) {
+			this.popModel(command.args);
+		}
+		else {
+			this.popModel();
+		}	
+		command.results = this.currentModel.name;
 	}
 
 	// testing method

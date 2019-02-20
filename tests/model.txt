@@ -9,3 +9,4 @@ addtool Expression cube 100 300
 .cube value
 addtool Model jack
 addtool Model
+/.root.jack addtool Model frodo

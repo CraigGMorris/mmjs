@@ -42,6 +42,13 @@ text {
 	stroke: rgb(0,102,0);
 	font-style: italic;
 }
+#dgm-parent-name {
+	font: 15px sans-serif;
+}
+
+#dgm-model-name {
+	font: 15px sans-serif;
+}
 
 .dgm-Expression {
 	fill: rgba(247,247,230,.8);
