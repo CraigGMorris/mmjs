@@ -225,7 +225,7 @@ export class Diagram extends React.Component {
 									const p = snapPosition(position);
 									terms.push(`${name} ${p.x} ${p.y}`);
 								}
-								this.props.doCommand(terms.join(' '));
+								this.doCommand(terms.join(' '));
 							}			
 							return {
 								dragType: null,
@@ -565,9 +565,14 @@ export class Diagram extends React.Component {
 					this.createSelectionBox(touch.clientX, touch.clientY);
 				}
 				else {
-					if (touch.clientX - this.boundingBox.top < 100 && touch.clientY - this.boundingBox.top < 15) {
-						this.popModel();
-						this.setState({selectionBox: null});
+					if (touch.clientY - this.boundingBox.top < 15) {
+						if (touch.clientX - this.boundingBox.top < this.boundingBox.width/2) {
+							this.popModel();
+							this.setState({selectionBox: null});
+						}
+						else {
+							this.getModelInfo(true);
+						}
 					}
 					else {
 						console.log('should pop menu');
