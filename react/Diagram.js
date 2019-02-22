@@ -85,42 +85,42 @@ export class Diagram extends React.Component {
 		this.props.doCommand('/ dgminfo', (results) => {
 			if (results.length && results[0].results) {
 				const modelInfo = results[0].results;
-				let newState = {
-					path: modelInfo.path,
-					tools: modelInfo.tools
-				};
+				this.setState((state) => {
+					let newState = {
+						path: modelInfo.path,
+						tools: modelInfo.tools
+					};
 
-				if (rescale) {
-					let maxX = -1.e6;
-					let maxY = -1.e6;
-					let minX = 1.e6;
-					let minY = 1.e6;
-					for (const toolName in modelInfo.tools) {
-						const toolInfo  = modelInfo.tools[toolName];
-						const position = toolInfo.position;
-						maxX = (position.x > maxX ) ? position.x : maxX;
-						maxY = (position.y > maxY ) ? position.y : maxY;
-						minX = (position.x > minX ) ? minX : position.x;
-						minY = (position.y > minY ) ? minY : position.y;
-					}
-					if ( maxX != -1.e6 ) { // no objects, don't change
-						maxX += 1.5 *objectWidth;
-						maxY += 5 * objectHeight;
-						
-						const box = this.boundingBox;
-						const widthScale = (box.right - box.left -30) / ( maxX - minX );
-						const heightScale = (box.bottom - box.top - 40) / ( maxY - minY);
-						let scale =  ( widthScale < heightScale ) ? widthScale : heightScale;
-						if ( scale > 3.0 ) {
-							scale = 3.0;
+					if (rescale) {
+						let maxX = -1.e6;
+						let maxY = -1.e6;
+						let minX = 1.e6;
+						let minY = 1.e6;
+						for (const toolName in modelInfo.tools) {
+							const toolInfo  = modelInfo.tools[toolName];
+							const position = toolInfo.position;
+							maxX = (position.x > maxX ) ? position.x : maxX;
+							maxY = (position.y > maxY ) ? position.y : maxY;
+							minX = (position.x > minX ) ? minX : position.x;
+							minY = (position.y > minY ) ? minY : position.y;
 						}
-						newState['scale'] = scale;
-						newState['translate'] = {x: -minX + 30 / scale, y: -minY + 40 /scale};
-//						newState['translate'] = {x: -minX + objectHeight / 2, y: -minY + 20 / scale};
+						if ( maxX != -1.e6 ) { // no objects, don't change
+							maxX += 1.5 *objectWidth;
+							maxY += 5 * objectHeight;
+							
+							const box = state.boundingBox;
+							const widthScale = (box.right - box.left -30) / ( maxX - minX );
+							const heightScale = (box.bottom - box.top - 40) / ( maxY - minY);
+							let scale =  ( widthScale < heightScale ) ? widthScale : heightScale;
+							if ( scale > 3.0 ) {
+								scale = 3.0;
+							}
+							newState['scale'] = scale;
+							newState['translate'] = {x: -minX + 30 / scale, y: -minY + 40 /scale};
+						}
 					}
-				}
-
-				this.setState(newState);
+					return newState;
+				})
 			}
 		});
 	}
@@ -148,8 +148,15 @@ export class Diagram extends React.Component {
 	}
 
 	componentDidMount() {
-		this.boundingBox = document.getElementById('dgm-main').getBoundingClientRect();
-		ReactDOM.findDOMNode(this).addEventListener('touchstart', this.onTouchStart, {passive: false});
+		window.addEventListener('resize', (e) => {
+			this.setState({
+				boundingBox: document.getElementById('dgm-main').getBoundingClientRect()
+			});
+		});
+		this.setState({
+			boundingBox: document.getElementById('dgm-main').getBoundingClientRect()
+		});
+	ReactDOM.findDOMNode(this).addEventListener('touchstart', this.onTouchStart, {passive: false});
 		ReactDOM.findDOMNode(this).addEventListener('touchend', this.onTouchEnd, {passive: false});
 	}
 
@@ -454,16 +461,7 @@ export class Diagram extends React.Component {
 				this.createSelectionBox(e.clientX, e.clientY);
 			}
 			else {
-				if (e.clientY - this.boundingBox.top < 15) {
-					if (e.clientX - this.boundingBox.left < this.boundingBox.width/2) {
-						this.popModel();
-						this.setState({selectionBox: null});
-					}
-					else {
-						this.getModelInfo(true);
-					}
-				}
-				else {
+				if (e.clientY - this.state.boundingBox.top < 15) {
 					console.log('should pop menu');
 					this.setState({selectionBox: null});
 				}
@@ -565,8 +563,9 @@ export class Diagram extends React.Component {
 					this.createSelectionBox(touch.clientX, touch.clientY);
 				}
 				else {
-					if (touch.clientY - this.boundingBox.top < 15) {
-						if (touch.clientX - this.boundingBox.top < this.boundingBox.width/2) {
+					const boundingBox = this.state.boundingBox;
+					if (touch.clientY - boundingBox.top < 15) {
+						if (touch.clientX - boundingBox.top < boundingBox.width/2) {
 							this.popModel();
 							this.setState({selectionBox: null});
 						}
@@ -602,8 +601,9 @@ export class Diagram extends React.Component {
 	render() {
 		let t = this.props.t;
 		let viewBox;
-		if (this.boundingBox) {
-			viewBox = [this.boundingBox.left, this.boundingBox.top, this.boundingBox.width, this.boundingBox.height];
+		const boundingBox = this.state.boundingBox;
+		if (boundingBox) {
+			viewBox = [boundingBox.left, boundingBox.top, boundingBox.width,  boundingBox.height];
 		}
 		else {
 			const width = window.innerWidth - this.props.infoWidth;
@@ -793,21 +793,28 @@ export class Diagram extends React.Component {
 			const pathParts = this.state.path.split('.');
 			if (pathParts.length > 2) {
 				textList.push(
-					e('text', {
+					e(ClickableDiagramText, {
 						id: 'dgm-parent-name',
 						key: 'parent',
 						x: 15,
 						y: 25,
-					}, `< ${pathParts[pathParts.length-2]}`)
+						text:`< ${pathParts[pathParts.length-2]}`,
+						textClick: (e) => {
+							this.popModel();
+							this.setState({selectionBox: null});
+						}
+					})
 				)
 			}
 			textList.push(
-				e('text', {
+				e(ClickableDiagramText, {
 					id: 'dgm-model-name',
 					key: 'name',
-					x: this.boundingBox.width/2,
+					x: this.state.boundingBox.width/2,
 					y: 25,
-				}, pathParts[pathParts.length-1])
+					text: pathParts[pathParts.length-1],
+					textClick: (e) => {this.getModelInfo(true);}
+				})
 			)
 		}
 
@@ -822,12 +829,6 @@ export class Diagram extends React.Component {
 				onWheel: this.onWheel,
 				onClick: this.onClick,
 			},
-/*
-				e('text', {
-					x: 15,
-					y: 25,
-					style: {font: '15px sans-serif'},
-				}, this.state.path),*/
 				toolList,
 				connectList,
 				selectionBox,
@@ -1242,5 +1243,82 @@ class SelectionBox extends React.Component {
 				y2: y + height - 8
 			}),
 		);
+	}
+}
+
+/**
+ * @class ClickableDiagramText
+ * the main mind map diagram
+ */
+class ClickableDiagramText extends React.Component {
+	constructor(props) {
+		super(props);
+		this.touchStarted = false;
+		this.onMouseDown = this.onMouseDown.bind(this);
+		this.onMouseUp = this.onMouseUp.bind(this);
+		this.onMouseMove = this.onMouseMove.bind(this);
+		this.onClick = this.onClick.bind(this);
+		this.onTouchStart = this.onTouchStart.bind(this);
+		this.onTouchMove = this.onTouchMove.bind(this);
+		this.onTouchEnd = this.onTouchEnd.bind(this);
+	}
+
+	ignoreEvent(e) {
+    // only left mouse button
+		if (e.button !== 0) return;
+		// don't do anything
+    e.stopPropagation()
+    e.preventDefault()
+	}
+
+	onMouseDown(e) {
+		this.ignoreEvent(e);
+	}
+
+	onMouseMove(e) {
+		this.ignoreEvent(e);
+	}
+
+	onMouseUp(e) {
+		this.ignoreEvent(e);
+	}
+
+	onClick(e) {
+    // only left mouse button
+		if (e.button !== 0) return;
+		this.props.textClick(e);
+    e.stopPropagation()
+    e.preventDefault()
+	}
+
+	onTouchStart(e) {
+		this.touchStarted = true;
+		this.ignoreEvent(e);
+	}
+
+	onTouchMove(e) {
+		this.ignoreEvent(e);
+	}
+
+	onTouchEnd(e) {
+		this.touchStarted = false;
+		this.props.textClick(e);
+ 		this.ignoreEvent(e);
+	}
+
+	render() {
+		return e('text', {
+			id: this.props.id,
+			className: 'dgm-clickable-text',
+			x: this.props.x,
+			y: this.props.y,
+			onMouseDown: this.onMouseDown,
+			onMouseMove: this.onMouseMove,
+			onMouseUp: this.onMouseUp,
+			onClick: this.onClick,
+			onTouchStart: this.onTouchStart,
+			onTouchMove: this.onTouchMove,
+			onTouchEnd: this.onTouchEnd,
+			}, this.props.text);
 	}
 }

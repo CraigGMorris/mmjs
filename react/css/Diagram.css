@@ -50,6 +50,12 @@ text {
 	font: 15px sans-serif;
 }
 
+.dgm-clickable-text {
+	pointer-events: auto;
+	fill: blue;
+
+}
+
 .dgm-Expression {
 	fill: rgba(247,247,230,.8);
 }
