@@ -2,17 +2,17 @@
 @import "UnitsView.css";
 @import "Diagram.css";
 
-body {
-	height: calc(100vh - 30px);
+/* body {
+	height: calc(100vh - 70px);
 }
-
+ */
 #root {
 	height: 100%;
 	width: 100%;
 	border: solid 1px;
 }
 
-.mmapp-wrapper {
+#mmapp-wrapper {
 	font-size: 1em;
 	height: 100%;
 	width: 100%;
@@ -51,7 +51,6 @@ body {
 .mmapp-diagram {
 	grid-area: diagram;
 	background-color:rgb(238,255,238);
-	/*overflow: hidden;*/
 	border-right: 1px solid;
 }
 
@@ -72,8 +71,8 @@ body {
 }
 
 .mmapp-info-tools button {
-	width: calc(100% - 10px);
-	height: calc(100% - 10px);
+	padding: 0;
+	width: 100%;
 	background: transparent;
 	border: 0;
 	font-size: 10pt;
@@ -82,7 +81,6 @@ body {
 #mmapp-expand-button {
 	grid-area: expand;
 	font-size: 24pt;
-	padding-bottom: 10px;
 }
 
 #mmapp-undo-button {

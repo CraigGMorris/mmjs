@@ -150,11 +150,11 @@ export class Diagram extends React.Component {
 	componentDidMount() {
 		window.addEventListener('resize', (e) => {
 			this.setState({
-				boundingBox: document.getElementById('dgm-main').getBoundingClientRect()
+				boundingBox: document.getElementById('dgm-svg-main').getBoundingClientRect()
 			});
 		});
 		this.setState({
-			boundingBox: document.getElementById('dgm-main').getBoundingClientRect()
+			boundingBox: document.getElementById('dgm-svg-main').getBoundingClientRect()
 		});
 	ReactDOM.findDOMNode(this).addEventListener('touchstart', this.onTouchStart, {passive: false});
 		ReactDOM.findDOMNode(this).addEventListener('touchend', this.onTouchEnd, {passive: false});
@@ -606,8 +606,8 @@ export class Diagram extends React.Component {
 			viewBox = [boundingBox.left, boundingBox.top, boundingBox.width,  boundingBox.height];
 		}
 		else {
-			const width = window.innerWidth - this.props.infoWidth;
-			const height = window.innerHeight;
+			const width = Math.min(10, window.innerWidth - this.props.infoWidth);
+			const height = Math.min(10, window.innerHeight);
 			viewBox = [0, 0, width, height];
 		}
 		const scale = this.state.scale;

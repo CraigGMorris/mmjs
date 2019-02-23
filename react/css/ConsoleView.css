@@ -36,7 +36,7 @@
 	grid-area: input;
 	justify-self: center;
 	font-size: 12pt;
-	width: calc(100% - 10px);
+	width: calc(100% - 1em);
 	border: solid 1px;
 }
 

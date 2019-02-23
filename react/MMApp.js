@@ -250,7 +250,9 @@ export class MMApp extends React.Component {
 			infoComponents.push(infoView);
 		}
 
-		return e('div', {className: 'mmapp-wrapper'},
+		return e('div', {
+				id: 'mmapp-wrapper'
+			},
 			e('div', {className: 'mmapp-diagram'},
 				e(Diagram, {
 					ref: this.diagram,
