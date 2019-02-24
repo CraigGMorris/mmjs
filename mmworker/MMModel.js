@@ -197,18 +197,21 @@ class MMModel extends MMTool {
 	setPositions(command) {
 		let parts = command.args.split(/\s/);
 		let i = 0;
+		let undoParts = [`${this.getPath()} setpositions`];
 		while (i + 2 < parts.length) {
 			const toolName = parts[i++];
 			let tool = this.children[toolName];
 			const x = parseFloat(parts[i++]);
 			const y = parseFloat(parts[i++]);
 			if (tool && !isNaN(x) && !isNaN(y)) {
+				undoParts.push(`${toolName} ${tool.position.x} ${tool.position.y}`);
 				tool.position = new MMPoint(x, y);
 			}
 			else {
 				throw(this.t('mmcmd:modelSetPosition', {command: command, tool: toolName}));
 			}
 		}
+		command.undo = undoParts.join(' ');
 	}
 
 	/**

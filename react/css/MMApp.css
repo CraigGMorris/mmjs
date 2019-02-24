@@ -2,10 +2,12 @@
 @import "UnitsView.css";
 @import "Diagram.css";
 
-/* body {
-	height: calc(100vh - 70px);
+body {
+	height: 100%;
+	width: calc(100%-10px);
+	overflow: hidden;
 }
- */
+
 #root {
 	height: 100%;
 	width: 100%;

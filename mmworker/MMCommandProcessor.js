@@ -101,6 +101,11 @@ class MMCommandProcessor {
 		this.currentExpression = expression;
 		let terms = this.getNextTerm(expression);
 
+		if (terms[0] === 'undo' || terms[0] === 'redo') {
+			// these are used to tag undone and redone commands
+			terms = this.getNextTerm(terms[1])
+		}
+
 		if (terms[0].length == 0) {
 			return false;
 		}

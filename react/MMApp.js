@@ -101,6 +101,19 @@ export class MMApp extends React.Component {
 					if (!warning && result.warning) {
 						warning = result.warning;
 					}
+					if (!warning) {
+						if (result.undo) {
+							if (result.expression && result.expression.startsWith("undo ")) {
+								this.redoStack.push(result.undo);
+							}
+							else {
+								if (!result.expression || !result.expression.startsWith("redo ")) {
+									this.redoStack = [];
+								}
+									this.undoStack.push(result.undo);
+							}
+						}
+					}
 				}
 			}
 			let stringify = (msg) => {
@@ -213,7 +226,27 @@ export class MMApp extends React.Component {
 
 	handleButtonClick(event) {
 		let parts = event.target.value.split(' ');
-		this.pushView(parts[0], parts[1], parts[3], );
+		switch (parts[0]) {
+			case 'undo':
+				const undo = this.undoStack.pop();
+				if (undo) {
+					this.doCommand('undo ' + undo, (results) => {
+						this.updateDiagram();
+					});
+				}
+				break;
+			case 'redo':
+				const redo = this.redoStack.pop();
+				if (redo) {
+					this.doCommand('redo ' + redo, (results) => {
+						this.updateDiagram();
+					});
+				}
+				break;	
+			default:
+				this.pushView(parts[0], parts[1], parts[3], );
+				break;
+		}
 	}
 
 	render() {
