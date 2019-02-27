@@ -74,6 +74,10 @@ export class MMApp extends React.Component {
 
 		this.diagram = React.createRef();
 
+		this.setDgmState = this.setDgmState.bind(this);
+		this.setInfoState = this.setInfoState.bind(this);
+
+
 		this.doCommand = this.doCommand.bind(this);
 		this.updateDiagram = this.updateDiagram.bind(this);
 		this.handleButtonClick = this.handleButtonClick.bind(this);
@@ -89,6 +93,32 @@ export class MMApp extends React.Component {
 				allow2Pane: allow2Pane,
 				viewType: allow2Pane ? ViewType.twoPanes : ViewType.diagram
 			});
+		});
+	}
+
+	/**
+	 * @method setDgmState
+	 * @param {Function} f (prevState) => newState
+	 */
+	setDgmState(f) {
+		this.setState((state) => {
+			return Object.assign(state, f(state.dgmState));
+		});
+	}
+
+	/**
+	 * @method setInfoState
+	 * @param stackNumber
+	 * @param {Function} f (prevState) => newState
+	 */
+	setInfoState(stackNumber, f) {
+		this.setState((state) => {
+			const key = `infoState${stackNumber}`;
+			const oldInfoState = state[key] || {};
+			let newInfoState = Object.assign(oldInfoState,f(state[key]));
+			let newState = {};
+			newState[key] = newInfoState;
+			return newState;
 		});
 	}
 
@@ -286,30 +316,33 @@ export class MMApp extends React.Component {
 		let title = '';
 		let infoStack = this.state.infoStack;
 
-		for (let i = infoStack.length-1; i < infoStack.length; i++) {
-				previousTitle = i > 0 ? infoStack[i-1].title : '';
-			let viewInfo = this.state.infoStack[i];
-			title = viewInfo.title;
-			let infoView = e('div', {
-					className: 'mmapp-info-content',
-					key: i,
-					style: {
-						zIndex: i+1,
-						/** @desc hide lower views in case upper one has transparent areas */
-						visibility: i < infoStack.length - 1 ? 'hidden' : 'visible'
-					}
-				},
-				e(this.infoViews[viewInfo.viewKey],
-					{
-						className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
-						actions: this.actions,
-						viewInfo: viewInfo,
-						updateDiagram: this.updateDiagram,
-						t: t
-					})
-			);
-			infoComponents.push(infoView);
-		}
+		let i = infoStack.length-1;
+		previousTitle = i > 0 ? infoStack[i-1].title : '';
+		let viewInfo = this.state.infoStack[i];
+		let infoState = this.state[`infoState${i}`] || {};
+		title = viewInfo.title;
+		let infoView = e('div', {
+				className: 'mmapp-info-content',
+				key: i,
+				style: {
+					zIndex: i+1,
+					/** @desc hide lower views in case upper one has transparent areas */
+					visibility: i < infoStack.length - 1 ? 'hidden' : 'visible'
+				}
+			},
+			e(this.infoViews[viewInfo.viewKey],
+				{
+					className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
+					actions: this.actions,
+					viewInfo: viewInfo,
+					updateDiagram: this.updateDiagram,
+					stackNumber: i,
+					infoState: infoState,
+					setInfoState: this.setInfoState,
+					t: t
+				})
+		);
+		infoComponents.push(infoView);
 
 		const infoNav = e('div', {
 				className: 'mmapp-info-nav',

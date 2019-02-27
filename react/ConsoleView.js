@@ -8,10 +8,6 @@ const e = React.createElement;
 export class ConsoleView extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			input: '',
-			output: ''
-		};
 		this.handleChange = this.handleChange.bind(this);
 		this.handleKeyPress = this.handleKeyPress.bind(this);
 		this.readCommandFile = this.readCommandFile.bind(this);
@@ -39,7 +35,7 @@ export class ConsoleView extends React.Component {
 			}
 			lines.push(output);
 		}
-		this.setState((state) => {
+		this.props.setInfoState(this.props.stackNumber, (state) => {
 			lines = lines.join('\n');
 			if (lines.length > 100000) {
 				lines = lines.substr(0, 100000) + '\nTRUNCATED at 100000 chars';
@@ -55,7 +51,10 @@ export class ConsoleView extends React.Component {
 	 * @param {Event} event
 	 */
   handleChange(event) {
-		this.setState({input: event.target.value});
+		const value = event.target.value;  // event will be null in handler
+		this.props.setInfoState(this.props.stackNumber, (state) => {
+			return {input: value}
+		});
 	}
 	
 	/** @method handleKeyPress
@@ -64,8 +63,10 @@ export class ConsoleView extends React.Component {
 	 */
 	handleKeyPress(event) {
 		if (event.key == 'Enter') {
-			this.props.actions.doCommand(this.state.input, this.callBack);
-			this.setState({input:''});
+			this.props.actions.doCommand(this.props.infoState.input, this.callBack);
+			this.props.setInfoState(this.props.stackNumber, (state) => {
+				return {input:''}
+			});
 		}
 	}
 
@@ -90,12 +91,12 @@ export class ConsoleView extends React.Component {
 		return e('div', {className:'console-view'},
 			e('textarea',{
 				id: 'console-result-field',
-				value: this.state.output,
+				value: this.props.infoState.output || '',
 				readOnly: true
 			}),
 			e('input', {
 				id: 'console-input-field',
-				value: this.state.input,
+				value: this.props.infoState.input || '',
 				placeholder: t('react:consoleReadPlaceHolder'),
 				onChange: this.handleChange,
 				onKeyPress: this.handleKeyPress
