@@ -8,6 +8,17 @@ import {UnitsView, UserUnitsView, UnitSetsView, UnitSetView} from './UnitsView.j
 const e = React.createElement;
 
 /**
+ * Enum for view types.
+ * @readonly
+ * @enum {string}
+ */
+const ViewType = Object.freeze({
+	diagram: 0,
+	info: 1,
+	twoPane: 2
+});
+
+/**
  * @class MMApp
  * the main Math Minion window
  * @member {MMCommandPipe} pipe - pipe to worker
@@ -51,9 +62,14 @@ export class MMApp extends React.Component {
 		this.undoStack = [];
 		this.redoStack = [];
 
+		// calc pane style
+		const allow2Pane = document.documentElement.clientWidth >= 640;
+
 		this.state = {
 			/** @desc infoStack keeps the information necessary to render all the info views pushed */
-			infoStack: [initialInfoState]
+			infoStack: [initialInfoState],
+			allow2Pane: allow2Pane,
+			viewType: allow2Pane ? ViewType.twoPanes : ViewType.diagram
 		}
 
 		this.diagram = React.createRef();
@@ -63,6 +79,17 @@ export class MMApp extends React.Component {
 		this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.popView = this.popView.bind(this);
 		this.pushView = this.pushView.bind(this);
+	}
+
+	componentDidMount() {
+		window.addEventListener('resize', (e) => {
+			document.body.style.height = `${document.documentElement.clientHeight-15}px`;
+			const allow2Pane = document.documentElement.clientWidth >= 640;
+			this.setState({
+				allow2Pane: allow2Pane,
+				viewType: allow2Pane ? ViewType.twoPanes : ViewType.diagram
+			});
+		});
 	}
 
 	/**
@@ -258,15 +285,16 @@ export class MMApp extends React.Component {
 		let previousTitle = '';
 		let title = '';
 		let infoStack = this.state.infoStack;
-		for (let i = 0; i < infoStack.length; i++) {
-			previousTitle = i > 0 ? infoStack[i-1].title : '';
+
+		for (let i = infoStack.length-1; i < infoStack.length; i++) {
+				previousTitle = i > 0 ? infoStack[i-1].title : '';
 			let viewInfo = this.state.infoStack[i];
 			title = viewInfo.title;
 			let infoView = e('div', {
 					className: 'mmapp-info-content',
 					key: i,
 					style: {
-						zIndex: i,
+						zIndex: i+1,
 						/** @desc hide lower views in case upper one has transparent areas */
 						visibility: i < infoStack.length - 1 ? 'hidden' : 'visible'
 					}
@@ -283,63 +311,106 @@ export class MMApp extends React.Component {
 			infoComponents.push(infoView);
 		}
 
-		return e('div', {
-				id: 'mmapp-wrapper'
+		const infoNav = e('div', {
+				className: 'mmapp-info-nav',
 			},
-			e('div', {className: 'mmapp-diagram'},
-				e(Diagram, {
-					ref: this.diagram,
-					infoWidth: 320,
-					doCommand: this.doCommand
-				})
-			),
-			e('div', {className: 'mmapp-info-nav'},
-				e('div',{
-					className: 'mmapp-info-navback clickable',
-					onClick: this.popView
-				}, previousTitle ? '< ' + t(previousTitle) : ''),
-				e('div',{
-					className: 'mmapp-info-title'
-				}, t(title))				
-			),
-			infoComponents,
-			e('div', {className: 'mmapp-info-tools'},
-				e('button', {
-					id:'mmapp-expand-button',
-					value:'expand',
-					onClick: this.handleButtonClick
-					},
-					'⇤'
-				),
-				e('button', {
-					id:'mmapp-undo-button',
-					value:'undo',
-					onClick: this.handleButtonClick
-					},
-					'Undo'
-				),
-				e('button', {
-					id:'mmapp-redo-button',
-					value:'redo',
-					onClick: this.handleButtonClick
-					},
-					'Redo'
-				),
-				e('button', {
-						id:'mmapp-unit-button',
-						value:'units react:unitsTitle /units',
-						onClick: this.handleButtonClick
-					},
-					t('react:unitButtonValue')
-				),
-				e('button', {
-						id:'mmapp-console-button',
-						value:'console react:consoleTitle',
-						onClick: this.handleButtonClick
-					},
-					t('react:consoleButtonValue')
-				),
-			)
+			e('div',{
+				className: 'mmapp-info-navback clickable',
+				onClick: this.popView
+			}, previousTitle ? '< ' + t(previousTitle) : ''),
+			e('div',{
+				className: 'mmapp-info-title'
+			}, t(title))				
 		);
+
+		const infoTools = e('div', {className: 'mmapp-info-tools'},
+			e('button', {
+				id:'mmapp-expand-button',
+				value:'expand',
+				onClick: this.handleButtonClick
+				},
+				'⇤'
+			),
+			e('button', {
+				id:'mmapp-undo-button',
+				value:'undo',
+				onClick: this.handleButtonClick
+				},
+				'Undo'
+			),
+			e('button', {
+				id:'mmapp-redo-button',
+				value:'redo',
+				onClick: this.handleButtonClick
+				},
+				'Redo'
+			),
+			e('button', {
+					id:'mmapp-unit-button',
+					value:'units react:unitsTitle /units',
+					onClick: this.handleButtonClick
+				},
+				t('react:unitButtonValue')
+			),
+			e('button', {
+					id:'mmapp-console-button',
+					value:'console react:consoleTitle',
+					onClick: this.handleButtonClick
+				},
+				t('react:consoleButtonValue')
+			),
+		);
+
+		let wrapper;
+		switch (this.state.viewType) {
+			case ViewType.twoPanes:
+				wrapper = e('div',{
+					id: 'mmapp-wrapper',
+					style: {gridTemplateColumns: '1fr 320px'},
+				},
+				e('div', {className: 'mmapp-diagram'},
+					e(Diagram, {
+						ref: this.diagram,
+						infoWidth: 320,
+						doCommand: this.doCommand
+					})
+				),
+				infoNav,
+				infoComponents,
+				infoTools,
+				);
+				break;
+
+			case ViewType.diagram:
+				const dgm =	e('div', {
+						className: 'mmapp-diagram',
+						key: infoStack.length + 2,
+						style: {
+							zIndex: infoStack.length + 2,
+							gridArea: 'info',
+						}
+					},
+					e(Diagram, {
+						ref: this.diagram,
+						infoWidth: 0,
+						doCommand: this.doCommand
+					})
+				);
+				infoComponents.push(dgm);
+				wrapper = e('div', {
+					id: 'mmapp-wrapper-dgm',
+					style: {
+						gridTemplateColumns: '1fr',
+						gridTemplateAreas: "nav\ninfo\ninfotools"
+					},
+				},
+				infoNav,
+				infoComponents,
+				infoTools,
+				);
+				break;			
+		}
+
+		return wrapper;
 	}
 }

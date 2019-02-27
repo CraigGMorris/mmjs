@@ -27,8 +27,23 @@ body {
 		"diagram nav"
 		"diagram info"
 		"diagram infotools";
-		background-color: rgb(243,243,243);
-	}
+	background-color: rgb(243,243,243);
+}
+
+#mmapp-wrapper-dgm {
+	font-size: 1em;
+	height: 100%;
+	width: 100%;
+	display: grid;
+	--toolHeight: 40px;
+	grid-template-columns: 1fr;
+	grid-template-rows: 40px 1fr var(--toolHeight);
+	grid-template-areas:
+		"nav"
+		"info"
+		"infotools";
+	background-color: rgb(243,243,243);
+}
 
 .mmapp-info-nav {
 	grid-area: nav;
@@ -52,6 +67,12 @@ body {
 
 .mmapp-diagram {
 	grid-area: diagram;
+	background-color:rgb(238,255,238);
+	border-right: 1px solid;
+}
+
+.mmapp-diagram-single{
+	grid-area: info;
 	background-color:rgb(238,255,238);
 	border-right: 1px solid;
 }
