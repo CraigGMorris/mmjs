@@ -14,7 +14,7 @@ body {
 	border: solid 1px;
 }
 
-#mmapp-wrapper {
+#mmapp-wrapper-twopane {
 	font-size: 1em;
 	height: 100%;
 	width: 100%;
@@ -30,7 +30,7 @@ body {
 	background-color: rgb(243,243,243);
 }
 
-#mmapp-wrapper-dgm {
+#mmapp-wrapper-onepane {
 	font-size: 1em;
 	height: 100%;
 	width: 100%;
@@ -66,15 +66,14 @@ body {
 }
 
 .mmapp-diagram {
-	grid-area: diagram;
 	background-color:rgb(238,255,238);
 	border-right: 1px solid;
 }
 
-.mmapp-diagram-single{
+.mmapp-diagram-single {
+	height: 100%;
 	grid-area: info;
 	background-color:rgb(238,255,238);
-	border-right: 1px solid;
 }
 
 .mmapp-info-content {
@@ -103,7 +102,6 @@ body {
 
 #mmapp-expand-button {
 	grid-area: expand;
-	font-size: 24pt;
 }
 
 #mmapp-undo-button {

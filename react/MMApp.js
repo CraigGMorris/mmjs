@@ -15,7 +15,7 @@ const e = React.createElement;
 const ViewType = Object.freeze({
 	diagram: 0,
 	info: 1,
-	twoPane: 2
+	twoPanes: 2
 });
 
 /**
@@ -68,6 +68,13 @@ export class MMApp extends React.Component {
 		this.state = {
 			/** @desc infoStack keeps the information necessary to render all the info views pushed */
 			infoStack: [initialInfoState],
+			dgmState: {
+				dragType: null,
+				dragSelection: null,
+				selectionBox: null,
+				translate: {x: 0, y: 0},
+				scale: 1.0,				
+			},
 			allow2Pane: allow2Pane,
 			viewType: allow2Pane ? ViewType.twoPanes : ViewType.diagram
 		}
@@ -101,9 +108,14 @@ export class MMApp extends React.Component {
 	 * @param {Function} f (prevState) => newState
 	 */
 	setDgmState(f) {
-		this.setState((state) => {
-			return Object.assign(state, f(state.dgmState));
-		});
+		if (typeof f === 'function') {
+			this.setState((state) => {
+				return {dgmState: Object.assign(this.state.dgmState, f(state.dgmState))};
+			});
+		}
+		else {
+			this.setState({dgmState: Object.assign(this.state.dgmState, f)});
+		}
 	}
 
 	/**
@@ -112,14 +124,21 @@ export class MMApp extends React.Component {
 	 * @param {Function} f (prevState) => newState
 	 */
 	setInfoState(stackNumber, f) {
-		this.setState((state) => {
-			const key = `infoState${stackNumber}`;
-			const oldInfoState = state[key] || {};
-			let newInfoState = Object.assign(oldInfoState,f(state[key]));
+		const key = `infoState${stackNumber}`;
+		if (typeof f === 'function') {
+			this.setState((state) => {
+				const oldInfoState = state[key] || {};
+				let newInfoState = Object.assign(oldInfoState,f(state[key]));
+				let newState = {};
+				newState[key] = newInfoState;
+				return newState;
+			});
+		}
+		else {
 			let newState = {};
-			newState[key] = newInfoState;
-			return newState;
-		});
+			newState[key] = f;
+			this.setState(newState);
+		}
 	}
 
 	/**
@@ -261,6 +280,7 @@ export class MMApp extends React.Component {
 		let stack = this.state.infoStack;
 		if (stack.length) {
 			stack.pop();
+			this.setInfoState(stack.length, {});
 			this.updateViewState(stack.length-1);
 		}
 	}
@@ -299,7 +319,21 @@ export class MMApp extends React.Component {
 						this.updateDiagram();
 					});
 				}
-				break;	
+				break;
+			case 'expand':
+				this.setState((state) => {
+					switch (state.viewType) {
+						case ViewType.twoPanes:
+							return {viewType: ViewType.info};
+
+						case ViewType.diagram:
+							return {viewType: (state.allow2Pane) ? ViewType.twoPanes : ViewType.info};
+
+						case ViewType.info:
+							return {viewType: (state.allow2Pane) ? ViewType.twoPanes : ViewType.diagram}
+					}
+				})
+				break;
 			default:
 				this.pushView(parts[0], parts[1], parts[3], );
 				break;
@@ -307,31 +341,25 @@ export class MMApp extends React.Component {
 	}
 
 	render() {
+		console.log(`body height ${document.documentElement.clientHeight}`);
 		let t = this.props.t;
-		/** @desc infoComponents is array of info views created from the information on the state.infoStack
-		 * Only the last one will be visible, but the others will retain their information when popped back to
-		 */
-		let infoComponents = [];
 		let previousTitle = '';
 		let title = '';
 		let infoStack = this.state.infoStack;
-
-		let i = infoStack.length-1;
-		previousTitle = i > 0 ? infoStack[i-1].title : '';
-		let viewInfo = this.state.infoStack[i];
-		let infoState = this.state[`infoState${i}`] || {};
-		title = viewInfo.title;
-		let infoView = e('div', {
-				className: 'mmapp-info-content',
-				key: i,
-				style: {
-					zIndex: i+1,
-					/** @desc hide lower views in case upper one has transparent areas */
-					visibility: i < infoStack.length - 1 ? 'hidden' : 'visible'
-				}
-			},
-			e(this.infoViews[viewInfo.viewKey],
-				{
+		let infoView = null;
+		let infoNav = null;
+		const viewType = this.state.viewType;
+		let diagramHeight = document.documentElement.clientHeight-15;
+		if (viewType !== ViewType.diagram) {
+			let i = infoStack.length-1;
+			previousTitle = i > 0 ? infoStack[i-1].title : '';
+			let viewInfo = this.state.infoStack[i];
+			let infoState = this.state[`infoState${i}`] || {};
+			title = viewInfo.title;
+			infoView = e('div', {
+					className: 'mmapp-info-content',
+				},
+				e(this.infoViews[viewInfo.viewKey], {
 					className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
 					actions: this.actions,
 					viewInfo: viewInfo,
@@ -341,20 +369,43 @@ export class MMApp extends React.Component {
 					setInfoState: this.setInfoState,
 					t: t
 				})
-		);
-		infoComponents.push(infoView);
-
-		const infoNav = e('div', {
+			);
+			infoNav = e('div', {
 				className: 'mmapp-info-nav',
-			},
-			e('div',{
-				className: 'mmapp-info-navback clickable',
-				onClick: this.popView
-			}, previousTitle ? '< ' + t(previousTitle) : ''),
-			e('div',{
-				className: 'mmapp-info-title'
-			}, t(title))				
-		);
+				},
+				e('div',{
+					className: 'mmapp-info-navback clickable',
+					onClick: this.popView
+				}, previousTitle ? '< ' + t(previousTitle) : ''),
+				e('div',{
+					className: 'mmapp-info-title'
+				}, t(title))				
+			);
+		}
+		else {
+			diagramHeight -= 80;
+		}
+
+		let diagram = null;
+	
+		if (viewType !== ViewType.info) {
+			diagram = e(Diagram, {
+				ref: this.diagram,
+				infoWidth: infoView ? 320 : 0,
+				dgmState: this.state.dgmState,
+				diagramHeight: diagramHeight,
+				setDgmState: this.setDgmState,
+				doCommand: this.doCommand
+			});
+		}
+
+		let expandText = 'Expand'; //'⇤';
+		if (viewType === ViewType.info) {
+			expandText = 'Dgm';
+		}
+		else if (viewType === ViewType.diagram) {
+			expandText = 'Info';
+		}
 
 		const infoTools = e('div', {className: 'mmapp-info-tools'},
 			e('button', {
@@ -362,7 +413,7 @@ export class MMApp extends React.Component {
 				value:'expand',
 				onClick: this.handleButtonClick
 				},
-				'⇤'
+				expandText
 			),
 			e('button', {
 				id:'mmapp-undo-button',
@@ -395,53 +446,47 @@ export class MMApp extends React.Component {
 		);
 
 		let wrapper;
-		switch (this.state.viewType) {
+		switch (viewType) {
 			case ViewType.twoPanes:
 				wrapper = e('div',{
-					id: 'mmapp-wrapper',
+					id: 'mmapp-wrapper-twopane',
 					style: {gridTemplateColumns: '1fr 320px'},
 				},
-				e('div', {className: 'mmapp-diagram'},
-					e(Diagram, {
-						ref: this.diagram,
-						infoWidth: 320,
-						doCommand: this.doCommand
-					})
+				e('div', {
+						className: 'mmapp-diagram',
+						style: {gridArea: 'diagram'}
+					},
+					diagram
 				),
 				infoNav,
-				infoComponents,
+				infoView,
 				infoTools,
 				);
 				break;
 
 			case ViewType.diagram:
-				const dgm =	e('div', {
-						className: 'mmapp-diagram',
-						key: infoStack.length + 2,
-						style: {
-							zIndex: infoStack.length + 2,
-							gridArea: 'info',
-						}
-					},
-					e(Diagram, {
-						ref: this.diagram,
-						infoWidth: 0,
-						doCommand: this.doCommand
-					})
-				);
-				infoComponents.push(dgm);
 				wrapper = e('div', {
-					id: 'mmapp-wrapper-dgm',
-					style: {
-						gridTemplateColumns: '1fr',
-						gridTemplateAreas: "nav\ninfo\ninfotools"
-					},
+					id: 'mmapp-wrapper-onepane',
 				},
-				infoNav,
-				infoComponents,
+				e('div', {
+						className: 'mmapp-diagram-single',
+						style: {gridArea: 'nav / 1 / info / 1'}
+					},
+					diagram
+				),
 				infoTools,
 				);
-				break;			
+				break;	
+				
+			case ViewType.info:
+				wrapper = e('div',{
+					id: 'mmapp-wrapper-onepane',
+				},
+				infoNav,
+				infoView,
+				infoTools,
+				);
+			break;
 		}
 
 		return wrapper;

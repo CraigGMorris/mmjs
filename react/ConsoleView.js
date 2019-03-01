@@ -52,9 +52,7 @@ export class ConsoleView extends React.Component {
 	 */
   handleChange(event) {
 		const value = event.target.value;  // event will be null in handler
-		this.props.setInfoState(this.props.stackNumber, (state) => {
-			return {input: value}
-		});
+		this.props.setInfoState(this.props.stackNumber, {input: value});
 	}
 	
 	/** @method handleKeyPress

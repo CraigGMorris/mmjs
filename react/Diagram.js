@@ -51,13 +51,6 @@ const DiagramDragType = Object.freeze({
 export class Diagram extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			dragType: null,
-			dragSelection: null,
-			selectionBox: null,
-			translate: {x: 0, y: 0},
-			scale: 1.0,
-		};
 
 		this.panSum = 0;
 
@@ -85,7 +78,7 @@ export class Diagram extends React.Component {
 		this.props.doCommand('/ dgminfo', (results) => {
 			if (results.length && results[0].results) {
 				const modelInfo = results[0].results;
-				this.setState((state) => {
+				this.props.setDgmState((state) => {
 					let newState = {
 						path: modelInfo.path,
 						tools: modelInfo.tools
@@ -137,26 +130,25 @@ export class Diagram extends React.Component {
 		});
 	}
 
-	componentDidUpdate(precProps, prevState) {
-		if (this.state.dragType == DiagramDragType.pan && prevState.dragType != DiagramDragType.pan) {
-			document.addEventListener('mousemove', this.onMouseMove);
-      document.addEventListener('mouseup', this.onMouseUp);
-		} else if (this.state.dragType != DiagramDragType.pan && prevState.dragType == DiagramDragType.pan) {
-      document.removeEventListener('mousemove', this.onMouseMove);
-			document.removeEventListener('mouseup', this.onMouseUp);
-		}
-	}
-
 	componentDidMount() {
 		window.addEventListener('resize', (e) => {
-			this.setState({
+			const svgMain = document.getElementById('dgm-svg-main');
+			if (svgMain) {
+				console.log(`svgmain height ${svgMain.getBoundingClientRect().height}`);
+				this.props.setDgmState({
+					boundingBox: svgMain.getBoundingClientRect()
+				});
+			}
+		});
+		console.log(`initial bbox height ${document.getElementById('dgm-svg-main').getBoundingClientRect().height}`);
+		this.props.setDgmState((state) => {
+			return {
 				boundingBox: document.getElementById('dgm-svg-main').getBoundingClientRect()
-			});
+			}
 		});
-		this.setState({
-			boundingBox: document.getElementById('dgm-svg-main').getBoundingClientRect()
-		});
-	ReactDOM.findDOMNode(this).addEventListener('touchstart', this.onTouchStart, {passive: false});
+		ReactDOM.findDOMNode(this).addEventListener('mousemove', this.onMouseMove);
+		ReactDOM.findDOMNode(this).addEventListener('mouseup', this.onMouseUp);
+		ReactDOM.findDOMNode(this).addEventListener('touchstart', this.onTouchStart, {passive: false});
 		ReactDOM.findDOMNode(this).addEventListener('touchend', this.onTouchEnd, {passive: false});
 	}
 
@@ -174,7 +166,7 @@ export class Diagram extends React.Component {
 	 * if type is selectionBox, options should contain topLeft and
 	 */
 	setDragType(dragType, lastMousePosition, options) {
-		this.setState((state) => {
+		this.props.setDgmState((state) => {
 			switch (dragType) {
 				case DiagramDragType.pan: 
 					return {
@@ -184,7 +176,7 @@ export class Diagram extends React.Component {
 	
 				case DiagramDragType.tool: {
 					if (options && options.name) {
-						const tool = this.state.tools[options.name];
+						const tool = state.tools[options.name];
 						let dragSelection = new Map();
 						dragSelection.set(tool.name, tool.position);
 						return {
@@ -257,7 +249,10 @@ export class Diagram extends React.Component {
 	 * @param {Number} y 
 	 */
 	draggedTo(x, y) {
-		this.setState((state) => {
+		this.props.setDgmState((state) => {
+			if (state.dragType == null) {
+				return {};
+			}
 			const dx = x - state.lastMouse.x;
 			const dy = y - state.lastMouse.y;
 			function updateDragSelection(dragSelection) {
@@ -407,7 +402,7 @@ export class Diagram extends React.Component {
 	 * x, y is top left corner
 	 */
 	createSelectionBox(x, y) {
-		this.setState((state) => {
+		this.props.setDgmState((state) => {
 			const scale = state.scale;
 			const topLeft = {
 				x: x / scale - state.translate.x,
@@ -445,11 +440,13 @@ export class Diagram extends React.Component {
 	}
 	
   onMouseMove(e) {
-		this.panSum += Math.abs(e.movementX) + Math.abs(e.movementY);
+		if (this.props.dgmState.dragType) {
+			this.panSum += Math.abs(e.movementX) + Math.abs(e.movementY);
 
-		this.draggedTo( e.clientX, e.clientY);
-    e.stopPropagation()
-    e.preventDefault()
+			this.draggedTo( e.clientX, e.clientY);
+			e.stopPropagation()
+			e.preventDefault()
+		}
 	}
 
 	onClick(e) {
@@ -461,10 +458,10 @@ export class Diagram extends React.Component {
 				this.createSelectionBox(e.clientX, e.clientY);
 			}
 			else {
-				if (e.clientY - this.state.boundingBox.top < 15) {
+				if (e.clientY - this.props.dgmState.boundingBox.top < 15) {
 					console.log('should pop menu');
-					this.setState({selectionBox: null});
 				}
+				this.props.setDgmState({selectionBox: null});
 			}
 		}
 		this.panSum = 0;
@@ -476,7 +473,7 @@ export class Diagram extends React.Component {
 		const deltaY = e.deltaY;
 		const pageX = e.pageX;
 		const pageY = e.pageY;
-		this.setState((state) => {
+		this.props.setDgmState((state) => {
 			const newScale = Math.max(0.1, state.scale - deltaY/100);
 			const newTranslate = {
 				x: pageX/newScale - pageX/state.scale + state.translate.x,
@@ -537,7 +534,7 @@ export class Diagram extends React.Component {
 			const clientX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
 			const clientY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
 
-			this.setState((state) => {
+			this.props.setDgmState((state) => {
 				const newScale = Math.max(0.1, state.scale * ratio);
 				const newTranslate = {
 					x: clientX/newScale - clientX/state.scale + state.translate.x,
@@ -563,11 +560,11 @@ export class Diagram extends React.Component {
 					this.createSelectionBox(touch.clientX, touch.clientY);
 				}
 				else {
-					const boundingBox = this.state.boundingBox;
+					const boundingBox = this.props.dgmState.boundingBox;
 					if (touch.clientY - boundingBox.top < 15) {
 						if (touch.clientX - boundingBox.top < boundingBox.width/2) {
 							this.popModel();
-							this.setState({selectionBox: null});
+							this.props.setDgmState({selectionBox: null});
 						}
 						else {
 							this.getModelInfo(true);
@@ -575,7 +572,7 @@ export class Diagram extends React.Component {
 					}
 					else {
 						console.log('should pop menu');
-						this.setState({selectionBox: null});
+						this.props.setDgmState({selectionBox: null});
 					}
 				}
 			}
@@ -601,25 +598,25 @@ export class Diagram extends React.Component {
 	render() {
 		let t = this.props.t;
 		let viewBox;
-		const boundingBox = this.state.boundingBox;
+		const boundingBox = this.props.dgmState.boundingBox;
 		if (boundingBox) {
-			viewBox = [boundingBox.left, boundingBox.top, boundingBox.width,  boundingBox.height];
+			viewBox = [boundingBox.left, boundingBox.top, boundingBox.width,  this.props.diagramHeight];
 		}
 		else {
 			const width = Math.min(10, window.innerWidth - this.props.infoWidth);
-			const height = Math.min(10, window.innerHeight);
+			const height = this.props.diagramHeight;
 			viewBox = [0, 0, width, height];
 		}
-		const scale = this.state.scale;
-		const tools = this.state.tools;
-		const tx = this.state.translate.x;
-		const ty = this.state.translate.y;
+		const scale = this.props.dgmState.scale;
+		const tools = this.props.dgmState.tools;
+		const tx = this.props.dgmState.translate.x;
+		const ty = this.props.dgmState.translate.y;
 		let toolList = [];
 		let connectList = [];
 		for (const toolName in tools) {
 			const toolInfo  = tools[toolName];
 			let highlight = false;
-			if (this.state.dragSelection && this.state.dragSelection.has(toolInfo.name)) {
+			if (this.props.dgmState.dragSelection && this.props.dgmState.dragSelection.has(toolInfo.name)) {
 				highlight = true;
 			}
 
@@ -627,7 +624,7 @@ export class Diagram extends React.Component {
 				key: toolName,
 				info: toolInfo,
 				highlight: highlight,
-				translate: this.state.translate,
+				translate: this.props.dgmState.translate,
 				scale: scale,
 				setDragType: this.setDragType,
 				draggedTo: this.draggedTo,
@@ -778,19 +775,19 @@ export class Diagram extends React.Component {
 		}
 
 		let selectionBox = null;
-		if (this.state.selectionBox) {
+		if (this.props.dgmState.selectionBox) {
 			selectionBox = e(SelectionBox, {
-				rect: this.state.selectionBox,
+				rect: this.props.dgmState.selectionBox,
 				setDragType: this.setDragType,
 				draggedTo: this.draggedTo,
-				translate: this.state.translate,
+				translate: this.props.dgmState.translate,
 				scale: scale
 			})
 		}
 
 		let textList = [];
-		if (this.state.path) {
-			const pathParts = this.state.path.split('.');
+		if (this.props.dgmState.path) {
+			const pathParts = this.props.dgmState.path.split('.');
 			if (pathParts.length > 2) {
 				textList.push(
 					e(ClickableDiagramText, {
@@ -801,7 +798,7 @@ export class Diagram extends React.Component {
 						text:`< ${pathParts[pathParts.length-2]}`,
 						textClick: (e) => {
 							this.popModel();
-							this.setState({selectionBox: null});
+							this.props.setDgmState({selectionBox: null});
 						}
 					})
 				)
@@ -810,7 +807,7 @@ export class Diagram extends React.Component {
 				e(ClickableDiagramText, {
 					id: 'dgm-model-name',
 					key: 'name',
-					x: this.state.boundingBox.width/2,
+					x: this.props.dgmState.boundingBox.width/2,
 					y: 25,
 					text: pathParts[pathParts.length-1],
 					textClick: (e) => {this.getModelInfo(true);}
@@ -820,7 +817,6 @@ export class Diagram extends React.Component {
 
 		return e('div', {
 				id:'dgm-main',
-//				className: this.state.dragType ? 'hide-cursor' : 'show-cursor'
 			},
 			e('svg', {
 				id: 'dgm-svg-main',
