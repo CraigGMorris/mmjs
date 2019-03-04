@@ -101,9 +101,9 @@ export class Diagram extends React.Component {
 							maxX += 1.5 *objectWidth;
 							maxY += 5 * objectHeight;
 							
-							const box = state.boundingBox;
-							const widthScale = (box.right - box.left -30) / ( maxX - minX );
-							const heightScale = (box.bottom - box.top - 40) / ( maxY - minY);
+							const box = this.props.diagramBox;
+							const widthScale = (box.width -30) / ( maxX - minX );
+							const heightScale = (box.height - 40) / ( maxY - minY);
 							let scale =  ( widthScale < heightScale ) ? widthScale : heightScale;
 							if ( scale > 3.0 ) {
 								scale = 3.0;
@@ -131,30 +131,19 @@ export class Diagram extends React.Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener('resize', (e) => {
-			const svgMain = document.getElementById('dgm-svg-main');
-			if (svgMain) {
-				console.log(`svgmain height ${svgMain.getBoundingClientRect().height}`);
-				this.props.setDgmState({
-					boundingBox: svgMain.getBoundingClientRect()
-				});
-			}
-		});
-		console.log(`initial bbox height ${document.getElementById('dgm-svg-main').getBoundingClientRect().height}`);
-		this.props.setDgmState((state) => {
-			return {
-				boundingBox: document.getElementById('dgm-svg-main').getBoundingClientRect()
-			}
-		});
-		ReactDOM.findDOMNode(this).addEventListener('mousemove', this.onMouseMove);
-		ReactDOM.findDOMNode(this).addEventListener('mouseup', this.onMouseUp);
-		ReactDOM.findDOMNode(this).addEventListener('touchstart', this.onTouchStart, {passive: false});
-		ReactDOM.findDOMNode(this).addEventListener('touchend', this.onTouchEnd, {passive: false});
+		const domNode = ReactDOM.findDOMNode(this);
+		domNode.addEventListener('mousemove', this.onMouseMove);
+		domNode.addEventListener('mouseup', this.onMouseUp);
+		domNode.addEventListener('touchstart', this.onTouchStart, {passive: false});
+		domNode.addEventListener('touchend', this.onTouchEnd, {passive: false});
 	}
 
 	componentWillUnmount() {
-		ReactDOM.findDOMNode(this).removeEventListener('touchstart', this.onTouchStart);
-		ReactDOM.findDOMNode(this).removeEventListener('touchend', this.onTouchEnd);
+		const domNode = ReactDOM.findDOMNode(this);
+		domNode.removeEventListener('mousemove', this.onMouseMove);
+		domNode.removeEventListener('mouseup', this.onMouseUp);
+		domNode.removeEventListener('touchstart', this.onTouchStart);
+		domNode.removeEventListener('touchend', this.onTouchEnd);
 	}
 
 	/**
@@ -458,7 +447,7 @@ export class Diagram extends React.Component {
 				this.createSelectionBox(e.clientX, e.clientY);
 			}
 			else {
-				if (e.clientY - this.props.dgmState.boundingBox.top < 15) {
+				if (e.clientY - this.props.diagramBox.top < 15) {
 					console.log('should pop menu');
 				}
 				this.props.setDgmState({selectionBox: null});
@@ -560,9 +549,9 @@ export class Diagram extends React.Component {
 					this.createSelectionBox(touch.clientX, touch.clientY);
 				}
 				else {
-					const boundingBox = this.props.dgmState.boundingBox;
-					if (touch.clientY - boundingBox.top < 15) {
-						if (touch.clientX - boundingBox.top < boundingBox.width/2) {
+					const diagramBox = this.props.diagramBox;
+					if (touch.clientY - diagramBox.top < 15) {
+						if (touch.clientX - diagramBox.top < diagramBox.width/2) {
 							this.popModel();
 							this.props.setDgmState({selectionBox: null});
 						}
@@ -597,16 +586,8 @@ export class Diagram extends React.Component {
 
 	render() {
 		let t = this.props.t;
-		let viewBox;
-		const boundingBox = this.props.dgmState.boundingBox;
-		if (boundingBox) {
-			viewBox = [boundingBox.left, boundingBox.top, boundingBox.width,  this.props.diagramHeight];
-		}
-		else {
-			const width = Math.min(10, window.innerWidth - this.props.infoWidth);
-			const height = this.props.diagramHeight;
-			viewBox = [0, 0, width, height];
-		}
+		const dgmBox = this.props.diagramBox;
+		const viewBox = [dgmBox.left, dgmBox.top, dgmBox.width, dgmBox.height];
 		const scale = this.props.dgmState.scale;
 		const tools = this.props.dgmState.tools;
 		const tx = this.props.dgmState.translate.x;
@@ -807,7 +788,7 @@ export class Diagram extends React.Component {
 				e(ClickableDiagramText, {
 					id: 'dgm-model-name',
 					key: 'name',
-					x: this.props.dgmState.boundingBox.width/2,
+					x: this.props.diagramBox.width/2,
 					y: 25,
 					text: pathParts[pathParts.length-1],
 					textClick: (e) => {this.getModelInfo(true);}

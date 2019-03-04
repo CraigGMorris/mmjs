@@ -33,7 +33,7 @@ export class UnitsView extends React.Component {
 			let defaultName = results[1].results.toLowerCase();
 			let handleChange = (event) => {
 				let newName = event.target.value;
-				this.props.actions.doCommand(`/unitsys.sets set default ${newName}`, (cmd) => {
+				this.props.actions.doCommand(`/unitsys.sets set defaultSetName ${newName}`, (cmd) => {
 						this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
 				});
 			}

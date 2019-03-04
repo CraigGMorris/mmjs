@@ -4,7 +4,7 @@
 
 body {
 	height: 100%;
-	width: calc(100%-10px);
+	width: calc(100% - 10px);
 	overflow: hidden;
 }
 
@@ -59,6 +59,7 @@ body {
 
 .mmapp-info-navback {
 	grid-area: back;
+	margin-left: 10px;
 }
 
 .mmapp-info-title {

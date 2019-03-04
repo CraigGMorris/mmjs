@@ -94,11 +94,16 @@ export class MMApp extends React.Component {
 
 	componentDidMount() {
 		window.addEventListener('resize', (e) => {
-			document.body.style.height = `${document.documentElement.clientHeight-15}px`;
-			const allow2Pane = document.documentElement.clientWidth >= 640;
+			const docElement = document.documentElement;
+			const docHeight = docElement.clientHeight;
+			const docWidth = docElement.clientWidth;
+			document.body.style.height = `${docHeight-15}px`;
+			document.body.style.width = `${docWidth-15}px`;
+			const allow2Pane = docWidth >= 640;
 			this.setState({
 				allow2Pane: allow2Pane,
-				viewType: allow2Pane ? ViewType.twoPanes : ViewType.diagram
+				viewType: allow2Pane ? ViewType.twoPanes : ViewType.diagram,
+
 			});
 		});
 	}
@@ -240,7 +245,10 @@ export class MMApp extends React.Component {
 		this.setState((state) => {
 			let stack = state.infoStack;
 			stack.push(newInfoState);
-			return {infoStack: stack};
+			return {
+				infoStack: stack,
+				viewType: state.viewType === ViewType.diagram ? ViewType.info : state.viewType
+			};
 		})
 	}
 
@@ -256,10 +264,12 @@ export class MMApp extends React.Component {
 				this.doCommand(top.updateCommands, (cmds) => {
 					top.updateResults = cmds;
 					this.setState({infoStack: stack});
+					this.updateDiagram();
 				});
 			}
 			else {
 				this.setState({infoStack: stack});
+				this.updateDiagram();
 			}
 		}
 	}
@@ -341,7 +351,6 @@ export class MMApp extends React.Component {
 	}
 
 	render() {
-		console.log(`body height ${document.documentElement.clientHeight}`);
 		let t = this.props.t;
 		let previousTitle = '';
 		let title = '';
@@ -349,7 +358,12 @@ export class MMApp extends React.Component {
 		let infoView = null;
 		let infoNav = null;
 		const viewType = this.state.viewType;
-		let diagramHeight = document.documentElement.clientHeight-15;
+		const docElement = document.documentElement;
+		const docHeight = docElement.clientHeight;
+		const docWidth = docElement.clientWidth;
+		let infoWidth = 320;
+		const toolHeight = 40;
+		let diagramBox = {top: 9, left: 9, height: docHeight-15, width: docWidth - infoWidth - 10}
 		if (viewType !== ViewType.diagram) {
 			let i = infoStack.length-1;
 			previousTitle = i > 0 ? infoStack[i-1].title : '';
@@ -383,7 +397,7 @@ export class MMApp extends React.Component {
 			);
 		}
 		else {
-			diagramHeight -= 80;
+			diagramBox = {top: 9, left: 9, height: docHeight-toolHeight-15, width: docWidth - 10}
 		}
 
 		let diagram = null;
@@ -393,18 +407,18 @@ export class MMApp extends React.Component {
 				ref: this.diagram,
 				infoWidth: infoView ? 320 : 0,
 				dgmState: this.state.dgmState,
-				diagramHeight: diagramHeight,
+				diagramBox: diagramBox,
 				setDgmState: this.setDgmState,
 				doCommand: this.doCommand
 			});
 		}
 
-		let expandText = 'Expand'; //'⇤';
+		let expandText = t('react:dgmButtonExpand');
 		if (viewType === ViewType.info) {
-			expandText = 'Dgm';
+			expandText = t('react:dgmButtonDiagram');
 		}
 		else if (viewType === ViewType.diagram) {
-			expandText = 'Info';
+			expandText = t('react:dgmButtonInfo');
 		}
 
 		const infoTools = e('div', {className: 'mmapp-info-tools'},
@@ -420,28 +434,28 @@ export class MMApp extends React.Component {
 				value:'undo',
 				onClick: this.handleButtonClick
 				},
-				'Undo'
+				t('react:dgmButtonUndo')
 			),
 			e('button', {
 				id:'mmapp-redo-button',
 				value:'redo',
 				onClick: this.handleButtonClick
 				},
-				'Redo'
+				t('react:dgmButtonRedo')
 			),
 			e('button', {
 					id:'mmapp-unit-button',
 					value:'units react:unitsTitle /units',
 					onClick: this.handleButtonClick
 				},
-				t('react:unitButtonValue')
+				t('react:dgmButtonUnits')
 			),
 			e('button', {
 					id:'mmapp-console-button',
 					value:'console react:consoleTitle',
 					onClick: this.handleButtonClick
 				},
-				t('react:consoleButtonValue')
+				t('react:dgmButtonConsole')
 			),
 		);
 

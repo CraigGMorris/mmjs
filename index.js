@@ -21,6 +21,7 @@ let i18n = i18next
 		},
 		(err, t) => {
 			document.body.style.height = `${document.documentElement.clientHeight-15}px`;
+			document.body.style.width = `${document.documentElement.clientWidth-15}px`;
  			// initialized and ready to go!
 			const domContainer = document.querySelector('#root');
 			ReactDOM.render(e(MMApp, {t: t}), domContainer);
