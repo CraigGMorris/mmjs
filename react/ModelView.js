@@ -21,7 +21,6 @@ export class ModelView extends React.Component {
 			e(ToolNameField, {
 				viewInfo: this.props.viewInfo,
 				infoState: this.props.infoState,
-				setInfoState: this.props.setInfoState
 			})
 		);
 	}

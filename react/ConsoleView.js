@@ -35,7 +35,7 @@ export class ConsoleView extends React.Component {
 			}
 			lines.push(output);
 		}
-		this.props.setInfoState(this.props.stackNumber, (state) => {
+		this.props.actions.setInfoState(this.props.stackNumber, (state) => {
 			lines = lines.join('\n');
 			if (lines.length > 100000) {
 				lines = lines.substr(0, 100000) + '\nTRUNCATED at 100000 chars';
@@ -52,7 +52,7 @@ export class ConsoleView extends React.Component {
 	 */
   handleChange(event) {
 		const value = event.target.value;  // event will be null in handler
-		this.props.setInfoState(this.props.stackNumber, {input: value});
+		this.props.actions.setInfoState(this.props.stackNumber, {input: value});
 	}
 	
 	/** @method handleKeyPress
@@ -62,7 +62,7 @@ export class ConsoleView extends React.Component {
 	handleKeyPress(event) {
 		if (event.key == 'Enter') {
 			this.props.actions.doCommand(this.props.infoState.input, this.callBack);
-			this.props.setInfoState(this.props.stackNumber, (state) => {
+			this.props.actions.setInfoState(this.props.stackNumber, (state) => {
 				return {input:''}
 			});
 		}

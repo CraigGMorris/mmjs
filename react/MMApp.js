@@ -38,7 +38,9 @@ export class MMApp extends React.Component {
 			pushView: this.pushView.bind(this),
 			popView: this.popView.bind(this),
 			setUpdateCommands: this.setUpdateCommands.bind(this),
-			updateViewState: this.updateViewState.bind(this)
+			setInfoState: this.setInfoState.bind(this),
+			updateViewState: this.updateViewState.bind(this),
+			updateDiagram: this.updateDiagram.bind(this)
 		};
 
  		this.infoViews = {
@@ -81,15 +83,13 @@ export class MMApp extends React.Component {
 
 		this.diagram = React.createRef();
 
-		this.setDgmState = this.setDgmState.bind(this);
-		this.setInfoState = this.setInfoState.bind(this);
-
-
 		this.doCommand = this.doCommand.bind(this);
 		this.updateDiagram = this.updateDiagram.bind(this);
 		this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.popView = this.popView.bind(this);
 		this.pushView = this.pushView.bind(this);
+		this.setDgmState = this.setDgmState.bind(this);
+		this.setInfoState = this.setInfoState.bind(this);
 	}
 
 	componentDidMount() {
@@ -380,7 +380,6 @@ export class MMApp extends React.Component {
 					updateDiagram: this.updateDiagram,
 					stackNumber: i,
 					infoState: infoState,
-					setInfoState: this.setInfoState,
 					t: t
 				})
 			);
@@ -589,7 +588,7 @@ export class ToolNameField extends React.Component {
 		super(props);
 		const pathParts = this.props.viewInfo.path.split('.');
 		const name = pathParts[pathParts.length - 1];
-		this.props.setInfoState(this.props.stackNumber, {name: name});
+		this.props.actions.setInfoState(this.props.stackNumber, {name: name});
 		this.handleChange = this.handleChange.bind(this);
 		this.handleKeyPress = this.handleKeyPress.bind(this);
 	}
@@ -600,7 +599,7 @@ export class ToolNameField extends React.Component {
 	 */
   handleChange(event) {
 		const value = event.target.value;  // event will be null in handler
-		this.props.setInfoState(this.props.stackNumber, {name: value});
+		this.props.actions.setInfoState(this.props.stackNumber, {name: value});
 	}
 	
 	/** @method handleKeyPress
@@ -620,7 +619,6 @@ export class ToolNameField extends React.Component {
 	render() {
 		let t = this.props.t;
 		return e('input', {
-			class: 'tool-name-input',
 			value: this.props.infoState.name || '',
 			placeholder: t('react:toolNamePlaceHolder'),
 			onChange: this.handleChange,
