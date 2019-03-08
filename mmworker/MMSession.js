@@ -32,7 +32,6 @@ class MMSession extends MMCommandParent {
 		// construct the unit system - it will add itself to my children
 		new MMUnitSystem(this);
 		this.nextToolLocation = this.unknownPosition;
-		//this.rootModel = new MMModel('root', this);
 		this.rootModel = MMToolTypes['Model'].factory('root', this);
 		this.currentModel = this.rootModel;
 		this.modelStack = [this.currentModel];

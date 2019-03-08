@@ -185,7 +185,7 @@ export class Diagram extends React.Component {
 					return {
 						dragType: dragType,
 						lastMouse: lastMousePosition,
-						dragSelectin: dragSelection
+						dragSelection: dragSelection
 					}
 				}
 
@@ -450,7 +450,10 @@ export class Diagram extends React.Component {
 				if (e.clientY - this.props.diagramBox.top < 15) {
 					console.log('should pop menu');
 				}
-				this.props.setDgmState({selectionBox: null});
+				this.props.setDgmState({
+					selectionBox: null,
+					dragSelection: null
+				});
 			}
 		}
 		this.panSum = 0;
@@ -772,7 +775,9 @@ export class Diagram extends React.Component {
 			if (pathParts.length > 2) {
 				textList.push(
 					e(ClickableDiagramText, {
-						id: 'dgm-parent-name',
+						style: {
+							font: '15px sans-serif'
+						},
 						key: 'parent',
 						x: 15,
 						y: 25,
@@ -786,7 +791,9 @@ export class Diagram extends React.Component {
 			}
 			textList.push(
 				e(ClickableDiagramText, {
-					id: 'dgm-model-name',
+					style: {
+						font: '15px sans-serif'
+					},
 					key: 'name',
 					x: this.props.diagramBox.width/2,
 					y: 25,
@@ -797,10 +804,17 @@ export class Diagram extends React.Component {
 		}
 
 		return e('div', {
-				id:'dgm-main',
+				style: {
+					height: '100%',
+					width: '100%'
+				}
 			},
 			e('svg', {
-				id: 'dgm-svg-main',
+				style: {
+					backgroundColor: 'rgba(238,255,238,1)',
+					height: '100%',
+					width: '100%'
+				},
 				viewBox: viewBox,
 				onMouseDown: this.onMouseDown,
 				onWheel: this.onWheel,
@@ -968,56 +982,76 @@ class ToolIcon extends React.Component {
 
 		const translate = this.props.translate;
 		const scale = this.props.scale;
+		const textColor = this.props.highlight ? 'blue' : 'black';
+		const toolTypeColor = this.props.highlight ? textColor : 'rgb(0,102,0)';
+		const toolColors = {
+			Expression: 'rgba(247,247,230,.8)',
+			Model: 'rgba(230,255,255,.8)',
+		}
+		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;
 		if (info.toolTypeName === 'Expression') {
-			textComponents = e('g', {},
+			textComponents = e('g', {	style: {pointerEvents: 'none'}},
 				e('text', {
 					x: (x + 3 + translate.x)*scale,
 					y: (y + 7 + translate.y)*scale,
-					style: {fontSize: `${6*scale}px`}
+					style: {
+						fontSize: `${6*scale}px`,
+						fill: textColor
+					}
 					}, info.name
 				),
 				e('text', {
-					className: 'dgm-formula',
+					//className: 'dgm-formula',
 					x: (x + 3 + translate.x)*scale,
 					y: (y + 12.5 + translate.y)*scale,
-					style: {fontSize: `${5*scale}px`}
+					style: {
+						fontSize: `${5*scale}px`,
+						fill: textColor
+					}
 					}, info.formula
 				),
 				e('text', {
-					className: 'dgm-result',
 					x: (x + 3 + translate.x)*scale,
 					y: (y + 18 + translate.y)*scale,
 					style: {
 						fontSize: `${5*scale}px`,
-						fill: (info.result) ? 'black' : 'red'
+						fill: (info.result) ? textColor : 'red'
 					}
 					}, info.result ? info.result.trim() : '?'
 				),
 			);
 		}
 		else {
-			textComponents = e('g', {},
-			e('text', {
-				className: 'dgm-tooltype',
-				x: (x + 3 + translate.x)*scale,
-				y: (y + 8 + translate.y)*scale,
-				style: {fontSize: `${9*scale}px`}
-				}, info.toolTypeName + ':'
-			),
-			e('text', {
-				x: (x + 3 + translate.x)*scale,
-					y: (y + 16 + translate.y)*scale,
-					style: {fontSize: `${7*scale}px`}
-					}, info.name
+			textComponents = e('g', {	style: {pointerEvents: 'none'}},
+				e('text', {
+					//className: 'dgm-tooltype',
+					x: (x + 3 + translate.x)*scale,
+					y: (y + 8 + translate.y)*scale,
+					style: {
+						fontSize: `${9*scale}px`,
+						fontStyle: 'italic',
+						fill: toolTypeColor,
+						stroke: toolTypeColor}
+					},
+					info.toolTypeName + ':'
+				),
+				e('text', {
+						x: (x + 3 + translate.x)*scale,
+						y: (y + 16 + translate.y)*scale,
+						style: {fontSize: `${7*scale}px`, fill: textColor}
+					},
+					info.name
 				),
 			);
 		}
 
-		this.props.highlight 
 		return e('g', {
-			className: `${this.props.highlight ? 'dgm-svg-tool-highlight' : 'dgm-svg-tool'} dgm-${info.toolTypeName}`,
-		},
+				style: {
+					stroke: textColor,
+					fill: fillColor
+				},
+			},
 			e('rect', {
 				onMouseDown: this.onMouseDown,
 				onClick: this.onClick,
@@ -1197,7 +1231,10 @@ class SelectionBox extends React.Component {
 		const height = (box.bottom - box.top) * scale;
 
 		return e('g', {
-			className: `dgm-svg-selectbox`,
+			style: {
+				stroke: 'blue',
+				fill: 'transparent'
+			},
 		},
 			e('rect', {
 				onMouseDown: this.onMouseDown,
@@ -1286,7 +1323,10 @@ class ClickableDiagramText extends React.Component {
 	render() {
 		return e('text', {
 			id: this.props.id,
-			className: 'dgm-clickable-text',
+			style: {
+				pointerEvents: 'auto',
+				fill: 'blue'
+			},
 			x: this.props.x,
 			y: this.props.y,
 			onMouseDown: this.onMouseDown,

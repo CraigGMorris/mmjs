@@ -22,8 +22,12 @@ let i18n = i18next
 		(err, t) => {
 			document.body.style.height = `${document.documentElement.clientHeight-15}px`;
 			document.body.style.width = `${document.documentElement.clientWidth-15}px`;
+			document.body.style.overflow = 'hidden';
  			// initialized and ready to go!
 			const domContainer = document.querySelector('#root');
+			domContainer.style.height = '100%';
+			domContainer.style.width = '100%';
+			domContainer.style.border = 'solid 1px';
 			ReactDOM.render(e(MMApp, {t: t}), domContainer);
 		}
 	);

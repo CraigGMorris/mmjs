@@ -11,6 +11,7 @@
 	"dgmButtonUndo": "Undo",
 	"dgmButtonUnits": "Units",
 	"readCommands": "Read",
+	"toolNamePlaceHolder": "Name (without spaces)",
 	"unitsTitle": "Units",
 	"userUnitsDefinition": "Definition",
 	"userUnitsDelete": "Delete",

@@ -93,7 +93,7 @@ export class MMApp extends React.Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener('resize', (e) => {
+		const setSize = () => {
 			const docElement = document.documentElement;
 			const docHeight = docElement.clientHeight;
 			const docWidth = docElement.clientWidth;
@@ -103,9 +103,10 @@ export class MMApp extends React.Component {
 			this.setState({
 				allow2Pane: allow2Pane,
 				viewType: allow2Pane ? ViewType.twoPanes : ViewType.diagram,
-
 			});
-		});
+		};
+		setSize();
+		window.addEventListener('resize', setSize);
 	}
 
 	/**
@@ -130,20 +131,12 @@ export class MMApp extends React.Component {
 	 */
 	setInfoState(stackNumber, f) {
 		const key = `infoState${stackNumber}`;
-		if (typeof f === 'function') {
-			this.setState((state) => {
-				const oldInfoState = state[key] || {};
-				let newInfoState = Object.assign(oldInfoState,f(state[key]));
-				let newState = {};
-				newState[key] = newInfoState;
-				return newState;
-			});
-		}
-		else {
+		this.setState((state) => {
+			const oldInfoState = state[key] || {};
 			let newState = {};
-			newState[key] = f;
-			this.setState(newState);
-		}
+			newState[key] = Object.assign(oldInfoState, (typeof f === 'function') ? f(state[key]) : f);
+			return newState;
+		});
 	}
 
 	/**
@@ -361,8 +354,10 @@ export class MMApp extends React.Component {
 		const docElement = document.documentElement;
 		const docHeight = docElement.clientHeight;
 		const docWidth = docElement.clientWidth;
-		let infoWidth = 320;
+		const infoWidth = 320;
 		const toolHeight = 40;
+		const navHeight = 40;
+		const infoHeight = docHeight - 15 - navHeight - toolHeight;
 		let diagramBox = {top: 9, left: 9, height: docHeight-15, width: docWidth - infoWidth - 10}
 		if (viewType !== ViewType.diagram) {
 			let i = infoStack.length-1;
@@ -371,12 +366,17 @@ export class MMApp extends React.Component {
 			let infoState = this.state[`infoState${i}`] || {};
 			title = viewInfo.title;
 			infoView = e('div', {
-					className: 'mmapp-info-content',
+					style: {
+						height: '100%',
+						gridArea: 'info'
+					},
 				},
 				e(this.infoViews[viewInfo.viewKey], {
 					className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
 					actions: this.actions,
 					viewInfo: viewInfo,
+					infoWidth: infoWidth,
+					infoHeight: infoHeight,
 					updateDiagram: this.updateDiagram,
 					stackNumber: i,
 					infoState: infoState,
@@ -385,14 +385,30 @@ export class MMApp extends React.Component {
 				})
 			);
 			infoNav = e('div', {
-				className: 'mmapp-info-nav',
+				style: {
+					gridArea: 'nav',
+					display: 'grid',
+					gridTemplateColumns: previousTitle ? '1fr 2fr' : '0px 1fr',
+					gridTemplateRows: '1fr',
+					gridTemplateAreas: `"back title"`,
+					alignItems: 'center',
+					backgroundColor: 'rgb(243,243,243)',
+					borderBottom: 'solid 1px black'
+				},
 				},
 				e('div',{
-					className: 'mmapp-info-navback clickable',
+					style: {
+						gridArea: 'back',
+						marginLeft: '10px',
+						color: 'blue'
+					},
 					onClick: this.popView
 				}, previousTitle ? '< ' + t(previousTitle) : ''),
 				e('div',{
-					className: 'mmapp-info-title'
+					style: {
+						gridArea: 'title',
+						justifySelf: 'center'
+					}
 				}, t(title))				
 			);
 		}
@@ -405,7 +421,7 @@ export class MMApp extends React.Component {
 		if (viewType !== ViewType.info) {
 			diagram = e(Diagram, {
 				ref: this.diagram,
-				infoWidth: infoView ? 320 : 0,
+				infoWidth: infoView ? infoWidth : 0,
 				dgmState: this.state.dgmState,
 				diagramBox: diagramBox,
 				setDgmState: this.setDgmState,
@@ -421,9 +437,32 @@ export class MMApp extends React.Component {
 			expandText = t('react:dgmButtonInfo');
 		}
 
-		const infoTools = e('div', {className: 'mmapp-info-tools'},
+		const infoButtonStyle = (area) => {
+			return {
+				gridArea: area,
+				padding: '0',
+				width: '100%',
+				background: 'transparent',
+				border: '0',
+				fontSize: '10pt',
+				color: 'blue'
+			}
+		};
+		const infoTools = e('div', {
+				style: {
+					gridArea: 'infotools',
+					display: 'grid',
+					gridTemplateColumns: 'repeat(5, 1fr)',
+					gridTemplateRows: '1fr',
+					gridTemplateAreas: `"expand sessions undo redo units"`,
+					justifyTtems: 'center',
+					alignItems: 'center',
+					borderTop: 'solid 1px black'
+				}
+			},
 			e('button', {
 				id:'mmapp-expand-button',
+				style: infoButtonStyle('expand'),
 				value:'expand',
 				onClick: this.handleButtonClick
 				},
@@ -431,6 +470,7 @@ export class MMApp extends React.Component {
 			),
 			e('button', {
 				id:'mmapp-undo-button',
+				style: infoButtonStyle('undo'),
 				value:'undo',
 				onClick: this.handleButtonClick
 				},
@@ -438,6 +478,7 @@ export class MMApp extends React.Component {
 			),
 			e('button', {
 				id:'mmapp-redo-button',
+				style: infoButtonStyle('redo'),
 				value:'redo',
 				onClick: this.handleButtonClick
 				},
@@ -445,6 +486,7 @@ export class MMApp extends React.Component {
 			),
 			e('button', {
 					id:'mmapp-unit-button',
+					style: infoButtonStyle('units'),
 					value:'units react:unitsTitle /units',
 					onClick: this.handleButtonClick
 				},
@@ -452,6 +494,7 @@ export class MMApp extends React.Component {
 			),
 			e('button', {
 					id:'mmapp-console-button',
+					style: infoButtonStyle('sessions'),
 					value:'console react:consoleTitle',
 					onClick: this.handleButtonClick
 				},
@@ -460,15 +503,44 @@ export class MMApp extends React.Component {
 		);
 
 		let wrapper;
+		const onePaneStyle = {
+			fontSize: '1em',
+			height: '100%',
+			width: '100%',
+			display: 'grid',
+			gridTemplateColumns: '1fr',
+			gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
+			gridTemplateAreas: `"nav"
+				"info"
+				"infotools"`,
+			backgroundColor: 'rgb(243,243,243)'
+		};
+
 		switch (viewType) {
 			case ViewType.twoPanes:
 				wrapper = e('div',{
 					id: 'mmapp-wrapper-twopane',
-					style: {gridTemplateColumns: '1fr 320px'},
+					style: {
+						gridTemplateColumns: `1fr ${infoWidth}px`,
+						fontSize: '1em',
+						height: '100%',
+						width: '100%',
+						display: 'grid',
+						gridTemplateColumns: `1fr ${infoWidth}px`,
+						gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
+						gridTemplateAreas: `"diagram nav"
+							"diagram info"
+							"diagram infotools"`,
+						backgroundColor: 'rgb(243,243,243)'
+					},
 				},
 				e('div', {
 						className: 'mmapp-diagram',
-						style: {gridArea: 'diagram'}
+						style: {
+							gridArea: 'diagram',
+							backgroundColor: 'rgb(238,255,238)',
+							borderRight: '1px solid'
+						}
 					},
 					diagram
 				),
@@ -480,11 +552,12 @@ export class MMApp extends React.Component {
 
 			case ViewType.diagram:
 				wrapper = e('div', {
-					id: 'mmapp-wrapper-onepane',
+					style: onePaneStyle
 				},
 				e('div', {
-						className: 'mmapp-diagram-single',
-						style: {gridArea: 'nav / 1 / info / 1'}
+						style: {
+							gridArea: 'nav / 1 / info / 1',
+						}
 					},
 					diagram
 				),
@@ -494,7 +567,7 @@ export class MMApp extends React.Component {
 				
 			case ViewType.info:
 				wrapper = e('div',{
-					id: 'mmapp-wrapper-onepane',
+					style: onePaneStyle,
 				},
 				infoNav,
 				infoView,
@@ -504,5 +577,54 @@ export class MMApp extends React.Component {
 		}
 
 		return wrapper;
+	}
+}
+
+/**
+ * @class ToolNameField
+ * common field for tool name in tool info views
+ */
+export class ToolNameField extends React.Component {
+	constructor(props) {
+		super(props);
+		const pathParts = this.props.viewInfo.path.split('.');
+		const name = pathParts[pathParts.length - 1];
+		this.props.setInfoState(this.props.stackNumber, {name: name});
+		this.handleChange = this.handleChange.bind(this);
+		this.handleKeyPress = this.handleKeyPress.bind(this);
+	}
+
+	/** @method handleChange
+	 * keeps input field in sync
+	 * @param {Event} event
+	 */
+  handleChange(event) {
+		const value = event.target.value;  // event will be null in handler
+		this.props.setInfoState(this.props.stackNumber, {name: value});
+	}
+	
+	/** @method handleKeyPress
+	 * watches for Enter and sends command when it see it
+	 * @param {Event} event
+	 */
+	handleKeyPress(event) {
+		if (event.key == 'Enter') {
+			const path = this.props.viewInfo.path;
+			const newName = this.props.infoState.name;
+			this.props.actions.doCommand(`${path} renameto ${newName}`, (cmd) => {
+				this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+		});
+		}
+	}
+
+	render() {
+		let t = this.props.t;
+		return e('input', {
+			class: 'tool-name-input',
+			value: this.props.infoState.name || '',
+			placeholder: t('react:toolNamePlaceHolder'),
+			onChange: this.handleChange,
+			onKeyPress: this.handleKeyPress
+		});
 	}
 }

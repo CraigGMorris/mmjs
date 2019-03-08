@@ -86,31 +86,75 @@ export class ConsoleView extends React.Component {
 	
 	render() {
 		let t = this.props.t;
-		return e('div', {className:'console-view'},
+		return e('div', {
+				style: {
+					height: '100%',
+					fontSize: '1em',
+					display: 'grid',
+					gridTemplateColumns: '1fr',
+					gridTemplateRows: '1fr 30px 40px',
+					gridTemplateAreas: `"result"
+						"input"
+						"readfile"`					
+				}
+			},
 			e('textarea',{
-				id: 'console-result-field',
+				style: {
+					gridArea: 'result',
+					overflow: 'auto',
+					textAlign: 'left',
+					fontSize: '1em',
+					boxSizing: 'border-box',
+					whiteSpace: 'pre-wrap',
+					tabSize: '4',
+					paddingLeft: '5px'
+				},
 				value: this.props.infoState.output || '',
 				readOnly: true
 			}),
 			e('input', {
-				id: 'console-input-field',
+				style: {
+					gridArea: 'input',
+					justifySelf: 'center',
+					fontSize: '12pt',
+					width: 'calc(100% - 1em)',
+					border: 'solid 1px'
+				},
 				value: this.props.infoState.input || '',
 				placeholder: t('react:consoleReadPlaceHolder'),
 				onChange: this.handleChange,
 				onKeyPress: this.handleKeyPress
 			}),
 			e('div', {
-				id: 'console-readfile-background'
+				style: {
+					gridArea: 'readfile',
+					display: 'grid',
+					gridTemplateColumns: '40px 1fr',
+					gridTemplateRows: '1fr',
+					gridTemplateAreas: `"readlabel readinput"`,
+					backgroundColor: 'rgb(243,243,243)'
+				}
 			},
 				e('label', {
-					id: 'readlabel',
+					style: {
+						fontSize: '11pt',
+						gridArea: 'readlabel',
+						alignSelf: 'center',
+						justifySelf: 'center'
+					},
 					htmlFor: 'readfile'
 				},
 					t('react:readCommands')
 				),
 				e('input', {
 					type: 'file',
-					id: 'readfile',
+					style: {
+						fontSize: '10pt',
+						gridArea: 'readinput',
+						alignSelf: 'center',
+						justifySelf: 'center',
+						color: 'blue'			
+					},
 					onChange: this.readCommandFile,
 					placeholder: 'Read Command File'
 				})

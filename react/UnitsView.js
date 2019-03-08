@@ -39,18 +39,26 @@ export class UnitsView extends React.Component {
 			}
 			for(let set of results[0].results) {
 				let id = 'radio-' + set;
+				const checked = defaultName == set.toLowerCase();
 				let comp = e('div', { key: set },
 					e('input', {
 						id: id,
+						style: {
+							marginLeft: '15px',
+							marginRight: '25px'
+						},
 						onChange: handleChange,
-						checked: (defaultName == set.toLowerCase()),
+						checked: checked,
 						type: 'radio',
 						name: 'defaultSet',
-						className: 'unitsview-defaultset',
 						value: set
 					}),
 					e('label', {
-						id: 'readlabel clickable',
+						style: {
+							color: checked ? 'black' : 'blue',
+							fontWeight: checked ? 'bold' : 'normal',
+							width: '100%'
+						},
 						htmlFor: id
 					}, set)
 				);
@@ -62,23 +70,42 @@ export class UnitsView extends React.Component {
 
 	render() {
 		let t = this.props.t;
-		return e('div', {className:'units-view'},
+		const buttonStyle = (area) => {
+			return {
+				gridArea: area,
+				color: 'blue',
+				justifySelf: 'center',
+				alignSelf: 'center',
+				fontSize: '10pt',
+				height: '30px'
+			}
+		}
+		return e('div', {
+				style: {
+					display: 'grid',
+					gridTemplateColumns: '1fr 1fr',
+					gridTemplateRows: '40px 1fr',
+					gridTemplateAreas: `"customunits customsets"
+						"setslist setslist"`,
+					gap: '10px 10px'					
+				}
+			},
 			e('button', {
-				id:'unitsview-customunits-button',
+				style: buttonStyle('customunits'),
 				value:'userunits react:userUnitsTitle /unitsys.units',
 				onClick: this.handleButtonClick
 			},
 				t('react:customUnitsButtonValue')
 			),
 			e('button', {
-				id:'unitsview-customsets-button',
+				style: buttonStyle('customsets'),
 				value: 'unitsets react:unitsSetsTitle /unitsys.sets',
 				onClick: this.handleButtonClick
 				},
 				t('react:unitsSetsTitle')
 			),
 			e('div', {
-				id:'unitsview-setslist'
+				style: {area: 'setslist'}
 			},
 				this.setsList(this.props.viewInfo.updateResults)
 			)
@@ -154,24 +181,43 @@ export class UserUnitsView extends React.Component {
 				let unit = units[i];
 				let cmp = e('div', {
 					key: unit.name,
-					className: 'userunits-item-div',
+					style: {
+						borderBottom: 'solid 1px',
+						display: 'grid',
+						gridTemplateColumns: '1fr 80px',
+						gridTemplateRows: '1fr 1fr',
+						gridTemplateAreas: `"definition delete"
+							"unittype delete"`
+					},
 				},
 					e('div', {
-						className: 'userunits-item-definition clickable',
+						style: {
+							color: 'blue',
+							gridArea: 'definition',
+							marginLeft: '10px'						
+						},
 						onClick: this.handleSelectClick,
 						'data-definition': unit.definition	
 					},
 						unit.definition
 					),
 					e('div', {
-						className: 'userunits-item-type clickable',
+						style: {
+							color: 'blue',
+							gridArea: 'unittype',
+							marginLeft: '10px'
+						},
 						onClick: this.handleSelectClick,
 						'data-definition': unit.definition	
 					},
 						unit.unitType
 					),
 					e('button', {
-						className: 'userunits-delete',
+						style: {
+							gridArea: 'delete',
+							fontSize: '10pt',
+							color: 'blue'
+						},
 						value: unit.name,
 						onClick: this.handleButtonClick						
 					}, t('react:userUnitsDelete', {}))
@@ -179,26 +225,71 @@ export class UserUnitsView extends React.Component {
 				unitList.push(cmp);
 			}
 		}
-		return e('div', {id:'userunits-view'},
-			e('div', {id: 'userunits-input-section'},
+		return e('div', {
+				id:'userunits-view',
+				style: {
+					display: 'grid',
+					gridTemplateColumns: '1fr',
+					gridTemplateRows: '60px 1fr',
+					gridTemplateAreas: `"inputsection"
+						"unitslist"`,
+					height: '100%'					
+				}
+			},
+			e('div', {
+					id: 'userunits-input-section',
+					style: {
+						gridArea: 'inputsection',
+						display: 'grid',
+						gridTemplateColumns: '80px 1fr',
+						gridTemplateRows: '1fr 1fr',
+						gridTemplateAreas: `"label input"
+							"example example"`						
+					}
+				},
 				e('label', {
-					id: 'userunits-input-label',
-					htmlFor: 'userunits-input-field'
-				}, t('react:userUnitsDefinition')
+						id: 'userunits-input-label',
+						style: {
+							gridArea: 'label',
+							marginLeft: '10px',
+							marginTop: '10px'						
+						},
+						htmlFor: 'userunits-input-field'
+					}, t('react:userUnitsDefinition')
 				),
 				e('input', {
 					id: 'userunits-input-field',
+					style: {
+						gridArea: 'input',
+						justifySelf: 'center',
+						fontSize: '10pt',
+						width: 'calc(100% - 25px)',
+						paddingLeft: '5px',
+						marginLeft: '10px',
+						marginTop: '5px',
+						border: 'solid 1px'
+					},
 					value: this.state.input,
 					placeholder: t('react:userUnitsPlaceHolder'),
 					onChange: this.handleChange,
 					onKeyPress: this.handleKeyPress	
 				}),
 				e('div', {
-					id: 'userunits-example'
+					style: {
+						gridArea: 'example',
+						marginLeft: '10px',
+						marginTop: '5px'
+					}
 				}, t('react:userUnitsExample')
 				)
 			),
-			e('div', {id: 'userunits-list'},
+			e('div', {
+					style: {
+						backgroundColor: 'white',
+						height: '100%',
+						borderTop: 'solid 1px'
+					}	
+				},
 				unitList
 			)
 		);
@@ -299,26 +390,41 @@ export class UnitSetsView extends React.Component {
 			let sets = results[0].results;
 			for (let i = 0; i < sets.length; i++) {
 				let set = sets[i];
-				let containerClass = 'usersets-item-div';
 				if (this.state.selected == set.name) 	{
-					containerClass += ' usersets-selected';
 					if (set.isMaster) {
 						isMasterSelected = true;
 					}
 				}
 				let cmp = e('div', {
 					key: set.name,
-					className: containerClass,
+					style: {
+						borderBottom: 'solid 1px',
+						display: 'grid',
+						backgroundColor: this.state.selected == set.name ? 'lightgray' : 'white',
+						gridTemplateColumns: '1fr 40px',
+						gridTemplateRows: '1fr 1fr',
+						gridTemplateAreas: `"name info"
+							"settype info"`						
+					}
 				},
 					e('div', {
-						className: 'usersets-item-name clickable',
+						style: {
+							color: 'blue',
+							gridArea: 'name',
+							marginLeft: '10px',
+							fontSize: '14pt'
+						},
 						onClick: this.handleSelectClick,
 						'data-name': set.name
 					},
 						set.name
 					),
 					e('div', {
-						className: 'usersets-item-type',
+						style: {
+							gridArea: 'settype',
+							marginLeft: '10px',
+							color: 'darkgray'
+						},
 						onClick: this.handleSelectClick,
 						'data-name': set.name
 					},
@@ -326,9 +432,15 @@ export class UnitSetsView extends React.Component {
 					),
 					set.isMaster ? '' :
 						e('div', {
-							className: 'usersets-info',
+							style: { gridArea: 'info'},
 						},
 							e('button', {
+								style: {
+									marginTop: '15px',
+									fontSize: '10pt',
+									fontWeight: 'bold',
+									color: 'blue'
+								},
 								value: set.name,
 								onClick: this.handleInfoClick						
 							}, t('react:unitsSetsInfo'))
@@ -337,15 +449,49 @@ export class UnitSetsView extends React.Component {
 				setList.push(cmp);
 			}
 		}
-		return e('div', {id:'usersets-view'},
-			e('div', {id: 'usersets-input-section'},
+		return e('div', {
+				id:'usersets-view',
+				style: {
+					display: 'grid',
+					gridTemplateColumns: '1fr',
+					gridTemplateRows: '60px 1fr',
+					gridTemplateAreas: `"inputsection"
+						"unitslist"`,
+					height: '100%'
+				}
+			},
+			e('div', {
+					id: 'usersets-input-section',
+					style: {
+						gridArea: 'inputsection',
+						display: 'grid',
+						gridTemplateColumns: '1fr 5fr 1f',
+						gridTemplateRows: '30px',
+						gridTemplateAreas: `"label input clone"`						
+					}
+				},
 				e('label', {
 					id: 'usersets-name-label',
+					style: {
+						gridArea: 'label',
+						marginLeft: '10px',
+						marginTop: '10px'
+					},
 					htmlFor: 'usersets-name-field'
 				}, t('react:unitsSetName')
 				),
 				e('input', {
 					id: 'usersets-name-field',
+					style: {
+						gridArea: 'input',
+						justifySelf: 'center',
+						fontSize: '10pt',
+						width: 'calc(100% - 25px)',
+						paddingLeft: '5px',
+						marginLeft: '10px',
+						marginTop: '5px',
+						border: 'solid 1px'
+					},
 					value: this.state.input,
 					placeholder: '',
 					onChange: this.handleChange,
@@ -354,6 +500,10 @@ export class UnitSetsView extends React.Component {
 				}),
 				e('button', {
 					id: 'usersets-clone-button',
+					style: {
+						color: 'blue',
+						fontSize: '10pt'
+					},
 					onClick: this.handleCloneClick,
 					disabled: !(this.state.input && this.state.input == this.state.selected)
 				}, t('react:unitsSetsClone')
@@ -361,6 +511,11 @@ export class UnitSetsView extends React.Component {
 			),
 			e('div', {
 				id: 'usersets-list',
+				style: {
+					backgroundColor: 'white',
+					height: '100%',
+					borderTop: "solid 1px"
+				},
 				onClick: this.handleClearClick
 			},
 				setList
@@ -490,20 +645,34 @@ export class UnitSetView extends React.Component {
 		let t = this.props.t;
 		let typeList = [];
 		let results = this.props.viewInfo.updateResults;
+		const inputHeight = 100;
+		const listHeight = this.props.infoHeight - inputHeight - 10;
 		if (results && results.length) {
 			let types = results[0].results;
 			for (let i = 0; i < types.length; i++) {
 				let unitType = types[i];
-				let containerClass = 'userset-item-div';
+				let containerStyle = {
+					borderBottom: 'solid 1px',
+					display: 'grid',
+					gridTemplateColumns: '1fr 80px',
+					gridTemplateRows: '1fr 1fr',
+					gridTemplateAreas: `"name delete"
+						"unit delete"`,
+				};
 				if (this.state.selected == unitType.name) 	{
-					containerClass += ' userset-selected';
+					containerStyle['backgroundColor'] = ' lightgray';
 				}
 				let cmp = e('div', {
 					key: unitType.name,
-					className: containerClass,
+					style: containerStyle,
 					},
 					e('div', {
-						className: 'userset-item-type clickable',
+						style: {
+							gridArea: 'name',
+							marginLeft: '5px',
+							fontSize: '14pt',
+							color: 'blue'
+						},
 						'data-name': unitType.name,
 						'data-unit': unitType.unit,
 						onClick: this.handleSelectClick,
@@ -511,7 +680,11 @@ export class UnitSetView extends React.Component {
 						unitType.name
 					),
 					e('div', {
-						className: 'userset-item-unit clickable',
+						style: {
+							gridArea: 'unit',
+							marginLeft: '5px',
+							color: 'blue'
+						},
 						'data-name': unitType.name,
 						'data-unit': unitType.unit,
 						onClick: this.handleSelectClick,
@@ -519,9 +692,19 @@ export class UnitSetView extends React.Component {
 						unitType.unit
 					),
 					e('div', {
-						className: 'userset-delete-type',
+						style: {
+							gridArea: 'delete',
+							alignSelf: 'center',
+							height: '100%'
+						},
 					},
 						e('button', {
+							style: {
+								fontSize: '10pt',
+								fontWeight: 'bold',
+								marginTop: '10px',
+								color: 'blue'
+							},
 							value: unitType.name,
 							onClick: this.handleDeleteTypeClick						
 						}, t('react:unitsSetDeleteType'))
@@ -530,15 +713,60 @@ export class UnitSetView extends React.Component {
 				typeList.push(cmp);
 			}
 		}
-		return e('div', {id:'userset-view'},
-			e('div', {id: 'userset-input-section'},
+		const inputButtonStyle = {
+			fontSize: '12pt',
+			width: '140px',
+			marginRight: '10px',
+			color: 'blue'
+		}
+
+		const inputStyle = (area) => {
+			return {
+				gridArea: area,
+				justifySelf: 'center',
+				fontSize: '10pt',
+				width: 'calc(100% - 25px)',
+				height: '25px',
+				paddingLeft: "5px",
+				border: 'solid 1px'
+			}
+		};
+
+		return e('div', {
+				id:'userset-view',
+				style: {
+					display: 'grid',
+					gridTemplateColumns: '1fr',
+					gridTemplateRows: '100px 1fr',
+					gridGap: '5px',
+					gridTemplateAreas: `"inputsection"
+						"unitslist"`,
+					height: '100%'
+				}
+			},
+			e('div', {
+					id: 'userset-input-section',
+					style: {
+						gridArea: 'inputsection',
+						display: 'grid',
+						gridTemplateColumns: '60px 1fr',
+						gridTemplateRows: '1fr 1fr 1fr',
+						gridTemplateAreas: `"buttons buttons"
+							"namelabel namefield"
+							"unitlabel unitfield"`						
+					}
+				},
 				e('label', {
-					id: 'userset-name-label',
-					htmlFor: 'userset-name-field'
-				}, t('react:unitsSetTypeName')
+						style: {
+							gridArea: 'namelabel',
+							paddingLeft: '5px'
+						},
+						htmlFor: 'userset-name-field'
+					}, t('react:unitsSetTypeName')
 				),
 				e('input', {
 					id: 'userset-name-field',
+					style: inputStyle('namefield'),
 					value: this.state.nameInput,
 					placeholder: '',
 					onChange: this.handleChange,
@@ -546,26 +774,36 @@ export class UnitSetView extends React.Component {
 				}),
 				e('label', {
 					id: 'userset-unit-label',
+					style: {
+						gridArea: 'unitlabel',
+						paddingLeft: '5px'
+					},
 					htmlFor: 'userset-unit-field'
 				}, t('react:unitsSetUnitName')
 				),
 				e('input', {
 					id: 'userset-unit-field',
+					style: inputStyle('unitfield'),
 					value: this.state.unitInput,
 					placeholder: '',
 					onChange: this.handleChange,
 					onKeyPress: this.handleKeyPress,
 				}),
 				e('div', {
-					id: 'userset-buttons'
+					id: 'userset-buttons',
+					style: {
+						gridArea: 'buttons',
+						justifySelf: 'end',
+						alignSelf: 'center'
+					}
 				},
 					e('button', {
-						id: 'userset-deleteset-button',
+						style: inputButtonStyle,
 						onClick: this.handleDeleteSetClick,
 					}, t('react:unitsSetDeleteSet')
 					),
 					e('button', {
-						id: 'userset-addtype-button',
+						style: inputButtonStyle,
 						onClick: this.handleAddTypeClick,
 					}, t('react:unitsSetAddType')
 					)
@@ -573,9 +811,15 @@ export class UnitSetView extends React.Component {
 			),
 			e('div', {
 				id: 'userset-list',
-			},
-				typeList
-			)
+				style: {
+					gridArea: 'unitslist',
+					backgroundColor: 'white',
+					height: `${listHeight}px`,
+					borderTop: 'solid 1px',
+					overflow: 'auto',
+					boxSizing: 'border-box'
+				}
+			},	typeList)
 		);
 	}
 }
