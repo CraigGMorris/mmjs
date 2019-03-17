@@ -4,6 +4,7 @@ import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
 import {Diagram} from './Diagram.js';
 import {UnitsView, UserUnitsView, UnitSetsView, UnitSetView} from './UnitsView.js';
+import {ModelView} from './ModelView.js';
 
 const e = React.createElement;
 
@@ -22,6 +23,7 @@ const ViewType = Object.freeze({
  * @class MMApp
  * the main Math Minion window
  * @member {MMCommandPipe} pipe - pipe to worker
+ * @member {Array} callBackStack - makes sure callbacks are called in correct order
  * @member {method[]} actions
  * methods passed to components
  * @member {Object} infoViews
@@ -33,14 +35,18 @@ export class MMApp extends React.Component {
 	constructor(props) {
 		super(props);
 		this.pipe = new MMCommandPipe();
+		this.callBackStack = [];
 		this.actions = {
 			doCommand: this.doCommand.bind(this),
+			pushModel: this.pushModel.bind(this),
+			popModel: this.popModel.bind(this),
 			pushView: this.pushView.bind(this),
 			popView: this.popView.bind(this),
 			setUpdateCommands: this.setUpdateCommands.bind(this),
-			setInfoState: this.setInfoState.bind(this),
+			setViewInfoState: this.setViewInfoState.bind(this),
 			updateViewState: this.updateViewState.bind(this),
-			updateDiagram: this.updateDiagram.bind(this)
+			updateDiagram: this.updateDiagram.bind(this),
+			renameTool: this.renameTool.bind(this)
 		};
 
  		this.infoViews = {
@@ -48,17 +54,19 @@ export class MMApp extends React.Component {
 			'units': UnitsView,
 			'userunits': UserUnitsView,
 			'unitsets': UnitSetsView,
-			"unitset": UnitSetView
+			"unitset": UnitSetView,
+			"model": ModelView
 		}
 
 		// information need to generate an information view component
-		let initialInfoState = {
-			viewKey: 'console',
+		const initialInfoState = {
 			title: 'react:consoleTitle',
 			path: '',
 			stackIndex: 0,
 			updateCommands: '',
 			updateResults: [],
+			viewKey: 'console',
+			viewState: {},
 		}
 
 		this.undoStack = [];
@@ -89,7 +97,7 @@ export class MMApp extends React.Component {
 		this.popView = this.popView.bind(this);
 		this.pushView = this.pushView.bind(this);
 		this.setDgmState = this.setDgmState.bind(this);
-		this.setInfoState = this.setInfoState.bind(this);
+		this.setViewInfoState = this.setViewInfoState.bind(this);
 	}
 
 	componentDidMount() {
@@ -125,18 +133,18 @@ export class MMApp extends React.Component {
 	}
 
 	/**
-	 * @method setInfoState
+	 * @method setViewInfoState
 	 * @param stackNumber
 	 * @param {Function} f (prevState) => newState
 	 */
-	setInfoState(stackNumber, f) {
-		const key = `infoState${stackNumber}`;
-		this.setState((state) => {
-			const oldInfoState = state[key] || {};
-			let newState = {};
-			newState[key] = Object.assign(oldInfoState, (typeof f === 'function') ? f(state[key]) : f);
-			return newState;
-		});
+	setViewInfoState(f) {
+		let stack = this.state.infoStack;
+		if (stack.length) {
+			let top = stack[stack.length-1];
+			let viewState = top.viewState;
+			top.viewState = Object.assign(viewState,(typeof f === 'function') ? f(viewState) : f);
+			this.setState({infoStack: stack});
+		}
 	}
 
 	/**
@@ -163,6 +171,7 @@ export class MMApp extends React.Component {
 	 * @param {function} callBack - (cmds[]) => {}
 	 */
 	doCommand(cmd, callBack) {
+		this.callBackStack.push(callBack);
 		this.pipe.doCommand(cmd, (results) => {
 			let error = results.error;
 			let warning;
@@ -214,8 +223,9 @@ export class MMApp extends React.Component {
 					this.warningAlert(warning);
 				}
 			}
-			if (callBack) {
-				callBack(results);
+			const stackedCallBack = this.callBackStack.shift();
+			if (stackedCallBack) {
+				stackedCallBack(results);
 			}
 		});
 	}
@@ -228,12 +238,13 @@ export class MMApp extends React.Component {
 	 */
 	pushView(viewKey, title, path) {
 		let newInfoState = {
-			viewKey: viewKey,
 			title: (title ? title : ''),
 			path: (path ? path : ''),
 			stackIndex: this.state.infoStack.length,
 			updateCommands: '',			// commands used to update the view state
-			updateResults: []		// result of doCommand on the updateCommands
+			updateResults: [],		// result of doCommand on the updateCommands
+			viewKey: viewKey,
+			viewState: {},
 		};
 		this.setState((state) => {
 			let stack = state.infoStack;
@@ -242,6 +253,66 @@ export class MMApp extends React.Component {
 				infoStack: stack,
 				viewType: state.viewType === ViewType.diagram ? ViewType.info : state.viewType
 			};
+		})
+	}
+
+	/** @method popView
+	 * if more than one thing on info stack, it pops the last one
+	 */
+	popView() {
+		let stack = this.state.infoStack;
+		if (stack.length) {
+			stack.pop();
+			this.setViewInfoState({});
+			this.updateViewState(stack.length-1);
+		}
+	}
+
+	/**
+	 * @method pushModel
+	 * pushes model name on to the diagram and infoview
+	 * @param {String} modelName 
+	 */
+	pushModel(modelName) {
+		this.doCommand(`/ pushmodel ${modelName}`, (cmds) => {
+			if (cmds.length) {
+				const modelInfoState = {
+					title: modelName,
+					path: cmds[0].results,
+					stackIndex: 0,
+					updateCommands: '',
+					updateResults: [],
+					viewKey: 'model',
+					viewState: {}
+				}
+
+				this.setState({infoStack: [modelInfoState]});
+				this.updateDiagram(true);
+			}
+		});
+	}
+
+	/**
+	 * @method popModel
+	 * on the diagram and infoview
+	 */
+	popModel() {
+		this.doCommand('/ popmodel', (cmds) => {
+			if (cmds.length) {
+				const modelName = cmds[0].results;
+				const modelInfoState = {
+					title: modelName,
+					path: cmds[0].results,
+					stackIndex: 0,
+					updateCommands: '',
+					updateResults: [],
+					viewKey: 'model',
+					viewState: {}
+				}
+
+				this.setState({infoStack: [modelInfoState]});
+				this.updateDiagram(true);
+			}
 		})
 	}
 
@@ -269,23 +340,45 @@ export class MMApp extends React.Component {
 
 	/**
 	 * @method updateDiagram
+	 * @param {Boolean} rescale - should diagram be rescaled - default false
 	 */
-	updateDiagram() {
+	updateDiagram(rescale = false) {
 		if (this.diagram.current) {
-			this.diagram.current.getModelInfo();
+			this.diagram.current.getModelInfo(rescale);
 		}
 	}
 
-	/** @method popView
-	 * if more than one thing on info stack, it pops the last one
+	/**
+	 * @method renameTool
+	 * @param {String} path 
+	 * @param {String} newName
+	 * renames tool at path to newName (in same parent model)
 	 */
-	popView() {
-		let stack = this.state.infoStack;
-		if (stack.length) {
-			stack.pop();
-			this.setInfoState(stack.length, {});
-			this.updateViewState(stack.length-1);
-		}
+	renameTool(path, newName) {
+		this.doCommand(`${path} renameto ${newName}`, (cmd) => {
+			// fix up things in the view info to reflect the new name
+			let parts = path.split('.');
+			const oldName = parts.pop();
+			parts.push(newName);
+			const newPath = parts.join('.');
+			const escapedPath = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			const re = new RegExp(`^${escapedPath} `, 'gi');
+			let infoStack = this.state.infoStack;
+			for (let i = 0; i < infoStack.length; i++) {
+				let viewInfo = infoStack[i];
+				if (viewInfo.path === path) {
+					viewInfo.path = newPath;
+					viewInfo.updateCommands = viewInfo.updateCommands.replace(re, newPath + ' ');
+					if (viewInfo.title === oldName) {
+						viewInfo.title = newName;
+					}
+					infoStack[i] = viewInfo;
+				}
+			}
+			this.setState({infoStack: infoStack});
+			this.updateDiagram();
+			this.updateViewState(infoStack.length-1)
+		});
 	}
 
 	/** @method setUpdateCommands
@@ -363,7 +456,6 @@ export class MMApp extends React.Component {
 			let i = infoStack.length-1;
 			previousTitle = i > 0 ? infoStack[i-1].title : '';
 			let viewInfo = this.state.infoStack[i];
-			let infoState = this.state[`infoState${i}`] || {};
 			title = viewInfo.title;
 			infoView = e('div', {
 					style: {
@@ -379,7 +471,6 @@ export class MMApp extends React.Component {
 					infoHeight: infoHeight,
 					updateDiagram: this.updateDiagram,
 					stackNumber: i,
-					infoState: infoState,
 					t: t
 				})
 			);
@@ -424,7 +515,7 @@ export class MMApp extends React.Component {
 				dgmState: this.state.dgmState,
 				diagramBox: diagramBox,
 				setDgmState: this.setDgmState,
-				doCommand: this.doCommand
+				actions: this.actions,
 			});
 		}
 
@@ -588,7 +679,7 @@ export class ToolNameField extends React.Component {
 		super(props);
 		const pathParts = this.props.viewInfo.path.split('.');
 		const name = pathParts[pathParts.length - 1];
-		this.props.actions.setInfoState(this.props.stackNumber, {name: name});
+		this.props.actions.setViewInfoState({name: name});
 		this.handleChange = this.handleChange.bind(this);
 		this.handleKeyPress = this.handleKeyPress.bind(this);
 	}
@@ -599,7 +690,7 @@ export class ToolNameField extends React.Component {
 	 */
   handleChange(event) {
 		const value = event.target.value;  // event will be null in handler
-		this.props.actions.setInfoState(this.props.stackNumber, {name: value});
+		this.props.actions.setViewInfoState({name: value});
 	}
 	
 	/** @method handleKeyPress
@@ -609,17 +700,15 @@ export class ToolNameField extends React.Component {
 	handleKeyPress(event) {
 		if (event.key == 'Enter') {
 			const path = this.props.viewInfo.path;
-			const newName = this.props.infoState.name;
-			this.props.actions.doCommand(`${path} renameto ${newName}`, (cmd) => {
-				this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
-		});
+			const newName = this.props.viewInfo.viewState.name;
+			this.props.actions.renameTool(path, newName);
 		}
 	}
 
 	render() {
 		let t = this.props.t;
 		return e('input', {
-			value: this.props.infoState.name || '',
+			value: this.props.viewInfo.viewState.name || '',
 			placeholder: t('react:toolNamePlaceHolder'),
 			onChange: this.handleChange,
 			onKeyPress: this.handleKeyPress

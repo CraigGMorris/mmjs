@@ -122,7 +122,7 @@ class MMSession extends MMCommandParent {
 			this.pushModel(model);	
 		}
 
-		command.results = this.currentModel.name;
+		command.results = this.currentModel.getPath();
 	}
 
 	/**
@@ -138,7 +138,7 @@ class MMSession extends MMCommandParent {
 		else {
 			this.popModel();
 		}	
-		command.results = this.currentModel.name;
+		command.results = this.currentModel.getPath();
 	}
 
 	// testing method
@@ -656,6 +656,24 @@ class MMTool extends MMCommandParent {
 			}
 		}
 		return this.notes;
+	}
+
+	/** @override */
+	get verbs() {
+		let verbs = super.verbs;
+		verbs['toolviewinfo'] = this.toolViewInfo;
+
+		return verbs;
+	}
+	
+	/**
+	 * @method toolViewInfo
+	 * @param {MMCommand} command
+	 * command.results contains the info for tool info view
+	 * should be overridden by derived classes
+	 */
+	toolViewInfo(command) {
+		command.results = {notes: this.notes}
 	}
 
 	/**

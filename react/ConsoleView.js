@@ -35,7 +35,7 @@ export class ConsoleView extends React.Component {
 			}
 			lines.push(output);
 		}
-		this.props.actions.setInfoState(this.props.stackNumber, (state) => {
+		this.props.actions.setViewInfoState((state) => {
 			lines = lines.join('\n');
 			if (lines.length > 100000) {
 				lines = lines.substr(0, 100000) + '\nTRUNCATED at 100000 chars';
@@ -52,7 +52,7 @@ export class ConsoleView extends React.Component {
 	 */
   handleChange(event) {
 		const value = event.target.value;  // event will be null in handler
-		this.props.actions.setInfoState(this.props.stackNumber, {input: value});
+		this.props.actions.setViewInfoState({input: value});
 	}
 	
 	/** @method handleKeyPress
@@ -61,8 +61,8 @@ export class ConsoleView extends React.Component {
 	 */
 	handleKeyPress(event) {
 		if (event.key == 'Enter') {
-			this.props.actions.doCommand(this.props.infoState.input, this.callBack);
-			this.props.actions.setInfoState(this.props.stackNumber, (state) => {
+			this.props.actions.doCommand(this.props.viewInfo.viewState.input, this.callBack);
+			this.props.actions.setViewInfoState((state) => {
 				return {input:''}
 			});
 		}
@@ -109,7 +109,7 @@ export class ConsoleView extends React.Component {
 					tabSize: '4',
 					paddingLeft: '5px'
 				},
-				value: this.props.infoState.output || '',
+				value: this.props.viewInfo.viewState.output || '',
 				readOnly: true
 			}),
 			e('input', {
@@ -120,7 +120,7 @@ export class ConsoleView extends React.Component {
 					width: 'calc(100% - 1em)',
 					border: 'solid 1px'
 				},
-				value: this.props.infoState.input || '',
+				value: this.props.viewInfo.viewState.input || '',
 				placeholder: t('react:consoleReadPlaceHolder'),
 				onChange: this.handleChange,
 				onKeyPress: this.handleKeyPress

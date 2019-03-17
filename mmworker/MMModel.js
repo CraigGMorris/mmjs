@@ -150,7 +150,6 @@ class MMModel extends MMTool {
 
 	/**
 	 * @method diagramInfo
-	 * @param {MMCommand} command
 	 * @returns {Object}
 	 * returns object containing the info needed for model diagram
 	 */
@@ -187,6 +186,15 @@ class MMModel extends MMTool {
 			path: this.getPath(),
 			tools: tools,
 		};
+	}
+
+	/**
+	 * @method toolViewInfo
+	 * @param {MMCommand} command
+	 * command.results contains the info for tool info view
+	 */
+	toolViewInfo(command) {
+		super.toolViewInfo(command);
 	}
 
 	/**

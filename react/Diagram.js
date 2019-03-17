@@ -75,7 +75,7 @@ export class Diagram extends React.Component {
 	 * @param {Boolean} rescale
 	 */
 	getModelInfo(rescale = false) {
-		this.props.doCommand('/ dgminfo', (results) => {
+		this.props.actions.doCommand('/ dgminfo', (results) => {
 			if (results.length && results[0].results) {
 				const modelInfo = results[0].results;
 				this.props.setDgmState((state) => {
@@ -122,10 +122,10 @@ export class Diagram extends React.Component {
 	 * @method doCommand
 	 * @param {String} command
 	 * @param {Boolean} rescale - true if diagram should be rescaled
-	 * shortcut to props.doCommand with automatic getModelInfo
+	 * shortcut to props.actions.doCommand with automatic getModelInfo
 	 */
 	doCommand(command, rescale) {
-		this.props.doCommand(command, (cmds) => {
+		this.props.actions.doCommand(command, (cmds) => {
 			this.getModelInfo(rescale);
 		});
 	}
@@ -577,14 +577,16 @@ export class Diagram extends React.Component {
 	 * @param {string} modelName 
 	 */
 	pushModel(modelName) {
-		this.doCommand(`/ pushmodel ${modelName}`, true);
+	//	this.doCommand(`/ pushmodel ${modelName}`, true);
+		this.props.actions.pushModel(modelName);
 	}
 
 	/**
 	 * @method popModel 
 	 */
 	popModel() {
-		this.doCommand('/ popmodel', true);
+		this.props.actions.popModel();
+		//this.doCommand('/ popmodel', true);
 	}
 
 	render() {
@@ -871,7 +873,9 @@ class ToolIcon extends React.Component {
 	componentWillUnmount() {
 		ReactDOM.findDOMNode(this).removeEventListener('touchstart', this.onTouchStart);
 		ReactDOM.findDOMNode(this).removeEventListener('touchend', this.onTouchEnd);
-	}
+		document.removeEventListener('mousemove', this.onMouseMove);
+		document.removeEventListener('mouseup', this.onMouseUp);
+}
 
 	onMouseDown(e) {
     // only left mouse button
@@ -1105,7 +1109,9 @@ class SelectionBox extends React.Component {
 	componentWillUnmount() {
 		ReactDOM.findDOMNode(this).removeEventListener('touchstart', this.onTouchStart);
 		ReactDOM.findDOMNode(this).removeEventListener('touchend', this.onTouchEnd);
-	}
+		document.removeEventListener('mousemove', this.onMouseMove);
+		document.removeEventListener('mouseup', this.onMouseUp);
+}
 
 	/**
 	 * @method determineDragType

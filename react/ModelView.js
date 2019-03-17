@@ -1,4 +1,7 @@
 'use strict';
+
+import {ToolNameField} from './MMApp.js';
+
 const e = React.createElement;
 
 /**
@@ -12,16 +15,31 @@ export class ModelView extends React.Component {
 
 	componentDidMount() {
 		this.props.actions.setUpdateCommands(this.props.viewInfo.stackIndex,
-			`${this.props.viewInfo.path} toolInfo`);
+			`${this.props.viewInfo.path} toolViewInfo`);
 	}
 
 	render() {
 		let t = this.props.t;
-		return e('div', {id:'model-info-view'},
+		return e('div', {
+			style: {
+				height: '100%',
+				fontSize: '1em',
+				display: 'grid',
+				gridTemplateColumns: '1fr',
+				gridTemplateRows: '50px 1fr',
+				gridTemplateAreas: `"name"
+					"other"`
+			}
+		},
 			e(ToolNameField, {
+				style: {
+					gridArea: 'name'
+				},
+				t: t,
 				viewInfo: this.props.viewInfo,
-				infoState: this.props.infoState,
-			})
+				actions: this.props.actions
+			}),
+			e('div', {}, 'Some stuff')
 		);
 	}
 }
