@@ -58,8 +58,8 @@ export class MMApp extends React.Component {
 			"model": ModelView
 		}
 
-		// information need to generate an information view component
-		const initialInfoState = {
+		// information need to generate an console view component
+		this.consoleInfo = {
 			title: 'react:consoleTitle',
 			path: '',
 			stackIndex: 0,
@@ -67,7 +67,18 @@ export class MMApp extends React.Component {
 			updateResults: [],
 			viewKey: 'console',
 			viewState: {},
-		}
+		};
+
+		// information need to generate initial root view component
+		const initialInfoState = {
+			title: 'root',
+			path: '/.root',
+			stackIndex: 0,
+			updateCommands: '',
+			updateResults: [],
+			viewKey: 'model',
+			viewState: {}
+		};
 
 		this.undoStack = [];
 		this.redoStack = [];
@@ -96,6 +107,7 @@ export class MMApp extends React.Component {
 		this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.popView = this.popView.bind(this);
 		this.pushView = this.pushView.bind(this);
+		this.pushConsole = this.pushConsole.bind(this);
 		this.setDgmState = this.setDgmState.bind(this);
 		this.setViewInfoState = this.setViewInfoState.bind(this);
 	}
@@ -261,10 +273,24 @@ export class MMApp extends React.Component {
 	 */
 	popView() {
 		let stack = this.state.infoStack;
-		if (stack.length) {
-			stack.pop();
-			this.setViewInfoState({});
-			this.updateViewState(stack.length-1);
+		if (stack.length > 1) {
+			const oldTop = stack.pop();
+			switch (oldTop.viewKey) {
+				case 'model':
+					this.doCommand('/ popmodel', (cmds) => {
+						this.updateViewState(stack.length-1, true);
+					});
+					break;
+
+				case 'console':
+					this.consoleInfo = oldTop;
+					this.updateViewState(stack.length-1);
+					break;
+				
+				default:
+					this.updateViewState(stack.length-1);
+					break;
+			}
 		}
 	}
 
@@ -285,8 +311,12 @@ export class MMApp extends React.Component {
 					viewKey: 'model',
 					viewState: {}
 				}
-
-				this.setState({infoStack: [modelInfoState]});
+				let infoStack = this.state.infoStack;
+				while (infoStack.length > 1 && infoStack[infoStack.length - 1].viewKey !== 'model') {
+					infoStack.pop();
+				}
+				infoStack.push(modelInfoState);
+				this.setState({infoStack: infoStack});
 				this.updateDiagram(true);
 			}
 		});
@@ -297,30 +327,38 @@ export class MMApp extends React.Component {
 	 * on the diagram and infoview
 	 */
 	popModel() {
-		this.doCommand('/ popmodel', (cmds) => {
-			if (cmds.length) {
-				const modelName = cmds[0].results;
-				const modelInfoState = {
-					title: modelName,
-					path: cmds[0].results,
-					stackIndex: 0,
-					updateCommands: '',
-					updateResults: [],
-					viewKey: 'model',
-					viewState: {}
-				}
-
-				this.setState({infoStack: [modelInfoState]});
-				this.updateDiagram(true);
+		let stack = this.state.infoStack;
+		while (stack.length > 1 && stack[stack.length-1].viewKey !== 'model') {
+			const oldTop = stack.pop();
+			if (oldTop.viewKey === 'console') {
+				this.consoleInfo = oldTop;
 			}
+		}
+		this.popView();
+	}
+
+	/**
+	 * @method pushConsole
+	 * pushes the console onto the info view
+	 */
+	pushConsole() {
+		this.setState((state) => {
+			let stack = state.infoStack;
+			stack.push(this.consoleInfo);
+			return {
+				infoStack: stack,
+				viewType: state.viewType === ViewType.diagram ? ViewType.info : state.viewType
+			};
 		})
+
 	}
 
 	/** @method updateViewState
 	 * @param {Number} stackIndex = info stack position of view
+	 * @param {Boolean} rescaleDiagram - should diagram be rescaled - default false
 	 * call doCommand with updateCommands to update th info view state
 	 */
-	updateViewState(stackIndex) {
+	updateViewState(stackIndex, rescaleDiagram = false) {
 		let stack = this.state.infoStack;
 		if (stackIndex < stack.length) {
 			let top = stack[stackIndex];
@@ -328,12 +366,12 @@ export class MMApp extends React.Component {
 				this.doCommand(top.updateCommands, (cmds) => {
 					top.updateResults = cmds;
 					this.setState({infoStack: stack});
-					this.updateDiagram();
+					this.updateDiagram(rescaleDiagram);
 				});
 			}
 			else {
 				this.setState({infoStack: stack});
-				this.updateDiagram();
+				this.updateDiagram(rescaleDiagram);
 			}
 		}
 	}
@@ -429,6 +467,9 @@ export class MMApp extends React.Component {
 							return {viewType: (state.allow2Pane) ? ViewType.twoPanes : ViewType.diagram}
 					}
 				})
+				break;
+			case 'console':
+				this.pushConsole();
 				break;
 			default:
 				this.pushView(parts[0], parts[1], parts[3], );
