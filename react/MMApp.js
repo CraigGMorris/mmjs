@@ -24,10 +24,9 @@ const ViewType = Object.freeze({
  * the main Math Minion window
  * @member {MMCommandPipe} pipe - pipe to worker
  * @member {Array} callBackStack - makes sure callbacks are called in correct order
- * @member {method[]} actions
- * methods passed to components
- * @member {Object} infoViews
- * classes of info views used to construct the react component appearing in the info view
+ * @member {Array} dgmStateStack - keeps diagram state when model is pushed over it
+ * @member {method[]} actions - methods passed to components
+ * @member {Object} infoViews - classes of info views used to construct the react component appearing in the info view
  * @member {string[]} undoStack;
  * @member {string[]} redoStack;
  */
@@ -36,6 +35,7 @@ export class MMApp extends React.Component {
 		super(props);
 		this.pipe = new MMCommandPipe();
 		this.callBackStack = [];
+		this.dgmStateStack = [];
 		this.actions = {
 			doCommand: this.doCommand.bind(this),
 			pushModel: this.pushModel.bind(this),
@@ -278,6 +278,9 @@ export class MMApp extends React.Component {
 			switch (oldTop.viewKey) {
 				case 'model':
 					this.doCommand('/ popmodel', (cmds) => {
+						if (this.dgmStateStack.length) {
+							this.setState({dgmState: this.dgmStateStack.pop()});
+						}
 						this.updateViewState(stack.length-1, true);
 					});
 					break;
@@ -301,6 +304,7 @@ export class MMApp extends React.Component {
 	 */
 	pushModel(modelName) {
 		this.doCommand(`/ pushmodel ${modelName}`, (cmds) => {
+			this.dgmStateStack.push(Object.assign({}, this.state.dgmState));
 			if (cmds.length) {
 				const modelInfoState = {
 					title: modelName,
