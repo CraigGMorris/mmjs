@@ -5,6 +5,7 @@ import {ConsoleView} from './ConsoleView.js';
 import {Diagram} from './Diagram.js';
 import {UnitsView, UserUnitsView, UnitSetsView, UnitSetView} from './UnitsView.js';
 import {ModelView} from './ModelView.js';
+import {ExpressionView} from './ExpressionView.js';
 
 const e = React.createElement;
 
@@ -40,6 +41,7 @@ export class MMApp extends React.Component {
 			doCommand: this.doCommand.bind(this),
 			pushModel: this.pushModel.bind(this),
 			popModel: this.popModel.bind(this),
+			pushTool: this.pushTool.bind(this),
 			pushView: this.pushView.bind(this),
 			popView: this.popView.bind(this),
 			setUpdateCommands: this.setUpdateCommands.bind(this),
@@ -54,8 +56,9 @@ export class MMApp extends React.Component {
 			'units': UnitsView,
 			'userunits': UserUnitsView,
 			'unitsets': UnitSetsView,
-			"unitset": UnitSetView,
-			"model": ModelView
+			'unitset': UnitSetView,
+			'Model': ModelView,
+			'Expression': ExpressionView
 		}
 
 		// information need to generate an console view component
@@ -76,7 +79,7 @@ export class MMApp extends React.Component {
 			stackIndex: 0,
 			updateCommands: '',
 			updateResults: [],
-			viewKey: 'model',
+			viewKey: 'Model',
 			viewState: {}
 		};
 
@@ -276,7 +279,7 @@ export class MMApp extends React.Component {
 		if (stack.length > 1) {
 			const oldTop = stack.pop();
 			switch (oldTop.viewKey) {
-				case 'model':
+				case 'Model':
 					this.doCommand('/ popmodel', (cmds) => {
 						if (this.dgmStateStack.length) {
 							this.setState({dgmState: this.dgmStateStack.pop()});
@@ -299,7 +302,7 @@ export class MMApp extends React.Component {
 
 	/**
 	 * @method pushModel
-	 * pushes model name on to the diagram and infoview
+	 * pushes model named on to the diagram and infoview
 	 * @param {String} modelName 
 	 */
 	pushModel(modelName) {
@@ -312,11 +315,11 @@ export class MMApp extends React.Component {
 					stackIndex: 0,
 					updateCommands: '',
 					updateResults: [],
-					viewKey: 'model',
+					viewKey: 'Model',
 					viewState: {}
 				}
 				let infoStack = this.state.infoStack;
-				while (infoStack.length > 1 && infoStack[infoStack.length - 1].viewKey !== 'model') {
+				while (infoStack.length > 1 && infoStack[infoStack.length - 1].viewKey !== 'Model') {
 					infoStack.pop();
 				}
 				infoStack.push(modelInfoState);
@@ -332,13 +335,28 @@ export class MMApp extends React.Component {
 	 */
 	popModel() {
 		let stack = this.state.infoStack;
-		while (stack.length > 1 && stack[stack.length-1].viewKey !== 'model') {
+		while (stack.length > 1 && stack[stack.length-1].viewKey !== 'Model') {
 			const oldTop = stack.pop();
 			if (oldTop.viewKey === 'console') {
 				this.consoleInfo = oldTop;
 			}
 		}
 		this.popView();
+	}
+
+	/**
+	 * @method pushTool
+	 * pushes tool named on to the infoview
+	 * @param {String} toolName
+	 * @param {String} toolType
+	 */
+	pushTool(toolName, toolType) {
+		let infoStack = this.state.infoStack;
+		while (infoStack.length > 1 && infoStack[infoStack.length - 1].viewKey !== 'Model') {
+			infoStack.pop();
+		}
+		const path = `${infoStack[infoStack.length - 1].path}.${toolName}`;
+		this.pushView(toolType, toolName, path);
 	}
 
 	/**

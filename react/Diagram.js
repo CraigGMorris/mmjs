@@ -64,8 +64,6 @@ export class Diagram extends React.Component {
 		this.onTouchStart = this.onTouchStart.bind(this);
 		this.onTouchMove = this.onTouchMove.bind(this);
 		this.onTouchEnd = this.onTouchEnd.bind(this);
-		this.popModel = this.popModel.bind(this);
-		this.pushModel = this.pushModel.bind(this);
 
 		this.getModelInfo();
 	}
@@ -555,7 +553,7 @@ export class Diagram extends React.Component {
 					const diagramBox = this.props.diagramBox;
 					if (touch.clientY - diagramBox.top < 15) {
 						if (touch.clientX - diagramBox.top < diagramBox.width/2) {
-							this.popModel();
+							this.props.actions.popModel();
 							this.props.setDgmState({selectionBox: null});
 						}
 						else {
@@ -570,23 +568,6 @@ export class Diagram extends React.Component {
 			}
 		}
 		this.pinch = null;
-	}
-
-	/**
-	 * @method pushModel
-	 * @param {string} modelName 
-	 */
-	pushModel(modelName) {
-	//	this.doCommand(`/ pushmodel ${modelName}`, true);
-		this.props.actions.pushModel(modelName);
-	}
-
-	/**
-	 * @method popModel 
-	 */
-	popModel() {
-		this.props.actions.popModel();
-		//this.doCommand('/ popmodel', true);
 	}
 
 	render() {
@@ -614,7 +595,8 @@ export class Diagram extends React.Component {
 				scale: scale,
 				setDragType: this.setDragType,
 				draggedTo: this.draggedTo,
-				pushModel: this.pushModel
+				pushModel: this.props.actions.pushModel,
+				pushTool: this.props.actions.pushTool,
 			});
 			toolList.push(cmp);
 
@@ -785,7 +767,7 @@ export class Diagram extends React.Component {
 						y: 25,
 						text:`< ${pathParts[pathParts.length-2]}`,
 						textClick: (e) => {
-							this.popModel();
+							this.props.actions.popModel();
 							this.props.setDgmState({selectionBox: null});
 						}
 					})
@@ -920,7 +902,9 @@ class ToolIcon extends React.Component {
 			if (this.props.info.toolTypeName === "Model") {
 				this.props.pushModel(this.props.info.name);
 			}
-			console.log(`Tool click panSum ${this.panSum}`);
+			else {
+				this.props.pushTool(this.props.info.name, this.props.info.toolTypeName);
+			}
 		}
 		this.panSum = 0;
     e.stopPropagation()
@@ -970,7 +954,9 @@ class ToolIcon extends React.Component {
 				else {
 					if (this.props.info.toolTypeName === "Model") {
 						this.props.pushModel(this.props.info.name);
-						console.log(`Tool tap panSum ${this.panSum}`);
+					}
+					else {
+						this.props.pushTool(this.props.info.name, this.props.info.toolTypeName);
 					}
 				}
 			}
