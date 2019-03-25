@@ -158,9 +158,10 @@ class MMModel extends MMTool {
 		for (const key in this.children) {
 			let requestors = [];
 			const tool = this.children[key];
-			for (const requestor of tool.valueRequstors) {
-				if (requestor !== tool) {
-					requestors.push(requestor.name);
+			const sources = tool.inputSources();
+			for (const source of sources) {
+				if (source !== tool) {
+					requestors.push(source.name);
 				}
 			}
 			let toolInfo = {

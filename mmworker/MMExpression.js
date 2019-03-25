@@ -109,10 +109,10 @@ class MMExpression extends MMTool {
 	forgetCalculated() {
 		if (!this.forgetRecursionBlockIsOn) {
 			this.forgetRecursionBlockIsOn = true;
-			for (let requestor of this.valueRequstors) {
+			for (let requestor of this.valueRequestors) {
 				requestor.forgetCalculated();
 			}
-			this.valueRequstors.clear();
+			this.valueRequestors.clear();
 			super.forgetCalculated();
 			this.cachedValue = null;
 			this.forgetRecursionBlockIsOn = false;
@@ -169,6 +169,20 @@ class MMExpression extends MMTool {
 		}
 		return value;
 	}
+
+		/**
+	 * @method inputSources
+	 * @override
+	 * @returns {Set} contains tools referenced by this tool
+	 */
+	inputSources() {
+		let sources = super.inputSources();
+		if (!this._isInput) {
+			this.formula.addInputSourcesToSet(sources);
+		}
+		return sources;
+	}
+
 
 	/**
 	 * @method jsonValue

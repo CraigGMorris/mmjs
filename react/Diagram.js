@@ -458,7 +458,7 @@ export class Diagram extends React.Component {
 	}
 
 	onWheel(e) {
-		e.preventDefault();
+//		e.preventDefault(); // chrome complains and remvoing seems ok
 		e.stopPropagation();
 		const deltaY = e.deltaY;
 		const pageX = e.pageX;

@@ -305,7 +305,7 @@ class MMToolReferenceOperator extends MMFormulaOperator {
 				tool = this.formula.nameSpace.childNamed(toolName);
 			}
 			if (tool) {
-				this.input.addInputSourcesToSet(tool);
+				sources.add(tool);
 			}
 		}
 	}
@@ -1555,5 +1555,15 @@ class MMFormula extends MMCommandObject {
 
 		//this.setError('mmcmd:unimplemented', {feature: 'parseFormula'});
 		return this._resultOperator;
+	}
+
+	/**
+	 * @method addInputSourcesToSet
+	 * @param {Set} sources - contains tools referenced in this formula
+	 */
+	addInputSourcesToSet(sources) {
+		if (this._resultOperator) {
+			this._resultOperator.addInputSourcesToSet(sources);
+		}
 	}
 }

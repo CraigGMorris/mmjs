@@ -625,7 +625,7 @@ class MMTool extends MMCommandParent {
 		super(name, parentModel, 'MM' + typeName);
 		this.typeName = typeName;  // temporary until objectTypes is defined
 		this.notes = '';
-		this.valueRequstors = new Set([]);
+		this.valueRequestors = new Set([]);
 		this.forgetRecursionBlockIsOn = false;
 		this.isHidingConnections = false;
 		this.position = this.session.nextToolLocation;
@@ -718,7 +718,7 @@ class MMTool extends MMCommandParent {
 	 * short cut method
 	 */
 	addRequestor(requestor) {
-		this.valueRequstors.add(requestor);
+		this.valueRequestors.add(requestor);
 	}
 
 	/**
@@ -734,10 +734,18 @@ class MMTool extends MMCommandParent {
 		}
 		else if (description == 'myName') {
 			if (requestor) {
-				this.valueRequstors.add(requestor);
+				this.valueRequestors.add(requestor);
 			}
 			return MMStringValue.scalarValue(this.name);
 		}
 		return null;
+	}
+
+	/**
+	 * @method inputSources
+	 * @returns {Set} contains tools referenced by this tool - filled in by derived classes
+	 */
+	inputSources() {
+		return new Set([]);
 	}
 }
