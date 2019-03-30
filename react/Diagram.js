@@ -987,6 +987,8 @@ class ToolIcon extends React.Component {
 					y: (y + 7 + translate.y)*scale,
 					style: {
 						fontSize: `${6*scale}px`,
+						fontFamily: 'Helvetica',
+						fontWeight: '100',
 						fill: textColor
 					}
 					}, info.name
@@ -997,6 +999,8 @@ class ToolIcon extends React.Component {
 					y: (y + 12.5 + translate.y)*scale,
 					style: {
 						fontSize: `${5*scale}px`,
+						fontFamily: 'Helvetica',
+						fontWeight: '100',
 						fill: textColor
 					}
 					}, info.formula
@@ -1006,6 +1010,8 @@ class ToolIcon extends React.Component {
 					y: (y + 18 + translate.y)*scale,
 					style: {
 						fontSize: `${5*scale}px`,
+						fontFamily: 'Helvetica',
+						fontWeight: '100',
 						fill: (info.result) ? textColor : 'red'
 					}
 					}, info.result ? info.result.trim() : '?'
@@ -1021,6 +1027,8 @@ class ToolIcon extends React.Component {
 					style: {
 						fontSize: `${9*scale}px`,
 						fontStyle: 'italic',
+						fontFamily: 'Helvetica',
+						fontWeight: '100',
 						fill: toolTypeColor,
 						stroke: toolTypeColor}
 					},
@@ -1029,7 +1037,12 @@ class ToolIcon extends React.Component {
 				e('text', {
 						x: (x + 3 + translate.x)*scale,
 						y: (y + 16 + translate.y)*scale,
-						style: {fontSize: `${7*scale}px`, fill: textColor}
+						style: {
+							fontSize: `${7*scale}px`,
+							fontFamily: 'Helvetica',
+							fontWeight: '100',
+								fill: textColor
+						}
 					},
 					info.name
 				),
