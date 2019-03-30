@@ -183,6 +183,20 @@ class MMExpression extends MMTool {
 		return sources;
 	}
 
+	/**
+	 * @method toolViewInfo
+	 * @param {MMCommand} command
+	 * command.results contains the info for tool info view
+	 */
+	toolViewInfo(command) {
+		super.toolViewInfo(command);
+		let results = command.results;
+		const value = this.valueForRequestor();
+		results['formulaPath'] = this.getPath() + '.formula';
+		results['formula'] = this.formula._formula;
+		results['isInput'] = this._isInput;
+		results['isOutput'] = this._isOutput;
+	}
 
 	/**
 	 * @method jsonValue

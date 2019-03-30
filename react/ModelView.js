@@ -20,25 +20,35 @@ export class ModelView extends React.Component {
 
 	render() {
 		let t = this.props.t;
-		return e('div', {
-			style: {
-				height: '100%',
-				fontSize: '1em',
-				display: 'grid',
-				gridTemplateColumns: '1fr',
-				gridTemplateRows: '50px 1fr',
-				gridTemplateAreas: `"name"
-					"other"`
-			}
-		},
-			e(ToolNameField, {
+		const inputHeight = this.props.actions.defaults().grid.inputHeight;
+		return e(
+			'div', {
 				style: {
-					gridArea: 'name'
+					paddingLeft: '3px',
+					paddingRight: '3px',
+					height: '100%',
+					fontSize: '1em',
+					display: 'grid',
+					gridTemplateColumns: '1fr',
+					gridTemplateRows: `${inputHeight} 1fr`,
+					gridTemplateAreas: `"name"
+						"other"`
+				}
+			},
+			e(
+				'div', {
+					style: {
+						gridArea: 'name'
+					},
 				},
-				t: t,
-				viewInfo: this.props.viewInfo,
-				actions: this.props.actions
-			}),
+				e(
+					ToolNameField, {
+						t: t,
+						viewInfo: this.props.viewInfo,
+						actions: this.props.actions
+					}
+				)
+			),
 			e('div', {}, 'Some stuff')
 		);
 	}

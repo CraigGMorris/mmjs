@@ -48,7 +48,8 @@ export class MMApp extends React.Component {
 			setViewInfoState: this.setViewInfoState.bind(this),
 			updateViewState: this.updateViewState.bind(this),
 			updateDiagram: this.updateDiagram.bind(this),
-			renameTool: this.renameTool.bind(this)
+			renameTool: this.renameTool.bind(this),
+			defaults: this.defaults.bind(this)
 		};
 
  		this.infoViews = {
@@ -132,6 +133,20 @@ export class MMApp extends React.Component {
 		window.addEventListener('resize', setSize);
 	}
 
+	defaults() {
+		return {
+			styles: {
+				input: {
+					fontSize: '12pt',
+					width: 'calc(100% - 6px)'
+				}
+			},
+			grid: {
+				inputHeight: '30px',
+			}
+		};
+	}
+
 	/**
 	 * @method setDgmState
 	 * @param {Function} f (prevState) => newState
@@ -150,7 +165,10 @@ export class MMApp extends React.Component {
 	/**
 	 * @method setViewInfoState
 	 * @param stackNumber
-	 * @param {Function} f (prevState) => newState
+	 * @param {Function} f (prevState) => newState | just Object
+	 * this method allows included components to save their state in a stack reflecting the pushed
+	 * info views.  That way the state is preserved if another view is pushed over it and can
+	 * be restored when the overlaying view is popped.
 	 */
 	setViewInfoState(f) {
 		let stack = this.state.infoStack;
@@ -355,8 +373,28 @@ export class MMApp extends React.Component {
 		while (infoStack.length > 1 && infoStack[infoStack.length - 1].viewKey !== 'Model') {
 			infoStack.pop();
 		}
-		const path = `${infoStack[infoStack.length - 1].path}.${toolName}`;
-		this.pushView(toolType, toolName, path);
+		let top = infoStack[infoStack.length - 1];
+		const path = `${top.path}.${toolName}`;
+		const updateCommand = `${path} toolViewInfo`;
+		this.doCommand(updateCommand, (cmds) => {
+			let newInfoState = {
+				title: (toolName ? toolName : ''),
+				path: (path ? path : ''),
+				stackIndex: this.state.infoStack.length,
+				updateCommands: updateCommand,			// commands used to update the view state
+				updateResults: cmds,		// result of doCommand on the updateCommands
+				viewKey: toolType,
+				viewState: {},
+			};
+			this.setState((state) => {
+				let stack = state.infoStack;
+				stack.push(newInfoState);
+				return {
+					infoStack: stack,
+					viewType: state.viewType === ViewType.diagram ? ViewType.info : state.viewType
+				};
+			})
+		});
 	}
 
 	/**
@@ -527,6 +565,7 @@ export class MMApp extends React.Component {
 					},
 				},
 				e(this.infoViews[viewInfo.viewKey], {
+					key: viewInfo.path,
 					className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
 					actions: this.actions,
 					viewInfo: viewInfo,
@@ -740,9 +779,15 @@ export class MMApp extends React.Component {
 export class ToolNameField extends React.Component {
 	constructor(props) {
 		super(props);
-		const pathParts = this.props.viewInfo.path.split('.');
-		const name = pathParts[pathParts.length - 1];
-		this.props.actions.setViewInfoState({name: name});
+		let name;
+		if (this.props.viewInfo.viewState.toolName) {
+			name = this.props.viewInfo.viewState.toolName;
+		}
+		else {
+			const pathParts = this.props.viewInfo.path.split('.');
+			name = pathParts[pathParts.length - 1];
+		}
+		this.props.actions.setViewInfoState({toolName: name});
 		this.handleChange = this.handleChange.bind(this);
 		this.handleKeyPress = this.handleKeyPress.bind(this);
 	}
@@ -753,7 +798,7 @@ export class ToolNameField extends React.Component {
 	 */
   handleChange(event) {
 		const value = event.target.value;  // event will be null in handler
-		this.props.actions.setViewInfoState({name: value});
+		this.props.actions.setViewInfoState({toolName: value});
 	}
 	
 	/** @method handleKeyPress
@@ -763,15 +808,17 @@ export class ToolNameField extends React.Component {
 	handleKeyPress(event) {
 		if (event.key == 'Enter') {
 			const path = this.props.viewInfo.path;
-			const newName = this.props.viewInfo.viewState.name;
+			const newName = this.props.viewInfo.viewState.toolName;
 			this.props.actions.renameTool(path, newName);
 		}
 	}
 
 	render() {
 		let t = this.props.t;
+		const inputHeight = this.props.actions.defaults().grid.inputHeight;
 		return e('input', {
-			value: this.props.viewInfo.viewState.name || '',
+			style: this.props.actions.defaults().styles.input,
+			value: this.props.viewInfo.viewState.toolName || '',
 			placeholder: t('react:toolNamePlaceHolder'),
 			onChange: this.handleChange,
 			onKeyPress: this.handleKeyPress
