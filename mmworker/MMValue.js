@@ -686,6 +686,7 @@ class MMNumberValue extends MMValue {
 			rv['v'] = Array.from(this._values);
 			rv['unit'] = theMMSession.unitSystem.baseUnitWithDimensions(this.unitDimensions).name;
 		}
+		rv['unitType'] = theMMSession.unitSystem.sets.defaultSet.typeNameForDimensions(this.unitDimensions);
 		rv['t'] = 'n';
 		rv['nr'] = this.rowCount;
 		rv['nc'] = this.columnCount;

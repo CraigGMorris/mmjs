@@ -10,6 +10,8 @@
 	"dgmButtonRedo": "Redo",
 	"dgmButtonUndo": "Undo",
 	"dgmButtonUnits": "Units",
+	"exprIsInput": "Input",
+	"exprIsOutput": "Output",
 	"formulaValueUnknown": "Enter formula",
 	"readCommands": "Read",
 	"toolNamePlaceHolder": "Name (without spaces)",

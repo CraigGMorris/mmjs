@@ -67,7 +67,7 @@ class MMExpression extends MMTool {
 	/** @override */
 	get verbs() {
 		let verbs = super.verbs;
-		verbs['value'] = this.jsonValue;
+		verbs['value'] = this.valueCommand;
 		return verbs;
 	}
 
@@ -78,7 +78,7 @@ class MMExpression extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			value: 'mmcmd:?exprUseJsonValue'
+			value: 'mmcmd:?exprUseValue'
 		}[command];
 		if (key) {
 			return key;
@@ -196,18 +196,23 @@ class MMExpression extends MMTool {
 		results['formula'] = this.formula._formula;
 		results['isInput'] = this._isInput;
 		results['isOutput'] = this._isOutput;
+		results['value'] = this.jsonValue();
+	}
+
+	jsonValue() {
+		let value = this.valueForRequestor();
+		let json = {}
+		if (value) {
+			json = value.jsonValue(this.displayUnit);
+		}
+		return json;
 	}
 
 	/**
-	 * @method jsonValue
+	 * @method valueCommand
 	 * command.results = json
 	 */
-	jsonValue(command) {
-		let value = this.valueForRequestor();
-		let rv = {}
-		if (value) {
-			rv = value.jsonValue(this.displayUnit);
-		}
-		command.results = rv;
+	valueCommand(command) {
+		command.results = this.jsonValue();
 	}
 }
