@@ -982,66 +982,75 @@ class ToolIcon extends React.Component {
 		let textComponents;
 		if (info.toolTypeName === 'Expression') {
 			textComponents = e('g', {	style: {pointerEvents: 'none'}},
-				e('text', {
-					x: (x + 3 + translate.x)*scale,
-					y: (y + 7 + translate.y)*scale,
-					style: {
-						fontSize: `${6*scale}px`,
-						fontFamily: 'Helvetica',
-						fontWeight: '100',
-						fill: textColor
-					}
+				e(
+					'text', {
+						x: (x + 3 + translate.x)*scale,
+						y: (y + 7 + translate.y)*scale,
+						style: {
+							fontSize: `${6*scale}px`,
+							fontFamily: 'Helvetica',
+							fontWeight: '100',
+							fill: textColor,
+							stroke: textColor
+						}
 					}, info.name
 				),
-				e('text', {
-					//className: 'dgm-formula',
-					x: (x + 3 + translate.x)*scale,
-					y: (y + 12.5 + translate.y)*scale,
-					style: {
-						fontSize: `${5*scale}px`,
-						fontFamily: 'Helvetica',
-						fontWeight: '100',
-						fill: textColor
-					}
+				e(
+					'text', {
+						x: (x + 3 + translate.x)*scale,
+						y: (y + 12.5 + translate.y)*scale,
+						style: {
+							fontSize: `${5*scale}px`,
+							fontFamily: 'Helvetica',
+							fontWeight: '100',
+							fill: textColor,
+							stroke: textColor
+						}
 					}, info.formula
 				),
-				e('text', {
-					x: (x + 3 + translate.x)*scale,
-					y: (y + 18 + translate.y)*scale,
-					style: {
-						fontSize: `${5*scale}px`,
-						fontFamily: 'Helvetica',
-						fontWeight: '100',
-						fill: (info.result) ? textColor : 'red',
-					}
+				e(
+					'text', {
+						x: (x + 3 + translate.x)*scale,
+						y: (y + 18 + translate.y)*scale,
+						style: {
+							fontSize: `${5*scale}px`,
+							fontFamily: 'Helvetica',
+							fontWeight: '100',
+							fill: (info.result) ? textColor : 'red',
+							stroke: (info.result) ? textColor : 'red',
+						}
 					}, info.result ? info.result.trim().substr(0, 20) : '?'
 				),
 			);
 		}
 		else {
 			textComponents = e('g', {	style: {pointerEvents: 'none'}},
-				e('text', {
-					//className: 'dgm-tooltype',
-					x: (x + 3 + translate.x)*scale,
-					y: (y + 8 + translate.y)*scale,
-					style: {
-						fontSize: `${9*scale}px`,
-						fontStyle: 'italic',
-						fontFamily: 'Helvetica',
-						fontWeight: '100',
-						fill: toolTypeColor,
-						stroke: toolTypeColor}
+				e(
+					'text', {
+						//className: 'dgm-tooltype',
+						x: (x + 3 + translate.x)*scale,
+						y: (y + 8 + translate.y)*scale,
+						style: {
+							fontSize: `${9*scale}px`,
+							fontStyle: 'italic',
+							fontFamily: 'Helvetica',
+							fontWeight: '100',
+							fill: toolTypeColor,
+							stroke: toolTypeColor
+						}
 					},
 					info.toolTypeName + ':'
 				),
-				e('text', {
+				e(
+					'text', {
 						x: (x + 3 + translate.x)*scale,
 						y: (y + 16 + translate.y)*scale,
 						style: {
 							fontSize: `${7*scale}px`,
 							fontFamily: 'Helvetica',
 							fontWeight: '100',
-								fill: textColor
+							fill: textColor,
+							stroke: textColor
 						}
 					},
 					info.name
@@ -1049,20 +1058,22 @@ class ToolIcon extends React.Component {
 			);
 		}
 
-		return e('g', {
+		return e(
+			'g', {
 				style: {
 					stroke: textColor,
 					fill: fillColor
 				},
 			},
-			e('rect', {
-				onMouseDown: this.onMouseDown,
-				onClick: this.onClick,
-				x: (x + translate.x)*scale,
-				y: (y + translate.y)*scale,
-				width: objectWidth*scale,
-				height: objectHeight*scale
-			}),
+			e(
+				'rect', {
+					onMouseDown: this.onMouseDown,
+					onClick: this.onClick,
+					x: (x + translate.x)*scale,
+					y: (y + translate.y)*scale,
+					width: objectWidth*scale,
+					height: objectHeight*scale
+				}),
 			textComponents
 		);
 	}
