@@ -1012,9 +1012,9 @@ class ToolIcon extends React.Component {
 						fontSize: `${5*scale}px`,
 						fontFamily: 'Helvetica',
 						fontWeight: '100',
-						fill: (info.result) ? textColor : 'red'
+						fill: (info.result) ? textColor : 'red',
 					}
-					}, info.result ? info.result.trim() : '?'
+					}, info.result ? info.result.trim().substr(0, 20) : '?'
 				),
 			);
 		}
