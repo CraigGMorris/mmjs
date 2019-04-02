@@ -1187,9 +1187,15 @@ class MMFormula extends MMCommandObject {
 
 		// helper functions
 		let filterFloat = (value) => {
-			if (/^(\-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/
-				.test(value))
-				return Number(value);
+			const parts = value.split('e');
+			if (/^(\-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/.test(parts[0])) {
+				if (parts.length === 1) {
+					return Number(value);
+				}
+				if (parts.length === 2 && /^(\-|\+)?([0-9]+$)/.test(parts[1])) {
+					return Number(value);
+				}
+			}
 			return NaN;
 		}
 
