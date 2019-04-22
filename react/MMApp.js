@@ -121,8 +121,8 @@ export class MMApp extends React.Component {
 			const docElement = document.documentElement;
 			const docHeight = docElement.clientHeight;
 			const docWidth = docElement.clientWidth;
-			document.body.style.height = `${docHeight-15}px`;
-			document.body.style.width = `${docWidth-15}px`;
+			document.body.style.height = `${docHeight-16}px`;
+			document.body.style.width = `${docWidth-16}px`;
 			const allow2Pane = docWidth >= 640;
 			this.setState({
 				allow2Pane: allow2Pane,
@@ -138,11 +138,14 @@ export class MMApp extends React.Component {
 			styles: {
 				input: {
 					fontSize: '12pt',
-					width: 'calc(100% - 6px)'
+					width: 'calc(100% - 8px)',
+					paddingLeft: '3px',
+					paddingRight: '3px',
+					border: '0px'
 				}
 			},
 			grid: {
-				inputHeight: '30px',
+				inputHeight: 30,  // px
 			}
 		};
 	}
@@ -546,13 +549,14 @@ export class MMApp extends React.Component {
 		let infoNav = null;
 		const viewType = this.state.viewType;
 		const docElement = document.documentElement;
-		const docHeight = docElement.clientHeight;
-		const docWidth = docElement.clientWidth;
-		const infoWidth = 320;
+		const docHeight = docElement.clientHeight-16;
+		const docWidth = docElement.clientWidth-16;
+		console.log(`docWidth ${docWidth}`);
+		const infoWidth = (viewType !== ViewType.info) ? 320 : docWidth;
 		const toolHeight = 40;
 		const navHeight = 40;
-		const infoHeight = docHeight - 15 - navHeight - toolHeight;
-		let diagramBox = {top: 9, left: 9, height: docHeight-15, width: docWidth - infoWidth - 10}
+		const infoHeight = docHeight - navHeight - toolHeight;
+		let diagramBox = {top: 9, left: 9, height: docHeight, width: docWidth - infoWidth}
 		if (viewType !== ViewType.diagram) {
 			let i = infoStack.length-1;
 			previousTitle = i > 0 ? infoStack[i-1].title : '';
@@ -605,7 +609,7 @@ export class MMApp extends React.Component {
 			);
 		}
 		else {
-			diagramBox = {top: 9, left: 9, height: docHeight-toolHeight-15, width: docWidth - 10}
+			diagramBox = {top: 9, left: 9, height: docHeight-toolHeight, width: docWidth}
 		}
 
 		let diagram = null;
@@ -698,7 +702,7 @@ export class MMApp extends React.Component {
 		const onePaneStyle = {
 			fontSize: '1em',
 			height: '100%',
-			width: '100%',
+			width: `${docWidth}px`,
 			display: 'grid',
 			gridTemplateColumns: '1fr',
 			gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
@@ -815,7 +819,7 @@ export class ToolNameField extends React.Component {
 
 	render() {
 		let t = this.props.t;
-		const inputHeight = this.props.actions.defaults().grid.inputHeight;
+		const inputHeight = `${this.props.actions.defaults().grid.inputHeight}px`;
 		return e('input', {
 			style: this.props.actions.defaults().styles.input,
 			value: this.props.viewInfo.viewState.toolName || '',

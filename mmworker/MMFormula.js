@@ -857,7 +857,7 @@ class MMMultipleArgumentFunction extends MMFunctionOperator {
 	 * @param  {Set} sources
 	 */
 	addInputSourcesToSet(sources) {
-		for (let arg of this.arguments()) {
+		for (let arg of this.arguments) {
 			arg.addInputSourcesToSet(sources);
 		}
 	}

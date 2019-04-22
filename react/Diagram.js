@@ -787,23 +787,25 @@ export class Diagram extends React.Component {
 			)
 		}
 
-		return e('div', {
+		return e(
+			'div', {
 				style: {
 					height: '100%',
 					width: '100%'
 				}
 			},
-			e('svg', {
-				style: {
-					backgroundColor: 'rgba(238,255,238,1)',
-					height: '100%',
-					width: '100%'
+			e(
+				'svg', {
+					style: {
+						backgroundColor: 'rgba(238,255,238,1)',
+						height: '100%',
+						width: '100%'
+					},
+					viewBox: viewBox,
+					onMouseDown: this.onMouseDown,
+					onWheel: this.onWheel,
+					onClick: this.onClick,
 				},
-				viewBox: viewBox,
-				onMouseDown: this.onMouseDown,
-				onWheel: this.onWheel,
-				onClick: this.onClick,
-			},
 				toolList,
 				connectList,
 				selectionBox,
