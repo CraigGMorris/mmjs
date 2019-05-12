@@ -441,11 +441,13 @@ export class ValueView extends React.Component {
 				});
 				cells.push(cellBox);
 				const vIndex = (row + rowOrigin) * nColumns + column + columnOrigin;
+				const v = vIndex < nValues ? value.v[vIndex] : '';
+				const displayedV = (typeof v === 'string') ? v : v.toFixed(5);
 				const cmp = e('text', {
 					x: x + xTextPad,
 					y: y,
 					key: `${row}-${column}`
-				}, `${vIndex < nValues ? value.v[vIndex].toFixed(5) : ''}`);
+				}, displayedV);
 				cells.push(cmp);
 				if (row === 0) {
 					const columnLabelBox = e('rect', {
