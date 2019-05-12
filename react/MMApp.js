@@ -551,7 +551,6 @@ export class MMApp extends React.Component {
 		const docElement = document.documentElement;
 		const docHeight = docElement.clientHeight-16;
 		const docWidth = docElement.clientWidth-16;
-		console.log(`docWidth ${docWidth}`);
 		const infoWidth = (viewType !== ViewType.info) ? 320 : docWidth;
 		const toolHeight = 40;
 		const navHeight = 40;

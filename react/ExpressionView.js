@@ -218,6 +218,8 @@ export class ExpressionView extends React.Component {
 				e(
 					ValueView, {
 						value: results.value,
+						actions: this.props.actions,
+						viewInfo: this.props.viewInfo,
 						viewBox: [0, 0, this.props.infoWidth, this.props.infoHeight - 4*nInputHeight]
 					}
 				)
@@ -227,6 +229,22 @@ export class ExpressionView extends React.Component {
 }
 
 /**
+ * Enum for ValueView drag type.
+ * @readonly
+ * @enum {string}
+ */
+const ValueViewDragType = Object.freeze({
+	none: 'none',
+	origin: 'origin',
+	row: 'row',
+	column: 'column',
+	cell: 'cell',
+	pan: 'pan',
+	fastX: 'fastX',
+	fastY: 'fastY'
+});
+
+/**
  * @class ValueView
  * view for MMValue as a table
  */
@@ -234,56 +252,211 @@ export class ValueView extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			rowOffset: 0,
-			columnOffset: 0
+			dragType: ValueViewDragType.none,
+			dragOrigin: {x: 0, y: 0},
+			initialOffset: {x: 0, y: 0},
+			selectedCell: {row: 0, column: 0}
 		};
+		this.cellHeight = 25;
+		this.cellWidth = 100;
+		this.rowLabelWidth = 50;
+		this.props.actions.setViewInfoState({valueViewOffset: {x: 0, y: 0}});
+		this.onMouseDown = this.onMouseDown.bind(this);
+		this.onMouseUp = this.onMouseUp.bind(this);
+		this.onMouseMove = this.onMouseMove.bind(this);
+		this.onMouseLeave = this.onMouseLeave.bind(this);
+	}
+
+	onMouseDown(e) {
+		const x = e.nativeEvent.offsetX;
+		const y = e.nativeEvent.offsetY;
+		let dragType = ValueViewDragType.cell;
+		if (y < this.cellHeight) {
+			if (x < this.rowLabelWidth) {
+				dragType = ValueViewDragType.origin;
+			} else {
+					dragType = ValueViewDragType.column;
+			}
+		}
+		else if (x < this.rowLabelWidth) {
+			dragType = ValueViewDragType.row;
+		}
+		this.setState({
+			dragType: dragType,
+			dragOrigin: {x: x, y: y},
+			initialOffset: {
+				x: this.props.viewInfo.viewState.valueViewOffset.x,
+				y: this.props.viewInfo.viewState.valueViewOffset.y
+			}
+		});
+ 		e.stopPropagation()
+    e.preventDefault()
+	}
+
+	onMouseUp(e) {
+		// const column = Math.floor((x - this.rowLabelWidth)/this.cellWidth + 1);  // column number starting at 1
+
+		switch (this.state.dragType) {
+			case ValueViewDragType.origin:
+				this.setState( {
+					dragType: ValueViewDragType.none,
+					dragOrigin: {x: 0, y: 0},
+					initialOffset: {
+						x: 0,
+						y: 0
+					}
+				});
+				this.props.actions.setViewInfoState({valueViewOffset: {x: 0, y: 0}});
+				break;
+			default:
+				this.setState({
+					dragType: ValueViewDragType.none
+				})
+				break;
+		}
+		e.stopPropagation()
+    e.preventDefault()
+	}
+
+	onMouseMove(e) {
+		const cellPan = (deltaX, deltaY) => {
+			let offsetX = Math.max(0, deltaX + this.state.initialOffset.x);
+			let offsetY = Math.max(0, deltaY + this.state.initialOffset.y);
+
+			// make sure at least one row and column appear
+			const value = this.props.value;
+			const nRows = value.nr;
+			const nColumns = value.nc;	
+			offsetX = Math.min(offsetX, (nColumns - 1)*this.cellWidth)
+			offsetY = Math.min(offsetY, (nRows - 1)*this.cellHeight);
+			this.props.actions.setViewInfoState({valueViewOffset: {x: offsetX, y: offsetY}});
+		}
+
+		const fastPanX = (deltaX) => {
+			const viewBox = this.props.viewBox;
+			const maxX = viewBox[3];
+			const value = this.props.value;
+			const nColumns = value.nc;
+			deltaX = (deltaX/(maxX - this.rowLabelWidth)) * nColumns * this.cellWidth * 2;
+			cellPan(deltaX, 0);
+		}
+
+		const fastPanY = (deltaY) => {
+			const viewBox = this.props.viewBox;
+			const maxY = viewBox[2];
+			const value = this.props.value;
+			const nRows = value.nr;
+			deltaY = (deltaY/(maxY - this.cellHeight)) * nRows * this.cellHeight * 2;
+			cellPan(0, deltaY);
+		}
+
+		if (this.state.dragType != ValueViewDragType.none) {
+			const deltaX = this.state.dragOrigin.x - e.nativeEvent.offsetX;
+			const deltaY = this.state.dragOrigin.y - e.nativeEvent.offsetY;
+			switch (this.state.dragType) {
+				case ValueViewDragType.pan:
+					cellPan(deltaX, deltaY);
+					break;
+
+				case ValueViewDragType.fastX:
+					fastPanX(deltaX);
+					break;
+
+				case ValueViewDragType.fastY:
+					fastPanY(deltaY);
+					break;
+
+				case ValueViewDragType.column:
+					if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+						this.setState({dragType: ValueViewDragType.fastX});
+						fastPanX(deltaX);
+					}
+					break;
+		
+					case ValueViewDragType.row:
+					if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+						this.setState({dragType: ValueViewDragType.fastY});
+						fastPanY(deltaY);
+					}
+					break;
+		
+				case ValueViewDragType.cell:
+					if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+						this.setState({dragType: ValueViewDragType.pan});
+						cellPan(deltaX, deltaY);
+					}
+					break;
+				default:
+					break;
+			}	
+		}
+		e.stopPropagation()
+    e.preventDefault()
+	}
+
+	onMouseLeave(e) {
+		this.setState({
+			dragType: ValueViewDragType.none
+		});
 	}
 
 	render() {
 		const value = this.props.value;
 		const nRows = value.nr;
 		const nColumns = value.nc;
-		const cellHeight = 25;
-		const cellWidth = 100;
+		const nValues = nRows * nColumns;
+		const cellHeight = this.cellHeight;
+		const cellWidth = this.cellWidth;
 		const xTextPad = 5;
-		const rowLabelWidth = 40;
+		const rowLabelWidth = this.rowLabelWidth;
 		const color1 = 'white';
 		const color2 = 'rgba(255,255,230,1)';
 		const color3 = 'rgba(240,240,255,1)';
 		const viewBox = this.props.viewBox;
-		const nRowCells = Math.min(viewBox[3] / cellHeight, nRows);
+		const offset = this.props.viewInfo.viewState.valueViewOffset;
+		const nRowCells = Math.min(Math.floor(viewBox[3] / cellHeight), nRows);
+		const rowOrigin = Math.max(0, Math.floor(Math.min(offset.y / cellHeight), nRows - nRowCells));
 		const nColumnCells = Math.min(viewBox[2] / cellWidth, nColumns);
+		const columnOrigin = Math.max(0, Math.floor(Math.min(offset.x / cellWidth), nColumns - nColumnCells));
 		let cells = [];
-		for (let row = 0; row < nRowCells; row++) {
-			const y = (row + 2) * cellHeight;
-			const rowLabelBox = e('rect', {
-				x: 0,
-				y: y - cellHeight * 0.75,
-				width: rowLabelWidth,
-				height: cellHeight,
-				style: {
-					stroke: 'black',
-					fill: row % 2 ? color1 : color3
-				}
-			});
-			cells.push(rowLabelBox);
-			const rowLabel = e('text', {
-				x: xTextPad,
-				y: y,
-				key: `row${row}`
-			}, `${(row + 1)}`);
-			cells.push(rowLabel);
-			for (let column = 0; column < nColumnCells; column++) {
-				const x = column * cellWidth  + rowLabelWidth;
+		for (let row = 0; row < Math.min(nRowCells, nRows - rowOrigin); row++) {
+			const y = (row + 2) * cellHeight + rowOrigin*cellHeight - offset.y;
+			for (let column = 0; column < Math.min(nColumnCells, nColumns - columnOrigin); column++) {
+				const x = column * cellWidth + columnOrigin*cellWidth + rowLabelWidth - offset.x;
+				const color = (row + rowOrigin) % 2 ? (
+					(column + columnOrigin) % 2 ? color1 : color2
+				) : (
+					(column + columnOrigin) % 2 ? color3 : color1
+				);
+				const cellBox = e('rect', {
+					x: x,
+					y: y - cellHeight * 0.75,
+					width: cellWidth,
+					height: cellHeight,
+					key: `cellbox${row}-${column}`,
+					style: {
+						stroke: 'black',
+						fill: color
+					}
+				});
+				cells.push(cellBox);
+				const vIndex = (row + rowOrigin) * nColumns + column + columnOrigin;
+				const cmp = e('text', {
+					x: x + xTextPad,
+					y: y,
+					key: `${row}-${column}`
+				}, `${vIndex < nValues ? value.v[vIndex].toFixed(5) : ''}`);
+				cells.push(cmp);
 				if (row === 0) {
 					const columnLabelBox = e('rect', {
 						x: x,
 						y: cellHeight* 0.25,
 						width: cellWidth,
 						height: cellHeight,
+						key: `colbox${column}`,
 						style: {
 							stroke: 'black',
-							fill: column % 2 ? color1 : color2
+							fill: (column + columnOrigin) % 2 ? color1 : color2
 						}		
 					});
 					cells.push(columnLabelBox);
@@ -291,34 +464,42 @@ export class ValueView extends React.Component {
 						x: x + xTextPad,
 						y: cellHeight,
 						key: `col${column}`
-					}, `${(column+1)}`);
+					}, `${(column + columnOrigin + 1)}`);
 					cells.push(columnLabel);
 				}
-				const color = row % 2 ? (
-					column % 2 ? color1 : color2
-				) : (
-					column % 2 ? color3 : color1
-				);
-				const cellBox = e('rect', {
-					x: x,
-					y: y - cellHeight * 0.75,
-					width: cellWidth,
-					height: cellHeight,
-					style: {
-						stroke: 'black',
-						fill: color
-					}
-				});
-				cells.push(cellBox);
-				const cmp = e('text', {
-					x: x + xTextPad,
-					y: y,
-					key: `${row}-${column}`
-				}, `${value.v[row * nColumns + column].toFixed(5)}`);
-				cells.push(cmp)
 			}
+			const rowLabelBox = e('rect', {
+				x: 0,
+				y: y - cellHeight * 0.75,
+				width: rowLabelWidth,
+				height: cellHeight,
+				key: `rowbox${row}`,
+				style: {
+					stroke: 'black',
+					fill: (row + rowOrigin) % 2 ? color1 : color3
+				}
+			});
+			cells.push(rowLabelBox);
+			const rowLabel = e('text', {
+				x: xTextPad,
+				y: y,
+				key: `row${row}`
+			}, `${(row + rowOrigin + 1)}`);
+			cells.push(rowLabel);
 		}
-		return e(
+		const originBox = e('rect', {
+			x: 0,
+			y: cellHeight* 0.25,
+			width: rowLabelWidth,
+			height: cellHeight,
+			key: `origin`,
+			style: {
+				stroke: 'black',
+				fill: 'rgba(238,255,238,1)'
+			}
+		});
+		cells.push(originBox);
+	return e(
 			'div', {
 				style: {
 					height: `${viewBox[3]}px`,
@@ -333,8 +514,11 @@ export class ValueView extends React.Component {
 						width: '100%'
 					},
 					viewBox: viewBox,
-/* 					onMouseDown: this.onMouseDown,
-					onWheel: this.onWheel,
+						onMouseMove: this.onMouseMove,
+						onMouseDown: this.onMouseDown,
+						onMouseUp: this.onMouseUp,
+						onMouseLeave: this.onMouseLeave
+/*					onWheel: this.onWheel,
 					onClick: this.onClick,
  */			},
 
