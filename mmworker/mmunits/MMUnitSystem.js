@@ -248,7 +248,7 @@ class MMUnitSystem extends MMCommandParent {
 		if (!unit) {
 			// unit doesn't exist - create it
 			unit = MMUnit(unitName, this.units).initWithOperation(
-				fales, calcType, MMUnit.stringFromDimensions(dimensions), 1.0, 0.0
+				false, calcType, MMUnit.stringFromDimensions(dimensions), 1.0, 0.0
 				);
 		}
 		return unit;

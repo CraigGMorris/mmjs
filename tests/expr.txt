@@ -9,3 +9,5 @@ addtool Expression y
 addtool Expression s
 .s.formula set formula {array 2, 3, "hello"}
 .s value
+addtool Expression cc
+.cc.formula set formula {table {cc "Numbers", "Strings"}, {cc 1, 2}, {cc "one", "two"}}

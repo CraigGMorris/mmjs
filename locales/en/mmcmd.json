@@ -1,4 +1,6 @@
 {
+	"concatTableColumnMismatch": "Can't concat table values with different column counts",
+	"displayUnitTypeMismatch": "Unit type mismatch in setting display unit {{unitName}} on table value",
 	"error": "Error",
 	"exprDisplayName": "Expression",
 	"exprShortDescription": "Single constant or formula",
@@ -24,6 +26,7 @@
 	"modelInvalidToolName": "{{name}} is not a valid name for an added tool",
 	"modelInvalidToolType": "Cannot create {{name}} as there is no tool with type {{typeName}}",
 	"modelShortDescription": "Container for other tools",
+	"tableAddRowUnitMismatch": "Add row unit type mismatch for column {{name}}",
 	"?modelAddTool": "usage: addTool typeName [name]",
 	"?modelDgmInfo": "usage: dgmInfo",
 	"?modelSetPositions": "usage: setpositions {series of toolname x y values",

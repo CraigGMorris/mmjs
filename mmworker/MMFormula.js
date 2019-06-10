@@ -41,8 +41,11 @@ var MMFormulaOpDictionary = {
 };
 
 var mmFunctionDictionary = {
+	'cc': (f) => {return new MMConcatFunction(f)},
+	'concat': (f) => {return new MMConcatFunction(f)},
 	'ln': (f) => {return new MMLnFunction(f)},
-	'array': (f) => {return new MMArrayFunction(f)}
+	'array': (f) => {return new MMArrayFunction(f)},
+	'table': (f) => {return new MMTableFunction(f)}
 }
 
 /**
@@ -847,7 +850,6 @@ class MMMultipleArgumentFunction extends MMFunctionOperator {
 			}
 			arg = operandStack.pop();
 		}
-		operandStack.pop();
 		return true;
 	}
 
@@ -948,6 +950,207 @@ class MMArrayFunction extends MMMultipleArgumentFunction {
 			return null;
 		}
 		return rv;
+	}
+}
+
+/**
+ * @class MMConcatFunction
+ * @extends MMMultipleArgumentFunction
+ */
+class MMConcatFunction extends MMMultipleArgumentFunction {
+
+	/**
+	 * @override
+	 * @function processArguments
+	 * @param {MMFormulaOperator[]} operandStack
+	 * @returns {boolean}
+	 */
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length < 1) {
+			return false; // needs at least one arguments
+		}
+		return rv;
+	}
+
+	/**
+	 * @method value
+	 * @override
+	 * @returns {MMValue}
+	 */
+	value() {
+		let valueCount = 0;
+		let rowCount = 0;
+		let first;
+		let argCount = this.arguments.length;
+		while (argCount-- > 0) {
+			const obj = this.arguments[argCount].value();
+		
+			if (!first) {
+				first = obj;
+				rowCount = obj.rowCount;
+			}
+			else if (Object.getPrototypeOf(obj).constructor == Object.getPrototypeOf(first).constructor) {
+				if (first instanceof MMNumberValue) {
+					first.checkUnitDimensionsAreEqualTo(obj.unitDimensions);
+				}
+				else if (first instanceof MMTableValue) {
+					rowCount += obj.rowCount;
+					if (first.columnCount !== obj.columnCount) {
+						this.formula.functionError('concatTableColumnMismatch','mmcmd:concat');
+						return null;
+					}
+				}
+			}
+			else {
+				return null;
+			}
+			valueCount += obj.valueCount;
+		}
+
+		if (valueCount) {
+			if (first instanceof MMTableValue) {
+				const columnCount =  first.columnCount;
+				let a = [];
+				for (let column in first.columns) {
+					if (column.value) {
+						a.push(column.value);
+					}
+				}
+				argCount = this.arguments.length;
+				while (argCount-- > 0) {
+					const tableValue = this.arguments[argCount].value();
+					if (!(tableValue instanceof MMTableValue)) {
+						return null;
+					}
+					for (let i = 0; i < columnCount; i++) {
+						let v1 = a[i];
+						const v2 = tableValue.columns[i].value;
+						if (v2 && Object.getPrototypeOf(v1).constructor == Object.getPrototypeOf(v2).constructor) {
+							v1 = v1.concat(v2);
+							if (v1) {
+								a[i] = v1;
+							}
+							else {
+								return null;
+							}
+						}
+						else  {
+							return null;
+						}
+					}
+				}
+
+				for (let i = 0; i < columnCount; i++)  {
+					const firstColumn = first.columns[i];
+					a[i] = new MMTableValueColumn({
+						name: firstColumn.name,
+						displayUnit: firstColumn.displayUnit,
+						value: a[i]
+					});
+				}
+				return new MMTableValue({columns: a});
+			}
+			else {
+				argCount = this.arguments.length - 1;
+				while (argCount-- >  0) {
+					first = first.concat(this.arguments[argCount].value());
+				}
+				return first;
+			}
+		}
+	}	
+}
+
+/**
+ * @class MMTableFunction
+ * @extends MMMultipleArgumentFunction
+ */
+class MMTableFunction extends MMMultipleArgumentFunction {
+
+	/**
+	 * @override
+	 * @function processArguments
+	 * @param {MMFormulaOperator[]} operandStack
+	 * @returns {boolean}
+	 */
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length < 1) {
+			return false; // needs at least one arguments
+		}
+		return rv;
+	}
+
+	/**
+	 * @method value
+	 * @override
+	 * @returns {MMValue}
+	 */
+	value() {
+		const argCount = this.arguments.length;
+		const nameParam = this.arguments[argCount -  1].value();
+		let names = [];
+		let templateColumns;
+		let nameCount = 0;
+		if (nameParam instanceof MMStringValue) {
+			if (argCount > 1) {
+				nameCount = nameParam.valueCount;
+				for (let  i = 0;  i < nameCount; i++) {
+					names.push(nameParam.valueAtCount(i));
+				}
+			}
+			else {
+				// should be CSV
+				if (nameParam.valueCount) {
+					return new MMTableValue({csv: nameParam.valueAtCount(1)});
+				}
+				return null;
+			}
+		}
+		else if (nameParam instanceof MMTableValue) {
+			nameCount = nameParam.columnCount;
+			templateColumns = nameParam.columns
+			for (let  i = 0;  i < nameCount; i++) {
+				names.push(templateColumns[i].name);
+			}
+		}
+
+		if (argCount < 2) {
+			return null;
+		}
+
+		let columns = []
+		let addColumnCount = 0;
+		for (let argNo = argCount - 2; argNo >= 0; argNo--) {
+			const arg = this.arguments[argNo];
+			const v = arg.value();
+			if (v instanceof MMValue) {
+				for (let i = 0; i < v.columnCount && addColumnCount < nameCount; i++) {
+					const cValue = v.columnNumber(i + 1);
+					if (!(cValue instanceof  MMNumberValue) && !(cValue instanceof MMStringValue)) {
+						return null;
+					}
+					const column = new MMTableValueColumn({
+						name: names[addColumnCount],
+						value: cValue
+					});
+
+					if (templateColumns && !column.isString) {
+						const templateColumn = templateColumns[addColumnCount];
+						if (MMUnitSystem.areDimensionsEqual(templateColumn.displayUnit, cValue.unitDimensions)) {
+							column.displayUnit = templateColumn.displayUnit;
+							column.format = templateColumn.format;
+						}
+					}
+					columns.push(column);
+					addColumnCount++;
+				}
+			}	else {
+				return null;
+			}
+		}
+		return new MMTableValue({columns: columns});
 	}
 }
 

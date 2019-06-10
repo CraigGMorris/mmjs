@@ -440,9 +440,17 @@ export class ValueView extends React.Component {
 					}
 				});
 				cells.push(cellBox);
-				const vIndex = (row + rowOrigin) * nColumns + column + columnOrigin;
-				const v = vIndex < nValues ? value.v[vIndex] : '';
-				const displayedV = (typeof v === 'string') ? v : v.toFixed(5);
+				let  displayedV = '';
+				if (value.t === 't') {
+					const tableColumn = value.v[column];
+					const v = tableColumn.v.v[row];
+					displayedV = (typeof v === 'string') ? v : v.toFixed(5);
+				}
+				else {
+					const vIndex = (row + rowOrigin) * nColumns + column + columnOrigin;
+					const v = vIndex < nValues ? value.v[vIndex] : '';
+					displayedV = (typeof v === 'string') ? v : v.toFixed(5);
+				}
 				const cmp = e('text', {
 					x: x + xTextPad,
 					y: y,
@@ -462,12 +470,36 @@ export class ValueView extends React.Component {
 						}		
 					});
 					cells.push(columnLabelBox);
-					const columnLabel = e('text', {
-						x: x + xTextPad,
-						y: cellHeight,
-						key: `col${column}`
-					}, `${(column + columnOrigin + 1)}`);
-					cells.push(columnLabel);
+					if (value.t === 't') {
+						const tableColumn = value.v[column];
+						const columnLabel = e('text', {
+							x: x + xTextPad,
+							y: cellHeight - 8,
+							key: `col${column}`,
+							style: {
+								fontSize: 13
+							}
+						}, tableColumn.name);
+						cells.push(columnLabel);
+						const unitLabel = e('text', {
+							x: x + xTextPad,
+							y: cellHeight + 4,
+							key: `colUnit${column}`,
+							style: {
+								fontSize: 13
+							}
+						}, tableColumn.dUnit);
+						cells.push(unitLabel);
+
+					}
+					else {
+						const columnLabel = e('text', {
+							x: x + xTextPad,
+							y: cellHeight,
+							key: `col${column}`
+						}, `${(column + columnOrigin + 1)}`);
+						cells.push(columnLabel);
+					}
 				}
 			}
 			const rowLabelBox = e('rect', {
