@@ -159,7 +159,7 @@ class MMCommandProcessor {
 				let cmdLines = commands.split('\n');
 				let continuedCmd = '';
 				for( let cmd of cmdLines) {
-					if (cmd.startsWith("'") && !continuedCmd) {
+					if (cmd.startsWith("'") && !continuedCmd) {  // comment
 						continue;
 					}
 					cmd = continuedCmd + cmd.trim();
@@ -305,6 +305,8 @@ class MMCommandProcessor {
  *	@member {MMCommandProcessor} processor - can be nil
  *	@member {MMCommandParent} parent - can be nil
  *	@member {Object} properties - {string: PropertyInfo}
+ *	@member {Object} setProperties - {string: PropertyInfo}
+ * properties added with set command
  *	@member {Object} verbs - [string]: (string) => any
  *	@member {MMCommand} _command
 */
@@ -318,6 +320,7 @@ class MMCommandProcessor {
 		this.name = name;
 		this.className = className;
 		this.processor = undefined;
+		this.setProperties = {};
 //		this._command = undefined;
 
 		this.parent = parent;
@@ -356,12 +359,13 @@ class MMCommandProcessor {
 	}
 
 	get properties() {
-		return {
-			/** @property {PropertyInfo} name  */
+		return Object.assign({},
+			{
 			'name': {type: PropertyType.string, readOnly: true},
-			/** @property {PropertyInfo} className */
 			'className': {type: PropertyType.string, readOnly: true}
-		}
+			},
+			this.setProperties
+		);
 	}
 
 	get command() {
@@ -449,7 +453,7 @@ class MMCommandProcessor {
 	setProperty(command) {
 		let args = command.args;
 		if (!args) {
-			throw(this.t('usage:?setValue'));
+			throw(this.t('cmd:?set'));
 		}
 		let firstSpace = args.indexOf(' ');
 		let propertyName;
@@ -463,25 +467,19 @@ class MMCommandProcessor {
 			valueString = args.slice(firstSpace + 1);
 		}
 		
-		if (propertyName === 'properties') {
-			// console.log(valueString);
-			let props = JSON.parse(valueString);
-			for (let propName in props) {
-				if (this.properties[propName]) {
-					this[propName] = props[propName];
-				}
-			}
-			command.results =  propertyName + ' set';
+		let oldValue;
+		if (propertyName.length > 0 && propertyName[0] == "_") {
+			oldValue = this[propertyName.substring(1)];
 		}
 		else {
-			let oldValue = this[propertyName];
-			if (oldValue == undefined || oldValue == null) {
-				oldValue = '';
-			}
-			this.setValue(propertyName, valueString);
-			command.results = propertyName + ' = ' + valueString;
-			command.undo = this.getPath() + ' set ' + propertyName + ' ' + oldValue;
+			oldValue = this[propertyName];
 		}
+		if (oldValue == undefined || oldValue == null) {
+			oldValue = '';
+		}
+		this.setValue(propertyName, valueString);
+		command.results = propertyName + ' = ' + valueString;
+		command.undo = this.getPath() + ' set ' + propertyName + ' ' + oldValue;
 	}
 
 	/** @returns {string} returns path of this object */
@@ -507,7 +505,7 @@ class MMCommandProcessor {
 			propertyName = propertyName.substring(1);
 			if ( value.length > 0) {
 				this[propertyName] = value;
-				this.properties[propertyName] = { type: PropertyType.string, readOnly: false};
+				this.setProperties[propertyName] = { type: PropertyType.string, readOnly: false};
 			}
 			else {
 				delete this[propertyName];
@@ -730,7 +728,7 @@ class MMCommandProcessor {
 	createChildFromArgs(command) {
 		let argValues = this.splitArgsString(command.args);
 		if (argValues.length < 2) {
-			throw(this.t('usage:?createChild'));
+			throw(this.t('cmd:?createchild'));
 		}
 		let name = argValues[1];
 		let child = this.createChild(argValues[0], name);
