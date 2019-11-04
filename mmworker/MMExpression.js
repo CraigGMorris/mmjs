@@ -215,4 +215,18 @@ class MMExpression extends MMTool {
 	valueCommand(command) {
 		command.results = this.jsonValue();
 	}
+
+		/**
+	 * @method saveObject
+	 * @returns {Object} object that can be converted to json for save file
+	 */
+	saveObject() {
+		let o=   super.saveObject();
+		o['Type'] = 'Expression';
+		o['Formula'] = this.formula._formula;
+		if (this._isInput) { o['isInput'] = 'y'; }
+		if (this._isOutput) { o['isOutput'] = 'y'}
+		return o;
+	}
+
 }

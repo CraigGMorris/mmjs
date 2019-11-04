@@ -1,4 +1,4 @@
-cd .root
+/ new modelTest
 addtool Expression length 80 200
 .length.formula set formula {array 15,10,1:150}*18 ft
 .length value

@@ -190,6 +190,25 @@ class MMModel extends MMTool {
 	}
 
 	/**
+	 * @method saveObject
+	 * @returns {Object} object that can be converted to json for save file
+	 */
+	saveObject() {
+		let tools = [];
+		for (const key in this.children) {
+			const tool = this.children[key];
+			let saveTool = tool.saveObject();
+			tools.push(saveTool);
+		}
+
+		return Object.assign({}, super.saveObject(), {
+			Type: 'Model',
+			diagramScale: 1,  // need to fix this - get from interface
+			Objects: tools
+		});
+	}
+
+	/**
 	 * @method toolViewInfo
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view

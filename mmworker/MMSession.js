@@ -31,10 +31,7 @@ class MMSession extends MMCommandParent {
 		super('session',  processor, 'MMSession');
 		// construct the unit system - it will add itself to my children
 		new MMUnitSystem(this);
-		this.nextToolLocation = this.unknownPosition;
-		this.rootModel = MMToolTypes['Model'].factory('root', this);
-		this.currentModel = this.rootModel;
-		this.modelStack = [this.currentModel];
+		this.newSession();
 	}
 
 	/** @override */
@@ -42,6 +39,8 @@ class MMSession extends MMCommandParent {
 		let verbs = super.verbs;
 		verbs['test'] = this.test;
 		verbs['dgminfo'] = this.diagramInfo;
+		verbs['new'] = this.newSessionCommand;
+		verbs['save'] =  this.saveSessionCommand;
 		verbs['pushmodel'] = this.pushModelCommand;
 		verbs['popmodel'] = this.popModelCommand;
 		return verbs;
@@ -76,6 +75,56 @@ class MMSession extends MMCommandParent {
 		return new MMPoint(0, 0);
 	}
 
+	// session creation and storage commands
+
+	/** @method newSession
+	 * initialize to new empty session
+	 * @param {string} storePath - the storage path
+	 */
+	newSession(storePath) {
+		if (!storePath) {
+			storePath = 'unnamed';
+		}
+		this.nextToolLocation = this.unknownPosition;
+		this.rootModel = MMToolTypes['Model'].factory('root', this);
+		this.currentModel = this.rootModel;
+		this.modelStack = [this.currentModel];
+		this.storePath = storePath;
+		this.processor.defaultObject = this.rootModel;
+	}
+
+	/** @method saveSession
+	 * save the session in local storage
+	 * @param {string} path - the path to store to
+	 * if blank, the storePath used when the session was created will be used 
+	 */
+	saveSession(path) {
+		let detailWidth = this['detailWidth'] ? this['detailWidth'] : 320;
+		let deviceWidth = this['deviceWidth'] ? this['deviceWidth'] : 1024;
+		let selectedObject = '';
+		if (path) {
+			this.storePath = path;
+		}
+		let pathParts = path.split('/');
+		let caseName = pathParts.pop()
+		let rootSave = this.rootModel.saveObject();
+		let defaultObject = this.processor.defaultObject;
+		let modelPath = this.currentModel.getPath();
+		let sessionSave = {
+			Program : 'Rtm',
+			Version: 3.0,
+			DetailWidth: detailWidth,
+			DeviceWidth: deviceWidth,
+			CaseName: caseName,
+			DefaultUnitSet: this.unitSystem.defaultSet().name,
+			SelectedObject: selectedObject,
+			ModelPath: modelPath,
+			RootModel: rootSave,
+		}
+		let caseJson = JSON.stringify(sessionSave);//, null, '');
+		console.log(caseJson);
+	}
+
 	// MMModel related methods
 
 	/**
@@ -97,6 +146,28 @@ class MMSession extends MMCommandParent {
 		while (this.modelStack.length > 0 && count-- > 0) {
 			this.currentModel = this.modelStack.pop();
 		}
+	}
+
+	/**
+	 * @method newSessionCommand
+	 * verb
+	 * @param {MMCommand} command
+	 * command.args contains the store path for the new session
+	 */
+	newSessionCommand(command) {
+		this.newSession(command.args);
+		command.results = this.storePath;
+	}
+
+	/**
+	 * @method saveSessionCommand
+	 * verb
+	 * @param {MMCommand} command
+	 * command.args contains the store path for the new session
+	 */
+	saveSessionCommand(command) {
+		this.saveSession(command.args);
+		command.results = this.storePath;
 	}
 
 	/**
@@ -748,4 +819,19 @@ class MMTool extends MMCommandParent {
 	inputSources() {
 		return new Set([]);
 	}
+
+	/**
+	 * @method saveObject
+	 * @returns {Object} object that can be converted to json for save file
+	 */
+	saveObject() {
+		return {
+			name: this.name,
+			Notes: this.notes,
+			DiagramX: this.position.x,
+			DiagramY: this.position.y,
+			HideInfo: this.isHidingInfo ? 'y': 'n',
+		};
+	}
+
 }

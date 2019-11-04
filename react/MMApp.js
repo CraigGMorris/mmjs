@@ -2,6 +2,7 @@
 
 import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
+import {SessionsView} from './SessionsView.js';
 import {Diagram} from './Diagram.js';
 import {UnitsView, UserUnitsView, UnitSetsView, UnitSetView} from './UnitsView.js';
 import {ModelView} from './ModelView.js';
@@ -54,6 +55,7 @@ export class MMApp extends React.Component {
 
  		this.infoViews = {
 			'console': ConsoleView,
+			'sessions': SessionsView,
 			'units': UnitsView,
 			'userunits': UserUnitsView,
 			'unitsets': UnitSetsView,
@@ -112,6 +114,7 @@ export class MMApp extends React.Component {
 		this.popView = this.popView.bind(this);
 		this.pushView = this.pushView.bind(this);
 		this.pushConsole = this.pushConsole.bind(this);
+		this.showHelp = this.showHelp.bind(this);
 		this.setDgmState = this.setDgmState.bind(this);
 		this.setViewInfoState = this.setViewInfoState.bind(this);
 	}
@@ -416,6 +419,16 @@ export class MMApp extends React.Component {
 
 	}
 
+	/**
+	 * @method showHelp
+	 * show help for the current view
+	 */
+	showHelp() {
+		let stackLength = this.state.infoStack.length;
+		let viewKey = stackLength ? this.state.infoStack[stackLength - 1].viewKey : 'none';
+		console.log(`show help ${viewKey}`);
+	}
+
 	/** @method updateViewState
 	 * @param {Number} stackIndex = info stack position of view
 	 * @param {Boolean} rescaleDiagram - should diagram be rescaled - default false
@@ -535,7 +548,7 @@ export class MMApp extends React.Component {
 				this.pushConsole();
 				break;
 			default:
-				this.pushView(parts[0], parts[1], parts[3], );
+				this.pushView(parts[0], parts[1], parts[2], );
 				break;
 		}
 	}
@@ -583,9 +596,9 @@ export class MMApp extends React.Component {
 				style: {
 					gridArea: 'nav',
 					display: 'grid',
-					gridTemplateColumns: previousTitle ? '1fr 2fr' : '0px 1fr',
+					gridTemplateColumns: previousTitle ? '1fr 3fr 1fr' : '0px 1fr',
 					gridTemplateRows: '1fr',
-					gridTemplateAreas: `"back title"`,
+					gridTemplateAreas: `"back title help"`,
 					alignItems: 'center',
 					backgroundColor: 'rgb(243,243,243)',
 					borderBottom: 'solid 1px black'
@@ -604,7 +617,16 @@ export class MMApp extends React.Component {
 						gridArea: 'title',
 						justifySelf: 'center'
 					}
-				}, t(title))				
+				},t(title)),
+				e('div', {
+					style: {
+						gridArea: 'help',
+						color: 'blue',
+						marginRight: '10px',
+						justifySelf: 'right'
+					},
+					onClick: this.showHelp
+				}, '?')			
 			);
 		}
 		else {
@@ -647,9 +669,9 @@ export class MMApp extends React.Component {
 				style: {
 					gridArea: 'infotools',
 					display: 'grid',
-					gridTemplateColumns: 'repeat(5, 1fr)',
+					gridTemplateColumns: 'auto auto auto auto auto auto',//repeat(5, 1fr)',
 					gridTemplateRows: '1fr',
-					gridTemplateAreas: `"expand sessions undo redo units"`,
+					gridTemplateAreas: `"expand sessions console undo redo units"`,
 					justifyTtems: 'center',
 					alignItems: 'center',
 					borderTop: 'solid 1px black'
@@ -682,20 +704,28 @@ export class MMApp extends React.Component {
 			e('button', {
 					id:'mmapp-unit-button',
 					style: infoButtonStyle('units'),
-					value:'units react:unitsTitle /units',
+					value:'units react:unitsTitle',
 					onClick: this.handleButtonClick
 				},
 				t('react:dgmButtonUnits')
 			),
 			e('button', {
 					id:'mmapp-console-button',
-					style: infoButtonStyle('sessions'),
+					style: infoButtonStyle('console'),
 					value:'console react:consoleTitle',
 					onClick: this.handleButtonClick
 				},
 				t('react:dgmButtonConsole')
 			),
-		);
+			e('button', {
+				id:'mmapp-sessions-button',
+				style: infoButtonStyle('sessions'),
+				value:'sessions react:sessionsTitle',
+				onClick: this.handleButtonClick
+			},
+			t('react:dgmButtonSessions')
+		),
+	);
 
 		let wrapper;
 		const onePaneStyle = {
