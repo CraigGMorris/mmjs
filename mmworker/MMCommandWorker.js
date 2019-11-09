@@ -32,9 +32,9 @@ class MMCommandWorker {
 
 var worker = new MMCommandWorker();
 
-onmessage = function(e) {
+onmessage = async function(e) {
   // console.log('Worker: Message received from main script');
-  let result = worker.processor.processCommandString(e.data);
+  let result = await worker.processor.processCommandString(e.data);
   if (result) {
     // console.log('Worker: Posting message back to main script');
     postMessage(result);

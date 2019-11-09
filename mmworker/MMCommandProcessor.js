@@ -96,7 +96,7 @@ class MMCommandProcessor {
 	/** @param {MMCommand} command
 	 * @returns {boolean} true if successful
 	 */
-	processCommand(command) {
+	async processCommand(command) {
 		let expression = command.expression;
 		this.currentExpression = expression;
 		let terms = this.getNextTerm(expression);
@@ -137,7 +137,7 @@ class MMCommandProcessor {
 		command.verb = verb;
 		command.args = terms[1];
 
-		subject.performCommand(command);
+		await subject.performCommand(command);
 		return true;
 	}
 
@@ -147,7 +147,7 @@ class MMCommandProcessor {
 	 *concatenation of all their result strings
 	 * @returns {MMCommand[]} a list of MMCommands or null
 	 */
-	processCommandString(commands) {
+	async processCommandString(commands) {
 		let results = [];
 		try {
 			commands = commands.trim();
@@ -178,7 +178,7 @@ class MMCommandProcessor {
 					
 					if (cmd.length > 0) {
 						let action = new MMCommand(cmd);
-						if (this.processCommand(action)) {
+						if (await this.processCommand(action)) {
 							results.push(action);
 						}
 						else {
@@ -189,7 +189,7 @@ class MMCommandProcessor {
 
 				if (continuedCmd.length > 0) {
 					let action = new MMCommand(continuedCmd);
-					if (this.processCommand(action)) {
+					if (await this.processCommand(action)) {
 						results.push(action);
 					}
 				}
@@ -633,7 +633,7 @@ class MMCommandProcessor {
 	 * @param {MMCommand} command 
 	 * @returns {Object} 
 	 */
-	performCommand(command) {
+	async performCommand(command) {
 		this._command = command; // temporary so warnings can be set
 		try {
 			let f = this.verbs[command.verb];
@@ -641,7 +641,7 @@ class MMCommandProcessor {
 				throw(this.t('cmd:commandNotFound', {className: this.className, path: this.getPath(), cmd: command.verb}));
 			}
 			f = f.bind(this);
-			f(command);
+			await f(command);
 		}
 		finally {
 			delete this._command;  // remove temporary assignment

@@ -13,16 +13,107 @@ class MMPoint {
 }
 
 /**
+ * @class MMSessionStorage - persistent storage for session
+ */
+class MMSessionStorage  {
+	constructor() {
+		this.isSetup = false;
+	}
+	
+	/**
+	 * @method setup - prepare db for storage
+	 */
+	async setup() {
+		let storage = this;
+		return new Promise((resolve, reject) => {
+			if (this.isSetup) { // already set up
+				resolve();
+				return;
+			}
+
+			let dbReq = indexedDB.open('MMSessions', 1);
+			dbReq.onupgradeneeded = function(event) {
+				storage.db = event.target.result;
+				if (!storage.db.objectStoreNames.contains('sessions')) {
+					storage.db.createObjectStore('sessions', {keyPath: 'id'});
+				} 
+			}
+
+			dbReq.onsuccess = function(event) {
+				storage.db = event.target.result;
+				storage.isSetup = true;
+				resolve();
+			}
+
+			dbReq.onerror = function(event) {
+				reject(event.target.errorCode);
+			}
+		});
+	}
+
+	/**
+	 * @method save
+	 * @param {string} path - persistent storage path
+	 * @param {*} json - json representation of session
+	 */
+	async save(path, json) {
+		let storage = this;
+		await this.setup();
+		return new Promise((resolve, reject) =>  {
+			// Start a database transaction and get the sessions object store
+			let tx = storage.db.transaction(['sessions'], 'readwrite');
+			let store = tx.objectStore('sessions');
+			// add the json with the path as the key
+			store.put({id: path, session: json});
+			tx.oncomplete = resolve;
+			tx.onerror = (event) => {
+				reject(event.target.errorCode);
+			}
+		});
+	}
+
+	/**
+	 * @method load
+	 * @param {*} path - persistent storage path
+	 */
+	async load(path) {
+		let storage = this;
+		await this.setup();
+		return new Promise((resolve, reject) =>  {
+			// Start a database transaction and get the sessions object store
+			let tx = storage.db.transaction(['sessions'], 'readwrite');
+			let store = tx.objectStore('sessions');
+			let request = store.get(path);
+			request.onsuccess = (event) => {
+				if (request.result) {
+					resolve(request.result.session);
+				}
+				else {
+					resolve(null);
+				}
+			};
+			request.onerror = (event) => {
+				reject(event.target.errorCode);
+			}
+		});
+	}
+}
+
+/**
  * @class MMSession - base Math Minion class
  * @extends MMCommandParent
- * @member {MMSession} session - this
  * @member {MMUnitSystem} unitSystem
- * @member {MMModel} rootModel;
- * @member {MMModel} currentModel;
- * @member {MMModel[]} modelStack;
+ * @member {MMModel} rootModel
+ * @member {MMModel} currentModel
+ * @member {MMModel[]} modelStack
+ * @member {string} storePath - path to persistent storage
  * @member {MMPoint} unknownPosition
+ * @member {MMPoint} nextToolLocation
+ * @member  {MMSessionStorage} storage
  */
 class MMSession extends MMCommandParent {
+	// session creation and storage commands
+
 	/**
 	 * @constructor
 	 * @param {Object} processor - MMCommandProcessor
@@ -31,8 +122,106 @@ class MMSession extends MMCommandParent {
 		super('session',  processor, 'MMSession');
 		// construct the unit system - it will add itself to my children
 		new MMUnitSystem(this);
+		this.storage = new MMSessionStorage();
 		this.newSession();
 	}
+
+	/** @method newSession
+	 * initialize to new empty session
+	 * @param {string} storePath - the storage path
+	 */
+	newSession(storePath) {
+		if (!storePath) {
+			storePath = 'unnamed';
+		}
+		this.nextToolLocation = this.unknownPosition;
+		this.rootModel = MMToolTypes['Model'].factory('root', this);
+		this.currentModel = this.rootModel;
+		this.modelStack = [this.currentModel];
+		this.storePath = storePath;
+		this.processor.defaultObject = this.rootModel;
+	}
+
+	/**
+	 * create a new session from json (stored case)
+	 * @param {string} json 
+	 * @param {string} storePath - default storage location
+	 */
+	initializeFromJson(json, storePath) {
+		let saveObject;
+		try {
+			saveObject = JSON.parse(json);
+		}
+		catch(e) {
+			this.setError('mmcmd:parseSessionError', {error: e});
+			return;
+		}
+
+		let rootModel = MMToolTypes['Model'].factory('root', this);;
+		rootModel.initFromSaved(saveObject.RootModel);
+
+		this.nextToolLocation = this.unknownPosition;
+		this.rootModel = rootModel;
+		this.currentModel = rootModel;
+		this.modelStack = [rootModel];
+		this.storePath = storePath;
+		this.processor.defaultObject = rootModel;
+	}
+
+	/** @method saveSession
+	 * save the session in persistent storage
+	 * @param {string} path - the path to store to
+	 * if blank, the storePath used when the session was created will be used 
+	 */
+	async saveSession(path) {
+		let detailWidth = this['detailWidth'] ? this['detailWidth'] : 320;
+		let deviceWidth = this['deviceWidth'] ? this['deviceWidth'] : 1024;
+		let selectedObject = '';
+		if (path) {
+			this.storePath = path;
+		}
+		let pathParts = this.storePath.split('/');
+		let caseName = pathParts.pop()
+		let rootSave = this.rootModel.saveObject();
+		let defaultObject = this.processor.defaultObject;
+		let modelPath = this.currentModel.getPath();
+		let sessionSave = {
+			Program : 'Rtm',
+			Version: 3.0,
+			DetailWidth: detailWidth,
+			DeviceWidth: deviceWidth,
+			CaseName: caseName,
+			DefaultUnitSet: this.unitSystem.defaultSet().name,
+			SelectedObject: selectedObject,
+			ModelPath: modelPath,
+			RootModel: rootSave,
+		}
+		let caseJson = JSON.stringify(sessionSave);//, null, '');
+		try {
+			await this.storage.save(this.storePath, caseJson);
+		}
+		catch(e) {
+			this.setError('mmcmd:saveFailed', {path: this.storePath, error: e});
+		}
+	}
+
+	/** @method loadSession
+	 * load the session from persistent storage
+	 * @param {string} path - the path to load from
+	 * if blank, the storePath used when the session was created will be used 
+	 */
+	async loadSession(path) {
+		try {
+			let result = await this.storage.load(path);
+			this.initializeFromJson(result);
+			return result;
+		}
+		catch(e) {
+			this.setError('mmcmd:loadFailed', {path: path, error: e});
+		}
+	}
+
+	// get methods
 
 	/** @override */
 	get verbs() {
@@ -41,6 +230,7 @@ class MMSession extends MMCommandParent {
 		verbs['dgminfo'] = this.diagramInfo;
 		verbs['new'] = this.newSessionCommand;
 		verbs['save'] =  this.saveSessionCommand;
+		verbs['load'] = this.loadSessionCommand;
 		verbs['pushmodel'] = this.pushModelCommand;
 		verbs['popmodel'] = this.popModelCommand;
 		return verbs;
@@ -73,56 +263,6 @@ class MMSession extends MMCommandParent {
 
 	get unknownPosition() {
 		return new MMPoint(0, 0);
-	}
-
-	// session creation and storage commands
-
-	/** @method newSession
-	 * initialize to new empty session
-	 * @param {string} storePath - the storage path
-	 */
-	newSession(storePath) {
-		if (!storePath) {
-			storePath = 'unnamed';
-		}
-		this.nextToolLocation = this.unknownPosition;
-		this.rootModel = MMToolTypes['Model'].factory('root', this);
-		this.currentModel = this.rootModel;
-		this.modelStack = [this.currentModel];
-		this.storePath = storePath;
-		this.processor.defaultObject = this.rootModel;
-	}
-
-	/** @method saveSession
-	 * save the session in local storage
-	 * @param {string} path - the path to store to
-	 * if blank, the storePath used when the session was created will be used 
-	 */
-	saveSession(path) {
-		let detailWidth = this['detailWidth'] ? this['detailWidth'] : 320;
-		let deviceWidth = this['deviceWidth'] ? this['deviceWidth'] : 1024;
-		let selectedObject = '';
-		if (path) {
-			this.storePath = path;
-		}
-		let pathParts = path.split('/');
-		let caseName = pathParts.pop()
-		let rootSave = this.rootModel.saveObject();
-		let defaultObject = this.processor.defaultObject;
-		let modelPath = this.currentModel.getPath();
-		let sessionSave = {
-			Program : 'Rtm',
-			Version: 3.0,
-			DetailWidth: detailWidth,
-			DeviceWidth: deviceWidth,
-			CaseName: caseName,
-			DefaultUnitSet: this.unitSystem.defaultSet().name,
-			SelectedObject: selectedObject,
-			ModelPath: modelPath,
-			RootModel: rootSave,
-		}
-		let caseJson = JSON.stringify(sessionSave);//, null, '');
-		console.log(caseJson);
 	}
 
 	// MMModel related methods
@@ -165,8 +305,28 @@ class MMSession extends MMCommandParent {
 	 * @param {MMCommand} command
 	 * command.args contains the store path for the new session
 	 */
-	saveSessionCommand(command) {
-		this.saveSession(command.args);
+	async saveSessionCommand(command) {
+		if (!indexedDB) {
+			this.setError('mmcmd:noIndexedDB', {});
+			return;
+		}
+		await this.saveSession(command.args);
+		command.results = this.storePath;
+	}
+
+	/**
+	 * @method loadSessionCommand
+	 * verb
+	 * @param {MMCommand} command
+	 * command.args contains the store path for the session to load
+	 */
+	async loadSessionCommand(command) {
+		if (!indexedDB) {
+			this.setError('mmcmd:noIndexedDB', {});
+			return;
+		}
+		let result = await this.loadSession(command.args);
+		console.log(result);
 		command.results = this.storePath;
 	}
 

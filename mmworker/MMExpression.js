@@ -36,7 +36,23 @@ class MMExpression extends MMTool {
 	}
 
 	set isInput(newValue) {
-		this._isInput = (newValue) ? true : false;
+		let newInput = (newValue) ? true : false;
+
+		if (newInput !== this._isInput ) {
+			this._isInput = newInput;
+			if (newInput) {
+				let model = this.parent.parent;
+				if (model) {
+					this.formula.nameSpace = model;
+				}
+				else {
+					this.formula.nameSpace = this.parent;
+				}
+			}
+			else {
+				this.formula.nameSpace = this.parent;
+			}
+		}
 	}
 	
 	get isOutput() {
@@ -216,7 +232,7 @@ class MMExpression extends MMTool {
 		command.results = this.jsonValue();
 	}
 
-		/**
+	/**
 	 * @method saveObject
 	 * @returns {Object} object that can be converted to json for save file
 	 */
@@ -229,4 +245,13 @@ class MMExpression extends MMTool {
 		return o;
 	}
 
+	/**
+	 * @method initFromSaved - initialize from stored object
+	 * @param {Object} saved 
+	 */
+	initFromSaved(saved) {
+		this.formula.formula = saved.Formula;
+		this.isInput = (saved.isInput === 'y');
+		this.isOutput = (saved.isOutput === 'y');
+	}
 }

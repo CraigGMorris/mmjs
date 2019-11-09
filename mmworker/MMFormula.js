@@ -453,9 +453,13 @@ class MMIndexOperator extends MMFormulaOperator {
 	 * @param  {Set} sources
 	 */
 	addInputSourcesToSet(sources) {
-		if (this.argument) {
-			this.sources.addInputSourcesToSet(sources);
+		if (this.sourceArgument) {
+			this.sourceArgument.addInputSourcesToSet(sources);
+		}
+		if (this.rowArgument) {
 			this.rowArgument.addInputSourcesToSet(sources);
+		}
+		if (this.columnArgument) {
 			this.columnArgument.addInputSourcesToSet(sources);
 		}
 	}

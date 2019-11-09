@@ -209,6 +209,28 @@ class MMModel extends MMTool {
 	}
 
 	/**
+	 * @method initFromSaved - initialize from stored object
+	 * @param {Object} saved 
+	 */
+	initFromSaved(saved) {
+		theMMSession.pushModel(this);
+		let tools = saved.Objects;
+		for (let tool of tools) {
+			let name = tool.name;
+			let toolType = MMToolTypes[tool.Type];
+			if(!toolType) {
+				throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: tool.Type}));
+			}
+			let newTool = toolType.factory(name, this);
+			newTool.initFromSaved(tool);
+			if (newTool) {
+				newTool.position = new MMPoint(tool.DiagramX, tool.DiagramY);
+			}	
+		}
+		theMMSession.popModel();
+	}
+
+	/**
 	 * @method toolViewInfo
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view
