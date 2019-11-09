@@ -376,10 +376,15 @@ export class MMApp extends React.Component {
 	 */
 	pushTool(toolName, toolType) {
 		let infoStack = this.state.infoStack;
-		while (infoStack.length > 1 && infoStack[infoStack.length - 1].viewKey !== 'Model') {
+		let top = infoStack[infoStack.length - 1];
+		while (infoStack.length > 1 && top.viewKey !== 'Model') {
+			if (top.title === toolName && top.viewKey === toolType) {
+				infoStack.pop();
+				this.updateViewState(infoStack.length-1);
+				return;
+			}
 			infoStack.pop();
 		}
-		let top = infoStack[infoStack.length - 1];
 		const path = `${top.path}.${toolName}`;
 		const updateCommand = `${path} toolViewInfo`;
 		this.doCommand(updateCommand, (cmds) => {
