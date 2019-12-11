@@ -81,7 +81,7 @@ class MMSessionStorage  {
 		await this.setup();
 		return new Promise((resolve, reject) =>  {
 			// Start a database transaction and get the sessions object store
-			let tx = storage.db.transaction(['sessions'], 'readwrite');
+			let tx = storage.db.transaction(['sessions'], 'read');
 			let store = tx.objectStore('sessions');
 			let request = store.get(path);
 			request.onsuccess = (event) => {
