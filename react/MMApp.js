@@ -50,7 +50,6 @@ export class MMApp extends React.Component {
 			updateViewState: this.updateViewState.bind(this),
 			updateDiagram: this.updateDiagram.bind(this),
 			renameTool: this.renameTool.bind(this),
-			defaults: this.defaults.bind(this)
 		};
 
  		this.infoViews = {
@@ -110,7 +109,6 @@ export class MMApp extends React.Component {
 
 		this.doCommand = this.doCommand.bind(this);
 		this.updateDiagram = this.updateDiagram.bind(this);
-		this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.popView = this.popView.bind(this);
 		this.pushView = this.pushView.bind(this);
 		this.pushConsole = this.pushConsole.bind(this);
@@ -134,23 +132,6 @@ export class MMApp extends React.Component {
 		};
 		setSize();
 		window.addEventListener('resize', setSize);
-	}
-
-	defaults() {
-		return {
-			styles: {
-				input: {
-					fontSize: '12pt',
-					width: 'calc(100% - 8px)',
-					paddingLeft: '3px',
-					paddingRight: '3px',
-					border: '0px'
-				}
-			},
-			grid: {
-				inputHeight: 30,  // px
-			}
-		};
 	}
 
 	/**
@@ -385,6 +366,7 @@ export class MMApp extends React.Component {
 			}
 			infoStack.pop();
 		}
+		top = infoStack[infoStack.length - 1];
 		const path = `${top.path}.${toolName}`;
 		const updateCommand = `${path} toolViewInfo`;
 		this.doCommand(updateCommand, (cmds) => {
@@ -579,11 +561,9 @@ export class MMApp extends React.Component {
 			previousTitle = i > 0 ? infoStack[i-1].title : '';
 			let viewInfo = this.state.infoStack[i];
 			title = viewInfo.title;
-			infoView = e('div', {
-					style: {
-						height: '100%',
-						gridArea: 'info'
-					},
+			infoView = e(
+				'div', {
+					id: 'info-view',
 				},
 				e(this.infoViews[viewInfo.viewKey], {
 					key: viewInfo.path,
@@ -597,41 +577,26 @@ export class MMApp extends React.Component {
 					t: t
 				})
 			);
-			infoNav = e('div', {
-				style: {
-					gridArea: 'nav',
-					display: 'grid',
-					gridTemplateColumns: previousTitle ? '1fr 3fr 1fr' : '0px 1fr',
-					gridTemplateRows: '1fr',
-					gridTemplateAreas: `"back title help"`,
-					alignItems: 'center',
-					backgroundColor: 'rgb(243,243,243)',
-					borderBottom: 'solid 1px black'
+			infoNav = e(
+				'div', {
+					id: 'info-nav',
+					className: previousTitle ? 'three-column' : 'two-column',
 				},
-				},
-				e('div',{
-					style: {
-						gridArea: 'back',
-						marginLeft: '10px',
-						color: 'blue'
-					},
-					onClick: this.popView
-				}, previousTitle ? '< ' + t(previousTitle) : ''),
-				e('div',{
-					style: {
-						gridArea: 'title',
-						justifySelf: 'center'
-					}
-				},t(title)),
-				e('div', {
-					style: {
-						gridArea: 'help',
-						color: 'blue',
-						marginRight: '10px',
-						justifySelf: 'right'
-					},
-					onClick: this.showHelp
-				}, '?')			
+				e(
+					'div',{
+						id: 'info-nav__back',
+						onClick: this.popView
+					}, previousTitle ? '< ' + t(previousTitle) : ''),
+				e(
+					'div',{
+						id: 'info-nav__title',
+					},t(title)),
+				e(
+					'div', {
+						id: 'info-nav__help',
+						onClick: this.showHelp
+					}, '?'
+				)			
 			);
 		}
 		else {
@@ -659,149 +624,149 @@ export class MMApp extends React.Component {
 			expandText = t('react:dgmButtonInfo');
 		}
 
-		const infoButtonStyle = (area) => {
-			return {
-				gridArea: area,
-				padding: '0',
-				width: '100%',
-				background: 'transparent',
-				border: '0',
-				fontSize: '10pt',
-				color: 'blue'
-			}
-		};
-		const infoTools = e('div', {
-				style: {
-					gridArea: 'infotools',
-					display: 'grid',
-					gridTemplateColumns: 'auto auto auto auto auto auto',//repeat(5, 1fr)',
-					gridTemplateRows: '1fr',
-					gridTemplateAreas: `"expand sessions console undo redo units"`,
-					justifyTtems: 'center',
-					alignItems: 'center',
-					borderTop: 'solid 1px black'
-				}
+		const infoTools = e(
+			'div', {
+				id: 'info-tools',
 			},
-			e('button', {
-				id:'mmapp-expand-button',
-				style: infoButtonStyle('expand'),
-				value:'expand',
-				onClick: this.handleButtonClick
+			e(
+				'button', {
+					id:'info-tools__expand-button',
+					className: 'info-tools__button',
+					onClick: (event) => {
+						this.setState((state) => {
+							switch (state.viewType) {
+								case ViewType.twoPanes:
+									return {viewType: ViewType.info};
+		
+								case ViewType.diagram:
+									return {viewType: (state.allow2Pane) ? ViewType.twoPanes : ViewType.info};
+		
+								case ViewType.info:
+									return {viewType: (state.allow2Pane) ? ViewType.twoPanes : ViewType.diagram}
+							}
+						})
+					}
 				},
 				expandText
 			),
 			e('button', {
-				id:'mmapp-undo-button',
-				style: infoButtonStyle('undo'),
-				value:'undo',
-				onClick: this.handleButtonClick
+				id:'info-tools__undo-button',
+				className: 'info-tools__button',
+				onClick: (event) => {
+					const undo = this.undoStack.pop();
+					if (undo) {
+						this.doCommand('undo ' + undo, (results) => {
+							this.updateDiagram();
+						});
+					}	
+				}
 				},
 				t('react:dgmButtonUndo')
 			),
-			e('button', {
-				id:'mmapp-redo-button',
-				style: infoButtonStyle('redo'),
-				value:'redo',
-				onClick: this.handleButtonClick
+			e(
+					'button', {
+					id:'info-tools__redo-button',
+					className: 'info-tools__button',
+					onClick: (event) => {
+						const redo = this.redoStack.pop();
+						if (redo) {
+							this.doCommand('redo ' + redo, (results) => {
+								this.updateDiagram();
+							});
+						}
+					}
 				},
 				t('react:dgmButtonRedo')
 			),
-			e('button', {
-					id:'mmapp-unit-button',
-					style: infoButtonStyle('units'),
-					value:'units react:unitsTitle',
-					onClick: this.handleButtonClick
+			e(
+				'button', {
+					id:'info-tools__unit-button',
+					className: 'info-tools__button',
+					onClick: (event) => {
+						this.pushView('units', 'react:unitsTitle');
+					}
 				},
 				t('react:dgmButtonUnits')
 			),
-			e('button', {
-					id:'mmapp-console-button',
-					style: infoButtonStyle('console'),
-					value:'console react:consoleTitle',
-					onClick: this.handleButtonClick
+			e(
+				'button', {
+					id:'info-tools__console-button',
+					className: 'info-tools__button',
+					onClick: (event) => {
+						this.pushConsole();
+					}
 				},
 				t('react:dgmButtonConsole')
 			),
-			e('button', {
-				id:'mmapp-sessions-button',
-				style: infoButtonStyle('sessions'),
-				value:'sessions react:sessionsTitle',
-				onClick: this.handleButtonClick
-			},
-			t('react:dgmButtonSessions')
-		),
-	);
+			e(
+					'button', {
+					id:'info-tools__sessions-button',
+					className: 'info-tools__button',
+					onClick: (event) => {
+						this.pushView('sessions', 'react:sessionsTitle');
+					}
+				},
+				t('react:dgmButtonSessions')
+			),
+		);
 
 		let wrapper;
 		const onePaneStyle = {
-			fontSize: '1em',
-			height: '100%',
 			width: `${docWidth}px`,
-			display: 'grid',
-			gridTemplateColumns: '1fr',
 			gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
-			gridTemplateAreas: `"nav"
-				"info"
-				"infotools"`,
-			backgroundColor: 'rgb(243,243,243)'
 		};
 
 		switch (viewType) {
 			case ViewType.twoPanes:
-				wrapper = e('div',{
-					id: 'mmapp-wrapper-twopane',
-					style: {
-						gridTemplateColumns: `1fr ${infoWidth}px`,
-						fontSize: '1em',
-						height: '100%',
-						width: '100%',
-						display: 'grid',
-						gridTemplateColumns: `1fr ${infoWidth}px`,
-						gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
-						gridTemplateAreas: `"diagram nav"
-							"diagram info"
-							"diagram infotools"`,
-						backgroundColor: 'rgb(243,243,243)'
-					},
-				},
-				e('div', {
-						className: 'mmapp-diagram',
+				wrapper = e(
+					'div',{
+						id: 'mmapp__wrapper--two-pane',
 						style: {
-							gridArea: 'diagram',
-							backgroundColor: 'rgb(238,255,238)',
-							borderRight: '1px solid'
-						}
+							gridTemplateColumns: `1fr ${infoWidth}px`,
+							gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
+						},
 					},
-					diagram
-				),
-				infoNav,
-				infoView,
-				infoTools,
+					e(
+						'div', {
+							id: 'mmapp__diagram--two-pane',
+							className: 'mmapp__diagram',
+						},
+						diagram
+					),
+					infoNav,
+					infoView,
+					infoTools,
 				);
 				break;
 
 			case ViewType.diagram:
-				wrapper = e('div', {
-					style: onePaneStyle
-				},
-				e('div', {
-						style: {
-							gridArea: 'nav / 1 / info / 1',
-						}
+				wrapper = e(
+					'div', {
+						id: 'mmapp__wrapper--one-pane',
+						className: 'mmapp__wrapper--one-pane',
+						style: onePaneStyle
 					},
-					diagram
-				),
-				infoTools,
+					e(
+						'div', {
+							id: 'mmapp__diagram--one-pane',
+							className: 'mmapp__diagram',
+						},
+						diagram
+					),
+					infoTools,
 				);
 				break;	
 				
 			case ViewType.info:
-				wrapper = e('div',{
-					style: onePaneStyle,
-				},
-				infoNav,
-				infoView,
-				infoTools,
+				wrapper = e(
+					'div', {
+						id: 'mmapp__info--one-pane',
+						className: 'mmapp__wrapper--one-pane',
+						style: onePaneStyle,
+					},
+					infoNav,
+					infoView,
+					infoTools,
 				);
 			break;
 		}
@@ -826,40 +791,39 @@ export class ToolNameField extends React.Component {
 			name = pathParts[pathParts.length - 1];
 		}
 		this.props.actions.setViewInfoState({toolName: name});
-		this.handleChange = this.handleChange.bind(this);
-		this.handleKeyPress = this.handleKeyPress.bind(this);
-	}
-
-	/** @method handleChange
-	 * keeps input field in sync
-	 * @param {Event} event
-	 */
-  handleChange(event) {
-		const value = event.target.value;  // event will be null in handler
-		this.props.actions.setViewInfoState({toolName: value});
-	}
-	
-	/** @method handleKeyPress
-	 * watches for Enter and sends command when it see it
-	 * @param {Event} event
-	 */
-	handleKeyPress(event) {
-		if (event.key == 'Enter') {
-			const path = this.props.viewInfo.path;
-			const newName = this.props.viewInfo.viewState.toolName;
-			this.props.actions.renameTool(path, newName);
-		}
 	}
 
 	render() {
 		let t = this.props.t;
-		const inputHeight = `${this.props.actions.defaults().grid.inputHeight}px`;
-		return e('input', {
-			style: this.props.actions.defaults().styles.input,
-			value: this.props.viewInfo.viewState.toolName || '',
-			placeholder: t('react:toolNamePlaceHolder'),
-			onChange: this.handleChange,
-			onKeyPress: this.handleKeyPress
-		});
+		return e(
+			'input', {
+				className: 'tool-name__input',
+				value: this.props.viewInfo.viewState.toolName || '',
+				placeholder: t('react:toolNamePlaceHolder'),
+				onChange: (event) => {
+					// keeps input field in sync
+					const value = event.target.value;
+					this.props.actions.setViewInfoState({toolName: value});	
+				},
+				onKeyPress: (event) => {
+					// watches for Enter and sends command when it see it
+					if (event.key == 'Enter') {
+						const path = this.props.viewInfo.path;
+						const newName = this.props.viewInfo.viewState.toolName;
+						if (path.split('.').pop() != newName) {
+							this.props.actions.renameTool(path, newName);
+						}
+					}		
+				},
+				onBlur: (event) => {
+					// watch for loss of focus
+					const path = this.props.viewInfo.path;
+					const newName = this.props.viewInfo.viewState.toolName;
+					if (path.split('.').pop() != newName) {
+						this.props.actions.renameTool(path, newName);
+					}
+				}
+			}
+		);
 	}
 }

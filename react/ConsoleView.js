@@ -8,8 +8,6 @@ const e = React.createElement;
 export class ConsoleView extends React.Component {
 	constructor(props) {
 		super(props);
-		this.handleChange = this.handleChange.bind(this);
-		this.handleKeyPress = this.handleKeyPress.bind(this);
 		this.readCommandFile = this.readCommandFile.bind(this);
 		this.callBack = this.callBack.bind(this);
 	}
@@ -46,28 +44,6 @@ export class ConsoleView extends React.Component {
 		this.props.updateDiagram();
 	}
 	
-	/** @method handleChange
-	 * keeps input field in sync
-	 * @param {Event} event
-	 */
-  handleChange(event) {
-		const value = event.target.value;  // event will be null in handler
-		this.props.actions.setViewInfoState({input: value});
-	}
-	
-	/** @method handleKeyPress
-	 * watches for Enter and sends command when it see it
-	 * @param {Event} event
-	 */
-	handleKeyPress(event) {
-		if (event.key == 'Enter') {
-			this.props.actions.doCommand(this.props.viewInfo.viewState.input, this.callBack);
-			this.props.actions.setViewInfoState((state) => {
-				return {input:''}
-			});
-		}
-	}
-
 	readCommandFile(event) {
 		//Retrieve the first (and only!) File from the FileList object
 		var f = event.target.files[0]; 
@@ -86,78 +62,57 @@ export class ConsoleView extends React.Component {
 	
 	render() {
 		let t = this.props.t;
-		return e('div', {
-				style: {
-					height: '100%',
-					fontSize: '1em',
-					display: 'grid',
-					gridTemplateColumns: '1fr',
-					gridTemplateRows: '1fr 30px 40px',
-					gridTemplateAreas: `"result"
-						"input"
-						"readfile"`					
-				}
+		return e(
+			'div', {
+				id: 'console',
 			},
-			e('textarea',{
-				style: {
-					gridArea: 'result',
-					overflow: 'auto',
-					textAlign: 'left',
-					fontSize: '1em',
-					boxSizing: 'border-box',
-					whiteSpace: 'pre-wrap',
-					tabSize: '4',
-					paddingLeft: '5px'
-				},
-				value: this.props.viewInfo.viewState.output || '',
-				readOnly: true
-			}),
-			e('input', {
-				style: {
-					gridArea: 'input',
-					justifySelf: 'center',
-					fontSize: '12pt',
-					width: 'calc(100% - 1em)',
-					border: 'solid 1px'
-				},
-				value: this.props.viewInfo.viewState.input || '',
-				placeholder: t('react:consoleReadPlaceHolder'),
-				onChange: this.handleChange,
-				onKeyPress: this.handleKeyPress
-			}),
-			e('div', {
-				style: {
-					gridArea: 'readfile',
-					display: 'grid',
-					gridTemplateColumns: '40px 1fr',
-					gridTemplateRows: '1fr',
-					gridTemplateAreas: `"readlabel readinput"`,
-					backgroundColor: 'rgb(243,243,243)'
+			e(
+				'textarea',{
+					id: 'console__result',
+					value: this.props.viewInfo.viewState.output || '',
+					readOnly: true
 				}
-			},
-				e('label', {
-					style: {
-						fontSize: '11pt',
-						gridArea: 'readlabel',
-						alignSelf: 'center',
-						justifySelf: 'center'
+			),
+			e(
+				'input', {
+					id: 'console__input',
+					value: this.props.viewInfo.viewState.input || '',
+					placeholder: t('react:consoleReadPlaceHolder'),
+					onChange: (event) => {
+						//keeps input field in sync
+						const value = event.target.value;
+						this.props.actions.setViewInfoState({input: value});				
 					},
-					htmlFor: 'readfile'
+					onKeyPress: (event) => {
+						if (event.key == 'Enter') {
+							// watches for Enter and sends command when it see it
+							this.props.actions.doCommand(this.props.viewInfo.viewState.input, this.callBack);
+							this.props.actions.setViewInfoState((state) => {
+								return {input:''}
+							});
+						}
+					}
+				}
+			),
+			e(
+				'div', {
+					id: 'console__read-file',
 				},
+				e(
+					'label', {
+						id: 'console__read-file-label',
+						htmlFor: 'readfile'
+					},
 					t('react:readCommands')
 				),
-				e('input', {
-					type: 'file',
-					style: {
-						fontSize: '10pt',
-						gridArea: 'readinput',
-						alignSelf: 'center',
-						justifySelf: 'center',
-						color: 'blue'			
-					},
-					onChange: this.readCommandFile,
-					placeholder: 'Read Command File'
-				})
+				e(
+					'input', {
+						id: 'console__read-file-input',
+						type: 'file',
+						onChange: this.readCommandFile,
+						placeholder: 'Read Command File'
+					}
+				)
 			)
 		);
 	}

@@ -20,20 +20,9 @@ export class ModelView extends React.Component {
 
 	render() {
 		let t = this.props.t;
-		const inputHeight = `${this.props.actions.defaults().grid.inputHeight}px`;
 		return e(
 			'div', {
-				style: {
-//					paddingLeft: '3px',
-//					paddingRight: '3px',
-					height: '100%',
-					fontSize: '1em',
-					display: 'grid',
-					gridTemplateColumns: '1fr',
-					gridTemplateRows: `${inputHeight} 1fr`,
-					gridTemplateAreas: `"name"
-						"other"`
-				}
+				id: 'model',
 			},
 			e(
 				'div', {

@@ -12,31 +12,6 @@ const e = React.createElement;
 export class ExpressionView extends React.Component {
 	constructor(props) {
 		super(props);
-		this.setIsInputProperty = this.setIsInputProperty.bind(this);
-		this.setIsOutputProperty = this.setIsOutputProperty.bind(this);
-	}
-
-	/**
-	 * @method setIsInputProperty
-	 * @param {Event} event
-	 * toggle the isInput property
-	 */
-	setIsInputProperty(event) {
-		const value = this.props.viewInfo.updateResults[0].results.isInput ? 'f' : 't';
-		this.props.actions.doCommand(`${this.props.viewInfo.path} set isInput ${value}`, (cmds) => {
-			this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
-		});
-	}
-
-	/**
-	 * @method setIsOutputProperty
-	 * toggle the isOutput property
-	 */
-	setIsOutputProperty(event) {
-		const value = this.props.viewInfo.updateResults[0].results.isOutput ? 'f' : 't';
-		this.props.actions.doCommand(`${this.props.viewInfo.path} set isOutput ${value}`, (cmds) => {
-			this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
-		});
 	}
 
 	render() {
@@ -46,24 +21,17 @@ export class ExpressionView extends React.Component {
 		const value = results.value;
 		const valueUnit = value.unit;
 		const unitType = value.unitType ? value.unitType : '';
-		const nInputHeight = this.props.actions.defaults().grid.inputHeight;
-		const inputHeight = `${nInputHeight}px`;
+		const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
+		const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 		return e(
 			'div', {
 				// main vertical sections
-				style: {
-					height: '100%',
-					display: 'grid',
-					gridTemplateColumns: '1fr',
-					gridTemplateRows: `${inputHeight} ${inputHeight} ${inputHeight} ${inputHeight} 1fr`,
- 				}
+				id: 'expression',
 			},
 			e(
 				// name field line
 				'div', {
-					style: {
-						gridArea: '1 / 1 / 1 / 1',
-					},
+					id: 'expression__name',
 				},
 				e(
 					ToolNameField, {
@@ -76,29 +44,19 @@ export class ExpressionView extends React.Component {
 			e(
 				// formula field line
 				'div', {
-					style: {
-						display: 'grid',
-						gridArea: '2 / 1 / 2 / 1',
-						gridTemplateColumns: '20px 1fr',
-						gridTemplateRows: `1fr`,
-					}
+					id: 'expression__formula',
 				},
 				e(
 					// equal sign preceding formula
 					'div', {
-						style: {
-							gridArea: '1 / 1 / 1 / 1',
-							marginLeft: '5px'
-						}
+						id: 'expression__formula-equsl',
 					},
 					' = '
 				),
  				e(
 					// the formula input field
 					'div', {
-						style: {
-							gridArea: '1 / 2 / 1 / 2'//'finput'
-						},
+						id: 'expression__formula-field'
 					},
  					e(
 						FormulaField, {
@@ -115,114 +73,95 @@ export class ExpressionView extends React.Component {
  			e(
 				// line containing isInput and isOutput check boxes
 				'div', {
-					style: {
-						display: 'grid',
-						gridArea: '3 / 1 / 3 / 1',
-						gridTemplateColumns: '1fr 1fr',
-						gridTemplateRows: `1fr`,
-					}
+					id: 'expression__in-out-boxes',
 				},
 				e(
 					// isInput check box
 					'div', {
-						style: {
-							gridArea: '1 / 1 / 1 / 1',
-						},
+						id: 'expression__is-input',
 					},
 					e(
 						'label', {
-							htmlFor: 'isinput'
+							id: 'expression__is-input-label',
+							htmlFor: 'expression__is-input-checkbox'
 						},
 						t('react:exprIsInput')
 					),
 					e(
 						'input', {
+							id: 'expression__is-input-checkbox',
 							type: 'checkbox',
-							name: 'isinput',
 							checked: results.isInput,
-							style: {
-								marginLeft: '10px'
-							},
-							onChange: this.setIsInputProperty
+							onChange: (event) => {
+								// toggle the isInput property
+								const value = this.props.viewInfo.updateResults[0].results.isInput ? 'f' : 't';
+								this.props.actions.doCommand(`${this.props.viewInfo.path} set isInput ${value}`, (cmds) => {
+									this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+								});						
+							}
 						},
 					),
 				),
 				e(
 					// isOutput check box
 					'div', {
-						style: {
-							gridArea: '1 / 2 / 1 / 2',
-							marginLeft: '10px'
-						},
+						id: 'expression__is-output',
+						className: 'checkbox-and-label',
 					},
 					e(
 						'label', {
-							htmlFor: 'isoutput'
+							id: 'expression__is-output-label',
+							className: 'checkbox__label',
+							htmlFor: 'expression__is-output-checkbox'
 						},
-						t('react:exprIsOutput')
+						t('react:exprIsOutput'),
 					),
 					e(
 						'input', {
+							id: 'expression__is-output-checkbox',
+							className: 'checkbox__input',
 							type: 'checkbox',
-							name: 'isoutput',
 							checked: results.isOutput,
-							style: {
-								marginLeft: '10px'
-							},
-							onChange: this.setIsOutputProperty
+							onChange: (event) => {
+								// toggle the isOutput property
+								const value = this.props.viewInfo.updateResults[0].results.isOutput ? 'f' : 't';
+								this.props.actions.doCommand(`${this.props.viewInfo.path} set isOutput ${value}`, (cmds) => {
+									this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+								});						
+							}
 						},
-					),
+					),	
+
 				),
 			),
 			e(
 				// results unit line
 				'div', {
-					style: {
-						display: 'grid',
-						gridArea: '4 / 1 / 4 / 1',
-						gridTemplateColumns: '1fr 30px',
-						gridTemplateRows: inputHeight,
-					}
+					id: 'expression__units',
 				},
 				e(
 					// unit type and unit
 					'div', {
-						style: {
-							gridArea: '1 / 1 / 1 / 1'
-						}
+						id: 'expression__unit-and-type',
 					},
 					`${unitType}: ${valueUnit}`
 				),
 				e(
 					// info button
 					'button', {
-						style: {
-							gridArea: '1 / 2 / 1 / 2',
-							borderRadius: '10px',
-							height: '20px',
-							width: '20px',
-							fontSize: '10pt',
-							border: '1',
-							textAlign: 'center'
-						}
+						id: 'expression__info-button',
 					},
 					'i'
 				)
 			),
 			e(
-				'div', {
-					style: {
-						gridArea: '5 / 1 / 5 / 1'
-					}
-				},
-				e(
-					ValueView, {
-						value: results.value,
-						actions: this.props.actions,
-						viewInfo: this.props.viewInfo,
-						viewBox: [0, 0, this.props.infoWidth, this.props.infoHeight - 4*nInputHeight]
-					}
-				)
+				ValueView, {
+					id: 'expression__value',
+					value: results.value,
+					actions: this.props.actions,
+					viewInfo: this.props.viewInfo,
+					viewBox: [0, 0, this.props.infoWidth - 2*nInfoViewPadding, this.props.infoHeight - 4*nInputHeight],
+				}
 			)
 		);
 	}
@@ -264,7 +203,8 @@ export class ValueView extends React.Component {
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
-		this.onMouseLeave = this.onMouseLeave.bind(this);
+//		this.onMouseLeave = this.onMouseLeave.bind(this);
+		this.onMouseEnter = this.onMouseEnter.bind(this);
 	}
 
 	onMouseDown(e) {
@@ -334,7 +274,7 @@ export class ValueView extends React.Component {
 
 		const fastPanX = (deltaX) => {
 			const viewBox = this.props.viewBox;
-			const maxX = viewBox[3];
+			const maxX = viewBox[2];
 			const value = this.props.value;
 			const nColumns = value.nc;
 			deltaX = (deltaX/(maxX - this.rowLabelWidth)) * nColumns * this.cellWidth * 2;
@@ -343,7 +283,7 @@ export class ValueView extends React.Component {
 
 		const fastPanY = (deltaY) => {
 			const viewBox = this.props.viewBox;
-			const maxY = viewBox[2];
+			const maxY = viewBox[3];
 			const value = this.props.value;
 			const nRows = value.nr;
 			deltaY = (deltaY/(maxY - this.cellHeight)) * nRows * this.cellHeight * 2;
@@ -394,10 +334,20 @@ export class ValueView extends React.Component {
     e.preventDefault()
 	}
 
-	onMouseLeave(e) {
+/* 	onMouseLeave(e) {
 		this.setState({
 			dragType: ValueViewDragType.none
 		});
+	} */
+
+	onMouseEnter(e) {
+		if (this.state.dragType != ValueViewDragType.none) {
+			if (!e.nativeEvent.buttons) {
+				this.setState({
+					dragType: ValueViewDragType.none
+				});				
+			}
+		}
 	}
 
 	render() {
@@ -409,36 +359,44 @@ export class ValueView extends React.Component {
 		const cellWidth = this.cellWidth;
 		const xTextPad = 5;
 		const rowLabelWidth = this.rowLabelWidth;
-		const color1 = 'white';
-		const color2 = 'rgba(255,255,230,1)';
-		const color3 = 'rgba(240,240,255,1)';
+
+		const color1 = getComputedStyle(document.documentElement).getPropertyValue('--expression__value--color1');
+		const color2 = getComputedStyle(document.documentElement).getPropertyValue('--expression__value--color2');
+		const color3 = getComputedStyle(document.documentElement).getPropertyValue('--expression__value--color3');
+		const strokeColor = getComputedStyle(document.documentElement).getPropertyValue('--expression__value--stroke-color');
+		const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--expression__value--bgcolor');
+
 		const viewBox = this.props.viewBox;
 		const offset = this.props.viewInfo.viewState.valueViewOffset;
 		const nRowCells = Math.min(Math.floor(viewBox[3] / cellHeight), nRows);
 		const rowOrigin = Math.max(0, Math.floor(Math.min(offset.y / cellHeight), nRows - nRowCells));
-		const nColumnCells = Math.min(viewBox[2] / cellWidth, nColumns);
+		const nColumnCells = Math.min(Math.floor(viewBox[2] / cellWidth), nColumns);
 		const columnOrigin = Math.max(0, Math.floor(Math.min(offset.x / cellWidth), nColumns - nColumnCells));
+		const yPadding = 0; // pixel gap at top
+		const xPadding = 0; // pixel gap at left
 		let cells = [];
 		for (let row = 0; row < Math.min(nRowCells, nRows - rowOrigin); row++) {
 			const y = (row + 2) * cellHeight + rowOrigin*cellHeight - offset.y;
 			for (let column = 0; column < Math.min(nColumnCells, nColumns - columnOrigin); column++) {
-				const x = column * cellWidth + columnOrigin*cellWidth + rowLabelWidth - offset.x;
+				const x = column * cellWidth + columnOrigin*cellWidth + rowLabelWidth - offset.x + xPadding;
 				const color = (row + rowOrigin) % 2 ? (
 					(column + columnOrigin) % 2 ? color1 : color2
 				) : (
 					(column + columnOrigin) % 2 ? color3 : color1
 				);
-				const cellBox = e('rect', {
-					x: x,
-					y: y - cellHeight * 0.75,
-					width: cellWidth,
-					height: cellHeight,
-					key: `cellbox${row}-${column}`,
-					style: {
-						stroke: 'black',
-						fill: color
+				const cellBox = e(
+					'rect', {
+						x: x,
+						y: y - cellHeight + yPadding,
+						width: cellWidth,
+						height: cellHeight,
+						key: `cellbox${row}-${column}`,
+						style: {
+							stroke: strokeColor,
+							fill: color
+						}
 					}
-				});
+				);
 				cells.push(cellBox);
 				let  displayedV = '';
 				if (value.t === 't') {
@@ -453,112 +411,114 @@ export class ValueView extends React.Component {
 				}
 				const cmp = e('text', {
 					x: x + xTextPad,
-					y: y,
+					y: y - cellHeight * 0.2,
 					key: `${row}-${column}`
 				}, displayedV);
 				cells.push(cmp);
 				if (row === 0) {
-					const columnLabelBox = e('rect', {
-						x: x,
-						y: cellHeight* 0.25,
-						width: cellWidth,
-						height: cellHeight,
-						key: `colbox${column}`,
-						style: {
-							stroke: 'black',
-							fill: (column + columnOrigin) % 2 ? color1 : color2
-						}		
-					});
+					const columnLabelBox = e(
+						'rect', {
+							x: x,
+							y: yPadding,
+							width: cellWidth,
+							height: cellHeight,
+							key: `colbox${column}`,
+							style: {
+								stroke: strokeColor,
+								fill: (column + columnOrigin) % 2 ? color1 : color2
+							}		
+						}
+					);
 					cells.push(columnLabelBox);
 					if (value.t === 't') {
 						const tableColumn = value.v[column];
-						const columnLabel = e('text', {
-							x: x + xTextPad,
-							y: cellHeight - 8,
-							key: `col${column}`,
-							style: {
-								fontSize: 13
-							}
-						}, tableColumn.name);
+						const columnLabel = e(
+							'text', {
+								className: 'result-table__column-label',
+								x: x + xTextPad,
+								y: cellHeight * 0.5,
+								key: `col${column}`,
+							},
+							tableColumn.name
+						);
 						cells.push(columnLabel);
-						const unitLabel = e('text', {
-							x: x + xTextPad,
-							y: cellHeight + 4,
-							key: `colUnit${column}`,
-							style: {
-								fontSize: 13
-							}
-						}, tableColumn.dUnit);
+						const unitLabel = e(
+							'text', {
+								className: 'result-table__column-label',
+								x: x + xTextPad,
+								y: cellHeight * 0.9,
+								key: `colUnit${column}`,
+							},
+							tableColumn.dUnit
+						);
 						cells.push(unitLabel);
 
 					}
 					else {
-						const columnLabel = e('text', {
-							x: x + xTextPad,
-							y: cellHeight,
-							key: `col${column}`
-						}, `${(column + columnOrigin + 1)}`);
+						const columnLabel = e(
+							'text', {
+								x: x + xTextPad,
+								y: cellHeight * 0.8,
+								key: `col${column}`
+							},
+							`${(column + columnOrigin + 1)}`
+						);
 						cells.push(columnLabel);
 					}
 				}
 			}
-			const rowLabelBox = e('rect', {
-				x: 0,
-				y: y - cellHeight * 0.75,
-				width: rowLabelWidth,
-				height: cellHeight,
-				key: `rowbox${row}`,
-				style: {
-					stroke: 'black',
-					fill: (row + rowOrigin) % 2 ? color1 : color3
+			const rowLabelBox = e(
+				'rect', {
+					x: xPadding,
+					y: y - cellHeight,
+					width: rowLabelWidth,
+					height: cellHeight,
+					key: `rowbox${row}`,
+					style: {
+						stroke: strokeColor,
+						fill: (row + rowOrigin) % 2 ? color1 : color3
+					}
 				}
-			});
+			);
 			cells.push(rowLabelBox);
-			const rowLabel = e('text', {
-				x: xTextPad,
-				y: y,
-				key: `row${row}`
-			}, `${(row + rowOrigin + 1)}`);
+			const rowLabel = e(
+				'text', {
+					x: xTextPad,
+					y: y - cellHeight * 0.2,
+					key: `row${row}`
+				},
+				`${(row + rowOrigin + 1)}`
+			);
 			cells.push(rowLabel);
 		}
-		const originBox = e('rect', {
-			x: 0,
-			y: cellHeight* 0.25,
-			width: rowLabelWidth,
-			height: cellHeight,
-			key: `origin`,
-			style: {
-				stroke: 'black',
-				fill: 'rgba(238,255,238,1)'
+		const originBox = e(
+			'rect', {
+				x: xPadding,
+				y: yPadding,
+				width: rowLabelWidth,
+				height: cellHeight,
+				key: `origin`,
+				style: {
+					stroke: strokeColor,
+					fill: bgColor,
+				}
 			}
-		});
+		);
 		cells.push(originBox);
-	return e(
-			'div', {
+		return e(
+			'svg', {
+				id: 'expression__value-svg',
 				style: {
 					height: `${viewBox[3]}px`,
-					width: `${viewBox[2]}px`
-				}
-			},
-			e(
-				'svg', {
-					style: {
-						backgroundColor: 'rgba(238,255,238,1)',
-						height: '100%',
-						width: '100%'
-					},
-					viewBox: viewBox,
-						onMouseMove: this.onMouseMove,
-						onMouseDown: this.onMouseDown,
-						onMouseUp: this.onMouseUp,
-						onMouseLeave: this.onMouseLeave
-/*					onWheel: this.onWheel,
-					onClick: this.onClick,
- */			},
-
-				 cells
-			),
+				},
+				viewBox: viewBox,
+				onMouseMove: this.onMouseMove,
+				onMouseDown: this.onMouseDown,
+				onMouseUp: this.onMouseUp,
+				onMouseEnter: this.onMouseEnter,
+//				onMouseLeave: this.onMouseLeave
+				},
+			cells
 		);
-
 	}
 }

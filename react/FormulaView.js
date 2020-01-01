@@ -58,7 +58,6 @@ export class FormulaField extends React.Component {
 		let t = this.props.t;
 		return e('input', {
 			value: this.props.viewInfo.viewState[this.formulaName],
-			style: this.props.actions.defaults().styles.input,
 			placeholder: t('react:formulaValueUnknown'),
 			onChange: this.handleChange,
 			onKeyPress: this.handleKeyPress

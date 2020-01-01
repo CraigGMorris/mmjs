@@ -1,0 +1,357 @@
+:root {
+	--body--bgcolor: #1c1c1c;
+	--body--color: #fff;
+	--link--color: #ccf;
+	--link--color-hover: #c5fc98fe;
+	--diagram--bgcolor: #eeffee;
+	--info-nav--bgcolor: #111;
+	--info-view--padding: 5px;
+	--border--color: #fff;
+	--input--bgcolor: rgb(51, 51, 51);
+	--input--color: #fff;
+	--input--height: 30px;
+	--expression__value--color1: white;
+	--expression__value--color2: rgba(255,255,230,1);
+	--expression__value--color3:rgba(240,240,255,1);
+	--expression__value--stroke-color: black;
+	--expression__value--bgcolor: rgba(238,255,238,1);
+}
+@media (prefers-color-scheme: light) {
+	:root {
+		--body--bgcolor: #fafafa;
+		--body--color: #555;
+		--link--color: blue;
+		--link--color-hover: #000;
+		--diagram--bgcolor: #eeffee;
+		--info-nav--bgcolor: #f3f3f3;
+		--border--color: #000;
+		--input--color: #000;
+		--input--bgcolor: #fff;
+	}
+}
+
+body {
+	background-color: var(--body--bgcolor) !important;
+	color: var(--body--color);
+}
+
+input {
+	font-size: 12pt;
+	width: 100%;
+	box-sizing: border-box;
+	padding-left: 3px;
+	padding-right: 3px;
+	border: solid 1px;
+	color: var(--input--color);
+	background-color: var(--input--bgcolor);
+}
+
+textarea {
+	overflow: auto;
+	text-align: left;
+	font-size: 1em;
+	box-sizing: border-box;
+	white-space: pre-wrap;
+	tab-size: 4;
+	padding-left: 5px;
+	color: var(--input--color);
+	background-color: var(--input--bgcolor);
+}
+
+svg text {
+	pointer-events: none;
+}
+
+a {
+	color: var(--link--color);
+}
+
+a:hover {
+	color: var(--link--color-hover);
+}
+
+.checkbox-and-label {
+	display: grid;
+	grid-template-columns: 40px 1fr;
+	grid-template-rows: 1fr;
+}
+
+.checkbox__label {
+	grid-area: 1 / 2 / 1 / 2
+}
+
+.checkbox__input {
+	grid-area: 1 / 1 / 1 / 1;
+}
+
+#info-view {
+	height: 100%;
+	grid-area: info;
+	padding-left: var(--info-view--padding);
+	padding-right: var(--info-view--padding);
+}
+
+#info-nav {
+	grid-area: nav;
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-areas: "back title help";
+	align-items: center;
+	background-color: var(--info-nav--bgcolor);
+	border-bottom: solid 1px black;
+}
+
+#info-nav .three-column {
+	grid-template-columns: 1fr 3fr 1fr;
+}
+
+#info-nav .two-column {
+	grid-template-columns: 0px 1fr;
+}
+
+#info-nav__back {
+	grid-area: back;
+	margin-left: 10px;
+	color: var(--link--color);
+}
+
+#info-nav__title {
+	grid-area: title;
+	justify-self: center;
+}
+
+#info-nav__help {
+	grid-area: help;
+	color: var(--link--color);
+	margin-right: 10px;
+	justify-self: right;
+}
+
+#info-tools {
+	grid-area: infotools;
+	display: grid;
+	grid-template-columns: auto auto auto auto auto auto;
+	grid-template-rows: 1fr;
+	grid-template-areas: "expand sessions console undo redo units";
+	justify-items: center;
+	align-items: center;
+	border-top: solid 1px var(--border--color);
+}
+
+.info-tools__button {
+	padding: 0;
+	width: 100%;
+	background: transparent;
+	border: 0;
+	font-size: 10pt;
+	color: var(--link--color);
+}
+
+#info-tools__expand-button {
+	grid-area: expand;
+}
+
+#info-tools__undo-button {
+	grid-area: undo;
+}
+
+#info-tools__redo-button {
+	grid-area: redo;
+}
+
+#info-tools__units-button {
+	grid-area: units;
+}
+
+#info-tools__console-button {
+	grid-area: console;
+}
+
+#info-tools__sessions-button {
+	grid-area: sessions;
+}
+
+#mmapp__wrapper--two-pane {
+	font-size: 1em;
+	/* height: 100%; */
+	width: 100%;
+	display: grid;
+	grid-template-areas: "diagram nav"
+		"diagram info"
+		"diagram infotools";
+}
+
+.mmapp__wrapper--one-pane {
+	font-size: 1em;
+	height: 100%;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-areas: "nav"
+		"info"
+		"infotools";
+}
+
+.mmapp__diagram {
+	background-color: var(--diagram--bgcolor);
+	border-right: 1px solid var(--border--color);
+}
+
+#mmapp__diagram--two-pane {
+	grid-area: diagram;
+}
+
+#mmapp__diagram--one-pane {
+	grid-area: nav / 1 / info / 1;
+}
+
+/* .tool-name__input {
+	margin-left: 10px;
+	margin-right: 10px;
+} */
+
+#console {
+	height: 100%;
+	font-size: 1em;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr 30px 40px;
+	grid-template-areas: "result"
+		"input"
+		"readfile"					
+}
+
+#console__result {
+	grid-area: result;
+}
+
+#console__input {
+	grid-area: input;
+	justify-self: center;
+	/*width: calc(100% - 1em);*/
+}
+
+#console__read-file {
+	grid-area: readfile;
+	display: grid;
+	grid-template-columns: 40px 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: "readlabel readinput";
+}
+
+#console__read-file-label {
+	font-size: 11pt;
+	grid-area: readlabel;
+	align-self: center;
+	justify-self: center;
+}
+
+#console__read-file-input {
+	font-size: 10pt;
+	grid-area: readinput;
+	align-self: center;
+	justify-self: center;
+	color: var(--link--color);
+}
+
+#model {
+	height: 100%;
+	font-size: 1em;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: var(--input--height) 1fr;
+	grid-template-areas: "name"
+		"other"
+}
+
+#expression {
+	height: 100%;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: var(--input--height) var(--input--height) var(--input--height) var(--input--height) 1fr;
+	box-sizing: border-box;
+}
+
+#expression__name {
+	grid-area: 1 / 1 / 1 / 1;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+#expression__formula {
+	display: grid;
+	grid-area: 2 / 1 / 2 / 1;
+	grid-template-columns: 20px 1fr;
+	grid-template-rows: 1fr;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+#expression__formula-equal {
+	grid-area: 1 / 1 / 1 / 1;
+	margin-left: 5px;
+}
+
+#expression__formula-field {
+	grid-area: 1 / 2 / 1 / 2;
+}
+
+#expression__in-out-boxes {
+	display: grid;
+	grid-area: 3 / 1 / 3 / 1;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr;
+}
+
+#expression__is-input {
+	grid-area: 1 / 1 / 1 / 1;
+	margin-left: 10px;
+	display: grid;
+	grid-template-columns: 40px 1fr;
+	grid-template-rows: 1fr;
+}
+
+#expression__is-input-label {
+	grid-area: 1 / 2 / 1 / 2
+}
+
+#expression__is-output {
+	grid-area: 1 / 2 / 1 / 2;
+	margin-left: 10px;
+}
+
+#expression__units {
+	display: grid;
+	grid-area: 4 / 1 / 4 / 1;
+	grid-template-columns: 1fr 30px;
+	grid-template-rows: var(--input--height);
+}
+
+#expression__unit-and-type {
+	grid-area: 1 / 1 / 1 / 1;
+}
+
+#expression__info-button {
+	grid-area: 1 / 2 / 1 / 2;
+	border-radius: 10px;
+	height: 20px;
+	width: 20px;
+	font-size: 10pt;
+	border: 1;
+	text-align: center;
+}
+
+/* #expression__value {
+	grid-area: 5 / 1 / 5 / 1;
+}
+ */
+
+ #expression__value-svg {
+	grid-area: 5 / 1 / 5 / 1;
+	background-color: var(--expression__value--bgcolor);
+	width: 100%;
+	font-size: 13pt;
+}
+
+.result-table__column-label {
+	font-size: 10pt;
+}
