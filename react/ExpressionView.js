@@ -200,16 +200,10 @@ export class ValueView extends React.Component {
 		this.cellWidth = 100;
 		this.rowLabelWidth = 50;
 		this.props.actions.setViewInfoState({valueViewOffset: {x: 0, y: 0}});
-		this.onMouseDown = this.onMouseDown.bind(this);
-		this.onMouseUp = this.onMouseUp.bind(this);
-		this.onMouseMove = this.onMouseMove.bind(this);
-//		this.onMouseLeave = this.onMouseLeave.bind(this);
 		this.onMouseEnter = this.onMouseEnter.bind(this);
 	}
 
-	onMouseDown(e) {
-		const x = e.nativeEvent.offsetX;
-		const y = e.nativeEvent.offsetY;
+	pointerStart(x, y) {
 		let dragType = ValueViewDragType.cell;
 		if (y < this.cellHeight) {
 			if (x < this.rowLabelWidth) {
@@ -229,13 +223,9 @@ export class ValueView extends React.Component {
 				y: this.props.viewInfo.viewState.valueViewOffset.y
 			}
 		});
- 		e.stopPropagation()
-    e.preventDefault()
 	}
 
-	onMouseUp(e) {
-		// const column = Math.floor((x - this.rowLabelWidth)/this.cellWidth + 1);  // column number starting at 1
-
+	pointerEnd() {
 		switch (this.state.dragType) {
 			case ValueViewDragType.origin:
 				this.setState( {
@@ -254,11 +244,9 @@ export class ValueView extends React.Component {
 				})
 				break;
 		}
-		e.stopPropagation()
-    e.preventDefault()
 	}
 
-	onMouseMove(e) {
+	pointerMove(x, y) {
 		const cellPan = (deltaX, deltaY) => {
 			let offsetX = Math.max(0, deltaX + this.state.initialOffset.x);
 			let offsetY = Math.max(0, deltaY + this.state.initialOffset.y);
@@ -291,8 +279,8 @@ export class ValueView extends React.Component {
 		}
 
 		if (this.state.dragType != ValueViewDragType.none) {
-			const deltaX = this.state.dragOrigin.x - e.nativeEvent.offsetX;
-			const deltaY = this.state.dragOrigin.y - e.nativeEvent.offsetY;
+			const deltaX = this.state.dragOrigin.x - x;
+			const deltaY = this.state.dragOrigin.y - y;
 			switch (this.state.dragType) {
 				case ValueViewDragType.pan:
 					cellPan(deltaX, deltaY);
@@ -330,8 +318,6 @@ export class ValueView extends React.Component {
 					break;
 			}	
 		}
-		e.stopPropagation()
-    e.preventDefault()
 	}
 
 /* 	onMouseLeave(e) {
@@ -491,9 +477,44 @@ export class ValueView extends React.Component {
 			'svg', {
 				id: 'expression__value-svg',
 				viewBox: viewBox,
-				onMouseMove: this.onMouseMove,
-				onMouseDown: this.onMouseDown,
-				onMouseUp: this.onMouseUp,
+				onMouseDown: (e) => {
+					const x = e.nativeEvent.offsetX;
+					const y = e.nativeEvent.offsetY;
+					 e.stopPropagation()
+					e.preventDefault()
+					this.pointerStart(x, y);
+				},
+				onTouchStart: (e) => {
+					const x = e.touches[0].clientX;
+					const y = e.touches[0].clientY;
+					e.stopPropagation();
+					e.preventDefault();
+					this.pointerStart(x, y);
+				},
+				onMouseUp: (e) => {
+					e.stopPropagation();
+					e.preventDefault();
+					this.pointerEnd();
+				},
+				onTouchEnd: (e) => {
+					e.stopPropagation();
+					e.preventDefault();
+					this.pointerEnd();
+				},
+				onMouseMove: (e) => {
+					const x = e.nativeEvent.offsetX;
+					const y = e.nativeEvent.offsetY;
+					e.stopPropagation();
+					e.preventDefault();
+					this.pointerMove(x, y);
+				},
+				onTouchMove: (e) => {
+					const x = e.touches[0].clientX;
+					const y = e.touches[0].clientY;
+					e.stopPropagation();
+					e.preventDefault();
+					this.pointerMove(x, y);
+				},
 				onMouseEnter: this.onMouseEnter,
 //				onMouseLeave: this.onMouseLeave
 				},
