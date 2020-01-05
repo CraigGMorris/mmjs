@@ -196,7 +196,7 @@ export class ValueView extends React.Component {
 			initialOffset: {x: 0, y: 0},
 			selectedCell: {row: 0, column: 0}
 		};
-		this.cellHeight = 25;
+		this.cellHeight = 30;
 		this.cellWidth = 100;
 		this.rowLabelWidth = 50;
 		this.props.actions.setViewInfoState({valueViewOffset: {x: 0, y: 0}});
@@ -360,12 +360,6 @@ export class ValueView extends React.Component {
 		const xTextPad = 5;
 		const rowLabelWidth = this.rowLabelWidth;
 
-		const color1 = getComputedStyle(document.documentElement).getPropertyValue('--expression__value--color1');
-		const color2 = getComputedStyle(document.documentElement).getPropertyValue('--expression__value--color2');
-		const color3 = getComputedStyle(document.documentElement).getPropertyValue('--expression__value--color3');
-		const strokeColor = getComputedStyle(document.documentElement).getPropertyValue('--expression__value--stroke-color');
-		const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--expression__value--bgcolor');
-
 		const viewBox = this.props.viewBox;
 		const offset = this.props.viewInfo.viewState.valueViewOffset;
 		const nRowCells = Math.min(Math.floor(viewBox[3] / cellHeight), nRows);
@@ -379,22 +373,19 @@ export class ValueView extends React.Component {
 			const y = (row + 2) * cellHeight + rowOrigin*cellHeight - offset.y;
 			for (let column = 0; column < Math.min(nColumnCells, nColumns - columnOrigin); column++) {
 				const x = column * cellWidth + columnOrigin*cellWidth + rowLabelWidth - offset.x + xPadding;
-				const color = (row + rowOrigin) % 2 ? (
-					(column + columnOrigin) % 2 ? color1 : color2
+				const colorClass = 'expression__cell--' + ((row + rowOrigin) % 2 ? (
+					(column + columnOrigin) % 2 ? 'color1' : 'color2'
 				) : (
-					(column + columnOrigin) % 2 ? color3 : color1
+					(column + columnOrigin) % 2 ? 'color3' : 'color1')
 				);
 				const cellBox = e(
 					'rect', {
+						className: colorClass,
 						x: x,
 						y: y - cellHeight + yPadding,
 						width: cellWidth,
 						height: cellHeight,
 						key: `cellbox${row}-${column}`,
-						style: {
-							stroke: strokeColor,
-							fill: color
-						}
 					}
 				);
 				cells.push(cellBox);
@@ -418,15 +409,12 @@ export class ValueView extends React.Component {
 				if (row === 0) {
 					const columnLabelBox = e(
 						'rect', {
+							className: 'expression__cell--' + ((column + columnOrigin) % 2 ? 'color1' : 'color2'),
 							x: x,
 							y: yPadding,
 							width: cellWidth,
 							height: cellHeight,
 							key: `colbox${column}`,
-							style: {
-								stroke: strokeColor,
-								fill: (column + columnOrigin) % 2 ? color1 : color2
-							}		
 						}
 					);
 					cells.push(columnLabelBox);
@@ -469,15 +457,12 @@ export class ValueView extends React.Component {
 			}
 			const rowLabelBox = e(
 				'rect', {
+					className: 'expression__cell--' + ((row + rowOrigin) % 2 ? 'color1' : 'color3'),
 					x: xPadding,
 					y: y - cellHeight,
 					width: rowLabelWidth,
 					height: cellHeight,
 					key: `rowbox${row}`,
-					style: {
-						stroke: strokeColor,
-						fill: (row + rowOrigin) % 2 ? color1 : color3
-					}
 				}
 			);
 			cells.push(rowLabelBox);
@@ -493,24 +478,18 @@ export class ValueView extends React.Component {
 		}
 		const originBox = e(
 			'rect', {
+				id: 'expression__origin-box',
 				x: xPadding,
 				y: yPadding,
 				width: rowLabelWidth,
 				height: cellHeight,
 				key: `origin`,
-				style: {
-					stroke: strokeColor,
-					fill: bgColor,
-				}
 			}
 		);
 		cells.push(originBox);
 		return e(
 			'svg', {
 				id: 'expression__value-svg',
-				style: {
-					height: `${viewBox[3]}px`,
-				},
 				viewBox: viewBox,
 				onMouseMove: this.onMouseMove,
 				onMouseDown: this.onMouseDown,

@@ -759,9 +759,6 @@ export class Diagram extends React.Component {
 			if (pathParts.length > 2) {
 				textList.push(
 					e(ClickableDiagramText, {
-						style: {
-							font: '15px sans-serif'
-						},
 						key: 'parent',
 						x: 15,
 						y: 25,
@@ -775,9 +772,6 @@ export class Diagram extends React.Component {
 			}
 			textList.push(
 				e(ClickableDiagramText, {
-					style: {
-						font: '15px sans-serif'
-					},
 					key: 'name',
 					x: this.props.diagramBox.width/2,
 					y: 25,
@@ -797,7 +791,7 @@ export class Diagram extends React.Component {
 			e(
 				'svg', {
 					style: {
-						backgroundColor: 'rgba(238,255,238,1)',
+						// backgroundColor: 'rgba(238,255,238,1)',
 						height: '100%',
 						width: '100%'
 					},
@@ -983,9 +977,13 @@ class ToolIcon extends React.Component {
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;
 		if (info.toolTypeName === 'Expression') {
-			textComponents = e('g', {	style: {pointerEvents: 'none'}},
+			textComponents = e(
+				'g', {
+					className: 'diagram__text-components',
+				},
 				e(
 					'text', {
+						className: 'diagram__tool-name',
 						x: (x + 3 + translate.x)*scale,
 						y: (y + 7 + translate.y)*scale,
 						style: {
@@ -999,6 +997,7 @@ class ToolIcon extends React.Component {
 				),
 				e(
 					'text', {
+						className: 'diagram__tool-formula',
 						x: (x + 3 + translate.x)*scale,
 						y: (y + 12.5 + translate.y)*scale,
 						style: {
@@ -1012,6 +1011,7 @@ class ToolIcon extends React.Component {
 				),
 				e(
 					'text', {
+						className: 'diagram__tool-result',
 						x: (x + 3 + translate.x)*scale,
 						y: (y + 18 + translate.y)*scale,
 						style: {
@@ -1026,7 +1026,10 @@ class ToolIcon extends React.Component {
 			);
 		}
 		else {
-			textComponents = e('g', {	style: {pointerEvents: 'none'}},
+			textComponents = e(
+				'g', {
+					className: 'diagram__text-components',
+				},
 				e(
 					'text', {
 						//className: 'dgm-tooltype',
@@ -1341,9 +1344,11 @@ class ClickableDiagramText extends React.Component {
 	render() {
 		return e('text', {
 			id: this.props.id,
+			className: 'diagram__clickable-text',
 			style: {
 				pointerEvents: 'auto',
-				fill: 'blue'
+				fill: 'blue',
+				font: '15px sans-serif',
 			},
 			x: this.props.x,
 			y: this.props.y,

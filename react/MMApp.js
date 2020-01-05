@@ -555,6 +555,7 @@ export class MMApp extends React.Component {
 		const toolHeight = 40;
 		const navHeight = 40;
 		const infoHeight = docHeight - navHeight - toolHeight;
+		document.documentElement.style.setProperty('--info-height', `${infoHeight}px`);
 		let diagramBox = {top: 9, left: 9, height: docHeight, width: docWidth - infoWidth}
 		if (viewType !== ViewType.diagram) {
 			let i = infoStack.length-1;
