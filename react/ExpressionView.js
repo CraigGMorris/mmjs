@@ -200,7 +200,6 @@ export class ValueView extends React.Component {
 		this.cellWidth = 100;
 		this.rowLabelWidth = 50;
 		this.props.actions.setViewInfoState({valueViewOffset: {x: 0, y: 0}});
-		this.onMouseEnter = this.onMouseEnter.bind(this);
 	}
 
 	pointerStart(x, y) {
@@ -317,22 +316,6 @@ export class ValueView extends React.Component {
 				default:
 					break;
 			}	
-		}
-	}
-
-/* 	onMouseLeave(e) {
-		this.setState({
-			dragType: ValueViewDragType.none
-		});
-	} */
-
-	onMouseEnter(e) {
-		if (this.state.dragType != ValueViewDragType.none) {
-			if (!e.nativeEvent.buttons) {
-				this.setState({
-					dragType: ValueViewDragType.none
-				});				
-			}
 		}
 	}
 
@@ -477,47 +460,36 @@ export class ValueView extends React.Component {
 			'svg', {
 				id: 'expression__value-svg',
 				viewBox: viewBox,
-				onMouseDown: (e) => {
+				onPointerDown: (e) => {
 					const x = e.nativeEvent.offsetX;
 					const y = e.nativeEvent.offsetY;
 					 e.stopPropagation()
 					e.preventDefault()
 					this.pointerStart(x, y);
 				},
-				onTouchStart: (e) => {
-					const x = e.touches[0].clientX;
-					const y = e.touches[0].clientY;
-					e.stopPropagation();
-					e.preventDefault();
-					this.pointerStart(x, y);
-				},
-				onMouseUp: (e) => {
+
+				onPointerUp: (e) => {
 					e.stopPropagation();
 					e.preventDefault();
 					this.pointerEnd();
 				},
-				onTouchEnd: (e) => {
-					e.stopPropagation();
-					e.preventDefault();
-					this.pointerEnd();
-				},
-				onMouseMove: (e) => {
+				onPointerMove: (e) => {
 					const x = e.nativeEvent.offsetX;
 					const y = e.nativeEvent.offsetY;
 					e.stopPropagation();
 					e.preventDefault();
 					this.pointerMove(x, y);
 				},
-				onTouchMove: (e) => {
-					const x = e.touches[0].clientX;
-					const y = e.touches[0].clientY;
-					e.stopPropagation();
-					e.preventDefault();
-					this.pointerMove(x, y);
+				onPointerEnter: (e) => {
+					if (this.state.dragType != ValueViewDragType.none) {
+						if (!e.nativeEvent.buttons) {
+							this.setState({
+								dragType: ValueViewDragType.none
+							});				
+						}
+					}
 				},
-				onMouseEnter: this.onMouseEnter,
-//				onMouseLeave: this.onMouseLeave
-				},
+			},
 			cells
 		);
 	}
