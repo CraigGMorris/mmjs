@@ -53,17 +53,15 @@ export class Diagram extends React.Component {
 		super(props);
 
 		this.panSum = 0;
+		this.eventCache = [];
+		this.pinch = 0;
 
 		this.setDragType = this.setDragType.bind(this);
 		this.draggedTo = this.draggedTo.bind(this);
-		this.onMouseDown = this.onMouseDown.bind(this);
-		this.onMouseUp = this.onMouseUp.bind(this);
-		this.onMouseMove = this.onMouseMove.bind(this);
-		this.onClick = this.onClick.bind(this);
+		this.onPointerDown = this.onPointerDown.bind(this);
+		this.onPointerUp = this.onPointerUp.bind(this);
+		this.onPointerMove = this.onPointerMove.bind(this);
 		this.onWheel = this.onWheel.bind(this);
-		this.onTouchStart = this.onTouchStart.bind(this);
-		this.onTouchMove = this.onTouchMove.bind(this);
-		this.onTouchEnd = this.onTouchEnd.bind(this);
 
 		this.getModelInfo();
 	}
@@ -107,7 +105,7 @@ export class Diagram extends React.Component {
 								scale = 3.0;
 							}
 							newState['scale'] = scale;
-							newState['translate'] = {x: -minX + 30 / scale, y: -minY + 40 /scale};
+							newState['translate'] = {x: -minX + 30.0 / scale, y: -minY + 40.0 /scale};
 						}
 					}
 					return newState;
@@ -130,35 +128,30 @@ export class Diagram extends React.Component {
 
 	componentDidMount() {
 		const domNode = ReactDOM.findDOMNode(this);
-		domNode.addEventListener('mousemove', this.onMouseMove);
-		domNode.addEventListener('mouseup', this.onMouseUp);
-		domNode.addEventListener('touchstart', this.onTouchStart, {passive: false});
-		domNode.addEventListener('touchend', this.onTouchEnd, {passive: false});
+		domNode.addEventListener('wheel', this.onWheel, {passive: false});
 	}
 
 	componentWillUnmount() {
 		const domNode = ReactDOM.findDOMNode(this);
-		domNode.removeEventListener('mousemove', this.onMouseMove);
-		domNode.removeEventListener('mouseup', this.onMouseUp);
-		domNode.removeEventListener('touchstart', this.onTouchStart);
-		domNode.removeEventListener('touchend', this.onTouchEnd);
+		domNode.removeEventListener('pointermove', this.onPointerMove);
+		domNode.removeEventListener('pointerup', this.onPointerUp);
+		domNode.removeEventListener('wheel', this.onWheel);
 	}
 
 	/**
 	 * @method setDragType
 	 * @param {DiagramDragType} dragType
-	 * @param {Object} lastMousePosition
+	 * @param {Object} lastPointerPosition
 	 * @param {Object} options
 	 * if type is tool, options should contain tool name
-	 * if type is selectionBox, options should contain topLeft and
 	 */
-	setDragType(dragType, lastMousePosition, options) {
+	setDragType(dragType, lastPointerPosition, options) {
 		this.props.setDgmState((state) => {
 			switch (dragType) {
 				case DiagramDragType.pan: 
 					return {
 						dragType: dragType,
-						lastMouse: lastMousePosition,
+						lastPointer: lastPointerPosition,
 					}
 	
 				case DiagramDragType.tool: {
@@ -168,7 +161,7 @@ export class Diagram extends React.Component {
 						dragSelection.set(tool.name, tool.position);
 						return {
 							dragType: dragType,
-							lastMouse: lastMousePosition,
+							lastPointer: lastPointerPosition,
 							selectionBox: null,
 							dragSelection: dragSelection
 						}
@@ -182,7 +175,7 @@ export class Diagram extends React.Component {
 					const dragSelection = this.toolsInBox(state.selectionBox, state.tools);
 					return {
 						dragType: dragType,
-						lastMouse: lastMousePosition,
+						lastPointer: lastPointerPosition,
 						dragSelection: dragSelection
 					}
 				}
@@ -200,7 +193,7 @@ export class Diagram extends React.Component {
 							}			
 							return {
 								dragType: null,
-								lastMouse: null,
+								lastPointer: null,
 								dragSelection: null
 							};
 						}
@@ -215,13 +208,13 @@ export class Diagram extends React.Component {
 							}			
 							return {
 								dragType: null,
-								lastMouse: null
+								lastPointer: null
 							};
 						}
 						default: 
 							return {
 								dragType: null,
-								lastMouse: null
+								lastPointer: null
 							};
 					}
 				}
@@ -240,8 +233,8 @@ export class Diagram extends React.Component {
 			if (state.dragType == null) {
 				return {};
 			}
-			const dx = x - state.lastMouse.x;
-			const dy = y - state.lastMouse.y;
+			const dx = x - state.lastPointer.x;
+			const dy = y - state.lastPointer.y;
 			function updateDragSelection(dragSelection) {
 				if (!dragSelection) {
 					return null;
@@ -264,7 +257,7 @@ export class Diagram extends React.Component {
 							x: state.translate.x + dx/state.scale,
 							y: state.translate.y + dy/state.scale,
 						},
-						lastMouse: {x: x, y: y}
+						lastPointer: {x: x, y: y}
 					};
 
 				case DiagramDragType.tool: 
@@ -273,7 +266,7 @@ export class Diagram extends React.Component {
 						const tools = this.updateToolPositions(dragSelection, state);
 						return {
 							tools: tools,
-							lastMouse: {x: x, y: y},
+							lastPointer: {x: x, y: y},
 							dragSelection: dragSelection
 						}
 					}
@@ -293,7 +286,7 @@ export class Diagram extends React.Component {
 							right: sb.right + dx/scale,
 							bottom: sb.bottom + dy/scale
 						},
-						lastMouse: {x: x, y: y}
+						lastPointer: {x: x, y: y}
 					};
 				}
 
@@ -306,7 +299,7 @@ export class Diagram extends React.Component {
 					return {
 						dragSelection: dragSelection,
 						selectionBox: sb,
-						lastMouse: {x: x, y: y}
+						lastPointer: {x: x, y: y}
 					}
 				}
 
@@ -319,7 +312,7 @@ export class Diagram extends React.Component {
 					return {
 						dragSelection: dragSelection,
 						selectionBox: sb,
-						lastMouse: {x: x, y: y}
+						lastPointer: {x: x, y: y}
 					}
 				}
 
@@ -398,8 +391,8 @@ export class Diagram extends React.Component {
 			const sb = {
 				left: topLeft.x,
 				top: topLeft.y,
-				right: topLeft.x + 150/scale,
-				bottom: topLeft.y + 80/scale
+				right: topLeft.x + 150.0/scale,
+				bottom: topLeft.y + 80.0/scale
 			}
 
 			const dragSelection = this.toolsInBox(sb, state.tools);
@@ -410,109 +403,98 @@ export class Diagram extends React.Component {
 		});
 	}
 
-	onMouseDown(e) {
-    // only left mouse button
-		if (e.button !== 0) return;
-		this.panSum = 0;
+	onPointerDown(e) {
+    e.stopPropagation();
+    e.preventDefault();
 		this.pointerStartTime = new Date().getTime();
-    this.setDragType( DiagramDragType.pan, {x: e.clientX, y: e.clientY });
-    e.stopPropagation()
-    e.preventDefault()
-  }
-
-	onMouseUp(e) {
-    this.setDragType(null);
-    e.stopPropagation()
-    e.preventDefault()
-	}
-	
-  onMouseMove(e) {
-		if (this.props.dgmState.dragType) {
-			this.panSum += Math.abs(e.movementX) + Math.abs(e.movementY);
-
-			this.draggedTo( e.clientX, e.clientY);
-			e.stopPropagation()
-			e.preventDefault()
-		}
-	}
-
-	onClick(e) {
-    e.stopPropagation()
-    e.preventDefault()
-		if (this.panSum == 0) {
-			const t = new Date().getTime();
-			if (t - this.pointerStartTime > 500) {
-				this.createSelectionBox(e.clientX, e.clientY);
-			}
-			else {
-				if (e.clientY - this.props.diagramBox.top < 15) {
-					console.log('should pop menu');
-				}
-				this.props.setDgmState({
-					selectionBox: null,
-					dragSelection: null
-				});
-			}
-		}
-		this.panSum = 0;
-	}
-
-	onWheel(e) {
-//		e.preventDefault(); // chrome complains and remvoing seems ok
-		e.stopPropagation();
-		const deltaY = e.deltaY;
-		const pageX = e.pageX;
-		const pageY = e.pageY;
-		this.props.setDgmState((state) => {
-			const newScale = Math.max(0.1, state.scale - deltaY/100);
-			const newTranslate = {
-				x: pageX/newScale - pageX/state.scale + state.translate.x,
-				y: pageY/newScale - pageY/state.scale + state.translate.y
-			};
-			return {
-				scale: newScale,
-				translate: newTranslate
-			}
-		})
-	}
-
-	onTouchStart(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		if (e.touches.length == 1) {
+		this.eventCache.push({
+			x: e.clientX,
+			y: e.clientY,
+			id: e.pointerId
+		});
+		if (this.eventCache.length === 1) {
 			this.panSum = 0;
-			this.pointerStartTime = new Date().getTime();
-			const touch = e.touches[0];
-			this.touch0 = {x: touch.clientX, y: touch.clientY};
+			this.touch0 = {x: e.clientX, y: e.clientY};
 			this.setDragType( DiagramDragType.pan, this.touch0);
 		}
-		else if (e.touches.length == 2) {
+		else if (this.eventCache.length == 2) {
 			const pinch = Math.hypot(
-				e.touches[0].clientX - e.touches[1].clientX,
-				e.touches[0].clientY - e.touches[1].clientY
+				this.eventCache[0].x - e.clientX,
+				this.eventCache[0].y - e.clientY
 			);
 			if (pinch > 0) {
 				this.pinch = pinch;
 			}
 		}
-		e.target.addEventListener('touchmove', this.onTouchMove, {passive: false});
-	}
-
-	onTouchMove(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		if (e.touches.length == 1) {
-			const touch = e.touches[0];
-			let deltaX = touch.clientX - this.touch0.x;
-			let deltaY = touch.clientY - this.touch0.y;
-			this.panSum += Math.abs(deltaX) + Math.abs(deltaY);
-			this.touch0 = {x: touch.clientX, y: touch.clientY};
-			this.draggedTo( touch.clientX, touch.clientY);
+		if ( this.eventCache.length) {
+			const domNode = ReactDOM.findDOMNode(this);
+			domNode.addEventListener('pointermove', this.onPointerMove);
+			domNode.addEventListener('pointerup', this.onPointerUp);	
 		}
-		else if (e.touches.length == 2 && this.pinch) {
+  }
+
+	onPointerUp(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		let eCache = this.eventCache;
+		if ( eCache.length === 1 && this.pinch === 0) {
+			if (this.panSum == 0) {
+				const t = new Date().getTime();
+				if (t - this.pointerStartTime > 500) {
+					this.createSelectionBox(e.clientX, e.clientY);
+				}
+				else {
+					if (e.clientY - this.props.diagramBox.top < 15) {
+						console.log('should pop menu');
+					}
+					this.props.setDgmState({
+						selectionBox: null,
+						dragSelection: null
+					});
+				}
+			}
+			this.panSum = 0;
+		}
+
+		for (var i = 0; i < eCache.length; i++) {
+			if (eCache[i].id == e.pointerId) {
+				eCache.splice(i, 1);
+				break;
+			}
+		}
+
+		if (eCache.length === 0) {
+			this.panSum = 0;
+			this.pinch = 0;
+			const domNode = ReactDOM.findDOMNode(this);
+			domNode.removeEventListener('pointermove', this.onPointerMove);
+			domNode.removeEventListener('pointerup', this.onPointerUp);	
+		}
+	}
+	
+  onPointerMove(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		let eCache = this.eventCache;
+		if (eCache.length == 1 && this.pinch === 0) {
+			// panning
+			let deltaX = e.clientX - eCache[0].x;
+			let deltaY = e.clientY - eCache[0].y;
+			this.panSum += Math.abs(deltaX) + Math.abs(deltaY);
+			this.touch0 = {x: e.clientX, y: e.clientY};
+			this.draggedTo( e.clientX, e.clientY);
+		}
+		else if (eCache.length == 2 && this.pinch) {
+			// Find this event in the cache and update its record with this event
+			for (let i = 0; i < eCache.length; i++) {
+				if (eCache[i].id === e.pointerId) {
+					eCache[i].x = e.clientX;
+					eCache[i].y = e.clientY;
+				}
+			}
 			const newPinch = Math.hypot(
-				e.touches[0].clientX - e.touches[1].clientX,
-				e.touches[0].clientY - e.touches[1].clientY
+				eCache[0].x - eCache[1].x,
+				eCache[0].y - eCache[1].y
 			);
 
 			let ratio = 1;
@@ -521,8 +503,8 @@ export class Diagram extends React.Component {
 				this.pinch = newPinch;
 				this.panSum += this.pinch;
 			}
-			const clientX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-			const clientY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+			const clientX = (eCache[0].x + eCache[1].x) / 2;
+			const clientY = (eCache[0].y + eCache[1].y) / 2;
 
 			this.props.setDgmState((state) => {
 				const newScale = Math.max(0.1, state.scale * ratio);
@@ -538,36 +520,23 @@ export class Diagram extends React.Component {
 		}
 	}
 
-	onTouchEnd(e) {
-		e.target.removeEventListener('touchmove', this.onTouchMove);
-		console.log(`touch end length ${e.changedTouches.length} pinch ${this.pinch}`);
-	if (e.changedTouches.length == 1 && this.pinch == null) {
-			this.setDragType(null);
-			if (this.panSum <= 5) {
-				const touch = e.changedTouches[0];
-				const t = new Date().getTime();
-				if (t - this.pointerStartTime > 500) {
-					this.createSelectionBox(touch.clientX, touch.clientY);
-				}
-				else {
-					const diagramBox = this.props.diagramBox;
-					if (touch.clientY - diagramBox.top < 15) {
-						if (touch.clientX - diagramBox.top < diagramBox.width/2) {
-							this.props.actions.popModel();
-							this.props.setDgmState({selectionBox: null});
-						}
-						else {
-							this.getModelInfo(true);
-						}
-					}
-					else {
-						console.log('should pop menu');
-						this.props.setDgmState({selectionBox: null});
-					}
-				}
+	onWheel(e) {
+		e.preventDefault(); // chrome complains and remvoing seems ok
+		e.stopPropagation();
+		const deltaY = e.deltaY;
+		const pageX = e.pageX;
+		const pageY = e.pageY;
+		this.props.setDgmState((state) => {
+			const newScale = Math.max(0.1, state.scale - deltaY/100);
+			const newTranslate = {
+				x: pageX/newScale - pageX/state.scale + state.translate.x,
+				y: pageY/newScale - pageY/state.scale + state.translate.y
+			};
+			return {
+				scale: newScale,
+				translate: newTranslate
 			}
-		}
-		this.pinch = null;
+		})
 	}
 
 	render() {
@@ -783,22 +752,25 @@ export class Diagram extends React.Component {
 
 		return e(
 			'div', {
+				id: '#diagram__wrapper',
 				style: {
 					height: '100%',
-					width: '100%'
-				}
+					width: '100%',
+				},
 			},
 			e(
 				'svg', {
+					id: 'diagram__svg',
 					style: {
-						// backgroundColor: 'rgba(238,255,238,1)',
 						height: '100%',
-						width: '100%'
+						width: '100%',
 					},
 					viewBox: viewBox,
-					onMouseDown: this.onMouseDown,
-					onWheel: this.onWheel,
-					onClick: this.onClick,
+					onPointerDown: this.onPointerDown,
+					onTouchMove: e => {
+						e.preventDefault();
+						e.stopPropagation();
+					},
 				},
 				toolList,
 				connectList,
@@ -816,136 +788,57 @@ export class Diagram extends React.Component {
 class ToolIcon extends React.Component {
 	constructor(props) {
 		super(props);
-		//this.handleButtonClick = this.handleButtonClick.bind(this);
 		this.state = {
 			dragging: null,
 			position: this.props.info.position,
 		};
 
 		this.panSum = 0;
+		this.eventCache = [];
 
-		this.onMouseDown = this.onMouseDown.bind(this);
-		this.onMouseUp = this.onMouseUp.bind(this);
-		this.onMouseMove = this.onMouseMove.bind(this);
-		this.onClick = this.onClick.bind(this);
-		this.onTouchStart = this.onTouchStart.bind(this);
-		this.onTouchMove = this.onTouchMove.bind(this);
-		this.onTouchEnd = this.onTouchEnd.bind(this);
-	}
-
-	componentDidUpdate(props, state) {
-		if (this.state.dragging && !state.dragging) {
-			document.addEventListener('mousemove', this.onMouseMove);
-      document.addEventListener('mouseup', this.onMouseUp);
-		} else if (!this.state.dragging && state.dragging) {
-      document.removeEventListener('mousemove', this.onMouseMove);
-			document.removeEventListener('mouseup', this.onMouseUp);
-		}
-	}
-
-	componentDidMount() {
-		ReactDOM.findDOMNode(this).addEventListener('touchstart', this.onTouchStart, {passive: false});
-		ReactDOM.findDOMNode(this).addEventListener('touchend', this.onTouchEnd, {passive: false});
+		this.onPointerDown = this.onPointerDown.bind(this);
+		this.onPointerUp = this.onPointerUp.bind(this);
+		this.onPointerMove = this.onPointerMove.bind(this);
 	}
 
 	componentWillUnmount() {
-		ReactDOM.findDOMNode(this).removeEventListener('touchstart', this.onTouchStart);
-		ReactDOM.findDOMNode(this).removeEventListener('touchend', this.onTouchEnd);
-		document.removeEventListener('mousemove', this.onMouseMove);
-		document.removeEventListener('mouseup', this.onMouseUp);
+		const domNode = ReactDOM.findDOMNode(this);
+		domNode.removeEventListener('pointermove', this.onPointerMove);
+		domNode.removeEventListener('pointerup', this.onPointerUp);
 }
 
-	onMouseDown(e) {
-    // only left mouse button
-		if (e.button !== 0) return;
-		this.panSum = 0;
-		this.pointerStartTime = new Date().getTime();
-		this.props.setDragType( DiagramDragType.tool,
-			{x: e.clientX, y: e.clientY }, 
-			{name: this.props.info.name}
-		);
-		this.setState({dragging: true});
-    e.stopPropagation()
-    e.preventDefault()
-  }
-
-	onMouseUp(e) {
-		this.setState((state) => {
-			return {
-				dragging: false,
-			};
-		});
-		this.props.setDragType(null, null, {name: this.props.info.name});
-    e.stopPropagation()
-    e.preventDefault()
-	}
-	
-  onMouseMove(e) {
-		if (!this.state.dragging) return
-		this.panSum += Math.abs(e.movementX) + Math.abs(e.movementY);
-		this.props.draggedTo(e.clientX, e.clientY);
-
+	onPointerDown(e) {
     e.stopPropagation();
     e.preventDefault();
-	}
+		this.eventCache.push({
+			x: e.clientX,
+			y: e.clientY,
+			id: e.pointerId
+		});
+		this.pointerStartTime = new Date().getTime();
 
-	onClick(e) {
-		const t = new Date().getTime();
-		if (t - this.pointerStartTime > 500) {
-			console.log('tool long press')
-		}
-		else {
-			if (this.props.info.toolTypeName === "Model") {
-				this.props.pushModel(this.props.info.name);
-			}
-			else {
-				this.props.pushTool(this.props.info.name, this.props.info.toolTypeName);
-			}
-		}
-		this.panSum = 0;
-    e.stopPropagation()
-    e.preventDefault()
-	}
-
-	onTouchStart(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		if (e.changedTouches.length == 1) {
+		if (this.eventCache.length == 1) {
 			this.panSum = 0;
-			this.pointerStartTime = new Date().getTime();
-			const touch = e.changedTouches[0];
-			this.touch0 = {x: touch.clientX, y: touch.clientY};
 			this.props.setDragType( DiagramDragType.tool,
-				this.touch0, 
+				{x: e.clientX, y: e.clientY }, 
 				{name: this.props.info.name}
 			);
-		e.target.addEventListener('touchmove', this.onTouchMove, {passive: false});
+			e.target.addEventListener('pointerup', this.onPointerUp);
+			e.target.addEventListener('pointermove', this.onPointerMove)
+			e.target.setPointerCapture(e.pointerId);
+			this.setState({dragging: true});
 		}
-	}
+  }
 
-	onTouchMove(e) {
-		e.preventDefault();
+	onPointerUp(e) {
+		let eCache = this.eventCache;
 		e.stopPropagation();
-		if (e.changedTouches.length == 1) {
-			const touch = e.changedTouches[0];
-			let deltaX = touch.clientX - this.touch0.x;
-			let deltaY = touch.clientY - this.touch0.y;
-			this.touch0 = {x: touch.clientX, y: touch.clientY};
-			this.panSum += Math.abs(deltaX) + Math.abs(deltaY);
-			this.props.draggedTo(touch.clientX, touch.clientY);
-		}
-	}
-
-	onTouchEnd(e) {
 		e.preventDefault();
-		e.stopPropagation();
-		e.target.removeEventListener('touchmove', this.onTouchMove);
-		if (e.changedTouches.length == 1) {
-			this.props.setDragType(null, null, {name: this.props.info.name});
-			if (this.panSum <= 5) {
+		if ( eCache.length === 1) {
+			if (this.panSum == 0) {
 				const t = new Date().getTime();
 				if (t - this.pointerStartTime > 500) {
-					console.log(`tool long touch  ${this.panSum}`);
+					console.log('tool long press')
 				}
 				else {
 					if (this.props.info.toolTypeName === "Model") {
@@ -957,7 +850,44 @@ class ToolIcon extends React.Component {
 				}
 			}
 		}
-		this.panSum = 0;
+		else {
+			this.setState((state) => {
+				return {
+					dragging: false,
+				};
+			});
+			this.props.setDragType(null, null, {name: this.props.info.name});	
+		}
+		
+		for (var i = 0; i < eCache.length; i++) {
+			if (eCache[i].id == e.pointerId) {
+				eCache.splice(i, 1);
+				break;
+			}
+		}
+
+		if (eCache.length === 0) {
+			this.panSum = 0;
+			e.target.releasePointerCapture(e.pointerId);
+			e.target.removeEventListener('pointermove', this.onPointerMove);
+			e.target.removeEventListener('pointerup', this.onPointerUp);
+		}
+
+	}
+	
+  onPointerMove(e) {
+	  e.stopPropagation();
+		e.preventDefault();
+		if (!this.state.dragging) return
+
+		let eCache = this.eventCache;
+		if (eCache.length == 1) {
+			// panning
+			let deltaX = e.clientX - eCache[0].x;
+			let deltaY = e.clientY - eCache[0].y;
+			this.panSum += Math.abs(deltaX) + Math.abs(deltaY);
+			this.props.draggedTo( e.clientX, e.clientY);
+		}
 	}
 
 	render() {
@@ -1072,7 +1002,7 @@ class ToolIcon extends React.Component {
 			},
 			e(
 				'rect', {
-					onMouseDown: this.onMouseDown,
+ 					onPointerDown: this.onPointerDown,
 					onClick: this.onClick,
 					x: (x + translate.x)*scale,
 					y: (y + translate.y)*scale,
@@ -1096,36 +1026,16 @@ class SelectionBox extends React.Component {
 		};
 
 		this.panSum = 0;
+		this.eventCache = [];
 
-		this.onMouseDown = this.onMouseDown.bind(this);
-		this.onMouseUp = this.onMouseUp.bind(this);
-		this.onMouseMove = this.onMouseMove.bind(this);
-		this.onClick = this.onClick.bind(this);
-		this.onTouchStart = this.onTouchStart.bind(this);
-		this.onTouchMove = this.onTouchMove.bind(this);
-		this.onTouchEnd = this.onTouchEnd.bind(this);
-	}
-
-	componentDidUpdate(props, state) {
-		if (this.state.dragging && !state.dragging) {
-			document.addEventListener('mousemove', this.onMouseMove);
-      document.addEventListener('mouseup', this.onMouseUp);
-		} else if (!this.state.dragging && state.dragging) {
-      document.removeEventListener('mousemove', this.onMouseMove);
-			document.removeEventListener('mouseup', this.onMouseUp);
-		}
-	}
-
-	componentDidMount() {
-		ReactDOM.findDOMNode(this).addEventListener('touchstart', this.onTouchStart, {passive: false});
-		ReactDOM.findDOMNode(this).addEventListener('touchend', this.onTouchEnd, {passive: false});
+		this.onPointerDown = this.onPointerDown.bind(this);
+		this.onPointerUp = this.onPointerUp.bind(this);
+		this.onPointerMove = this.onPointerMove.bind(this);
 	}
 
 	componentWillUnmount() {
-		ReactDOM.findDOMNode(this).removeEventListener('touchstart', this.onTouchStart);
-		ReactDOM.findDOMNode(this).removeEventListener('touchend', this.onTouchEnd);
-		document.removeEventListener('mousemove', this.onMouseMove);
-		document.removeEventListener('mouseup', this.onMouseUp);
+		document.removeEventListener('pointermove', this.onPointerMove);
+		document.removeEventListener('pointerup', this.onPointerUp);
 }
 
 	/**
@@ -1136,6 +1046,7 @@ class SelectionBox extends React.Component {
 	 */
 	determineDragType(clientX, clientY, corner) {
 		const scale = this.props.scale;
+		corner /= scale;
 		const x = clientX/scale - this.props.translate.x;
 		const y = clientY/scale - this.props.translate.y;
 		const box = this.props.rect;
@@ -1152,94 +1063,70 @@ class SelectionBox extends React.Component {
 		return dragType
 	}
 
-	onMouseDown(e) {
-    // only left mouse button
-		if (e.button !== 0) return;
-		this.panSum = 0;
+	onPointerDown(e) {
+    e.stopPropagation();
+		e.preventDefault();
+		this.eventCache.push({
+			x: e.clientX,
+			y: e.clientY,
+			id: e.pointerId
+		});
 		this.pointerStartTime = new Date().getTime();
-		this.setState({
-      dragging: true
-		})
-		const dragType = this.determineDragType(e.clientX, e.clientY, 20);
-		this.props.setDragType(dragType, {x: e.clientX, y: e.clientY});
-    e.stopPropagation()
-    e.preventDefault()
+
+		if (this.eventCache.length == 1) {
+			this.panSum = 0;
+			this.props.setDragType( DiagramDragType.tool, {x: e.clientX, y: e.clientY });
+			e.target.addEventListener('pointerup', this.onPointerUp);
+			e.target.addEventListener('pointermove', this.onPointerMove)
+			e.target.setPointerCapture(e.pointerId);
+			this.setState({dragging: true});
+			const dragType = this.determineDragType(e.clientX, e.clientY, 30);
+			this.props.setDragType(dragType, {x: e.clientX, y: e.clientY});
+		}
   }
 
-	onMouseUp(e) {
-		this.setState((state) => {
-			return {
-				dragging: false,
-				};
-		});
-		this.props.setDragType(null);
-    e.stopPropagation()
-    e.preventDefault()
+	onPointerUp(e) {
+    e.stopPropagation();
+		e.preventDefault();
+		if (this.panSum === 0) {
+			const t = new Date().getTime();
+			if (t - this.pointerStartTime > 500) {
+				console.log(`sb long press  ${this.panSum}`);
+			}
+			else {
+				console.log(`sb click panSum ${this.panSum}`);
+			}	
+		}
+		else {
+			this.setState((state) => {
+				return {
+					dragging: false,
+					};
+			});
+			this.props.setDragType(null);
+		}
+
+		let eCache = this.eventCache;
+		for (var i = 0; i < eCache.length; i++) {
+			if (eCache[i].id == e.pointerId) {
+				eCache.splice(i, 1);
+				break;
+			}
+		}
+
+		if (eCache.length === 0) {
+			this.panSum = 0;
+			e.target.releasePointerCapture(e.pointerId);
+			e.target.removeEventListener('pointermove', this.onPointerMove);
+			e.target.removeEventListener('pointerup', this.onPointerUp);
+		}
 	}
 	
-  onMouseMove(e) {
+  onPointerMove(e) {
 		this.panSum += Math.abs(e.movementX) + Math.abs(e.movementY);
 		this.props.draggedTo(e.clientX, e.clientY);
     e.stopPropagation()
     e.preventDefault()
-	}
-
-	onClick(e) {
-		this.panSum = 0;
-    e.stopPropagation()
-    e.preventDefault()
-		const t = new Date().getTime();
-		if (t - this.pointerStartTime > 500) {
-			console.log(`sb long press  ${this.panSum}`);
-		}
-		else {
-			console.log(`sb click panSum ${this.panSum}`);
-		}
-}
-
-	onTouchStart(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		if (e.changedTouches.length == 1) {
-			this.panSum = 0;
-			this.pointerStartTime = new Date().getTime();
-			const touch = e.changedTouches[0];
-			this.touch0 = {x: touch.clientX, y: touch.clientY};
-			const dragType = this.determineDragType(touch.clientX, touch.clientY, 20);
-			this.props.setDragType(dragType, this.touch0);
-			e.target.addEventListener('touchmove', this.onTouchMove, {passive: false});
-		}
-	}
-
-	onTouchMove(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		if (e.changedTouches.length == 1) {
-			const touch = e.changedTouches[0];
-			let deltaX = touch.clientX - this.touch0.x;
-			let deltaY = touch.clientY - this.touch0.y;
-			this.touch0 = {x: touch.clientX, y: touch.clientY};
-			this.panSum += Math.abs(deltaX) + Math.abs(deltaY);
-			this.props.draggedTo(touch.clientX, touch.clientY);
-		}
-	}
-
-	onTouchEnd(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		if (e.changedTouches.length == 1) {
-			e.target.removeEventListener('touchmove', this.onTouchMove);
-			this.props.setDragType(null, null);
-			if (this.panSum <= 5) {
-				const t = new Date().getTime();
-				if (t - this.pointerStartTime > 500) {
-					console.log(`sb long touch  ${this.panSum}`);
-				}
-				else {
-					console.log(`sb tap panSum ${this.panSum}`);
-				}
-			}
-		}
 	}
 
 	render() {
@@ -1258,7 +1145,7 @@ class SelectionBox extends React.Component {
 			},
 		},
 			e('rect', {
-				onMouseDown: this.onMouseDown,
+				onPointerDown: this.onPointerDown,
 				onClick: this.onClick,
 				x: x,
 				y: y,
@@ -1288,57 +1175,15 @@ class SelectionBox extends React.Component {
 class ClickableDiagramText extends React.Component {
 	constructor(props) {
 		super(props);
-		this.touchStarted = false;
-		this.onMouseDown = this.onMouseDown.bind(this);
-		this.onMouseUp = this.onMouseUp.bind(this);
-		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onClick = this.onClick.bind(this);
-		this.onTouchStart = this.onTouchStart.bind(this);
-		this.onTouchMove = this.onTouchMove.bind(this);
-		this.onTouchEnd = this.onTouchEnd.bind(this);
-	}
-
-	ignoreEvent(e) {
-    // only left mouse button
-		if (e.button !== 0) return;
-		// don't do anything
-    e.stopPropagation()
-    e.preventDefault()
-	}
-
-	onMouseDown(e) {
-		this.ignoreEvent(e);
-	}
-
-	onMouseMove(e) {
-		this.ignoreEvent(e);
-	}
-
-	onMouseUp(e) {
-		this.ignoreEvent(e);
 	}
 
 	onClick(e) {
-    // only left mouse button
+    // only left Pointer button
 		if (e.button !== 0) return;
 		this.props.textClick(e);
     e.stopPropagation()
     e.preventDefault()
-	}
-
-	onTouchStart(e) {
-		this.touchStarted = true;
-		this.ignoreEvent(e);
-	}
-
-	onTouchMove(e) {
-		this.ignoreEvent(e);
-	}
-
-	onTouchEnd(e) {
-		this.touchStarted = false;
-		this.props.textClick(e);
- 		this.ignoreEvent(e);
 	}
 
 	render() {
@@ -1352,13 +1197,7 @@ class ClickableDiagramText extends React.Component {
 			},
 			x: this.props.x,
 			y: this.props.y,
-			onMouseDown: this.onMouseDown,
-			onMouseMove: this.onMouseMove,
-			onMouseUp: this.onMouseUp,
 			onClick: this.onClick,
-			onTouchStart: this.onTouchStart,
-			onTouchMove: this.onTouchMove,
-			onTouchEnd: this.onTouchEnd,
 			}, this.props.text);
 	}
 }

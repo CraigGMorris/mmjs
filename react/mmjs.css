@@ -124,6 +124,16 @@ a:hover {
 	grid-area: 1 / 1 / 1 / 1;
 }
 
+/* prevent diagram text being selected when moving icons on iOS */
+.diagram__text-components {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
 #info-view {
 	height: 100%;
 	grid-area: info;
