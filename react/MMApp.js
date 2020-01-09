@@ -45,6 +45,7 @@ export class MMApp extends React.Component {
 			pushTool: this.pushTool.bind(this),
 			pushView: this.pushView.bind(this),
 			popView: this.popView.bind(this),
+			resetInfoStack: this.resetInfoStack.bind(this),
 			setUpdateCommands: this.setUpdateCommands.bind(this),
 			setViewInfoState: this.setViewInfoState.bind(this),
 			updateViewState: this.updateViewState.bind(this),
@@ -132,6 +133,23 @@ export class MMApp extends React.Component {
 		};
 		setSize();
 		window.addEventListener('resize', setSize);
+	}
+
+	/** @method resetInfoStack
+	 * @param {string} rootName
+	 * clears all views - called when new case loaded
+	 */
+	resetInfoStack(rootName) {
+		const infoState = {
+			title: rootName,
+			path: `/.${rootName}`,
+			stackIndex: 0,
+			updateCommands: '',
+			updateResults: [],
+			viewKey: 'Model',
+			viewState: {}
+		};
+		this.setState({infoStack: [infoState]});
 	}
 
 	/**
@@ -348,6 +366,7 @@ export class MMApp extends React.Component {
 		}
 		this.popView();
 	}
+
 
 	/**
 	 * @method pushTool

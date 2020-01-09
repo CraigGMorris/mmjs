@@ -81,12 +81,37 @@ class MMSessionStorage  {
 		await this.setup();
 		return new Promise((resolve, reject) =>  {
 			// Start a database transaction and get the sessions object store
-			let tx = storage.db.transaction(['sessions'], 'read');
+			let tx = storage.db.transaction(['sessions'], 'readonly');
 			let store = tx.objectStore('sessions');
 			let request = store.get(path);
 			request.onsuccess = (event) => {
 				if (request.result) {
 					resolve(request.result.session);
+				}
+				else {
+					resolve(null);
+				}
+			};
+			request.onerror = (event) => {
+				reject(event.target.errorCode);
+			}
+		});
+	}
+
+	/**
+	 * @method listSessions
+	 */
+	async listSessions() {
+		let storage = this;
+		await this.setup();
+		return new Promise((resolve, reject) =>  {
+			// Start a database transaction and get the sessions object store
+			let tx = storage.db.transaction(['sessions'], 'readonly');
+			let store = tx.objectStore('sessions');
+			let request = store.getAllKeys();
+			request.onsuccess = (event) => {
+				if (request.result) {
+					resolve(request.result);
 				}
 				else {
 					resolve(null);
@@ -213,7 +238,7 @@ class MMSession extends MMCommandParent {
 	async loadSession(path) {
 		try {
 			let result = await this.storage.load(path);
-			this.initializeFromJson(result);
+			this.initializeFromJson(result, path);
 			return result;
 		}
 		catch(e) {
@@ -228,6 +253,7 @@ class MMSession extends MMCommandParent {
 		let verbs = super.verbs;
 		verbs['test'] = this.test;
 		verbs['dgminfo'] = this.diagramInfo;
+		verbs['listsessions'] = this.listSessionsCommand;
 		verbs['new'] = this.newSessionCommand;
 		verbs['save'] =  this.saveSessionCommand;
 		verbs['load'] = this.loadSessionCommand;
@@ -243,7 +269,13 @@ class MMSession extends MMCommandParent {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			dgminfo: 'mmcmd:?modelDgmInfo'
+			dgminfo: 'mmcmd:?modelDgmInfo',
+			listsessions: 'mmcmd:?sessionList',
+			new: 'mmcmd:?sessionNew',
+			load: 'mmcmd:?sessionLoad',
+			save: 'mmcmd:?sessionSave',
+			pushmodel: 'mmcmd:?sessionPushModel',
+			popmodel: 'mmcmd:?sessionPopModel'
 		}[command];
 		if (key) {
 			return key;
@@ -288,6 +320,14 @@ class MMSession extends MMCommandParent {
 		}
 	}
 
+	/** @method listSessionsCommand
+	 * list all the stored sessions
+	 */
+	async listSessionsCommand(command) {
+		let result = await this.storage.listSessions();
+		command.results = result
+	}
+
 	/**
 	 * @method newSessionCommand
 	 * verb
@@ -326,7 +366,6 @@ class MMSession extends MMCommandParent {
 			return;
 		}
 		let result = await this.loadSession(command.args);
-		console.log(result);
 		command.results = this.storePath;
 	}
 

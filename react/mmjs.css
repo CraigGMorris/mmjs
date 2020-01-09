@@ -124,6 +124,54 @@ a:hover {
 	grid-area: 1 / 1 / 1 / 1;
 }
 
+.result-table__column-label {
+	font-size: 10pt;
+}
+
+#console {
+	height: 100%;
+	font-size: 1em;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr 30px 40px;
+	grid-template-areas: "result"
+		"input"
+		"readfile"					
+}
+
+#console__result {
+	grid-area: result;
+}
+
+#console__input {
+	grid-area: input;
+	justify-self: center;
+	/*width: calc(100% - 1em);*/
+}
+
+#console__read-file {
+	grid-area: readfile;
+	display: grid;
+	grid-template-columns: 40px 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: "readlabel readinput";
+}
+
+#console__read-file-label {
+	font-size: 11pt;
+	grid-area: readlabel;
+	align-self: center;
+	justify-self: center;
+}
+
+#console__read-file-input {
+	font-size: 10pt;
+	grid-area: readinput;
+	align-self: center;
+	justify-self: center;
+	color: var(--link--color);
+}
+
 /* prevent diagram text being selected when moving icons on iOS */
 .diagram__text-components {
 	-webkit-touch-callout: none;
@@ -132,6 +180,108 @@ a:hover {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+}
+
+#expression {
+	height: 100%;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: var(--input--height) var(--input--height) var(--input--height) var(--input--height) 1fr;
+	box-sizing: border-box;
+}
+
+#expression__name {
+	grid-area: 1 / 1 / 1 / 1;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+#expression__formula {
+	display: grid;
+	grid-area: 2 / 1 / 2 / 1;
+	grid-template-columns: 20px 1fr;
+	grid-template-rows: 1fr;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+#expression__formula-equal {
+	grid-area: 1 / 1 / 1 / 1;
+	margin-left: 5px;
+}
+
+#expression__formula-field {
+	grid-area: 1 / 2 / 1 / 2;
+}
+
+#expression__in-out-boxes {
+	display: grid;
+	grid-area: 3 / 1 / 3 / 1;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr;
+}
+
+#expression__is-input {
+	grid-area: 1 / 1 / 1 / 1;
+	margin-left: 10px;
+	display: grid;
+	grid-template-columns: 40px 1fr;
+	grid-template-rows: 1fr;
+}
+
+#expression__is-input-label {
+	grid-area: 1 / 2 / 1 / 2
+}
+
+#expression__is-output {
+	grid-area: 1 / 2 / 1 / 2;
+	margin-left: 10px;
+}
+
+#expression__units {
+	display: grid;
+	grid-area: 4 / 1 / 4 / 1;
+	grid-template-columns: 1fr 30px;
+	grid-template-rows: var(--input--height);
+}
+
+#expression__unit-and-type {
+	grid-area: 1 / 1 / 1 / 1;
+}
+
+#expression__info-button {
+	grid-area: 1 / 2 / 1 / 2;
+	border-radius: 10px;
+	height: 20px;
+	width: 20px;
+	font-size: 10pt;
+	border: 1;
+	text-align: center;
+}
+
+ #expression__value-svg {
+	grid-area: 5 / 1 / 5 / 1;
+	background-color: var(--expression__value--bgcolor);
+	width: 100%;
+	font-size: 13pt;
+	stroke: var(--expression__value--stroke-color);
+}
+
+#expression__origin-box {
+	fill: var(--expression__value--bgcolor);
+	height: var(--input--height);
+}
+
+.expression__cell--color1 {
+	fill: var(--expression__value--color1);
+}
+
+.expression__cell--color2 {
+	fill: var(--expression__value--color2);
+}
+
+.expression__cell--color3 {
+	fill: var(--expression__value--color3);
 }
 
 #info-view {
@@ -254,50 +404,6 @@ a:hover {
 	grid-area: nav / 1 / info / 1;
 }
 
-#console {
-	height: 100%;
-	font-size: 1em;
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: 1fr 30px 40px;
-	grid-template-areas: "result"
-		"input"
-		"readfile"					
-}
-
-#console__result {
-	grid-area: result;
-}
-
-#console__input {
-	grid-area: input;
-	justify-self: center;
-	/*width: calc(100% - 1em);*/
-}
-
-#console__read-file {
-	grid-area: readfile;
-	display: grid;
-	grid-template-columns: 40px 1fr;
-	grid-template-rows: 1fr;
-	grid-template-areas: "readlabel readinput";
-}
-
-#console__read-file-label {
-	font-size: 11pt;
-	grid-area: readlabel;
-	align-self: center;
-	justify-self: center;
-}
-
-#console__read-file-input {
-	font-size: 10pt;
-	grid-area: readinput;
-	align-self: center;
-	justify-self: center;
-	color: var(--link--color);
-}
-
 #model {
 	height: 100%;
 	font-size: 1em;
@@ -308,110 +414,18 @@ a:hover {
 		"other"
 }
 
-#expression {
-	height: 100%;
+#sesssions__header {
 	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: var(--input--height) var(--input--height) var(--input--height) var(--input--height) 1fr;
-	box-sizing: border-box;
-}
-
-#expression__name {
-	grid-area: 1 / 1 / 1 / 1;
-	width: 100%;
-	box-sizing: border-box;
-}
-
-#expression__formula {
-	display: grid;
-	grid-area: 2 / 1 / 2 / 1;
-	grid-template-columns: 20px 1fr;
-	grid-template-rows: 1fr;
-	width: 100%;
-	box-sizing: border-box;
-}
-
-#expression__formula-equal {
-	grid-area: 1 / 1 / 1 / 1;
-	margin-left: 5px;
-}
-
-#expression__formula-field {
-	grid-area: 1 / 2 / 1 / 2;
-}
-
-#expression__in-out-boxes {
-	display: grid;
-	grid-area: 3 / 1 / 3 / 1;
 	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 1fr;
+	grid-template-areas: "new save";
 }
 
-#expression__is-input {
-	grid-area: 1 / 1 / 1 / 1;
-	margin-left: 10px;
-	display: grid;
-	grid-template-columns: 40px 1fr;
-	grid-template-rows: 1fr;
+#sessions__new-button {
+	grid-area: new;
 }
 
-#expression__is-input-label {
-	grid-area: 1 / 2 / 1 / 2
-}
-
-#expression__is-output {
-	grid-area: 1 / 2 / 1 / 2;
-	margin-left: 10px;
-}
-
-#expression__units {
-	display: grid;
-	grid-area: 4 / 1 / 4 / 1;
-	grid-template-columns: 1fr 30px;
-	grid-template-rows: var(--input--height);
-}
-
-#expression__unit-and-type {
-	grid-area: 1 / 1 / 1 / 1;
-}
-
-#expression__info-button {
-	grid-area: 1 / 2 / 1 / 2;
-	border-radius: 10px;
-	height: 20px;
-	width: 20px;
-	font-size: 10pt;
-	border: 1;
-	text-align: center;
-}
-
- #expression__value-svg {
-	grid-area: 5 / 1 / 5 / 1;
-	background-color: var(--expression__value--bgcolor);
-	width: 100%;
-	font-size: 13pt;
-	stroke: var(--expression__value--stroke-color);
-}
-
-#expression__origin-box {
-	fill: var(--expression__value--bgcolor);
-	height: var(--input--height);
-}
-
-.expression__cell--color1 {
-	fill: var(--expression__value--color1);
-}
-
-.expression__cell--color2 {
-	fill: var(--expression__value--color2);
-}
-
-.expression__cell--color3 {
-	fill: var(--expression__value--color3);
-}
-
-.result-table__column-label {
-	font-size: 10pt;
+#sessions__save-button {
+	grid-area: save;
 }
 
 #units {

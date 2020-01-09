@@ -36,7 +36,7 @@ class MMModel extends MMTool {
 		let key = {
 			addtool: 'mmcmd:?modelAddTool',
 			dgminfo: 'mmcmd:?modelDgmInfo',
-			setpositions: 'mmcmd?modelSetPositions'
+			setpositions: 'mmcmd:?modelSetPositions'
 		}[command];
 		if (key) {
 			return key;
