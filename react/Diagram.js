@@ -429,7 +429,8 @@ export class Diagram extends React.Component {
 		if ( this.eventCache.length) {
 			const domNode = ReactDOM.findDOMNode(this);
 			domNode.addEventListener('pointermove', this.onPointerMove);
-			domNode.addEventListener('pointerup', this.onPointerUp);	
+			domNode.addEventListener('pointerup', this.onPointerUp);
+			e.target.setPointerCapture(e.pointerId);
 		}
   }
 
@@ -467,6 +468,7 @@ export class Diagram extends React.Component {
 			this.panSum = 0;
 			this.pinch = 0;
 			const domNode = ReactDOM.findDOMNode(this);
+			e.target.releasePointerCapture(e.pointerId);
 			domNode.removeEventListener('pointermove', this.onPointerMove);
 			domNode.removeEventListener('pointerup', this.onPointerUp);	
 		}
