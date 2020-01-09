@@ -263,7 +263,7 @@ export class Diagram extends React.Component {
 				case DiagramDragType.tool: 
 					if (state.dragSelection) {
 						let dragSelection = updateDragSelection(state.dragSelection);
-						const tools = this.updateToolPositions(dragSelection, state);
+						const tools = this.updateToolInfoPositions(dragSelection, state);
 						return {
 							tools: tools,
 							lastPointer: {x: x, y: y},
@@ -276,7 +276,7 @@ export class Diagram extends React.Component {
 					const sb = state.selectionBox;
 					const scale = state.scale;
 					const dragSelection = updateDragSelection(state.dragSelection);
-					const tools = this.updateToolPositions(dragSelection, state);
+					const tools = this.updateToolInfoPositions(dragSelection, state);
 					return {
 						tools: tools,
 						dragSelection: dragSelection,
@@ -357,12 +357,12 @@ export class Diagram extends React.Component {
 	}
 
 	/**
-	 * @method updateToolPositions
+	 * @method updateToolInfoPositions
 	 * @param {Map} positions
 	 * @param {Object} state
 	 * @returns {Object} new tools object
 	 */
-	updateToolPositions(positions, state) {
+	updateToolInfoPositions(positions, state) {
 		let tools = Object.assign({}, state.tools);
 		if (positions) {
 			for (const [name, position] of positions) {
@@ -852,14 +852,12 @@ class ToolIcon extends React.Component {
 				}
 			}
 		}
-		else {
-			this.setState((state) => {
-				return {
-					dragging: false,
-				};
-			});
-			this.props.setDragType(null, null, {name: this.props.info.name});	
-		}
+		this.setState((state) => {
+			return {
+				dragging: false,
+			};
+		});
+		this.props.setDragType(null, null, {name: this.props.info.name});	
 		
 		for (var i = 0; i < eCache.length; i++) {
 			if (eCache[i].id == e.pointerId) {
