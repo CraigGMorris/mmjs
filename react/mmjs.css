@@ -9,6 +9,7 @@
 	--info-nav--bgcolor: #111;
 	--info-view--padding: 5px;
 	--border--color: #fff;
+	--button--border-color: #d1d1d1;
 	--input--color: #fff;
 	--input--bgcolor: rgb(51, 51, 51);
 	--input--disabled-color: #77a;
@@ -31,6 +32,7 @@
 		--diagram--bgcolor: #eeffee;
 		--info-nav--bgcolor: #f3f3f3;
 		--border--color: #000;
+		--button--border-color: #bababa;
 		--input--color: #000;
 		--input--bgcolor: #fff;
 		--input--disabled-color: #555;
@@ -48,6 +50,7 @@
 body {
 	background-color: var(--body--bgcolor) !important;
 	color: var(--body--color);
+	box-sizing: border-box;
 }
 
 input {
@@ -97,6 +100,37 @@ button:disabled {
 	color: var(--input--disabled-color);
 	background-color: var(--input--disabled-bgcolor);
 }
+
+.input-file-button {
+	overflow: hidden;
+	position: relative;
+	text-align: center;
+	padding-top: 4px;
+	box-sizing: border-box;
+	color: var(--link--color);
+	background-color: var(--input-bgcolor);
+	border-radius: 5px;
+	border: solid 1px;
+	border-color: var(--button--border-color);
+	font-size: 12pt;
+	height: 28px;
+	float: left;
+}
+
+.input-file-button [type=file] {
+	display: block;
+	cursor: inherit;
+	filter: alpha(opacity=0);
+	min-height: 100%;
+	min-width: 100%;
+	opacity: 0;
+	position: absolute;
+	right: 0;
+	text-align: right;
+	top: 0;
+}
+
+
 
 svg text {
 	pointer-events: none;
@@ -151,25 +185,13 @@ a:hover {
 
 #console__read-file {
 	grid-area: readfile;
-	display: grid;
-	grid-template-columns: 40px 1fr;
-	grid-template-rows: 1fr;
-	grid-template-areas: "readlabel readinput";
+	justify-self: center;
+	align-self: middle;
 }
 
 #console__read-file-label {
-	font-size: 11pt;
-	grid-area: readlabel;
-	align-self: center;
-	justify-self: center;
-}
-
-#console__read-file-input {
-	font-size: 10pt;
-	grid-area: readinput;
-	align-self: center;
-	justify-self: center;
-	color: var(--link--color);
+	margin-top: 5px;
+	width: 200px;
 }
 
 /* prevent diagram text being selected when moving icons on iOS */
@@ -414,10 +436,19 @@ a:hover {
 		"other"
 }
 
-#sesssions__header {
+#sessions__wrapper {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-template-areas: "new save";
+	grid-template-rows: 50px 1fr 1fr;
+	grid-template-areas: "header"
+		"menu"
+		"list";
+}
+
+#sessions__header {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-areas: "new save import";
+	grid-column-gap: 10px;
 }
 
 #sessions__new-button {
@@ -426,6 +457,64 @@ a:hover {
 
 #sessions__save-button {
 	grid-area: save;
+}
+
+#sessions__import-button {
+	grid-area: import;
+}
+
+#sessions__list {
+	grid-area: menu-start / list-start / list-end / list-end;
+	z-index: 1;
+}
+
+#sessions__menu-wrapper {
+	display: grid;
+	grid-template-rows: repeat(5, 1fr);
+	grid-template-areas: "title"
+		"copy"
+		"rename"
+		"delete"
+		"cancel";
+		width: 150px;
+		margin: 0 auto;
+		grid-row-gap: 15px;
+}
+
+#sessions__menu-title {
+	grid-area: title;
+	font-size: 16pt;
+	text-align: center;
+}
+
+#sessions__menu-copy {
+	grid-area: copy;
+}
+
+#sessions__menu-rename {
+	grid-area: rename;
+}
+
+#sessions__menu-delete {
+	grid-area: delete;
+}
+
+#sessions__menu-cancel {
+	grid-area: cancel;
+}
+
+.sessions__menu-button {
+	justify-self: center;
+	width: 100%;
+}
+
+.sessions__entry {
+	display: grid;
+	grid-template-columns: 1fr 30px;
+}
+
+.sessions__entry--selected {
+	background-color: red;
 }
 
 #units {

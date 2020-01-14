@@ -152,6 +152,18 @@ class MMCommandProcessor {
 		try {
 			commands = commands.trim();
 			if (commands.length > 0) {
+				if (commands.startsWith('__blob__')) {
+					// the command has subject and verb surrounded by '__blob__' with everything
+					// following the second __blob__ being a single argument
+					let endBlob = commands.indexOf('__blob__',7);
+					let subjectAndVerb = commands.substring(8, endBlob);
+					let arg = commands.substring(endBlob + 8);
+					let action = new MMCommand(subjectAndVerb + ' ' + arg);
+					if (await this.processCommand(action)) {
+						results.push(action);
+					}
+					return results;
+				}
 				// cmds are separated by either \n or ;
 				// two ; are replaced by a single one
 				commands = commands.replace(/([^;]);([^;])/,'$1\n$2');

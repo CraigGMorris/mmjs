@@ -53,8 +53,8 @@ class MMSessionStorage  {
 
 	/**
 	 * @method save
-	 * @param {string} path - persistent storage path
-	 * @param {*} json - json representation of session
+	 * @param {String} path - persistent storage path
+	 * @param {String} json - json representation of session
 	 */
 	async save(path, json) {
 		let storage = this;
@@ -64,9 +64,13 @@ class MMSessionStorage  {
 			let tx = storage.db.transaction(['sessions'], 'readwrite');
 			let store = tx.objectStore('sessions');
 			// add the json with the path as the key
-			store.put({id: path, session: json});
-			tx.oncomplete = resolve;
-			tx.onerror = (event) => {
+			let request = store.put({id: path, session: json});
+//			tx.oncomplete = resolve;
+//			tx.onerror = (event) => {
+			request.onsuccess = event => {
+				resolve(path);
+			}
+			request.onerror = event => {
 				reject(event.target.errorCode);
 			}
 		});
@@ -74,7 +78,7 @@ class MMSessionStorage  {
 
 	/**
 	 * @method load
-	 * @param {*} path - persistent storage path
+	 * @param {String} path - persistent storage path
 	 */
 	async load(path) {
 		let storage = this;
@@ -96,6 +100,40 @@ class MMSessionStorage  {
 				reject(event.target.errorCode);
 			}
 		});
+	}
+
+	/**
+	 * @method delete
+	 * @param {String} path - persistent storage path to delete
+	 */
+	async delete(path) {
+		let storage = this;
+		await this.setup();
+		return new Promise((resolve, reject) =>  {
+			// Start a database transaction and get the sessions object store
+			let tx = storage.db.transaction(['sessions'], 'readwrite');
+			let store = tx.objectStore('sessions');
+			let request = store.delete(path);
+			request.onsuccess = (event) => {
+					resolve(path);
+			};
+			request.onerror = (event) => {
+				reject(event.target.errorCode);
+			}
+		});
+	}
+
+	/**
+	 * @emethod copy
+	 * @param {String} oldPath
+	 * @param {String} newPath
+	 */
+	async copy(oldPath, newPath) {
+		let session = await this.load(oldPath);
+		if (session) {
+			await this.save(newPath, session);
+			return newPath;
+		}
 	}
 
 	/**
@@ -134,7 +172,7 @@ class MMSessionStorage  {
  * @member {string} storePath - path to persistent storage
  * @member {MMPoint} unknownPosition
  * @member {MMPoint} nextToolLocation
- * @member  {MMSessionStorage} storage
+ * @member {MMSessionStorage} storage
  */
 class MMSession extends MMCommandParent {
 	// session creation and storage commands
@@ -157,7 +195,7 @@ class MMSession extends MMCommandParent {
 	 */
 	newSession(storePath) {
 		if (!storePath) {
-			storePath = 'unnamed';
+			storePath = '_unnamed';
 		}
 		this.nextToolLocation = this.unknownPosition;
 		this.rootModel = MMToolTypes['Model'].factory('root', this);
@@ -166,6 +204,13 @@ class MMSession extends MMCommandParent {
 		this.storePath = storePath;
 		this.processor.defaultObject = this.rootModel;
 	}
+
+	get properties() {
+		let d = super.properties;
+		d['storePath'] = {type: PropertyType.string, readOnly: false};
+		return d;
+	}
+
 
 	/**
 	 * create a new session from json (stored case)
@@ -189,16 +234,17 @@ class MMSession extends MMCommandParent {
 		this.rootModel = rootModel;
 		this.currentModel = rootModel;
 		this.modelStack = [rootModel];
-		this.storePath = storePath;
+		if (storePath) {
+			this.storePath = storePath;
+		}
 		this.processor.defaultObject = rootModel;
 	}
 
-	/** @method saveSession
-	 * save the session in persistent storage
+	/** @method sessionAsJson
+	 * returns the json needed to save the session
 	 * @param {string} path - the path to store to
-	 * if blank, the storePath used when the session was created will be used 
 	 */
-	async saveSession(path) {
+	sessionAsJson(path=null) {
 		let detailWidth = this['detailWidth'] ? this['detailWidth'] : 320;
 		let deviceWidth = this['deviceWidth'] ? this['deviceWidth'] : 1024;
 		let selectedObject = '';
@@ -221,19 +267,28 @@ class MMSession extends MMCommandParent {
 			ModelPath: modelPath,
 			RootModel: rootSave,
 		}
-		let caseJson = JSON.stringify(sessionSave);//, null, '');
+		return JSON.stringify(sessionSave);//, null, '');
+	}
+
+	/** @method saveSession
+	 * save the session in persistent storage
+	 * @param {string} path - the path to store to
+	 * if blank, the storePath used when the session was created will be used 
+	 */
+	async saveSession(path) {
+		let caseJson = this.sessionAsJson(path);
 		try {
 			await this.storage.save(this.storePath, caseJson);
+			return this.storePath;
 		}
 		catch(e) {
-			this.setError('mmcmd:saveFailed', {path: this.storePath, error: e});
+			this.setError('mmcmd:sessionSaveFailed', {path: this.storePath, error: e});
 		}
 	}
 
 	/** @method loadSession
 	 * load the session from persistent storage
-	 * @param {string} path - the path to load from
-	 * if blank, the storePath used when the session was created will be used 
+	 * @param {String} path - the path to load from
 	 */
 	async loadSession(path) {
 		try {
@@ -242,7 +297,53 @@ class MMSession extends MMCommandParent {
 			return result;
 		}
 		catch(e) {
-			this.setError('mmcmd:loadFailed', {path: path, error: e});
+			this.setError('mmcmd:sessionLoadFailed', {path: path, error: e});
+		}
+	}
+
+	/** @method deleteSession
+	 * delete the session from persistent storage
+	 * @param {String} path - the path to delete
+	 */
+	async deleteSession(path) {
+		try {
+			let result = await this.storage.delete(path);
+			return path;
+		}
+		catch(e) {
+			this.setError('mmcmd:sessionDeleteFailed', {path: path, error: e});
+		}
+	}
+
+	/** @method copySession
+	 * make a copy of the session in persistent storage
+	 * @param {string} oldPath - the path to load from
+	 * @param {string} newPath - the path for the copy
+	 */
+	async copySession(oldPath, newPath) {
+		try {
+			await this.storage.copy(oldPath, newPath);
+			return newPath;
+		}
+		catch(e) {
+			this.setError('mmcmd:sessionCopyfailed', {oldPath: oldPath, newPath: newPath, error: e});
+		}
+	}
+
+	/** @method renameSession
+	 * rename a session in persistent storage
+	 * (just copy and delete)
+	 * @param {string} oldPath - the path to load from
+	 * @param {string} newPath - the path for the copy
+	 */
+	async renameSession(oldPath, newPath) {
+		try {
+			await this.storage.copy(oldPath, newPath);
+			await this.storage.delete(oldPath);
+			return newPath;
+		}
+		catch(e) {
+			this.setError('mmcmd:sessionRenamefailed', {oldPath: oldPath, newPath: newPath, error: e});
 		}
 	}
 
@@ -257,8 +358,13 @@ class MMSession extends MMCommandParent {
 		verbs['new'] = this.newSessionCommand;
 		verbs['save'] =  this.saveSessionCommand;
 		verbs['load'] = this.loadSessionCommand;
+		verbs['copy'] = this.copySessionCommand;
+		verbs['delete'] = this.deleteSessionCommand;
+		verbs['rename'] = this.renameSessionCommand;
+		verbs['getjson'] = this.getJsonCommand;
 		verbs['pushmodel'] = this.pushModelCommand;
 		verbs['popmodel'] = this.popModelCommand;
+		verbs['import'] =this.importCommand;
 		return verbs;
 	}
 
@@ -274,6 +380,9 @@ class MMSession extends MMCommandParent {
 			new: 'mmcmd:?sessionNew',
 			load: 'mmcmd:?sessionLoad',
 			save: 'mmcmd:?sessionSave',
+			copy: 'mmcmd:?sessionCopy',
+			delete: 'mmcmd:?sessionDelete',
+			getjson: 'mmcmd:?sessionGetJson',
 			pushmodel: 'mmcmd:?sessionPushModel',
 			popmodel: 'mmcmd:?sessionPopModel'
 		}[command];
@@ -325,7 +434,7 @@ class MMSession extends MMCommandParent {
 	 */
 	async listSessionsCommand(command) {
 		let result = await this.storage.listSessions();
-		command.results = result
+		command.results = {paths: result, currentPath: this.storePath};
 	}
 
 	/**
@@ -351,7 +460,7 @@ class MMSession extends MMCommandParent {
 			return;
 		}
 		await this.saveSession(command.args);
-		command.results = this.storePath;
+		command.results = `copied to: ${this.storePath}`;
 	}
 
 	/**
@@ -367,6 +476,79 @@ class MMSession extends MMCommandParent {
 		}
 		let result = await this.loadSession(command.args);
 		command.results = this.storePath;
+	}
+
+	/**
+	 * @method deleteSessionCommand
+	 * verb
+	 * @param {MMCommand} command
+	 * command.args contains the store path for the session to delete
+	 */
+	async deleteSessionCommand(command) {
+		if (!indexedDB) {
+			this.setError('mmcmd:noIndexedDB', {});
+			return;
+		}
+		let result = await this.deleteSession(command.args);
+		command.results = `deleted: ${result}`;
+	}
+
+	/**
+	 * @method copySessionCommand
+	 * verb
+	 * @param {MMCommand} command
+	 * command.args contains the oldPath and newPath for the session copy
+	 */
+	async copySessionCommand(command) {
+		if (!indexedDB) {
+			this.setError('mmcmd:noIndexedDB', {});
+			return;
+		}
+		let paths = command.args.split(' ');
+		let result = await this.copySession(paths[0], paths[1]);
+		command.results = result;
+	}
+
+	/**
+	 * @method renameSessionCommand
+	 * verb
+	 * @param {MMCommand} command
+	 * command.args contains the oldPath and newPath for the session
+	 */
+	async renameSessionCommand(command) {
+		if (!indexedDB) {
+			this.setError('mmcmd:noIndexedDB', {});
+			return;
+		}
+		let paths = command.args.split(' ');
+		let result = await this.renameSession(paths[0], paths[1]);
+		command.results = result;
+	}
+
+	/**
+	 * @method getJsonCommand
+	 * verb
+	 * @param {MMCommand} command
+	 * command.args optionall contains the store path for the session
+	 */
+	async getJsonCommand(command) {
+		command.results = this.sessionAsJson(command.args);
+	}
+
+	/**
+	 * @method importCommand
+	 * verb
+	 * @param {MMCommand} command
+	 * command.args contains json to construct session from
+	 */
+	async importCommand(command) {
+		try {
+			this.initializeFromJson(command.args);
+			command.results = this.storePath;
+		}
+		catch(e) {
+			this.setError('mmcmd:loadFailed', {path: path, error: e});
+		}
 	}
 
 	/**

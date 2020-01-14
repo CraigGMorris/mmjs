@@ -101,18 +101,17 @@ export class ConsoleView extends React.Component {
 				e(
 					'label', {
 						id: 'console__read-file-label',
-						htmlFor: 'readfile'
+						className: 'input-file-button',
 					},
-					t('react:readCommands')
+					t('react:consoleReadCommands'),
+					e(
+						'input', {
+							id: 'console__read-file-input',
+							type: 'file',
+							onChange:  this.readCommandFile,
+						}
+					),	
 				),
-				e(
-					'input', {
-						id: 'console__read-file-input',
-						type: 'file',
-						onChange: this.readCommandFile,
-						placeholder: 'Read Command File'
-					}
-				)
 			)
 		);
 	}
