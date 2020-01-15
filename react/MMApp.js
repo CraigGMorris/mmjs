@@ -649,6 +649,7 @@ export class MMApp extends React.Component {
 			expandText = t('react:dgmButtonInfo');
 		}
 
+		let viewKeys = new Set(infoStack.map(v => v.viewKey));		
 		const infoTools = e(
 			'div', {
 				id: 'info-tools',
@@ -677,10 +678,13 @@ export class MMApp extends React.Component {
 			e('button', {
 				id:'info-tools__undo-button',
 				className: 'info-tools__button',
+				disabled: !this.undoStack.length,
 				onClick: (event) => {
 					const undo = this.undoStack.pop();
 					if (undo) {
+						console.log(`undo ${undo}`)
 						this.doCommand('undo ' + undo, (results) => {
+							this.updateViewState(this.state.infoStack.length - 1);
 							this.updateDiagram();
 						});
 					}	
@@ -692,10 +696,13 @@ export class MMApp extends React.Component {
 					'button', {
 					id:'info-tools__redo-button',
 					className: 'info-tools__button',
+					disabled: !this.redoStack.length,
 					onClick: (event) => {
 						const redo = this.redoStack.pop();
 						if (redo) {
+							console.log(`redo ${redo}`)
 							this.doCommand('redo ' + redo, (results) => {
+								this.updateViewState(this.state.infoStack.length - 1);
 								this.updateDiagram();
 							});
 						}
@@ -707,6 +714,7 @@ export class MMApp extends React.Component {
 				'button', {
 					id:'info-tools__unit-button',
 					className: 'info-tools__button',
+					disabled: viewKeys.has('units'),
 					onClick: (event) => {
 						this.pushView('units', 'react:unitsTitle');
 					}
@@ -717,6 +725,7 @@ export class MMApp extends React.Component {
 				'button', {
 					id:'info-tools__console-button',
 					className: 'info-tools__button',
+					disabled: viewKeys.has('console'),
 					onClick: (event) => {
 						this.pushConsole();
 					}
@@ -727,6 +736,7 @@ export class MMApp extends React.Component {
 					'button', {
 					id:'info-tools__sessions-button',
 					className: 'info-tools__button',
+					disabled: viewKeys.has('sessions'),
 					onClick: (event) => {
 						this.pushView('sessions', 'react:sessionsTitle');
 					}
