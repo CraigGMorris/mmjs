@@ -149,6 +149,10 @@ class MMCommandProcessor {
 	 */
 	async processCommandString(commands) {
 		let results = [];
+		if (typeof commands === 'object') {
+			results.id = commands.id;
+			commands = commands.cmd;
+		}
 		try {
 			commands = commands.trim();
 			if (commands.length > 0) {

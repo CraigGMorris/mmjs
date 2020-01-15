@@ -25,7 +25,7 @@ const ViewType = Object.freeze({
  * @class MMApp
  * the main Math Minion window
  * @member {MMCommandPipe} pipe - pipe to worker
- * @member {Array} callBackStack - makes sure callbacks are called in correct order
+ * @member {Array} commandCallBacks - a Map keyed by and id so callbacks are called in correct order
  * @member {Array} dgmStateStack - keeps diagram state when model is pushed over it
  * @member {method[]} actions - methods passed to components
  * @member {Object} infoViews - classes of info views used to construct the react component appearing in the info view
@@ -36,7 +36,8 @@ export class MMApp extends React.Component {
 	constructor(props) {
 		super(props);
 		this.pipe = new MMCommandPipe();
-		this.callBackStack = [];
+		this.callBackId = 1;
+		this.commandCallBacks = new Map();
 		this.dgmStateStack = [];
 		this.actions = {
 			doCommand: this.doCommand.bind(this),
@@ -209,8 +210,9 @@ export class MMApp extends React.Component {
 	 * @param {function} callBack - (cmds[]) => {}
 	 */
 	doCommand(cmd, callBack) {
-		this.callBackStack.push(callBack);
-		this.pipe.doCommand(cmd, (results) => {
+		this.commandCallBacks.set(this.callBackId, callBack);
+		let cmdObject = {cmd: cmd, id: this.callBackId++};
+		this.pipe.doCommand(cmdObject, (results) => {
 			let error = results.error;
 			let warning;
 			if (!error) {
@@ -261,9 +263,12 @@ export class MMApp extends React.Component {
 					this.warningAlert(warning);
 				}
 			}
-			const stackedCallBack = this.callBackStack.shift();
-			if (stackedCallBack) {
-				stackedCallBack(results);
+			if (results.id) {
+				const savedCallBack = this.commandCallBacks.get(results.id);
+				this.commandCallBacks.delete(results.id);
+				if (savedCallBack) {
+					savedCallBack(results);
+				}
 			}
 		});
 	}
