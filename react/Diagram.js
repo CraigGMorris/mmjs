@@ -187,9 +187,14 @@ export class Diagram extends React.Component {
 							if (state.dragSelection) {
 								for (const [name, position] of state.dragSelection) {
 									const p = snapPosition(position);
-									terms.push(`${name} ${p.x} ${p.y}`);
+									let oldPosition = this.props.dgmState.tools[name].position;
+									if (p.x !== oldPosition.x || p.y !== oldPosition.y) {
+										terms.push(`${name} ${p.x} ${p.y}`);
+									}
 								}
-								this.doCommand(terms.join(' '));
+								if (terms.length > 1) {
+									this.doCommand(terms.join(' '));
+								}
 							}			
 							return {
 								dragType: null,
