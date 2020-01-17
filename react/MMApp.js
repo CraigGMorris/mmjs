@@ -211,7 +211,7 @@ export class MMApp extends React.Component {
 	 */
 	doCommand(cmd, callBack) {
 		this.commandCallBacks.set(this.callBackId, callBack);
-		let cmdObject = {cmd: cmd, id: this.callBackId++};
+		let cmdObject = {cmdString: cmd, id: this.callBackId++};
 		this.pipe.doCommand(cmdObject, (results) => {
 			let error = results.error;
 			let warning;
@@ -682,7 +682,6 @@ export class MMApp extends React.Component {
 				onClick: (event) => {
 					const undo = this.undoStack.pop();
 					if (undo) {
-						console.log(`undo ${undo}`)
 						this.doCommand('undo ' + undo, (results) => {
 							this.updateViewState(this.state.infoStack.length - 1);
 							this.updateDiagram();
@@ -700,7 +699,6 @@ export class MMApp extends React.Component {
 					onClick: (event) => {
 						const redo = this.redoStack.pop();
 						if (redo) {
-							console.log(`redo ${redo}`)
 							this.doCommand('redo ' + redo, (results) => {
 								this.updateViewState(this.state.infoStack.length - 1);
 								this.updateDiagram();

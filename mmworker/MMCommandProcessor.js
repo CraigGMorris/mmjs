@@ -142,16 +142,18 @@ class MMCommandProcessor {
 	}
 
 	/** @param {string} commands
-	 * commands is a string that could be made up of many commands separated by newline or semicolon
+	 * commands is normally an object containing a cmdString and an id, but it can be just a plain string
+	 * cmdString (or the plain string) can be made up of many commands separated by newline or semicolon
 	 * characters.  This function splits them up and processes them one at a time and returns the
-	 *concatenation of all their result strings
+	 * concatenation of all their result strings.
+	 * If an id is provided, it is returned as a property of the results array
 	 * @returns {MMCommand[]} a list of MMCommands or null
 	 */
 	async processCommandString(commands) {
 		let results = [];
 		if (typeof commands === 'object') {
 			results.id = commands.id;
-			commands = commands.cmd;
+			commands = commands.cmdString;
 		}
 		try {
 			commands = commands.trim();
