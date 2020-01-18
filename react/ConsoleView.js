@@ -10,6 +10,10 @@ export class ConsoleView extends React.Component {
 		super(props);
 		this.readCommandFile = this.readCommandFile.bind(this);
 		this.callBack = this.callBack.bind(this);
+		this.state = {
+			output: '',
+			input: '',
+		};
 	}
 
 	/** @method callBack - called when the worker completes command
@@ -33,7 +37,7 @@ export class ConsoleView extends React.Component {
 			}
 			lines.push(output);
 		}
-		this.props.actions.setViewInfoState((state) => {
+		this.setState((state) => {
 			lines = lines.join('\n');
 			if (lines.length > 100000) {
 				lines = lines.substr(0, 100000) + '\nTRUNCATED at 100000 chars';
@@ -69,25 +73,25 @@ export class ConsoleView extends React.Component {
 			e(
 				'textarea',{
 					id: 'console__result',
-					value: this.props.viewInfo.viewState.output || '',
+					value: this.state.output || '',
 					readOnly: true
 				}
 			),
 			e(
 				'input', {
 					id: 'console__input',
-					value: this.props.viewInfo.viewState.input || '',
+					value: this.state.input || '',
 					placeholder: t('react:consoleReadPlaceHolder'),
 					onChange: (event) => {
 						//keeps input field in sync
 						const value = event.target.value;
-						this.props.actions.setViewInfoState({input: value});				
+						this.setState({input: value});				
 					},
 					onKeyPress: (event) => {
 						if (event.key == 'Enter') {
 							// watches for Enter and sends command when it see it
-							this.props.actions.doCommand(this.props.viewInfo.viewState.input, this.callBack);
-							this.props.actions.setViewInfoState((state) => {
+							this.props.actions.doCommand(this.state.input, this.callBack);
+							this.setState((state) => {
 								return {input:''}
 							});
 						}

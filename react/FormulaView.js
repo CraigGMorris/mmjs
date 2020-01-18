@@ -9,24 +9,20 @@ const e = React.createElement;
 export class FormulaField extends React.Component {
 	constructor(props) {
 		super(props);
-		// need name so there is no conflict in viewInfo between different formula fields
-		// in the same tool view
-		this.formulaName = this.props.formulaName;
-
-		// check and see if a modified input is saved - may be reshowing view that had another view pushed over it
-		let formula
-		if (this.props.viewInfo.viewState[this.formulaName]) {
-			formula = this.props.viewInfo.viewState[this.formulaName];
-		}
-		else {
-			formula = this.props.formula;
-		}
-		let state = {};
-		state[this.formulaName] = formula;
-		this.props.actions.setViewInfoState(state);
-
+		this.state = {
+			formula: this.props.formula,
+			formulaHasFocus: false
+		};
 		this.handleChange = this.handleChange.bind(this);
 		this.handleKeyPress = this.handleKeyPress.bind(this);
+	}
+
+	// need to update state formula if component updated when focus is not on input
+	// undo and redo could change the formula without the input field knowing
+	componentDidUpdate() {
+		if (!this.state.formulaHasFocus && this.state.formula !== this.props.formula) {
+			this.setState({formula: this.props.formula});
+		}
 	}
 
 	/** @method handleChange
@@ -35,9 +31,7 @@ export class FormulaField extends React.Component {
 	 */
   handleChange(event) {
 		const value = event.target.value;
-		let state = {};
-		state[this.formulaName] = value;
-		this.props.actions.setViewInfoState(state);
+		this.setState({formula: value});
 	}
 	
 	/** @method handleKeyPress
@@ -47,9 +41,9 @@ export class FormulaField extends React.Component {
 	handleKeyPress(event) {
 		if (event.key == 'Enter') {
 			const path = this.props.path;
-			const newFormula = this.props.viewInfo.viewState[this.formulaName];
+			const newFormula = this.state.formula;
 			this.props.actions.doCommand(`${path} set formula ${newFormula}`, (cmds) => {
-				this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+				this.props.actions.updateView(this.props.viewInfo.stackIndex);
 			});
 		}
 	}
@@ -57,10 +51,15 @@ export class FormulaField extends React.Component {
 	render() {
 		let t = this.props.t;
 		return e('input', {
-			value: this.props.viewInfo.viewState[this.formulaName],
+			// value: this.state.formulaHasFocus ? this.state.formula : this.props.formula,
+			value: this.state.formula,
 			placeholder: t('react:formulaValueUnknown'),
 			onChange: this.handleChange,
-			onKeyPress: this.handleKeyPress
+			onKeyPress: this.handleKeyPress,
+			onFocus: e => {
+				this.setState({formulaHasFocus: true});
+			},
+			onBlur: e => {this.setState({formulaHasFocus: false})}
 		});
 	}
 }

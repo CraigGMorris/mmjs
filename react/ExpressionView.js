@@ -96,7 +96,7 @@ export class ExpressionView extends React.Component {
 								// toggle the isInput property
 								const value = this.props.viewInfo.updateResults[0].results.isInput ? 'f' : 't';
 								this.props.actions.doCommand(`${this.props.viewInfo.path} set isInput ${value}`, (cmds) => {
-									this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+									this.props.actions.updateView(this.props.viewInfo.stackIndex);
 								});						
 							}
 						},
@@ -126,7 +126,7 @@ export class ExpressionView extends React.Component {
 								// toggle the isOutput property
 								const value = this.props.viewInfo.updateResults[0].results.isOutput ? 'f' : 't';
 								this.props.actions.doCommand(`${this.props.viewInfo.path} set isOutput ${value}`, (cmds) => {
-									this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+									this.props.actions.updateView(this.props.viewInfo.stackIndex);
 								});						
 							}
 						},
@@ -194,12 +194,12 @@ export class ValueView extends React.Component {
 			dragType: ValueViewDragType.none,
 			dragOrigin: {x: 0, y: 0},
 			initialOffset: {x: 0, y: 0},
-			selectedCell: {row: 0, column: 0}
+			selectedCell: {row: 0, column: 0},
+			valueViewOffset: {x: 0, y: 0}
 		};
 		this.cellHeight = 30;
 		this.cellWidth = 100;
 		this.rowLabelWidth = 50;
-		this.props.actions.setViewInfoState({valueViewOffset: {x: 0, y: 0}});
 	}
 
 	pointerStart(x, y) {
@@ -214,12 +214,14 @@ export class ValueView extends React.Component {
 		else if (x < this.rowLabelWidth) {
 			dragType = ValueViewDragType.row;
 		}
-		this.setState({
-			dragType: dragType,
-			dragOrigin: {x: x, y: y},
-			initialOffset: {
-				x: this.props.viewInfo.viewState.valueViewOffset.x,
-				y: this.props.viewInfo.viewState.valueViewOffset.y
+		this.setState((state) => {
+			return {
+				dragType: dragType,
+				dragOrigin: {x: x, y: y},
+				initialOffset: {
+					x: state.valueViewOffset.x,
+					y: state.valueViewOffset.y
+				}
 			}
 		});
 	}
@@ -235,7 +237,7 @@ export class ValueView extends React.Component {
 						y: 0
 					}
 				});
-				this.props.actions.setViewInfoState({valueViewOffset: {x: 0, y: 0}});
+				this.setState({valueViewOffset: {x: 0, y: 0}});
 				break;
 			default:
 				this.setState({
@@ -256,7 +258,7 @@ export class ValueView extends React.Component {
 			const nColumns = value.nc;	
 			offsetX = Math.min(offsetX, (nColumns - 1)*this.cellWidth)
 			offsetY = Math.min(offsetY, (nRows - 1)*this.cellHeight);
-			this.props.actions.setViewInfoState({valueViewOffset: {x: offsetX, y: offsetY}});
+			this.setState({valueViewOffset: {x: offsetX, y: offsetY}});
 		}
 
 		const fastPanX = (deltaX) => {
@@ -330,7 +332,7 @@ export class ValueView extends React.Component {
 		const rowLabelWidth = this.rowLabelWidth;
 
 		const viewBox = this.props.viewBox;
-		const offset = this.props.viewInfo.viewState.valueViewOffset;
+		const offset = this.state.valueViewOffset;
 		const nRowCells = Math.min(Math.floor(viewBox[3] / cellHeight), nRows);
 		const rowOrigin = Math.max(0, Math.floor(Math.min(offset.y / cellHeight), nRows - nRowCells));
 		const nColumnCells = Math.min(Math.floor(viewBox[2] / cellWidth), nColumns);

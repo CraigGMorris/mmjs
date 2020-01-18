@@ -48,8 +48,7 @@ export class MMApp extends React.Component {
 			popView: this.popView.bind(this),
 			resetInfoStack: this.resetInfoStack.bind(this),
 			setUpdateCommands: this.setUpdateCommands.bind(this),
-			setViewInfoState: this.setViewInfoState.bind(this),
-			updateViewState: this.updateViewState.bind(this),
+			updateView: this.updateView.bind(this),
 			updateDiagram: this.updateDiagram.bind(this),
 			renameTool: this.renameTool.bind(this),
 		};
@@ -73,18 +72,16 @@ export class MMApp extends React.Component {
 			updateCommands: '',
 			updateResults: [],
 			viewKey: 'console',
-			viewState: {},
 		};
 
 		// information need to generate initial root view component
-		const initialInfoState = {
+		const initialInfo = {
 			title: 'root',
 			path: '/.root',
 			stackIndex: 0,
 			updateCommands: '',
 			updateResults: [],
 			viewKey: 'Model',
-			viewState: {}
 		};
 
 		this.undoStack = [];
@@ -95,7 +92,7 @@ export class MMApp extends React.Component {
 
 		this.state = {
 			/** @desc infoStack keeps the information necessary to render all the info views pushed */
-			infoStack: [initialInfoState],
+			infoStack: [initialInfo],
 			dgmState: {
 				dragType: null,
 				dragSelection: null,
@@ -116,7 +113,6 @@ export class MMApp extends React.Component {
 		this.pushConsole = this.pushConsole.bind(this);
 		this.showHelp = this.showHelp.bind(this);
 		this.setDgmState = this.setDgmState.bind(this);
-		this.setViewInfoState = this.setViewInfoState.bind(this);
 	}
 
 	componentDidMount() {
@@ -148,7 +144,6 @@ export class MMApp extends React.Component {
 			updateCommands: '',
 			updateResults: [],
 			viewKey: 'Model',
-			viewState: {}
 		};
 		this.setState({infoStack: [infoState]});
 	}
@@ -165,24 +160,6 @@ export class MMApp extends React.Component {
 		}
 		else {
 			this.setState({dgmState: Object.assign(this.state.dgmState, f)});
-		}
-	}
-
-	/**
-	 * @method setViewInfoState
-	 * @param stackNumber
-	 * @param {Function} f (prevState) => newState | just Object
-	 * this method allows included components to save their state in a stack reflecting the pushed
-	 * info views.  That way the state is preserved if another view is pushed over it and can
-	 * be restored when the overlaying view is popped.
-	 */
-	setViewInfoState(f) {
-		let stack = this.state.infoStack;
-		if (stack.length) {
-			let top = stack[stack.length-1];
-			let viewState = top.viewState;
-			top.viewState = Object.assign(viewState,(typeof f === 'function') ? f(viewState) : f);
-			this.setState({infoStack: stack});
 		}
 	}
 
@@ -287,7 +264,6 @@ export class MMApp extends React.Component {
 			updateCommands: '',			// commands used to update the view state
 			updateResults: [],		// result of doCommand on the updateCommands
 			viewKey: viewKey,
-			viewState: {},
 		};
 		this.setState((state) => {
 			let stack = state.infoStack;
@@ -312,17 +288,17 @@ export class MMApp extends React.Component {
 						if (this.dgmStateStack.length) {
 							this.setState({dgmState: this.dgmStateStack.pop()});
 						}
-						this.updateViewState(stack.length-1, true);
+						this.updateView(stack.length-1, true);
 					});
 					break;
 
 				case 'console':
 					this.consoleInfo = oldTop;
-					this.updateViewState(stack.length-1);
+					this.updateView(stack.length-1);
 					break;
 				
 				default:
-					this.updateViewState(stack.length-1);
+					this.updateView(stack.length-1);
 					break;
 			}
 		}
@@ -344,7 +320,6 @@ export class MMApp extends React.Component {
 					updateCommands: '',
 					updateResults: [],
 					viewKey: 'Model',
-					viewState: {}
 				}
 				let infoStack = this.state.infoStack;
 				while (infoStack.length > 1 && infoStack[infoStack.length - 1].viewKey !== 'Model') {
@@ -385,7 +360,7 @@ export class MMApp extends React.Component {
 		while (infoStack.length > 1 && top.viewKey !== 'Model') {
 			if (top.title === toolName && top.viewKey === toolType) {
 				infoStack.pop();
-				this.updateViewState(infoStack.length-1);
+				this.updateView(infoStack.length-1);
 				return;
 			}
 			infoStack.pop();
@@ -401,7 +376,6 @@ export class MMApp extends React.Component {
 				updateCommands: updateCommand,			// commands used to update the view state
 				updateResults: cmds,		// result of doCommand on the updateCommands
 				viewKey: toolType,
-				viewState: {},
 			};
 			this.setState((state) => {
 				let stack = state.infoStack;
@@ -440,12 +414,12 @@ export class MMApp extends React.Component {
 		console.log(`show help ${viewKey}`);
 	}
 
-	/** @method updateViewState
+	/** @method updateView
 	 * @param {Number} stackIndex = info stack position of view
 	 * @param {Boolean} rescaleDiagram - should diagram be rescaled - default false
 	 * call doCommand with updateCommands to update th info view state
 	 */
-	updateViewState(stackIndex, rescaleDiagram = false) {
+	updateView(stackIndex, rescaleDiagram = false) {
 		let stack = this.state.infoStack;
 		if (stackIndex < stack.length) {
 			let top = stack[stackIndex];
@@ -502,7 +476,7 @@ export class MMApp extends React.Component {
 			}
 			this.setState({infoStack: infoStack});
 			this.updateDiagram();
-			this.updateViewState(infoStack.length-1)
+			this.updateView(infoStack.length-1)
 		});
 	}
 
@@ -683,7 +657,7 @@ export class MMApp extends React.Component {
 					const undo = this.undoStack.pop();
 					if (undo) {
 						this.doCommand('undo ' + undo, (results) => {
-							this.updateViewState(this.state.infoStack.length - 1);
+							this.updateView(this.state.infoStack.length - 1);
 							this.updateDiagram();
 						});
 					}	
@@ -700,7 +674,7 @@ export class MMApp extends React.Component {
 						const redo = this.redoStack.pop();
 						if (redo) {
 							this.doCommand('redo ' + redo, (results) => {
-								this.updateViewState(this.state.infoStack.length - 1);
+								this.updateView(this.state.infoStack.length - 1);
 								this.updateDiagram();
 							});
 						}
@@ -816,14 +790,9 @@ export class ToolNameField extends React.Component {
 	constructor(props) {
 		super(props);
 		let name;
-		if (this.props.viewInfo.viewState.toolName) {
-			name = this.props.viewInfo.viewState.toolName;
-		}
-		else {
-			const pathParts = this.props.viewInfo.path.split('.');
-			name = pathParts[pathParts.length - 1];
-		}
-		this.props.actions.setViewInfoState({toolName: name});
+		const pathParts = this.props.viewInfo.path.split('.');
+		name = pathParts[pathParts.length - 1];
+		this.state = {toolName: name};
 	}
 
 	render() {
@@ -831,18 +800,18 @@ export class ToolNameField extends React.Component {
 		return e(
 			'input', {
 				className: 'tool-name__input',
-				value: this.props.viewInfo.viewState.toolName || '',
+				value: this.state.toolName || '',
 				placeholder: t('react:toolNamePlaceHolder'),
 				onChange: (event) => {
 					// keeps input field in sync
 					const value = event.target.value;
-					this.props.actions.setViewInfoState({toolName: value});	
+					this.setState({toolName: value});	
 				},
 				onKeyPress: (event) => {
 					// watches for Enter and sends command when it see it
 					if (event.key == 'Enter') {
 						const path = this.props.viewInfo.path;
-						const newName = this.props.viewInfo.viewState.toolName;
+						const newName = this.state.toolName;
 						if (path.split('.').pop() != newName) {
 							this.props.actions.renameTool(path, newName);
 						}
@@ -851,7 +820,7 @@ export class ToolNameField extends React.Component {
 				onBlur: (event) => {
 					// watch for loss of focus
 					const path = this.props.viewInfo.path;
-					const newName = this.props.viewInfo.viewState.toolName;
+					const newName = this.state.toolName;
 					if (path.split('.').pop() != newName) {
 						this.props.actions.renameTool(path, newName);
 					}

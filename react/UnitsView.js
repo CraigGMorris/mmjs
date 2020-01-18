@@ -38,7 +38,7 @@ export class UnitsView extends React.Component {
 						onChange: (event) => {
 							let newName = event.target.value;
 							this.props.actions.doCommand(`/unitsys.sets set defaultSetName ${newName}`, (cmd) => {
-									this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+									this.props.actions.updateView(this.props.viewInfo.stackIndex);
 							});
 						},
 						checked: checked,
@@ -149,7 +149,7 @@ export class UserUnitsView extends React.Component {
 							className: 'user-units__delete',
 							onClick: (event) => {
 								this.props.actions.doCommand(`/unitsys.units remove ${unit.name}`, (cmds) => {
-									this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+									this.props.actions.updateView(this.props.viewInfo.stackIndex);
 								});
 							}						
 						}, 
@@ -185,7 +185,7 @@ export class UserUnitsView extends React.Component {
 						onKeyPress: (event) => {
 							// watches for Enter and sends command when it see it
 							this.props.actions.doCommand(`/unitsys.units adduserunit ${this.state.input}`, (cmds) => {
-								this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+								this.props.actions.updateView(this.props.viewInfo.stackIndex);
 							});
 							this.setState({input:''});
 						}
@@ -316,7 +316,7 @@ export class UnitSetsView extends React.Component {
 							// watches for Enter and sends command when it see it
 							if (event.key == 'Enter') {
 								this.props.actions.doCommand(`/unitsys.sets.${this.state.selected} renameto ${this.state.input}`, (cmds) => {
-									this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+									this.props.actions.updateView(this.props.viewInfo.stackIndex);
 								})
 							}
 						},
@@ -333,7 +333,7 @@ export class UnitSetsView extends React.Component {
 										let newName = cmds[0].results;
 										this.setState({selected: newName, input: newName});
 									}
-									this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+									this.props.actions.updateView(this.props.viewInfo.stackIndex);
 								})
 							}
 							event.stopPropagation()
@@ -396,7 +396,7 @@ export class UnitSetView extends React.Component {
 							unitInput: ''				
 						});
 					}
-					this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+					this.props.actions.updateView(this.props.viewInfo.stackIndex);
 				});
 			}
 		}
@@ -463,7 +463,7 @@ export class UnitSetView extends React.Component {
 										});
 									}
 									this.props.actions.doCommand(`${this.props.viewInfo.path} removetype ${name}`, (cmds) => {
-										this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+										this.props.actions.updateView(this.props.viewInfo.stackIndex);
 									});
 									event.stopPropagation();
 								}						

@@ -69,7 +69,7 @@ export class SessionsView extends React.Component {
 				await this.props.actions.doCommand(
 					`/ copy ${oldName} ${newName}`,
 					(cmds) => {
-						this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+						this.props.actions.updateView(this.props.viewInfo.stackIndex);
 						this.setState({menuPath: ''});
 					}
 				);
@@ -81,7 +81,7 @@ export class SessionsView extends React.Component {
 				await this.props.actions.doCommand(
 					`/ delete ${path}`,
 					(cmds) => {
-						this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+						this.props.actions.updateView(this.props.viewInfo.stackIndex);
 						if (path === currentPath) {
 							alert(t('react:sessionsDeletedCurrentPath', {current: currentPath}));
 						}
@@ -102,7 +102,7 @@ export class SessionsView extends React.Component {
 				await this.props.actions.doCommand(
 					`/ rename ${oldName} ${newName}`,
 					(cmds) => {
-						this.props.actions.updateViewState(this.props.viewInfo.stackIndex);
+						this.props.actions.updateView(this.props.viewInfo.stackIndex);
 						this.setState({menuPath: ''});
 						this.props.updateDiagram(true);
 					}
