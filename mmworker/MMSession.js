@@ -152,6 +152,7 @@ class MMSessionStorage  {
 					resolve(request.result);
 				}
 				else {
+					console.log(`list sessions failed ${event}`);
 					resolve(null);
 				}
 			};

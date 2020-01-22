@@ -3,42 +3,39 @@
 import {ToolNameField} from './MMApp.js';
 
 const e = React.createElement;
+const useState = React.useState;
+const useEffect = React.useEffect;
 
 /**
- * @class ModelView
+ * ModelView
  * info view for model
  */
-export class ModelView extends React.Component {
-	constructor(props) {
-		super(props);
-	}
+export function ModelView(props) {
 
-	componentDidMount() {
-		this.props.actions.setUpdateCommands(this.props.viewInfo.stackIndex,
-			`${this.props.viewInfo.path} toolViewInfo`);
-	}
+	useEffect(() => {
+		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
+			`${props.viewInfo.path} toolViewInfo`);
+	}, []);
 
-	render() {
-		let t = this.props.t;
-		return e(
+	let t = props.t;
+	return e(
+		'div', {
+			id: 'model',
+		},
+		e(
 			'div', {
-				id: 'model',
+				style: {
+					gridArea: 'name'
+				},
 			},
 			e(
-				'div', {
-					style: {
-						gridArea: 'name'
-					},
-				},
-				e(
-					ToolNameField, {
-						t: t,
-						viewInfo: this.props.viewInfo,
-						actions: this.props.actions
-					}
-				)
-			),
-			e('div', {}, 'Some stuff')
-		);
-	}
+				ToolNameField, {
+					t: t,
+					viewInfo: props.viewInfo,
+					actions: props.actions
+				}
+			)
+		),
+		e('div', {}, 'Some stuff')
+	);
 }

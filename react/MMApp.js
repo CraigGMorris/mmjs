@@ -9,6 +9,8 @@ import {ModelView} from './ModelView.js';
 import {ExpressionView} from './ExpressionView.js';
 
 const e = React.createElement;
+const useState = React.useState;
+const useEffect = React.useEffect;
 
 /**
  * Enum for view types.
@@ -21,122 +23,106 @@ const ViewType = Object.freeze({
 	twoPanes: 2
 });
 
+// {MMCommandPipe} pipe - pipe to worker
+const pipe = new MMCommandPipe();
+
+// {Integer} tag to ensure correct callback is used with doCommand
+let callBackId = 1;
+
+// {Array} commandCallBacks - a Map keyed by and id so callbacks are called in correct order
+const commandCallBacks = new Map();
+
+// {Array} dgmStateStack - keeps diagram state when model is pushed over it
+let dgmStateStack = [];
+
+// information need to generate initial root view component
+const initialInfo = {
+	title: 'root',
+	path: '/.root',
+	stackIndex: 0,
+	updateCommands: '',
+	updateResults: [],
+	viewKey: 'Model',
+};
+
+// stacks for undo and redo
+let undoStack = [];
+let redoStack = [];
+
+// infoStack keeps the information necessary to render all the info views pushed 
+let infoStack = [initialInfo];
+
 /**
- * @class MMApp
+ * MMApp
  * the main Math Minion window
- * @member {MMCommandPipe} pipe - pipe to worker
- * @member {Array} commandCallBacks - a Map keyed by and id so callbacks are called in correct order
- * @member {Array} dgmStateStack - keeps diagram state when model is pushed over it
- * @member {method[]} actions - methods passed to components
- * @member {Object} infoViews - classes of info views used to construct the react component appearing in the info view
- * @member {string[]} undoStack;
- * @member {string[]} redoStack;
  */
-export class MMApp extends React.Component {
-	constructor(props) {
-		super(props);
-		this.pipe = new MMCommandPipe();
-		this.callBackId = 1;
-		this.commandCallBacks = new Map();
-		this.dgmStateStack = [];
-		this.actions = {
-			doCommand: this.doCommand.bind(this),
-			pushModel: this.pushModel.bind(this),
-			popModel: this.popModel.bind(this),
-			pushTool: this.pushTool.bind(this),
-			pushView: this.pushView.bind(this),
-			popView: this.popView.bind(this),
-			resetInfoStack: this.resetInfoStack.bind(this),
-			setUpdateCommands: this.setUpdateCommands.bind(this),
-			updateView: this.updateView.bind(this),
-			updateDiagram: this.updateDiagram.bind(this),
-			renameTool: this.renameTool.bind(this),
-		};
+export function MMApp(props) {
+	let t = props.t;
 
- 		this.infoViews = {
-			'console': ConsoleView,
-			'sessions': SessionsView,
-			'units': UnitsView,
-			'userunits': UserUnitsView,
-			'unitsets': UnitSetsView,
-			'unitset': UnitSetView,
-			'Model': ModelView,
-			'Expression': ExpressionView
-		}
-
-		// information need to generate an console view component
-		this.consoleInfo = {
-			title: 'react:consoleTitle',
-			path: '',
-			stackIndex: 0,
-			updateCommands: '',
-			updateResults: [],
-			viewKey: 'console',
-		};
-
-		// information need to generate initial root view component
-		const initialInfo = {
-			title: 'root',
-			path: '/.root',
-			stackIndex: 0,
-			updateCommands: '',
-			updateResults: [],
-			viewKey: 'Model',
-		};
-
-		this.undoStack = [];
-		this.redoStack = [];
-
-		// calc pane style
-		const allow2Pane = document.documentElement.clientWidth >= 640;
-
-		this.state = {
-			/** @desc infoStack keeps the information necessary to render all the info views pushed */
-			infoStack: [initialInfo],
-			dgmState: {
-				dragType: null,
-				dragSelection: null,
-				selectionBox: null,
-				translate: {x: 0, y: 0},
-				scale: 1.0,				
-			},
-			allow2Pane: allow2Pane,
-			viewType: allow2Pane ? ViewType.twoPanes : ViewType.diagram
-		}
-
-		this.diagram = React.createRef();
-
-		this.doCommand = this.doCommand.bind(this);
-		this.updateDiagram = this.updateDiagram.bind(this);
-		this.popView = this.popView.bind(this);
-		this.pushView = this.pushView.bind(this);
-		this.pushConsole = this.pushConsole.bind(this);
-		this.showHelp = this.showHelp.bind(this);
-		this.setDgmState = this.setDgmState.bind(this);
+	// {Object} infoViews - classes of info views used to construct the react component appearing in the info view
+	const infoViews = {
+		'console': ConsoleView,
+		'sessions': SessionsView,
+		'units': UnitsView,
+		'userunits': UserUnitsView,
+		'unitsets': UnitSetsView,
+		'unitset': UnitSetView,
+		'Model': ModelView,
+		'Expression': ExpressionView
 	}
 
-	componentDidMount() {
+	// information need to generate an console view component
+	let consoleInfo = {
+		title: 'react:consoleTitle',
+		path: '',
+		stackIndex: 0,
+		updateCommands: '',
+		updateResults: [],
+		viewKey: 'console',
+	};
+
+	// diagram state variables
+	const [dgmState, setDgmState] = useState({
+		dragType: null,
+		dragSelection: null,
+		selectionBox: null,
+		translate: {x: 0, y: 0},
+		scale: 1.0,				
+	});
+	
+	// calc pane style
+	const twoPane = document.documentElement.clientWidth >= 640;
+	const [allow2Pane, setAllow2Pane] = useState(twoPane);
+
+	const [viewType, setViewType] = useState(twoPane ? ViewType.twoPanes : diagram);
+
+	const [viewInfo, setViewInfo] = useState(initialInfo);
+
+	const diagramRef = React.useRef(null);
+
+	useEffect(() => {
 		const setSize = () => {
 			const docElement = document.documentElement;
 			const docHeight = docElement.clientHeight;
 			const docWidth = docElement.clientWidth;
 			document.body.style.height = `${docHeight-16}px`;
 			document.body.style.width = `${docWidth-16}px`;
-			const allow2Pane = docWidth >= 640;
-			this.setState({
-				allow2Pane: allow2Pane,
-				viewType: allow2Pane ? ViewType.twoPanes : ViewType.diagram,
-			});
+			const twoPane = docWidth >= 640;
+			setAllow2Pane(twoPane);
+			setViewType(twoPane ? ViewType.twoPanes : ViewType.diagram);
 		};
 		setSize();
 		window.addEventListener('resize', setSize);
-	}
+		return () => {
+			window.removeEventListener('resize', setSize);
+		}
+	}, []);
 
-	/** @method resetInfoStack
+	/** resetInfoStack
 	 * @param {string} rootName
 	 * clears all views - called when new case loaded
 	 */
-	resetInfoStack(rootName) {
+	const resetInfoStack = (rootName) => {
 		const infoState = {
 			title: rootName,
 			path: `/.${rootName}`,
@@ -145,51 +131,49 @@ export class MMApp extends React.Component {
 			updateResults: [],
 			viewKey: 'Model',
 		};
-		this.setState({infoStack: [infoState]});
+		infoStack = [infoState];
 	}
 
 	/**
-	 * @method setDgmState
+	 * updateDgmState
 	 * @param {Function} f (prevState) => newState
 	 */
-	setDgmState(f) {
+	const updateDgmState = (f) => {
 		if (typeof f === 'function') {
-			this.setState((state) => {
-				return {dgmState: Object.assign(this.state.dgmState, f(state.dgmState))};
-			});
+			setDgmState({...dgmState, ...f(dgmState)});
 		}
 		else {
-			this.setState({dgmState: Object.assign(this.state.dgmState, f)});
+			setDgmState({...dgmState, ...f});
 		}
 	}
 
 	/**
-	 * @method errorAlert
+	 * errorAlert
 	 * @param {String} msg
 	 */
-	errorAlert(msg) {
-		let s = `${this.props.t('mmcmd:error')}\n${msg}`;
+	const errorAlert = (msg) => {
+		let s = `${props.t('mmcmd:error')}\n${msg}`;
 		alert(s);
 	}
 
 	/**
-	 * @method warningAlert
+	 * warningAlert
 	 * @param {String} msg
 	 */
-	warningAlert(msg) {
-		let s = `${this.props.t('mmcmd:warning')}\n${msg}`;
+	const warningAlert = (msg) => {
+		let s = `${props.t('mmcmd:warning')}\n${msg}`;
 		alert(s);
 	}
 
 	/**
-	 * @method doCommand - sends command to worker
+	 * doCommand - sends command to worker
 	 * @param {string} cmd
 	 * @param {function} callBack - (cmds[]) => {}
 	 */
-	doCommand(cmd, callBack) {
-		this.commandCallBacks.set(this.callBackId, callBack);
-		let cmdObject = {cmdString: cmd, id: this.callBackId++};
-		this.pipe.doCommand(cmdObject, (results) => {
+	const doCommand = (cmd, callBack) => {
+		commandCallBacks.set(callBackId, callBack);
+		let cmdObject = {cmdString: cmd, id: callBackId++};
+		pipe.doCommand(cmdObject, (results) => {
 			let error = results.error;
 			let warning;
 			if (!error) {
@@ -204,20 +188,20 @@ export class MMApp extends React.Component {
 					if (!warning) {
 						if (result.undo) {
 							if (result.expression && result.expression.startsWith("undo ")) {
-								this.redoStack.push(result.undo);
+								redoStack.push(result.undo);
 							}
 							else {
 								if (!result.expression || !result.expression.startsWith("redo ")) {
-									this.redoStack = [];
+									redoStack = [];
 								}
-									this.undoStack.push(result.undo);
+									undoStack.push(result.undo);
 							}
 						}
 					}
 				}
 			}
 			let stringify = (msg) => {
-				let s = this.props.t(msg.msgKey, msg.args);
+				let s = props.t(msg.msgKey, msg.args);
 				if (msg.child) {
 					s += '\n' + stringify(msg.child);
 				}
@@ -226,23 +210,23 @@ export class MMApp extends React.Component {
 
 			if (error) {
 				if (error.msgKey) {
-					this.errorAlert(stringify(error));
+					errorAlert(stringify(error));
 				}
 				else {
-					this.errorAlert(error);
+					errorAlert(error);
 				}
 			}
 			else if (warning) {
 				if (warning.msgKey) {
-					this.warningAlert(stringify(warning));
+					warningAlert(stringify(warning));
 				}
 				else {
-					this.warningAlert(warning);
+					warningAlert(warning);
 				}
 			}
 			if (results.id) {
-				const savedCallBack = this.commandCallBacks.get(results.id);
-				this.commandCallBacks.delete(results.id);
+				const savedCallBack = commandCallBacks.get(results.id);
+				commandCallBacks.delete(results.id);
 				if (savedCallBack) {
 					savedCallBack(results);
 				}
@@ -250,117 +234,110 @@ export class MMApp extends React.Component {
 		});
 	}
 
-	/** @method pushView
+	/** pushView
 	 * pushes the creation information for a new info view onto the infoStack
 	 * @param {string} viewKey - key to view class in infoViews
 	 * @param {string} title
 	 * @param	{string} path - command path to object to display (if applicable)
 	 */
-	pushView(viewKey, title, path) {
+	const pushView = (viewKey, title, path) => {
 		let newInfoState = {
 			title: (title ? title : ''),
 			path: (path ? path : ''),
-			stackIndex: this.state.infoStack.length,
+			stackIndex: infoStack.length,
 			updateCommands: '',			// commands used to update the view state
 			updateResults: [],		// result of doCommand on the updateCommands
 			viewKey: viewKey,
 		};
-		this.setState((state) => {
-			let stack = state.infoStack;
-			stack.push(newInfoState);
-			return {
-				infoStack: stack,
-				viewType: state.viewType === ViewType.diagram ? ViewType.info : state.viewType
-			};
-		})
+		infoStack.push(newInfoState);
+		setViewInfo(newInfoState);
+		setViewType(viewType === ViewType.diagram ? ViewType.info : viewType);
 	}
 
-	/** @method popView
+	/** popView
 	 * if more than one thing on info stack, it pops the last one
 	 */
-	popView() {
-		let stack = this.state.infoStack;
-		if (stack.length > 1) {
-			const oldTop = stack.pop();
+	const popView = () => {
+		if (infoStack.length > 1) {
+			const oldTop = infoStack.pop();
 			switch (oldTop.viewKey) {
 				case 'Model':
-					this.doCommand('/ popmodel', (cmds) => {
-						if (this.dgmStateStack.length) {
-							this.setState({dgmState: this.dgmStateStack.pop()});
+					doCommand('/ popmodel', (cmds) => {
+						if (dgmStateStack.length) {
+							setDgmState(dgmStateStack.pop());
 						}
-						this.updateView(stack.length-1, true);
+						updateView(infoStack.length-1, true);
 					});
 					break;
 
 				case 'console':
-					this.consoleInfo = oldTop;
-					this.updateView(stack.length-1);
+					consoleInfo = oldTop;
+					updateView(infoStack.length-1);
 					break;
 				
 				default:
-					this.updateView(stack.length-1);
+					updateView(infoStack.length-1);
 					break;
 			}
+			setViewInfo(infoStack[infoStack.length-1]);
 		}
 	}
 
 	/**
-	 * @method pushModel
+	 * pushModel
 	 * pushes model named on to the diagram and infoview
 	 * @param {String} modelName 
 	 */
-	pushModel(modelName) {
-		this.doCommand(`/ pushmodel ${modelName}`, (cmds) => {
-			this.dgmStateStack.push(Object.assign({}, this.state.dgmState));
+	const pushModel = (modelName) => {
+		doCommand(`/ pushmodel ${modelName}`, (cmds) => {
+			dgmStateStack.push({...dgmState});
+			const path = cmds[0].results;
 			if (cmds.length) {
 				const modelInfoState = {
 					title: modelName,
-					path: cmds[0].results,
+					path: path,
 					stackIndex: 0,
 					updateCommands: '',
 					updateResults: [],
 					viewKey: 'Model',
 				}
-				let infoStack = this.state.infoStack;
 				while (infoStack.length > 1 && infoStack[infoStack.length - 1].viewKey !== 'Model') {
 					infoStack.pop();
 				}
 				infoStack.push(modelInfoState);
-				this.setState({infoStack: infoStack});
-				this.updateDiagram(true);
+				setViewInfo(modelInfoState);
+				updateDiagram(true);
 			}
 		});
 	}
 
 	/**
-	 * @method popModel
+	 * popModel
 	 * on the diagram and infoview
 	 */
-	popModel() {
-		let stack = this.state.infoStack;
-		while (stack.length > 1 && stack[stack.length-1].viewKey !== 'Model') {
-			const oldTop = stack.pop();
+	const popModel = () => {
+		while (infoStack.length > 1 && infoStack[infoStack.length-1].viewKey !== 'Model') {
+			const oldTop = infoStack.pop();
 			if (oldTop.viewKey === 'console') {
-				this.consoleInfo = oldTop;
+				consoleInfo = oldTop;
 			}
 		}
-		this.popView();
+		popView();
 	}
 
 
 	/**
-	 * @method pushTool
+	 * pushTool
 	 * pushes tool named on to the infoview
 	 * @param {String} toolName
 	 * @param {String} toolType
 	 */
-	pushTool(toolName, toolType) {
-		let infoStack = this.state.infoStack;
+	const pushTool = (toolName, toolType) => {
 		let top = infoStack[infoStack.length - 1];
 		while (infoStack.length > 1 && top.viewKey !== 'Model') {
 			if (top.title === toolName && top.viewKey === toolType) {
 				infoStack.pop();
-				this.updateView(infoStack.length-1);
+				updateView(infoStack.length-1);
 				return;
 			}
 			infoStack.pop();
@@ -368,93 +345,80 @@ export class MMApp extends React.Component {
 		top = infoStack[infoStack.length - 1];
 		const path = `${top.path}.${toolName}`;
 		const updateCommand = `${path} toolViewInfo`;
-		this.doCommand(updateCommand, (cmds) => {
+		doCommand(updateCommand, (cmds) => {
 			let newInfoState = {
 				title: (toolName ? toolName : ''),
 				path: (path ? path : ''),
-				stackIndex: this.state.infoStack.length,
+				stackIndex: infoStack.length,
 				updateCommands: updateCommand,			// commands used to update the view state
 				updateResults: cmds,		// result of doCommand on the updateCommands
 				viewKey: toolType,
 			};
-			this.setState((state) => {
-				let stack = state.infoStack;
-				stack.push(newInfoState);
-				return {
-					infoStack: stack,
-					viewType: state.viewType === ViewType.diagram ? ViewType.info : state.viewType
-				};
-			})
+			infoStack.push(newInfoState);
+			setViewInfo(newInfoState);
+			setViewType(viewType === ViewType.diagram ? ViewType.info : viewType)
 		});
 	}
 
 	/**
-	 * @method pushConsole
+	 * pushConsole
 	 * pushes the console onto the info view
 	 */
-	pushConsole() {
-		this.setState((state) => {
-			let stack = state.infoStack;
-			stack.push(this.consoleInfo);
-			return {
-				infoStack: stack,
-				viewType: state.viewType === ViewType.diagram ? ViewType.info : state.viewType
-			};
-		})
-
+	const pushConsole = () => {
+		infoStack.push(consoleInfo);
+		setViewInfo(consoleInfo);
+		setViewType(viewType === ViewType.diagram ? ViewType.info : viewType)
 	}
 
 	/**
-	 * @method showHelp
+	 * showHelp
 	 * show help for the current view
 	 */
-	showHelp() {
-		let stackLength = this.state.infoStack.length;
-		let viewKey = stackLength ? this.state.infoStack[stackLength - 1].viewKey : 'none';
+	const showHelp = () => {
+		let stackLength = infoStack.length;
+		let viewKey = stackLength ? infoStack[stackLength - 1].viewKey : 'none';
 		console.log(`show help ${viewKey}`);
 	}
 
-	/** @method updateView
+	/** updateView
 	 * @param {Number} stackIndex = info stack position of view
 	 * @param {Boolean} rescaleDiagram - should diagram be rescaled - default false
 	 * call doCommand with updateCommands to update th info view state
 	 */
-	updateView(stackIndex, rescaleDiagram = false) {
-		let stack = this.state.infoStack;
-		if (stackIndex < stack.length) {
-			let top = stack[stackIndex];
+	const updateView = (stackIndex, rescaleDiagram = false) => {
+		if (stackIndex < infoStack.length) {
+			let top = infoStack[stackIndex];
+			setViewInfo(top);
 			if (top.updateCommands) {
-				this.doCommand(top.updateCommands, (cmds) => {
+				doCommand(top.updateCommands, (cmds) => {
 					top.updateResults = cmds;
-					this.setState({infoStack: stack});
-					this.updateDiagram(rescaleDiagram);
+					updateDiagram(rescaleDiagram);
 				});
 			}
 			else {
-				this.setState({infoStack: stack});
-				this.updateDiagram(rescaleDiagram);
+				updateDiagram(rescaleDiagram);
 			}
 		}
 	}
 
 	/**
-	 * @method updateDiagram
+	 * updateDiagram
 	 * @param {Boolean} rescale - should diagram be rescaled - default false
 	 */
-	updateDiagram(rescale = false) {
-		if (this.diagram.current) {
-			this.diagram.current.getModelInfo(rescale);
+	const updateDiagram = (rescale = false) => {
+		if (diagramRef.current) {
+			diagramRef.current.getModelInfo(rescale);
 		}
 	}
 
 	/**
-	 * @method renameTool
+	 * renameTool
 	 * @param {String} path 
 	 * @param {String} newName
 	 * renames tool at path to newName (in same parent model)
 	 */
-	renameTool(path, newName) {
-		this.doCommand(`${path} renameto ${newName}`, (cmd) => {
+	const renameTool = (path, newName) => {
+		doCommand(`${path} renameto ${newName}`, (cmd) => {
 			// fix up things in the view info to reflect the new name
 			let parts = path.split('.');
 			const oldName = parts.pop();
@@ -462,7 +426,6 @@ export class MMApp extends React.Component {
 			const newPath = parts.join('.');
 			const escapedPath = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 			const re = new RegExp(`^${escapedPath} `, 'gi');
-			let infoStack = this.state.infoStack;
 			for (let i = 0; i < infoStack.length; i++) {
 				let viewInfo = infoStack[i];
 				if (viewInfo.path === path) {
@@ -474,358 +437,366 @@ export class MMApp extends React.Component {
 					infoStack[i] = viewInfo;
 				}
 			}
-			this.setState({infoStack: infoStack});
-			this.updateDiagram();
-			this.updateView(infoStack.length-1)
+			updateDiagram();
+			updateView(infoStack.length-1)
 		});
 	}
 
-	/** @method setUpdateCommands
+	/** setUpdateCommands
 	 * @param {Number} stackIndex - index of view in infoStack
 	 * @param {string} commands - commands to be run to update state
 	 */
-	setUpdateCommands(stackIndex, commands) {
-		let stack = this.state.infoStack;
-		if (stackIndex < stack.length) {
-			let top = stack[stack.length-1];
-			this.doCommand(commands, (cmds) => {
+	const setUpdateCommands = (stackIndex, commands) => {
+		if (stackIndex < infoStack.length) {
+			let top = infoStack[infoStack.length-1];
+			doCommand(commands, (cmds) => {
 				top.updateCommands = commands;
 				top.updateResults = cmds;
-				this.setState({infoStack: stack});
+				setViewInfo(top);
+				updateView(stackIndex);
 			});
 		}
 	}
 
-	handleButtonClick(event) {
+	const handleButtonClick = (event) => {
 		let parts = event.target.value.split(' ');
 		switch (parts[0]) {
 			case 'undo':
-				const undo = this.undoStack.pop();
+				const undo = undoStack.pop();
 				if (undo) {
-					this.doCommand('undo ' + undo, (results) => {
-						this.updateDiagram();
+					doCommand('undo ' + undo, (results) => {
+						updateDiagram();
 					});
 				}
 				break;
 			case 'redo':
-				const redo = this.redoStack.pop();
+				const redo = redoStack.pop();
 				if (redo) {
-					this.doCommand('redo ' + redo, (results) => {
-						this.updateDiagram();
+					doCommand('redo ' + redo, (results) => {
+						updateDiagram();
 					});
 				}
 				break;
 			case 'expand':
-				this.setState((state) => {
-					switch (state.viewType) {
-						case ViewType.twoPanes:
-							return {viewType: ViewType.info};
+				switch (viewType) {
+					case ViewType.twoPanes:
+						setViewType(ViewType.info);
+						break;
 
-						case ViewType.diagram:
-							return {viewType: (state.allow2Pane) ? ViewType.twoPanes : ViewType.info};
+					case ViewType.diagram:
+						setViewType(allow2Pane ? ViewType.twoPanes : ViewType.info);
+						break;
 
-						case ViewType.info:
-							return {viewType: (state.allow2Pane) ? ViewType.twoPanes : ViewType.diagram}
-					}
-				})
+					case ViewType.info:
+						setViewType(allow2Pane ? ViewType.twoPanes : ViewType.diagram);
+						break;
+					default:
+						break;
+				}
 				break;
 			case 'console':
-				this.pushConsole();
+				pushConsole();
 				break;
 			default:
-				this.pushView(parts[0], parts[1], parts[2], );
+				pushView(parts[0], parts[1], parts[2], );
 				break;
 		}
 	}
 
-	render() {
-		let t = this.props.t;
-		let previousTitle = '';
-		let title = '';
-		let infoStack = this.state.infoStack;
-		let infoView = null;
-		let infoNav = null;
-		const viewType = this.state.viewType;
-		const docElement = document.documentElement;
-		const docHeight = docElement.clientHeight-16;
-		const docWidth = docElement.clientWidth-16;
-		const infoWidth = (viewType !== ViewType.info) ? 320 : docWidth;
-		const toolHeight = 40;
-		const navHeight = 40;
-		const infoHeight = docHeight - navHeight - toolHeight;
-		document.documentElement.style.setProperty('--info-height', `${infoHeight}px`);
-		let diagramBox = {top: 9, left: 9, height: docHeight, width: docWidth - infoWidth}
-		if (viewType !== ViewType.diagram) {
-			let i = infoStack.length-1;
-			previousTitle = i > 0 ? infoStack[i-1].title : '';
-			let viewInfo = this.state.infoStack[i];
-			title = viewInfo.title;
-			infoView = e(
-				'div', {
-					id: 'info-view',
-				},
-				e(this.infoViews[viewInfo.viewKey], {
-					key: viewInfo.path,
-					className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
-					actions: this.actions,
-					viewInfo: viewInfo,
-					infoWidth: infoWidth,
-					infoHeight: infoHeight,
-					updateDiagram: this.updateDiagram,
-					stackNumber: i,
-					t: t
-				})
-			);
-			infoNav = e(
-				'div', {
-					id: 'info-nav',
-					className: previousTitle ? 'three-column' : 'two-column',
-				},
-				e(
-					'div',{
-						id: 'info-nav__back',
-						onClick: this.popView
-					}, previousTitle ? '< ' + t(previousTitle) : ''),
-				e(
-					'div',{
-						id: 'info-nav__title',
-					},t(title)),
-				e(
-					'div', {
-						id: 'info-nav__help',
-						onClick: this.showHelp
-					}, '?'
-				)			
-			);
-		}
-		else {
-			diagramBox = {top: 9, left: 9, height: docHeight-toolHeight, width: docWidth}
-		}
-
-		let diagram = null;
+	// {method[]} actions - methods passed to components
+	let actions = {
+		doCommand: doCommand,
+		pushModel: pushModel,
+		popModel: popModel,
+		pushTool: pushTool,
+		pushView: pushView,
+		popView: popView,
+		resetInfoStack: resetInfoStack,
+		setUpdateCommands: setUpdateCommands,
+		updateView: updateView,
+		updateDiagram: updateDiagram,
+		renameTool: renameTool,
+	};
 	
-		if (viewType !== ViewType.info) {
-			diagram = e(Diagram, {
-				ref: this.diagram,
-				infoWidth: infoView ? infoWidth : 0,
-				dgmState: this.state.dgmState,
-				diagramBox: diagramBox,
-				setDgmState: this.setDgmState,
-				actions: this.actions,
-			});
-		}
-
-		let expandText = t('react:dgmButtonExpand');
-		if (viewType === ViewType.info) {
-			expandText = t('react:dgmButtonDiagram');
-		}
-		else if (viewType === ViewType.diagram) {
-			expandText = t('react:dgmButtonInfo');
-		}
-
-		let viewKeys = new Set(infoStack.map(v => v.viewKey));		
-		const infoTools = e(
+	let previousTitle = '';
+	let title = '';
+	let infoView = null;
+	let infoNav = null;
+	const docElement = document.documentElement;
+	const docHeight = docElement.clientHeight-16;
+	const docWidth = docElement.clientWidth-16;
+	const infoWidth = (viewType !== ViewType.info) ? 320 : docWidth;
+	const toolHeight = 40;
+	const navHeight = 40;
+	const infoHeight = docHeight - navHeight - toolHeight;
+	document.documentElement.style.setProperty('--info-height', `${infoHeight}px`);
+	let diagramBox = {top: 9, left: 9, height: docHeight, width: docWidth - infoWidth}
+	if (viewType !== ViewType.diagram) {
+		let i = infoStack.length-1;
+		previousTitle = i > 0 ? infoStack[i-1].title : '';
+		let viewInfo = infoStack[i];
+		title = viewInfo.title;
+		infoView = e(
 			'div', {
-				id: 'info-tools',
+				id: 'info-view',
+			},
+			e(infoViews[viewInfo.viewKey], {
+				key: viewInfo.path,
+				className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
+				actions: actions,
+				viewInfo: viewInfo,
+				infoWidth: infoWidth,
+				infoHeight: infoHeight,
+				updateDiagram: updateDiagram,
+				stackNumber: i,
+				t: t
+			})
+		);
+		infoNav = e(
+			'div', {
+				id: 'info-nav',
+				className: previousTitle ? 'three-column' : 'two-column',
 			},
 			e(
-				'button', {
-					id:'info-tools__expand-button',
-					className: 'info-tools__button',
-					onClick: (event) => {
-						this.setState((state) => {
-							switch (state.viewType) {
-								case ViewType.twoPanes:
-									return {viewType: ViewType.info};
-		
-								case ViewType.diagram:
-									return {viewType: (state.allow2Pane) ? ViewType.twoPanes : ViewType.info};
-		
-								case ViewType.info:
-									return {viewType: (state.allow2Pane) ? ViewType.twoPanes : ViewType.diagram}
-							}
-						})
-					}
-				},
-				expandText
-			),
-			e('button', {
-				id:'info-tools__undo-button',
-				className: 'info-tools__button',
-				disabled: !this.undoStack.length,
-				onClick: (event) => {
-					const undo = this.undoStack.pop();
-					if (undo) {
-						this.doCommand('undo ' + undo, (results) => {
-							this.updateView(this.state.infoStack.length - 1);
-							this.updateDiagram();
-						});
-					}	
-				}
-				},
-				t('react:dgmButtonUndo')
-			),
+				'div',{
+					id: 'info-nav__back',
+					onClick: popView
+				}, previousTitle ? '< ' + t(previousTitle) : ''),
 			e(
-					'button', {
-					id:'info-tools__redo-button',
-					className: 'info-tools__button',
-					disabled: !this.redoStack.length,
-					onClick: (event) => {
-						const redo = this.redoStack.pop();
-						if (redo) {
-							this.doCommand('redo ' + redo, (results) => {
-								this.updateView(this.state.infoStack.length - 1);
-								this.updateDiagram();
-							});
-						}
-					}
-				},
-				t('react:dgmButtonRedo')
-			),
+				'div',{
+					id: 'info-nav__title',
+				},t(title)),
 			e(
-				'button', {
-					id:'info-tools__unit-button',
-					className: 'info-tools__button',
-					disabled: viewKeys.has('units'),
-					onClick: (event) => {
-						this.pushView('units', 'react:unitsTitle');
-					}
-				},
-				t('react:dgmButtonUnits')
-			),
-			e(
-				'button', {
-					id:'info-tools__console-button',
-					className: 'info-tools__button',
-					disabled: viewKeys.has('console'),
-					onClick: (event) => {
-						this.pushConsole();
-					}
-				},
-				t('react:dgmButtonConsole')
-			),
-			e(
-					'button', {
-					id:'info-tools__sessions-button',
-					className: 'info-tools__button',
-					disabled: viewKeys.has('sessions'),
-					onClick: (event) => {
-						this.pushView('sessions', 'react:sessionsTitle');
-					}
-				},
-				t('react:dgmButtonSessions')
-			),
+				'div', {
+					id: 'info-nav__help',
+					onClick: showHelp
+				}, '?'
+			)			
 		);
-
-		let wrapper;
-		const onePaneStyle = {
-			width: `${docWidth}px`,
-			gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
-		};
-
-		switch (viewType) {
-			case ViewType.twoPanes:
-				wrapper = e(
-					'div',{
-						id: 'mmapp__wrapper--two-pane',
-						style: {
-							gridTemplateColumns: `1fr ${infoWidth}px`,
-							gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
-						},
-					},
-					e(
-						'div', {
-							id: 'mmapp__diagram--two-pane',
-							className: 'mmapp__diagram',
-						},
-						diagram
-					),
-					infoNav,
-					infoView,
-					infoTools,
-				);
-				break;
-
-			case ViewType.diagram:
-				wrapper = e(
-					'div', {
-						id: 'mmapp__wrapper--one-pane',
-						className: 'mmapp__wrapper--one-pane',
-						style: onePaneStyle
-					},
-					e(
-						'div', {
-							id: 'mmapp__diagram--one-pane',
-							className: 'mmapp__diagram',
-						},
-						diagram
-					),
-					infoTools,
-				);
-				break;	
-				
-			case ViewType.info:
-				wrapper = e(
-					'div', {
-						id: 'mmapp__info--one-pane',
-						className: 'mmapp__wrapper--one-pane',
-						style: onePaneStyle,
-					},
-					infoNav,
-					infoView,
-					infoTools,
-				);
-			break;
-		}
-
-		return wrapper;
 	}
+	else {
+		diagramBox = {top: 9, left: 9, height: docHeight-toolHeight, width: docWidth}
+	}
+
+	let diagram = null;
+
+	if (viewType !== ViewType.info) {
+		diagram = e(Diagram, {
+			ref: diagramRef,
+			infoWidth: infoView ? infoWidth : 0,
+			dgmState: dgmState,
+			diagramBox: diagramBox,
+			setDgmState: updateDgmState,
+			actions: actions,
+		});
+	}
+
+	let expandText = t('react:dgmButtonExpand');
+	if (viewType === ViewType.info) {
+		expandText = t('react:dgmButtonDiagram');
+	}
+	else if (viewType === ViewType.diagram) {
+		expandText = t('react:dgmButtonInfo');
+	}
+
+	let viewKeys = new Set(infoStack.map(v => v.viewKey));		
+	const infoTools = e(
+		'div', {
+			id: 'info-tools',
+		},
+		e(
+			'button', {
+				id:'info-tools__expand-button',
+				className: 'info-tools__button',
+				onClick: (event) => {
+					switch (viewType) {
+						case ViewType.twoPanes:
+							setViewType(ViewType.info);
+							break;
+
+						case ViewType.diagram:
+							setViewType(allow2Pane ? ViewType.twoPanes : ViewType.info);
+							break;
+
+						case ViewType.info:
+							setViewType(allow2Pane ? ViewType.twoPanes : ViewType.diagram);
+							break;
+						default:
+							break;
+					}
+				}
+			},
+			expandText
+		),
+		e('button', {
+			id:'info-tools__undo-button',
+			className: 'info-tools__button',
+			disabled: !undoStack.length,
+			onClick: (event) => {
+				const undo = undoStack.pop();
+				if (undo) {
+					doCommand('undo ' + undo, (results) => {
+						updateView(infoStack.length - 1);
+						updateDiagram();
+					});
+				}	
+			}
+			},
+			t('react:dgmButtonUndo')
+		),
+		e(
+				'button', {
+				id:'info-tools__redo-button',
+				className: 'info-tools__button',
+				disabled: !redoStack.length,
+				onClick: (event) => {
+					const redo = redoStack.pop();
+					if (redo) {
+						doCommand('redo ' + redo, (results) => {
+							updateView(infoStack.length - 1);
+							updateDiagram();
+						});
+					}
+				}
+			},
+			t('react:dgmButtonRedo')
+		),
+		e(
+			'button', {
+				id:'info-tools__unit-button',
+				className: 'info-tools__button',
+				disabled: viewKeys.has('units'),
+				onClick: (event) => {
+					pushView('units', 'react:unitsTitle');
+				}
+			},
+			t('react:dgmButtonUnits')
+		),
+		e(
+			'button', {
+				id:'info-tools__console-button',
+				className: 'info-tools__button',
+				disabled: viewKeys.has('console'),
+				onClick: (event) => {
+					pushConsole();
+				}
+			},
+			t('react:dgmButtonConsole')
+		),
+		e(
+				'button', {
+				id:'info-tools__sessions-button',
+				className: 'info-tools__button',
+				disabled: viewKeys.has('sessions'),
+				onClick: (event) => {
+					pushView('sessions', 'react:sessionsTitle');
+				}
+			},
+			t('react:dgmButtonSessions')
+		),
+	);
+
+	let wrapper;
+	const onePaneStyle = {
+		width: `${docWidth}px`,
+		gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
+	};
+
+	switch (viewType) {
+		case ViewType.twoPanes:
+			wrapper = e(
+				'div',{
+					id: 'mmapp__wrapper--two-pane',
+					style: {
+						gridTemplateColumns: `1fr ${infoWidth}px`,
+						gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
+					},
+				},
+				e(
+					'div', {
+						id: 'mmapp__diagram--two-pane',
+						className: 'mmapp__diagram',
+					},
+					diagram
+				),
+				infoNav,
+				infoView,
+				infoTools,
+			);
+			break;
+
+		case ViewType.diagram:
+			wrapper = e(
+				'div', {
+					id: 'mmapp__wrapper--one-pane',
+					className: 'mmapp__wrapper--one-pane',
+					style: onePaneStyle
+				},
+				e(
+					'div', {
+						id: 'mmapp__diagram--one-pane',
+						className: 'mmapp__diagram',
+					},
+					diagram
+				),
+				infoTools,
+			);
+			break;	
+			
+		case ViewType.info:
+			wrapper = e(
+				'div', {
+					id: 'mmapp__info--one-pane',
+					className: 'mmapp__wrapper--one-pane',
+					style: onePaneStyle,
+				},
+				infoNav,
+				infoView,
+				infoTools,
+			);
+		break;
+	}
+
+	return wrapper;
 }
 
 /**
- * @class ToolNameField
+ * ToolNameField
  * common field for tool name in tool info views
  */
-export class ToolNameField extends React.Component {
-	constructor(props) {
-		super(props);
-		let name;
-		const pathParts = this.props.viewInfo.path.split('.');
-		name = pathParts[pathParts.length - 1];
-		this.state = {toolName: name};
+export function ToolNameField(props) {
+	let name;
+	const pathParts = props.viewInfo.path.split('.');
+	name = pathParts[pathParts.length - 1];
+	const [toolName, setToolName] = useState(name);
+	const t = props.t;
+	const doRename = () => {
+		const path = props.viewInfo.path;
+		if (path.split('.').pop() != toolName) {
+			props.actions.renameTool(path, toolName);
+		}
 	}
 
-	render() {
-		let t = this.props.t;
-		return e(
-			'input', {
-				className: 'tool-name__input',
-				value: this.state.toolName || '',
-				placeholder: t('react:toolNamePlaceHolder'),
-				onChange: (event) => {
-					// keeps input field in sync
-					const value = event.target.value;
-					this.setState({toolName: value});	
-				},
-				onKeyPress: (event) => {
-					// watches for Enter and sends command when it see it
-					if (event.key == 'Enter') {
-						const path = this.props.viewInfo.path;
-						const newName = this.state.toolName;
-						if (path.split('.').pop() != newName) {
-							this.props.actions.renameTool(path, newName);
-						}
-					}		
-				},
-				onBlur: (event) => {
-					// watch for loss of focus
-					const path = this.props.viewInfo.path;
-					const newName = this.state.toolName;
-					if (path.split('.').pop() != newName) {
-						this.props.actions.renameTool(path, newName);
-					}
+	return e(
+		'input', {
+			className: 'tool-name__input',
+			value: toolName || '',
+			placeholder: t('react:toolNamePlaceHolder'),
+			onChange: (event) => {
+				// keeps input field in sync
+				const value = event.target.value;
+				setToolName(value);	
+			},
+			onKeyPress: (event) => {
+				// watches for Enter and sends command when it see it
+				if (event.key == 'Enter') {
+					doRename()
+				}		
+			},
+			onBlur: (event) => {
+				// watch for loss of focus
+				doRename();
 				}
 			}
-		);
-	}
+	);
 }
