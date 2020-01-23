@@ -1,6 +1,6 @@
 'use strict';
 
-import {ToolNameField} from './MMApp.js';
+import {ToolView} from './ToolView.js';
 
 const e = React.createElement;
 const useState = React.useState;
@@ -18,24 +18,12 @@ export function ModelView(props) {
 	}, []);
 
 	let t = props.t;
+	let toolComponent = e('div', {key: 'model'}, 'Some stuff');
 	return e(
-		'div', {
-			id: 'model',
+		ToolView, {
+			id: 'tool-view',
+			toolComponent: toolComponent,
+			...props,
 		},
-		e(
-			'div', {
-				style: {
-					gridArea: 'name'
-				},
-			},
-			e(
-				ToolNameField, {
-					t: t,
-					viewInfo: props.viewInfo,
-					actions: props.actions
-				}
-			)
-		),
-		e('div', {}, 'Some stuff')
 	);
 }
