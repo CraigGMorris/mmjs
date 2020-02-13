@@ -1066,7 +1066,7 @@ const MMToolTypes = {
  * @member {boolean} isHidingInfo;
  * @member {Set<MMTool>} valueRequestors;
  * @member {MMPoint} position;
- * @member {boolean} showNotesOnDiagram;
+ * @member {boolean} diagramNotes;
  */
 class MMTool extends MMCommandParent {
 	/** @constructor
@@ -1084,6 +1084,7 @@ class MMTool extends MMCommandParent {
 		this.position = this.session.nextToolLocation;
 		this.session.nextToolLocation = this.session.unknownPosition;
 		this.isHidingInfo = false;
+		this.diagramNotes = false;
 	}
 
 	get properties() {
@@ -1091,6 +1092,7 @@ class MMTool extends MMCommandParent {
 		d['displayName'] = {type: PropertyType.string, readOnly: true};
 		d['description'] = {type: PropertyType.string, readOnly: true};
 		d['notes'] = {type: PropertyType.string, readOnly: false};
+		d['diagramNotes'] = {type: PropertyType.boolean, readOnly: false};
 		return d;
 	}
 
@@ -1126,7 +1128,10 @@ class MMTool extends MMCommandParent {
 	 * should be overridden by derived classes
 	 */
 	toolViewInfo(command) {
-		command.results = {notes: this.notes}
+		command.results = {
+			notes: this.notes,
+			diagramNotes: this.diagramNotes,
+		}
 	}
 
 	/**
@@ -1213,7 +1218,18 @@ class MMTool extends MMCommandParent {
 			DiagramX: this.position.x,
 			DiagramY: this.position.y,
 			HideInfo: this.isHidingInfo ? 'y': 'n',
+			DiagramNotee: this.diagramNotes ? 'y' : 'n', 
 		};
 	}
 
+	/**
+	 * @method initFromSaved - initialize from stored object
+	 * @param {Object} saved 
+	 */
+	initFromSaved(saved) {
+		this.notes = saved.Notes;
+		this.position = new MMPoint(saved.DiagramX, saved.DiagramY);
+		this.isHidingInfo = (saved.HideInfo === 'y');
+		this.diagramNotes = (saved.DiagramNotee === 'y');
+	}
 }

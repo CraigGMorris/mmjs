@@ -213,6 +213,7 @@ class MMModel extends MMTool {
 	 * @param {Object} saved 
 	 */
 	initFromSaved(saved) {
+		super.initFromSaved(saved);
 		theMMSession.pushModel(this);
 		let tools = saved.Objects;
 		for (let tool of tools) {
@@ -223,9 +224,6 @@ class MMModel extends MMTool {
 			}
 			let newTool = toolType.factory(name, this);
 			newTool.initFromSaved(tool);
-			if (newTool) {
-				newTool.position = new MMPoint(tool.DiagramX, tool.DiagramY);
-			}	
 		}
 		theMMSession.popModel();
 	}

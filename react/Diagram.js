@@ -1,5 +1,9 @@
 'use strict';
 
+// this works better as a class component as one can then have a ref to it
+// and call getModelInfo with the appropriate scaling argument to update it
+// on session and model changes
+
 const e = React.createElement;
 
 	/**

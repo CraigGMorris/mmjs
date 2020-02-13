@@ -250,6 +250,7 @@ class MMExpression extends MMTool {
 	 * @param {Object} saved 
 	 */
 	initFromSaved(saved) {
+		super.initFromSaved(saved);
 		this.formula.formula = saved.Formula;
 		this.isInput = (saved.isInput === 'y');
 		this.isOutput = (saved.isOutput === 'y');

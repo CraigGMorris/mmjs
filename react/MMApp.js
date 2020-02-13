@@ -132,6 +132,7 @@ export function MMApp(props) {
 			viewKey: 'Model',
 		};
 		infoStack = [infoState];
+		setViewInfo(infoState);
 	}
 
 	/**
@@ -139,12 +140,15 @@ export function MMApp(props) {
 	 * @param {Function} f (prevState) => newState
 	 */
 	const updateDgmState = (f) => {
+		let newState;
 		if (typeof f === 'function') {
-			setDgmState({...dgmState, ...f(dgmState)});
+			newState = {...dgmState, ...f(dgmState)};
 		}
 		else {
-			setDgmState({...dgmState, ...f});
+			newState = {...dgmState, ...f};
 		}
+		// console.log(`newState drag ${newState.dragType}`);
+		setDgmState(newState);
 	}
 
 	/**
@@ -392,6 +396,7 @@ export function MMApp(props) {
 			if (top.updateCommands) {
 				doCommand(top.updateCommands, (cmds) => {
 					top.updateResults = cmds;
+					setViewInfo({...top});
 					updateDiagram(rescaleDiagram);
 				});
 			}
@@ -534,7 +539,6 @@ export function MMApp(props) {
 	if (viewType !== ViewType.diagram) {
 		let i = infoStack.length-1;
 		previousTitle = i > 0 ? infoStack[i-1].title : '';
-		let viewInfo = infoStack[i];
 		title = viewInfo.title;
 		infoView = e(
 			'div', {
