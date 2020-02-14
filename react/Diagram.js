@@ -932,7 +932,7 @@ class ToolIcon extends React.Component {
 							fill: textColor,
 							stroke: textColor
 						}
-					}, info.name
+					}, info.name.length > 16 ? info.name.trim().substr(0,16) + '...' : info.name
 				),
 				e(
 					'text', {
@@ -946,7 +946,7 @@ class ToolIcon extends React.Component {
 							fill: textColor,
 							stroke: textColor
 						}
-					}, info.formula
+					}, info.formula.length > 23 ? info.formula.trim().substr(0, 23) + '...' : info.formula
 				),
 				e(
 					'text', {
@@ -960,7 +960,9 @@ class ToolIcon extends React.Component {
 							fill: (info.result) ? textColor : 'red',
 							stroke: (info.result) ? textColor : 'red',
 						}
-					}, info.result ? info.result.trim().substr(0, 20) : '?'
+					}, info.result ? (
+						info.result.length > 24 ? info.result.trim().substr(0, 24) + '...' : info.result
+					) :	'?'
 				),
 			);
 		}

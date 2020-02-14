@@ -1645,5 +1645,15 @@ class MMTableValue extends MMValue {
 			nc: this.columnCount
 		}
 	}
+
+	/**
+	 * @method stringWithUnit
+	 * @param {MMUnit} unit - optional
+	 * @returns {String} 
+	 */
+	stringWithUnit(unit) {
+		return `Table [ ${this.rowCount}, ${this.columnCount} ]`;
+	}
+
 }
 
