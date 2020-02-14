@@ -175,6 +175,7 @@ export function MMApp(props) {
 	 * @param {function} callBack - (cmds[]) => {}
 	 */
 	const doCommand = (cmd, callBack) => {
+		console.log(`cmd: ${cmd}`);
 		commandCallBacks.set(callBackId, callBack);
 		let cmdObject = {cmdString: cmd, id: callBackId++};
 		pipe.doCommand(cmdObject, (results) => {
@@ -300,7 +301,7 @@ export function MMApp(props) {
 				const modelInfoState = {
 					title: modelName,
 					path: path,
-					stackIndex: 0,
+					stackIndex: infoStack.length,
 					updateCommands: '',
 					updateResults: [],
 					viewKey: 'Model',
@@ -541,6 +542,7 @@ export function MMApp(props) {
 		let i = infoStack.length-1;
 		previousTitle = i > 0 ? infoStack[i-1].title : '';
 		title = viewInfo.title;
+		console.log(`infoView stack ${i} ${title}`);
 		infoView = e(
 			'div', {
 				id: 'info-view',
