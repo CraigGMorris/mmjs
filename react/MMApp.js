@@ -360,7 +360,8 @@ export function MMApp(props) {
 			};
 			infoStack.push(newInfoState);
 			setViewInfo(newInfoState);
-			setViewType(viewType === ViewType.diagram ? ViewType.info : viewType)
+			setViewType(viewType === ViewType.diagram ? ViewType.info : viewType);
+			updateDiagram();
 		});
 	}
 
