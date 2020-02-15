@@ -74,7 +74,12 @@ export function ToolView(props) {
 					setShowNotes(!showNotes);
 				}
 			},
-			showNotes ? t('react:toolViewHideNotesButton') : t('react:toolViewShowNotesButton')
+			notesText.length ? (
+				showNotes ? t('react:toolViewHideNotesButton') : t('react:toolViewShowNotesButton')
+			) :
+			(
+				showNotes ? t('react:toolViewHideNotesButton') : t('react:toolViewAddNotesButton')
+			)
 		)
 	);
 	cmpStack.push(nameArea);

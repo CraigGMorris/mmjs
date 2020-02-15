@@ -1218,7 +1218,7 @@ class MMTool extends MMCommandParent {
 			DiagramX: this.position.x,
 			DiagramY: this.position.y,
 			HideInfo: this.isHidingInfo ? 'y': 'n',
-			DiagramNotee: this.diagramNotes ? 'y' : 'n', 
+			DiagramNotes: this.diagramNotes ? 'y' : 'n', 
 		};
 	}
 
@@ -1230,6 +1230,6 @@ class MMTool extends MMCommandParent {
 		this.notes = saved.Notes;
 		this.position = new MMPoint(saved.DiagramX, saved.DiagramY);
 		this.isHidingInfo = (saved.HideInfo === 'y');
-		this.diagramNotes = (saved.DiagramNotee === 'y');
+		this.diagramNotes = (saved.DiagramNotes === 'y');
 	}
 }

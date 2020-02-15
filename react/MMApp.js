@@ -587,6 +587,7 @@ export function MMApp(props) {
 
 	if (viewType !== ViewType.info) {
 		diagram = e(Diagram, {
+			t: t,
 			ref: diagramRef,
 			infoWidth: infoView ? infoWidth : 0,
 			dgmState: dgmState,

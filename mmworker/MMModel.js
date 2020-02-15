@@ -169,7 +169,8 @@ class MMModel extends MMTool {
 				name: tool.name,
 				position: tool.position,
 				requestors: requestors,
-				notes: tool.notes
+				notes: tool.notes,
+				diagramNotes: tool.diagramNotes,
 			}
 			if (tool instanceof MMExpression) {
 				toolInfo['formula'] = tool.formula.formula;

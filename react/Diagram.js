@@ -568,6 +568,7 @@ export class Diagram extends React.Component {
 			}
 
 			const cmp = e(ToolIcon, {
+				t: t,
 				key: toolName,
 				info: toolInfo,
 				highlight: highlight,
@@ -1004,6 +1005,82 @@ class ToolIcon extends React.Component {
 			);
 		}
 
+		let notesLineComponents = [];
+		let notesComponent;
+		if (info.notes.length) {
+			if (info.diagramNotes) {
+				const lines = info.notes.split('\n');
+				let maxLineChars = 25;
+				let wrappedLines = [];
+				for (let line of lines) {
+					let words = line.split(' ');
+					let wrappedLineWords = [];
+					let wrappedLineLength = 0;
+					for (let word of words) {
+						wrappedLineWords.push(word);
+						wrappedLineLength += word.length + 1;
+						if (wrappedLineLength > maxLineChars) {
+							wrappedLines.push(wrappedLineWords.join(' '));
+							wrappedLineWords = [];
+							wrappedLineLength = 0;
+						}
+					}
+					if (wrappedLineWords.length) {
+						wrappedLines.push(wrappedLineWords.join(' '));
+					}
+				}
+				let lineNumber = 0;
+				for (let wrappedLine of wrappedLines) {
+					const lineComponent = e(
+						'tspan', {
+							key: lineNumber,
+							x: (x - 5 + translate.x)*scale,
+							y: (y + objectHeight + 6 + lineNumber++ * 6 + translate.y)*scale,
+						},
+						wrappedLine
+					);
+					notesLineComponents.push(lineComponent);
+					if (lineNumber > 20) {
+						notesLineComponents.push(
+							e(
+								'tspan', {
+									key: lineNumber,
+									x: (x - 6 + translate.x)*scale,
+									dy: 5 * scale,
+								},
+								'...'
+							)
+						);
+						break;
+					}
+				}
+			}
+			else {
+				notesLineComponents.push(
+					e(
+						'tspan', {
+							key: 0,
+							x: (x + 25 + translate.x)*scale,
+							y: (y + objectHeight + 6 + translate.y)*scale,
+						},
+						t('react:dgmToolHasNote')
+					)
+				);
+			}
+		notesComponent = e(
+				'text', {
+					style: {
+						fontSize: `${5*scale}px`,
+						fontFamily: 'Helvetica',
+						fontWeight: '100',
+						fill: textColor,
+						stroke: textColor
+					}
+				},
+				notesLineComponents
+			);
+		}
+
 		return e(
 			'g', {
 				style: {
@@ -1020,7 +1097,8 @@ class ToolIcon extends React.Component {
 					width: objectWidth*scale,
 					height: objectHeight*scale
 				}),
-			textComponents
+			textComponents,
+			notesComponent
 		);
 	}
 }
