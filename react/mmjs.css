@@ -279,7 +279,7 @@ a:hover {
 	grid-area: 4 / 1 / 4 / 1;
 	background-color: var(--expression__value--bgcolor);
 	width: 100%;
-	font-size: 13pt;
+	font-size: 12pt;
 	stroke: var(--expression__value--stroke-color);
 }
 

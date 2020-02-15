@@ -184,7 +184,7 @@ export function ValueView(props) {
 	const	[selectedCell, setSelectedCell] = useState({row: 0, column: 0});
 	const [valueViewOffset, setValueViewOffset] = useState({x: 0, y: 0});
 	const cellHeight = 30;
-	const cellWidth = 100;
+	const cellWidth = 110;
 	const rowLabelWidth = 50;
 
 	const pointerStart = (x, y) => {
@@ -305,10 +305,18 @@ export function ValueView(props) {
 	const offset = valueViewOffset;
 	const nRowCells = Math.min(Math.floor(viewBox[3] / cellHeight), nRows);
 	const rowOrigin = Math.max(0, Math.floor(Math.min(offset.y / cellHeight), nRows - nRowCells));
-	const nColumnCells = Math.min(Math.floor(viewBox[2] / cellWidth), nColumns);
+	const nColumnCells = Math.min(Math.floor(viewBox[2] / cellWidth) + 2, nColumns);
 	const columnOrigin = Math.max(0, Math.floor(Math.min(offset.x / cellWidth), nColumns - nColumnCells));
 	const yPadding = 0; // pixel gap at top
 	const xPadding = 0; // pixel gap at left
+	const formatValue = v => {
+		if (typeof v === 'string') {
+			return v;
+		}
+		else {
+			return v.toPrecision(8);
+		}
+	}
 	let cells = [];
 	for (let row = 0; row < Math.min(nRowCells, nRows - rowOrigin); row++) {
 		const y = (row + 2) * cellHeight + rowOrigin*cellHeight - offset.y;
@@ -334,12 +342,12 @@ export function ValueView(props) {
 			if (value.t === 't') {
 				const tableColumn = value.v[column];
 				const v = tableColumn.v.v[row];
-				displayedV = (typeof v === 'string') ? v : v.toFixed(5);
+				displayedV = formatValue(v);
 			}
 			else {
 				const vIndex = (row + rowOrigin) * nColumns + column + columnOrigin;
 				const v = vIndex < nValues ? value.v[vIndex] : '';
-				displayedV = (typeof v === 'string') ? v : v.toFixed(5);
+				displayedV = formatValue(v);
 			}
 			const cmp = e('text', {
 				x: x + xTextPad,
