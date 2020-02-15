@@ -143,7 +143,7 @@ export function ExpressionView(props) {
 				value: results.value,
 				actions: props.actions,
 				viewInfo: props.viewInfo,
-				viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 4*nInputHeight],
+				viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 4*nInputHeight - 4],
 			}
 		)
 	);
