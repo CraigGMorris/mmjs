@@ -248,7 +248,7 @@ class MMModel extends MMTool {
 		let undoParts = [`${this.getPath()} setpositions`];
 		while (i + 2 < parts.length) {
 			const toolName = parts[i++];
-			let tool = this.children[toolName];
+			let tool = this.children[toolName.toLowerCase()];
 			const x = parseFloat(parts[i++]);
 			const y = parseFloat(parts[i++]);
 			if (tool && !isNaN(x) && !isNaN(y)) {
