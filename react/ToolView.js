@@ -68,7 +68,7 @@ export function ToolView(props) {
 				}
 		),
 		e(
-			'div', {
+			'button', {
 				id: 'tool-view__notes-toggle',
 				onClick: (e) => {
 					setShowNotes(!showNotes);
@@ -100,7 +100,7 @@ export function ToolView(props) {
 					t('react:toolViewNotesTitle', {name: name}),
 				),
 				e(
-					'div', {
+					'button', {
 						id: 'tool-view__diagram-notes-toggle',
 						onClick: (e) => {
 							doSetDiagramNotes(!diagramNotes);

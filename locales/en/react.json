@@ -1,4 +1,5 @@
 {
+	"applyChanges": "Apply Changes (Shift-Enter)",
 	"cancel": "Cancel",
 	"consoleReadCommands": "Read Command File",
 	"consoleReadPlaceHolder": "Enter command",
@@ -14,8 +15,8 @@
 	"dgmButtonUndo": "Undo",
 	"dgmButtonUnits": "Units",
 	"dgmToolHasNote": "Notes",
-	"exprIsInput": "Input",
-	"exprIsOutput": "Output",
+	"exprIsInput": "In",
+	"exprIsOutput": "Out",
 	"formulaValueUnknown": "Enter formula",
 	"sessionsImportButton": "Import",
 	"sessionsNewButton": "New",

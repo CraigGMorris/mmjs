@@ -7,6 +7,7 @@ import {Diagram} from './Diagram.js';
 import {UnitsView, UserUnitsView, UnitSetsView, UnitSetView} from './UnitsView.js';
 import {ModelView} from './ModelView.js';
 import {ExpressionView} from './ExpressionView.js';
+import {FormulaEditor} from './FormulaView.js';
 
 const e = React.createElement;
 const useState = React.useState;
@@ -67,8 +68,9 @@ export function MMApp(props) {
 		'userunits': UserUnitsView,
 		'unitsets': UnitSetsView,
 		'unitset': UnitSetView,
+		'formulaEditor': FormulaEditor,
 		'Model': ModelView,
-		'Expression': ExpressionView
+		'Expression': ExpressionView,
 	}
 
 	// information need to generate an console view component
