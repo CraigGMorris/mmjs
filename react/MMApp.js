@@ -94,7 +94,7 @@ export function MMApp(props) {
 	const twoPane = document.documentElement.clientWidth >= 640;
 	const [allow2Pane, setAllow2Pane] = useState(twoPane);
 
-	const [viewType, setViewType] = useState(twoPane ? ViewType.twoPanes : diagram);
+	const [viewType, setViewType] = useState(twoPane ? ViewType.twoPanes : ViewType.diagram);
 
 	const [viewInfo, setViewInfo] = useState(initialInfo);
 
