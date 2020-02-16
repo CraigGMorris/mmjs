@@ -242,16 +242,17 @@ export function MMApp(props) {
 	 * pushes the creation information for a new info view onto the infoStack
 	 * @param {string} viewKey - key to view class in infoViews
 	 * @param {string} title
-	 * @param	{string} path - command path to object to display (if applicable)
+	 * @param	{Object} options - options to append to infoState
 	 */
-	const pushView = (viewKey, title, path) => {
+	const pushView = (viewKey, title, options = {}) => {
 		let newInfoState = {
 			title: (title ? title : ''),
-			path: (path ? path : ''),
+			path: '',
 			stackIndex: infoStack.length,
 			updateCommands: '',			// commands used to update the view state
 			updateResults: [],		// result of doCommand on the updateCommands
 			viewKey: viewKey,
+			...options
 		};
 		infoStack.push(newInfoState);
 		setViewInfo(newInfoState);
@@ -504,7 +505,7 @@ export function MMApp(props) {
 				pushConsole();
 				break;
 			default:
-				pushView(parts[0], parts[1], parts[2], );
+				pushView(parts[0], parts[1], {path: parts[2]} );
 				break;
 		}
 	}

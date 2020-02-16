@@ -67,7 +67,7 @@ export class UnitsView extends React.Component {
 				'button', {
 					id: 'units__custom-units-button',
 					onClick: (event) => {
-						this.props.actions.pushView('userunits', 'react:userUnitsTitle', '/unitsys.units' );
+						this.props.actions.pushView('userunits', 'react:userUnitsTitle', {path: '/unitsys.units'} );
 					}
 				},
 				t('react:customUnitsButtonValue')
@@ -76,7 +76,7 @@ export class UnitsView extends React.Component {
 				'button', {
 					id: 'units__custom-sets-button',
 					onClick: (event) => {
-						this.props.actions.pushView('unitsets', 'react:unitsSetsTitle', '/unitsys.sets' );
+						this.props.actions.pushView('unitsets', 'react:unitsSetsTitle', {path: '/unitsys.sets'} );
 					}
 				},
 				t('react:unitsSetsTitle')
@@ -278,7 +278,7 @@ export class UnitSetsView extends React.Component {
 								value: set.name,
 								onClick: (event) => {
 									let setName = event.target.value;
-									this.props.actions.pushView('unitset', setName, `/unitsys.sets.${setName}`);
+									this.props.actions.pushView('unitset', setName, {path: `/unitsys.sets.${setName}`});
 									event.stopPropagation();
 								}						
 							},
