@@ -228,7 +228,15 @@ class MMSession extends MMCommandParent {
 			return;
 		}
 
-		let rootModel = MMToolTypes['Model'].factory('root', this);;
+		if (saveObject.UserUnitSets) {
+			this.unitSystem.sets.loadFromJsonObject(saveObject.UserUnitSets, false);
+		}
+
+		if (saveObject.UserUnits) {
+			this.unitSystem.units.loadFromJsonObject(saveObject.UserUnits);
+		}
+
+		let rootModel = MMToolTypes['Model'].factory('root', this);
 		rootModel.initFromSaved(saveObject.RootModel);
 
 		this.nextToolLocation = this.unknownPosition;
@@ -257,11 +265,15 @@ class MMSession extends MMCommandParent {
 		let rootSave = this.rootModel.saveObject();
 		let defaultObject = this.processor.defaultObject;
 		let modelPath = this.currentModel.getPath();
+		let userSets = this.unitSystem.sets.userSetsAsJsonObject();
+		let userUnits = this.unitSystem.units.userUnitsAsJsonObject();
 		let sessionSave = {
 			Program : 'Rtm',
 			Version: 3.0,
 			DetailWidth: detailWidth,
 			DeviceWidth: deviceWidth,
+			UserUnitSets: userSets,
+			UserUnits: userUnits,
 			CaseName: caseName,
 			DefaultUnitSet: this.unitSystem.defaultSet().name,
 			SelectedObject: selectedObject,
@@ -294,6 +306,7 @@ class MMSession extends MMCommandParent {
 	async loadSession(path) {
 		try {
 			let result = await this.storage.load(path);
+			new MMUnitSystem(this);  // clear any user units and sets
 			this.initializeFromJson(result, path);
 			return result;
 		}

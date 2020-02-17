@@ -986,10 +986,21 @@ class MMUnitSet extends MMCommandObject {
 		command.results = results;
 	}
 
-	/** @method loadFromJsonObjects
+	/** @method setAsJsonObject
+	 * @returns Object dictionary of units suitable for storing as json
+	 */
+	setAsJsonObject() {
+		let objects = {};
+		for (let key in this.typesDictionary) {
+			objects[this.typesDictionary[key]] = this.unitsDictionary[key].name;
+		}
+		return {units: objects};
+	}
+
+	/** @method loadFromJsonObject
 	 * @param {Object} objects
 	 */
-	loadFromJsonObjects(objects) {
+	loadFromJsonObject(objects) {
 		let types = objects['units'];
 		for (let typeName in types) {
 			let unitName = types[typeName];
@@ -1025,7 +1036,7 @@ class MMUnitsContainer extends MMCommandParent {
 	get verbs() {
 		let verbs = super.verbs;
 		if (!this.isMaster) {
-			verbs['adduserunit'] = this.addUserDefinition;
+			verbs['adduserunit'] = this.addUserDefinitionCommand;
 			verbs['listuserunits'] = this.listUserUnits;
 			verbs['remove'] = this.removeUserDefinition;
 		}
@@ -1083,14 +1094,25 @@ class MMUnitsContainer extends MMCommandParent {
 		return newUnit;
 	}
 
-	/** @method addUserDefinition
+	/** @method addUserDefinitionCommand
 	 * @param {MMCommand} command - command args should be name = scale * existingUnit
-	 * example - workday = 8 h
-	 * existingUnit can be a previously undefined compound unit
+	 * see addUserDefinition
 	 * command.results is set to the new unit name
 	*/
-	addUserDefinition(command) {
-		let definition = command.args;
+	addUserDefinitionCommand(command) {
+		const definition = command.args;
+		const newUnit = this .addUserDefinition(definition);
+		command.results = newUnit.name;
+		command.undo = `${this.getPath()} remove ${newUnit.name}`;
+	}
+
+	/** @method addUserDefinition
+	 * @param {string} definition - should be name = scale * existingUnit
+	 * example - workday = 8 h
+	 * existingUnit can be a previously undefined compound unit
+	 * @returns {MMUnit} the new unit
+	*/
+	addUserDefinition(definition) {
 		let parts = definition.split(/\s*=\s*|\s+/);
 		if (parts.length != 3) {
 			throw(this.t('mmunit:definitionError', {definition: definition}));
@@ -1114,8 +1136,7 @@ class MMUnitsContainer extends MMCommandParent {
 			this.registerDimensionsOfUnit(newUnit);
 		}
 		newUnit.definition = definition;	// save the definiton - useful for undoing remove
-		command.results = newUnit.name;
-		command.undo = `${this.getPath()} remove ${newUnit.name}`;
+		return newUnit
 	}
 
 	/** @method listUserUnits
@@ -1155,6 +1176,30 @@ class MMUnitsContainer extends MMCommandParent {
 		this.removeChildNamed(command);
 		if (definition) {
 			command.undo = `${this.getPath()} adduserunit ${definition}`;
+		}
+	}
+
+	/**
+	 * @method userUnitsAsJsonObject
+	 * @returns object suitable for json storage
+	 */
+	userUnitsAsJsonObject() {
+		let list = [];
+		for (let name in this.children) {
+			let child = this.children[name];
+			if (!child.isMaster) {
+				list.push(child.definition);
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * loadFromJsonObject
+	 */
+	loadFromJsonObject(object) {
+		for (let definition of object) {
+			this.addUserDefinition(definition);
 		}
 	}
 
@@ -1452,14 +1497,28 @@ class MMUnitSetsContainer extends MMCommandParent {
 		command.results = results;
 	}
 
-	/** @method loadFromJsonObjects
+	/** @method userSetsAsJsonObject
+	 * @returns Object suitable for storing as json
+	 */
+	userSetsAsJsonObject() {
+		let sets = {};
+		for (let name in this.children) {
+			let set = this.children[name];
+			if (!set.isMaster) {
+				sets[set.name] = set.setAsJsonObject();
+			}
+		}
+		return sets;
+	}
+
+	/** @method loadFromJsonObject
 	 * @param {Object} sets
 	 * @param {boolean} isMaster
 	 */
-	loadFromJsonObjects(sets, isMaster) {
+	loadFromJsonObject(sets, isMaster) {
 		for (let setName in sets) {
 			let set = this.addSet(setName, isMaster);
-			set.loadFromJsonObjects(sets[setName]);
+			set.loadFromJsonObject(sets[setName]);
 		}
 	}
 
@@ -1632,6 +1691,6 @@ class MMUnitSetsContainer extends MMCommandParent {
 				}
 			}
 		}
-		this.loadFromJsonObjects(sets, true);
+		this.loadFromJsonObject(sets, true);
 	}
 }
