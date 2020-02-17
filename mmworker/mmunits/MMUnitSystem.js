@@ -171,8 +171,11 @@ class MMUnitSystem extends MMCommandParent {
 		if (MMUnit.compoundRegex.test(name)) {
 			let parts = name.split(MMUnit.compoundRegex);
 			for (let part of parts) {
+				if (part.length === 0) {
+					return null;
+				}
 				let value = Number(part);
-				if ( value ==NaN && !this.units.childNamed(part)) {
+				if ( isNaN(value) && !this.units.childNamed(part)) {
 					return null;
 				}
 			}
@@ -247,7 +250,7 @@ class MMUnitSystem extends MMCommandParent {
 		let unit = this.unitNamed(unitName);
 		if (!unit) {
 			// unit doesn't exist - create it
-			unit = MMUnit(unitName, this.units).initWithOperation(
+			unit = new MMUnit(unitName, this.units).initWithOperation(
 				false, calcType, MMUnit.stringFromDimensions(dimensions), 1.0, 0.0
 				);
 		}
