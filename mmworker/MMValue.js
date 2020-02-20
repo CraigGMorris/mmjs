@@ -762,11 +762,14 @@ class MMNumberValue extends MMValue {
 	 * @param {MMUnit} displayUnit
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
-	jsonValue(unit) {
+	jsonValue(displayUnit) {
 		let rv = {}
-		if (unit) {
-			rv['unit'] = unit.name;
-			rv['v'] = Array.from(this._values).map(x => unit.convertFromBase(x));
+		if (!displayUnit) {
+			displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(this.unitDimensions);
+		}
+		if (displayUnit) {
+			rv['unit'] = displayUnit.name;
+			rv['v'] = Array.from(this._values).map(x => displayUnit.convertFromBase(x));
 			}
 		else {
 			rv['v'] = Array.from(this._values);

@@ -160,6 +160,10 @@ a:hover {
 	align-self: center;
 }
 
+.entry--selected {
+	background-color: var(--selected__list--bgcolor);
+}
+
 .result-table__column-label {
 	font-size: 10pt;
 }
@@ -270,6 +274,8 @@ a:hover {
 	grid-template-columns: 1fr 30px;
 	grid-template-rows: var(--input--height);
 	grid-template-areas: "unit-and-type info-button";
+	box-sizing: border-box;
+	padding-top: 2px;
 }
 
 #expression__unit-and-type {
@@ -329,19 +335,13 @@ a:hover {
 	grid-area: formula-refresh;
 }
 
-.formula-editor__toolbar {
-	grid-area: toolbar;
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr;
-	grid-template-rows: 1fr;
-	grid-gap: 2px;
-}
-
-.formula-editor__toolbar button {
-	font-size: 10pt;
-}
-
 #formula-editor {
+	height: 100%;
+	padding-top: 2px;
+	box-sizing: border-box;
+}
+
+#formula-editor__edit {
 	display: grid;
 	grid-template-areas: 1fr;
 	grid-template-rows: var(--input--height) 1fr var(--input--height);
@@ -354,9 +354,17 @@ a:hover {
 
 #formula-editor__toolbar {
 	grid-area: toolbar;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-rows: 1fr;
+	grid-gap: 2px;
 }
 
-#formula-editor__input {
+#formula-editor__toolbar button {
+	font-size: 10pt;
+}
+
+.formula-editor__display {
 	grid-area: input;
 }
 
@@ -571,10 +579,6 @@ a:hover {
 	grid-template-columns: 1fr 30px;
 }
 
-.sessions__entry--selected {
-	background-color: red;
-}
-
 #tool-view {
 	height: 100%;
 	display: grid;
@@ -593,6 +597,7 @@ a:hover {
 	width: 100%;
 	height: var(--input--height);
 	box-sizing: border-box;
+	padding-top: 5px;
 }
 
 #tool-view__name {
@@ -832,10 +837,6 @@ a:hover {
 		"settype info"	
 }
 
-.unit-sets__row--selected {
-	background-color: var(--selected__list--bgcolor);
-}
-
 .unit-sets__list-set-name {
 	color: var(--link--color);
 	grid-area: name;
@@ -940,10 +941,6 @@ a:hover {
 		"unit delete";
 }
 
-.unit-set__row--selected {
-	background-color: var(--selected__list--bgcolor);
-}
-
 .unit-set__name {
 	grid-area: name;
 	margin-left: 5px;
@@ -964,3 +961,63 @@ a:hover {
 	margin-right: 10px;
 }
 
+#unit-picker {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr var(--input--height) var(--input--height);
+	grid-template-areas: "list"
+		"input"
+		"buttons";
+		height: 100%
+	}
+
+#unit-picker__list {
+	grid-area: list;
+	height: 100%;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: "types units";
+}
+
+#unit-picker__list-types {
+	grid-area: types;
+	border-right: 1px solid;
+	overflow: auto;
+	box-sizing: border-box;
+	height: calc(var(--info-height) - (2 * var(--input--height)));
+	white-space: nowrap;
+}
+
+#unit-picker__list-units {
+	grid-area: units;
+	padding-left: var(--info-view--padding);
+	overflow: auto;
+	box-sizing: border-box;
+	height: calc(var(--info-height) - (2 * var(--input--height)));
+	white-space: nowrap;
+}
+
+#unit-picker__input {
+	grid-area: input;
+}
+
+#unit-picker__buttons {
+	grid-area: buttons;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: "cancel apply";
+	justify-content: center;
+	padding-left: 10%;
+	padding-right: 10%;
+	grid-gap: 10px;
+}
+
+#unit-picker__cancel {
+	grid-area: cancel;
+}
+
+#unit-picker__apply {
+	grid-area: apply;
+}

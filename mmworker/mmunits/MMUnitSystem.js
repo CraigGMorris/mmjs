@@ -796,7 +796,7 @@ class MMUnitSet extends MMCommandObject {
 			renametype: 	'mmunit:?renametype',
 			removetype: 	'mmunit:?removetype',
 			unitfortype:	'mmunit:?unitfortype',
-			listtypes:		'mmunit:?listtypes'
+			listtypes:		'mmunit:?listtypes',
 		}[command];
 		if (key) {
 			return key;
@@ -970,7 +970,8 @@ class MMUnitSet extends MMCommandObject {
 	listTypeNameUnit(command) {
 		let results = [];
 		for (let key in this.typesDictionary) {
-			results.push({name: this.typesDictionary[key], unit: this.unitsDictionary[key].name});
+			const unit = this.unitsDictionary[key];
+			results.push({name: this.typesDictionary[key], unit: unit.name, dim: unit.dimensionString});
 		}
 		results.sort((a, b) => {
 			let aName = a.name.toLowerCase();
@@ -1039,6 +1040,7 @@ class MMUnitsContainer extends MMCommandParent {
 			verbs['adduserunit'] = this.addUserDefinitionCommand;
 			verbs['listuserunits'] = this.listUserUnits;
 			verbs['remove'] = this.removeUserDefinition;
+			verbs['unitsfordim'] = this.listUnitsWithDimensions;
 		}
 		return verbs;
 	}
@@ -1052,7 +1054,8 @@ class MMUnitsContainer extends MMCommandParent {
 		let key = {
 			adduserunit: 'mmunit:?adduserunit',
 			listuserunits: 'mmunit:?listuserunits',
-			remove: 'mmunit:?removeuserunit'
+			remove: 'mmunit:?removeuserunit',
+			unitsfordim:	'mmunit:?unitsfordim',
 		}[command];
 		if (key) {
 			return key;
@@ -1157,6 +1160,23 @@ class MMUnitsContainer extends MMCommandParent {
 			}
 		}
 		command.results = list;
+	}
+
+	/** method listUnitsWithDimensions
+	 * @param {MMCommand} command - requires command.args = the dimension string
+	 */
+	listUnitsWithDimensions(command) {
+		const dimesionString = command.args;
+		let unitNames = [];
+		for (let key in this.children) {
+			const unit = this.children[key];
+			if (unit.dimensionString === dimesionString) {
+				unitNames.push(unit.name);
+			}
+		}
+
+		unitNames = unitNames.sort();
+		command.results = unitNames;
 	}
 
 	/** @method removeUserDefinition

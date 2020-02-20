@@ -241,7 +241,7 @@ export class SessionsView extends React.Component {
 				sessionPaths = [];
 			}
 			for (let path of sessionPaths) {
-				let selectedClass = (path === currentPath) ? ' sessions__entry--selected' : '';
+				let selectedClass = (path === currentPath) ? ' entry--selected' : '';
 				let cmp = e(
 					'div', {
 						className: 'sessions__entry' + selectedClass,

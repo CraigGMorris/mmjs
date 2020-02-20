@@ -31,5 +31,6 @@
 	"?removeset": "usage: remove setName",
 	"?removetype": "usage: removetype typeName",
 	"?renametype": "usage: renametype fromName toName",
+	"?unitsfordim": "usage unitsfordim dimensionString",
 	"?unitfortype": "usage: unitfortype typeName\nreturns the unit for type in the set"
 }

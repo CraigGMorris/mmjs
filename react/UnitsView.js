@@ -1,6 +1,8 @@
 'use strict';
 
 const e = React.createElement;
+const useState = React.useState;
+const useEffect = React.useEffect;
 
 /**
  * @class UnitsView
@@ -252,7 +254,7 @@ export class UnitSetsView extends React.Component {
 				}
 				let cmp = e(
 					'div', {
-						className: `unit-sets__row${this.state.selected == set.name ? ' unit-sets__row--selected' : ''}`,
+						className: `unit-sets__row${this.state.selected == set.name ? ' entry--selected' : ''}`,
 						key: set.name,
 					},
 					e(
@@ -428,7 +430,7 @@ export class UnitSetView extends React.Component {
 				let unitType = types[i];
 				let cmp = e(
 					'div', {
-						className: `unit-set__row${this.state.selected == unitType.name ? ' unit-set__row--selected' : ''}`,
+						className: `unit-set__row${this.state.selected == unitType.name ? ' entry--selected' : ''}`,
 						key: unitType.name,
 						},
 						e(
@@ -564,4 +566,137 @@ export class UnitSetView extends React.Component {
 			)
 		);
 	}
+}
+
+
+
+// unit picker component
+export function UnitPicker(props) {
+	let t = props.t;
+
+	const [unitTypes, setUnitTypes] = useState([]);
+	const [defaultSetName, setDefaultSetName] = useState('');
+	const [selectedType, setSelectedType] = useState('');
+	const [unitNames, setUnitNames] = useState([]);
+	const [selectedUnit, setSelectedUnit] = useState('');
+
+	useEffect(() => {
+		props.actions.doCommand('/unitsys.sets get defaultSetName', (cmds) => {
+			setDefaultSetName(cmds[0].results);
+		});
+	},[]);
+
+	useEffect(() => {
+		if (defaultSetName) {
+			props.actions.doCommand(`/unitsys.sets.${defaultSetName} listTypes`, (cmds) => {
+				setUnitTypes(cmds[0].results);
+			});
+		}
+	},[defaultSetName]);
+
+	useEffect(() => {
+		if (selectedType) {
+			for (let type of unitTypes) {
+				if (type.name === selectedType) {
+					props.actions.doCommand(`/unitsys.units unitsfordim ${type.dim}`, (cmds) => {
+						setUnitNames(cmds[0].results);
+					});
+					break;
+				}
+			}
+		}
+	},[selectedType]);
+
+	let typeComponents = [];
+	for (let type of unitTypes) {
+		const cmp = e(
+			'div', {
+				className: `unit-picker__type-name${selectedType == type.name ?  ' entry--selected' : ''}`,
+				key: type.name,
+				onClick: e => {
+					setSelectedType(type.name);
+				}
+			},
+			type.name
+		);
+		typeComponents.push(cmp);
+	}
+
+	let unitComponents = [];
+	for (let unitName of unitNames) {
+		const cmp = e(
+			'div', {
+				className: 'unit-picker__unit-name',
+				key: unitName,
+				onClick: e => {
+					setSelectedUnit(unitName);
+				}
+			},
+			unitName
+		);
+		unitComponents.push(cmp);
+	}
+
+	const wrapper = e(
+		'div', {
+			id: 'unit-picker'
+		},
+		e(
+			'div', {
+				id: 'unit-picker__list'
+			},
+			e(
+				'div', {
+					id: 'unit-picker__list-types'
+				},
+				typeComponents
+			),
+			e(
+				'div', {
+					id: 'unit-picker__list-units',
+				},
+				unitComponents
+			),
+		),
+		e(
+			'input', {
+				id: 'unit-picker__input',
+				value: selectedUnit,
+				onChange: (event) => {
+					// keeps input field in sync
+					setSelectedUnit(event.target.value);
+				},
+			}
+		),
+		e(
+			'div', {
+				id: 'unit-picker__buttons',
+			},
+			e(
+				'button', {
+					id: 'unit-picker__cancel',
+					onClick: e => {
+						props.cancel();
+					}
+				},
+				t('react:cancel')
+			),
+			e(
+				'button', {
+					id: 'unit-picker__apply',
+					onClick: e => {
+						if (selectedUnit) {
+							props.apply(selectedUnit);
+						}
+						else {
+							props.cancel();
+						}
+					}
+				},
+				t('react:unitPickerApply')
+			)
+		)
+	);
+
+	return wrapper;
 }
