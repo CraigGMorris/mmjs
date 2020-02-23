@@ -18,6 +18,7 @@
 	"exprIsInput": "In",
 	"exprIsOutput": "Out",
 	"formulaValueUnknown": "Enter formula",
+	"funcPickerInsert": "Insert",
 	"sessionsImportButton": "Import",
 	"sessionsNewButton": "New",
 	"sessionsCopyButton": "Copy",

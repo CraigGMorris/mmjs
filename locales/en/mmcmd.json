@@ -1,4 +1,5 @@
 {
+	"languageCode": "en",
 	"concatTableColumnMismatch": "Can't concat table values with different column counts",
 	"displayUnitTypeMismatch": "Unit type mismatch in setting display unit {{unitName}} on table value",
 	"error": "Error",

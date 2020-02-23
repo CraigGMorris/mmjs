@@ -22,11 +22,13 @@
 	--expression__value--bgcolor: rgba(238,255,238,1);
 	--selected__list--bgcolor: rgb(79, 85, 116);
 	--subtext--color: darkgray;
+	--title--color: #69e469;
+	--bold--color: #fbb636;
 }
 @media (prefers-color-scheme: light) {
 	:root {
 		--body--bgcolor: #fafafa;
-		--body--color: #555;
+		--body--color: #000;
 		--link--color: blue;
 		--link--color-hover: #000;
 		--diagram--bgcolor: #eeffee;
@@ -44,6 +46,8 @@
 		--expression__value--bgcolor: rgba(238,255,238,1);
 		--selected__list--bgcolor: lightgray;
 		--subtext--color: rgb(102, 101, 101);
+		--title--color: #040;
+		--bold--color: black;
 	}
 }
 
@@ -86,6 +90,10 @@ textarea {
 textarea:disabled {
 	color: var(--input--disabled-color);
 	background-color: var(--input--disabled-bgcolor);
+}
+
+b {
+	color: var(--bold--color);
 }
 
 button {
@@ -370,6 +378,75 @@ a:hover {
 
 #formula-editor__apply {
 	grid-area: apply;
+}
+
+#f-picker {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: var(--input--height) 1fr;
+	grid-template-areas: "header"
+		"scrollarea";
+}
+
+#f-picker__header {
+	grid-area: header;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-areas: "title cancel";
+}
+
+#f-picker__scroll-area {
+	grid-area: scrollarea;
+	overflow: auto;
+	height: calc(var(--info-height) - 1.5em);
+}
+
+#f-picker__title {
+	grid-area: title;
+	color: var(--title--color);
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 1.0em;
+	margin-bottom: 0.2em;
+}
+
+#f-picker__cancel {
+	grid-area: cancel;
+	width: 5em;
+	justify-self: right;
+}
+
+.f-picker__section {
+	border-top: solid 1px var(--border--color);
+	padding-bottom: 5px;
+}
+
+.f-picker__section-header {
+	color: var(--link--color);
+	padding: 3px 0;
+}
+
+.f-picker__comment {
+	padding: 5px 0;
+}
+
+.f-picker__f {
+	padding: 0 10px;
+}
+
+.f-picker__f-def {
+	color: var(--link--color);
+	border-top: solid 1px var(--border--color);
+	padding: 3px 0;
+}
+
+#f-picker__f-desc {
+	color: var(--body--color);
+}
+
+#f-picker__insert {
+	margin: 5px auto;
+	display: flex;
+	justify-content: center;
 }
 
 #info-view {
