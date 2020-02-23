@@ -202,15 +202,50 @@ export function FormulaEditor(props) {
 	const [selection, setSelection] = useState([offset,offset]);
 	const inputRef = React.useRef(null);
 
+	/* Need to save state when this component is unmounted when view pushed over it
+		or the info view is expanded or diagram shown. A useEffect will use information
+		stored in saveRef to save the state in the viewInfo
+	*/
+	const saveRef = React.useRef({});
+
 	useEffect(() => {
 		if (display === FormulaDisplay.editor) {
 			inputRef.current.focus();
 		}
+		saveRef.current.display = display;
 	}, [display]);
 
 	useEffect(() => {
 		inputRef.current.setSelectionRange(selection[0], selection[1]);
+		saveRef.current.selection = selection;
 	}, [selection]);
+
+	useEffect(() => {
+		saveRef.current.formula = formula;
+	}, [formula]);
+
+	useEffect(() => {
+		// recover state on mount if it was saved in viewInfo
+		if (props.viewInfo.savedState) {
+			const saved = props.viewInfo.savedState;
+			setFormula(saved.formula);
+			setDisplay(saved.display);
+			setSelection(saved.selection);
+		}
+		return () => {
+			// save state in viewInfo
+
+			// get the selection from the inputRef
+			const selectionStart = inputRef.current.selectionStart;
+			const selectionEnd = inputRef.current.selectionEnd;
+
+			props.viewInfo.savedState = {
+				formula: saveRef.current.formula,
+				display: saveRef.current.display,
+				selection: [selectionStart, selectionEnd]
+			};
+		}
+	}, []);
 
 	const applyChanges = (formula) => {
 		const path = props.viewInfo.path;
