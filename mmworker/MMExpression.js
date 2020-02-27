@@ -15,7 +15,7 @@ class MMExpression extends MMTool {
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Expression');
-		this.formula = new MMFormula('formula', this);
+		this.formula = new MMFormula('Formula', this);
 		this.cachedValue = null;
 		this.displayUnit = null;
 		this._isInput = false;
@@ -239,7 +239,7 @@ class MMExpression extends MMTool {
 	saveObject() {
 		let o=   super.saveObject();
 		o['Type'] = 'Expression';
-		o['Formula'] = this.formula._formula;
+		o['Formula'] = {'Formula': this.formula._formula};
 		if (this._isInput) { o['isInput'] = 'y'; }
 		if (this._isOutput) { o['isOutput'] = 'y'}
 		return o;
@@ -251,7 +251,7 @@ class MMExpression extends MMTool {
 	 */
 	initFromSaved(saved) {
 		super.initFromSaved(saved);
-		this.formula.formula = saved.Formula;
+		this.formula.formula = saved.Formula.Formula;
 		this.isInput = (saved.isInput === 'y');
 		this.isOutput = (saved.isOutput === 'y');
 	}
