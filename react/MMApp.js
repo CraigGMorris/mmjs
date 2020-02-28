@@ -273,7 +273,7 @@ export function MMApp(props) {
 						if (dgmStateStack.length) {
 							setDgmState(dgmStateStack.pop());
 						}
-						updateView(infoStack.length-1, true);
+						updateView(infoStack.length-1, false);
 					});
 					break;
 
