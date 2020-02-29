@@ -55,29 +55,29 @@ let redoStack = [];
 let infoStack = [initialInfo];
 
 /**
- * errorAlert
- * @param {String} msg
- */
-const errorAlert = (msg) => {
-	let s = `${props.t('mmcmd:error')}\n${msg}`;
-	alert(s);
-}
-
-/**
- * warningAlert
- * @param {String} msg
- */
-const warningAlert = (msg) => {
-	let s = `${props.t('mmcmd:warning')}\n${msg}`;
-	alert(s);
-}
-
-/**
  * MMApp
  * the main Math Minion window
  */
 export function MMApp(props) {
 	let t = props.t;
+
+	/**
+	 * errorAlert
+	 * @param {String} msg
+	 */
+	const errorAlert = (msg) => {
+		let s = `${props.t('mmcmd:error')}\n${msg}`;
+		alert(s);
+	}
+
+	/**
+	 * warningAlert
+	 * @param {String} msg
+	 */
+	const warningAlert = (msg) => {
+		let s = `${props.t('mmcmd:warning')}\n${msg}`;
+		alert(s);
+	}
 
 	// {Object} infoViews - classes of info views used to construct the react component appearing in the info view
 	const infoViews = {
