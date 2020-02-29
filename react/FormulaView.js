@@ -95,12 +95,12 @@ function FunctionPicker(props) {
 							e(
 								'button', {
 									onClick: e => {
-										props.apply(f.f);
+										props.apply(f.f, -1);
 									}
 								},
 								t('react:funcPickerInsert'),
 							)
-							)
+						)
 					];
 				}
 				const funcCmp = e(
@@ -193,6 +193,137 @@ function FunctionPicker(props) {
 	)
 }
 
+function ValuePicker(props) {
+	const t = props.t;
+	const [paramList, setParamList] = useState([]);
+	const [selected, setSelected] = useState([]);
+	useEffect(() => {
+		const path = selected.join('');
+
+		if (selected.length === 0 || path.endsWith('.')) {
+			props.actions.doCommand(`.${path} get parameters`, (results) => {
+				if (results.length && results[0].results) {
+					setParamList(results[0].results);
+				}
+			});
+		}
+		else {
+			setParamList([]);
+		}
+	},[selected])
+
+	const selectParam = param => {
+		setSelected([...selected, param]);
+	}
+
+	const selectSelection = targetSelection => {
+		const newSelected = [];
+		for (let s of selected) {
+			newSelected.push(s);
+			if (s === targetSelection) {
+				break
+			}
+		}
+		setSelected(newSelected);
+	}
+
+	const selectedCmps = [];
+	for (let s of selected) {
+		const cmp = e(
+			'span', {
+				className: 'value-picker__selection',
+				key: s,
+				onClick: e => {
+					selectSelection(s)
+				},
+			},
+			s
+		)
+		selectedCmps.push(cmp);
+	}
+
+	let paramCmps = [];
+	for (let param of paramList) {
+		const cmp = e(
+			'div', {
+				className: 'value-picker__param',
+				key: param,
+				onClick: e => {
+					selectParam(param)
+				},
+			},
+			param
+		)
+		paramCmps.push(cmp);
+	}
+
+	return e(
+		'div', {
+			id: 'value-picker',
+		},
+		e(
+			'div', {
+				id: 'value-picker__path-list'
+			},
+			e(
+				'div', {
+					id: 'value-picker__path-header',
+				},
+				t('react:valuePickerPathHeader')
+			),
+			e(
+				'div', {
+					id: 'value-picker__buttons'
+				},
+				e(
+					'button', {
+						id: 'value-picker__buttons-clear',
+						onClick: e => {
+							setSelected([]);
+						}
+					},
+					t('react:valuePickerClearButton')
+				),
+				e(
+					'button', {
+						id: 'value-picker__buttons-cancel',
+						onClick: e => {
+							e.preventDefault();
+							props.cancel();
+						}
+					},
+					t('react:cancel'),
+				),
+				e(
+					'button', {
+						onClick: e => {
+							let path = selected.join('');
+							if (path.endsWith('.')) {
+								path = path.substring(0, path.length - 1);
+							}					
+							props.apply(path, 0);
+						}
+					},
+					t('react:valuePickerInsert'),
+				),
+			),
+			selectedCmps,
+		),
+		e(
+			'div', {
+				id: 'value-picker__param-list'
+			},
+			e(
+				'div', {
+					id: 'value-picker__param-header',
+				},
+				t('react:valuePickerParamHeader')
+			),
+			paramCmps,
+		)
+	);
+}
+
 export function FormulaEditor(props) {
 	let t = props.t;
 
@@ -254,6 +385,13 @@ export function FormulaEditor(props) {
 		});
 	}
 
+	const pickerButtonClick = (picker) => {
+			const selectionStart = inputRef.current.selectionStart;
+			const selectionEnd = inputRef.current.selectionEnd;
+			setSelection([selectionStart, selectionEnd]);
+			setDisplay(picker);
+	}
+
 	const editComponent = e(
 		// this is always rendered to keep cursor position/selection, but is hidden if display != editor
 		'div', {
@@ -269,30 +407,21 @@ export function FormulaEditor(props) {
 			e(
 				'button', {
 					className: 'formula-editor__toolbar-values',
+					onClick: e => { pickerButtonClick(FormulaDisplay.values); }
 				},
 				'<v>'
 			),
 			e(
 				'button', {
 					className: 'formula-editor__toolbar-units',
-					onClick: e => {
-						const selectionStart = inputRef.current.selectionStart;
-						const selectionEnd = inputRef.current.selectionEnd;
-						setSelection([selectionStart, selectionEnd]);
-						setDisplay(FormulaDisplay.units);
-					}
+					onClick: e => { pickerButtonClick(FormulaDisplay.units); }
 				},
 				'"u"'
 			),
 			e(
 				'button', {
 					className: 'formula-editor__toolbar-functions',
-					onClick: e => {
-						const selectionStart = inputRef.current.selectionStart;
-						const selectionEnd = inputRef.current.selectionEnd;
-						setSelection([selectionStart, selectionEnd]);
-						setDisplay(FormulaDisplay.functiions);
-					}
+					onClick: e => { pickerButtonClick(FormulaDisplay.functiions); }
 				},
 				'{f}}'
 			),
@@ -327,6 +456,17 @@ export function FormulaEditor(props) {
 		)
 	);
 
+	const apply = (value, cursorOffset) => {
+		const current = formula;
+		const selectionStart = inputRef.current.selectionStart;
+		const selectionEnd = inputRef.current.selectionEnd;
+		const newFormula = `${current.substring(0, selectionStart)}${value}${current.substring(selectionEnd)}`;
+		setFormula(newFormula);
+		setDisplay(FormulaDisplay.editor);
+		const newSelection = selectionStart + value.length + cursorOffset;
+		setSelection([newSelection, newSelection]);
+	}
+
 	let displayComponent;
 	switch (display) {
 		case FormulaDisplay.units:
@@ -337,16 +477,7 @@ export function FormulaEditor(props) {
 					cancel: () => {
 						setDisplay(FormulaDisplay.editor);
 					},
-					apply: (unit) => {
-						const current = formula;
-						const selectionStart = inputRef.current.selectionStart;
-						const selectionEnd = inputRef.current.selectionEnd;
-						const newFormula = `${current.substring(0, selectionStart)}"${unit}"${current.substring(selectionEnd)}`;
-						setFormula(newFormula);
-						setDisplay(FormulaDisplay.editor);
-						const newSelection = selectionStart + unit.length + 2;
-						setSelection([newSelection, newSelection]);
-					}
+					apply: apply,
 				}
 			);
 			break;
@@ -358,21 +489,24 @@ export function FormulaEditor(props) {
 					cancel: () => {
 						setDisplay(FormulaDisplay.editor);
 					},
-					apply: (f) => {
-						const current = formula;
-						const selectionStart = inputRef.current.selectionStart;
-						const selectionEnd = inputRef.current.selectionEnd;
-						const newFormula = `${current.substring(0, selectionStart)}${f}${current.substring(selectionEnd)}`;
-						setFormula(newFormula);
-						setDisplay(FormulaDisplay.editor);
-						const newSelection = selectionStart + f.length -1;
-						setSelection([newSelection, newSelection]);
-					}
+					apply: apply,
 				}
 			);			
 			break;
-	}
 
+		case FormulaDisplay.values:
+			displayComponent= e(
+				ValuePicker, {
+					t: props.t,
+					actions: props.actions,
+					cancel: () => {
+						setDisplay(FormulaDisplay.editor);
+					},
+					apply: apply,
+				}
+			);
+			break;
+	}
 
 	const wrapper = e(
 		'div', {

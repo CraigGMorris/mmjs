@@ -430,6 +430,16 @@ class MMCommandProcessor {
 	}
 
 	/**
+	 * @method parameters
+	 * overridden by objects that have formula value parameters
+	 * i.e. things that can be appended to a formula value
+	 * e.g. aModel.anExpression.table
+	 */
+	parameters() {
+		return [];
+	}
+
+	/**
 	 * @method renameTo
 	 * @param {MMCommand} command 
 	 */
@@ -458,6 +468,9 @@ class MMCommandProcessor {
 				props[key] = this[key];
 			}
 			command.results = props;
+		}
+		else if (command.args === 'parameters') {
+			command.results = this.parameters();
 		}
 		else {
 			command.results = this.getValue(command.args);

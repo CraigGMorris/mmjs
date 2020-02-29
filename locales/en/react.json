@@ -58,6 +58,9 @@
 	"userUnitsDelete": "Delete",
 	"userUnitsExample": "Example: myUnit = 2 kg-m/s^2",
 	"userUnitsPlaceHolder": "myName = value existing unit",
-	"userUnitsTitle": "Custom Units"
-
+	"userUnitsTitle": "Custom Units",
+	"valuePickerClearButton": "Clear",
+	"valuePickerInsert": "Insert",
+	"valuePickerParamHeader": "Available Parameters",
+	"valuePickerPathHeader": "Selected Value Path"
 }

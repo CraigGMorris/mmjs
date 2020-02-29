@@ -1135,6 +1135,16 @@ class MMTool extends MMCommandParent {
 	}
 	
 	/**
+	 * @method parameters
+	 * i.e. things that can be appended to a formula value
+	 */
+	parameters() {
+		let p = super.parameters();
+		p.push('myName');
+		return p;
+	}
+
+	/**
 	 * @method toolViewInfo
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view

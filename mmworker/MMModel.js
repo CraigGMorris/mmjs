@@ -46,6 +46,18 @@ class MMModel extends MMTool {
 		}
 	}
 
+	/**
+	 * @method parameters
+	 * i.e. things that can be appended to a formula value
+	 */
+	parameters() {
+		let p = super.parameters();
+		for (const name in this.children) {
+			p.push(name + '.');
+		}
+		return p;
+	}
+
 	/** @method addTool
 	 * creates new Tool with supplied type and name
 	 * @param {MMCommand} command

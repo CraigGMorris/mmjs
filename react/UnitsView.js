@@ -686,7 +686,7 @@ export function UnitPicker(props) {
 					id: 'unit-picker__apply',
 					onClick: e => {
 						if (selectedUnit) {
-							props.apply(selectedUnit);
+							props.apply(`"${selectedUnit}"`, 0);
 						}
 						else {
 							props.cancel();

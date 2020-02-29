@@ -1098,3 +1098,26 @@ a:hover {
 #unit-picker__apply {
 	grid-area: apply;
 }
+
+#value-picker__buttons button {
+	margin: 5px;
+}
+
+.value-picker__param {
+	color: var(--link--color);
+}
+
+#value-picker__param-list {
+	text-align: center;
+}
+
+#value-picker__path-list {
+	border-bottom: solid 1px;
+	box-sizing: border-box;
+	padding: 3px;
+	text-align: center;
+}
+
+.value-picker__selection {
+	color: var(--link--color);
+}

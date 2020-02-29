@@ -105,6 +105,19 @@ class MMExpression extends MMTool {
 	}
 
 	/**
+	 * @method parameters
+	 * @override
+	 * i.e. things that can be appended to a formula value
+	 */
+	parameters() {
+		let p = super.parameters();
+		p.push('table.');
+		p.push('hasValue');
+		p.push('formula');
+		return p;
+	}
+
+	/**
 	 * @method valueForRequestor
 	 * @param {MMTool} requestor
 	 * @returns {MMValue}
@@ -147,7 +160,7 @@ class MMExpression extends MMTool {
 			const lcDescription = description.toLowerCase();
 			switch (lcDescription) {
 				case 'hasvalue':
-					self.addRequestor(requestor);
+					this.addRequestor(requestor);
 					if (value) {
 						value = MMNumberValue.scalarValue(1);
 					}
