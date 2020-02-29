@@ -349,6 +349,7 @@ export function MMApp(props) {
 				return;
 			}
 			infoStack.pop();
+			top = infoStack[infoStack.length - 1];
 		}
 		top = infoStack[infoStack.length - 1];
 		const path = `${top.path}.${toolName}`;
