@@ -5,11 +5,11 @@ const useState = React.useState;
 const useEffect = React.useEffect;
 
 /**
- * Enum for ValueView drag type.
+ * Enum for TableView drag type.
  * @readonly
  * @enum {string}
  */
-const ValueViewDragType = Object.freeze({
+const TableViewDragType = Object.freeze({
 	none: 'none',
 	origin: 'origin',
 	row: 'row',
@@ -21,49 +21,49 @@ const ValueViewDragType = Object.freeze({
 });
 
 /**
- * ValueView
+ * TableView
  * view for MMValue as a table
  */
-export function ValueView(props) {
-	const [dragType, setDragType] = useState(ValueViewDragType.none);
+export function TableView(props) {
+	const [dragType, setDragType] = useState(TableViewDragType.none);
 	const [dragOrigin, setDragOrigin] = useState({x: 0, y: 0});
 	const [initialOffset, setInitialOffset] = useState({x: 0, y: 0});
 	const	[selectedCell, setSelectedCell] = useState({row: 0, column: 0});
-	const [valueViewOffset, setValueViewOffset] = useState({x: 0, y: 0});
+	const [TableViewOffset, setTableViewOffset] = useState({x: 0, y: 0});
 	const cellHeight = 30;
 	const cellWidth = 110;
 	const rowLabelWidth = 50;
 
 	const pointerStart = (x, y) => {
-		let newDragType = ValueViewDragType.cell;
+		let newDragType = TableViewDragType.cell;
 		if (y < cellHeight) {
 			if (x < rowLabelWidth) {
-				newDragType = ValueViewDragType.origin;
+				newDragType = TableViewDragType.origin;
 			} else {
-					newDragType = ValueViewDragType.column;
+					newDragType = TableViewDragType.column;
 			}
 		}
 		else if (x < rowLabelWidth) {
-			newDragType = ValueViewDragType.row;
+			newDragType = TableViewDragType.row;
 		}
 		setDragType(newDragType);
 		setDragOrigin({x: x, y: y});
 		setInitialOffset({
-				x: valueViewOffset.x,
-				y: valueViewOffset.y
+				x: TableViewOffset.x,
+				y: TableViewOffset.y
 			});
 	}
 
 	const pointerEnd = () => {
 		switch (dragType) {
-			case ValueViewDragType.origin:
-				setDragType(ValueViewDragType.none);
+			case TableViewDragType.origin:
+				setDragType(TableViewDragType.none);
 				setDragOrigin({x: 0, y: 0})
 				setInitialOffset({x: 0, y: 0});
-				setValueViewOffset({x: 0, y: 0});
+				setTableViewOffset({x: 0, y: 0});
 				break;
 			default:
-				setDragType(ValueViewDragType.none);
+				setDragType(TableViewDragType.none);
 				break;
 		}
 	}
@@ -81,7 +81,7 @@ export function ValueView(props) {
 			const nColumns = Math.max(0,value.nc - maxX/cellWidth + 1);	
 			offsetX = Math.min(offsetX, nColumns*cellWidth)
 			offsetY = Math.min(offsetY, nRows*cellHeight);
-			setValueViewOffset({x: offsetX, y: offsetY});
+			setTableViewOffset({x: offsetX, y: offsetY});
 		}
 
 		const fastPanX = (deltaX) => {
@@ -102,39 +102,39 @@ export function ValueView(props) {
 			cellPan(0, deltaY);
 		}
 
-		if (dragType != ValueViewDragType.none) {
+		if (dragType != TableViewDragType.none) {
 			const deltaX = dragOrigin.x - x;
 			const deltaY = dragOrigin.y - y;
 			switch (dragType) {
-				case ValueViewDragType.pan:
+				case TableViewDragType.pan:
 					cellPan(deltaX, deltaY);
 					break;
 
-				case ValueViewDragType.fastX:
+				case TableViewDragType.fastX:
 					fastPanX(deltaX);
 					break;
 
-				case ValueViewDragType.fastY:
+				case TableViewDragType.fastY:
 					fastPanY(deltaY);
 					break;
 
-				case ValueViewDragType.column:
+				case TableViewDragType.column:
 					if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-						setDragType(ValueViewDragType.fastX);
+						setDragType(TableViewDragType.fastX);
 						fastPanX(deltaX);
 					}
 					break;
 		
-					case ValueViewDragType.row:
+					case TableViewDragType.row:
 					if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-						setDragType(ValueViewDragType.fastY);
+						setDragType(TableViewDragType.fastY);
 						fastPanY(deltaY);
 					}
 					break;
 		
-				case ValueViewDragType.cell:
+				case TableViewDragType.cell:
 					if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-						setDragType(ValueViewDragType.pan);
+						setDragType(TableViewDragType.pan);
 						cellPan(deltaX, deltaY);
 					}
 					break;
@@ -151,7 +151,7 @@ export function ValueView(props) {
 	const xTextPad = 5;
 
 	const viewBox = props.viewBox;
-	const offset = valueViewOffset;
+	const offset = TableViewOffset;
 	const nRowCells = Math.min(Math.floor(viewBox[3] / cellHeight), nRows);
 	const rowOrigin = Math.max(0, Math.floor(Math.min(offset.y / cellHeight), nRows - nRowCells));
 	const nColumnCells = Math.min(Math.floor(viewBox[2] / cellWidth) + 2, nColumns);
@@ -310,9 +310,9 @@ export function ValueView(props) {
 				pointerMove(x, y);
 			},
 			onPointerEnter: (e) => {
-				if (dragType != ValueViewDragType.none) {
+				if (dragType != TableViewDragType.none) {
 					if (!e.nativeEvent.buttons) {
-						setDragType(ValueViewDragType.none);
+						setDragType(TableViewDragType.none);
 					}
 				}
 			},

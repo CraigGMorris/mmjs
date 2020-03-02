@@ -2,7 +2,7 @@
 
 import {ToolView} from './ToolView.js';
 import {FormulaField} from './FormulaView.js';
-import {ValueView} from './ValueView.js';
+import {TableView} from './TableView.js';
 
 const e = React.createElement;
 const useState = React.useState;
@@ -140,7 +140,7 @@ export function ExpressionView(props) {
 			)
 		),
 		e(
-			ValueView, {
+			TableView, {
 				id: 'expression__value',
 				value: results.value,
 				actions: props.actions,
