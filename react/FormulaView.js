@@ -42,6 +42,7 @@ export function FormulaField(props) {
 						formulaOffset: offset,
 						formulaName: props.formulaName,
 						path: props.path,
+						modelPath: props.viewInfo.modelPath,
 					});
 				}
 			},
@@ -201,7 +202,7 @@ function ValuePicker(props) {
 		const path = selected.join('');
 
 		if (selected.length === 0 || path.endsWith('.')) {
-			props.actions.doCommand(`.${path} get parameters`, (results) => {
+			props.actions.doCommand(`${props.modelPath}.${path} get parameters`, (results) => {
 				if (results.length && results[0].results) {
 					setParamList(results[0].results);
 				}
@@ -499,6 +500,7 @@ export function FormulaEditor(props) {
 				ValuePicker, {
 					t: props.t,
 					actions: props.actions,
+					modelPath: props.viewInfo.modelPath,
 					cancel: () => {
 						setDisplay(FormulaDisplay.editor);
 					},

@@ -5,12 +5,18 @@ import {FormulaField} from './FormulaView.js';
 
 const e = React.createElement;
 const useState = React.useState;
+const useEffect = React.useEffect;
 
 /**
  * ExpressionView
  * info view for expression
  */
 export function ExpressionView(props) {
+	useEffect(() => {
+		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
+			`${props.viewInfo.path} toolViewInfo`);
+	}, []);
+
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
 	const results = updateResults.length ? updateResults[0].results : {};

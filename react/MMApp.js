@@ -358,6 +358,7 @@ export function MMApp(props) {
 			let newInfoState = {
 				title: (toolName ? toolName : ''),
 				path: (path ? path : ''),
+				modelPath: cmds[0].results.modelPath,
 				stackIndex: infoStack.length,
 				updateCommands: updateCommand,			// commands used to update the view state
 				updateResults: cmds,		// result of doCommand on the updateCommands

@@ -1151,7 +1151,13 @@ class MMTool extends MMCommandParent {
 	 * should be overridden by derived classes
 	 */
 	toolViewInfo(command) {
+		let parent = this;
+		while (parent.typeName !== 'Model') {
+			parent = parent.parent;
+		}
+
 		command.results = {
+			modelPath: parent.getPath(),
 			notes: this.notes,
 			diagramNotes: this.diagramNotes,
 		}
