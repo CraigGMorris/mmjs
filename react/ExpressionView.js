@@ -21,9 +21,11 @@ export function ExpressionView(props) {
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
 	const results = updateResults.length ? updateResults[0].results : {};
+	const path = results.path;
 	const value = results.value;
 	const valueUnit = value.unit;
 	const unitType = value.unitType ? value.unitType : '';
+	const formulaName = results.formulaName;
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 	const toolComponent = e(
@@ -41,8 +43,7 @@ export function ExpressionView(props) {
 				FormulaField, {
 					t: t,
 					actions: props.actions,
-					path: results.formulaPath || '',
-					formulaName: 'f_formula',
+					path: `${path}.${formulaName}`,
 					formula: results.formula || '',
 					viewInfo: props.viewInfo,
 				}

@@ -913,6 +913,7 @@ class ToolIcon extends React.Component {
 		const toolColors = {
 			Expression: 'rgba(247,247,230,.8)',
 			Model: 'rgba(230,255,255,.8)',
+			Matrix: 'rgba(223,233,223,.8)',
 		}
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;

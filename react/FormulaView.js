@@ -40,7 +40,6 @@ export function FormulaField(props) {
 						t: t,
 						formula: props.formula,
 						formulaOffset: offset,
-						formulaName: props.formulaName,
 						path: props.path,
 						modelPath: props.viewInfo.modelPath,
 					});

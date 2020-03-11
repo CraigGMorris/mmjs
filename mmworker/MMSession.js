@@ -1056,14 +1056,14 @@ const MMToolTypes = {
 	'Model': {
 		factory: (name, parent) => { return new MMModel(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:modelDisplayName'),
-		shortDescription: new MMCommandMessage('mmcmd:modelShortDescription'),
-		fillColor: [.9, 1, 1, .8]
 	},
 	"Expression": {
 		factory: (name, parent) => {return new MMExpression(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:exprDisplayName'),
-		shortDescription: new MMCommandMessage('mmcmd:exprShortDescription'),
-		fillColor: [.97, .97, .9, .8]
+	},
+	"Matrix": {
+		factory: (name, parent) => {return new MMMatrix(name, parent)},
+		displayName: new MMCommandMessage('mmcmd:matrixDisplayName'),
 	}
 };
 
@@ -1157,6 +1157,7 @@ class MMTool extends MMCommandParent {
 		}
 
 		command.results = {
+			path: this.getPath(),
 			modelPath: parent.getPath(),
 			notes: this.notes,
 			diagramNotes: this.diagramNotes,
@@ -1205,7 +1206,9 @@ class MMTool extends MMCommandParent {
 	 * short cut method
 	 */
 	addRequestor(requestor) {
-		this.valueRequestors.add(requestor);
+		if (requestor) {
+			this.valueRequestors.add(requestor);
+		}
 	}
 
 	/**

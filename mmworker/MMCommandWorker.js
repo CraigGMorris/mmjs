@@ -11,6 +11,7 @@ importScripts(
   'mmunits/MMUnitSystem.js',
   'MMModel.js',
   "MMExpression.js",
+  "MMMatrix.js",
   "MMFormula.js",
   "MMValue.js"
 );

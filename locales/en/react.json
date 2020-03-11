@@ -19,6 +19,8 @@
 	"exprIsOutput": "Out",
 	"formulaValueUnknown": "Enter formula",
 	"funcPickerInsert": "Insert",
+	"matrixRowCountLabel": "# Rows",
+	"matrixColumnCountLabel": "# Columns",
 	"sessionsImportButton": "Import",
 	"sessionsNewButton": "New",
 	"sessionsCopyButton": "Copy",

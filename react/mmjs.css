@@ -536,6 +536,29 @@ a:hover {
 	grid-area: sessions;
 }
 
+#matrix {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: var(--input--height) var(--input--height) var(--input--height) 1fr;
+	grid-template-areas: "size"
+		"out-units"
+		"formula"
+		"display";
+	box-sizing: border-box;
+	grid-gap: 2px;
+}
+
+#matrix__size-fields {
+	grid-area: size;
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-columns: repeat(4, 1fr);
+}
+
+#matrix__unit-fields {
+	grid-area: out-units;
+}
+
 #mmapp__wrapper--two-pane {
 	font-size: 1em;
 	/* height: 100%; */

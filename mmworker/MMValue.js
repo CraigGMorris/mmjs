@@ -201,10 +201,10 @@ class MMValue {
 	}
 
 	/**
-	 * @method numeric
+	 * @method numberValue
 	 * @returns MMNumberValue
 	 */
-	numeric() {
+	numberValue() {
 		return null;
 	}
 
@@ -655,11 +655,11 @@ class MMNumberValue extends MMValue {
 	}
 
 	/**
-	 * @method numeric
+	 * @method numberValue
 	 * @override
 	 * @returns MMNumberValue
 	 */
-	numeric() {
+	numberValue() {
 		return this;
 	}
 
@@ -999,11 +999,11 @@ class MMStringValue extends MMValue {
 	}
 
 	/**
-	 * @method numeric
+	 * @method numberValue
 	 * @override
 	 * @returns MMNumberValue
 	 */
-	numeric() {
+	numberValue() {
 		let rv = new MMNumberValue(this.rowCount, this.columnCount);
 		const count = this.valueCount;
 		for (let i = 0; i < count; i++) {

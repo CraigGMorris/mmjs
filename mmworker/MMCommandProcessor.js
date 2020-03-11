@@ -430,6 +430,15 @@ class MMCommandProcessor {
 	}
 
 	/**
+	 * @method caughtException
+	 * @param {Error} e
+	 */
+	caughtException(e) {
+		let message = (e instanceof Error) ? `${e.message}` : `${e}`;
+		this.command.error = this.t('cmd:caughtException', {e: message});
+	}
+
+	/**
 	 * @method parameters
 	 * overridden by objects that have formula value parameters
 	 * i.e. things that can be appended to a formula value

@@ -94,7 +94,7 @@ class MMExpression extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			value: 'mmcmd:?exprUseValue'
+			value: 'mmcmd:?toolValue'
 		}[command];
 		if (key) {
 			return key;
@@ -169,9 +169,9 @@ class MMExpression extends MMTool {
 					}
 					break;
 				case 'formula':
-					if (this.formula._formula) {
+					if (this.formula.formula) {
 						this.addRequestor(requestor);
-						value = MMStringValue.scalarValue(this.formula._formula);
+						value = MMStringValue.scalarValue(this.formula.formula);
 					}
 					else {
 						value = null;
@@ -221,8 +221,8 @@ class MMExpression extends MMTool {
 		super.toolViewInfo(command);
 		let results = command.results;
 		const value = this.valueForRequestor();
-		results['formulaPath'] = this.getPath() + '.formula';
-		results['formula'] = this.formula._formula;
+		results['formulaName'] = 'formula';
+		results['formula'] = this.formula.formula;
 		results['isInput'] = this._isInput;
 		results['isOutput'] = this._isOutput;
 		results['value'] = this.jsonValue();
@@ -247,12 +247,13 @@ class MMExpression extends MMTool {
 
 	/**
 	 * @method saveObject
+	 * @override
 	 * @returns {Object} object that can be converted to json for save file
 	 */
 	saveObject() {
 		let o=   super.saveObject();
 		o['Type'] = 'Expression';
-		o['Formula'] = {'Formula': this.formula._formula};
+		o['Formula'] = {'Formula': this.formula.formula};
 		if (this._isInput) { o['isInput'] = 'y'; }
 		if (this._isOutput) { o['isOutput'] = 'y'}
 		return o;
@@ -260,6 +261,7 @@ class MMExpression extends MMTool {
 
 	/**
 	 * @method initFromSaved - initialize from stored object
+	 * @override
 	 * @param {Object} saved 
 	 */
 	initFromSaved(saved) {

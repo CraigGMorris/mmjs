@@ -45,7 +45,10 @@ var mmFunctionDictionary = {
 	'concat': (f) => {return new MMConcatFunction(f)},
 	'ln': (f) => {return new MMLnFunction(f)},
 	'array': (f) => {return new MMArrayFunction(f)},
-	'table': (f) => {return new MMTableFunction(f)}
+	'table': (f) => {return new MMTableFunction(f)},
+	'cell': (f) => {return new MMMatrixCellFunction(f)},
+	'row': (f) => {return new MMMatrixRowFunction(f)},
+	'col': (f) => {return new MMMatrixColumnFunction(f)},
 }
 
 /**
@@ -912,7 +915,7 @@ class MMArrayFunction extends MMMultipleArgumentFunction {
 		}
 
 		let v = this.arguments[rowArg].value();
-		v = v && v.numeric();
+		v = v && v.numberValue();
 		if (!v.valueCount) {
 			return null;
 		}
@@ -1159,6 +1162,138 @@ class MMTableFunction extends MMMultipleArgumentFunction {
 }
 
 /**
+ * @class MMMatrixCellFunction
+ * @extends MMMultipleArgumentFunction
+ */
+class MMMatrixCellFunction extends MMMultipleArgumentFunction {
+	/**
+	 * @override
+	 * @function processArguments
+	 * @param {MMFormulaOperator[]} operandStack
+	 * @returns {boolean}
+	 */
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length < 1) {
+			return false; // needs at least one arguments
+		}
+		if ((this.formula.owner instanceof MMMatrix)) {
+			return false;
+		}
+
+		return rv;
+	}
+
+	/**
+	 * @method value
+	 * @override
+	 * @returns {MMValue}
+	 */
+	value() {
+		const matrix = this.formula.parent;
+		let rv = null;
+		const savedRow = matrix.currentRow;
+		const savedColumn = matrix.currentColumn;
+		const v1 = this.arguments[1].value();
+		if (v1) {
+			const v2 = this.arguments[0].value();
+			if (v2) {
+				if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
+					const rowOffset = v1.valueAtRowColumn(1,1);
+					const columnOffset = v2.valueAtRowColumn(1,1);
+					if (rowOffset != 0 || columnOffset != 0) {
+						rv = matrix.numberValueAtOffsets(rowOffset, columnOffset);
+					}
+				}
+			}
+		}
+		matrix.currentRow = savedRow;
+		matrix.currentColumn = savedColumn;
+		return rv;	
+	}
+}
+
+/**
+ * @class MMMatrixRowFunction
+ * @extends MMMultipleArgumentFunction
+ */
+class MMMatrixRowFunction extends MMFunctionOperator {
+	/**
+	 * @override
+	 * @function processArguments
+	 * @param {MMFormulaOperator[]} operandStack
+	 * @returns {boolean}
+	 */
+	processArguments(operandStack) {
+		if ((this.formula.owner instanceof MMMatrix)) {
+			return false;
+		}
+
+		if (!operandStack || operandStack.length < 1) {
+			return false;
+		}
+
+		const arg = operandStack[operandStack.length - 1];
+		if (arg && arg instanceof MMOperandMarker) {
+			operandStack.pop();
+			return true;
+		}
+	
+		return false;
+	}
+
+	/**
+	 * @method value
+	 * @override
+	 * @returns {MMValue}
+	 */
+	value() {
+		const matrix = this.formula.parent;
+		return MMNumberValue.scalarValue(matrix.currentRow, null);
+	}
+}
+
+/**
+ * @class MMMatrixColumnFunction
+ * @extends MMMultipleArgumentFunction
+ */
+class MMMatrixColumnFunction extends MMFunctionOperator {
+	/**
+	 * @override
+	 * @function processArguments
+	 * @param {MMFormulaOperator[]} operandStack
+	 * @returns {boolean}
+	 */
+	processArguments(operandStack) {
+		if ((this.formula.owner instanceof MMMatrix)) {
+			return false;
+		}
+
+		if (!operandStack || operandStack.length < 1) {
+			return false;
+		}
+
+		const arg = operandStack[operandStack.length - 1];
+		if (arg && arg instanceof MMOperandMarker) {
+			operandStack.pop();
+			return true;
+		}
+	
+		return false;
+	}
+
+	/**
+	 * @method value
+	 * @override
+	 * @returns {MMValue}
+	 */
+	value() {
+		const matrix = this.formula.parent;
+		return MMNumberValue.scalarValue(matrix.currentColumn, null);
+	}
+}
+
+/**
  * @class MMFormula
  * @extends MMCommandObject
  * @member {string} formula
@@ -1282,6 +1417,17 @@ class MMFormula extends MMCommandObject {
 			this.setExceptionError(e);
 		}
 		return null;
+	}
+
+	/**
+	 * @param {@method} numberValue
+	 * @returns MMNumberValue or null 
+	 */
+	numberValue() {
+		const value = this.value();
+		if (value) {
+			return value.numberValue();
+		}
 	}
 
 	/**

@@ -1,6 +1,7 @@
 {
  	"cannotChangeDefault": "Can't change the default to {{path}}",
 	"cannotRenameTo": "You cannot rename {{name}} to {{newName}}",
+	"caughtException": "Caught exception:\n\n{{e}}",
 	"changedDefault": "changed default to {{path}}",
 	"childNotFound": "{{parent}} does not have a child named {{child}}",
 	"childRemoved": "{{child}} was removed from {{parent}}",
