@@ -7,6 +7,7 @@ import {Diagram} from './Diagram.js';
 import {UnitsView, UserUnitsView, UnitSetsView, UnitSetView} from './UnitsView.js';
 import {ModelView} from './ModelView.js';
 import {ExpressionView} from './ExpressionView.js';
+import {MatrixView} from './MatrixView.js';
 import {FormulaEditor} from './FormulaView.js';
 
 const e = React.createElement;
@@ -55,6 +56,41 @@ let redoStack = [];
 let infoStack = [initialInfo];
 
 /**
+ * @class ErrorBoundary
+ * slightly modified boiler plate from react
+ */
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    // Update state so the next render will show the fallback UI.
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // You can also log the error to an error reporting service
+		//logErrorToMyService(error, errorInfo);
+		console.log(`error:\n${error}\nerrorInfo:\n${errorInfo}`);
+  }
+
+  render() {
+    if (this.state.hasError) {
+			// You can render any custom fallback UI
+			if (this.props.handleBoundraryError) {
+				this.props.handleBoundraryError();
+				this.state = { hasError: false };
+			}
+      return e('h1', {}, 'Something went wrong');
+    }
+
+    return this.props.children; 
+  }
+}
+
+/**
  * MMApp
  * the main Math Minion window
  */
@@ -90,6 +126,7 @@ export function MMApp(props) {
 		'formulaEditor': FormulaEditor,
 		'Model': ModelView,
 		'Expression': ExpressionView,
+		'Matrix': MatrixView,
 	}
 
 	// information need to generate an console view component
@@ -729,10 +766,15 @@ export function MMApp(props) {
 						id: 'mmapp__diagram--two-pane',
 						className: 'mmapp__diagram',
 					},
-					diagram
+					e(ErrorBoundary, {}, diagram)
 				),
 				infoNav,
-				infoView,
+				e(ErrorBoundary, {
+					handleBoundraryError: () => {
+						popView();
+						alert(t('mmcmd:viewError'));
+					}
+				}, infoView),
 				infoTools,
 			);
 			break;
@@ -749,7 +791,7 @@ export function MMApp(props) {
 						id: 'mmapp__diagram--one-pane',
 						className: 'mmapp__diagram',
 					},
-					diagram
+					e(ErrorBoundary, {}, diagram)
 				),
 				infoTools,
 			);
@@ -757,17 +799,20 @@ export function MMApp(props) {
 			
 		case ViewType.info:
 			wrapper = e(
+				ErrorBoundary, {},
+				e(
 				'div', {
 					id: 'mmapp__info--one-pane',
 					className: 'mmapp__wrapper--one-pane',
 					style: onePaneStyle,
 				},
 				infoNav,
-				infoView,
+				e(ErrorBoundary, {}, infoView),
 				infoTools,
+				)
 			);
 		break;
 	}
 
-	return wrapper;
+	return e(ErrorBoundary, {}, wrapper);
 }
