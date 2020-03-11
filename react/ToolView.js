@@ -74,7 +74,7 @@ export function ToolView(props) {
 					setShowNotes(!showNotes);
 				}
 			},
-			notesText.length ? (
+			notesText && notesText.length ? (
 				showNotes ? t('react:toolViewHideNotesButton') : t('react:toolViewShowNotesButton')
 			) :
 			(
