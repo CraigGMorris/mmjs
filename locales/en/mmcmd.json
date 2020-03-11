@@ -46,6 +46,7 @@
 	"viewError": "There was an error trying to show the view",
 	"unimplemented": "{{feature}} is not yet implemented",
 	"warning": "Warning",
+	"?formulaValue": "return formula value as json\n\nusage: value",
 	"?matrixSetCell": "set cell value\n\nusage: setcell row col input",
 	"?matrixSetColumnCount": "set column count\n\nusage: setcolumncount countFormula",
 	"?matrixSetRowCount": "set row count\n\nusage: setrowcount countFormula",

@@ -1370,6 +1370,7 @@ class MMFormula extends MMCommandObject {
 	/** @override */
 	get verbs() {
 		let verbs = super.verbs;
+		verbs['value'] = this.valueCommand;
 		return verbs;
 	}
 
@@ -1380,7 +1381,7 @@ class MMFormula extends MMCommandObject {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-//			addTool: 'mmcmd:?modelUseAddTool'
+			value: 'mmcmd:?formulaValue'
 		}[command];
 		if (key) {
 			return key;
@@ -1400,6 +1401,20 @@ class MMFormula extends MMCommandObject {
 			this._nameSpace = newSpace;
 			this.parent.forgetAllCalculations();
 			this.parseFormula();
+		}
+	}
+
+	/**
+	 * @method valueCommand
+	 * command.results = json
+	 */
+	valueCommand(command) {
+		const value = this.value();
+		if (value) {
+			command.results = value.jsonValue();
+		}
+		else {
+			command.results = 'unknown';
 		}
 	}
 
