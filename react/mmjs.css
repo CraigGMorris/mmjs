@@ -277,17 +277,10 @@ a:hover {
 }
 
 #expression__units {
-	display: grid;
 	grid-area: out-units;
-	grid-template-columns: 1fr 30px;
-	grid-template-rows: var(--input--height);
-	grid-template-areas: "unit-and-type info-button";
 	box-sizing: border-box;
 	padding-top: 2px;
-}
-
-#expression__unit-and-type {
-	grid-area: unit-and-type;
+	color: var(--link--color);
 }
 
 #expression__info-button {

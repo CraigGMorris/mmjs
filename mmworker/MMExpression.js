@@ -27,7 +27,7 @@ class MMExpression extends MMTool {
 		let d = super.properties;
 		d['isInput'] = {type: PropertyType.boolean, readOnly: false};
 		d['isOutput'] = {type: PropertyType.boolean, readOnly: false};
-		d['outputUnit'] = {type: PropertyType.string, readOnly: false};
+		d['displayUnitName'] = {type: PropertyType.string, readOnly: false};
 		return d;
 	}
 
@@ -63,11 +63,11 @@ class MMExpression extends MMTool {
 		this._isOutput = (newValue) ? true : false;
 	}
 	
-	get outputUnit() {
+	get displayUnitName() {
 		return (this.displayUnit) ? this.displayUnit.name : null;
 	}
 
-	set outputUnit(unitName) {
+	set displayUnitName(unitName) {
 		if (!unitName) {
 			this.displayUnit = null;
 		}

@@ -129,7 +129,7 @@ export function ToolView(props) {
 	}
 	else {
 
-		cmpStack.push(props.toolComponent);
+		cmpStack.push(props.displayComponent);
 	}
 
 	return e(

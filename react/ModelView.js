@@ -18,11 +18,11 @@ export function ModelView(props) {
 	}, []);
 
 	let t = props.t;
-	let toolComponent = e('div', {key: 'model'}, 'Some stuff');
+	let displayComponent = e('div', {key: 'model'}, 'Some stuff');
 	return e(
 		ToolView, {
 			id: 'tool-view',
-			toolComponent: toolComponent,
+			displayComponent: displayComponent,
 			...props,
 		},
 	);

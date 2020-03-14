@@ -581,18 +581,18 @@ export function UnitPicker(props) {
 	const [selectedUnit, setSelectedUnit] = useState('');
 
 	useEffect(() => {
-		props.actions.doCommand('/unitsys.sets get defaultSetName', (cmds) => {
-			setDefaultSetName(cmds[0].results);
-		});
-	},[]);
-
-	useEffect(() => {
 		if (defaultSetName) {
 			props.actions.doCommand(`/unitsys.sets.${defaultSetName} listTypes`, (cmds) => {
 				setUnitTypes(cmds[0].results);
 			});
 		}
 	},[defaultSetName]);
+
+	useEffect(() => {
+		props.actions.doCommand('/unitsys.sets get defaultSetName', (cmds) => {
+			setDefaultSetName(cmds[0].results);
+		});
+	},[]);
 
 	useEffect(() => {
 		if (selectedType) {
@@ -605,7 +605,7 @@ export function UnitPicker(props) {
 				}
 			}
 		}
-	},[selectedType]);
+	},[selectedType, unitTypes]);
 
 	let typeComponents = [];
 	for (let type of unitTypes) {
@@ -621,6 +621,12 @@ export function UnitPicker(props) {
 		);
 		typeComponents.push(cmp);
 	}
+
+	useEffect(() => {
+		if (props.unitType) {
+			setSelectedType(props.unitType);
+		}
+	},[]);
 
 	let unitComponents = [];
 	for (let unitName of unitNames) {
@@ -685,12 +691,12 @@ export function UnitPicker(props) {
 				'button', {
 					id: 'unit-picker__apply',
 					onClick: e => {
-						if (selectedUnit) {
-							props.apply(`"${selectedUnit}"`, 0);
-						}
-						else {
-							props.cancel();
-						}
+						// if (selectedUnit) {
+							props.apply(`${selectedUnit}`, 0);
+						// }
+						// else {
+						// 	props.cancel();
+						// }
 					}
 				},
 				t('react:unitPickerApply')

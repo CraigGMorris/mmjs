@@ -187,7 +187,7 @@ class MMModel extends MMTool {
 			if (tool instanceof MMExpression) {
 				toolInfo['formula'] = tool.formula.formula;
 				if (tool.cachedValue) {
-					const v = tool.cachedValue.stringWithUnit(tool.displayUnit);
+					const v = tool.cachedValue.stringWithUnit(tool.unit);
 					if (v) {
 						toolInfo['result'] = v;
 					}

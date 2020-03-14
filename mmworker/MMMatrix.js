@@ -63,10 +63,10 @@ class MatrixInputValue {
 				if (!unit) {
 					throw(owner.t('mmunit:unknownUnit', {name: unitName}));
 				}
-				if (!owner.unit || !MMUnitSystem.areDimensionsEqual(unit.dimensions, owner.unit.dimensions)) {
+				if (!MMUnitSystem.areDimensionsEqual(unit.dimensions, owner.displayUnit ? owner.displayUnit.dimensions : null)) {
 					if (this.row === 0 && this.column === 0) {
 						// the * cell - use its units
-						owner.unit = unit;
+						owner.displayUnit = unit;
 					}
 					else {
 						this.value = 0.0;
@@ -83,9 +83,9 @@ class MatrixInputValue {
 		// use Number(value) so extra charaters after a number will yield NaN
 		let value = Number(inputString);
 		if (!isNaN(value)) {
-			if (owner.unit) {
-				this.value = owner.unit.convertToBase(value);
-				inputString = `${inputString} ${owner.unit.name}`;
+			if (owner.displayUnit) {
+				this.value = owner.displayUnit.convertToBase(value);
+				inputString = `${inputString} ${owner.displayUnit.name}`;
 			}
 			else {
 				this.value = value;
@@ -138,7 +138,7 @@ class MatrixInputValue {
 					return null;
 				}
 
-				const dimensions = owner.unit ? owner.unit.dimensions : null;
+				const dimensions = owner.displayUnit ? owner.displayUnit.dimensions : null;
 				if (!MMUnitSystem.areDimensionsEqual(value.unitDimensions, dimensions)) {
 					this._input = this._input.formula;
 					this.state = MatrixValueState.error;
@@ -154,7 +154,7 @@ class MatrixInputValue {
 				return null;
 			}
 		}
-		const dimensions = owner.unit ? owner.unit.dimensions : null;
+		const dimensions = owner.displayUnit ? owner.displayUnit.dimensions : null;
 		return MMNumberValue.scalarValue(this.value, dimensions);
 	}
 
@@ -191,7 +191,7 @@ class MMMatrix extends MMTool {
 		super(name, parentModel, 'Matrix');
 		this.cellInputs = {};
 		this.value = null;
-		this.unit = null;
+		this.displayUnit = null;
 		this.calculatedRowCount = 1;
 		this.calculatedColumnCount = 1;
 		this.rowCountFormula = new MMFormula('rowCount', this);
@@ -237,7 +237,31 @@ class MMMatrix extends MMTool {
 		}
 	}
 
-		/**
+	/** @override */
+	get properties() {
+		let d = super.properties;
+		d['displayUnitName'] = {type: PropertyType.string, readOnly: false};
+		return d;
+	}
+
+	get displayUnitName() {
+		return (this.displayUnit) ? this.displayUnit.name : null;
+	}
+
+	set displayUnitName(unitName) {
+		if (!unitName) {
+			this.displayUnit = null;
+		}
+		else {
+			const unit = theMMSession.unitSystem.unitNamed(unitName);
+			if (!unit) {
+				throw(this.t('mmunit:unknownUnit', {name: unitName}));
+			}
+			this.displayUnit = unit;
+		}
+	}
+
+	/**
 	 * @method parameters
 	 * @override
 	 * i.e. things that can be appended to a formula value
@@ -268,7 +292,7 @@ class MMMatrix extends MMTool {
 			this.calculateValue();
 		}
 		if (this.value) {
-			results['value'] = this.jsonValue(this.unit);
+			results['value'] = this.jsonValue(this.displayUnit);
 		}
 
 		const cellInputs = {};
@@ -323,8 +347,8 @@ class MMMatrix extends MMTool {
 	saveObject() {
 		let o =   super.saveObject();
 		o['Type'] = 'Matrix';
-		if (this.unit) {
-			o['unit'] = this.unit.name;
+		if (this.displayUnit) {
+			o['unit'] = this.displayUnit.name;
 		}
 		const cellInputs = {};
 		for (let key in this.cellInputs) {
@@ -346,12 +370,12 @@ class MMMatrix extends MMTool {
 		const unitName = saved.unit;
 		try {
 			if (unitName) {
-				this.unit = theMMSession.unitSystem.unitNamed(unitName);
+				this.displayUnit = theMMSession.unitSystem.unitNamed(unitName);
 			}
 		}
 		catch(e) {
 			this.caughtException(e);
-			this.unit = null;
+			this.displayUnit = null;
 		}
 
 		if (saved.CellInputs) {
@@ -520,7 +544,7 @@ class MMMatrix extends MMTool {
 			}
 
 			this.recursionCount = 0;
-			const dimensions = this.unit ? this.unit.dimensions : null;
+			const dimensions = this.displayUnit ? this.displayUnit.dimensions : null;
 			this.value = new MMNumberValue(rowCount, columnCount, dimensions);
 			this.knowns = [];
 
@@ -721,7 +745,7 @@ class MMMatrix extends MMTool {
 				const columnName = `${column}`;
 				const tableColumn = new MMTableValueColumn({
 					name:`${column}`,
-					displayUnit: this.unit,
+					displayUnit: this.displayUnit,
 					value: columnValue
 				});
 				a.push(tableColumn);

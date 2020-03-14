@@ -4,7 +4,7 @@ addtool Expression x 80 20
 .x value
 addtool Expression y 90 60
 .y.formula set formula x[3:7]
-.y set outputUnit in
+.y set displayUnitName in
 .y value
 ' test that formula json values work
 addtool Expression s 140 90
