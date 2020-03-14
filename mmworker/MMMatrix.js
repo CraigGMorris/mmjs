@@ -6,10 +6,10 @@
  * @enum {string}
  */
 const MatrixValueState = Object.freeze({
-	unknown: 0,
-	string: 1,
-	formula: 2,
-	error: 3,
+	unknown: '?',
+	string: 's',
+	formula: 'f',
+	error: 'e',
 });
 
 
@@ -431,20 +431,26 @@ class MMMatrix extends MMTool {
 	 * if inputString is missing, the cell value is cleared
 	 */
 	setCellCommand(command) {
-		const parts = command.args.split(/\s/);
-		const throwError = () => { throw(this.t('mmcmd:matrixRowColumnError', {path: this.getPath(), args: command.args})) }
-		if (parts.length >= 2) {
-			const row = Number(parts[0]);
-			const column = Number(parts[1]);
-			if (isNaN(row) || isNaN(column)) {
+		const indicesMatch = command.args.match(/^\d+\s+\d+\s+/);
+		if (indicesMatch) {
+			const parts = indicesMatch[0].split(/\s+/,2);
+			if (parts.length >= 2) {
+				const row = Number(parts[0]);
+				const column = Number(parts[1]);
+				if (isNaN(row) || isNaN(column)) {
+					throwError();
+				}
+
+				const inputString = command.args.substring(indicesMatch[0].length);
+				this.setCellInput(row, column, inputString);
+			}
+			else {
 				throwError();
 			}
-			const inputString = (parts.length >= 3) ? parts.slice(2).join(' ') : null;
-			this.setCellInput(row, column, inputString);
 		}
 		else {
 			throwError();
-		}
+		}	
 	}
 
 	/** @method setRowCountCommand
