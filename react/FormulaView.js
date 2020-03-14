@@ -26,6 +26,24 @@ const FormulaDisplay = Object.freeze({
 export function FormulaField(props) {
 	let t = props.t;
 
+	/**
+	 * @function applyChanges
+	 * @param {String} formula
+	 * @param {function} callBack
+	 * call back is called when update command is complete - has cmds parameter
+	 */
+	const applyChanges = (formula, callBack) => {
+		if (props.applyChanges) {
+			// if supplied this is called instead of updating formula at path
+			// not normally definted, but is used by MatrixView
+			props.applyChanges(formula, callBack);
+		}
+		else {
+			const path = props.path;
+			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, callBack);
+		}
+	}
+
 	return e(
 		'div', {
 			className: 'formula-field'
@@ -40,8 +58,8 @@ export function FormulaField(props) {
 						t: t,
 						formula: props.formula,
 						formulaOffset: offset,
-						path: props.path,
 						modelPath: props.viewInfo.modelPath,
+						applyChanges: applyChanges,
 					});
 				}
 			},
@@ -331,56 +349,46 @@ export function FormulaEditor(props) {
 	const [display, setDisplay] = useState(FormulaDisplay.editor);
 	const offset = props.viewInfo.formulaOffset
 	const [selection, setSelection] = useState([offset,offset]);
+
+	// reference to editor textarea to keep track of selection and focus
 	const inputRef = React.useRef(null);
 
-	/* Need to save state when this component is unmounted when view pushed over it
-		or the info view is expanded or diagram shown. A useEffect will use information
-		stored in saveRef to save the state in the viewInfo
-	*/
-	const saveRef = React.useRef({});
+	useEffect(() => {
+		// recover state on mount if it was saved in viewInfo
+		if (props.viewInfo.formulaEditorState) {
+			const saved = props.viewInfo.formulaEditorState;
+			setFormula(saved.formula);
+			setDisplay(saved.display);
+			setSelection(saved.selection);
+		}
+		else {
+			props.viewInfo.formulaEditorState = {
+				display: display,
+				selection: selection,
+				formula: formula,
+			}
+		}
+
+	}, []);
 
 	useEffect(() => {
 		if (display === FormulaDisplay.editor) {
 			inputRef.current.focus();
 		}
-		saveRef.current.display = display;
+		props.viewInfo.formulaEditorState.display = display;
 	}, [display]);
 
 	useEffect(() => {
 		inputRef.current.setSelectionRange(selection[0], selection[1]);
-		saveRef.current.selection = selection;
+		props.viewInfo.formulaEditorState.selection = selection;
 	}, [selection]);
 
 	useEffect(() => {
-		saveRef.current.formula = formula;
+		props.viewInfo.formulaEditorState.formula = formula;
 	}, [formula]);
 
-	useEffect(() => {
-		// recover state on mount if it was saved in viewInfo
-		if (props.viewInfo.savedState) {
-			const saved = props.viewInfo.savedState;
-			setFormula(saved.formula);
-			setDisplay(saved.display);
-			setSelection(saved.selection);
-		}
-		return () => {
-			// save state in viewInfo
-
-			// get the selection from the inputRef
-			const selectionStart = inputRef.current.selectionStart;
-			const selectionEnd = inputRef.current.selectionEnd;
-
-			props.viewInfo.savedState = {
-				formula: saveRef.current.formula,
-				display: saveRef.current.display,
-				selection: [selectionStart, selectionEnd]
-			};
-		}
-	}, []);
-
 	const applyChanges = (formula) => {
-		const path = props.viewInfo.path;
-		props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, (cmds) => {
+		props.viewInfo.applyChanges(formula, (cmds) => {
 			props.actions.popView();
 		});
 	}

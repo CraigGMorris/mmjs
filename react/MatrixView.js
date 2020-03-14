@@ -13,10 +13,34 @@ const useEffect = React.useEffect;
  * info view for matrix
  */
 export function MatrixView(props) {
+
+	const [currentRow, setCurrentRow] = useState(0);
+	const [currentColumn, setCurrentColumn] = useState(0);
+
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
+
+		if ( props.viewInfo.matrixViewState) {
+			const state = props.viewInfo.matrixViewState;
+			setCurrentRow(state.currentRow);
+			setCurrentColumn(state.currentColumn);
+		}
+		else {
+			props.viewInfo.matrixViewState = {
+				currentRow: currentRow,
+				currentColumn: currentColumn,
+			}
+		}
 	}, []);
+
+	useEffect(() => {
+		props.viewInfo.matrixViewState.currentRow = currentRow;
+	}, [currentRow]);
+
+	useEffect(() => {
+		props.viewInfo.matrixViewState.currentColumn = currentColumn;
+	}, [currentColumn]);
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
@@ -32,6 +56,14 @@ export function MatrixView(props) {
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 
+	const cellInput = cellInputs[`${currentRow}_${currentColumn}`];
+	const cellFormula = cellInput ? cellInput.input : '';
+
+	const applyCellChanges = (formula, callBack) => {
+		console.log(`${formula}\n${currentRow} ${currentColumn}`);
+		const path = props.viewInfo.path;
+		props.actions.doCommand(`__blob__${path} setcell ${currentRow} ${currentColumn}__blob__${formula}`, callBack);
+	}
 
 	const toolComponent = e(
 		'div', {
@@ -67,7 +99,7 @@ export function MatrixView(props) {
 			),
 			e(
 				FormulaField, {
-					id: 'matrix-column-count-formula',
+					id: 'matrix__column-count-formula',
 					t: t,
 					actions: props.actions,
 					path: `${results.path}.columnCount`,
@@ -78,14 +110,45 @@ export function MatrixView(props) {
 		),
 		e(
 			'div', {
-				id: 'matrix__unit-fields',
+				id: 'matrix__unit-line',
 			},
-			`${unitType}: ${valueUnit}`,
 			e(
-				'button', {
-					id: 'matrix__unit-info-button'
+				'div', {
+					id: 'matrix__current-cell-location',
+					onClick: () => {
+						setCurrentRow(currentRow + 1);
+					}
 				},
-				'i'
+				`[${currentRow}, ${currentColumn}]`,
+			),
+			e (
+				'div', {
+					id: 'matrix__output-unit'
+				},
+				`${unitType}: ${valueUnit}`,
+			),
+			// e(
+			// 	'button', {
+			// 		id: 'matrix__unit-info-button'
+			// 	},
+			// 	'i'
+			// )
+		),
+		e(
+			'div', {
+				id: 'matrix__formula-line'
+			},
+			e(
+				FormulaField, {
+					id: 'matrix__cell-formula',
+					t: t,
+					actions: props.actions,
+					path: `${results.path}.f_${currentRow}_${currentColumn}`,
+					formula: cellFormula,
+					viewInfo: props.viewInfo,
+					applyChanges: applyCellChanges,
+				}
+
 			)
 		)
 	)
