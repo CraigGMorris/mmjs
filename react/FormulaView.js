@@ -46,30 +46,37 @@ export function FormulaField(props) {
 
 	return e(
 		'div', {
-			className: 'formula-field'
+			className: 'formula-field',
+			onClick: e => {
+				e.stopPropagation();
+				let offset = window.getSelection().anchorOffset;
+				offset = offset < 2 ? 0 : offset - 2;
+				props.actions.pushView('formulaEditor', props.path, {
+					t: t,
+					formula: props.formula,
+					formulaOffset: offset,
+					modelPath: props.viewInfo.modelPath,
+					applyChanges: applyChanges,
+				});
+			}
 		},
 		e(
 			'div', {
 				className: 'formula-field__text-display',
-				onClick: e => {
-					let offset = window.getSelection().anchorOffset;
-					offset = offset < 2 ? 0 : offset - 2;
-					props.actions.pushView('formulaEditor', props.path, {
-						t: t,
-						formula: props.formula,
-						formulaOffset: offset,
-						modelPath: props.viewInfo.modelPath,
-						applyChanges: applyChanges,
-					});
-				}
 			},
-			'= ' + props.formula
+			props.formula
+			// '= ' + props.formula
 		),
 		e(
 			'div', {
 				className: 'formula-field__refresh',
+				onClick: e => {
+					e.stopPropagation();
+					console.log('Refresh');
+				},
 			},
-			'\u21A9'
+			'='
+			// '\u21A9'
 		)
 	);
 }

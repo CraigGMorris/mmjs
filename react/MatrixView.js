@@ -101,9 +101,9 @@ export function MatrixView(props) {
 					id: 'matrix__size-fields'
 				},
 				e(
-					'label', {
+					'span', {
 						id: 'matrix__row-count-label',
-						htmlFor: 'matrix-row-count-formula'
+						// htmlFor: 'matrix-row-count-formula'
 					}, t('react:matrixRowCountLabel')
 				),
 				e(
@@ -117,9 +117,9 @@ export function MatrixView(props) {
 					}
 				),
 				e(
-					'label', {
+					'span', {
 						id: 'matrix__column-count-label',
-						htmlFor: 'matrix-column-count-formula'
+						// htmlFor: 'matrix-column-count-formula'
 					}, t('react:matrixColumnCountLabel')
 				),
 				e(

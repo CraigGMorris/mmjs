@@ -320,9 +320,9 @@ a:hover {
 
 .formula-field {
 	display: grid;
-	grid-template-columns: 1fr 20px;
+	grid-template-columns: 20px 1fr;
 	grid-template-rows: 1fr;
-	grid-template-areas: "formula-display formula-refresh";
+	grid-template-areas: "formula-refresh formula-display";
 	width: 100%;
 	box-sizing: border-box;
 	color: var(--link--color);
@@ -330,7 +330,9 @@ a:hover {
 
 .formula-field__text-display {
 	grid-area: formula-display;
-	/* white-space: nowrap; */
+	white-space: nowrap;
+	width: calc(100% - 2px);
+	overflow: hidden;
 }
 
 .formula-field__refresh {
@@ -535,8 +537,8 @@ a:hover {
 	grid-template-columns: 1fr;
 	grid-template-rows: var(--input--height) var(--input--height) var(--input--height) 1fr;
 	grid-template-areas: "size"
-		"out-units"
 		"formula"
+		"out-units"
 		"display";
 	box-sizing: border-box;
 	grid-gap: 2px;
@@ -544,18 +546,26 @@ a:hover {
 
 #matrix__formula-line {
 	grid-area: formula;
+	width: 100%;
+	align-self: center;
+	padding: 3px;
+	border-top: solid 1px var(--border--color);
+	border-bottom: solid 1px var(--border--color);
 }
 
 #matrix__cell-formula {
 	width: 100%;
-	overflow: hidden;
 }
 
 #matrix__size-fields {
 	grid-area: size;
 	display: grid;
 	grid-template-rows: 1fr;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: 4em 1fr 4em 1fr;
+	width: 100%;
+	align-self: center;
+	padding: 3px;
+	border-top: solid 1px var(--border--color);
 }
 
 #matrix__unit-line {
