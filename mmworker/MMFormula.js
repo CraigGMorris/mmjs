@@ -41,14 +41,15 @@ var MMFormulaOpDictionary = {
 };
 
 var mmFunctionDictionary = {
+	'array': (f) => {return new MMArrayFunction(f)},
 	'cc': (f) => {return new MMConcatFunction(f)},
 	'concat': (f) => {return new MMConcatFunction(f)},
 	'ln': (f) => {return new MMLnFunction(f)},
-	'array': (f) => {return new MMArrayFunction(f)},
 	'table': (f) => {return new MMTableFunction(f)},
 	'cell': (f) => {return new MMMatrixCellFunction(f)},
 	'row': (f) => {return new MMMatrixRowFunction(f)},
 	'col': (f) => {return new MMMatrixColumnFunction(f)},
+	'rand': (f) => {return new MMRandFunction(f)},
 }
 
 /**
@@ -1070,6 +1071,50 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 }
 
 /**
+ * @class MMRandFunction
+ * @extends MMMultipleArgumentFunction
+ */
+class MMRandFunction extends MMMultipleArgumentFunction {
+
+	/**
+	 * @method value
+	 * @override
+	 * @returns {MMValue}
+	 */
+	value() {
+		const argCount = this.arguments.length;
+
+		let columnCount = 1, rowCount = 1, rowArg = 0;
+		if (argCount > 1) {
+			const v = this.arguments[0].value();
+			if (!v || !v.valueCount) {
+				return null;
+			}
+			columnCount = Math.floor(v._values[0] + 0.0001);
+			rowArg = 1;
+		}
+
+		if (argCount > 0) {
+			let v = this.arguments[rowArg].value();
+			v = v && v.numberValue();
+			if (!v.valueCount) {
+				return null;
+			}
+			rowCount = Math.floor(v._values[0] + 0.0001);
+		}
+
+		let rv = null;
+		rv = new MMNumberValue(rowCount, columnCount);
+		const valueCount = rv.valueCount;
+		const vRv = rv._values;
+		for (let i = 0; i < valueCount; i++) {
+			vRv[i] = Math.random();
+		}
+		return rv;
+	}
+}
+
+/**
  * @class MMTableFunction
  * @extends MMMultipleArgumentFunction
  */
@@ -1371,6 +1416,7 @@ class MMFormula extends MMCommandObject {
 	get verbs() {
 		let verbs = super.verbs;
 		verbs['value'] = this.valueCommand;
+		verbs['refresh'] = this.refreshCommand;
 		return verbs;
 	}
 
@@ -1381,7 +1427,8 @@ class MMFormula extends MMCommandObject {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			value: 'mmcmd:?formulaValue'
+			value: 'mmcmd:?formulaValue',
+			refresh: 'mmcmd:?formulaRefresh',
 		}[command];
 		if (key) {
 			return key;
@@ -1401,6 +1448,21 @@ class MMFormula extends MMCommandObject {
 			this._nameSpace = newSpace;
 			this.parent.forgetAllCalculations();
 			this.parseFormula();
+		}
+	}
+
+	/**
+	 * @method refreshCommand
+	 * command.results = value
+	 */
+	refreshCommand(command) {
+		this.parent.forgetCalculated();
+		const value = this.value();
+		if (value) {
+			command.results = value.jsonValue();
+		}
+		else {
+			command.results = 'unknown';
 		}
 	}
 

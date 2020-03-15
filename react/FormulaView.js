@@ -72,7 +72,9 @@ export function FormulaField(props) {
 				className: 'formula-field__refresh',
 				onClick: e => {
 					e.stopPropagation();
-					console.log('Refresh');
+					props.actions.doCommand(`${props.path} refresh`, (cmds) => {
+						props.actions.updateView(props.viewInfo.stackIndex);
+					});
 				},
 			},
 			'='
