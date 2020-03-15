@@ -50,7 +50,7 @@ export function FormulaField(props) {
 			onClick: e => {
 				e.stopPropagation();
 				let offset = window.getSelection().anchorOffset;
-				offset = offset < 2 ? 0 : offset - 2;
+				offset = Math.max(0, offset);
 				props.actions.pushView('formulaEditor', props.path, {
 					t: t,
 					formula: props.formula,
