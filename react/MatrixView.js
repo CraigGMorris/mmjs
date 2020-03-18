@@ -15,8 +15,7 @@ const useEffect = React.useEffect;
  */
 export function MatrixView(props) {
 
-	const [currentRow, setCurrentRow] = useState(0);
-	const [currentColumn, setCurrentColumn] = useState(0);
+	const [currentCell, setCurrentCell] = useState([0,0]);
 	const [showUnitPicker, setShowUnitPicker] = useState(false);
 
 	useEffect(() => {
@@ -25,34 +24,29 @@ export function MatrixView(props) {
 
 		if ( props.viewInfo.matrixViewState) {
 			const state = props.viewInfo.matrixViewState;
-			setCurrentRow(state.currentRow);
-			setCurrentColumn(state.currentColumn);
+			setCurrentCell(state.currentCell);
 			setShowUnitPicker(state.showUnitPicker);
 		}
 		else {
 			props.viewInfo.matrixViewState = {
-				currentRow: currentRow,
-				currentColumn: currentColumn,
+				currentCell: currentCell,
 				showUnitPicker: showUnitPicker,
 			}
 		}
 	}, []);
 
 	useEffect(() => {
-		props.viewInfo.matrixViewState.currentRow = currentRow;
-	}, [currentRow]);
-
-	useEffect(() => {
-		props.viewInfo.matrixViewState.currentColumn = currentColumn;
-	}, [currentColumn]);
+		props.viewInfo.matrixViewState.currentCell = currentCell;
+	}, [currentCell]);
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
 	const results = updateResults.length ? updateResults[0].results : {};
 	const rowCountFormula = results.rowCountFormula;
 	const columnCountFormula = results.columnCountFormula;
-  const rowCount = results.rowCount;
+	const rowCount = results.rowCount;
   const columnCount = results.columnCount;
+
 	const cellInputs = results.cellInputs;
 	const value = results.value;
 	const valueUnit = (value && value.unit) ? value.unit : '';
@@ -60,13 +54,12 @@ export function MatrixView(props) {
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 
-	const cellInput = cellInputs[`${currentRow}_${currentColumn}`];
+	const cellInput = cellInputs[currentCell.join('_')];
 	const cellFormula = cellInput ? cellInput.input : '';
 
 	const applyCellChanges = (formula, callBack) => {
-		console.log(`${formula}\n${currentRow} ${currentColumn}`);
 		const path = props.viewInfo.path;
-		props.actions.doCommand(`__blob__${path} setcell ${currentRow} ${currentColumn}__blob__${formula}`, callBack);
+		props.actions.doCommand(`__blob__${path} setcell ${currentCell.join(' ')}__blob__${formula}`, callBack);
 	}
 
 	let displayComponent;
@@ -90,6 +83,12 @@ export function MatrixView(props) {
 		);
 	}
 	else {
+		const cellClick = (row, column) => {
+			row = Math.min(row, rowCount);
+			column = Math.min(column, columnCount);
+			setCurrentCell([row, column]);
+		}
+
 		displayComponent = e(
 			'div', {
 				// main vertical sections
@@ -140,11 +139,8 @@ export function MatrixView(props) {
 				e(
 					'div', {
 						id: 'matrix__current-cell-location',
-						onClick: () => {
-							setCurrentRow(currentRow + 1);
-						}
 					},
-					`[${currentRow}, ${currentColumn}]`,
+					`[${currentCell.join(', ')}]`,
 				),
 				e (
 					'div', {
@@ -165,13 +161,25 @@ export function MatrixView(props) {
 						id: 'matrix__cell-formula',
 						t: t,
 						actions: props.actions,
-						path: `${results.path}.f_${currentRow}_${currentColumn}`,
+						path: `${results.path}.f_${currentCell.join('_')}`,
 						formula: cellFormula,
 						viewInfo: props.viewInfo,
 						applyChanges: applyCellChanges,
 					}
 
 				)
+			),
+			e(
+				TableView, {
+					id: 'matrix__value',
+					value: results.value,
+					actions: props.actions,
+					viewInfo: props.viewInfo,
+					viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 4*nInputHeight - 14],
+					cellClick: cellClick,
+					cellInputs: cellInputs,
+					currentCell: currentCell,
+				}
 			)
 		)
 	}

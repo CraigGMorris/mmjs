@@ -15,11 +15,13 @@
 	--input--disabled-color: #77a;
 	--input--disabled-bgcolor: #333;
 	--input--height: 30px;
-	--expression__value--color1: white;
-	--expression__value--color2: rgba(255,255,230,1);
-	--expression__value--color3:rgba(240,240,255,1);
-	--expression__value--stroke-color: black;
-	--expression__value--bgcolor: rgba(238,255,238,1);
+	--tableview__value--color1: white;
+	--tableview__value--color2: rgba(255,255,230,1);
+	--tableview__value--color3:rgba(240,240,255,1);
+	--tableview__value--stroke-color: black;
+	--tableview__value--bgcolor: rgba(238,255,238,1);
+	--tableview__input--color: rgba(254,239,167,1);
+	--tableview__selected-color: rgb(165, 214, 81);
 	--selected__list--bgcolor: rgb(79, 85, 116);
 	--subtext--color: darkgray;
 	--title--color: #69e469;
@@ -39,11 +41,12 @@
 		--input--bgcolor: #fff;
 		--input--disabled-color: #555;
 		--input--disabled-bgcolor: #ccc;
-		--expression__value--color1: white;
-		--expression__value--color2: rgba(255,255,230,1);
-		--expression__value--color3:rgba(240,240,255,1);
-		--expression__value--stroke-color: black;
-		--expression__value--bgcolor: rgba(238,255,238,1);
+		--tableview__value--color1: white;
+		--tableview__value--color2: rgba(255,255,230,1);
+		--tableview__value--color3:rgba(240,240,255,1);
+		--tableview__value--stroke-color: black;
+		--tableview__value--bgcolor: rgba(238,255,238,1);
+		--tableview__input--color: rgba(254,239,167,1);	
 		--selected__list--bgcolor: lightgray;
 		--subtext--color: rgb(102, 101, 101);
 		--title--color: #040;
@@ -276,6 +279,24 @@ a:hover {
 	grid-area: is-output;
 }
 
+#expression__string-header {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+}
+
+#expression__string-cell-coord {
+	align-self: center;
+}
+
+#expression__string-done {
+	justify-self: center;
+}
+
+#expression__string-text {
+	width: 100%;
+	height: 100%;
+}
+
 #expression__units {
 	grid-area: out-units;
 	box-sizing: border-box;
@@ -291,31 +312,6 @@ a:hover {
 	font-size: 10pt;
 	border: 1;
 	text-align: center;
-}
-
- #expression__value-svg {
-	grid-area: display;
-	background-color: var(--expression__value--bgcolor);
-	width: 100%;
-	font-size: 12pt;
-	stroke: var(--expression__value--stroke-color);
-}
-
-#expression__origin-box {
-	fill: var(--expression__value--bgcolor);
-	height: var(--input--height);
-}
-
-.expression__cell--color1 {
-	fill: var(--expression__value--color1);
-}
-
-.expression__cell--color2 {
-	fill: var(--expression__value--color2);
-}
-
-.expression__cell--color3 {
-	fill: var(--expression__value--color3);
 }
 
 .formula-field {
@@ -696,6 +692,38 @@ a:hover {
 .sessions__entry {
 	display: grid;
 	grid-template-columns: 1fr 30px;
+}
+
+#tableview__value-svg {
+	grid-area: display;
+	background-color: var(--tableview__value--bgcolor);
+	width: 100%;
+	font-size: 12pt;
+	stroke: var(--tableview__value--stroke-color);
+}
+
+#tableview__origin-box {
+	height: var(--input--height);
+}
+
+.tableview__cell--selected {
+	fill: var(--tableview__selected-color);
+}
+
+.tableview__cell--color1 {
+	fill: var(--tableview__value--color1);
+}
+
+.tableview__cell--color2 {
+	fill: var(--tableview__value--color2);
+}
+
+.tableview__cell--color3 {
+	fill: var(--tableview__value--color3);
+}
+
+.tableview__cell--input {
+	fill: var(--tableview__input--color);
 }
 
 #tool-view {
@@ -1083,10 +1111,10 @@ a:hover {
 #unit-picker {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: 1fr var(--input--height) var(--input--height);
-	grid-template-areas: "list"
+	grid-template-rows: var(--input--height) var(--input--height) 1fr;
+	grid-template-areas: "buttons"
 		"input"
-		"buttons";
+		"list";
 		height: 100%
 	}
 
@@ -1104,7 +1132,7 @@ a:hover {
 	border-right: 1px solid;
 	overflow: auto;
 	box-sizing: border-box;
-	height: calc(var(--info-height) - (2 * var(--input--height)));
+	height: calc(var(--info-height) - (3.5 * var(--input--height)));
 	white-space: nowrap;
 }
 
@@ -1113,7 +1141,7 @@ a:hover {
 	padding-left: var(--info-view--padding);
 	overflow: auto;
 	box-sizing: border-box;
-	height: calc(var(--info-height) - (2 * var(--input--height)));
+	height: calc(var(--info-height) - (3.5 * var(--input--height)));
 	white-space: nowrap;
 }
 

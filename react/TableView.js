@@ -25,14 +25,23 @@ const TableViewDragType = Object.freeze({
  * view for MMValue as a table
  */
 export function TableView(props) {
+	console.log('render tableview');
 	const [dragType, setDragType] = useState(TableViewDragType.none);
 	const [dragOrigin, setDragOrigin] = useState({x: 0, y: 0});
 	const [initialOffset, setInitialOffset] = useState({x: 0, y: 0});
 	const	[selectedCell, setSelectedCell] = useState({row: 0, column: 0});
-	const [TableViewOffset, setTableViewOffset] = useState({x: 0, y: 0});
+	const [tableViewOffset, setTableViewOffset] = useState({x: 0, y: 0});
 	const cellHeight = 30;
 	const cellWidth = 110;
 	const rowLabelWidth = 50;
+
+	const value = props.value;
+	const nRows = value.nr ? value.nr : 0;
+	const nColumns = value.nc ? value.nc : 0;
+	const nValues = nRows * nColumns;
+
+	const cellInputs = props.cellInputs;
+	const currentCell = props.currentCell;
 
 	const pointerStart = (x, y) => {
 		let newDragType = TableViewDragType.cell;
@@ -49,12 +58,34 @@ export function TableView(props) {
 		setDragType(newDragType);
 		setDragOrigin({x: x, y: y});
 		setInitialOffset({
-				x: TableViewOffset.x,
-				y: TableViewOffset.y
+				x: tableViewOffset.x,
+				y: tableViewOffset.y
 			});
 	}
 
-	const pointerEnd = () => {
+	const xyToRowColumn = (x, y) => {
+		let row, column;
+		if (y < cellHeight) {
+			row = 0;
+		}
+		else {
+			row = Math.floor((y + tableViewOffset.y) / cellHeight);
+		}
+		if (x < rowLabelWidth) {
+			column = 0;
+		}
+		else {
+			column = Math.floor((x + tableViewOffset.x + rowLabelWidth) / cellWidth);
+		}
+		return [row, column];
+	}
+
+	const pointerEnd = (x, y) => {
+		const panSum = Math.abs(dragOrigin.x - x) + Math.abs(dragOrigin.y - y);
+		if (panSum < 1.0 && props.cellClick) {
+			const [row, column] = xyToRowColumn(x, y);
+			props.cellClick(row, column);
+		}
 		switch (dragType) {
 			case TableViewDragType.origin:
 				setDragType(TableViewDragType.none);
@@ -144,14 +175,10 @@ export function TableView(props) {
 		}
 	}
 
-	const value = props.value;
-	const nRows = value.nr ? value.nr : 0;
-	const nColumns = value.nc ? value.nc : 0;
-	const nValues = nRows * nColumns;
 	const xTextPad = 5;
 
 	const viewBox = props.viewBox;
-	const offset = TableViewOffset;
+	const offset = tableViewOffset;
 	const nRowCells = Math.min(Math.floor(viewBox[3] / cellHeight), nRows);
 	const rowOrigin = Math.max(0, Math.floor(Math.min(offset.y / cellHeight), nRows - nRowCells));
 	const nColumnCells = Math.min(Math.floor(viewBox[2] / cellWidth) + 2, nColumns);
@@ -162,20 +189,36 @@ export function TableView(props) {
 		if (typeof v === 'string') {
 			return v;
 		}
-		else {
+		else if (typeof v === 'number') {
 			return v.toPrecision(8);
+		}
+		else {
+			return '???';
 		}
 	}
 	let cells = [];
+	let colorClass;
 	for (let row = 0; row < Math.min(nRowCells, nRows - rowOrigin); row++) {
+		const offsetRow = row + rowOrigin + 1;
 		const y = (row + 2) * cellHeight + rowOrigin*cellHeight - offset.y;
 		for (let column = 0; column < Math.min(nColumnCells, nColumns - columnOrigin); column++) {
 			const x = column * cellWidth + columnOrigin*cellWidth + rowLabelWidth - offset.x + xPadding;
-			const colorClass = 'expression__cell--' + ((row + rowOrigin) % 2 ? (
-				(column + columnOrigin) % 2 ? 'color1' : 'color2'
-			) : (
-				(column + columnOrigin) % 2 ? 'color3' : 'color1')
-			);
+
+			const offsetColumn = column + columnOrigin + 1;
+			if (currentCell && currentCell[0] === offsetRow && currentCell[1] === offsetColumn) {
+				colorClass = 'tableview__cell--selected';
+			}
+			else if (cellInputs && cellInputs[`${offsetRow}_${offsetColumn}`]) {
+				colorClass = 'tableview__cell--input';
+			}
+			else {
+				colorClass = 'tableview__cell--' + ((row + rowOrigin) % 2 ? (
+					(column + columnOrigin) % 2 ? 'color1' : 'color2'
+				) : (
+					(column + columnOrigin) % 2 ? 'color3' : 'color1')
+				);
+			}
+
 			const cellBox = e(
 				'rect', {
 					className: colorClass,
@@ -188,26 +231,63 @@ export function TableView(props) {
 			);
 			cells.push(cellBox);
 			let  displayedV = '';
+			let v;
 			if (value.t === 't') {
 				const tableColumn = value.v[column];
-				const v = tableColumn.v.v[row];
+				v = tableColumn.v.v[row];
 				displayedV = formatValue(v);
 			}
 			else {
 				const vIndex = (row + rowOrigin) * nColumns + column + columnOrigin;
-				const v = vIndex < nValues ? value.v[vIndex] : '';
+				v = vIndex < nValues ? value.v[vIndex] : '';
 				displayedV = formatValue(v);
 			}
-			const cmp = e('text', {
-				x: x + xTextPad,
-				y: y - cellHeight * 0.2,
-				key: `${row}-${column}`
-			}, displayedV);
+			let cmp;
+			// use sub svg to clip long strings - only doing for string values at this point
+			if (typeof v === 'string') {
+				cmp = e(
+					'svg', {
+						className: 'tableview__cell-text',
+						x: x,
+						y: y - cellHeight,
+						width: cellWidth,
+						height: cellHeight,
+						key: `${row}-${column}`,
+					},
+					e(
+						'text', {
+							x: xTextPad,
+							y: cellHeight * 0.8,
+						},
+						displayedV
+					)
+				);	
+			}
+			else {
+				cmp = e('text', {
+					className: 'tableview__cell-text',
+					x: x + xTextPad,
+					y: y - cellHeight * 0.2,
+					key: `${row}-${column}`,
+				}, displayedV);
+			}
+
 			cells.push(cmp);
+
 			if (row === 0) {
+				if (currentCell && currentCell[0] === 0 && currentCell[1] === offsetColumn) {
+					colorClass = 'tableview__cell--selected';
+				}
+				else if (cellInputs && cellInputs[`0_${offsetColumn}`]) {
+					colorClass = 'tableview__cell--input';
+				}
+				else {
+					colorClass = 'tableview__cell--' + ((column + columnOrigin) % 2 ? 'color1' : 'color2');
+				}
+	
 				const columnLabelBox = e(
 					'rect', {
-						className: 'expression__cell--' + ((column + columnOrigin) % 2 ? 'color1' : 'color2'),
+						className: colorClass,
 						x: x,
 						y: yPadding,
 						width: cellWidth,
@@ -253,9 +333,19 @@ export function TableView(props) {
 				}
 			}
 		}
+
+		if (currentCell && currentCell[1] === 0 && currentCell[0] === offsetRow) {
+			colorClass = 'tableview__cell--selected';
+		}
+		else if (cellInputs && cellInputs[`${offsetRow}_0`]) {
+			colorClass = 'tableview__cell--input';
+		}
+		else {
+			colorClass = 'tableview__cell--' + ((row + rowOrigin) % 2 ? 'color1' : 'color3');
+		}
 		const rowLabelBox = e(
 			'rect', {
-				className: 'expression__cell--' + ((row + rowOrigin) % 2 ? 'color1' : 'color3'),
+				className: colorClass,
 				x: xPadding,
 				y: y - cellHeight,
 				width: rowLabelWidth,
@@ -274,9 +364,20 @@ export function TableView(props) {
 		);
 		cells.push(rowLabel);
 	}
+
+	if (currentCell && currentCell[0] === 0 && currentCell[1] === 0) {
+		colorClass = 'tableview__cell--selected';
+	}
+	else if (cellInputs && cellInputs['0_0']) {
+		colorClass = 'tableview__cell--input';
+	}
+	else {
+		colorClass = 'tableview__cell--color1';
+	}
 	const originBox = e(
 		'rect', {
-			id: 'expression__origin-box',
+			id: 'tableview__origin-box',
+			className: colorClass,
 			x: xPadding,
 			y: yPadding,
 			width: rowLabelWidth,
@@ -287,7 +388,7 @@ export function TableView(props) {
 	cells.push(originBox);
 	return e(
 		'svg', {
-			id: 'expression__value-svg',
+			id: 'tableview__value-svg',
 			viewBox: viewBox,
 			onPointerDown: (e) => {
 				const x = e.nativeEvent.offsetX;
@@ -298,9 +399,11 @@ export function TableView(props) {
 			},
 
 			onPointerUp: (e) => {
+				const x = e.nativeEvent.offsetX;
+				const y = e.nativeEvent.offsetY;
 				e.stopPropagation();
 				e.preventDefault();
-				pointerEnd();
+				pointerEnd(x, y);
 			},
 			onPointerMove: (e) => {
 				const x = e.nativeEvent.offsetX;

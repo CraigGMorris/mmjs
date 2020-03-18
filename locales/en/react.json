@@ -17,6 +17,8 @@
 	"dgmToolHasNote": "Notes",
 	"exprIsInput": "In",
 	"exprIsOutput": "Out",
+	"exprStringCell": "Cell",
+	"exprStringDone": "Done",
 	"formulaValueUnknown": "Enter formula",
 	"funcPickerInsert": "Insert",
 	"matrixRowCountLabel": "# Rows",

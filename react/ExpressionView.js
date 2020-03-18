@@ -10,27 +10,42 @@ const useState = React.useState;
 const useEffect = React.useEffect;
 
 /**
+ * Enum for expression display types.
+ * @readonly
+ * @enum {string}
+ */
+const ExpressionDisplay = Object.freeze({
+	expression: 0,
+	unitPicker: 1,
+	stringValue: 2,
+});
+
+/**
  * ExpressionView
  * info view for expression
  */
 export function ExpressionView(props) {
-	const [showUnitPicker, setShowUnitPicker] = useState(false);
+	const [display, setDisplay] = useState(ExpressionDisplay.expression);
+	const [stringDisplay, setStringDisplay] = useState();
+	const [selectedCell, setSelectedCell] = useState([0,0]);
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
 
 		if (props.viewInfo.expressionViewState) {
-			setShowUnitPicker(props.viewInfo.expressionViewState.showUnitPicker);
+			setDisplay(props.viewInfo.expressionViewState.display);
 		}
 		else {
-			props.viewInfo.expressionViewState = { showUnitPicker: showUnitPicker };
+			props.viewInfo.expressionViewState = {
+				display: display,
+			};
 		}
 	}, []);
 
 	useEffect(() => {
-		props.viewInfo.expressionViewState.showUnitPicker = showUnitPicker;
-	}, [showUnitPicker])
+		props.viewInfo.expressionViewState.display = display;
+	}, [display])
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
@@ -42,140 +57,213 @@ export function ExpressionView(props) {
 	const formulaName = results.formulaName;
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
+
 	let displayComponent;
-	if (showUnitPicker) {
-		displayComponent = e(
-			UnitPicker, {
-				key: 'unit',
-				t: props.t,
-				actions: props.actions,
-				unitType: unitType,
-				cancel: () => {
-					setShowUnitPicker(false);
-				},
-				apply: (unit) => {
-					props.actions.doCommand(`${props.viewInfo.path} set displayUnitName ${unit}`, (cmds) => {
-						props.actions.updateView(props.viewInfo.stackIndex);
-						setShowUnitPicker(false);
-					});						
-				},
-			}
-		);
-	}
-	else {
-		displayComponent = e(
-			'div', {
-				// main vertical sections
-				id: 'expression',
-				key: 'expression'
-			},
-			e(
-				// formula field line
+	switch (display) {
+		case ExpressionDisplay.unitPicker:
+			displayComponent = e(
+				UnitPicker, {
+					key: 'unit',
+					t: props.t,
+					actions: props.actions,
+					unitType: unitType,
+					cancel: () => {
+						setDisplay(ExpressionDisplay.expression);
+					},
+					apply: (unit) => {
+						props.actions.doCommand(`${props.viewInfo.path} set displayUnitName ${unit}`, (cmds) => {
+							props.actions.updateView(props.viewInfo.stackIndex);
+							setDisplay(ExpressionDisplay.expression);
+						});						
+					},
+				}
+			);
+			break;
+
+		case ExpressionDisplay.stringValue:
+
+			displayComponent = e(
 				'div', {
-					id: 'expression__formula',
+					id: 'expression__string',
+					key: 'stringValue',
 				},
-				e(
-					FormulaField, {
-						t: t,
-						actions: props.actions,
-						path: `${path}.${formulaName}`,
-						formula: results.formula || '',
-						viewInfo: props.viewInfo,
-						unitType: unitType,
-					}
-				)
-			),
-			e(
-				'div', {
-					id: 'expression__options',
-				},
-				e(
-					// isInput and isOutput check boxes
+				e (
 					'div', {
-						id: 'expression__in-out-boxes',
+						id: 'expression__string-header'
 					},
 					e(
-						// isInput check box
 						'div', {
-							id: 'expression__is-input',
-							className: 'checkbox-and-label',
+							id: 'expression__string-cell-coord',
 						},
-						e(
-							'label', {
-								id: 'expression__is-input-label',
-								className: 'checkbox__label',
-								htmlFor: 'expression__is-input-checkbox'
-							},
-							t('react:exprIsInput')
-						),
-						e(
-							'input', {
-								id: 'expression__is-input-checkbox',
-								className: 'checkbox__input',
-								type: 'checkbox',
-								checked: results.isInput,
-								onChange: (event) => {
-									// toggle the isInput property
-									const value = props.viewInfo.updateResults[0].results.isInput ? 'f' : 't';
-									props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, (cmds) => {
-										props.actions.updateView(props.viewInfo.stackIndex);
-									});						
-								}
-							},
-						),
+						t('react:exprStringCell'), ` [${selectedCell.join(', ')}]`,
 					),
 					e(
-						// isOutput check box
-						'div', {
-							id: 'expression__is-output',
-							className: 'checkbox-and-label',
+						'button', {
+							id: 'expression__string-done',
+							onClick: e => {
+								setDisplay(ExpressionDisplay.expression);
+							},
 						},
-						e(
-							'label', {
-								id: 'expression__is-output-label',
-								className: 'checkbox__label',
-								htmlFor: 'expression__is-output-checkbox'
-							},
-							t('react:exprIsOutput'),
-						),
-						e(
-							'input', {
-								id: 'expression__is-output-checkbox',
-								className: 'checkbox__input',
-								type: 'checkbox',
-								checked: results.isOutput,
-								onChange: (event) => {
-									// toggle the isOutput property
-									const value = props.viewInfo.updateResults[0].results.isOutput ? 'f' : 't';
-									props.actions.doCommand(`${props.viewInfo.path} set isOutput ${value}`, (cmds) => {
-										props.actions.updateView(props.viewInfo.stackIndex);
-									});						
-								}
-							},
-						),	
+						t('react:exprStringDone'),
 					),
 				),
-			),
-			e(
-				// results unit line
-				'div', {
-					id: 'expression__units',
-					onClick: () => {
-						setShowUnitPicker(true);
-					}
-				},
-				`${unitType}: ${valueUnit}`
-			),
-			e(
-				TableView, {
-					id: 'expression__value',
-					value: results.value,
-					actions: props.actions,
-					viewInfo: props.viewInfo,
-					viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 4*nInputHeight - 14],
-				}
+				e(
+					'textarea', {
+						id: 'expression__string-text',
+						readOnly: true,
+						value: stringDisplay,
+					},
+				)
+
 			)
-		);
+			break;
+		case ExpressionDisplay.expression:
+			const cellClick = (row, column) => {
+				const formatValue = v => {
+					if (typeof v === 'string') {
+						return v;
+					}
+					else if (typeof v === 'number') {
+						return v.toPrecision(8);
+					}
+					else {
+						return '???';
+					}
+				}
+
+				const displayV = (row, column) => {
+					const value = results.value;
+					setSelectedCell([row,column]);
+					if (value.t === 't') {
+						const tableColumn = value.v[column];
+						const v = tableColumn.v.v[row];
+						return formatValue(v);
+					}
+					else {
+						const vIndex = (row - 1) * value.nc + column - 1;
+						const v = (vIndex >= 0 && vIndex < value.nr * value.nc) ? value.v[vIndex] : '';
+						return formatValue(v);
+					}
+				}
+				setStringDisplay(displayV(row, column));
+				setDisplay(ExpressionDisplay.stringValue);
+			}
+
+			displayComponent = e(
+				'div', {
+					// main vertical sections
+					id: 'expression',
+					key: 'expression'
+				},
+				e(
+					// formula field line
+					'div', {
+						id: 'expression__formula',
+					},
+					e(
+						FormulaField, {
+							t: t,
+							actions: props.actions,
+							path: `${path}.${formulaName}`,
+							formula: results.formula || '',
+							viewInfo: props.viewInfo,
+							unitType: unitType,
+						}
+					)
+				),
+				e(
+					'div', {
+						id: 'expression__options',
+					},
+					e(
+						// isInput and isOutput check boxes
+						'div', {
+							id: 'expression__in-out-boxes',
+						},
+						e(
+							// isInput check box
+							'div', {
+								id: 'expression__is-input',
+								className: 'checkbox-and-label',
+							},
+							e(
+								'label', {
+									id: 'expression__is-input-label',
+									className: 'checkbox__label',
+									htmlFor: 'expression__is-input-checkbox'
+								},
+								t('react:exprIsInput')
+							),
+							e(
+								'input', {
+									id: 'expression__is-input-checkbox',
+									className: 'checkbox__input',
+									type: 'checkbox',
+									checked: results.isInput,
+									onChange: (event) => {
+										// toggle the isInput property
+										const value = props.viewInfo.updateResults[0].results.isInput ? 'f' : 't';
+										props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, (cmds) => {
+											props.actions.updateView(props.viewInfo.stackIndex);
+										});						
+									}
+								},
+							),
+						),
+						e(
+							// isOutput check box
+							'div', {
+								id: 'expression__is-output',
+								className: 'checkbox-and-label',
+							},
+							e(
+								'label', {
+									id: 'expression__is-output-label',
+									className: 'checkbox__label',
+									htmlFor: 'expression__is-output-checkbox'
+								},
+								t('react:exprIsOutput'),
+							),
+							e(
+								'input', {
+									id: 'expression__is-output-checkbox',
+									className: 'checkbox__input',
+									type: 'checkbox',
+									checked: results.isOutput,
+									onChange: (event) => {
+										// toggle the isOutput property
+										const value = props.viewInfo.updateResults[0].results.isOutput ? 'f' : 't';
+										props.actions.doCommand(`${props.viewInfo.path} set isOutput ${value}`, (cmds) => {
+											props.actions.updateView(props.viewInfo.stackIndex);
+										});						
+									}
+								},
+							),	
+						),
+					),
+				),
+				e(
+					// results unit line
+					'div', {
+						id: 'expression__units',
+						onClick: () => {
+							setDisplay(ExpressionDisplay.unitPicker);
+						}
+					},
+					`${unitType}: ${valueUnit}`
+				),
+				e(
+					TableView, {
+						id: 'expression__value',
+						value: results.value,
+						actions: props.actions,
+						viewInfo: props.viewInfo,
+						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 4*nInputHeight - 14],
+						cellClick: cellClick,
+					}
+				)
+			);
+			break;
 	}
 
 	return e(
