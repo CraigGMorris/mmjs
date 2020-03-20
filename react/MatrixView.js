@@ -33,11 +33,13 @@ export function MatrixView(props) {
 				showUnitPicker: showUnitPicker,
 			}
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
 		props.viewInfo.matrixViewState.currentCell = currentCell;
-	}, [currentCell]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;

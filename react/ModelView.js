@@ -15,6 +15,7 @@ export function ModelView(props) {
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 //	let t = props.t;

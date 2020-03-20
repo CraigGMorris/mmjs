@@ -584,13 +584,13 @@ export function UnitPicker(props) {
 				setUnitTypes(cmds[0].results);
 			});
 		}
-	},[defaultSetName]);
+	},[defaultSetName, props.actions]);
 
 	useEffect(() => {
 		props.actions.doCommand('/unitsys.sets get defaultSetName', (cmds) => {
 			setDefaultSetName(cmds[0].results);
 		});
-	},[]);
+	},[props.actions]);
 
 	useEffect(() => {
 		if (selectedType) {
@@ -603,7 +603,7 @@ export function UnitPicker(props) {
 				}
 			}
 		}
-	},[selectedType, unitTypes]);
+	},[props.actions, selectedType, unitTypes]);
 
 	let typeComponents = [];
 	for (let type of unitTypes) {
@@ -624,7 +624,7 @@ export function UnitPicker(props) {
 		if (props.unitType) {
 			setSelectedType(props.unitType);
 		}
-	},[]);
+	},[props.unitType]);
 
 	let unitComponents = [];
 	for (let unitName of unitNames) {

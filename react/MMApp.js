@@ -14,6 +14,7 @@ const e = React.createElement;
 const useState = React.useState;
 const useEffect = React.useEffect;
 const useCallback = React.useCallback;
+const useRef = React.useRef;
 
 /**
  * Enum for view types.
@@ -97,24 +98,6 @@ class ErrorBoundary extends React.Component {
 export function MMApp(props) {
 	let t = props.t;
 
-	/**
-	 * errorAlert
-	 * @param {String} msg
-	 */
-	const errorAlert = (msg) => {
-		let s = `${props.t('mmcmd:error')}\n${msg}`;
-		alert(s);
-	}
-
-	/**
-	 * warningAlert
-	 * @param {String} msg
-	 */
-	const warningAlert = (msg) => {
-		let s = `${props.t('mmcmd:warning')}\n${msg}`;
-		alert(s);
-	}
-
 	// {Object} infoViews - classes of info views used to construct the react component appearing in the info view
 	const infoViews = {
 		'console': ConsoleView,
@@ -130,14 +113,14 @@ export function MMApp(props) {
 	}
 
 	// information need to generate an console view component
-	let consoleInfo = {
+	const consoleInfo = useRef({
 		title: 'react:consoleTitle',
 		path: '',
 		stackIndex: 0,
 		updateCommands: '',
 		updateResults: [],
 		viewKey: 'console',
-	};
+	});
 
 	// diagram state variables
 	const [dgmState, setDgmState] = useState({
@@ -191,7 +174,7 @@ export function MMApp(props) {
 		};
 		infoStack = [infoState];
 		setViewInfo(infoState);
-	});
+	},[]);
 
 	/**
 	 * updateDgmState
@@ -207,7 +190,7 @@ export function MMApp(props) {
 		}
 		// console.log(`newState drag ${newState.dragType}`);
 		setDgmState(newState);
-	});
+	},[dgmState]);
 
 	/**
 	 * doCommand - sends command to worker
@@ -215,6 +198,24 @@ export function MMApp(props) {
 	 * @param {function} callBack - (cmds[]) => {}
 	 */
 	const doCommand = useCallback((cmd, callBack) => {
+		/**
+		 * errorAlert
+		 * @param {String} msg
+		 */
+		const errorAlert = (msg) => {
+			let s = `${props.t('mmcmd:error')}\n${msg}`;
+			alert(s);
+		}
+
+		/**
+		 * warningAlert
+		 * @param {String} msg
+		 */
+		const warningAlert = (msg) => {
+			let s = `${props.t('mmcmd:warning')}\n${msg}`;
+			alert(s);
+		}
+
 		commandCallBacks.set(callBackId, callBack);
 		let cmdObject = {cmdString: cmd, id: callBackId++};
 		pipe.doCommand(cmdObject, (results) => {
@@ -276,7 +277,39 @@ export function MMApp(props) {
 				}
 			}
 		});
-	});
+	},[props]);
+
+	/**
+	 * updateDiagram
+	 * @param {Boolean} rescale - should diagram be rescaled - default false
+	 */
+	const updateDiagram = useCallback((rescale = false) => {
+		if (diagramRef.current) {
+			diagramRef.current.getModelInfo(rescale);
+		}
+	}, []);
+
+	/** updateView
+	 * @param {Number} stackIndex = info stack position of view
+	 * @param {Boolean} rescaleDiagram - should diagram be rescaled - default false
+	 * call doCommand with updateCommands to update th info view state
+	 */
+	const updateView = useCallback((stackIndex, rescaleDiagram = false) => {
+		if (stackIndex < infoStack.length) {
+			let top = infoStack[stackIndex];
+			setViewInfo(top);
+			if (top.updateCommands) {
+				doCommand(top.updateCommands, (cmds) => {
+					top.updateResults = cmds;
+					setViewInfo({...top});
+					updateDiagram(rescaleDiagram);
+				});
+			}
+			else {
+				updateDiagram(rescaleDiagram);
+			}
+		}
+	}, [doCommand, updateDiagram]);
 
 	/** pushView
 	 * pushes the creation information for a new info view onto the infoStack
@@ -297,7 +330,7 @@ export function MMApp(props) {
 		infoStack.push(newInfoState);
 		setViewInfo(newInfoState);
 		setViewType(viewType === ViewType.diagram ? ViewType.info : viewType);
-	});
+	},[viewType]);
 
 	/** popView
 	 * if more than one thing on info stack, it pops the last one
@@ -316,7 +349,7 @@ export function MMApp(props) {
 					break;
 
 				case 'console':
-					consoleInfo = oldTop;
+					consoleInfo.current = oldTop;
 					updateView(infoStack.length-1);
 					break;
 				
@@ -326,7 +359,7 @@ export function MMApp(props) {
 			}
 			setViewInfo(infoStack[infoStack.length-1]);
 		}
-	});
+	},[doCommand, updateView]);
 
 	/**
 	 * pushModel
@@ -354,7 +387,7 @@ export function MMApp(props) {
 				updateDiagram(true);
 			}
 		});
-	});
+	},[dgmState, doCommand, updateDiagram]);
 
 	/**
 	 * popModel
@@ -364,11 +397,11 @@ export function MMApp(props) {
 		while (infoStack.length > 1 && infoStack[infoStack.length-1].viewKey !== 'Model') {
 			const oldTop = infoStack.pop();
 			if (oldTop.viewKey === 'console') {
-				consoleInfo = oldTop;
+				consoleInfo.current = oldTop;
 			}
 		}
 		popView();
-	});
+	},[popView]);
 
 
 	/**
@@ -406,17 +439,17 @@ export function MMApp(props) {
 			setViewType(viewType === ViewType.diagram ? ViewType.info : viewType);
 			updateDiagram();
 		});
-	});
+	}, [doCommand, updateDiagram, updateView, viewType]);
 
 	/**
 	 * pushConsole
 	 * pushes the console onto the info view
 	 */
 	const pushConsole = useCallback(() => {
-		infoStack.push(consoleInfo);
-		setViewInfo(consoleInfo);
+		infoStack.push(consoleInfo.current);
+		setViewInfo(consoleInfo.current);
 		setViewType(viewType === ViewType.diagram ? ViewType.info : viewType)
-	});
+	}, [viewType]);
 
 	/**
 	 * showHelp
@@ -426,39 +459,7 @@ export function MMApp(props) {
 		let stackLength = infoStack.length;
 		let viewKey = stackLength ? infoStack[stackLength - 1].viewKey : 'none';
 		console.log(`show help ${viewKey}`);
-	});
-
-	/** updateView
-	 * @param {Number} stackIndex = info stack position of view
-	 * @param {Boolean} rescaleDiagram - should diagram be rescaled - default false
-	 * call doCommand with updateCommands to update th info view state
-	 */
-	const updateView = useCallback((stackIndex, rescaleDiagram = false) => {
-		if (stackIndex < infoStack.length) {
-			let top = infoStack[stackIndex];
-			setViewInfo(top);
-			if (top.updateCommands) {
-				doCommand(top.updateCommands, (cmds) => {
-					top.updateResults = cmds;
-					setViewInfo({...top});
-					updateDiagram(rescaleDiagram);
-				});
-			}
-			else {
-				updateDiagram(rescaleDiagram);
-			}
-		}
-	});
-
-	/**
-	 * updateDiagram
-	 * @param {Boolean} rescale - should diagram be rescaled - default false
-	 */
-	const updateDiagram = useCallback((rescale = false) => {
-		if (diagramRef.current) {
-			diagramRef.current.getModelInfo(rescale);
-		}
-	});
+	}, []);
 
 	/**
 	 * renameTool
@@ -489,7 +490,7 @@ export function MMApp(props) {
 			updateDiagram();
 			updateView(infoStack.length-1)
 		});
-	});
+	}, [doCommand, updateDiagram, updateView]);
 
 	/** setUpdateCommands
 	 * @param {Number} stackIndex - index of view in infoStack
@@ -505,7 +506,7 @@ export function MMApp(props) {
 				updateView(stackIndex);
 			});
 		}
-	});
+	}, [doCommand, updateView]);
 
 	const handleButtonClick = useCallback((event) => {
 		let parts = event.target.value.split(' ');
@@ -551,7 +552,7 @@ export function MMApp(props) {
 				pushView(parts[0], parts[1], {path: parts[2]} );
 				break;
 		}
-	});
+	}, [doCommand, allow2Pane, pushConsole, pushView, updateDiagram, viewType]);
 
 	// {method[]} actions - methods passed to components
 	let actions = {
