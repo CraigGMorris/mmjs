@@ -3,7 +3,7 @@
 import {ToolView} from './ToolView.js';
 
 const e = React.createElement;
-const useState = React.useState;
+// const useState = React.useState;
 const useEffect = React.useEffect;
 
 /**
@@ -17,7 +17,7 @@ export function ModelView(props) {
 			`${props.viewInfo.path} toolViewInfo`);
 	}, []);
 
-	let t = props.t;
+//	let t = props.t;
 	let displayComponent = e('div', {key: 'model'}, 'Some stuff');
 	return e(
 		ToolView, {

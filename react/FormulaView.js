@@ -72,7 +72,7 @@ export function FormulaField(props) {
 				className: 'formula-field__refresh',
 				onClick: e => {
 					e.stopPropagation();
-					props.actions.doCommand(`${props.path} refresh`, (cmds) => {
+					props.actions.doCommand(`${props.path} refresh`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
 					});
 				},
@@ -121,7 +121,7 @@ function FunctionPicker(props) {
 							},
 							e(
 								'button', {
-									onClick: e => {
+									onClick: () => {
 										props.apply(f.f, -1);
 									}
 								},
@@ -134,7 +134,7 @@ function FunctionPicker(props) {
 					'div', {
 						className: 'f-picker__f',
 						key: fKey++,
-						onClick: e => {
+						onClick: () => {
 							if (f.f === selectedFunction) {
 								setSelectedFunction('');
 							}
@@ -162,7 +162,7 @@ function FunctionPicker(props) {
 			e(
 				'div', {
 					className: 'f-picker__section-header',
-					onClick: e => {
+					onClick: () => {
 						if (section.header === selectedSection) {
 							setSelectedSection('');
 						}
@@ -260,7 +260,7 @@ function ValuePicker(props) {
 			'span', {
 				className: 'value-picker__selection',
 				key: s,
-				onClick: e => {
+				onClick: () => {
 					selectSelection(s)
 				},
 			},
@@ -275,7 +275,7 @@ function ValuePicker(props) {
 			'div', {
 				className: 'value-picker__param',
 				key: param,
-				onClick: e => {
+				onClick: () => {
 					selectParam(param)
 				},
 			},
@@ -305,7 +305,7 @@ function ValuePicker(props) {
 				e(
 					'button', {
 						id: 'value-picker__buttons-clear',
-						onClick: e => {
+						onClick: () => {
 							setSelected([]);
 						}
 					},
@@ -323,7 +323,7 @@ function ValuePicker(props) {
 				),
 				e(
 					'button', {
-						onClick: e => {
+						onClick: () => {
 							let path = selected.join('');
 							if (path.endsWith('.')) {
 								path = path.substring(0, path.length - 1);
@@ -397,7 +397,7 @@ export function FormulaEditor(props) {
 	}, [formula]);
 
 	const applyChanges = (formula) => {
-		props.viewInfo.applyChanges(formula, (cmds) => {
+		props.viewInfo.applyChanges(formula, () => {
 			props.actions.popView();
 		});
 	}
@@ -424,21 +424,21 @@ export function FormulaEditor(props) {
 			e(
 				'button', {
 					className: 'formula-editor__toolbar-values',
-					onClick: e => { pickerButtonClick(FormulaDisplay.values); }
+					onClick: () => { pickerButtonClick(FormulaDisplay.values); }
 				},
 				'<v>'
 			),
 			e(
 				'button', {
 					className: 'formula-editor__toolbar-units',
-					onClick: e => { pickerButtonClick(FormulaDisplay.units); }
+					onClick: () => { pickerButtonClick(FormulaDisplay.units); }
 				},
 				'"u"'
 			),
 			e(
 				'button', {
 					className: 'formula-editor__toolbar-functions',
-					onClick: e => { pickerButtonClick(FormulaDisplay.functiions); }
+					onClick: () => { pickerButtonClick(FormulaDisplay.functiions); }
 				},
 				'{f}}'
 			),
@@ -465,7 +465,7 @@ export function FormulaEditor(props) {
 		e(
 			'button', {
 				id: 'formula-editor__apply',
-				onClick: e => {
+				onClick: () => {
 					applyChanges(formula);
 				}
 			},

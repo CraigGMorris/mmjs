@@ -1,4 +1,11 @@
 'use strict';
+/* global
+	MMTool:readonly
+	MMToolTypes:readonly
+	MMExpression:readonly
+	theMMSession:readonly
+	MMPoint:readonly
+*/
 
 /**
  * @class MMModel - Math Minion tool contaioner
@@ -6,6 +13,7 @@
  * @member {Number} nextToolNumber
  * @member {boolean} isMissingObject
  */
+// eslint-disable-next-line no-unused-vars
 class MMModel extends MMTool {
 	/** @constructor
 	 * @param {string} name
@@ -79,7 +87,7 @@ class MMModel extends MMTool {
 		 * returns null if neither
 		 */
 		const valueAtArg = (i) => {
-			const re = /^[\d\.\-]+$/;
+			const re = /^[\d.-]+$/;
 			if (parts.length >= i+1 && re.test(parts[i]) && re.test(parts[i+1])) {
 				const x = parseFloat(parts[i]);
 				const y = parseFloat(parts[i+1]);

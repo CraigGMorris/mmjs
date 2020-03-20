@@ -1,5 +1,16 @@
 'use strict';
 
+/* global
+	theMMSession:readonly
+	MMUnitSystem:readonly
+	MMFormula:readonly
+	MMNumberValue:readonly
+	MMTool:readonly
+	PropertyType:readonly
+	MMTableValue:readonly
+	MMTableValueColumn:readonly
+*/
+
 /**
  * Enum for matrix value state.
  * @readonly
@@ -32,7 +43,7 @@ class MatrixInputValue {
 	}
 
 	get formula() {
-		if (this.state = MatrixValueState.formula) {
+		if (this.state === MatrixValueState.formula) {
 			return this._input;
 		}
 		else {
@@ -163,9 +174,10 @@ class MatrixInputValue {
 	 * @param {MMMatrix} owner 
 	 */
 	floatValue(owner) {
+		let value;
 		switch (this.state) {
 			case MatrixValueState.formula:
-				const value = this.numberValue(owner);
+				value = this.numberValue(owner);
 				if (value) {
 					return value.valueAtRowColumn(1, 1);
 				}
@@ -182,6 +194,7 @@ class MatrixInputValue {
  * @class MMMatrix
  * @extends MMTool
  */
+// eslint-disable-next-line no-unused-vars
 class MMMatrix extends MMTool {
 	/** @constructor
 	 * @param {string} name
@@ -462,18 +475,18 @@ class MMMatrix extends MMTool {
 				const row = Number(parts[0]);
 				const column = Number(parts[1]);
 				if (isNaN(row) || isNaN(column)) {
-					throwError();
+					throw(this.t('mmcmd:matrixRowColumnError', { path: this.getPath(), args: command.args }));
 				}
 
 				const inputString = command.args.substring(indicesMatch[0].length);
 				this.setCellInput(row, column, inputString);
 			}
 			else {
-				throwError();
+				throw(this.t('mmcmd:matrixSetCellError', { path: this.getPath(), args: command.args }));
 			}
 		}
 		else {
-			throwError();
+			throw(this.t('mmcmd:matrixSetCellError', { path: this.getPath(), args: command.args }));
 		}	
 	}
 
@@ -742,7 +755,6 @@ class MMMatrix extends MMTool {
 				for (let row = 1; row <= this.calculatedRowCount; row++) {
 					columnValue.setValue(this.value.valueAtRowColumn(row, column), row, 1);
 				}
-				const columnName = `${column}`;
 				const tableColumn = new MMTableValueColumn({
 					name:`${column}`,
 					displayUnit: this.displayUnit,

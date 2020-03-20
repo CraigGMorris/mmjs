@@ -1,8 +1,15 @@
 'use strict';
 
+/* global
+  importScripts:readonly
+  MMCommandProcessor:readonly
+  MMSession:readonly
+*/
+
 /**
  * @global theMMSession
  */
+// eslint-disable-next-line no-unused-vars
 var theMMSession;
 
 importScripts(

@@ -71,7 +71,7 @@ export function ExpressionView(props) {
 						setDisplay(ExpressionDisplay.expression);
 					},
 					apply: (unit) => {
-						props.actions.doCommand(`${props.viewInfo.path} set displayUnitName ${unit}`, (cmds) => {
+						props.actions.doCommand(`${props.viewInfo.path} set displayUnitName ${unit}`, () => {
 							props.actions.updateView(props.viewInfo.stackIndex);
 							setDisplay(ExpressionDisplay.expression);
 						});						
@@ -81,7 +81,6 @@ export function ExpressionView(props) {
 			break;
 
 		case ExpressionDisplay.stringValue:
-
 			displayComponent = e(
 				'div', {
 					id: 'expression__string',
@@ -100,7 +99,7 @@ export function ExpressionView(props) {
 					e(
 						'button', {
 							id: 'expression__string-done',
-							onClick: e => {
+							onClick: () => {
 								setDisplay(ExpressionDisplay.expression);
 							},
 						},
@@ -117,7 +116,7 @@ export function ExpressionView(props) {
 
 			)
 			break;
-		case ExpressionDisplay.expression:
+		case ExpressionDisplay.expression: {
 			const cellClick = (row, column) => {
 				const formatValue = v => {
 					if (typeof v === 'string') {
@@ -200,10 +199,10 @@ export function ExpressionView(props) {
 									className: 'checkbox__input',
 									type: 'checkbox',
 									checked: results.isInput,
-									onChange: (event) => {
+									onChange: () => {
 										// toggle the isInput property
 										const value = props.viewInfo.updateResults[0].results.isInput ? 'f' : 't';
-										props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, (cmds) => {
+										props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, () => {
 											props.actions.updateView(props.viewInfo.stackIndex);
 										});						
 									}
@@ -230,10 +229,10 @@ export function ExpressionView(props) {
 									className: 'checkbox__input',
 									type: 'checkbox',
 									checked: results.isOutput,
-									onChange: (event) => {
+									onChange: () => {
 										// toggle the isOutput property
 										const value = props.viewInfo.updateResults[0].results.isOutput ? 'f' : 't';
-										props.actions.doCommand(`${props.viewInfo.path} set isOutput ${value}`, (cmds) => {
+										props.actions.doCommand(`${props.viewInfo.path} set isOutput ${value}`, () => {
 											props.actions.updateView(props.viewInfo.stackIndex);
 										});						
 									}
@@ -263,7 +262,8 @@ export function ExpressionView(props) {
 					}
 				)
 			);
-			break;
+		}
+		break;
 	}
 
 	return e(

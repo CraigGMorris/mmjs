@@ -31,7 +31,7 @@ export class SessionsView extends React.Component {
 		let loadSession = async e => {
 			await this.props.actions.doCommand(
 				`/ load ${e.target.getAttribute('value')}`,
-				(cmds) => {
+				() => {
 					this.props.actions.resetInfoStack('root');
 					this.props.updateDiagram(true);
 				}
@@ -47,7 +47,7 @@ export class SessionsView extends React.Component {
 				r.onload = (e) => { 
 					let contents = e.target.result;
 					contents = '__blob__/ import__blob__' + contents;
-					this.props.actions.doCommand(contents, (cmds) => {
+					this.props.actions.doCommand(contents, () => {
 						this.props.actions.resetInfoStack('root');
 						this.props.updateDiagram(true);
 					});
@@ -68,7 +68,7 @@ export class SessionsView extends React.Component {
 				}
 				await this.props.actions.doCommand(
 					`/ copy ${oldName} ${newName}`,
-					(cmds) => {
+					() => {
 						this.props.actions.updateView(this.props.viewInfo.stackIndex);
 						this.setState({menuPath: ''});
 					}
@@ -80,7 +80,7 @@ export class SessionsView extends React.Component {
 			if (confirm(t('react:sessionsDeleteConfirm', {path: path}))) {
 				await this.props.actions.doCommand(
 					`/ delete ${path}`,
-					(cmds) => {
+					() => {
 						this.props.actions.updateView(this.props.viewInfo.stackIndex);
 						if (path === currentPath) {
 							alert(t('react:sessionsDeletedCurrentPath', {current: currentPath}));
@@ -101,7 +101,7 @@ export class SessionsView extends React.Component {
 				}
 				await this.props.actions.doCommand(
 					`/ rename ${oldName} ${newName}`,
-					(cmds) => {
+					() => {
 						this.props.actions.updateView(this.props.viewInfo.stackIndex);
 						this.setState({menuPath: ''});
 						this.props.updateDiagram(true);
@@ -125,7 +125,7 @@ export class SessionsView extends React.Component {
 					id: 'sessions__menu-cancel',
 					key: 'menu-cancel',
 					className: 'sessions__menu-button',
-					onClick: e => {
+					onClick: () => {
 						this.setState({menuPath: ''});
 					},
 				},
@@ -136,7 +136,7 @@ export class SessionsView extends React.Component {
 					id: 'sessions__menu-copy',
 					key: 'menu-copy',
 					className: 'sessions__menu-button',
-					onClick: e => {
+					onClick: () => {
 						copySession(this.state.menuPath);
 					},
 				},
@@ -147,7 +147,7 @@ export class SessionsView extends React.Component {
 					id: 'sessions__menu-rename',
 					key: 'menu-rename',
 					className: 'sessions__menu-button',
-					onClick: e => {
+					onClick: () => {
 						renameSession(this.state.menuPath);
 					},
 				},
@@ -158,7 +158,7 @@ export class SessionsView extends React.Component {
 					id: 'sessions__menu-delete',
 					key: 'menu-delete',
 					className: 'sessions__menu-button',
-					onClick: e => {
+					onClick: () => {
 						deleteSession(this.state.menuPath);
 					},
 				},
@@ -181,10 +181,10 @@ export class SessionsView extends React.Component {
 				e(
 					'button', {
 						id: 'sessions__new-button',
-						onClick: async e => {
+						onClick: async () => {
 							await this.props.actions.doCommand(
 								`/ new`,
-								(cmds) => {
+								() => {
 									this.props.actions.resetInfoStack('root');
 									this.props.updateDiagram(true);
 								}
@@ -196,7 +196,7 @@ export class SessionsView extends React.Component {
 				e(
 					'button', {
 						id: 'sessions__save-button',
-						onClick: async e => {
+						onClick: async () => {
 							let cmd = '/ save';
 							if (currentPath === '_unnamed') {
 								let path = prompt(t('react:sessionsSaveNamePrompt'));
@@ -210,7 +210,7 @@ export class SessionsView extends React.Component {
 							}
 							await this.props.actions.doCommand(
 								cmd,
-								(cmds) => {
+								() => {
 									this.props.actions.popView();
 								}
 							);			

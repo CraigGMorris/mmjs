@@ -74,7 +74,7 @@ export function MatrixView(props) {
 					setShowUnitPicker(false);
 				},
 				apply: (unit) => {
-					props.actions.doCommand(`${props.viewInfo.path} set displayUnitName ${unit}`, (cmds) => {
+					props.actions.doCommand(`${props.viewInfo.path} set displayUnitName ${unit}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
 						setShowUnitPicker(false);
 					});						

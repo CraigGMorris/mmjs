@@ -2,7 +2,6 @@
 
 const e = React.createElement;
 const useState = React.useState;
-const useEffect = React.useEffect;
 
 /**
  * ToolView
@@ -28,13 +27,13 @@ export function ToolView(props) {
 	}
 
 	const doSetNotes = (newNotes) => {
-		props.actions.doCommand(`__blob__${props.viewInfo.path} set notes__blob__${newNotes}`, (cmds) => {
+		props.actions.doCommand(`__blob__${props.viewInfo.path} set notes__blob__${newNotes}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 		});
 	}
 
 	const doSetDiagramNotes = (shouldShow) => {
-		props.actions.doCommand(`${props.viewInfo.path} set diagramNotes ${shouldShow ? 't' : 'f'}`, (cmds) => {
+		props.actions.doCommand(`${props.viewInfo.path} set diagramNotes ${shouldShow ? 't' : 'f'}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 		});
 	}
@@ -61,7 +60,7 @@ export function ToolView(props) {
 						doRename()
 					}		
 				},
-				onBlur: (event) => {
+				onBlur: () => {
 					// watch for loss of focus
 					doRename();
 					}
@@ -70,7 +69,7 @@ export function ToolView(props) {
 		e(
 			'button', {
 				id: 'tool-view__notes-toggle',
-				onClick: (e) => {
+				onClick: () => {
 					setShowNotes(!showNotes);
 				}
 			},
@@ -102,7 +101,7 @@ export function ToolView(props) {
 				e(
 					'button', {
 						id: 'tool-view__diagram-notes-toggle',
-						onClick: (e) => {
+						onClick: () => {
 							doSetDiagramNotes(!diagramNotes);
 						}
 					},
@@ -118,7 +117,7 @@ export function ToolView(props) {
 						const value = event.target.value;
 						setNotesText(value);	
 					},
-					onBlur: (event) => {
+					onBlur: () => {
 						// watch for loss of focus
 						doSetNotes(notesText);
 					}

@@ -2,7 +2,7 @@
 
 const e = React.createElement;
 const useState = React.useState;
-const useEffect = React.useEffect;
+//const useEffect = React.useEffect;
 
 /**
  * Enum for TableView drag type.
@@ -29,7 +29,7 @@ export function TableView(props) {
 	const [dragType, setDragType] = useState(TableViewDragType.none);
 	const [dragOrigin, setDragOrigin] = useState({x: 0, y: 0});
 	const [initialOffset, setInitialOffset] = useState({x: 0, y: 0});
-	const	[selectedCell, setSelectedCell] = useState({row: 0, column: 0});
+//	const	[selectedCell, setSelectedCell] = useState({row: 0, column: 0});
 	const [tableViewOffset, setTableViewOffset] = useState({x: 0, y: 0});
 	const cellHeight = 30;
 	const cellWidth = 110;

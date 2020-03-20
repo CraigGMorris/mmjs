@@ -78,7 +78,7 @@ export class Diagram extends React.Component {
 		this.props.actions.doCommand('/ dgminfo', (results) => {
 			if (results.length && results[0].results) {
 				const modelInfo = results[0].results;
-				this.props.setDgmState((state) => {
+				this.props.setDgmState(() => {
 					let newState = {
 						path: modelInfo.path,
 						tools: modelInfo.tools
@@ -125,21 +125,19 @@ export class Diagram extends React.Component {
 	 * shortcut to props.actions.doCommand with automatic getModelInfo
 	 */
 	doCommand(command, rescale) {
-		this.props.actions.doCommand(command, (cmds) => {
+		this.props.actions.doCommand(command, () => {
 			this.getModelInfo(rescale);
 		});
 	}
 
 	componentDidMount() {
-		const domNode = ReactDOM.findDOMNode(this);
-		domNode.addEventListener('wheel', this.onWheel, {passive: false});
+		this.node.addEventListener('wheel', this.onWheel, {passive: false});
 	}
 
 	componentWillUnmount() {
-		const domNode = ReactDOM.findDOMNode(this);
-		domNode.removeEventListener('pointermove', this.onPointerMove);
-		domNode.removeEventListener('pointerup', this.onPointerUp);
-		domNode.removeEventListener('wheel', this.onWheel);
+		this.node.removeEventListener('pointermove', this.onPointerMove);
+		this.node.removeEventListener('pointerup', this.onPointerUp);
+		this.node.removeEventListener('wheel', this.onWheel);
 	}
 
 	/**
@@ -227,7 +225,6 @@ export class Diagram extends React.Component {
 							};
 					}
 				}
-				break;
 			}
 		});
 	}
@@ -342,10 +339,10 @@ export class Diagram extends React.Component {
 	toolsInBox(selectionBox, tools) {
 		function intersectRect(r1, r2) {
 			return !(r2.left > r1.right || 
-							 r2.right < r1.left || 
-							 r2.top > r1.bottom ||
-							 r2.bottom < r1.top);
-		}
+				r2.right < r1.left || 
+				r2.top > r1.bottom ||
+				r2.bottom < r1.top);
+			}
 
 		let dragSelection = new Map();
 		for (const toolName in tools) {
@@ -436,9 +433,8 @@ export class Diagram extends React.Component {
 			}
 		}
 		if ( this.eventCache.length) {
-			const domNode = ReactDOM.findDOMNode(this);
-			domNode.addEventListener('pointermove', this.onPointerMove);
-			domNode.addEventListener('pointerup', this.onPointerUp);
+			this.node.addEventListener('pointermove', this.onPointerMove);
+			this.node.addEventListener('pointerup', this.onPointerUp);
 			e.target.setPointerCapture(e.pointerId);
 		}
   }
@@ -476,10 +472,9 @@ export class Diagram extends React.Component {
 		if (eCache.length === 0) {
 			this.panSum = 0;
 			this.pinch = 0;
-			const domNode = ReactDOM.findDOMNode(this);
 			e.target.releasePointerCapture(e.pointerId);
-			domNode.removeEventListener('pointermove', this.onPointerMove);
-			domNode.removeEventListener('pointerup', this.onPointerUp);	
+			this.node.removeEventListener('pointermove', this.onPointerMove);
+			this.node.removeEventListener('pointerup', this.onPointerUp);	
 		}
 	}
 	
@@ -744,7 +739,7 @@ export class Diagram extends React.Component {
 						x: 15,
 						y: 25,
 						text:`< ${pathParts[pathParts.length-2]}`,
-						textClick: (e) => {
+						textClick: () => {
 							this.props.actions.popModel();
 							this.props.setDgmState({selectionBox: null});
 						}
@@ -757,7 +752,7 @@ export class Diagram extends React.Component {
 					x: this.props.diagramBox.width/2,
 					y: 25,
 					text: pathParts[pathParts.length-1],
-					textClick: (e) => {this.getModelInfo(true);}
+					textClick: () => {this.getModelInfo(true);}
 				})
 			)
 		}
@@ -765,6 +760,7 @@ export class Diagram extends React.Component {
 		return e(
 			'div', {
 				id: '#diagram__wrapper',
+				ref: node => this.node = node,
 				style: {
 					height: '100%',
 					width: '100%',
@@ -814,9 +810,8 @@ class ToolIcon extends React.Component {
 	}
 
 	componentWillUnmount() {
-		const domNode = ReactDOM.findDOMNode(this);
-		domNode.removeEventListener('pointermove', this.onPointerMove);
-		domNode.removeEventListener('pointerup', this.onPointerUp);
+		this.node.removeEventListener('pointermove', this.onPointerMove);
+		this.node.removeEventListener('pointerup', this.onPointerUp);
 }
 
 	onPointerDown(e) {
@@ -862,11 +857,7 @@ class ToolIcon extends React.Component {
 				}
 			}
 		}
-		this.setState((state) => {
-			return {
-				dragging: false,
-			};
-		});
+		this.setState({ dragging: false });
 		this.props.setDragType(null, null, {name: this.props.info.name});	
 		
 		for (var i = 0; i < eCache.length; i++) {
@@ -886,7 +877,7 @@ class ToolIcon extends React.Component {
 	}
 	
   onPointerMove(e) {
-	  e.stopPropagation();
+		e.stopPropagation();
 		e.preventDefault();
 		if (!this.state.dragging) return
 
@@ -1096,10 +1087,11 @@ class ToolIcon extends React.Component {
 					stroke: textColor,
 					fill: fillColor
 				},
+				ref: node => this.node = node,
 			},
 			e(
 				'rect', {
- 					onPointerDown: this.onPointerDown,
+					onPointerDown: this.onPointerDown,
 					onClick: this.onClick,
 					x: (x + translate.x)*scale,
 					y: (y + translate.y)*scale,
@@ -1196,11 +1188,7 @@ class SelectionBox extends React.Component {
 			}	
 		}
 		else {
-			this.setState((state) => {
-				return {
-					dragging: false,
-					};
-			});
+			this.setState({ dragging: false });
 			this.props.setDragType(null);
 		}
 
@@ -1228,7 +1216,7 @@ class SelectionBox extends React.Component {
 	}
 
 	render() {
-		let t = this.props.t;
+		// let t = this.props.t;
 		const box = this.props.rect;
 		const scale = this.props.scale;
 		const x = (box.left + this.props.translate.x) * scale;

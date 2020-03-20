@@ -1,4 +1,13 @@
 'use strict';
+/* global
+	MMTool:readonly
+	MMFormula:readonly
+	theMMSession:readonly
+	MMNumberValue:readonly
+	MMStringValue:readonly
+	MMToolValue:readonly
+	PropertyType:readonly
+*/
 
 /**
  * @class MMExpression
@@ -8,6 +17,7 @@
  * @member {Boolean} isInput;
  * @member {Boolean} isOutput;
  */
+// eslint-disable-next-line no-unused-vars
 class MMExpression extends MMTool {
 	/** @constructor
 	 * @param {string} name
@@ -220,7 +230,7 @@ class MMExpression extends MMTool {
 	toolViewInfo(command) {
 		super.toolViewInfo(command);
 		let results = command.results;
-		const value = this.valueForRequestor();
+		this.valueForRequestor();
 		results['formulaName'] = 'formula';
 		results['formula'] = this.formula.formula;
 		results['isInput'] = this._isInput;

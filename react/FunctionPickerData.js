@@ -5,7 +5,7 @@
  * @param {*} language - for possible future use
  * textual data for function picker
  */
-export function functionPickerData(language) {
+export function functionPickerData(/* language */) {
 	const data = {
 		title: 'Formula Functions',
 		instructions: `

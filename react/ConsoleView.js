@@ -15,7 +15,7 @@ export function ConsoleView(props) {
 	 */
 	let callBack = cmds => {
 		let lines = [];
-		for (let r of cmds) {
+		const getOutput = (r) => {
 			let cmdOutput = r;
 			if (typeof cmdOutput != 'string') {
 				if (cmdOutput.verb == 'help' && cmdOutput.args) {
@@ -29,6 +29,14 @@ export function ConsoleView(props) {
 				}
 			}
 			lines.push(cmdOutput);
+		
+		}
+		for (let r of cmds) {
+			getOutput(r);
+		}
+
+		if (cmds.error) {
+			getOutput(cmds.error);
 		}
 
 		lines = lines.join('\n');

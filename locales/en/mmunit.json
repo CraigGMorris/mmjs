@@ -1,6 +1,7 @@
 {
 	"addTypeError": "Add type arguments '{{args}}' not of form 'typeName unitName'",
 	"badDescription": "I could not interpret the description for unit {{name} - {{description}",
+	"badDimensions": "Could not unit {{name} - with dimensions: {{dimensions}",
 	"cannotRemoveMaster": "Cannot remove standard unit {{name}}",
 	"definitionError": "Unit definition {{definition}} not of form: name = value existing_unit",
 	"definitionInvalid": "Unit definition {{definition}} is not valid",

@@ -75,7 +75,7 @@ class MMCommandProcessor {
 			throw(this.t('cmd:cannotChangeDefault', {path: path}));
 		}
 		
-		 return newObject
+		return newObject
 	}
 
 /**
@@ -243,7 +243,7 @@ class MMCommandProcessor {
 				return [expression.substr(1).trim()];
 			}
 		}
-		  
+
 		// no quotes, so split on first space
 		let firstSpacePos = expression.indexOf(' ');
 		if (firstSpacePos >= 0) {
@@ -295,7 +295,7 @@ class MMCommandProcessor {
 	}
 
 	/** @param {string} message */
-	showStatus(messag) {
+	showStatus(message) {
 		this.statusCallBack(message);
 	}
 }
@@ -609,7 +609,7 @@ class MMCommandProcessor {
 		let argument = command.args;
 		let fields = argument.split(".");
 		switch(fields[0]) {
-			case "properties":
+			case "properties": {
 				let returnValue = {};
 				for (let propName in this.properties) {
 					let info = this.properties[propName];
@@ -620,6 +620,7 @@ class MMCommandProcessor {
 					};
 				}
 				command.results = returnValue;
+			}
 				break;
 			default:
 				command.results = this.t('cmd:classAndPath', {className: this.className, path: this.getPath()});
@@ -701,17 +702,19 @@ class MMCommandProcessor {
 	 * should be MMCommandProcessor for root object, otherwise the parent object
 	 * @param {string} className 
 	 */
+	// eslint-disable-next-line constructor-super
 	constructor(name, anyParam, className) {
 		if (anyParam instanceof MMCommandProcessor) {
 			super(name, undefined, className);  // doesn't have parent
 			let cmdProcessor = anyParam;
 			this.processor = cmdProcessor;
 			cmdProcessor.setRoot(this);			// no parent so this must be root
+			this.children = {};
 		}
 		else if (anyParam instanceof MMCommandParent) {
 			super(name, anyParam, className);
+			this.children = {};
 		}
-		this.children = {};
 	}
 
 	/** @override */
@@ -771,7 +774,7 @@ class MMCommandProcessor {
 			throw(this.t('cmd:?createchild'));
 		}
 		let name = argValues[1];
-		let child = this.createChild(argValues[0], name);
+		this.createChild(argValues[0], name);
 		command.results = [this.t('cmd:createdChild', {className: argValues[0], name: argValues[1]})];
 		command.undo = this.getPath() + ' removechild ' + name;			
 	}

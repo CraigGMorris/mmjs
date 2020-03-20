@@ -1,5 +1,21 @@
 'use strict';
 
+/* global
+	MMCommandParent:readonly
+	MMUnitSystem:readonly
+	PropertyType:readonly
+	MMModel:readonly
+	MMNumberValue:readonly
+	MMStringValue:readonly
+	MMConstantOperator:readonly
+	MMFormulaOpDictionary:readonly
+	MMExpression:readonly
+	MMCommandMessage:readonly
+	MMMatrix:readonly
+	theMMSession:readonly
+	MMToolValue:readonly
+*/
+
 /** @class MMPoint
  * simple point class
  * @member {number} x
@@ -67,7 +83,7 @@ class MMSessionStorage  {
 			let request = store.put({id: path, session: json});
 //			tx.oncomplete = resolve;
 //			tx.onerror = (event) => {
-			request.onsuccess = event => {
+			request.onsuccess = () => {
 				resolve(path);
 			}
 			request.onerror = event => {
@@ -88,7 +104,7 @@ class MMSessionStorage  {
 			let tx = storage.db.transaction(['sessions'], 'readonly');
 			let store = tx.objectStore('sessions');
 			let request = store.get(path);
-			request.onsuccess = (event) => {
+			request.onsuccess = () => {
 				if (request.result) {
 					resolve(request.result.session);
 				}
@@ -114,7 +130,7 @@ class MMSessionStorage  {
 			let tx = storage.db.transaction(['sessions'], 'readwrite');
 			let store = tx.objectStore('sessions');
 			let request = store.delete(path);
-			request.onsuccess = (event) => {
+			request.onsuccess = () => {
 					resolve(path);
 			};
 			request.onerror = (event) => {
@@ -175,6 +191,7 @@ class MMSessionStorage  {
  * @member {MMPoint} nextToolLocation
  * @member {MMSessionStorage} storage
  */
+// eslint-disable-next-line no-unused-vars
 class MMSession extends MMCommandParent {
 	// session creation and storage commands
 
@@ -263,7 +280,6 @@ class MMSession extends MMCommandParent {
 		let pathParts = this.storePath.split('/');
 		let caseName = pathParts.pop()
 		let rootSave = this.rootModel.saveObject();
-		let defaultObject = this.processor.defaultObject;
 		let modelPath = this.currentModel.getPath();
 		let userSets = this.unitSystem.sets.userSetsAsJsonObject();
 		let userUnits = this.unitSystem.units.userUnitsAsJsonObject();
@@ -321,7 +337,7 @@ class MMSession extends MMCommandParent {
 	 */
 	async deleteSession(path) {
 		try {
-			let result = await this.storage.delete(path);
+			await this.storage.delete(path);
 			return path;
 		}
 		catch(e) {
@@ -488,7 +504,7 @@ class MMSession extends MMCommandParent {
 			this.setError('mmcmd:noIndexedDB', {});
 			return;
 		}
-		let result = await this.loadSession(command.args);
+		await this.loadSession(command.args);
 		command.results = this.storePath;
 	}
 
@@ -561,7 +577,7 @@ class MMSession extends MMCommandParent {
 			command.results = this.storePath;
 		}
 		catch(e) {
-			this.setError('mmcmd:loadFailed', {path: path, error: e});
+			this.setError('mmcmd:jsonImportFailed', {error: e});
 		}
 	}
 
@@ -674,8 +690,11 @@ class MMSession extends MMCommandParent {
 				results.push(`100 degf stringForValue '${u.stringForValue(373.15)}'`);
 				results.push(`100 degf stringForValueWithUnit '${u.stringForValueWithUnit(373.15)}'`);
 			}
-				if (test != 'all') break;
+				if (test != 'all') {
+					break;
+				}
 
+			// eslint-disable-next-line no-fallthrough
 			case 'values': {
 				let v = new MMNumberValue(3, 4);
 				let unitSet = unitSystem.sets.defaultSet;
@@ -1042,7 +1061,7 @@ class MMSession extends MMCommandParent {
 				a.fill(123.345, 0, length);
 				b = a.map((v, i) => v * i);
 				let c = new Float64Array(length*length);
-				c = c.map((v,i) => a[i%length] * b[i%length]);
+				c.map((v,i) => a[i%length] * b[i%length]);
 				results.push('done');
 				command.results = true;
 			}
@@ -1081,6 +1100,7 @@ const MMToolTypes = {
  * @member {MMPoint} position;
  * @member {boolean} diagramNotes;
  */
+// eslint-disable-next-line no-unused-vars
 class MMTool extends MMCommandParent {
 	/** @constructor
 	 * @param {string} name
@@ -1118,7 +1138,7 @@ class MMTool extends MMCommandParent {
 		if (this.notes) {
 			let maxLength = 50;
 			if ( this.notes.length <= maxLength) {
-				return myNotes;
+				return this.notes;
 			}	else {
 				return this.notes.substring(0, maxLength-1);
 			}
@@ -1194,7 +1214,7 @@ class MMTool extends MMCommandParent {
 	 * @method changedFormula
 	 * @param {MMFormula} formula
 	 */
-	changedFormula(formula) {
+	changedFormula(/* formula */) {
 		if (!theMMSession.isLoadingCase) {
 			this.forgetCalculated();
 		}

@@ -65,7 +65,7 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(/* error */) {
     // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
@@ -81,7 +81,7 @@ class ErrorBoundary extends React.Component {
 			// You can render any custom fallback UI
 			if (this.props.handleBoundraryError) {
 				this.props.handleBoundraryError();
-				this.state = { hasError: false };
+				this.setState({ hasError: false });
 			}
       return e('h1', {}, 'Something went wrong');
     }
@@ -307,7 +307,7 @@ export function MMApp(props) {
 			const oldTop = infoStack.pop();
 			switch (oldTop.viewKey) {
 				case 'Model':
-					doCommand('/ popmodel', (cmds) => {
+					doCommand('/ popmodel', () => {
 						if (dgmStateStack.length) {
 							setDgmState(dgmStateStack.pop());
 						}
@@ -467,7 +467,7 @@ export function MMApp(props) {
 	 * renames tool at path to newName (in same parent model)
 	 */
 	const renameTool = useCallback((path, newName) => {
-		doCommand(`${path} renameto ${newName}`, (cmd) => {
+		doCommand(`${path} renameto ${newName}`, () => {
 			// fix up things in the view info to reflect the new name
 			let parts = path.split('.');
 			const oldName = parts.pop();
@@ -509,19 +509,20 @@ export function MMApp(props) {
 
 	const handleButtonClick = useCallback((event) => {
 		let parts = event.target.value.split(' ');
+		let undo, redo;
 		switch (parts[0]) {
 			case 'undo':
-				const undo = undoStack.pop();
+				undo = undoStack.pop();
 				if (undo) {
-					doCommand('undo ' + undo, (results) => {
+					doCommand('undo ' + undo, () => {
 						updateDiagram();
 					});
 				}
 				break;
 			case 'redo':
-				const redo = redoStack.pop();
+				redo = redoStack.pop();
 				if (redo) {
-					doCommand('redo ' + redo, (results) => {
+					doCommand('redo ' + redo, () => {
 						updateDiagram();
 					});
 				}
@@ -657,7 +658,7 @@ export function MMApp(props) {
 			'button', {
 				id:'info-tools__expand-button',
 				className: 'info-tools__button',
-				onClick: (event) => {
+				onClick: () => {
 					switch (viewType) {
 						case ViewType.twoPanes:
 							setViewType(ViewType.info);
@@ -681,10 +682,10 @@ export function MMApp(props) {
 			id:'info-tools__undo-button',
 			className: 'info-tools__button',
 			disabled: !undoStack.length,
-			onClick: (event) => {
+			onClick: () => {
 				const undo = undoStack.pop();
 				if (undo) {
-					doCommand('undo ' + undo, (results) => {
+					doCommand('undo ' + undo, () => {
 						updateView(infoStack.length - 1);
 						updateDiagram();
 					});
@@ -698,10 +699,10 @@ export function MMApp(props) {
 				id:'info-tools__redo-button',
 				className: 'info-tools__button',
 				disabled: !redoStack.length,
-				onClick: (event) => {
+				onClick: () => {
 					const redo = redoStack.pop();
 					if (redo) {
-						doCommand('redo ' + redo, (results) => {
+						doCommand('redo ' + redo, () => {
 							updateView(infoStack.length - 1);
 							updateDiagram();
 						});
@@ -715,7 +716,7 @@ export function MMApp(props) {
 				id:'info-tools__unit-button',
 				className: 'info-tools__button',
 				disabled: viewKeys.has('units'),
-				onClick: (event) => {
+				onClick: () => {
 					pushView('units', 'react:unitsTitle');
 				}
 			},
@@ -726,7 +727,7 @@ export function MMApp(props) {
 				id:'info-tools__console-button',
 				className: 'info-tools__button',
 				disabled: viewKeys.has('console'),
-				onClick: (event) => {
+				onClick: () => {
 					pushConsole();
 				}
 			},
@@ -737,7 +738,7 @@ export function MMApp(props) {
 				id:'info-tools__sessions-button',
 				className: 'info-tools__button',
 				disabled: viewKeys.has('sessions'),
-				onClick: (event) => {
+				onClick: () => {
 					pushView('sessions', 'react:sessionsTitle');
 				}
 			},

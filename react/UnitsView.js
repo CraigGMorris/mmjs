@@ -39,7 +39,7 @@ export class UnitsView extends React.Component {
 						id: id,
 						onChange: (event) => {
 							let newName = event.target.value;
-							this.props.actions.doCommand(`/unitsys.sets set defaultSetName ${newName}`, (cmd) => {
+							this.props.actions.doCommand(`/unitsys.sets set defaultSetName ${newName}`, () => {
 									this.props.actions.updateView(this.props.viewInfo.stackIndex);
 							});
 						},
@@ -68,7 +68,7 @@ export class UnitsView extends React.Component {
 			e(
 				'button', {
 					id: 'units__custom-units-button',
-					onClick: (event) => {
+					onClick: () => {
 						this.props.actions.pushView('userunits', 'react:userUnitsTitle', {path: '/unitsys.units'} );
 					}
 				},
@@ -77,7 +77,7 @@ export class UnitsView extends React.Component {
 			e(
 				'button', {
 					id: 'units__custom-sets-button',
-					onClick: (event) => {
+					onClick: () => {
 						this.props.actions.pushView('unitsets', 'react:unitsSetsTitle', {path: '/unitsys.sets'} );
 					}
 				},
@@ -149,8 +149,8 @@ export class UserUnitsView extends React.Component {
 					e(
 						'button', {
 							className: 'user-units__delete',
-							onClick: (event) => {
-								this.props.actions.doCommand(`/unitsys.units remove ${unit.name}`, (cmds) => {
+							onClick: () => {
+								this.props.actions.doCommand(`/unitsys.units remove ${unit.name}`, () => {
 									this.props.actions.updateView(this.props.viewInfo.stackIndex);
 								});
 							}						
@@ -184,9 +184,9 @@ export class UserUnitsView extends React.Component {
 							// keeps input field in sync
 							this.setState({input: event.target.value});
 						},
-						onKeyPress: (event) => {
+						onKeyPress: () => {
 							// watches for Enter and sends command when it see it
-							this.props.actions.doCommand(`/unitsys.units adduserunit ${this.state.input}`, (cmds) => {
+							this.props.actions.doCommand(`/unitsys.units adduserunit ${this.state.input}`, () => {
 								this.props.actions.updateView(this.props.viewInfo.stackIndex);
 							});
 							this.setState({input:''});
@@ -317,7 +317,7 @@ export class UnitSetsView extends React.Component {
 						onKeyPress: (event) => {
 							// watches for Enter and sends command when it see it
 							if (event.key == 'Enter') {
-								this.props.actions.doCommand(`/unitsys.sets.${this.state.selected} renameto ${this.state.input}`, (cmds) => {
+								this.props.actions.doCommand(`/unitsys.sets.${this.state.selected} renameto ${this.state.input}`, () => {
 									this.props.actions.updateView(this.props.viewInfo.stackIndex);
 								})
 							}
@@ -348,7 +348,7 @@ export class UnitSetsView extends React.Component {
 			e(
 				'div', {
 					id: 'unit-sets__list',
-					onClick: (event) => {
+					onClick: () => {
 						// click on list outside of set clears selection
 						this.setState({selected: '', input: ''});
 					}
@@ -422,8 +422,6 @@ export class UnitSetView extends React.Component {
 		let t = this.props.t;
 		let typeList = [];
 		let results = this.props.viewInfo.updateResults;
-		const inputHeight = 120;
-		const listHeight = this.props.infoHeight - inputHeight - 10;
 		if (results && results.length) {
 			let types = results[0].results;
 			for (let i = 0; i < types.length; i++) {
@@ -464,7 +462,7 @@ export class UnitSetView extends React.Component {
 											unitInput: ''
 										});
 									}
-									this.props.actions.doCommand(`${this.props.viewInfo.path} removetype ${name}`, (cmds) => {
+									this.props.actions.doCommand(`${this.props.viewInfo.path} removetype ${name}`, () => {
 										this.props.actions.updateView(this.props.viewInfo.stackIndex);
 									});
 									event.stopPropagation();
@@ -533,7 +531,7 @@ export class UnitSetView extends React.Component {
 								// click to delete the user set
 								let pathParts = this.props.viewInfo.path.split('.');
 								let name = pathParts[pathParts.length - 1];
-								this.props.actions.doCommand(`/unitsys.sets remove ${name}`, (cmds) => {
+								this.props.actions.doCommand(`/unitsys.sets remove ${name}`, () => {
 									this.props.actions.popView();
 								});
 								event.stopPropagation();
@@ -613,7 +611,7 @@ export function UnitPicker(props) {
 			'div', {
 				className: `unit-picker__type-name${selectedType == type.name ?  ' entry--selected' : ''}`,
 				key: type.name,
-				onClick: e => {
+				onClick: () => {
 					setSelectedType(type.name);
 				}
 			},
@@ -634,7 +632,7 @@ export function UnitPicker(props) {
 			'div', {
 				className: 'unit-picker__unit-name',
 				key: unitName,
-				onClick: e => {
+				onClick: () => {
 					setSelectedUnit(unitName);
 				}
 			},
@@ -681,7 +679,7 @@ export function UnitPicker(props) {
 			e(
 				'button', {
 					id: 'unit-picker__cancel',
-					onClick: e => {
+					onClick: () => {
 						props.cancel();
 					}
 				},
@@ -690,7 +688,7 @@ export function UnitPicker(props) {
 			e(
 				'button', {
 					id: 'unit-picker__apply',
-					onClick: e => {
+					onClick: () => {
 						// if (selectedUnit) {
 							props.apply(`${selectedUnit}`, 0);
 						// }

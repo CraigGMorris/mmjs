@@ -1,5 +1,21 @@
 'use strict';
 
+/* global
+	MMNumberValue:readonly
+	MMTool:readonly
+	MMValue:readonly
+	MMToolValue:readonly
+	MMStringValue:readonly
+	MMTableValue:readonly
+	MMTableValueColumn:readonly
+	MMUnitSystem:readonly
+	MMMatrix:readonly
+	MMCommandObject:readonly
+	MMCommandMessage:readonly
+	theMMSession:readonly
+	PropertyType:readonly
+*/
+
 // formula operators
 
 /**
@@ -27,7 +43,7 @@ class MMFormulaOperator {
 	 * @virtual addInputSourcesToSet
 	 * @param {Set} sources
 	 */
-	addInputSourcesToSet(sources) {}
+	addInputSourcesToSet(/* sources */) {}
 }
 
 var MMFormulaOpDictionary = {
@@ -100,7 +116,7 @@ class MMMonadicOperator extends MMFormulaOperator {
 	 * @param {MMNumberValue} value
 	 * @returns {MMValue}
 	 */
-	operationOn(value) {
+	operationOn(/* value) */) {
 		return null;
 	}
 
@@ -174,7 +190,7 @@ class MMDyadicOperator extends MMFormulaOperator {
 	 * @param {MMNumberValue} firstValue;
 	 * @param {MMNumberValue} secondValue;
 	 */
-	operationOn(firstValue, secondValue) {
+	operationOn(/* firstValue, secondValue */) {
 		return null;
 	}
 
@@ -698,7 +714,7 @@ class MMFunctionOperator extends MMFormulaOperator {
 	 * @param {MMFormulaOperator[]} operandStack
 	 * @returns {boolean}
 	 */
-	processArguments(operandStack) {
+	processArguments(/* operandStack */) {
 		// override for each function
 		return false;
 	}
@@ -768,7 +784,7 @@ class MMSingleValueFunction extends MMFunctionOperator {
 	 * @param {MMNumberValue} value
 	 * @returns {MMValue}
 	 */
-	operationOn(value) {
+	operationOn(/* value */) {
 		return null;
 	}
 
@@ -777,17 +793,7 @@ class MMSingleValueFunction extends MMFunctionOperator {
 	 * @param {MMStringValue} value
 	 * @returns {MMValue}
 	 */
-	operationOnString(value) {
-		return null;
-	}
-
-	/**
-	 * @method operationOnTable
-	 * @param {MMTablerValue} value
-	 * @returns {MMValue}
-	 */
-	operationOn(value) {
-		// unimplemented
+	operationOnString(/* value */) {
 		return null;
 	}
 
@@ -988,7 +994,6 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 	 */
 	value() {
 		let valueCount = 0;
-		let rowCount = 0;
 		let first;
 		let argCount = this.arguments.length;
 		while (argCount-- > 0) {
@@ -996,14 +1001,12 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 		
 			if (!first) {
 				first = obj;
-				rowCount = obj.rowCount;
 			}
 			else if (Object.getPrototypeOf(obj).constructor == Object.getPrototypeOf(first).constructor) {
 				if (first instanceof MMNumberValue) {
 					first.checkUnitDimensionsAreEqualTo(obj.unitDimensions);
 				}
 				else if (first instanceof MMTableValue) {
-					rowCount += obj.rowCount;
 					if (first.columnCount !== obj.columnCount) {
 						this.formula.functionError('concatTableColumnMismatch','mmcmd:concat');
 						return null;
@@ -1345,6 +1348,7 @@ class MMMatrixColumnFunction extends MMFunctionOperator {
  * @member {MMModel} nameSpace
  * @member {boolean} isInError
  */
+// eslint-disable-next-line no-unused-vars
 class MMFormula extends MMCommandObject {
 	/** @constructor
 	 * @param {string} name
@@ -1371,7 +1375,7 @@ class MMFormula extends MMCommandObject {
 
 	set formula(newFormula) {
 		if (newFormula && newFormula.length == 0) {
-			newFormula = nil;
+			newFormula = null;
 		}
 
 		if (newFormula == this._formula) {
@@ -1383,7 +1387,7 @@ class MMFormula extends MMCommandObject {
 		}
 
 		// is this a bare numeric constant
-		let re = /^\-{0,1}\d+(\.\d+){0,1}([eE]\-{0,1}\d+){0,1}$/;
+		let re = /^-{0,1}\d+(\.\d+){0,1}([eE]-{0,1}\d+){0,1}$/;
 		if(newFormula && re.test(newFormula)) {
 			// is valid numeric
 			let unit = this.parent.displayUnit;
@@ -1618,11 +1622,11 @@ class MMFormula extends MMCommandObject {
 		// helper functions
 		let filterFloat = (value) => {
 			const parts = value.split('e');
-			if (/^(\-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/.test(parts[0])) {
+			if (/^(-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/.test(parts[0])) {
 				if (parts.length === 1) {
 					return Number(value);
 				}
-				if (parts.length === 2 && /^(\-|\+)?([0-9]+$)/.test(parts[1])) {
+				if (parts.length === 2 && /^(-|\+)?([0-9]+$)/.test(parts[1])) {
 					return Number(value);
 				}
 			}
@@ -1644,20 +1648,20 @@ class MMFormula extends MMCommandObject {
 	 			take the top operator off of the stack and connect it appropriately
 	 			with its operand(s) then push it back onto operand stack
 			 */
-			 if (operatorStack.length < 1) {
-				 this.syntaxError();
-				 return false;
-			 }
+			if (operatorStack.length < 1) {
+				this.syntaxError();
+				return false;
+			}
 
-			 let op = operatorStack.pop();
-			 if (op instanceof MMMonadicOperator) {
-				 if (operandStack.length < 1) {
-					 this.syntaxError();
-					 return false;
-				 }
-				 op.setInput(operandStack.pop());
-			 }
-			 else if (op instanceof MMDyadicOperator) {
+			let op = operatorStack.pop();
+			if (op instanceof MMMonadicOperator) {
+				if (operandStack.length < 1) {
+					this.syntaxError();
+					return false;
+				}
+				op.setInput(operandStack.pop());
+			}
+			else if (op instanceof MMDyadicOperator) {
 				if (operandStack.length < 2) {
 					this.syntaxError();
 					return false;
@@ -1665,9 +1669,9 @@ class MMFormula extends MMCommandObject {
 				let secondOp = operandStack.pop();
 				let firstOp = operandStack.pop();
 				op.setInputs(firstOp, secondOp);
-			 }
-			 operandStack.push(op);
-			 return true;
+			}
+			operandStack.push(op);
+			return true;
 		}
 
 		/**
@@ -1676,7 +1680,7 @@ class MMFormula extends MMCommandObject {
 		 */
 		let processParenthesis = () => {
 			// work back up operator stack until matching '(' is found
-			while (1) {
+			for(;;) {
 				let stackCount = operatorStack.length;
 				if (stackCount > 0) {
 					let op = operatorStack[stackCount - 1];
@@ -1704,7 +1708,7 @@ class MMFormula extends MMCommandObject {
 		 */
 		let processFunction = () => {
 			// work back up operator stack until function operator is found
-			while (1) {
+			for(;;) {
 				if (operatorStack.length > 0) {
 					let op = operatorStack.pop();
 					if (op instanceof MMFunctionOperator) {
@@ -1737,7 +1741,7 @@ class MMFormula extends MMCommandObject {
 		 */
 		let processIndex = () => {
 			// work back up operator stack until '[' is found
-			while (1) {
+			for(;;) {
 				if (operatorStack.length > 0) {
 					let op = operatorStack.pop();
 					if (op instanceof MMIndexOperator) {
@@ -1802,7 +1806,7 @@ class MMFormula extends MMCommandObject {
 			}
 
 			// didn't seem to be value and unit - parse for equation
-			let pattern = /"[\s\S]*?\"|[=*/+\-^:%()'@\{\}#\[\],]|[\w.\$]+/g;
+			let pattern = /"[\s\S]*?"|[=*/+\-^:%()'@{}#[\],]|[\w.$]+/g;
 			tokens = workingFormula.match(pattern);
 			let nTokens = tokens.length;
 			let startOp = new MMParenthesisOperator();
@@ -1847,10 +1851,10 @@ class MMFormula extends MMCommandObject {
 				}
 				else if (token == ']') {
 					if (!processParenthesis()) {
-						return nil;
+						return null;
 					}
 					if (!processIndex()) {
-						return nil;
+						return null;
 					}
 					treatMinusAsUnary = false;
 				}
