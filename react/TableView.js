@@ -68,6 +68,8 @@ export function TableView(props) {
 				x: tableViewOffset.x,
 				y: tableViewOffset.y
 			});
+			const en = e.nativeEvent;
+			en.target.setPointerCapture(en.pointerId);
 	}, [tableViewOffset]);
 
 	const xyToRowColumn = useCallback((x, y) => {
@@ -109,6 +111,9 @@ export function TableView(props) {
 				setDragType(TableViewDragType.none);
 				break;
 		}
+		const en = e.nativeEvent;
+		en.target.releasePointerCapture(en.pointerId);
+
 	}, [dragOrigin, dragType, cellClick, xyToRowColumn])
 
 	const pointerMove = useCallback(e => {
@@ -255,7 +260,7 @@ export function TableView(props) {
 			cells.push(cellBox);
 
 			// if dragging and there are lots of cells, skip filling them in to make things smoother
-			if (nDisplayedTotal <= 60 || dragType === TableViewDragType.none) {
+			if (nDisplayedTotal <= 80 || dragType === TableViewDragType.none) {
 				let  displayedV = '';
 				let v;
 				if (value.t === 't') {
