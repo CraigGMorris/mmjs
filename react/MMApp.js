@@ -121,15 +121,6 @@ export function MMApp(props) {
 		updateResults: [],
 		viewKey: 'console',
 	});
-
-	// diagram state variables
-	const [dgmState, setDgmState] = useState({
-		dragType: null,
-		dragSelection: null,
-		selectionBox: null,
-		translate: {x: 0, y: 0},
-		scale: 1.0,				
-	});
 	
 	// calc pane style
 	const twoPane = document.documentElement.clientWidth >= 640;
@@ -175,22 +166,6 @@ export function MMApp(props) {
 		infoStack = [infoState];
 		setViewInfo(infoState);
 	},[]);
-
-	/**
-	 * updateDgmState
-	 * @param {Function} f (prevState) => newState
-	 */
-	const updateDgmState = useCallback((f) => {
-		let newState;
-		if (typeof f === 'function') {
-			newState = {...dgmState, ...f(dgmState)};
-		}
-		else {
-			newState = {...dgmState, ...f};
-		}
-		// console.log(`newState drag ${newState.dragType}`);
-		setDgmState(newState);
-	},[dgmState]);
 
 	/**
 	 * doCommand - sends command to worker
@@ -342,7 +317,7 @@ export function MMApp(props) {
 				case 'Model':
 					doCommand('/ popmodel', () => {
 						if (dgmStateStack.length) {
-							setDgmState(dgmStateStack.pop());
+							diagramRef.current.setState(dgmStateStack.pop());
 						}
 						updateView(infoStack.length-1, false);
 					});
@@ -368,7 +343,7 @@ export function MMApp(props) {
 	 */
 	const pushModel = useCallback((modelName) => {
 		doCommand(`/ pushmodel ${modelName}`, (cmds) => {
-			dgmStateStack.push({...dgmState});
+			dgmStateStack.push({...diagramRef.current.state});
 			const path = cmds[0].results;
 			if (cmds.length) {
 				const modelInfoState = {
@@ -387,7 +362,7 @@ export function MMApp(props) {
 				updateDiagram(true);
 			}
 		});
-	},[dgmState, doCommand, updateDiagram]);
+	},[doCommand, updateDiagram]);
 
 	/**
 	 * popModel
@@ -635,9 +610,7 @@ export function MMApp(props) {
 			t: t,
 			ref: diagramRef,
 			infoWidth: infoView ? infoWidth : 0,
-			dgmState: dgmState,
 			diagramBox: diagramBox,
-			setDgmState: updateDgmState,
 			actions: actions,
 		});
 	}

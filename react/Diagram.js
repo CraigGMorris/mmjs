@@ -59,6 +59,13 @@ export class Diagram extends React.Component {
 		this.panSum = 0;
 		this.eventCache = [];
 		this.pinch = 0;
+		this.state = {
+			dragType: null,
+			dragSelection: null,
+			selectionBox: null,
+			translate: {x: 0, y: 0},
+			scale: 1.0,				
+		}
 
 		this.setDragType = this.setDragType.bind(this);
 		this.draggedTo = this.draggedTo.bind(this);
@@ -78,7 +85,7 @@ export class Diagram extends React.Component {
 		this.props.actions.doCommand('/ dgminfo', (results) => {
 			if (results.length && results[0].results) {
 				const modelInfo = results[0].results;
-				this.props.setDgmState(() => {
+				this.setState(() => {
 					let newState = {
 						path: modelInfo.path,
 						tools: modelInfo.tools
@@ -148,7 +155,7 @@ export class Diagram extends React.Component {
 	 * if type is tool, options should contain tool name
 	 */
 	setDragType(dragType, lastPointerPosition, options) {
-		this.props.setDgmState((state) => {
+		this.setState((state) => {
 			switch (dragType) {
 				case DiagramDragType.pan: 
 					return {
@@ -189,7 +196,7 @@ export class Diagram extends React.Component {
 							if (state.dragSelection) {
 								for (const [name, position] of state.dragSelection) {
 									const p = snapPosition(position);
-									let oldPosition = this.props.dgmState.tools[name].position;
+									let oldPosition = this.state.tools[name].position;
 									if (p.x !== oldPosition.x || p.y !== oldPosition.y) {
 										terms.push(`${name} ${p.x} ${p.y}`);
 									}
@@ -235,7 +242,7 @@ export class Diagram extends React.Component {
 	 * @param {Number} y 
 	 */
 	draggedTo(x, y) {
-		this.props.setDgmState((state) => {
+		this.setState((state) => {
 			if (state.dragType == null) {
 				return {};
 			}
@@ -388,7 +395,7 @@ export class Diagram extends React.Component {
 	 * x, y is top left corner
 	 */
 	createSelectionBox(x, y) {
-		this.props.setDgmState((state) => {
+		this.setState((state) => {
 			const scale = state.scale;
 			const topLeft = {
 				x: x / scale - state.translate.x,
@@ -453,7 +460,7 @@ export class Diagram extends React.Component {
 					if (e.clientY - this.props.diagramBox.top < 15) {
 						console.log('should pop menu');
 					}
-					this.props.setDgmState({
+					this.setState({
 						selectionBox: null,
 						dragSelection: null
 					});
@@ -512,7 +519,7 @@ export class Diagram extends React.Component {
 			const clientX = (eCache[0].x + eCache[1].x) / 2;
 			const clientY = (eCache[0].y + eCache[1].y) / 2;
 
-			this.props.setDgmState((state) => {
+			this.setState((state) => {
 				const newScale = Math.max(0.1, state.scale * ratio);
 				const newTranslate = {
 					x: clientX/newScale - clientX/state.scale + state.translate.x,
@@ -532,7 +539,7 @@ export class Diagram extends React.Component {
 		const deltaY = e.deltaY;
 		const pageX = e.pageX;
 		const pageY = e.pageY;
-		this.props.setDgmState((state) => {
+		this.setState((state) => {
 			const newScale = Math.max(0.1, state.scale - deltaY/100);
 			const newTranslate = {
 				x: pageX/newScale - pageX/state.scale + state.translate.x,
@@ -546,19 +553,20 @@ export class Diagram extends React.Component {
 	}
 
 	render() {
+		console.log('render diagram');
 		let t = this.props.t;
 		const dgmBox = this.props.diagramBox;
 		const viewBox = [dgmBox.left, dgmBox.top, dgmBox.width, dgmBox.height];
-		const scale = this.props.dgmState.scale;
-		const tools = this.props.dgmState.tools;
-		const tx = this.props.dgmState.translate.x;
-		const ty = this.props.dgmState.translate.y;
+		const scale = this.state.scale;
+		const tools = this.state.tools;
+		const tx = this.state.translate.x;
+		const ty = this.state.translate.y;
 		let toolList = [];
 		let connectList = [];
 		for (const toolName in tools) {
 			const toolInfo  = tools[toolName];
 			let highlight = false;
-			if (this.props.dgmState.dragSelection && this.props.dgmState.dragSelection.has(toolInfo.name)) {
+			if (this.state.dragSelection && this.state.dragSelection.has(toolInfo.name)) {
 				highlight = true;
 			}
 
@@ -567,7 +575,7 @@ export class Diagram extends React.Component {
 				key: toolName,
 				info: toolInfo,
 				highlight: highlight,
-				translate: this.props.dgmState.translate,
+				translate: this.state.translate,
 				scale: scale,
 				setDragType: this.setDragType,
 				draggedTo: this.draggedTo,
@@ -719,19 +727,19 @@ export class Diagram extends React.Component {
 		}
 
 		let selectionBox = null;
-		if (this.props.dgmState.selectionBox) {
+		if (this.state.selectionBox) {
 			selectionBox = e(SelectionBox, {
-				rect: this.props.dgmState.selectionBox,
+				rect: this.state.selectionBox,
 				setDragType: this.setDragType,
 				draggedTo: this.draggedTo,
-				translate: this.props.dgmState.translate,
+				translate: this.state.translate,
 				scale: scale
 			})
 		}
 
 		let textList = [];
-		if (this.props.dgmState.path) {
-			const pathParts = this.props.dgmState.path.split('.');
+		if (this.state.path) {
+			const pathParts = this.state.path.split('.');
 			if (pathParts.length > 2) {
 				textList.push(
 					e(ClickableDiagramText, {
@@ -741,7 +749,7 @@ export class Diagram extends React.Component {
 						text:`< ${pathParts[pathParts.length-2]}`,
 						textClick: () => {
 							this.props.actions.popModel();
-							this.props.setDgmState({selectionBox: null});
+							this.setState({selectionBox: null});
 						}
 					})
 				)
