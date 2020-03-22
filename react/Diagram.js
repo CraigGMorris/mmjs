@@ -553,7 +553,6 @@ export class Diagram extends React.Component {
 	}
 
 	render() {
-		console.log('render diagram');
 		let t = this.props.t;
 		const dgmBox = this.props.diagramBox;
 		const viewBox = [dgmBox.left, dgmBox.top, dgmBox.width, dgmBox.height];
