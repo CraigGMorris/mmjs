@@ -241,7 +241,8 @@ class MMSession extends MMCommandParent {
 			saveObject = JSON.parse(json);
 		}
 		catch(e) {
-			this.setError('mmcmd:parseSessionError', {error: e});
+			const msg = (typeof e === 'string') ? e : e.message;
+			this.setError('mmcmd:parseSessionError', {error: msg});
 			return;
 		}
 
@@ -311,7 +312,8 @@ class MMSession extends MMCommandParent {
 			return this.storePath;
 		}
 		catch(e) {
-			this.setError('mmcmd:sessionSaveFailed', {path: this.storePath, error: e});
+			const msg = (typeof e === 'string') ? e : e.message;
+			this.setError('mmcmd:sessionSaveFailed', {path: this.storePath, error: msg});
 		}
 	}
 
@@ -327,7 +329,8 @@ class MMSession extends MMCommandParent {
 			return result;
 		}
 		catch(e) {
-			this.setError('mmcmd:sessionLoadFailed', {path: path, error: e});
+			const msg = (typeof e === 'string') ? e : e.message;
+			this.setError('mmcmd:sessionLoadFailed', {path: path, error: msg});
 		}
 	}
 
@@ -341,7 +344,8 @@ class MMSession extends MMCommandParent {
 			return path;
 		}
 		catch(e) {
-			this.setError('mmcmd:sessionDeleteFailed', {path: path, error: e});
+			const msg = (typeof e === 'string') ? e : e.message;
+			this.setError('mmcmd:sessionDeleteFailed', {path: path, error: msg});
 		}
 	}
 
@@ -356,7 +360,8 @@ class MMSession extends MMCommandParent {
 			return newPath;
 		}
 		catch(e) {
-			this.setError('mmcmd:sessionCopyfailed', {oldPath: oldPath, newPath: newPath, error: e});
+			const msg = (typeof e === 'string') ? e : e.message;
+			this.setError('mmcmd:sessionCopyfailed', {oldPath: oldPath, newPath: newPath, error: msg});
 		}
 	}
 
@@ -373,7 +378,8 @@ class MMSession extends MMCommandParent {
 			return newPath;
 		}
 		catch(e) {
-			this.setError('mmcmd:sessionRenamefailed', {oldPath: oldPath, newPath: newPath, error: e});
+			const msg = (typeof e === 'string') ? e : e.message;
+			this.setError('mmcmd:sessionRenamefailed', {oldPath: oldPath, newPath: newPath, error: msg});
 		}
 	}
 
@@ -577,7 +583,8 @@ class MMSession extends MMCommandParent {
 			command.results = this.storePath;
 		}
 		catch(e) {
-			this.setError('mmcmd:jsonImportFailed', {error: e});
+			const msg = (typeof e === 'string') ? e : e.message;
+			this.setError('mmcmd:jsonImportFailed', {error: msg});
 		}
 	}
 
