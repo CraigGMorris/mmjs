@@ -260,7 +260,7 @@ export function TableView(props) {
 			cells.push(cellBox);
 
 			// if dragging and there are lots of cells, skip filling them in to make things smoother
-			if (nDisplayedTotal <= 80 || dragType === TableViewDragType.none) {
+			if (nDisplayedTotal <= 60 || dragType === TableViewDragType.none) {
 				let  displayedV = '';
 				let v;
 				if (value.t === 't') {

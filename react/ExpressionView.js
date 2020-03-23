@@ -41,11 +41,12 @@ export function ExpressionView(props) {
 				display: display,
 			};
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
 		props.viewInfo.expressionViewState.display = display;
-	}, [display])
+	}, [display, props.viewInfo])
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
@@ -118,6 +119,15 @@ export function ExpressionView(props) {
 			break;
 		case ExpressionDisplay.expression: {
 			const cellClick = (row, column) => {
+				const value = results.value;
+				if (value && value.nr && value.nc) {
+					row = Math.max(1, Math.min(row, value.nr));
+					column = Math.max(1, Math.min(column, value.nc));
+				}
+				else {
+					row = column = 1;
+				}
+		
 				const formatValue = v => {
 					if (typeof v === 'string') {
 						return v;
@@ -131,7 +141,6 @@ export function ExpressionView(props) {
 				}
 
 				const displayV = (row, column) => {
-					const value = results.value;
 					setSelectedCell([row,column]);
 					if (value.t === 't') {
 						const tableColumn = value.v[column];
