@@ -115,6 +115,7 @@ export function MatrixView(props) {
 						path: `${results.path}.rowCount`,
 						formula: rowCountFormula || '',
 						viewInfo: props.viewInfo,
+						infoWidth: props.infoWidth,
 					}
 				),
 				e(
@@ -131,6 +132,7 @@ export function MatrixView(props) {
 						path: `${results.path}.columnCount`,
 						formula: columnCountFormula || '',
 						viewInfo: props.viewInfo,
+						infoWidth: props.infoWidth,
 					}
 				)
 			),
@@ -166,6 +168,7 @@ export function MatrixView(props) {
 						path: `${results.path}.f_${currentCell.join('_')}`,
 						formula: cellFormula,
 						viewInfo: props.viewInfo,
+						infoWidth: props.infoWidth,
 						applyChanges: applyCellChanges,
 					}
 

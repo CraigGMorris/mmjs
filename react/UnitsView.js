@@ -179,6 +179,7 @@ export class UserUnitsView extends React.Component {
 					'input', {
 						id: 'user-units__input',
 						value: this.state.input,
+						width: this.props.infoWidth - 25,
 						placeholder: t('react:userUnitsPlaceHolder'),
 						onChange: (event) => {
 							// keeps input field in sync
@@ -186,10 +187,12 @@ export class UserUnitsView extends React.Component {
 						},
 						onKeyPress: () => {
 							// watches for Enter and sends command when it see it
-							this.props.actions.doCommand(`/unitsys.units adduserunit ${this.state.input}`, () => {
-								this.props.actions.updateView(this.props.viewInfo.stackIndex);
-							});
-							this.setState({input:''});
+							if (event.key == 'Enter') {
+								this.props.actions.doCommand(`/unitsys.units adduserunit ${this.state.input}`, () => {
+									this.props.actions.updateView(this.props.viewInfo.stackIndex);
+								});
+								this.setState({input:''});
+							}
 						}
 					}
 				),
@@ -310,6 +313,7 @@ export class UnitSetsView extends React.Component {
 						id: 'unit-sets__name-field',
 						placeholder: '',
 						value: this.state.input,
+						width: this.props.infoWidth - 25,
 						onChange: (event) => {
 							// keeps input field in sync
 							this.setState({input: event.target.value});

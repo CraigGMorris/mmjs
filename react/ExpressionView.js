@@ -175,6 +175,7 @@ export function ExpressionView(props) {
 							path: `${path}.${formulaName}`,
 							formula: results.formula || '',
 							viewInfo: props.viewInfo,
+							infoWidth: props.infoWidth,
 							unitType: unitType,
 						}
 					)

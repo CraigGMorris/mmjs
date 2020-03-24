@@ -197,7 +197,6 @@ a:hover {
 #console__input {
 	grid-area: input;
 	justify-self: center;
-	/*width: calc(100% - 1em);*/
 }
 
 #console__read-file {
@@ -327,7 +326,6 @@ a:hover {
 .formula-field__text-display {
 	grid-area: formula-display;
 	white-space: nowrap;
-	width: calc(100% - 2px);
 	overflow: hidden;
 }
 
@@ -879,7 +877,6 @@ a:hover {
 	grid-area: input;
 	justify-self: center;
 	font-size: 10pt;
-	width: calc(100% - 25px);
 	padding-left: 5px;
 	margin-left: 10px;
 	margin-top: 5px;
@@ -955,7 +952,6 @@ a:hover {
 #unit-sets__name-field {
 	grid-area: input;
 	justify-self: center;
-	width: calc(100% - 25px);
 	padding-left: 5px;
 	margin-left: 10px;
 	border: solid 1px;

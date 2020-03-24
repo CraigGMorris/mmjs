@@ -63,6 +63,7 @@ export function FormulaField(props) {
 		e(
 			'div', {
 				className: 'formula-field__text-display',
+				width: props.infoWidth,
 			},
 			props.formula
 			// '= ' + props.formula
