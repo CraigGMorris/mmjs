@@ -109,7 +109,7 @@ export class SessionsView extends React.Component {
 				);
 			}
 		}
-	
+
 		let sections = [];
 		if (this.state.menuPath) {
 			sections.push(e(
@@ -233,6 +233,30 @@ export class SessionsView extends React.Component {
 							},
 						}
 					),	
+				),
+				e(
+					'button', {
+						id: 'sessions__download-button',
+						onClick: async () => {
+							let cmd = '/ getjson';
+							await this.props.actions.doCommand(
+								cmd,
+								(results) => {
+									if (results && results.length) {
+										const json = results[0].results;
+										const blob = new Blob([json], {type : "text/plain"});
+										const link = document.createElement('a');
+										link.download = currentPath;
+										link.href = URL.createObjectURL(blob);
+										link.click();
+										URL.revokeObjectURL(link.href);
+									}
+									// this.props.actions.popView();
+								}
+							);			
+						},
+					},
+					t('react:sessionsDownloadButton'),
 				),
 			);
 

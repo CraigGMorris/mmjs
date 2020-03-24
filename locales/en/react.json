@@ -31,6 +31,7 @@
 	"sessionsDeleteButton": "Delete",
 	"sessionsDeleteConfirm": "Are you sure you want to delete session {{path}}",
 	"sessionsDeletedCurrentPath": "You deleted the stored version current session.\nYou can still save the current session though\n(as {{current}})",
+	"sessionsDownloadButton": "Download",
 	"sessionsRenameButton": "Rename",
 	"sessionsRenameOverwrite": "A session named {{newName}} already exists\nDo you wish to overwrite it with {{oldName}}",
 	"sessionsRenamePrompt": "New Name for {{oldName}}?",

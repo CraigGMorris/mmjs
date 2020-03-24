@@ -579,6 +579,7 @@ class MMSession extends MMCommandParent {
 	 */
 	async importCommand(command) {
 		try {
+			new MMUnitSystem(this);  // clear any user units and sets
 			this.initializeFromJson(command.args);
 			command.results = this.storePath;
 		}

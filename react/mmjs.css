@@ -625,8 +625,8 @@ a:hover {
 
 #sessions__header {
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
-	grid-template-areas: "new save import";
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	grid-template-areas: "new save import download";
 	grid-column-gap: 10px;
 }
 
@@ -640,6 +640,10 @@ a:hover {
 
 #sessions__import-button {
 	grid-area: import;
+}
+
+#sessions__download-button {
+	grid-area: download;
 }
 
 #sessions__list {
