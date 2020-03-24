@@ -238,7 +238,7 @@ function ValuePicker(props) {
 		else {
 			setParamList([]);
 		}
-	},[selected])
+	},[props.actions, props.modelPath, selected])
 
 	const selectParam = param => {
 		setSelected([...selected, param]);
@@ -379,6 +379,7 @@ export function FormulaEditor(props) {
 			}
 		}
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -386,15 +387,18 @@ export function FormulaEditor(props) {
 			inputRef.current.focus();
 		}
 		props.viewInfo.formulaEditorState.display = display;
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [display]);
 
 	useEffect(() => {
 		inputRef.current.setSelectionRange(selection[0], selection[1]);
 		props.viewInfo.formulaEditorState.selection = selection;
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selection]);
 
 	useEffect(() => {
 		props.viewInfo.formulaEditorState.formula = formula;
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [formula]);
 
 	const applyChanges = (formula) => {

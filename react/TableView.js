@@ -112,7 +112,7 @@ export function TableView(props) {
 				cellClick(row, column);
 			}
 		}
-	}, [dragOrigin, dragType, cellClick, xyToRowColumn])
+	}, [pointerCaptured, dragType, dragOrigin.x, dragOrigin.y, cellClick, xyToRowColumn])
 
 	const pointerMove = useCallback(e => {
 		if (dragType === TableViewDragType.none) {
@@ -196,7 +196,7 @@ export function TableView(props) {
 					break;
 			}	
 		}
-	}, [dragOrigin, dragType, initialOffset, viewBox, value])
+	}, [dragOrigin, dragType, pointerCaptured, initialOffset, viewBox, value])
 
 	const pointerEnter = useCallback(e => {
 		if (dragType != TableViewDragType.none) {
