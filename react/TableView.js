@@ -25,11 +25,10 @@ const TableViewDragType = Object.freeze({
  * view for MMValue as a table
  */
 export function TableView(props) {
-	// console.log('render tableview');
 	const [dragType, setDragType] = useState(TableViewDragType.none);
 	const [dragOrigin, setDragOrigin] = useState({x: 0, y: 0});
+	const [pointerCaptured, setPointerCaptured] = useState(false);
 	const [initialOffset, setInitialOffset] = useState({x: 0, y: 0});
-//	const	[selectedCell, setSelectedCell] = useState({row: 0, column: 0});
 	const [tableViewOffset, setTableViewOffset] = useState({x: 0, y: 0});
 	const cellHeight = 30;
 	const cellWidth = 110;
@@ -68,8 +67,6 @@ export function TableView(props) {
 				x: tableViewOffset.x,
 				y: tableViewOffset.y
 			});
-			const en = e.nativeEvent;
-			en.target.setPointerCapture(en.pointerId);
 	}, [tableViewOffset]);
 
 	const xyToRowColumn = useCallback((x, y) => {
@@ -95,28 +92,37 @@ export function TableView(props) {
 		e.stopPropagation();
 		e.preventDefault();
 
-		const panSum = Math.abs(dragOrigin.x - x) + Math.abs(dragOrigin.y - y);
-		if (panSum < 1.0 && cellClick) {
-			const [row, column] = xyToRowColumn(x, y);
-			cellClick(row, column);
+		if (pointerCaptured) {
+			const en = e.nativeEvent;
+			en.target.releasePointerCapture(en.pointerId);
+			setPointerCaptured(false);
 		}
-		switch (dragType) {
-			case TableViewDragType.origin:
-				setDragType(TableViewDragType.none);
-				setDragOrigin({x: 0, y: 0})
-				setInitialOffset({x: 0, y: 0});
-				setTableViewOffset({x: 0, y: 0});
-				break;
-			default:
-				setDragType(TableViewDragType.none);
-				break;
-		}
-		const en = e.nativeEvent;
-		en.target.releasePointerCapture(en.pointerId);
 
+		if (dragType === TableViewDragType.origin) {
+			setDragType(TableViewDragType.none);
+			setDragOrigin({x: 0, y: 0})
+			setInitialOffset({x: 0, y: 0});
+			setTableViewOffset({x: 0, y: 0});
+		}
+		else {
+			setDragType(TableViewDragType.none);
+			const panSum = Math.abs(dragOrigin.x - x) + Math.abs(dragOrigin.y - y);
+			if (panSum < 1.0 && cellClick) {
+				const [row, column] = xyToRowColumn(x, y);
+				cellClick(row, column);
+			}
+		}
 	}, [dragOrigin, dragType, cellClick, xyToRowColumn])
 
 	const pointerMove = useCallback(e => {
+		if (dragType === TableViewDragType.none) {
+			return;
+		}
+		if (!pointerCaptured) {
+			const en = e.nativeEvent;
+			en.target.setPointerCapture(en.pointerId);
+			setPointerCaptured(true);
+		}
 		const x = e.nativeEvent.offsetX;
 		const y = e.nativeEvent.offsetY;
 		e.stopPropagation();
