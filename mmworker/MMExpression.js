@@ -129,6 +129,7 @@ class MMExpression extends MMTool {
 
 	/**
 	 * @method valueForRequestor
+	 * @override
 	 * @param {MMTool} requestor
 	 * @returns {MMValue}
 	 */

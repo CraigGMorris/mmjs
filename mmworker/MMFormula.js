@@ -156,6 +156,9 @@ class MMDyadicOperator extends MMFormulaOperator {
 		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
 			return this.operationOn(v1, v2);
 		}
+		else if (v1 instanceof MMStringValue && v2 instanceof MMStringValue) {
+			return this.operationOn(v1, v2);
+		}
 
 		// much to add for all other value classes
 		return null;
@@ -1622,7 +1625,7 @@ class MMFormula extends MMCommandObject {
 		// helper functions
 		let filterFloat = (value) => {
 			const parts = value.split('e');
-			if (/^(-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/.test(parts[0])) {
+			if (/^(-|\+)?([0-9]*(\.[0-9]+)?|Infinity)$/.test(parts[0])) {
 				if (parts.length === 1) {
 					return Number(value);
 				}

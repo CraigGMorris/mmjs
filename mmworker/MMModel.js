@@ -238,8 +238,9 @@ class MMModel extends MMTool {
 		theMMSession.pushModel(this);
 		let tools = saved.Objects;
 		for (let tool of tools) {
-			let name = tool.name;
-			let toolType = MMToolTypes[tool.Type];
+			const name = tool.name;
+			const typeName = tool.Type.replace(' ','');
+			const toolType = MMToolTypes[typeName];
 			if(!toolType) {
 				throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: tool.Type}));
 			}

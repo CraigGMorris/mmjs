@@ -1201,7 +1201,7 @@ class MMUnitsContainer extends MMCommandParent {
 			throw(this.t('mmunit:cannotRemoveMaster', {name: name}));
 		}
 		let definition = unit.definition;	// for undo if available
-		this.removeChildNamed(command);
+		this.removeChildNamedCommand(command);
 		if (definition) {
 			command.undo = `${this.getPath()} adduserunit ${definition}`;
 		}
@@ -1505,7 +1505,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 		let name = command.args;
 		let set = this.childNamed(name);
 		if (set && !set.isMaster) {
-			this.removeChildNamed(command);
+			this.removeChildNamedCommand(command);
 			if (set === this.defaultSet) {
 				this.defaultSet = this.childNamed['SI'];
 			}

@@ -3,6 +3,7 @@
 	theMMSession:readonly
 	MMCommandMessage:readonly
 	MMUnitSystem:readonly
+	MMUnit:readonly
 	MMUnitDimensionType:readonly
 */
 
@@ -271,6 +272,11 @@ class MMNumberValue extends MMValue {
 		let newValue = new MMNumberValue(this.rowCount, this.columnCount, this.unitDimensions);
 		newValue._values.set(this._values);
 		return newValue;
+	}
+
+	get values() {
+		// used by MMTableValueColumn for saving actual values
+		return this._values;
 	}
 
 	/** @static scalarValue
@@ -814,6 +820,11 @@ class MMStringValue extends MMValue {
 		return newValue;
 	}
 
+	get values() {
+		// used by MMTableValueColumn for saving actual values
+		return this._values;
+	}
+
 	/** @static scalarValue
 	 * creates a MMStringValue with a single value
 	 * @param {String} value
@@ -1223,6 +1234,16 @@ class MMToolValue extends MMValue {
  * @member {String} _format
  */
 class MMTableValueColumn {
+	/** @method exceptionWith
+	 * throws a MMCommandMessage
+	 * @param {string} key	for i18n
+	 * @param {Object} args	for i18n
+	*/
+	exceptionWith(key, args) {
+		let msg = new MMCommandMessage(key, args);
+		throw(msg);
+	}
+
 	/**
 	 * @constructor
 	 * @param {Object} context
@@ -1234,9 +1255,26 @@ class MMTableValueColumn {
 	constructor(context) {
 		if (context.name) {
 			this.name = context.name;
-			this._displayUnit = context.displayUnit;
+			const unitName = context.displayUnit ? context.displayUnit : 'Fraction';
 			this._value = context.value;
 			this.format = null;
+			if (!this._value) {
+				if (unitName.toLowerCase() === 'string') {
+					this._value = new MMStringValue(0, 0);
+				}
+				else {
+					this._displayUnit = theMMSession.unitSystem.unitNamed(unitName);
+					if (this._displayUnit) {
+						this._value = new MMNumberValue(0, 0, this._displayUnit.dimensions);
+					}
+					else {
+						this.exceptionWith('mmcmd:tableBadUnit', {
+							unit: unitName,
+							name: this.name,
+						});
+					}
+				}
+			}
 		}
 		else {
 			const column = context.column;
@@ -1300,6 +1338,13 @@ class MMTableValueColumn {
 	 */
 	get isString() {
 		return (this._value instanceof MMStringValue);
+	}
+
+	/**
+	 * @return {Number}
+	 */
+	get rowCount() {
+		return this._value ? this._value.rowCount : 0;
 	}
 
 	/**
@@ -1437,10 +1482,40 @@ class MMTableValueColumn {
 	 * @method updateRow
 	 * @param {Number} rowNumber
 	 * @param {MMValue} withValue
-	 * @param {MMTableValue} forDataTable
+	 * @param {MMTableValue} dataTable
 	 */
-	updateRow(/* rowNumber, withValue, forDataTable */) {
-
+	updateRow(rowNumber, withValue, dataTable) {
+		if (this._value && rowNumber <= this._value.rowCount) {
+			if (this.isString) {
+				if (withValue) {
+					this._value.setValue(withValue.stringForRowColumnUnit(rowNumber, 1), rowNumber, 1);
+				}
+				else {
+					this._value.setValue('""', rowNumber, 1);
+				}
+			}
+			else {
+				if (withValue instanceof MMNumberValue) {
+					if (MMUnitSystem.areDimensionsEqual(withValue.unitDimensions, this._value.unitDimensions)) {
+						this._value.setValue(withValue.valueAtRowColumn(1,1), rowNumber, 1);
+					}
+					else {
+						this.exceptionWith('mmcmd:tableUnitTypeMismatch', {
+							row: rowNumber,
+							column: this.name,
+							table: dataTable
+						});
+					}
+				}
+				else {
+					this.exceptionWith('mmcmd:tableTypeMismatch', {
+						row: rowNumber,
+						column: this.name,
+						table: dataTable
+					});
+				}
+			}
+		}
 	}
 
 	/**
@@ -1455,7 +1530,7 @@ class MMTableValueColumn {
 					this._value.setValue(value, rowNumber, 1);
 				}
 				else {
-					this.setValue('""', rowNumber, 1);
+					this._value.setValue('', rowNumber, 1);
 				}
 			}
 			else {
@@ -1465,6 +1540,47 @@ class MMTableValueColumn {
 				}
 				this._value._values[rowNumber - 1] = d;
 			}
+		}
+
+	}
+
+	/**
+	 * @method saveObject
+	 * @returns {Object} object that can be converted to json for save file
+	 */
+	saveObject() {
+		const o = {
+			name: this.name,
+			displayUnit: this.isString ? 'string' : this.displayUnit.name,
+		}
+		if (this.format && this.format.length) {
+			o.format = this.format;
+		}
+		if (this._value) {
+			if (this.isString) {
+				o.sValues = this._value.values;
+			}
+			else {
+				o.nValues = this._value.values;
+				o.unitDimensions = MMUnit.stringFromDimensions(this._value.unitDimensions);
+			}
+		}
+		return o;
+	}
+
+	/**
+	 * @method initFromSaved - initialize from stored object
+	 * @param {Object} saved 
+	 */
+	initFromSaved(saved) {
+		if (saved.format) {
+			this.format = saved.format;
+		}
+		if (this.isString) {
+			this._value = MMStringValue.stringArrayValue(saved.sValues);
+		}
+		else {
+			this._value = MMNumberValue.numberArrayValue(Object.values(saved.nValues), saved.unitDimensions);
 		}
 	}
 
@@ -1496,20 +1612,20 @@ class MMTableValueColumn {
 	}
 
 	/**
-	 * @method deleteRowNumber
+	 * @method removeRowNumber
 	 * @param {Number} rowNumber
 	 */
-	deleteRowNumber(rowNumber) {
+	removeRowNumber(rowNumber) {
 		if (this._value && rowNumber <= this._value.rowCount) {
 			const nNewRows = this._value.rowCount - 1;
 			if (this.isString) {
 				const newValue = new MMStringValue(nNewRows, 1);
 				const oldValue = this._value;
-				for (let i = 0; i < rowNumber; i++) {
-					newValue.setValue(oldValue.valueAtCount(i), i, 1);
+				for (let i = 1; i < rowNumber; i++) {
+					newValue.setValue(oldValue.valueAtCount(i - 1), i, 1);
 				}
-				for (let i = rowNumber; i < nNewRows; i++) {
-					newValue.setValue(oldValue.valueAtCount(i + 1), i, 1);
+				for (let i = rowNumber; i <= nNewRows; i++) {
+					newValue.setValue(oldValue.valueAtCount(i), i, 1);
 				}
 				this._value = newValue;
 			}
@@ -1517,13 +1633,13 @@ class MMTableValueColumn {
 				const oldValue = this._value;
 				const dimensions =  oldValue.unitDimensions;
 				const newValue = new MMNumberValue(nNewRows, 1, dimensions);
-				for (let i = 0; i < rowNumber; i++) {
+				for (let i = 0; i < rowNumber - 1; i++) {
 					newValue._values[i] = oldValue._values[i];
 				}
-				for (let i = rowNumber; i < nNewRows; i++) {
-					newValue._values[i] = oldValue._values[i + 1];
+				for (let i = rowNumber; i <= nNewRows; i++) {
+					newValue._values[i - 1] = oldValue._values[i];
 				}
-				this._values = newValue;
+				this._value = newValue;
 			}
 		}
 	}
@@ -1648,8 +1764,9 @@ class MMTableValue extends MMValue {
 		let columns = [];
 		const nc =  this.columnCount;
 		for (let i = 0; i < nc; i++) {
-			const displayUnit = (displayUnits && i < displayUnits.length) ? displayUnits[i] : null;
-			columns.push(this.columns[i].jsonValue(displayUnit));
+			const column = this.columns[i];
+			const displayUnit = (displayUnits && i < displayUnits.length) ? displayUnits[i] : column.displayUnit;
+			columns.push(column.jsonValue(displayUnit));
 		}
 
 		return {

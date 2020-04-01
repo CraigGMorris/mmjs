@@ -16,11 +16,12 @@ importScripts(
   'MMCommandProcessor.js',
   'MMSession.js',
   'mmunits/MMUnitSystem.js',
+  "MMValue.js",
   'MMModel.js',
   "MMExpression.js",
   "MMMatrix.js",
   "MMFormula.js",
-  "MMValue.js"
+  "MMDataTable.js"
 );
 
 class MMCommandWorker {

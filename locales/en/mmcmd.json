@@ -1,6 +1,7 @@
 {
 	"languageCode": "en",
 	"concatTableColumnMismatch": "Can't concat table values with different column counts",
+	"dataTableDisplayName": "Data Table",
 	"displayUnitTypeMismatch": "Unit type mismatch in setting display unit {{unitName}} on table value",
 	"error": "Error",
 	"exprDisplayName": "Expression",
@@ -40,6 +41,12 @@
 	"sessionLoadFailed": "There was an error attempting to load the session\n{{path}}\n{{error}}",
 	"sessionRenameFailed": "There was an error attempting to rename the session\n{{oldPath}} to\n{{newPath}}\n{{error}}",
 	"tableAddRowUnitMismatch": "Add row unit type mismatch for column {{name}}",
+	"tableBadColumnName": "Could not find a column with name {{name}}\n\nIn table at: {{path}}",
+	"tableBadUnit": "Unrecognized unit '{{unit}}' in table column {{name}}",
+	"tableRowColumnError": "Invalid table row or column\n\nPath: {{path}}\nArgs: {{args}}",
+	"tableSetCellError": "Error setting table cell\n\nPath: {{path}}\nArgs: {{args}}",
+	"tableTypeMismatch": "Data table error\n\nString/Number type mismatch for row {{row}} of column {{column}} of {{table}}",
+	"tableUnitTypeMismatch": "Data table error\n\nUnit type mismatch for row {{row}} of column {{column}} of {{table}}",
 	"valueMatrixBoundsError": "Index [{{row}},{{column}}] out of bounds [{{rowCount}},{{columnCount}}]",
 	"valuePowerHasUnits": "Exponent cannot have units",
 	"valuePowerOfArrayWithUnits": "Exponent cannot be an array if the raised value has units",
@@ -65,5 +72,12 @@
 	"?sessionPopModel": "Switch current model to its parent\n\nusage popmodel",
 	"?sessionPushModel": "Switch current model to the child model named modelName\n\nusage pushmodel modelName",
 	"?sessionSave": "Save session to path or to current path if omitted\n\nusage: save {path}",
+	"?tableAddColumn": "add a column to a data table\n\nusage: addcolumn",
+	"?tableAddRow": "add a row to the data table\n\nusage addrow rowNumber\n\nif rowNumber is omitted or invalid, row is added to bottom",
+	"?tableRemoveColumn": "remove a column from the data table\n\nusage removecolumn columnName",
+	"?tableRemoveRow": "remove a row from the data table\n\nusage removerow rowNumber",
+	"?tableRestoreColumn": "used by undo to restore a deleted table column\n\nusage restorecolumn columnNumber recoveryJson",
+	"?tableRestoreRow": "used by undo to restore a deleted table row\n\nusage restorerow rowNumber recoveryJson",
+	"?tableSetCell": "sets value of cell\n\nusage: setcell rowNumber columnNumber value",
 	"?toolValue": "returns value as json\n\nusage: value"
 }

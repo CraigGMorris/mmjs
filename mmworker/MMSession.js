@@ -12,6 +12,7 @@
 	MMExpression:readonly
 	MMCommandMessage:readonly
 	MMMatrix:readonly
+	MMDataTable:readonly
 	theMMSession:readonly
 	MMToolValue:readonly
 */
@@ -1091,7 +1092,11 @@ const MMToolTypes = {
 	"Matrix": {
 		factory: (name, parent) => {return new MMMatrix(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:matrixDisplayName'),
-	}
+	},
+	"DataTable": {
+		factory: (name, parent) => {return new MMDataTable(name, parent)},
+		displayName: new MMCommandMessage('mmcmd:dataTableDisplayName'),
+	},
 };
 
 /**

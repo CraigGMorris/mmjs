@@ -722,7 +722,7 @@ class MMCommandProcessor {
 		let actions = super.verbs;
 		actions['list'] = this.listChildNames;
 		actions['createchild'] = this.createChildFromArgs;
-		actions['removechild'] = this.removeChildNamed;
+		actions['removechild'] = this.removeChildNamedCommand;
 		return actions;
 	}
 
@@ -779,15 +779,27 @@ class MMCommandProcessor {
 		command.undo = this.getPath() + ' removechild ' + name;			
 	}
 
-
 	/**
-	 * @param {MMCommand} command 
+	 * @method removeChildNamed
+	 * @param {String} name
+	 * returns true if successful
 	 */
-	removeChildNamed(command) {
-		let name = command.args;
+	removeChildNamed(name) {
 		let lcName = name.toLowerCase();
 		if (this.children[lcName]) {
 			delete this.children[lcName];
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @param {MMCommand} command
+	 * command.args should be the child name
+	 */
+	removeChildNamedCommand(command) {
+		let name = command.args;
+		if (this.removeChildNamed(name)) {
 			command.results = this.t('cmd:removedChild', {name: name})
 		}
 		else {
