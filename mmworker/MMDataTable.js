@@ -42,6 +42,7 @@ class MMDataTableColumn extends MMCommandObject {
 	get properties() {
 		let d = super.properties;
 		d['defaultValue'] = {type: PropertyType.string, readOnly: false};
+		d['displayUnit'] = {type: PropertyType.string, readOnly: false};
 		return d;
 	}
 
@@ -51,6 +52,14 @@ class MMDataTableColumn extends MMCommandObject {
 
 	set defaultValue(newValue) {
 		this._defaultValue = newValue;
+	}
+
+	get displayUnit() {
+		return this.columnValue.displayUnit.name;
+	}
+
+	set displayUnit(unitName) {
+		this.columnValue.displayUnit = unitName;
 	}
 
 	/**
@@ -109,8 +118,6 @@ class MMDataTableColumn extends MMCommandObject {
 			}
 		}	
 	}
-
-
 
 	/**
 	 * @method saveObject
@@ -507,7 +514,7 @@ class MMDataTable extends MMTool {
 		results['columns'] = this.columnArray.map( column => {
 			return {
 				defaultValue: column.defaultValue,
-				value: column.columnValue.saveObject(),
+				value: column.columnValue.jsonValue(),
 			}
 		})
 	}

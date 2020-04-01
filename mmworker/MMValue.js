@@ -1355,9 +1355,19 @@ class MMTableValueColumn {
 	}
 
 	/**
-	 * @param {MMUnit} unit
+	 * @param {MMUnit} unit - can be string in which case it will try to make unit from it
 	 */
 	set displayUnit(displayUnit) {
+		if (typeof displayUnit === 'string' ) {
+			const unitName = displayUnit;
+			displayUnit = theMMSession.unitSystem.unitNamed(unitName);
+			if (!displayUnit) {
+				this.exceptionWith('mmcmd:tableBadUnit', {
+					unit: unitName,
+					name: this.name,
+				});
+			}
+		}
 		if (!this._value && displayUnit) {
 			this._displayUnit = displayUnit;
 			return;
@@ -1690,8 +1700,8 @@ class MMTableValueColumn {
 			dUnit: displayUnitName,
 			format: this.format,
 			v: this._value.jsonValue(displayUnit),
-			nr: this._value.rowCount,
-			nc: 1
+			// nr: this._value.rowCount,
+			// nc: 1
 		}
 	}
 }
