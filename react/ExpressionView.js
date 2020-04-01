@@ -143,8 +143,8 @@ export function ExpressionView(props) {
 				const displayV = (row, column) => {
 					setSelectedCell([row,column]);
 					if (value.t === 't') {
-						const tableColumn = value.v[column];
-						const v = tableColumn.v.v[row];
+						const tableColumn = value.v[column - 1];
+						const v = tableColumn.v.v[row - 1];
 						return formatValue(v);
 					}
 					else {
