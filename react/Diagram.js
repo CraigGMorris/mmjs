@@ -451,7 +451,7 @@ export class Diagram extends React.Component {
 		e.preventDefault();
 		let eCache = this.eventCache;
 		if ( eCache.length === 1 && this.pinch === 0) {
-			if (this.panSum == 0) {
+			if (this.panSum < 1) {
 				const t = new Date().getTime();
 				if (t - this.pointerStartTime > 500) {
 					this.createSelectionBox(e.clientX, e.clientY);
@@ -849,7 +849,7 @@ class ToolIcon extends React.Component {
 		e.stopPropagation();
 		e.preventDefault();
 		if ( eCache.length === 1) {
-			if (this.panSum == 0) {
+			if (this.panSum < 1) {
 				const t = new Date().getTime();
 				if (t - this.pointerStartTime > 500) {
 					console.log('tool long press')
@@ -1186,7 +1186,7 @@ class SelectionBox extends React.Component {
 	onPointerUp(e) {
     e.stopPropagation();
 		e.preventDefault();
-		if (this.panSum === 0) {
+		if (this.panSum < 1) {
 			const t = new Date().getTime();
 			if (t - this.pointerStartTime > 500) {
 				console.log(`sb long press  ${this.panSum}`);
