@@ -120,13 +120,17 @@ export function ExpressionView(props) {
 		case ExpressionDisplay.expression: {
 			const cellClick = (row, column) => {
 				const value = results.value;
-				if (value && value.nr && value.nc) {
-					row = Math.max(1, Math.min(row, value.nr));
-					column = Math.max(1, Math.min(column, value.nc));
+				if (!value || row < 1 || row > value.nr || column < 1 || column > value.nc) {
+					return;
 				}
-				else {
-					row = column = 1;
-				}
+	
+				// if (value && value.nr && value.nc) {
+				// 	row = Math.max(1, Math.min(row, value.nr));
+				// 	column = Math.max(1, Math.min(column, value.nc));
+				// }
+				// else {
+				// 	row = column = 1;
+				// }
 		
 				const formatValue = v => {
 					if (typeof v === 'string') {

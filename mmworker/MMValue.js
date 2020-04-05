@@ -1590,7 +1590,13 @@ class MMTableValueColumn {
 			this._value = MMStringValue.stringArrayValue(saved.sValues);
 		}
 		else {
-			this._value = MMNumberValue.numberArrayValue(Object.values(saved.nValues), saved.unitDimensions);
+			const dimensions = [];
+			const parts = saved.unitDimensions.split(' ');
+			for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
+				dimensions.push(parseFloat(parts[i]));
+			}
+		
+			this._value = MMNumberValue.numberArrayValue(Object.values(saved.nValues), dimensions);
 		}
 	}
 

@@ -96,9 +96,7 @@ class MMUnitSystem extends MMCommandParent {
 	}
 	
 	return true;
-
 	}
-
 
 	/**
 	 * @constructor
@@ -513,7 +511,7 @@ class MMUnit extends MMCommandObject {
 				// convert the dimension string to numbers
 				this.dimensions = [];
 				for (let i = 1; i <= MMUnitDimensionType.NUMDIMS; i++) {
-					this.dimensions.push(parseInt(parts[i]));
+					this.dimensions.push(parseFloat(parts[i]));
 				}
 
 				let i = MMUnitDimensionType.NUMDIMS + 1;
@@ -565,7 +563,7 @@ class MMUnit extends MMCommandObject {
 				this.dimensions = [];
 				const parts = dimensionString.split(', ');
 				for (let i = 1; i <= MMUnitDimensionType.NUMDIMS; i++) {
-					this.dimensions.push(parseInt(parts[i]));
+					this.dimensions.push(parseFloat(parts[i]));
 					this.scale = scale;
 					this.offset = offset;
 				}
@@ -1174,11 +1172,11 @@ class MMUnitsContainer extends MMCommandParent {
 	 * @param {MMCommand} command - requires command.args = the dimension string
 	 */
 	listUnitsWithDimensions(command) {
-		const dimesionString = command.args;
+		const dimensionString = command.args;
 		let unitNames = [];
 		for (let key in this.children) {
 			const unit = this.children[key];
-			if (unit.dimensionString === dimesionString) {
+			if (unit.dimensionString === dimensionString) {
 				unitNames.push(unit.name);
 			}
 		}

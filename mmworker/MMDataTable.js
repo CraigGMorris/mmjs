@@ -510,13 +510,29 @@ class MMDataTable extends MMTool {
 	toolViewInfo(command) {
 		super.toolViewInfo(command);
 		let results = command.results;
-		results['rowCount'] = this.rowCount;
-		results['columns'] = this.columnArray.map( column => {
-			return {
-				defaultValue: column.defaultValue,
-				value: column.columnValue.jsonValue(),
-			}
-		})
+		const value = this.tableValue();
+		results['value'] = value.jsonValue();
+		results['defaultValues'] = this.columnArray.map( column => column.defaultValue );
+
+		// results['rowCount'] = this.rowCount;
+		// results['columns'] = this.columnArray.map( column => {
+		// 	return {
+		// 		defaultValue: column.defaultValue,
+		// 		value: column.columnValue.jsonValue(),
+		// 	}
+		// })
+	}
+
+	/**
+	 * @method tableValue
+	 * @returns MMTableValue 
+	 */
+	tableValue() {
+		const values = []
+		for (const column of this.columnArray) {
+			values.push(column.columnValue);
+		}
+		return new MMTableValue({columns: values});
 	}
 
 	/**
@@ -526,13 +542,13 @@ class MMDataTable extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
-		const tableValue = () => {
-			const values = []
-			for (const column of this.columnArray) {
-				values.push(column.columnValue);
-			}
-			return new MMTableValue({columns: values});
-		}
+		// const tableValue = () => {
+		// 	const values = []
+		// 	for (const column of this.columnArray) {
+		// 		values.push(column.columnValue);
+		// 	}
+		// 	return new MMTableValue({columns: values});
+		// }
 
 		let value;
 		if (description) {
@@ -548,7 +564,7 @@ class MMDataTable extends MMTool {
 					break;
 				case 'table':
 				case '':
-					value = tableValue();
+					value = this.tableValue();
 					break;
 				default:
 					value = super.valueDescribedBy(description, requestor);
@@ -556,7 +572,7 @@ class MMDataTable extends MMTool {
 			}
 		}
 		else {
-			value = tableValue();			
+			value = this.tableValue();			
 		}
 		return value;
 	}

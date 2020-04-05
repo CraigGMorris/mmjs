@@ -3,6 +3,7 @@
 const e = React.createElement;
 const useState = React.useState;
 const useCallback = React.useCallback;
+const useEffect = React.useEffect;
 
 /**
  * Enum for TableView drag type.
@@ -30,12 +31,15 @@ export function TableView(props) {
 	const [pointerCaptured, setPointerCaptured] = useState(false);
 	const [initialOffset, setInitialOffset] = useState({x: 0, y: 0});
 	const [tableViewOffset, setTableViewOffset] = useState({x: 0, y: 0});
+
+
 	const cellHeight = 30;
 	const cellWidth = 110;
 	const rowLabelWidth = 50;
 
 	const value = props.value;
 	const nRows = value.nr ? value.nr : 0;
+	const [lastRow, setLastRow] = useState(nRows);
 	const nColumns = value.nc ? value.nc : 0;
 	const nValues = nRows * nColumns;
 
@@ -43,6 +47,27 @@ export function TableView(props) {
 	const currentCell = props.currentCell;
 	const cellClick = props.cellClick;
 	const viewBox = props.viewBox;
+	const maxDisplayedRows = Math.floor(viewBox[3] / cellHeight) + 1;
+
+	useEffect(() => {
+		if (value.t === 't' && nRows > lastRow && nRows > maxDisplayedRows - 2) {
+			const y = (currentCell[0] + 2 - maxDisplayedRows) * cellHeight;
+			const newOffset = {x: 0, y: y};
+			setTableViewOffset(newOffset)
+			setInitialOffset(newOffset);
+			setLastRow(nRows);
+		}
+	}, [value.t, currentCell, nRows, lastRow, maxDisplayedRows]);
+
+	const xTextPad = 5;
+
+	const offset = tableViewOffset;
+	const nRowCells = Math.min(maxDisplayedRows, nRows);
+	const rowOrigin = Math.max(0, Math.floor(Math.min(offset.y / cellHeight), nRows - nRowCells));
+	const nColumnCells = Math.min(Math.floor((viewBox[2]- rowLabelWidth) / cellWidth) + 1, nColumns);
+	const columnOrigin = Math.max(0, Math.floor(Math.min(offset.x / cellWidth), nColumns - nColumnCells));
+	const yPadding = 0; // pixel gap at top
+	const xPadding = 0; // pixel gap at left
 
 	const pointerStart = useCallback(e => {
 		const x = e.nativeEvent.offsetX;
@@ -98,21 +123,21 @@ export function TableView(props) {
 			setPointerCaptured(false);
 		}
 
-		if (dragType === TableViewDragType.origin) {
-			setDragType(TableViewDragType.none);
-			setDragOrigin({x: 0, y: 0})
-			setInitialOffset({x: 0, y: 0});
-			setTableViewOffset({x: 0, y: 0});
-		}
-		else {
+		// if (dragType === TableViewDragType.origin) {
+		// 	setDragType(TableViewDragType.none);
+		// 	setDragOrigin({x: 0, y: 0})
+		// 	setInitialOffset({x: 0, y: 0});
+		// 	setTableViewOffset({x: 0, y: 0});
+		// }
+		// else {
 			setDragType(TableViewDragType.none);
 			const panSum = Math.abs(dragOrigin.x - x) + Math.abs(dragOrigin.y - y);
 			if (panSum < 1.0 && cellClick) {
 				const [row, column] = xyToRowColumn(x, y);
 				cellClick(row, column);
 			}
-		}
-	}, [pointerCaptured, dragType, dragOrigin.x, dragOrigin.y, cellClick, xyToRowColumn])
+		// }
+	}, [pointerCaptured, dragOrigin.x, dragOrigin.y, cellClick, xyToRowColumn])
 
 	const pointerMove = useCallback(e => {
 		if (dragType === TableViewDragType.none) {
@@ -206,15 +231,6 @@ export function TableView(props) {
 		}
 	}, [dragType]);
 
-	const xTextPad = 5;
-
-	const offset = tableViewOffset;
-	const nRowCells = Math.min(Math.floor(viewBox[3] / cellHeight) + 1, nRows);
-	const rowOrigin = Math.max(0, Math.floor(Math.min(offset.y / cellHeight), nRows - nRowCells));
-	const nColumnCells = Math.min(Math.floor((viewBox[2]- rowLabelWidth) / cellWidth) + 1, nColumns);
-	const columnOrigin = Math.max(0, Math.floor(Math.min(offset.x / cellWidth), nColumns - nColumnCells));
-	const yPadding = 0; // pixel gap at top
-	const xPadding = 0; // pixel gap at left
 	const formatValue = useCallback(v => {
 		if (typeof v === 'string') {
 			return v;
@@ -270,8 +286,8 @@ export function TableView(props) {
 				let  displayedV = '';
 				let v;
 				if (value.t === 't') {
-					const tableColumn = value.v[column];
-					v = tableColumn.v.v[row];
+					const tableColumn = value.v[column + columnOrigin];
+					v = tableColumn.v.v[row + rowOrigin];
 					displayedV = formatValue(v);
 				}
 				else {
@@ -335,7 +351,7 @@ export function TableView(props) {
 				);
 				cells.push(columnLabelBox);
 				if (value.t === 't') {
-					const tableColumn = value.v[column];
+					const tableColumn = value.v[column + columnOrigin];
 					const columnLabel = e(
 						'text', {
 							className: 'result-table__column-label',
