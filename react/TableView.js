@@ -21,6 +21,8 @@ const TableViewDragType = Object.freeze({
 	fastY: 'fastY'
 });
 
+let pointerStartTime;
+
 /**
  * TableView
  * view for MMValue as a table
@@ -45,7 +47,9 @@ export function TableView(props) {
 
 	const cellInputs = props.cellInputs;
 	const currentCell = props.currentCell;
+	const selectedRows = props.selectedRows;
 	const cellClick = props.cellClick;
+	const longPress = props.longPress;
 	const viewBox = props.viewBox;
 	const maxDisplayedRows = Math.floor(viewBox[3] / cellHeight) + 1;
 
@@ -75,6 +79,7 @@ export function TableView(props) {
 		e.stopPropagation();
 		e.preventDefault();
 
+		pointerStartTime = new Date().getTime();
 		let newDragType = TableViewDragType.cell;
 		if (y < cellHeight) {
 			if (x < rowLabelWidth) {
@@ -123,21 +128,19 @@ export function TableView(props) {
 			setPointerCaptured(false);
 		}
 
-		// if (dragType === TableViewDragType.origin) {
-		// 	setDragType(TableViewDragType.none);
-		// 	setDragOrigin({x: 0, y: 0})
-		// 	setInitialOffset({x: 0, y: 0});
-		// 	setTableViewOffset({x: 0, y: 0});
-		// }
-		// else {
-			setDragType(TableViewDragType.none);
-			const panSum = Math.abs(dragOrigin.x - x) + Math.abs(dragOrigin.y - y);
-			if (panSum < 1.0 && cellClick) {
-				const [row, column] = xyToRowColumn(x, y);
+		setDragType(TableViewDragType.none);
+		const panSum = Math.abs(dragOrigin.x - x) + Math.abs(dragOrigin.y - y);
+		if (panSum < 1.0 ) {
+			const [row, column] = xyToRowColumn(x, y);
+			const t = new Date().getTime();
+			if (longPress && (t - pointerStartTime > 500)) {
+				longPress(row, column);
+			}
+			else if (cellClick) {
 				cellClick(row, column);
 			}
-		// }
-	}, [pointerCaptured, dragOrigin.x, dragOrigin.y, cellClick, xyToRowColumn])
+		}
+	}, [pointerCaptured, dragOrigin.x, dragOrigin.y, cellClick, longPress, xyToRowColumn])
 
 	const pointerMove = useCallback(e => {
 		if (dragType === TableViewDragType.none) {
@@ -255,7 +258,9 @@ export function TableView(props) {
 			const x = column * cellWidth + columnOrigin*cellWidth + rowLabelWidth - offset.x + xPadding;
 
 			const offsetColumn = column + columnOrigin + 1;
-			if (currentCell && currentCell[0] === offsetRow && currentCell[1] === offsetColumn) {
+			if ((selectedRows && selectedRows.has(offsetRow)) ||
+				(currentCell && currentCell[0] === offsetRow && currentCell[1] === offsetColumn))
+			{
 				colorClass = 'tableview__cell--selected';
 			}
 			else if (cellInputs && cellInputs[`${offsetRow}_${offsetColumn}`]) {
@@ -388,7 +393,10 @@ export function TableView(props) {
 			}
 		}
 
-		if (currentCell && currentCell[1] === 0 && currentCell[0] === offsetRow) {
+		if (selectedRows && selectedRows.has(offsetRow)) {
+			colorClass = 'tableview__cell--selected';
+		}
+		else if	(!selectedRows && currentCell && currentCell[1] === 0 && currentCell[0] === offsetRow) {
 			colorClass = 'tableview__cell--selected';
 		}
 		else if (cellInputs && cellInputs[`${offsetRow}_0`]) {

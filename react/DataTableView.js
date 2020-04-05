@@ -29,6 +29,7 @@ const DataTableDisplay = Object.freeze({
 export function DataTableView(props) {
 	const [display, setDisplay] = useState(DataTableDisplay.table);
 	const [selectedCell, setSelectedCell] = useState([0,0]);
+	const [selectedRows, setSelectedRows] = useState();
 	const [cellFormula, setCellFormula] = useState('');
 
 	useEffect(() => {
@@ -90,6 +91,7 @@ export function DataTableView(props) {
 					props.actions.doCommand(`${path} addrow`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
 						setSelectedCell([value.nr + 1, 1]);
+						setSelectedRows();
 						setCellFormula(results.defaultValues[0]);
 					});
 				}
@@ -129,28 +131,67 @@ export function DataTableView(props) {
 	switch (display) {
 		case DataTableDisplay.table: {
 			const cellClick = (row, column) => {
-				if (value && value.nr && value.nc) {
-					row = Math.max(0, Math.min(row, value.nr));
-					column = Math.max(0, Math.min(column, value.nc));
+				if (column === 0 && row > 0) {  // row selection
+					const rowSet = new Set()
+					if (selectedRows) {
+						selectedRows.forEach(v => rowSet.add(v));
+					}
+					if (rowSet.has(row)) {
+						rowSet.delete(row);
+					}
+					else {
+						rowSet.add(row);
+					}
+					setSelectedRows(rowSet);
+					setSelectedCell([row,column]);
+					setCellFormula('');
 				}
 				else {
-					row = column = 0;
-				}
-		
-				let formulaString = '';
-				if (column > 0 && row > 0) {
-					const tableColumn = value.v[column - 1];
-					const v = tableColumn.v.v[row - 1];
-					if (typeof v === 'string') {
-						formulaString = v;
+					if (value && value.nr && value.nc) {
+						row = Math.max(0, Math.min(row, value.nr));
+						column = Math.max(0, Math.min(column, value.nc));
 					}
-					else if (typeof v === 'number') {
-						formulaString = `${v.toPrecision(8)} ${tableColumn.dUnit}`;
+					else {
+						row = column = 0;
 					}
-				}
+			
+					let formulaString = '';
+					if (column > 0 && row > 0) {
+						const tableColumn = value.v[column - 1];
+						const v = tableColumn.v.v[row - 1];
+						if (typeof v === 'string') {
+							formulaString = v;
+						}
+						else if (typeof v === 'number') {
+							formulaString = `${v.toPrecision(8)} ${tableColumn.dUnit}`;
+						}
+					}
 
-				setSelectedCell([row,column]);
-				setCellFormula(formulaString);
+					setSelectedCell([row,column]);
+					setSelectedRows();
+					setCellFormula(formulaString);
+				}
+			}
+
+			const longPress = (row, column) => {
+				if (selectedRows && column === 0 && row > 0) {
+					let lastRow = selectedCell[0];
+					if (row != lastRow) {
+						setSelectedCell([row, column]);
+						const rowSet = new Set();
+						selectedRows.forEach(v => rowSet.add(v));
+						if (row < lastRow) {
+							[row, lastRow] = [lastRow, row];
+						}
+						for (let i = lastRow; i <= row; i++) {
+							rowSet.add(i);
+						}
+						setSelectedRows(rowSet);
+					}
+				}
+				else {
+					cellClick(row, column);
+				}
 			}
 
 			displayComponent = e(
@@ -192,7 +233,9 @@ export function DataTableView(props) {
 						viewInfo: props.viewInfo,
 						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 4*nInputHeight - 14],
 						currentCell: selectedCell,
+						selectedRows: selectedRows,
 						cellClick: cellClick,
+						longPress: longPress,
 					}
 				)
 			)}
