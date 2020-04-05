@@ -129,16 +129,6 @@ export function DataTableView(props) {
 	switch (display) {
 		case DataTableDisplay.table: {
 			const cellClick = (row, column) => {
-				// if (row === 0 && column === 0) {
-				// 	if (value && value.nc > 0) {
-				// 		props.actions.doCommand(`${path} addrow`, () => {
-				// 			props.actions.updateView(props.viewInfo.stackIndex);
-				// 			setSelectedCell([value.nr + 1, 1]);
-				// 			setCellFormula(results.defaultValues[0]);
-				// 		});
-				// 		return;
-				// 	}
-				// }
 				if (value && value.nr && value.nc) {
 					row = Math.max(0, Math.min(row, value.nr));
 					column = Math.max(0, Math.min(column, value.nc));
