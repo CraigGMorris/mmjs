@@ -83,7 +83,7 @@ class ErrorBoundary extends React.Component {
 			// You can render any custom fallback UI
 			if (this.props.handleBoundraryError) {
 				this.props.handleBoundraryError();
-				this.setState({ hasError: false });
+//				this.setState({ hasError: false });
 			}
       return e('h1', {}, 'Something went wrong');
     }
@@ -659,9 +659,15 @@ export function MMApp(props) {
 			className: 'info-tools__button',
 			disabled: !undoStack.length,
 			onClick: () => {
-				const undo = undoStack.pop();
+				let undo = undoStack.pop();
 				if (undo) {
-					doCommand('undo ' + undo, () => {
+					if (undo.startsWith('__blob__')) {
+						undo = undo.replace(/^__blob__/,'__blob__undo ');
+					}
+					else {
+						undo = 'undo ' + undo;
+					}
+					doCommand(undo, () => {
 						updateView(infoStack.length - 1);
 						updateDiagram();
 					});
@@ -676,9 +682,15 @@ export function MMApp(props) {
 				className: 'info-tools__button',
 				disabled: !redoStack.length,
 				onClick: () => {
-					const redo = redoStack.pop();
+					let redo = redoStack.pop();
 					if (redo) {
-						doCommand('redo ' + redo, () => {
+						if (redo.startsWith('__blob__')) {
+							redo = redo.replace(/^__blob__/,'__blob__redo ');
+						}
+						else {
+							redo = 'redo ' + redo;
+						}
+						doCommand(redo, () => {
 							updateView(infoStack.length - 1);
 							updateDiagram();
 						});
@@ -747,10 +759,10 @@ export function MMApp(props) {
 				),
 				infoNav,
 				e(ErrorBoundary, {
-					handleBoundraryError: () => {
-						popView();
-						alert(t('mmcmd:viewError'));
-					}
+					// handleBoundraryError: () => {
+					// 	popView();
+					// 	alert(t('mmcmd:viewError'));
+					// }
 				}, infoView),
 				infoTools,
 			);
