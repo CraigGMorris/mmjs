@@ -168,9 +168,9 @@ class MMDataTable extends MMTool {
 			verbs['addcolumn'] = this.addColumnCommand;
 			verbs['addrow'] = this.addRowCommand;
 			verbs['removecolumn'] = this.removeColumnCommand;
-			verbs['removerow'] = this.removeRowCommand;
+			verbs['removerows'] = this.removeRowsCommand;
 			verbs['restorecolumn'] = this.restoreColumnCommand;
-			verbs['restorerow'] = this.restoreRowCommand;
+			verbs['restorerows'] = this.restoreRowsCommand;
 			verbs['setcell'] = this.setCellCommand;
 			// verbs['value'] = this.valueCommand;
 			return verbs;
@@ -187,9 +187,9 @@ class MMDataTable extends MMTool {
 				addcolumn: 			'mmcmd:?tableAddColumn',
 				addrow:					'mmcmd:?tableAddRow',
 				removecolumn: 	'mmcmd:?tableRemoveColumn',
-				removerow:			'mmcmd:?tableRemoveRow',
+				removerows:			'mmcmd:?tableRemoveRows',
 				restorecolumn:	'mmcmd?tableRestoreColumn',
-				restorerow:			'mmcmd?tableRestoreRow',
+				restorerows:			'mmcmd?tableRestoreRows',
 				setcell:				'mmcmd:?tableSetCell',
 			}[command];
 			if (key) {
@@ -372,71 +372,82 @@ class MMDataTable extends MMTool {
 	addRowCommand(command) {
 		const rowNumber = this.addRow(command.args ? parseInt(command.args) : 0);
 		if (rowNumber > 0) {
-			command.undo = `${this.getPath()} removerow ${rowNumber}}`;
+			command.undo = `${this.getPath()} removerows ${rowNumber}}`;
 		}
 		command.results = {rowNumber: rowNumber};
 	}
 
 	/**
-	 * @method removerow
-	 * @param {Number} rowNumber
-	 * @returns {Array} - old inputs for undo - empty if fails
+	 * @method removeRows
+	 * @param {Array} rowNumbers
+	 * @returns {Object} - old inputs for undo keyed by row number - empty if fails
 	 */
-	removeRow(rowNumber) {
-		const oldInputs = [];
-		if (rowNumber > 0 && rowNumber <= this.rowCount) {
-			for (let column of this.columnArray) {
-				const input = column.stringForRowWithUnit(rowNumber);
-				oldInputs.push(input);
-				column.columnValue.removeRowNumber(rowNumber);
+	removeRows(rowNumbers) {
+		const oldInputs = {};
+		rowNumbers.sort().reverse();
+		for (let rowNumber of rowNumbers) {
+			if (rowNumber > 0 && rowNumber <= this.rowCount) {
+				const columnInput = [];
+				for (let column of this.columnArray) {
+					const input = column.stringForRowWithUnit(rowNumber);
+					columnInput.push(input);
+					column.columnValue.removeRowNumber(rowNumber);
+				}
+				oldInputs[rowNumber] = columnInput;
+				this.rowCount--;
+				this.forgetCalculated();
 			}
-			this.rowCount--;
-			this.forgetCalculated();
 		}
 		return oldInputs;
 	}
 
 	/**
-	 * @method removeRowCommand
+	 * @method removeRowsCommand
 	 * @param {MMCommand} command
-	 * command.args should be the the row number
+	 * command.args should be the the row number(s)
 	 */
-	removeRowCommand(command) {
-		const rowNumber = command.args ? parseInt(command.args) : 0;
-		const oldInputs = this.removeRow(rowNumber);
-		if (oldInputs.length) {
+	removeRowsCommand(command) {
+		const argParts = command.args.split(/\s/);
+		const rowNumbers = argParts.map(arg => {
+			const n = parseInt(arg);
+			return isNaN(n) ? 0 : n;
+		})
+		const oldInputs = this.removeRows(rowNumbers);
+		if (Object.keys(oldInputs).length) {
 			const inputsJson = JSON.stringify(oldInputs);
-			command.undo = `__blob__${this.getPath()} restorerow ${rowNumber}__blob__${inputsJson}`;
+			command.undo = `__blob__${this.getPath()} restorerows__blob__${inputsJson}`;
 		}
 	}
 
 	/**
-	 * @method restoreRow
-	 * @param {Number} rowNumber
-	 * @param {Array} inputs) {
+	 * @method restoreRows
+	 * @param {Object} inputs) - row number keyed column values
 	 */
-	restoreRow(rowNumber, inputs) {
-		rowNumber = this.addRow(rowNumber);
-		const nColumns = this.columnArray.length;
-		for (let columnNumber = 0; columnNumber < nColumns; columnNumber++) {
-			this.columnArray[columnNumber].setCell(rowNumber, inputs[columnNumber]);
+	restoreRows(inputs) {
+		const rowNumbers = Object.keys(inputs);
+		rowNumbers.sort();
+		for (let rowNumber of rowNumbers) {
+			rowNumber = this.addRow(rowNumber);
+			const columnInputs = inputs[rowNumber];
+			const nColumns = this.columnArray.length;
+			for (let columnNumber = 0; columnNumber < nColumns; columnNumber++) {
+				this.columnArray[columnNumber].setCell(rowNumber, columnInputs[columnNumber]);
+			}
 		}
 		this.forgetCalculated();
 	}
 
 	/**
-	 * @method restoreRowCommand
+	 * @method restoreRowsCommand
 	 * @param {MMCommand} command
-	 * command.args should have the the rowNumber and inputsJson
+	 * command.args should have the the rinputsJson
 	 */
-	restoreRowCommand(command) {
-		const indicesMatch = command.args.match(/^\d+\s+/);
-		const rowNumber = Number(indicesMatch[0]);
-		const json = command.args.substring(indicesMatch[0].length);
-		const saved = JSON.parse(json);
-		this.restoreRow(rowNumber, saved);
-		command.results = {rowNumber: rowNumber}
-		command.undo = `${this.getPath()} removerow ${rowNumber}`;
+	restoreRowsCommand(command) {
+		const inputs = JSON.parse(command.args);
+		const rowNumbers = Object.keys(inputs);
+		this.restoreRows(inputs);
+		command.results = {rowNumbers: rowNumbers}
+		command.undo = `${this.getPath()} removerows ${rowNumbers.join(' ')}`;
 	}
 
 	/**
