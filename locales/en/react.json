@@ -9,6 +9,7 @@
 	"dataAddColumnButton": "Add Column",
 	"dataAddRowButton": "Add Row",
 	"dataColumnsButton": "Columns",
+	"dataDeleteRowsButton": "Delete {{count}} Rows",
 	"dataTableButton": "Table",
 	"dgmButtonConsole": "Console",
 	"dgmButtonDiagram": "Diagram",

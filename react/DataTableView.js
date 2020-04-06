@@ -194,6 +194,38 @@ export function DataTableView(props) {
 				}
 			}
 
+			let formulaLine;
+			if (selectedRows) {
+				formulaLine = e(
+					'button', {
+						id: 'deleteRowsButton',
+						onClick: () => {
+							props.actions.doCommand(`${path} removerows ${[...selectedRows].join(' ')}`, () => {
+								props.actions.updateView(props.viewInfo.stackIndex);
+								setSelectedCell([0, 0]);
+								setSelectedRows();
+								setCellFormula('');
+							});		
+						}
+					},
+					t('react:dataDeleteRowsButton', {count: selectedRows.size}),
+				)
+			}
+			else {
+				formulaLine = e(
+					FormulaField, {
+						t: t,
+						actions: props.actions,
+						path: `${path}.${formulaName}`,
+						formula: cellFormula || '',
+						viewInfo: props.viewInfo,
+						infoWidth: props.infoWidth,
+						unitType: unitType,
+						applyChanges: applyCellChanges,
+					}
+				)
+			}
+
 			displayComponent = e(
 				'div', {
 					id: 'datatable__table',
@@ -212,18 +244,7 @@ export function DataTableView(props) {
 					'div', {
 						id: 'expression__formula',
 					},
-					e(
-						FormulaField, {
-							t: t,
-							actions: props.actions,
-							path: `${path}.${formulaName}`,
-							formula: cellFormula || '',
-							viewInfo: props.viewInfo,
-							infoWidth: props.infoWidth,
-							unitType: unitType,
-							applyChanges: applyCellChanges,
-						}
-					)
+					formulaLine,
 				),				
 				e(
 					TableView, {
