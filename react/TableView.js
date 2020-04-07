@@ -251,13 +251,71 @@ export function TableView(props) {
 	const nDisplayedRows = Math.min(nRowCells, nRows - rowOrigin);
 	const nDisplayedColumns = Math.min(nColumnCells, nColumns - columnOrigin);
 	const nDisplayedTotal = nRowCells * nColumnCells;
-	for (let row = 0; row < nDisplayedRows; row++) {
-		const offsetRow = row + rowOrigin + 1;
-		const y = (row + 2) * cellHeight + rowOrigin*cellHeight - offset.y;
-		for (let column = 0; column < nDisplayedColumns; column++) {
-			const x = column * cellWidth + columnOrigin*cellWidth + rowLabelWidth - offset.x + xPadding;
+	for (let column = 0; column < nDisplayedColumns; column++) {
+		const x = column * cellWidth + columnOrigin*cellWidth + rowLabelWidth - offset.x + xPadding;
+		const offsetColumn = column + columnOrigin + 1;
 
-			const offsetColumn = column + columnOrigin + 1;
+		if (currentCell && currentCell[0] === 0 && currentCell[1] === offsetColumn) {
+			colorClass = 'tableview__cell--selected';
+		}
+		else if (cellInputs && cellInputs[`0_${offsetColumn}`]) {
+			colorClass = 'tableview__cell--input';
+		}
+		else {
+			colorClass = 'tableview__cell--' + ((column + columnOrigin) % 2 ? 'color1' : 'color2');
+		}
+
+		const columnLabelBox = e(
+			'rect', {
+				className: colorClass,
+				x: x,
+				y: yPadding,
+				width: cellWidth,
+				height: cellHeight,
+				key: `colbox${column}`,
+			}
+		);
+		cells.push(columnLabelBox);
+		if (value.t === 't') {
+			const tableColumn = value.v[column + columnOrigin];
+			const columnLabel = e(
+				'text', {
+					className: 'result-table__column-label',
+					x: x + xTextPad,
+					y: cellHeight * 0.5,
+					key: `col${column}`,
+				},
+				tableColumn.name
+			);
+			cells.push(columnLabel);
+			const unitLabel = e(
+				'text', {
+					className: 'result-table__column-label',
+					x: x + xTextPad,
+					y: cellHeight * 0.9,
+					key: `colUnit${column}`,
+				},
+				tableColumn.dUnit
+			);
+			cells.push(unitLabel);
+
+		}
+		else {
+			const columnLabel = e(
+				'text', {
+					x: x + xTextPad,
+					y: cellHeight * 0.8,
+					key: `col${column}`
+				},
+				`${(column + columnOrigin + 1)}`
+			);
+			cells.push(columnLabel);
+		}
+
+		for (let row = 0; row < nDisplayedRows; row++) {
+			const offsetRow = row + rowOrigin + 1;
+			const y = (row + 2) * cellHeight + rowOrigin*cellHeight - offset.y;
+
 			if ((selectedRows && selectedRows.has(offsetRow)) ||
 				(currentCell && currentCell[0] === offsetRow && currentCell[1] === offsetColumn))
 			{
@@ -333,98 +391,41 @@ export function TableView(props) {
 				cells.push(cmp);
 			}
 
-			if (row === 0) {
-				if (currentCell && currentCell[0] === 0 && currentCell[1] === offsetColumn) {
+			if (column === 0) {
+				if (selectedRows && selectedRows.has(offsetRow)) {
 					colorClass = 'tableview__cell--selected';
 				}
-				else if (cellInputs && cellInputs[`0_${offsetColumn}`]) {
+				else if	(!selectedRows && currentCell && currentCell[1] === 0 && currentCell[0] === offsetRow) {
+					colorClass = 'tableview__cell--selected';
+				}
+				else if (cellInputs && cellInputs[`${offsetRow}_0`]) {
 					colorClass = 'tableview__cell--input';
 				}
 				else {
-					colorClass = 'tableview__cell--' + ((column + columnOrigin) % 2 ? 'color1' : 'color2');
+					colorClass = 'tableview__cell--' + ((row + rowOrigin) % 2 ? 'color1' : 'color3');
 				}
-	
-				const columnLabelBox = e(
+				const rowLabelBox = e(
 					'rect', {
 						className: colorClass,
-						x: x,
-						y: yPadding,
-						width: cellWidth,
+						x: xPadding,
+						y: y - cellHeight,
+						width: rowLabelWidth,
 						height: cellHeight,
-						key: `colbox${column}`,
+						key: `rowbox${row}`,
 					}
 				);
-				cells.push(columnLabelBox);
-				if (value.t === 't') {
-					const tableColumn = value.v[column + columnOrigin];
-					const columnLabel = e(
-						'text', {
-							className: 'result-table__column-label',
-							x: x + xTextPad,
-							y: cellHeight * 0.5,
-							key: `col${column}`,
-						},
-						tableColumn.name
-					);
-					cells.push(columnLabel);
-					const unitLabel = e(
-						'text', {
-							className: 'result-table__column-label',
-							x: x + xTextPad,
-							y: cellHeight * 0.9,
-							key: `colUnit${column}`,
-						},
-						tableColumn.dUnit
-					);
-					cells.push(unitLabel);
-
-				}
-				else {
-					const columnLabel = e(
-						'text', {
-							x: x + xTextPad,
-							y: cellHeight * 0.8,
-							key: `col${column}`
-						},
-						`${(column + columnOrigin + 1)}`
-					);
-					cells.push(columnLabel);
-				}
+				cells.push(rowLabelBox);
+				const rowLabel = e(
+					'text', {
+						x: xTextPad,
+						y: y - cellHeight * 0.2,
+						key: `row${row}`
+					},
+					`${(row + rowOrigin + 1)}`
+				);
+				cells.push(rowLabel);
 			}
 		}
-
-		if (selectedRows && selectedRows.has(offsetRow)) {
-			colorClass = 'tableview__cell--selected';
-		}
-		else if	(!selectedRows && currentCell && currentCell[1] === 0 && currentCell[0] === offsetRow) {
-			colorClass = 'tableview__cell--selected';
-		}
-		else if (cellInputs && cellInputs[`${offsetRow}_0`]) {
-			colorClass = 'tableview__cell--input';
-		}
-		else {
-			colorClass = 'tableview__cell--' + ((row + rowOrigin) % 2 ? 'color1' : 'color3');
-		}
-		const rowLabelBox = e(
-			'rect', {
-				className: colorClass,
-				x: xPadding,
-				y: y - cellHeight,
-				width: rowLabelWidth,
-				height: cellHeight,
-				key: `rowbox${row}`,
-			}
-		);
-		cells.push(rowLabelBox);
-		const rowLabel = e(
-			'text', {
-				x: xTextPad,
-				y: y - cellHeight * 0.2,
-				key: `row${row}`
-			},
-			`${(row + rowOrigin + 1)}`
-		);
-		cells.push(rowLabel);
 	}
 
 	if (currentCell && currentCell[0] === 0 && currentCell[1] === 0) {
