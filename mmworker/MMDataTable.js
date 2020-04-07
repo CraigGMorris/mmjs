@@ -566,11 +566,9 @@ class MMDataTable extends MMTool {
 			const lcDescription = description.toLowerCase();
 			switch (lcDescription) {
 				case 'nrow':
-					this.addRequestor(requestor);
 					value = MMNumberValue.scalarValue(this.rowCount);
 					break;
 				case 'ncol':
-					this.addRequestor(requestor);
 					value = MMNumberValue.scalarValue(this.columnCount);
 					break;
 				case 'table':
@@ -584,6 +582,9 @@ class MMDataTable extends MMTool {
 		}
 		else {
 			value = this.tableValue();			
+		}
+		if (value) {
+			this.addRequestor(requestor);
 		}
 		return value;
 	}
