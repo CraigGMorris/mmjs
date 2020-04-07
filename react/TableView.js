@@ -55,7 +55,7 @@ export function TableView(props) {
 
 	useEffect(() => {
 		if (value.t === 't' && nRows > lastRow && nRows > maxDisplayedRows - 2) {
-			const y = (currentCell[0] + 2 - maxDisplayedRows) * cellHeight;
+			const y = currentCell ? (currentCell[0] + 2 - maxDisplayedRows) * cellHeight : 0;
 			const newOffset = {x: 0, y: y};
 			setTableViewOffset(newOffset)
 			setInitialOffset(newOffset);
