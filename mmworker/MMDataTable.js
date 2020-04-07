@@ -384,7 +384,7 @@ class MMDataTable extends MMTool {
 	 */
 	removeRows(rowNumbers) {
 		const oldInputs = {};
-		rowNumbers.sort().reverse();
+		rowNumbers.sort((a,b) => a - b).reverse();
 		for (let rowNumber of rowNumbers) {
 			if (rowNumber > 0 && rowNumber <= this.rowCount) {
 				const columnInput = [];
@@ -425,7 +425,7 @@ class MMDataTable extends MMTool {
 	 */
 	restoreRows(inputs) {
 		const rowNumbers = Object.keys(inputs);
-		rowNumbers.sort();
+		rowNumbers.sort((a,b) => a - b);
 		for (let rowNumber of rowNumbers) {
 			rowNumber = this.addRow(rowNumber);
 			const columnInputs = inputs[rowNumber];
