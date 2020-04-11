@@ -588,13 +588,15 @@ export function UnitPicker(props) {
 				setUnitTypes(cmds[0].results);
 			});
 		}
-	},[defaultSetName, props.actions]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	},[defaultSetName]);
 
 	useEffect(() => {
 		props.actions.doCommand('/unitsys.sets get defaultSetName', (cmds) => {
 			setDefaultSetName(cmds[0].results);
 		});
-	},[props.actions]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	},[]);
 
 	useEffect(() => {
 		if (selectedType) {
@@ -607,7 +609,8 @@ export function UnitPicker(props) {
 				}
 			}
 		}
-	},[props.actions, selectedType, unitTypes]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	},[selectedType, unitTypes]);
 
 	let typeComponents = [];
 	for (let type of unitTypes) {

@@ -190,6 +190,24 @@ class MMUnitSystem extends MMCommandParent {
 	}
 
 	/**
+	 * @method typeNameForUnitNamed - returns a type name for a named unit
+	 * @param {String} unitName
+	 * @returns {String} typeName
+	 */
+	typeNameForUnitNamed(unitName) {
+		const unit = this.unitNamed(unitName);
+		if (unit) {
+			const type = this.defaultSet().typeNameForDimensions(unit.dimensions);
+			if (type) {
+				return type;
+			}
+		}
+		return 'unknown';
+	}	
+
+
+
+	/**
 	 * @method defaultSet
 	 * @returns MMUnitSet 
 	 */

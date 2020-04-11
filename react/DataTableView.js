@@ -21,6 +21,207 @@ const DataTableDisplay = Object.freeze({
 	unitPicker: 3,
 });
 
+/** EditColumnComponent
+ */
+function EditColumnView(props) {
+	const t = props.t;
+	const selectedColumn = props.selectedColumn;
+	const path = props.path;
+	const name = props.name;
+
+	const [columnName, setColumnName] = useState(selectedColumn.name);
+	const [columnNumber, setColumnNumber] = useState(props.columnNumber);
+	const [columnFormat, setColumnFormat] = useState(selectedColumn.format ? selectedColumn.format : '');
+	const doRename = () => {
+		props.actions.doCommand(`${path}.${name} renameto ${columnName}`, () => {
+			props.actions.updateView(props.viewInfo.stackIndex);
+		})
+	}
+
+	const reposition = (fromNumber, toNumber) => {
+		props.actions.doCommand(`${path} movecolumn ${fromNumber} ${toNumber}`, () => {
+			props.actions.updateView(props.viewInfo.stackIndex);
+		})
+	}
+
+	const defaultValueChange = (formula, callback) => {
+		props.actions.doCommand(`${path}.${name} set defaultValue ${formula}`, callback);
+	}
+
+	const changeFormat = () => {
+		props.actions.doCommand(`${path}.${name} set format ${columnFormat}`, () => {
+			props.actions.updateView(props.viewInfo.stackIndex);
+		})
+	}
+	
+	return e(
+		'div', {
+			id: 'datatable__column-view',
+		},
+		e(
+			'div', {
+				id: 'datatable__column-name-line',
+				className: 'datatable__column-edit-section',
+			},
+			e(
+				'label', {
+					id: 'datatable__column-name-label',
+					htmlFor: 'datatable__column-name-field',
+				},
+				t('react:dataColumnName'),
+			),
+			e(
+				'input', {
+					id: 'datatable__column-name-field',
+					value: columnName,
+					// width: this.props.infoWidth - 25,
+					onChange: (event) => {
+						// keeps input field in sync
+						setColumnName(event.target.value);
+					},
+					onKeyPress: (event) => {
+						// watches for Enter and sends command when it see it
+						if (event.key == 'Enter') {
+							doRename();
+						}
+					},
+					onBlur: () => {
+						// watch for loss of focus
+						doRename();
+					},
+				}
+			)
+		),
+		e(
+			'div', {
+				id: 'datatable__column-position-line',
+				className: 'datatable__column-edit-section',
+			},
+			e(
+				'label', {
+					id: 'datatable__column-position-label',
+					htmlFor: 'datatable__column-position-field',
+				},
+				t('react:dataColumnPosition'),
+			),
+			e(
+				'input', {
+					id: 'datatable__column-position-field',
+					value: columnNumber,
+					// width: this.props.infoWidth - 25,
+					onChange: (event) => {
+						// keeps input field in sync
+						setColumnNumber(event.target.value);
+					},
+					onKeyPress: (event) => {
+						// watches for Enter and sends command when it see it
+						if (event.key == 'Enter') {
+							reposition(props.columnNumber, columnNumber);
+						}
+					},
+					onBlur: () => {
+						// watch for loss of focus
+						reposition(props.columnNumber, columnNumber);
+					},
+				}
+			)
+		),
+		e(
+			'div', {
+				id: 'datatable__column-value-line',
+				className: 'datatable__column-edit-section',
+			},
+			e(
+				'label', {
+					id: 'datatable__column-value-label',
+					htmlFor: 'datatable__formula',
+				},
+				t('react:dataColumnValue'),
+			),
+			e (
+				FormulaField, {
+					id: 'datatable__formula',
+					t: t,
+					actions: props.actions,
+					path: `${path}.${name}`,
+					formula: props.defaultValue || '',
+					viewInfo: props.viewInfo,
+					infoWidth: props.infoWidth,
+					applyChanges: defaultValueChange,
+				}
+			),
+		),
+		e(
+			'div', {
+				id: 'datatable__column-unit-line',
+				className: 'datatable__column-edit-section',
+				onClick: () => {
+					props.setDisplay(DataTableDisplay.unitPicker);
+				}
+			},
+			e(
+				'label', {
+					id: 'datatable__column-unit-label',
+					htmlFor: 'datatable__column-unit',
+				},
+				t('react:dataColumnUnit'),
+			),
+			e(
+				'div', {
+					id: 'datatable__column-unit',
+				},
+				selectedColumn.dUnit,
+			),
+		),
+		e(
+			'div', {
+				id: 'datatable__column-format-line',
+				className: 'datatable__column-edit-section',
+			},
+			e(
+				'label', {
+					id: 'datatable__column-format-label',
+					htmlFor: 'datatable__column-format-field',
+				},
+				t('react:dataColumnFormat'),
+			),
+			e(
+				'input', {
+					id: 'datatable__column-format-field',
+					value: columnFormat,
+					// width: this.props.infoWidth - 25,
+					onChange: (event) => {
+						// keeps input field in sync
+						setColumnFormat(event.target.value);
+					},
+					onKeyPress: (event) => {
+						// watches for Enter and sends command when it see it
+						if (event.key == 'Enter') {
+							changeFormat();
+						}
+					},
+					onBlur: () => {
+						// watch for loss of focus
+						changeFormat();
+					},
+				}
+			),
+		),
+		e(
+			'button', {
+				id: 'datatable__column-delete-button',
+				onClick: () => {
+					props.actions.doCommand(`${path} removecolumn ${name}`, () => {
+						props.setDisplay(DataTableDisplay.table);
+						props.actions.updateView(props.viewInfo.stackIndex);
+					})
+				}
+			},
+			t('react:dataDeleteColumnButton'),
+		),
+	);
+}
+
 /**
  * DataTableView
  * info view for data table
@@ -58,7 +259,7 @@ export function DataTableView(props) {
 	}, [display, props.viewInfo])
 
 	useEffect(() => {
-		props.viewInfo.dataTableViewState.selectedColumn = selectedCell;
+		props.viewInfo.dataTableViewState.selectedCell = selectedCell;
 		props.viewInfo.dataTableViewState.cellFormula = cellFormula;
 	}, [selectedCell, cellFormula, props.viewInfo])
 
@@ -68,8 +269,9 @@ export function DataTableView(props) {
 	const path = results.path;
 	const value = results.value;
 	const formulaName = 'formula'; //`${selectedCell[0]}_${selectedCell[1]}_f`;
-	const selectedColumn = selectedCell[1] > 0 ? value.v[selectedCell[1] - 1] : null;
-	const unitType = selectedColumn ? selectedColumn.unitType : null;
+	const columnNumber = selectedCell[1];
+	const selectedColumn = columnNumber > 0 ? value.v[columnNumber - 1] : null;
+	const unitType = columnNumber > 0 ? value.v[columnNumber - 1].unitType : '';
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 
@@ -92,7 +294,7 @@ export function DataTableView(props) {
 						props.actions.updateView(props.viewInfo.stackIndex);
 						setSelectedCell([value.nr + 1, 1]);
 						setSelectedRows();
-						setCellFormula(results.defaultValues[0]);
+						setCellFormula(value.v[0].defaultValue);
 					});
 				}
 			}
@@ -108,16 +310,6 @@ export function DataTableView(props) {
 			},
 		},
 		t('react:dataTableButton'),
-	);
-
-	const columnsButton = e(
-		'button', {
-			id: 'data__columns-button',
-			onClick: () => {
-				setDisplay(DataTableDisplay.columns);
-			},
-		},
-		t('react:dataColumnsButton'),
 	);
 
 	const applyCellChanges = (formula, callBack) => {
@@ -145,6 +337,12 @@ export function DataTableView(props) {
 					setSelectedRows(rowSet);
 					setSelectedCell([row,column]);
 					setCellFormula('');
+				}
+				else if (row === 0 && column > 0) {  //column selection
+					setSelectedCell([row,column]);
+					setSelectedRows();
+					setCellFormula('');
+					setDisplay(DataTableDisplay.editColumn);
 				}
 				else {
 					if (value && value.nr && value.nc) {
@@ -211,6 +409,14 @@ export function DataTableView(props) {
 					t('react:dataDeleteRowsButton', {count: selectedRows.size}),
 				)
 			}
+			else if (selectedCell[0] === 0 || selectedCell[1] === 0) {  // no formula for origin cell
+				formulaLine = e(
+					'div', {
+						id: 'datatable__origin-formula'
+					},
+					'---',
+				)
+			}
 			else {
 				formulaLine = e(
 					FormulaField, {
@@ -220,7 +426,6 @@ export function DataTableView(props) {
 						formula: cellFormula || '',
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						unitType: unitType,
 						applyChanges: applyCellChanges,
 					}
 				)
@@ -237,7 +442,6 @@ export function DataTableView(props) {
 					},
 					addRowButton,
 					addColumnButton,
-					columnsButton,
 				),
 				e(
 					// formula field line
@@ -279,21 +483,34 @@ export function DataTableView(props) {
 			);
 			break;
 
-		case DataTableDisplay.editColumn:
+		case DataTableDisplay.editColumn: {
 			displayComponent = e(
 				'div', {
-
-					key: 'edit'
+					key: 'edit',
+					id: 'datatable__edit-column',
 				},
 				e(
 					'div', {
 						id: 'datatable__display-buttons'
 					},
 					tableButton,
-					columnsButton,
-				),	
-				`edit column ${selectedCell[1]}`,
-			);
+				),
+				e(
+					EditColumnView, {
+						t: props.t,
+						viewInfo: props.viewInfo,
+						path: path,
+						name: selectedColumn.name,
+						actions: props.actions,
+						selectedColumn: selectedColumn,
+						columnNumber: selectedCell[1],
+						defaultValue: value.v[columnNumber - 1].defaultValue,
+						setDisplay: setDisplay,
+					},
+					`edit column ${columnNumber} ${selectedColumn.name}`,
+				)
+			)
+		}
 			break;
 	
 		case DataTableDisplay.unitPicker:
@@ -307,7 +524,7 @@ export function DataTableView(props) {
 						setDisplay(DataTableDisplay.editColumn);
 					},
 					apply: (unit) => {
-						props.actions.doCommand(`${props.viewInfo.path} set displayUnitName ${unit}`, () => {
+						props.actions.doCommand(`${path}.${selectedColumn.name} set displayUnit ${unit}`, () => {
 							props.actions.updateView(props.viewInfo.stackIndex);
 							setDisplay(DataTableDisplay.editColumn);
 						});						

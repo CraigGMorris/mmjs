@@ -180,7 +180,6 @@ export function ExpressionView(props) {
 							formula: results.formula || '',
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							unitType: unitType,
 						}
 					)
 				),

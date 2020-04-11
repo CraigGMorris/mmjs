@@ -210,6 +210,50 @@ a:hover {
 	width: 200px;
 }
 
+#datatable__edit-column {
+	display: grid;
+	grid-template-rows: var(--input--height) 1fr;
+	grid-template-areas: "display-buttons"
+		"column-view";
+	grid-gap: 5px;
+	margin-top: 5px;
+}
+
+.datatable__column-edit-section {
+	margin-top: 5px;
+	margin-bottom: 10px;
+	padding-top: 10px;
+	border-top: solid 1px var(--border--color);
+}
+
+#datatable__column-unit {
+	color: var(--link--color);
+}
+
+#datatable__column-delete-button {
+	margin-top: 20px;
+}
+
+#datatable__table {
+	display: grid;
+	grid-area: display-area;
+	grid-template-rows: var(--input--height) var(--input--height) 1fr;
+	grid-template-columns: 1fr;
+	grid-template-areas: "display-buttons"
+		"formula"
+		"display";
+	grid-gap: 5px;
+	margin-top: 5px;
+}
+
+#datatable__display-buttons {
+	grid-area: display-buttons;
+}
+
+#datatable__display-buttons button {
+	margin-right: 10px;
+}
+
 /* prevent diagram text being selected when moving icons on iOS */
 .diagram__text-components {
 	-webkit-touch-callout: none;

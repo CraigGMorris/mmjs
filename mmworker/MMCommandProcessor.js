@@ -833,6 +833,10 @@ class MMCommandProcessor {
 	renameChild(fromName, toName) {
 		let lcFromName = fromName.toLowerCase();
 		let lcToName = toName.toLowerCase();
+		if (lcToName == lcFromName) {
+			return;
+		}
+		
 		let child = this.children[lcFromName];
 		if (!child) {
 			throw(this.t('childNotFound', {parent: this.getPath(), fromName}));

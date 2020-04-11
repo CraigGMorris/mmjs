@@ -8,6 +8,7 @@
 	MMFormula:readonly
 	MMUnit:readonly
 	PropertyType:readonly
+	theMMSession:readonly
 */
 
 /**
@@ -43,6 +44,7 @@ class MMDataTableColumn extends MMCommandObject {
 		let d = super.properties;
 		d['defaultValue'] = {type: PropertyType.string, readOnly: false};
 		d['displayUnit'] = {type: PropertyType.string, readOnly: false};
+		d['format'] = {type: PropertyType.string, readOnly: false};
 		return d;
 	}
 
@@ -60,6 +62,14 @@ class MMDataTableColumn extends MMCommandObject {
 
 	set displayUnit(unitName) {
 		this.columnValue.displayUnit = unitName;
+	}
+
+	get format() {
+		return this._format;
+	}
+
+	set format(newValue) {
+		this._format = newValue;
 	}
 
 	/**
@@ -126,6 +136,9 @@ class MMDataTableColumn extends MMCommandObject {
 	saveObject() {
 		const o = this.columnValue.saveObject();
 		o.defaultValue = this.defaultValue;
+		if (this.format) {
+			o.format = this.format;
+		}
 		return o;
 	}
 
@@ -136,6 +149,9 @@ class MMDataTableColumn extends MMCommandObject {
 	 */
 	initFromSaved(saved) {
 		this.defaultValue = saved.defaultValue;
+		if (saved.format) {
+			this.format = saved.format;
+		}
 		this.columnValue.initFromSaved(saved);
 	}
 }
@@ -172,7 +188,7 @@ class MMDataTable extends MMTool {
 			verbs['restorecolumn'] = this.restoreColumnCommand;
 			verbs['restorerows'] = this.restoreRowsCommand;
 			verbs['setcell'] = this.setCellCommand;
-			// verbs['value'] = this.valueCommand;
+			verbs['movecolumn'] =this.moveColumnCommand;
 			return verbs;
 		}
 	
@@ -189,8 +205,9 @@ class MMDataTable extends MMTool {
 				removecolumn: 	'mmcmd:?tableRemoveColumn',
 				removerows:			'mmcmd:?tableRemoveRows',
 				restorecolumn:	'mmcmd?tableRestoreColumn',
-				restorerows:			'mmcmd?tableRestoreRows',
+				restorerows:		'mmcmd?tableRestoreRows',
 				setcell:				'mmcmd:?tableSetCell',
+				movecolumn:			'mmcmd:?tableMoveColumn',
 			}[command];
 			if (key) {
 				return key;
@@ -224,11 +241,6 @@ class MMDataTable extends MMTool {
 			}
 			column.columnValue.updateAllRows(this.rowCount, v);
 		}
-		
-		// [[ mySession.undoManager prepareWithInvocationTarget: self ] deleteColumnNumber: myColumns.count ];
-		// NSString *msg = [ NSString stringWithFormat:
-		// 				 NSLocalizedString( @"Add field %d of %@", @"add column undo message"), myColumns.count, myName ];
-		// [ mySession.undoManager setActionName: msg ];
 	
 		this.forgetCalculated();
 		return column;
@@ -261,6 +273,7 @@ class MMDataTable extends MMTool {
 
 	/**
 	 * @method removeChildNamed - removes column
+	 * @param {String} name
 	 * @override
 	 */
 	removeChildNamed(name) {
@@ -281,6 +294,18 @@ class MMDataTable extends MMTool {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * @method renameChild - renames column
+	 * @param {String} fromName
+	 * @param {String} toName
+	 * @override
+	 */
+	renameChild(fromName, toName) {
+		super.renameChild(fromName, toName);
+		const column = this.childNamed(toName);
+		column.columnValue.name = toName;
 	}
 
 	/**
@@ -328,6 +353,35 @@ class MMDataTable extends MMTool {
 		const columnName = this.columnArray[columnNumber - 1].name;
 		command.results = {columnName: columnName}
 		command.undo = `${this.getPath()} removecolumn ${columnName}`
+	}
+
+	/**
+	 * @method moveColumn - change column position
+	 * @param {Number} fromNumber 
+	 * @param {Number} toNumber
+	 */
+	moveColumn(fromNumber, toNumber) {
+		if (fromNumber > 0 && fromNumber <= this.columnArray.length && toNumber > 0) {
+			const column = this.columnArray[fromNumber - 1];
+			this.columnArray.splice(fromNumber - 1, 1);
+			this.columnArray.splice(toNumber - 1, 0 , column);
+		}
+	}
+
+	/**
+	 * @method moveColumnCommand
+	 * @param {MMCommand} command
+	 * command.args should be fromNumber, toNumber
+	 */
+	moveColumnCommand(command) {
+		const parts = command.args.split(/\s/);
+		if (parts.length !== 2) {
+			this.setError('mmcmd:?tableMoveColumn', {path: this.getPath(), name: name});
+		}
+		const fromNumber = parseInt(parts[0]);
+		const toNumber = parseInt(parts[1]);
+		this.moveColumn(fromNumber, toNumber);
+		command.undo = `${this.getPath()} movecolumn ${fromNumber} ${toNumber}`;
 	}
 
 	/**
@@ -521,17 +575,34 @@ class MMDataTable extends MMTool {
 	toolViewInfo(command) {
 		super.toolViewInfo(command);
 		let results = command.results;
-		const value = this.tableValue();
-		results['value'] = value.jsonValue();
-		results['defaultValues'] = this.columnArray.map( column => column.defaultValue );
-
-		// results['rowCount'] = this.rowCount;
-		// results['columns'] = this.columnArray.map( column => {
-		// 	return {
-		// 		defaultValue: column.defaultValue,
-		// 		value: column.columnValue.jsonValue(),
+		const value = this.tableValue().jsonValue();
+		const nc = this.columnArray.length;
+		for (let i = 0; i < nc; i++) {
+			const column = this.columnArray[i];
+			const v = value.v[i];
+			v.defaultValue = column.defaultValue;
+			const columnValue = column.columnValue;
+			if (columnValue.isString) {
+				v.unitType = 'String';
+			}
+			else {
+				v.unitType = theMMSession.unitSystem.typeNameForUnitNamed(column.columnValue.displayUnit.name);
+			}
+			if (column.format) {
+				v.format = column.format;
+			}
+		}
+		// results['defaultValues'] = this.columnArray.map( column => column.defaultValue );
+		// results['unitTypes'] = this.columnArray.map(column => {
+		// 	const columnValue = column.columnValue;
+		// 	if (columnValue.isString) {
+		// 		return 'String';
 		// 	}
-		// })
+		// 	else {
+		// 		return theMMSession.unitSystem.typeNameForUnitNamed(column.columnValue.displayUnit.name);
+		// 	}
+		// });
+		results['value'] = value;
 	}
 
 	/**

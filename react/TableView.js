@@ -234,11 +234,24 @@ export function TableView(props) {
 		}
 	}, [dragType]);
 
-	const formatValue = useCallback(v => {
+	const formatValue = useCallback((v, format) => {
 		if (typeof v === 'string') {
 			return v;
 		}
 		else if (typeof v === 'number') {
+			if (format) {
+				format = format.split('.');	// if there is a decimal point, only interested in what is after it
+				format = format[format.length - 1];
+				const precision = parseInt(format);
+				switch (format.slice(-1)) {  // last character should be format type
+					case 'f':
+						return v.toFixed(precision);
+					case 'e':
+						return v.toExponential(precision);
+					case 'x':
+						return v.toString(precision);
+				}
+			}
 			return v.toPrecision(8);
 		}
 		else {
@@ -351,7 +364,7 @@ export function TableView(props) {
 				if (value.t === 't') {
 					const tableColumn = value.v[column + columnOrigin];
 					v = tableColumn.v.v[row + rowOrigin];
-					displayedV = formatValue(v);
+					displayedV = formatValue(v, tableColumn.format);
 				}
 				else {
 					const vIndex = (row + rowOrigin) * nColumns + column + columnOrigin;

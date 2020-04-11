@@ -74,6 +74,7 @@
 	"?sessionSave": "Save session to path or to current path if omitted\n\nusage: save {path}",
 	"?tableAddColumn": "add a column to a data table\n\nusage: addcolumn",
 	"?tableAddRow": "add a row to the data table\n\nusage addrow rowNumber\n\nif rowNumber is omitted or invalid, row is added to bottom",
+	"?tableMoveColumn": "move column position\n\nusage: moveColumn fromNumber toNumber",
 	"?tableRemoveColumn": "remove a column from the data table\n\nusage removecolumn columnName",
 	"?tableRemoveRows": "remove a row from the data table\n\nusage removerows rowNumber(s)",
 	"?tableRestoreColumn": "used by undo to restore a deleted table column\n\nusage restorecolumn columnNumber recoveryJson",
