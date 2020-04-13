@@ -1234,6 +1234,17 @@ class MMTool extends MMCommandParent {
 	}
 
 	/**
+	 * @method defaultFormulaUnit
+	 * returns null or a unit to be used for a bare numeric constant in the named formula
+	 * @param {String} formulaName
+	 * @returns {MMUnit}
+	 */
+	// eslint-disable-next-line no-unused-vars
+	defaultFormulaUnit(formulaName) {
+		return null;
+	}
+
+	/**
 	 * @method addRequestor
 	 * @param {MMTool} requestor
 	 * short cut method

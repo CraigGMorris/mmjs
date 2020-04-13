@@ -55,6 +55,7 @@
 	"viewError": "There was an error trying to show the view",
 	"unimplemented": "{{feature}} is not yet implemented",
 	"warning": "Warning",
+	"?setColumnUnit": "set the display unit for a column\n\nusage: setcolumnunit columnNumber unitName",
 	"?formulaRefresh": "reevaluate the formula\n\nusage: refresh",
 	"?formulaValue": "return formula value as json\n\nusage: value",
 	"?matrixSetCell": "set cell value\n\nusage: setcell row col input",

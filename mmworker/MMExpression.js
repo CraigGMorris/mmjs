@@ -6,16 +6,13 @@
 	MMNumberValue:readonly
 	MMStringValue:readonly
 	MMToolValue:readonly
+	MMTableValue:readonly
 	PropertyType:readonly
 */
 
 /**
  * @class MMExpression
  * @extends MMTool
- * @member {MMValue} cachedValue;
- * @member {MMUnit} displayUnit
- * @member {Boolean} isInput;
- * @member {Boolean} isOutput;
  */
 // eslint-disable-next-line no-unused-vars
 class MMExpression extends MMTool {
@@ -26,10 +23,11 @@ class MMExpression extends MMTool {
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Expression');
 		this.formula = new MMFormula('Formula', this);
-		this.cachedValue = null;
-		this.displayUnit = null;
-		this._isInput = false;
-		this._isOutput = false;
+		this.cachedValue = null;		// MMValue - retained until forgotten
+		this.displayUnit = null;		// MMUnit - for number values
+		this.tableUnits = null;		// dictionary of optional table column display MMUnits 
+		this._isInput = false;			// boolean
+		this._isOutput = false;			// boolean
 	}
 
 	/** @override */
@@ -37,7 +35,7 @@ class MMExpression extends MMTool {
 		let d = super.properties;
 		d['isInput'] = {type: PropertyType.boolean, readOnly: false};
 		d['isOutput'] = {type: PropertyType.boolean, readOnly: false};
-		d['displayUnitName'] = {type: PropertyType.string, readOnly: false};
+		d['displayUnitName'] = {type: PropertyType.string, readOnly: false};  // for scalar displayUnit
 		return d;
 	}
 
@@ -78,6 +76,7 @@ class MMExpression extends MMTool {
 	}
 
 	set displayUnitName(unitName) {
+		this.tableUnits = null;
 		if (!unitName) {
 			this.displayUnit = null;
 		}
@@ -90,10 +89,24 @@ class MMExpression extends MMTool {
 		}
 	}
 
+	/**
+	 * @method defaultFormulaUnit
+	 * @override
+	 * returns null or a unit to be used for a bare numeric constant in the named formula
+	 * for an expression there is only one formula, so the name is ignored
+	 * @param {String} formulaName
+	 * @returns {MMUnit}
+	 */
+	// eslint-disable-next-line no-unused-vars
+	defaultFormulaUnit(formulaName) {
+		return this.displayUnit;
+	}
+
 	/** @override */
 	get verbs() {
 		let verbs = super.verbs;
 		verbs['value'] = this.valueCommand;
+		verbs['setcolumnunit'] = this.setColumnUnitCommand;
 		return verbs;
 	}
 
@@ -104,7 +117,8 @@ class MMExpression extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			value: 'mmcmd:?toolValue'
+			value: 'mmcmd:?toolValue',
+			setcolumnunit: 'mmcmd?exprSetColumnUnit',
 		}[command];
 		if (key) {
 			return key;
@@ -243,13 +257,19 @@ class MMExpression extends MMTool {
 		let value = this.valueForRequestor();
 		let json = {}
 		if (value) {
-			json = value.jsonValue(this.displayUnit);
+			if (value instanceof MMTableValue) {
+				json = value.jsonValue(this.tableUnits);
+			}
+			else {
+				json = value.jsonValue(this.displayUnit);
+			}
 		}
 		return json;
 	}
 
 	/**
 	 * @method valueCommand
+	 * @param {MMCommand} command
 	 * command.results = json
 	 */
 	valueCommand(command) {
@@ -257,6 +277,34 @@ class MMExpression extends MMTool {
 	}
 
 	/**
+	 * @method setColumnUnitCommand
+	 * @param {MMCommand} command
+	 * command.args should contain columnNumber unitName
+	 * command.results = unitName if successful
+	 */
+	setColumnUnitCommand(command) {
+		const parts = command.args.split(/\s/);
+		if (parts.length === 2) {
+			const unit = theMMSession.unitSystem.unitNamed(parts[1]);
+			if (unit) {
+				if (!this.tableUnits) {
+					this.tableUnits = {};
+				}
+				this.tableUnits[parts[0]] = unit;
+				this.displayUnit = null;
+				command.results = parts[1];
+				return;
+			}
+		}
+		else if (this.tableUnits && this.tableUnits[parts[0]]) {
+			delete this.tableUnits[parts[0]];
+			command.results = '';
+			return;
+		}
+		this.setError('mmcmd:?setColumnUnit', {});
+	}
+
+/**
 	 * @method saveObject
 	 * @override
 	 * @returns {Object} object that can be converted to json for save file
@@ -265,8 +313,16 @@ class MMExpression extends MMTool {
 		let o=   super.saveObject();
 		o['Type'] = 'Expression';
 		o['Formula'] = {'Formula': this.formula.formula};
-		if (this._isInput) { o['isInput'] = 'y'; }
-		if (this._isOutput) { o['isOutput'] = 'y'}
+		if (this._isInput)			{ o['isInput'] = 'y'; }
+		if (this._isOutput)			{ o['isOutput'] = 'y'; }
+		if (this.displayUnit)		{ o['displayUnit'] = this.displayUnit.name; }
+		if (this.tableUnits) {
+			const units = {};
+			Object.entries(this.tableUnits).forEach(([key, unit]) => {
+				units[key] = unit.name;
+			});
+			o['tableUnits'] = units;
+		}
 		return o;
 	}
 
@@ -280,5 +336,17 @@ class MMExpression extends MMTool {
 		this.formula.formula = saved.Formula.Formula;
 		this.isInput = (saved.isInput === 'y');
 		this.isOutput = (saved.isOutput === 'y');
+		if (saved.displayUnit) {
+			this.displayUnit = theMMSession.unitSystem.unitNamed(saved.displayUnit);
+		}
+		if (saved.tableUnits) {
+			this.tableUnits = {};
+			Object.entries(saved.tableUnits).forEach(([key, unitName]) => {
+				const unit = theMMSession.unitSystem.unitNamed(unitName);
+				if (unit) {
+					this.tableUnits[key] = unit;
+				}
+			});
+		}
 	}
 }

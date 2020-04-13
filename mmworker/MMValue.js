@@ -1781,7 +1781,8 @@ class MMTableValue extends MMValue {
 		const nc =  this.columnCount;
 		for (let i = 0; i < nc; i++) {
 			const column = this.columns[i];
-			const displayUnit = (displayUnits && i < displayUnits.length) ? displayUnits[i] : column.displayUnit;
+			// const displayUnit = (displayUnits && i < displayUnits.length) ? displayUnits[i] : column.displayUnit;
+			const displayUnit = displayUnits ? displayUnits[i + 1] : null;
 			columns.push(column.jsonValue(displayUnit));
 		}
 

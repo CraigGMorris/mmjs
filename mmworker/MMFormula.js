@@ -1393,7 +1393,7 @@ class MMFormula extends MMCommandObject {
 		let re = /^-{0,1}\d+(\.\d+){0,1}([eE]-{0,1}\d+){0,1}$/;
 		if(newFormula && re.test(newFormula)) {
 			// is valid numeric
-			let unit = this.parent.displayUnit;
+			let unit = this.parent.defaultFormulaUnit(this.name);
 			if (unit) {
 				newFormula = `${newFormula} ${unit.name}`;
 			}

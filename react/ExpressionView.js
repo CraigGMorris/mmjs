@@ -53,8 +53,19 @@ export function ExpressionView(props) {
 	const results = updateResults.length ? updateResults[0].results : {};
 	const path = results.path;
 	const value = results.value;
-	const valueUnit = value.unit;
-	const unitType = value.unitType ? value.unitType : '';
+	const isTable = value.t === 't';
+	let unitType;
+	let valueUnit;
+	if (isTable) {
+		if (selectedCell[0] === 0 && selectedCell[1] > 0) {
+			const v = value.v[selectedCell[1] - 1].v;
+			unitType = v.unitType;
+		}
+	}
+	else {
+		unitType = value.unitType ? value.unitType : '';
+		valueUnit = value.unit;
+	}
 	const formulaName = results.formulaName;
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
@@ -72,10 +83,16 @@ export function ExpressionView(props) {
 						setDisplay(ExpressionDisplay.expression);
 					},
 					apply: (unit) => {
-						props.actions.doCommand(`${props.viewInfo.path} set displayUnitName ${unit}`, () => {
+						const cmd = isTable ?
+							`${props.viewInfo.path} setcolumnunit ${selectedCell[1]} ${unit}`
+							:
+							`${props.viewInfo.path} set displayUnitName ${unit}`;
+
+						props.actions.doCommand(cmd, () => {
 							props.actions.updateView(props.viewInfo.stackIndex);
 							setDisplay(ExpressionDisplay.expression);
-						});						
+							setSelectedCell([0,0]);
+						});
 					},
 				}
 			);
@@ -120,8 +137,16 @@ export function ExpressionView(props) {
 		case ExpressionDisplay.expression: {
 			const cellClick = (row, column) => {
 				const value = results.value;
-				if (!value || row < 1 || row > value.nr || column < 1 || column > value.nc) {
+				if (!value || row < 0 || row > value.nr || column < 1 || column > value.nc) {
 					return;
+				}
+
+				if (row === 0) {
+					if (isTable) {
+						setSelectedCell([row,column]);
+						setDisplay(ExpressionDisplay.unitPicker);
+					}
+					return;					
 				}
 	
 				// if (value && value.nr && value.nc) {
@@ -259,10 +284,12 @@ export function ExpressionView(props) {
 					'div', {
 						id: 'expression__units',
 						onClick: () => {
-							setDisplay(ExpressionDisplay.unitPicker);
+							if (unitType) {
+								setDisplay(ExpressionDisplay.unitPicker);
+							}
 						}
 					},
-					`${unitType}: ${valueUnit}`
+					unitType ? `${unitType}: ${valueUnit}` : ''
 				),
 				e(
 					TableView, {
