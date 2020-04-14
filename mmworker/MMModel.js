@@ -28,7 +28,9 @@ class MMModel extends MMTool {
 	/** @override */
 	get verbs() {
 		let verbs = super.verbs;
-		verbs['addtool'] = this.addTool;
+		verbs['addtool'] = this.addToolCommand;
+		verbs['removetool'] = this.removeToolCommand;
+		verbs['restoretool'] = this.restoreToolCommand;
 		verbs['dgminfo'] = this.diagramInfoCommand;
 		verbs['setpositions'] = this.setPositions;
 
@@ -43,6 +45,8 @@ class MMModel extends MMTool {
 	getVerbUsageKey(command) {
 		let key = {
 			addtool: 'mmcmd:?modelAddTool',
+			removetool: 'mmcmd:?modelRemoveTool',
+			restoretool: 'mmcmd:?modelRestoreTool',
 			dgminfo: 'mmcmd:?modelDgmInfo',
 			setpositions: 'mmcmd:?modelSetPositions'
 		}[command];
@@ -66,14 +70,14 @@ class MMModel extends MMTool {
 		return p;
 	}
 
-	/** @method addTool
+	/** @method addToolCommand
 	 * creates new Tool with supplied type and name
 	 * @param {MMCommand} command
 	 * command.args should be typeName and optionally name and x,y position
 	 * if second argument starts with a number, it is asumed to be x coordinate
 	 * @returns {MMTool}
 	 */
-	addTool(command) {
+	addToolCommand(command) {
 		let parts = command.args.split(/\s/);
 		let typeName = parts[0];
 		let name;
@@ -155,8 +159,59 @@ class MMModel extends MMTool {
 				}
 			}
 			command.results = true;
-			command.undo = this.getPath() + ' removechild ' + name;
+			command.undo = this.getPath() + ' removetool ' + name;
 		}
+	}
+
+	/** @method removeToolCommand
+	 * removes named tool from the model
+	 * @param {MMCommand} command
+	 * command.args should be the tool name
+	 * @returns {boolean} success
+	 */
+	removeToolCommand(command) {
+		const name = command.args;
+		const tool = this.childNamed(name);
+		if (tool) {
+			const savedTool = tool.saveObject();
+			const toolJson = JSON.stringify(savedTool);
+			const success = this.removeChildNamed(name);
+			if (success) {
+				command.undo = `__blob__${this.getPath()} restoretool__blob__${toolJson}`;
+			}
+			command.results = success;
+		}
+		else {
+			command.results = false;
+		}
+	}
+
+	/**
+	 * @method restoreTool - adds a tool from json - for undo
+	 * @param {Object} tool - from json
+	 */
+	restoreTool(tool) {
+		const name = tool.name;
+		const typeName = tool.Type.replace(' ','');
+		const toolType = MMToolTypes[typeName];
+		if(!toolType) {
+			throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: tool.Type}));
+		}
+		let newTool = toolType.factory(name, this);
+		newTool.initFromSaved(tool);
+	}
+
+	/**
+	 * @method restoreToolCommand
+	 * @param {MMCommand} command
+	 * command.args should be the undo json
+	 * in the form __blob__/.x restoretool__blob__ followed by the json text
+	 */
+	restoreToolCommand(command) {
+		const saved = JSON.parse(command.args);
+		this.restoreTool(saved);
+		command.undo = `${this.getPath()} removetool ${saved.name}`
+		command.results = true;
 	}
 
 	/**
