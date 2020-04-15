@@ -272,7 +272,11 @@ export function MMApp(props) {
 	 * call doCommand with updateCommands to update th info view state
 	 */
 	const updateView = useCallback((stackIndex, rescaleDiagram = false) => {
-		if (stackIndex < infoStack.length) {
+		if (stackIndex == null) {
+			// assume top view
+			stackIndex = infoStack.length - 1;
+		}
+		if (stackIndex < infoStack.length && stackIndex >= 0) {
 			let top = infoStack[stackIndex];
 			setViewInfo(top);
 			if (top.updateCommands) {
@@ -398,6 +402,10 @@ export function MMApp(props) {
 			infoStack.pop();
 			top = infoStack[infoStack.length - 1];
 		}
+		if (!toolName || !toolType) {
+			return;  // pushing nothing clears stack to top model
+		}
+
 		top = infoStack[infoStack.length - 1];
 		const path = `${top.path}.${toolName}`;
 		const updateCommand = `${path} toolViewInfo`;
@@ -445,8 +453,15 @@ export function MMApp(props) {
 	 * renames tool at path to newName (in same parent model)
 	 */
 	const renameTool = useCallback((path, newName) => {
-		doCommand(`${path} renameto ${newName}`, () => {
+		if (!newName) {
+			return;
+		}
+		
+		doCommand(`${path} renameto ${newName}`, (results) => {
 			// fix up things in the view info to reflect the new name
+			if (results.error) {
+				return;
+			}
 			let parts = path.split('.');
 			const oldName = parts.pop();
 			parts.push(newName);
@@ -484,52 +499,6 @@ export function MMApp(props) {
 			});
 		}
 	}, [doCommand, updateView]);
-
-	const handleButtonClick = useCallback((event) => {
-		let parts = event.target.value.split(' ');
-		let undo, redo;
-		switch (parts[0]) {
-			case 'undo':
-				undo = undoStack.pop();
-				if (undo) {
-					doCommand('undo ' + undo, () => {
-						updateDiagram();
-					});
-				}
-				break;
-			case 'redo':
-				redo = redoStack.pop();
-				if (redo) {
-					doCommand('redo ' + redo, () => {
-						updateDiagram();
-					});
-				}
-				break;
-			case 'expand':
-				switch (viewType) {
-					case ViewType.twoPanes:
-						setViewType(ViewType.info);
-						break;
-
-					case ViewType.diagram:
-						setViewType(allow2Pane ? ViewType.twoPanes : ViewType.info);
-						break;
-
-					case ViewType.info:
-						setViewType(allow2Pane ? ViewType.twoPanes : ViewType.diagram);
-						break;
-					default:
-						break;
-				}
-				break;
-			case 'console':
-				pushConsole();
-				break;
-			default:
-				pushView(parts[0], parts[1], {path: parts[2]} );
-				break;
-		}
-	}, [doCommand, allow2Pane, pushConsole, pushView, updateDiagram, viewType]);
 
 	// {method[]} actions - methods passed to components
 	let actions = {

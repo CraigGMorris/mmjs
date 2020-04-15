@@ -6,31 +6,31 @@
 
 const e = React.createElement;
 
-	/**
-	 * @function snapPosition
-	 * @param {Object} pos 
-	 * @returns {Object}
-	 */
-	function snapPosition(pos) {
-		let newX, newY;
-		
-		if (pos.x > 0) {
-			newX = Math.floor((pos.x + 2.5) / 5);
-		}
-		else {
-			newX = Math.floor((pos.x - 2.5) / 5);
-		}
-		newX *= 5;
-		
-		if (pos.y > 0) {
-			newY = Math.floor((pos.y + 2) / 5);
-		}
-		else {
-			newY = Math.floor((pos.y - 2) / 5);
-		}
-		newY *= 5;
-		return {x: newX, y: newY};
+/**
+ * @function snapPosition
+ * @param {Object} pos 
+ * @returns {Object}
+ */
+function snapPosition(pos) {
+	let newX, newY;
+	
+	if (pos.x > 0) {
+		newX = Math.floor((pos.x + 2.5) / 5);
 	}
+	else {
+		newX = Math.floor((pos.x - 2.5) / 5);
+	}
+	newX *= 5;
+	
+	if (pos.y > 0) {
+		newY = Math.floor((pos.y + 2) / 5);
+	}
+	else {
+		newY = Math.floor((pos.y - 2) / 5);
+	}
+	newY *= 5;
+	return {x: newX, y: newY};
+}
 	
 const objectHeight = 20;
 const objectWidth = 60;
@@ -49,6 +49,19 @@ const DiagramDragType = Object.freeze({
 });
 
 /**
+ * Enum for context menu display.
+ * @readonly
+ * @enum {string}
+ */
+const ContextMenuType = Object.freeze({
+	none: 'none',
+	background: 'bg',
+	tool: 'tool',
+	addTool: 'add',
+});
+
+
+/**
  * @class Diagram
  * the main mind map diagram
  */
@@ -64,7 +77,8 @@ export class Diagram extends React.Component {
 			dragSelection: null,
 			selectionBox: null,
 			translate: {x: 0, y: 0},
-			scale: 1.0,				
+			scale: 1.0,
+			showContext: null,				
 		}
 
 		this.setDragType = this.setDragType.bind(this);
@@ -88,7 +102,8 @@ export class Diagram extends React.Component {
 				this.setState(() => {
 					let newState = {
 						path: modelInfo.path,
-						tools: modelInfo.tools
+						tools: modelInfo.tools,
+						selectedObject: modelInfo.selectedObject,
 					};
 
 					if (rescale) {
@@ -411,7 +426,8 @@ export class Diagram extends React.Component {
 			const dragSelection = this.toolsInBox(sb, state.tools);
 			return {
 				selectionBox: (state.selectionBox) ? null : sb,
-				dragSelection: dragSelection
+				dragSelection: dragSelection,
+				showContext: null
 			}
 		});
 	}
@@ -457,13 +473,28 @@ export class Diagram extends React.Component {
 					this.createSelectionBox(e.clientX, e.clientY);
 				}
 				else {
-					if (e.clientY - this.props.diagramBox.top < 15) {
-						console.log('should pop menu');
+					if (e.clientY - this.props.diagramBox.top > 15) {
+						// bring up context menu, but only if click is below title and return text
+						this.setState((state) => {
+							const scale = state.scale;
+							const position = {
+								x: state.lastPointer.x / scale - state.translate.x,
+								y: state.lastPointer.y / scale - state.translate.y
+							};
+				
+							return {
+								selectionBox: null,
+								dragSelection: null,
+								showContext: (state.showContext === null && !state.selectionBox) ?
+									{
+										type: ContextMenuType.background,
+										info: position,
+									}
+									:
+									null,
+							}
+						});
 					}
-					this.setState({
-						selectionBox: null,
-						dragSelection: null
-					});
 				}
 			}
 			this.panSum = 0;
@@ -580,6 +611,11 @@ export class Diagram extends React.Component {
 				draggedTo: this.draggedTo,
 				pushModel: this.props.actions.pushModel,
 				pushTool: this.props.actions.pushTool,
+				showContext: (shouldShow) => {
+					this.setState({
+						showContext: shouldShow,
+					});
+				}
 			});
 			toolList.push(cmp);
 
@@ -764,6 +800,110 @@ export class Diagram extends React.Component {
 			)
 		}
 
+		let contextMenu;
+		if (this.state.showContext) {
+			switch (this.state.showContext.type) {
+				case ContextMenuType.background: {
+					contextMenu = e(
+						ContextMenu, {
+							key: 'context',
+							t: t,
+							menu: [
+								{
+									text: 'Add Tool to Model',
+									action: () => {
+										this.setState({
+											showContext: {
+												type: ContextMenuType.addTool,
+												info: this.state.showContext.info,
+											}
+										})
+									}
+								},
+								{
+									text: 'Paste to Model',
+									action: () => {
+										console.log('paste to model');
+										this.setState({showContext: null});
+									}
+								},
+							]
+						}
+					)
+				}
+					break;
+				case ContextMenuType.tool: {
+					contextMenu = e(
+						ContextMenu, {
+							key: 'context',
+							t: t,
+							menu: [
+								{
+									text: 'Delete',
+									info: this.state.showContext.info,
+									action: (info) => {
+										if (info.name === this.state.selectedObject) {
+											this.props.actions.pushTool();  // empty parameters clears infostack
+										}
+										this.props.actions.doCommand(`${this.state.path} removetool ${info.name}`, () => {
+											this.setState({showContext: null});
+											this.props.actions.updateView();
+										});
+									}
+								}
+							]
+						}
+					)
+				}
+					break;
+				case ContextMenuType.addTool: {
+					const addTool = (type) => {
+						const position = this.state.showContext.info;
+						this.props.actions.doCommand(`${this.state.path} addtool ${type} ${position.x} ${position.y}`, (results) => {
+							this.setState({showContext: null});
+							const toolName = results[0].results;
+							if (type === 'Model') {
+								this.props.actions.pushModel(toolName);
+							}
+							else {
+								this.props.actions.pushTool(toolName, type);
+							}
+						})
+						this.setState({showContext: null});
+					}
+
+					contextMenu = e(
+						ContextMenu, {
+							key: 'add',
+							t: t,
+							menu: [
+								{
+									text: 'Expression',
+									action: () => {
+										addTool('Expression');
+									}
+								},
+								{
+									text: 'Model',
+									action: () => {
+										addTool('Model');
+									}
+								},
+								{
+									text: 'Data Table',
+									action: () => {
+										addTool('DataTable');
+									}
+								},
+							]
+						}
+					)
+				}
+					break;
+				
+			}
+		}
+
 		return e(
 			'div', {
 				id: '#diagram__wrapper',
@@ -790,7 +930,8 @@ export class Diagram extends React.Component {
 				toolList,
 				connectList,
 				selectionBox,
-				textList
+				contextMenu,
+				textList,
 			),
 		);
 	}
@@ -819,7 +960,7 @@ class ToolIcon extends React.Component {
 	componentWillUnmount() {
 		this.node.removeEventListener('pointermove', this.onPointerMove);
 		this.node.removeEventListener('pointerup', this.onPointerUp);
-}
+	}
 
 	onPointerDown(e) {
     e.stopPropagation();
@@ -852,9 +993,14 @@ class ToolIcon extends React.Component {
 			if (this.panSum < 1) {
 				const t = new Date().getTime();
 				if (t - this.pointerStartTime > 500) {
-					console.log('tool long press')
+					console.log('long press');
+					this.props.showContext({
+						type: ContextMenuType.tool,
+						info: this.props.info,
+					});
 				}
 				else {
+					this.props.showContext(null);
 					if (this.props.info.toolTypeName === "Model") {
 						this.props.pushModel(this.props.info.name);
 					}
@@ -1100,7 +1246,7 @@ class ToolIcon extends React.Component {
 			e(
 				'rect', {
 					onPointerDown: this.onPointerDown,
-					onClick: this.onClick,
+					// onClick: this.onClick,
 					x: (x + translate.x)*scale,
 					y: (y + translate.y)*scale,
 					width: objectWidth*scale,
@@ -1293,5 +1439,83 @@ class ClickableDiagramText extends React.Component {
 			y: this.props.y,
 			onClick: this.onClick,
 			}, this.props.text);
+	}
+}
+
+class ContextMenu extends React.Component {
+	constructor(props) {
+		super(props);
+		this.onPointerDown = this.onPointerDown.bind(this);
+		this.onPointerUp = this.onPointerUp.bind(this);
+		this.config = {
+			offset: {
+				x: 20,
+				y: 30,
+			},
+			size: {
+				height: 500,
+				width: 300,
+			},
+			itemHeight: 30,
+		}
+	}
+
+	componentWillUnmount() {
+		// this.node.removeEventListener('pointermove', this.onPointerMove);
+		this.node.removeEventListener('pointerup', this.onPointerUp);
+	}
+
+	onPointerDown(e) {
+    e.stopPropagation();
+    e.preventDefault();
+		e.target.addEventListener('pointerup', this.onPointerUp);
+	}
+
+	onPointerUp(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		e.target.removeEventListener('pointerup', this.onPointerUp);
+		const lineNumber = Math.floor((e.clientY - this.config.offset.y) / this.config.itemHeight);
+		if (lineNumber >= 0 && lineNumber < this.props.menu.length) {
+			const menuItem = this.props.menu[lineNumber];
+			menuItem.action(menuItem.info);
+		}
+	}	
+
+	render() {
+		const menu = this.props.menu;
+		const items = [];
+		let lineNumber = 0;
+		for (let item of menu) {
+			const cmp = e(
+				'text', {
+					key: lineNumber,
+					className: 'diagram__content-menu-text',
+					x: 20 + this.config.offset.x,
+					y: this.config.offset.y + (lineNumber + 1) * this.config.itemHeight,
+				},
+				item.text
+			)
+			items.push(cmp);
+			lineNumber++;
+		}
+		return e(
+			'g', {
+				id: 'diagram__context-menu',
+				ref: node => this.node = node,
+			},
+			e(
+				'rect', {
+					id: 'diagram__context-menu-rect',
+					onPointerDown: this.onPointerDown,
+					// onClick: this.onClick,
+					x: this.config.offset.x,
+					y: this.config.offset.y,
+					width: this.config.size.width,
+					height: this.config.size.height,
+				}
+			),
+			items,
+		);
 	}
 }

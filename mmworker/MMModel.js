@@ -75,7 +75,7 @@ class MMModel extends MMTool {
 	 * @param {MMCommand} command
 	 * command.args should be typeName and optionally name and x,y position
 	 * if second argument starts with a number, it is asumed to be x coordinate
-	 * @returns {MMTool}
+	 * command.results = the tool name if successful
 	 */
 	addToolCommand(command) {
 		let parts = command.args.split(/\s/);
@@ -158,7 +158,7 @@ class MMModel extends MMTool {
 					newTool.position = {x: 10, y: maxY + 30};
 				}
 			}
-			command.results = true;
+			command.results = name;
 			command.undo = this.getPath() + ' removetool ' + name;
 		}
 	}
@@ -175,6 +175,7 @@ class MMModel extends MMTool {
 		if (tool) {
 			const savedTool = tool.saveObject();
 			const toolJson = JSON.stringify(savedTool);
+			tool.forgetCalculated();
 			const success = this.removeChildNamed(name);
 			if (success) {
 				command.undo = `__blob__${this.getPath()} restoretool__blob__${toolJson}`;
@@ -312,6 +313,7 @@ class MMModel extends MMTool {
 	 */
 	toolViewInfo(command) {
 		super.toolViewInfo(command);
+		this.session.selectedObject = '';
 	}
 
 	/**

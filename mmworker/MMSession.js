@@ -222,6 +222,7 @@ class MMSession extends MMCommandParent {
 		this.modelStack = [this.currentModel];
 		this.storePath = storePath;
 		this.processor.defaultObject = this.rootModel;
+		this.selectedObject = '';
 	}
 
 	get properties() {
@@ -275,7 +276,6 @@ class MMSession extends MMCommandParent {
 	sessionAsJson(path=null) {
 		let detailWidth = this['detailWidth'] ? this['detailWidth'] : 320;
 		let deviceWidth = this['deviceWidth'] ? this['deviceWidth'] : 1024;
-		let selectedObject = '';
 		if (path) {
 			this.storePath = path;
 		}
@@ -294,7 +294,7 @@ class MMSession extends MMCommandParent {
 			UserUnits: userUnits,
 			CaseName: caseName,
 			DefaultUnitSet: this.unitSystem.defaultSet().name,
-			SelectedObject: selectedObject,
+			SelectedObject: this.selectedObject,
 			ModelPath: modelPath,
 			RootModel: rootSave,
 		}
@@ -598,6 +598,7 @@ class MMSession extends MMCommandParent {
 	 */
 	diagramInfo(command) {
 		command.results = this.currentModel.diagramInfo();
+		command.results.selectedObject = this.selectedObject;
 	}
 
 	/**
@@ -1185,6 +1186,7 @@ class MMTool extends MMCommandParent {
 	 */
 	toolViewInfo(command) {
 		let parent = this;
+		this.session.selectedObject = this.name;
 		while (parent.typeName !== 'Model') {
 			parent = parent.parent;
 		}

@@ -839,12 +839,12 @@ class MMCommandProcessor {
 		
 		let child = this.children[lcFromName];
 		if (!child) {
-			throw(this.t('childNotFound', {parent: this.getPath(), fromName}));
+			throw(this.t('cmd:childNotFound', {parent: this.getPath(), fromName}));
 		}
 
 		let newChild = this.children[lcToName];
 		if (newChild) {
-			throw(this.t('nameAlreadyUsed', {name: toName, parent: this.getPath()}));
+			throw(this.t('cmd:nameAlreadyUsed', {name: toName, parent: this.getPath()}));
 		}
 
 		this.children[lcToName] = child;

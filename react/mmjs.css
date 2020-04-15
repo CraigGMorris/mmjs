@@ -264,6 +264,15 @@ a:hover {
 	user-select: none;
 }
 
+#diagram__context-menu {
+	fill: var(--input--bgcolor);
+}
+
+.diagram__content-menu-text {
+	fill: var(--link--color);
+	border: solid 1px var(--border--color);
+}
+
 #expression {
 	height: 100%;
 	display: grid;

@@ -9,6 +9,7 @@
 	"classAndPath": "{{path}} is an instance of {{className}}",
 	"commandNotFound": "{{className}} {{path}} doesn't understand the command {{cmd}}",
 	"createdChild": "Created {{className}} {{name}}",
+	"nameAlreadyUsed": "The name {{name}} is already used by {{parent}}",
 	"propertyNotFound": "{{name}} does not have a property named {{propName}}",
 	"removedChild": "Removed {{name}}",
 	"unknownClass": "Cannot create unknown class {{className}}",

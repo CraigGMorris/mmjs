@@ -2,6 +2,7 @@
 
 const e = React.createElement;
 const useState = React.useState;
+const useEffect = React.useEffect;
 
 /**
  * ToolView
@@ -11,13 +12,19 @@ const useState = React.useState;
 export function ToolView(props) {
 	const t = props.t;
 	let name;
+	useEffect(() => {
+		const updateResults = props.viewInfo.updateResults;
+		const notes = updateResults.length ? updateResults[0].results.notes : '';		
+		setNotesText(notes);
+	}, [props.viewInfo.updateResults]);
+
 	const pathParts = props.viewInfo.path.split('.');
 	name = pathParts[pathParts.length - 1];
 	const [toolName, setToolName] = useState(name);
 	const [showNotes, setShowNotes] = useState(false);
 	const updateResults = props.viewInfo.updateResults;
-	
-	const [notesText, setNotesText] = useState(updateResults.length ? updateResults[0].results.notes : '');
+	const notes = updateResults.length ? updateResults[0].results.notes : '';	
+	const [notesText, setNotesText] = useState(notes);
 	const diagramNotes = updateResults.length ? updateResults[0].results.diagramNotes : false;
 	const doRename = () => {
 		const path = props.viewInfo.path;
