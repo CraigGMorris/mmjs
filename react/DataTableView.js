@@ -16,9 +16,8 @@ const useEffect = React.useEffect;
  */
 const DataTableDisplay = Object.freeze({
 	table: 0,
-	columns: 1,
-	editColumn: 2,
-	unitPicker: 3,
+	editColumn: 1,
+	unitPicker: 2,
 });
 
 /** EditColumnComponent
@@ -45,11 +44,11 @@ function EditColumnView(props) {
 	}
 
 	const defaultValueChange = (formula, callback) => {
-		props.actions.doCommand(`${path}.${name} set defaultValue ${formula}`, callback);
+		props.actions.doCommand(`__blob__${path}.${name} set defaultValue__blob__${formula}`, callback);
 	}
 
 	const changeFormat = () => {
-		props.actions.doCommand(`${path}.${name} set format ${columnFormat}`, () => {
+		props.actions.doCommand(`__blob__${path}.${name} set format__blob__${columnFormat}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 		})
 	}
@@ -265,13 +264,18 @@ export function DataTableView(props) {
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
+	if (updateResults.error) {
+		props.actions.popView();
+		return null;
+	}
+
 	const results = updateResults.length ? updateResults[0].results : {};
 	const path = results.path;
 	const value = results.value;
 	const formulaName = 'formula'; //`${selectedCell[0]}_${selectedCell[1]}_f`;
 	const columnNumber = selectedCell[1];
 	const selectedColumn = columnNumber > 0 ? value.v[columnNumber - 1] : null;
-	const unitType = columnNumber > 0 ? value.v[columnNumber - 1].unitType : '';
+	const unitType = columnNumber > 0 && columnNumber <= value.v.length ? value.v[columnNumber - 1].unitType : '';
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 
@@ -279,7 +283,14 @@ export function DataTableView(props) {
 		'button', {
 			id: 'data__add-column-button',
 			onClick: () => {
-				setDisplay(DataTableDisplay.editColumn);
+				if (value) {
+					props.actions.doCommand(`${path} addcolumn`, () => {
+						props.actions.updateView(props.viewInfo.stackIndex);
+						setSelectedRows();
+						setSelectedCell([0, value.nc + 1]);
+						setDisplay(DataTableDisplay.editColumn);
+					});
+				}
 			},
 		},
 		t('react:dataAddColumnButton'),
@@ -466,24 +477,10 @@ export function DataTableView(props) {
 			)}
 			break;
 
-		case DataTableDisplay.columns:
-			displayComponent = e(
-				'div', {
-					id: 'datatable__columns',
-					key: 'columns'
-				},
-				e(
-					'div', {
-						id: 'datatable__display-buttons'
-					},
-					tableButton,
-					addColumnButton,
-				),
-				'display columns'
-			);
-			break;
-
 		case DataTableDisplay.editColumn: {
+			if (!selectedColumn) {
+				return null;
+			}
 			displayComponent = e(
 				'div', {
 					key: 'edit',

@@ -43,6 +43,11 @@ export function MatrixView(props) {
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
+	if (updateResults.error) {
+		props.actions.popView();
+		return null;
+	}
+
 	const results = updateResults.length ? updateResults[0].results : {};
 	const rowCountFormula = results.rowCountFormula;
 	const columnCountFormula = results.columnCountFormula;

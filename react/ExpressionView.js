@@ -50,6 +50,10 @@ export function ExpressionView(props) {
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
+	if (updateResults.error) {
+		props.actions.popView();
+		return null;
+	}
 	const results = updateResults.length ? updateResults[0].results : {};
 	const path = results.path;
 	const value = results.value;

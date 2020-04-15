@@ -519,7 +519,7 @@ class MMCommandProcessor {
 		}
 		this.setValue(propertyName, valueString);
 		command.results = propertyName + ' = ' + valueString;
-		command.undo = this.getPath() + ' set ' + propertyName + ' ' + oldValue;
+		command.undo = `__blob__${this.getPath()} set ${propertyName}__blob__${oldValue}`;
 	}
 
 	/** @returns {string} returns path of this object */

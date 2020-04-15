@@ -884,15 +884,21 @@ export class Diagram extends React.Component {
 									}
 								},
 								{
-									text: 'Model',
-									action: () => {
-										addTool('Model');
-									}
-								},
-								{
 									text: 'Data Table',
 									action: () => {
 										addTool('DataTable');
+									}
+								},
+								{
+									text: 'Matrix',
+									action: () => {
+										addTool('Matrix');
+									}
+								},
+								{
+									text: 'Model',
+									action: () => {
+										addTool('Model');
 									}
 								},
 							]

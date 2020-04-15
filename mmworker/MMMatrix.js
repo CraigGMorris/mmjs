@@ -468,7 +468,7 @@ class MMMatrix extends MMTool {
 	 * if inputString is missing, the cell value is cleared
 	 */
 	setCellCommand(command) {
-		const indicesMatch = command.args.match(/^\d+\s+\d+\s+/);
+		const indicesMatch = command.args.match(/^\d+\s+\d+\s*/);
 		if (indicesMatch) {
 			const parts = indicesMatch[0].split(/\s+/,2);
 			if (parts.length >= 2) {
@@ -479,7 +479,10 @@ class MMMatrix extends MMTool {
 				}
 
 				const inputString = command.args.substring(indicesMatch[0].length);
+				const cellInput = this.cellInputs[`${row}_${column}`];
+				const oldInput = cellInput ? cellInput.input : '';
 				this.setCellInput(row, column, inputString);
+				command.undo = `__blob__${this.getPath()} setcell ${row} ${column}__blob__${oldInput}`;
 			}
 			else {
 				throw(this.t('mmcmd:matrixSetCellError', { path: this.getPath(), args: command.args }));

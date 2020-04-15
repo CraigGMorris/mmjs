@@ -18,6 +18,17 @@ export function ModelView(props) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	const t = props.t;
+	const updateResults = props.viewInfo.updateResults;
+	if (updateResults.error) {
+		return e(
+			'div', {
+				id: 'result-error'
+			},
+			t(updateResults.error.msgKey, updateResults.error.args)
+		);
+	}
+
 //	let t = props.t;
 	let displayComponent = e('div', {key: 'model'}, 'Some stuff');
 	return e(
