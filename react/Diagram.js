@@ -58,6 +58,7 @@ const ContextMenuType = Object.freeze({
 	background: 'bg',
 	tool: 'tool',
 	addTool: 'add',
+	selection: 'sel',
 });
 
 
@@ -768,7 +769,12 @@ export class Diagram extends React.Component {
 				setDragType: this.setDragType,
 				draggedTo: this.draggedTo,
 				translate: this.state.translate,
-				scale: scale
+				scale: scale,
+				showContext: (shouldShow) => {
+					this.setState({
+						showContext: shouldShow,
+					});
+				}
 			})
 		}
 
@@ -823,8 +829,13 @@ export class Diagram extends React.Component {
 								{
 									text: 'Paste to Model',
 									action: () => {
-										console.log('paste to model');
-										this.setState({showContext: null});
+										navigator.clipboard.readText().then(clipText => {
+											const position = this.state.showContext.info;
+											this.props.actions.doCommand(`__blob__${this.state.path} paste ${position.x} ${position.y}__blob__${clipText}`, () => {
+												this.setState({showContext: null});
+												this.props.actions.updateView();
+											});
+										});
 									}
 								},
 							]
@@ -833,6 +844,15 @@ export class Diagram extends React.Component {
 				}
 					break;
 				case ContextMenuType.tool: {
+					const deleteTool = (info) => {
+						if (info.name === this.state.selectedObject) {
+							this.props.actions.pushTool();  // empty parameters clears infostack
+						}
+						this.props.actions.doCommand(`${this.state.path} removetool ${info.name}`, () => {
+							this.setState({showContext: null});
+							this.props.actions.updateView();
+						});
+					}
 					contextMenu = e(
 						ContextMenu, {
 							key: 'context',
@@ -841,13 +861,30 @@ export class Diagram extends React.Component {
 								{
 									text: 'Delete',
 									info: this.state.showContext.info,
+									action: deleteTool,
+								},
+								{
+									text: 'Copy',
+									info: this.state.showContext.info,
 									action: (info) => {
-										if (info.name === this.state.selectedObject) {
-											this.props.actions.pushTool();  // empty parameters clears infostack
-										}
-										this.props.actions.doCommand(`${this.state.path} removetool ${info.name}`, () => {
+										this.props.actions.doCommand(`${this.state.path} copytool ${info.name}`, (results) => {
+											if (!results.error) {
+												navigator.clipboard.writeText(results[0].results);
+											}
 											this.setState({showContext: null});
-											this.props.actions.updateView();
+										});
+									}
+								},
+								{
+									text: 'Cut',
+									info: this.state.showContext.info,
+									action: (info) => {
+										this.props.actions.doCommand(`${this.state.path}.${info.name} saveobject`, (results) => {
+											if (!results.error) {
+												navigator.clipboard.writeText(results[0].results).then(() => {
+													deleteTool(info);
+												});
+											}
 										});
 									}
 								}
@@ -907,6 +944,69 @@ export class Diagram extends React.Component {
 				}
 					break;
 				
+				case ContextMenuType.selection: {
+					const copyTools = (deleteAfterCopy) => {
+						const sel = this.toolsInBox(this.state.selectionBox, this.state.tools);
+						const names = [];
+						for (let name of sel.keys()) {
+							names.push(name);
+						}
+						this.props.actions.doCommand(`${this.state.path} copytool ${names.join(' ')}`, (results) => {
+							if (!results.error) {
+								navigator.clipboard.writeText(results[0].results);
+								if (deleteAfterCopy) {
+									deleteTools();
+								}
+							}
+							this.setState({
+								showContext: null,
+								selectionBox: null,
+							});
+						});
+					}
+					const deleteTools = () => {
+						const sel = this.toolsInBox(this.state.selectionBox, this.state.tools);
+						const names = [];
+						for (let name of sel.keys()) {
+							names.push(name);
+							if (name === this.state.selectedObject) {
+								this.props.actions.pushTool();  // empty parameters clears infostack
+							}
+						}
+
+						this.props.actions.doCommand(`${this.state.path} removetool ${names.join(' ')}`, () => {
+							this.setState({
+								showContext: null,
+								selectionBox: null,
+							});
+							this.props.actions.updateView();
+						});
+					}
+
+					contextMenu = e(
+						ContextMenu, {
+							key: 'sel',
+							t: t,
+							menu: [
+								{
+									text: 'Delete',
+									action: deleteTools
+								},
+								{
+									text: 'Copy',
+									action: copyTools
+								},
+								{
+									text: 'Cut',
+									action: () => {
+										copyTools(true);
+									}
+								}
+							]
+						}
+					)
+				}
+					break;
 			}
 		}
 
@@ -999,7 +1099,6 @@ class ToolIcon extends React.Component {
 			if (this.panSum < 1) {
 				const t = new Date().getTime();
 				if (t - this.pointerStartTime > 500) {
-					console.log('long press');
 					this.props.showContext({
 						type: ContextMenuType.tool,
 						info: this.props.info,
@@ -1286,7 +1385,7 @@ class SelectionBox extends React.Component {
 	componentWillUnmount() {
 		document.removeEventListener('pointermove', this.onPointerMove);
 		document.removeEventListener('pointerup', this.onPointerUp);
-}
+	}
 
 	/**
 	 * @method determineDragType
@@ -1345,6 +1444,10 @@ class SelectionBox extends React.Component {
 			}
 			else {
 				console.log(`sb click panSum ${this.panSum}`);
+				this.props.showContext({
+					type: ContextMenuType.selection,
+					info: this.props.info,
+				});
 			}	
 		}
 		else {
@@ -1460,7 +1563,7 @@ class ContextMenu extends React.Component {
 			},
 			size: {
 				height: 500,
-				width: 300,
+				width: 250,
 			},
 			itemHeight: 30,
 		}
@@ -1505,6 +1608,7 @@ class ContextMenu extends React.Component {
 			items.push(cmp);
 			lineNumber++;
 		}
+		const height = Math.min(this.config.size.height, this.config.itemHeight * menu.length + 10);
 		return e(
 			'g', {
 				id: 'diagram__context-menu',
@@ -1518,7 +1622,7 @@ class ContextMenu extends React.Component {
 					x: this.config.offset.x,
 					y: this.config.offset.y,
 					width: this.config.size.width,
-					height: this.config.size.height,
+					height: height,
 				}
 			),
 			items,

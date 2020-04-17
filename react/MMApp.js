@@ -456,7 +456,7 @@ export function MMApp(props) {
 		if (!newName) {
 			return;
 		}
-		
+
 		doCommand(`${path} renameto ${newName}`, (results) => {
 			// fix up things in the view info to reflect the new name
 			if (results.error) {

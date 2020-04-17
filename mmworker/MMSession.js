@@ -1164,10 +1164,26 @@ class MMTool extends MMCommandParent {
 	get verbs() {
 		let verbs = super.verbs;
 		verbs['toolviewinfo'] = this.toolViewInfo;
-
 		return verbs;
 	}
-	
+
+	/** @method getVerbUsageKey
+	 * @override
+	 * @param {string} command - command to get the usage key for
+	 * @returns {string} - the i18n key, if it exists
+	 */
+	getVerbUsageKey(command) {
+		let key = {
+			addtool: 'mmcmd:?toolViewInfo',
+		}[command];
+		if (key) {
+			return key;
+		}
+		else {
+			return super.getVerbUsageKey(command);
+		}
+	}
+
 	/**
 	 * @method parameters
 	 * i.e. things that can be appended to a formula value

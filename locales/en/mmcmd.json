@@ -63,7 +63,8 @@
 	"?matrixSetRowCount": "set row count\n\nusage: setrowcount countFormula",
 	"?modelAddTool": "usage: addTool typeName [name] [x y]\n\nif second argument is present and a number, it is assumed to be x",
 	"?modelDgmInfo": "returns tool info used for diagram\n\nusage: dgmInfo",
-	"?modelRemoveTool": "removed the named tool from the model\n\nusage: removetool toolName",
+	"?modelPaste": "Paste tool(s) into model\n\nusage: paste positionX positionY toolJson",
+	"?modelRemoveTool": "removed the named tool(s) from the model\n\nusage: removetool toolName {toolName...}",
 	"?modelRestoreTool": "used by undo to restore a deleted tool to a model\n\nusage restoretool recoveryJson",
 	"?modelSetPositions": "usage: setpositions {series of toolname x y values",
 	"?sessionCopy": "Create a copy of a session\n\nusage: copy fromPath toPath",
@@ -83,5 +84,6 @@
 	"?tableRestoreColumn": "used by undo to restore a deleted table column\n\nusage restorecolumn columnNumber recoveryJson",
 	"?tableRestoreRows": "used by undo to restore a deleted table row\n\nusage restorerows recoveryJson",
 	"?tableSetCell": "sets value of cell\n\nusage: setcell rowNumber columnNumber value",
+	"?toolViewInfo": "returns json information about tool used for info views\n\nusage: toolPath toolviewinfo",
 	"?toolValue": "returns value as json\n\nusage: value"
 }

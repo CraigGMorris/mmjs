@@ -33,6 +33,8 @@ class MMModel extends MMTool {
 		verbs['restoretool'] = this.restoreToolCommand;
 		verbs['dgminfo'] = this.diagramInfoCommand;
 		verbs['setpositions'] = this.setPositions;
+		verbs['copytool'] = this.copyToolCommand;
+		verbs['paste'] = this.pasteCommand;
 
 		return verbs;
 	}
@@ -48,7 +50,9 @@ class MMModel extends MMTool {
 			removetool: 'mmcmd:?modelRemoveTool',
 			restoretool: 'mmcmd:?modelRestoreTool',
 			dgminfo: 'mmcmd:?modelDgmInfo',
-			setpositions: 'mmcmd:?modelSetPositions'
+			setpositions: 'mmcmd:?modelSetPositions',
+			copytool: 'mmcmd:?modelCopyTool',
+			paste: 'mmcmd:?modelPaste'
 		}[command];
 		if (key) {
 			return key;
@@ -166,25 +170,25 @@ class MMModel extends MMTool {
 	/** @method removeToolCommand
 	 * removes named tool from the model
 	 * @param {MMCommand} command
-	 * command.args should be the tool name
+	 * command.args should be the tool name(s)
 	 * @returns {boolean} success
 	 */
 	removeToolCommand(command) {
-		const name = command.args;
-		const tool = this.childNamed(name);
-		if (tool) {
-			const savedTool = tool.saveObject();
-			const toolJson = JSON.stringify(savedTool);
-			tool.forgetCalculated();
-			const success = this.removeChildNamed(name);
-			if (success) {
-				command.undo = `__blob__${this.getPath()} restoretool__blob__${toolJson}`;
+		const names = command.args.split(/\s/);
+		const savedTools = [];
+		for (let name of names) {
+			const tool = this.childNamed(name);
+			if (tool) {
+				const savedTool = tool.saveObject();
+				tool.forgetCalculated();
+				const success = this.removeChildNamed(name);
+				if (success) {
+					savedTools.push(savedTool);
+				}
 			}
-			command.results = success;
 		}
-		else {
-			command.results = false;
-		}
+		const json = JSON.stringify(savedTools);
+		command.undo = `__blob__${this.getPath()} restoretool__blob__${json}`;
 	}
 
 	/**
@@ -209,11 +213,97 @@ class MMModel extends MMTool {
 	 * in the form __blob__/.x restoretool__blob__ followed by the json text
 	 */
 	restoreToolCommand(command) {
-		const saved = JSON.parse(command.args);
-		this.restoreTool(saved);
-		command.undo = `${this.getPath()} removetool ${saved.name}`
+		const savedTools = JSON.parse(command.args);
+
+		for (let saved of savedTools) {
+			this.restoreTool(saved);
+		}
+		const names = savedTools.map(t => t.name);
+		command.undo = `${this.getPath()} removetool ${names.join(' ')}`
 		command.results = true;
 	}
+
+	/** @method copyToolCommand
+	 * collects saveObject infomation about the tool(s) and assigns it as json to command.results
+	 * @param {MMCommand} command
+	 * command.args should be the tool name(s)
+	 * @returns {String} json
+	 */
+	copyToolCommand(command) {
+		const names = command.args.split(/\s/);
+		const savedTools = [];
+		for (let name of names) {
+			const tool = this.childNamed(name);
+			if (tool) {
+				savedTools.push(tool.saveObject());
+			}
+		}
+		const json = `{"CopyObjects": ${JSON.stringify(savedTools, null, '\t')}}`;
+		command.results = json;
+	}
+
+	/**
+	 * @method pasteCommand
+	 * @param {MMCommand} command
+	 * command.args should be the tool x y toolJson
+	 * in the form __blob__/.x paste x y__blob__ followed by the json text
+	 */
+	pasteCommand(command) {
+		const indicesMatch = command.args.match(/^[\d.]+\s+[\d.]+\s+/);
+		if (indicesMatch) {
+			const parts = indicesMatch[0].split(/\s+/,2);
+			if (parts.length === 2) {
+				const json = command.args.substring(indicesMatch[0].length);
+				const saved = JSON.parse(json);
+				const originX = parseFloat(parts[0]);
+				const originY = parseFloat(parts[1]);
+			if (saved.CopyObjects) {
+					const tools = saved.CopyObjects;
+
+					// need to adjust positions to offset from the supplied upper left
+					let minX = null;
+					let minY = null;
+					for(let toolInfo of tools) {
+						if (minX === null) {
+							minX = toolInfo.DiagramX;
+							minY = toolInfo.DiagramY;
+						}
+						else {
+							minX = Math.min(minX, toolInfo.DiagramX);
+							minY = Math.min(minY, toolInfo.DiagramY);
+						}
+					}
+
+					const names = [];
+					for(let toolInfo of tools) {
+						toolInfo.DiagramX += originX - minX;
+						toolInfo.DiagramY += originY - minY;
+						const name = toolInfo.name;
+						let number = 1;
+						while ( this.childNamed(toolInfo.name) ) {
+							toolInfo.name = `${name}_${number++}`;
+						}
+						names.push(toolInfo.name);
+						this.restoreTool(toolInfo);
+					}
+					command.undo = `${this.getPath()} removetool ${names.join(' ')}`
+				}
+				else {
+					// just a single tool - probably copied from app based minion
+					saved.DiagramX = originX;
+					saved.DiagramY = originY;
+					let number = 1;
+					while ( this.childNamed(saved.name) ) {
+						saved.name = `${name}_${number++}`;
+					}
+					this.restoreTool(saved);
+					command.undo = `${this.getPath()} removetool ${saved.name}`
+				}
+				command.results = true;
+			}
+		}
+	}
+
 
 	/**
 	 * @method diagramInfo
