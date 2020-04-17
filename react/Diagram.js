@@ -478,10 +478,11 @@ export class Diagram extends React.Component {
 						// bring up context menu, but only if click is below title and return text
 						this.setState((state) => {
 							const scale = state.scale;
-							const position = {
+							let position = {
 								x: state.lastPointer.x / scale - state.translate.x,
 								y: state.lastPointer.y / scale - state.translate.y
 							};
+							position = snapPosition(position);
 				
 							return {
 								selectionBox: null,
@@ -612,6 +613,7 @@ export class Diagram extends React.Component {
 				draggedTo: this.draggedTo,
 				pushModel: this.props.actions.pushModel,
 				pushTool: this.props.actions.pushTool,
+				dimmed: this.state.selectedObject && toolName !== this.state.selectedObject,
 				showContext: (shouldShow) => {
 					this.setState({
 						showContext: shouldShow,
@@ -1174,7 +1176,8 @@ class ToolIcon extends React.Component {
 					x: (x + translate.x)*scale,
 					y: (y + translate.y)*scale,
 					width: objectWidth*scale,
-					height: objectHeight*scale
+					height: objectHeight*scale,
+					opacity: this.props.dimmed ? 0.5 : 1.0,
 				},
 				e(
 					'text', {
@@ -1229,7 +1232,8 @@ class ToolIcon extends React.Component {
 					x: (x + translate.x)*scale,
 					y: (y + translate.y)*scale,
 					width: objectWidth*scale,
-					height: objectHeight*scale
+					height: objectHeight*scale,
+					opacity: this.props.dimmed ? 0.5 : 1.0,
 				},
 				e(
 					'text', {
