@@ -333,7 +333,8 @@ class MMDataTable extends MMTool {
 	 * @param {Object} saved - from json
 	 */
 	restoreColumn(columnNumber, saved) {
-		const column = new MMDataTableColumn(this, saved.name, saved.displayUnit);
+		const displayUnit = saved.sValues ? 'string' : saved.displayUnitl
+		const column = new MMDataTableColumn(this, saved.name, displayUnit);
 		column.initFromSaved(saved);
 		this.columnArray.splice(columnNumber - 1, 0, column);
 	}

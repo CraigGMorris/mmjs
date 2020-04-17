@@ -1270,7 +1270,7 @@ class ToolIcon extends React.Component {
 
 		let notesLineComponents = [];
 		let notesComponent;
-		if (info.notes.length) {
+		if (info.notes && info.notes.length) {
 			if (info.diagramNotes) {
 				const lines = info.notes.split('\n');
 				let maxLineChars = 25;
