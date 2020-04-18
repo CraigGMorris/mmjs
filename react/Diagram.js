@@ -1,5 +1,7 @@
 'use strict';
 
+import { writeClipboard, readClipboard, hasSystemClipboard, ClipboardView } from "./Clipboard.js";
+
 // this works better as a class component as one can then have a ref to it
 // and call getModelInfo with the appropriate scaling argument to update it
 // on session and model changes
@@ -79,7 +81,8 @@ export class Diagram extends React.Component {
 			selectionBox: null,
 			translate: {x: 0, y: 0},
 			scale: 1.0,
-			showContext: null,				
+			showContext: null,
+			showClipboard: false,				
 		}
 
 		this.setDragType = this.setDragType.bind(this);
@@ -474,7 +477,10 @@ export class Diagram extends React.Component {
 					this.createSelectionBox(e.clientX, e.clientY);
 				}
 				else {
-					if (e.clientY - this.props.diagramBox.top > 15) {
+					if (this.state.showClipboard) {
+						this.setState({showClipboard: false});
+					}
+					else if (e.clientY - this.props.diagramBox.top > 15) {
 						// bring up context menu, but only if click is below title and return text
 						this.setState((state) => {
 							const scale = state.scale;
@@ -567,6 +573,10 @@ export class Diagram extends React.Component {
 	}
 
 	onWheel(e) {
+		if (this.state.showClipboard) {
+			return;
+		}
+
 		e.preventDefault(); // chrome complains and remvoing seems ok
 		e.stopPropagation();
 		const deltaY = e.deltaY;
@@ -812,35 +822,47 @@ export class Diagram extends React.Component {
 		if (this.state.showContext) {
 			switch (this.state.showContext.type) {
 				case ContextMenuType.background: {
+					const menu = [
+						{
+							text: 'Add Tool to Model',
+							action: () => {
+								this.setState({
+									showContext: {
+										type: ContextMenuType.addTool,
+										info: this.state.showContext.info,
+									}
+								})
+							}
+						},
+						{
+							text: 'Paste to Model',
+							action: () => {
+								readClipboard().then(clipText => {
+									const position = this.state.showContext.info;
+									this.props.actions.doCommand(`__blob__${this.state.path} paste ${position.x} ${position.y}__blob__${clipText}`, () => {
+										this.setState({showContext: null});
+										this.props.actions.updateView();
+									});
+								});
+							}
+						},
+					];
+
+					if (!hasSystemClipboard()) {
+						menu.push({
+							text: 'Show Clipboard',
+							action: () => {
+								// this.props.actions.pushView('clipboard', 'react:clipboardTitle');
+								this.setState({showContext: null, showClipboard: true});
+							}
+						});
+					}
+
 					contextMenu = e(
 						ContextMenu, {
 							key: 'context',
 							t: t,
-							menu: [
-								{
-									text: 'Add Tool to Model',
-									action: () => {
-										this.setState({
-											showContext: {
-												type: ContextMenuType.addTool,
-												info: this.state.showContext.info,
-											}
-										})
-									}
-								},
-								{
-									text: 'Paste to Model',
-									action: () => {
-										navigator.clipboard.readText().then(clipText => {
-											const position = this.state.showContext.info;
-											this.props.actions.doCommand(`__blob__${this.state.path} paste ${position.x} ${position.y}__blob__${clipText}`, () => {
-												this.setState({showContext: null});
-												this.props.actions.updateView();
-											});
-										});
-									}
-								},
-							]
+							menu: menu,
 						}
 					)
 				}
@@ -871,7 +893,7 @@ export class Diagram extends React.Component {
 									action: (info) => {
 										this.props.actions.doCommand(`${this.state.path} copytool ${info.name}`, (results) => {
 											if (!results.error) {
-												navigator.clipboard.writeText(results[0].results);
+												writeClipboard(results[0].results);
 											}
 											this.setState({showContext: null});
 										});
@@ -883,7 +905,7 @@ export class Diagram extends React.Component {
 									action: (info) => {
 										this.props.actions.doCommand(`${this.state.path}.${info.name} saveobject`, (results) => {
 											if (!results.error) {
-												navigator.clipboard.writeText(results[0].results).then(() => {
+												writeClipboard(results[0].results).then(() => {
 													deleteTool(info);
 												});
 											}
@@ -955,7 +977,7 @@ export class Diagram extends React.Component {
 						}
 						this.props.actions.doCommand(`${this.state.path} copytool ${names.join(' ')}`, (results) => {
 							if (!results.error) {
-								navigator.clipboard.writeText(results[0].results);
+								writeClipboard(results[0].results);
 								if (deleteAfterCopy) {
 									deleteTools();
 								}
@@ -1004,17 +1026,22 @@ export class Diagram extends React.Component {
 										copyTools(true);
 									}
 								}
-							]
+							],
 						}
 					)
 				}
 					break;
 			}
 		}
-
+		let clipboardComponent;
+		if (this.state.showClipboard) {
+			clipboardComponent = e(
+				ClipboardView, {}
+			)
+		}
 		return e(
 			'div', {
-				id: '#diagram__wrapper',
+				id: 'diagram__wrapper',
 				ref: node => this.node = node,
 				style: {
 					height: '100%',
@@ -1041,6 +1068,7 @@ export class Diagram extends React.Component {
 				contextMenu,
 				textList,
 			),
+			clipboardComponent,
 		);
 	}
 }

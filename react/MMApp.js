@@ -2,6 +2,7 @@
 
 import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
+import {ClipboardView} from './Clipboard.js';
 import {SessionsView} from './SessionsView.js';
 import {Diagram} from './Diagram.js';
 import {UnitsView, UserUnitsView, UnitSetsView, UnitSetView} from './UnitsView.js';
@@ -102,6 +103,7 @@ export function MMApp(props) {
 	// {Object} infoViews - classes of info views used to construct the react component appearing in the info view
 	const infoViews = {
 		'console': ConsoleView,
+		'clipboard': ClipboardView,
 		'sessions': SessionsView,
 		'units': UnitsView,
 		'userunits': UserUnitsView,
@@ -114,7 +116,7 @@ export function MMApp(props) {
 		'DataTable': DataTableView,
 	}
 
-	// information need to generate an console view component
+	// information need to generate a console view component
 	const consoleInfo = useRef({
 		title: 'react:consoleTitle',
 		path: '',
