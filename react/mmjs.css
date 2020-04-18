@@ -287,6 +287,9 @@ a:hover {
 }
 
 #diagram__wrapper {
+	/* touch-action: none needed to prevent pinch from zooming entire window on ios */
+	touch-action: none;
+	/* below needed to prevent long presses on diagram from selecting text on ios */
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -529,6 +532,13 @@ a:hover {
 	align-items: center;
 	background-color: var(--info-nav--bgcolor);
 	border-bottom: solid 1px var(--border--color);
+	/* below needed to prevent long presses on diagram from selecting text on ios */
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 #info-nav .three-column {
