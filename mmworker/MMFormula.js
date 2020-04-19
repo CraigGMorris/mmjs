@@ -1414,7 +1414,7 @@ class MMFormula extends MMCommandObject {
 		}
 		finally {
 			if (needToPop) {
-				this.parent.popModel();
+				theMMSession.popModel();
 			}
 		}
 	}
