@@ -1,6 +1,6 @@
 'use strict';
 
-import {MMCommandPipe} from '/mmworker/MMCommandPipe.js';
+import {MMCommandPipe} from '../mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
 import {ClipboardView} from './Clipboard.js';
 import {SessionsView} from './SessionsView.js';

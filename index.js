@@ -5,7 +5,7 @@
 
 */
 
-import {MMApp} from '/react/MMApp.js';
+import {MMApp} from './react/MMApp.js';
 
 const e = React.createElement;
 
@@ -20,7 +20,7 @@ i18next
 			defaultNS: 'cmd',
 			interpolation: { escapeValue: false },	// not html - if output is used for html, then escape
 			backend: {
-				loadPath: '/locales/{{lng}}/{{ns}}.json',
+				loadPath: './locales/{{lng}}/{{ns}}.json',
 			}
 		},
 		(err, t) => {

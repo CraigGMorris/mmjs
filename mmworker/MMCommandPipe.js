@@ -9,7 +9,7 @@ export class MMCommandPipe {
 	/** @constructor */
 	constructor() {
 		if (window.Worker) { // Check if Browser supports the Worker api.
-			this.cmdWorker = new Worker("/mmworker/MMCommandWorker.js");
+			this.cmdWorker = new Worker("./mmworker/MMCommandWorker.js");
 		}
 		else {
 			alert('No worker support');
