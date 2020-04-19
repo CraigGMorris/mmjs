@@ -3,6 +3,7 @@
 	MMTool:readonly
 	MMFormula:readonly
 	theMMSession:readonly
+	MMModel:readonly
 	MMNumberValue:readonly
 	MMStringValue:readonly
 	MMToolValue:readonly
@@ -49,13 +50,9 @@ class MMExpression extends MMTool {
 		if (newInput !== this._isInput ) {
 			this._isInput = newInput;
 			if (newInput) {
-				let model = this.parent.parent;
-				if (model) {
-					this.formula.nameSpace = model;
-				}
-				else {
-					this.formula.nameSpace = this.parent;
-				}
+				// nameSpace will be parent model, but
+				// check to ensure this isn't the root model and so actually has parent model
+				this.formula.nameSpace = this.parent.parent instanceof MMModel ? this.parent.parent : this.parent;
 			}
 			else {
 				this.formula.nameSpace = this.parent;
