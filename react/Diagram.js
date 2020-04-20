@@ -75,14 +75,21 @@ export class Diagram extends React.Component {
 		this.panSum = 0;
 		this.eventCache = [];
 		this.pinch = 0;
-		this.state = {
-			dragType: null,
-			dragSelection: null,
-			selectionBox: null,
-			translate: {x: 0, y: 0},
-			scale: 1.0,
-			showContext: null,
-			showClipboard: false,				
+		if (props.dgmStateStack.length) {
+			// if the diagram is being reconstructed after an expand, use the pushed state
+			this.state = props.dgmStateStack.pop();
+		}
+		else {
+			// create a default state
+			this.state = {
+				dragType: null,
+				dragSelection: null,
+				selectionBox: null,
+				translate: {x: 0, y: 0},
+				scale: 1.0,
+				showContext: null,
+				showClipboard: false,				
+			}
 		}
 
 		this.setDragType = this.setDragType.bind(this);

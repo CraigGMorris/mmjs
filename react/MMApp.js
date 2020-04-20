@@ -127,11 +127,11 @@ export function MMApp(props) {
 	});
 	
 	// calc pane style
-	const twoPane = document.documentElement.clientWidth >= 640;
+	const [docHeight, setDocHeight] = useState(document.documentElement.clientHeight - 16);
+	const [docWidth, setDocWidth] = useState(document.documentElement.clientWidth - 16);
+	const twoPane = docWidth >= 640;
 	const [allow2Pane, setAllow2Pane] = useState(twoPane);
-
 	const [viewType, setViewType] = useState(twoPane ? ViewType.twoPanes : ViewType.diagram);
-
 	const [viewInfo, setViewInfo] = useState(initialInfo);
 
 	const diagramRef = React.useRef(null);
@@ -139,20 +139,46 @@ export function MMApp(props) {
 	useEffect(() => {
 		const setSize = () => {
 			const docElement = document.documentElement;
-			const docHeight = docElement.clientHeight;
-			const docWidth = docElement.clientWidth;
-			document.body.style.height = `${docHeight-16}px`;
-			document.body.style.width = `${docWidth-16}px`;
-			const twoPane = docWidth >= 640;
+			const newDocHeight = docElement.clientHeight - 16;
+			const newDocWidth = docElement.clientWidth - 16;
+			setDocHeight(newDocHeight);
+			setDocWidth(newDocWidth);
+			document.body.style.height = `${newDocHeight}px`;
+			document.body.style.width = `${newDocWidth}px`;
+			const twoPane = newDocWidth >= 640;
 			setAllow2Pane(twoPane);
-			setViewType(twoPane ? ViewType.twoPanes : ViewType.diagram);
+			if (viewType !== ViewType.info) {
+				setViewType(twoPane ? ViewType.twoPanes : ViewType.diagram);
+			}
 		};
 		setSize();
 		window.addEventListener('resize', setSize);
 		return () => {
 			window.removeEventListener('resize', setSize);
 		}
-	}, []);
+	}, [viewType]);
+
+	/** setStateViewType
+	 * sets the actual viewType, but with some additional processing
+	 * @param {ViewType} newType
+	 */
+	const setStateViewType = useCallback((newType) => {
+		// save the diagram state when switching to type info
+		// so it can be reinitialized when constructed again
+		if (newType === viewType) {
+			return;
+		}
+		if (newType === ViewType.info) {
+			if (diagramRef.current) {
+				dgmStateStack.push({...diagramRef.current.state});
+			}
+			else {
+				dgmStateStack.push(null);
+			}
+		}
+		console.log(`new view type ${newType}`);
+		setViewType(newType);
+	}, [viewType]);
 
 	/** resetInfoStack
 	 * @param {string} rootName
@@ -312,8 +338,8 @@ export function MMApp(props) {
 		};
 		infoStack.push(newInfoState);
 		setViewInfo(newInfoState);
-		setViewType(viewType === ViewType.diagram ? ViewType.info : viewType);
-	},[viewType]);
+		setStateViewType(viewType === ViewType.diagram ? ViewType.info : viewType);
+	},[viewType, setStateViewType]);
 
 	/** popView
 	 * if more than one thing on info stack, it pops the last one
@@ -431,10 +457,10 @@ export function MMApp(props) {
 			};
 			infoStack.push(newInfoState);
 			setViewInfo(newInfoState);
-			setViewType(viewType === ViewType.diagram ? ViewType.info : viewType);
+			setStateViewType(viewType === ViewType.diagram ? ViewType.info : viewType);
 			updateDiagram();
 		});
-	}, [doCommand, updateDiagram, updateView, viewType]);
+	}, [doCommand, updateDiagram, updateView, viewType, setStateViewType]);
 
 	/**
 	 * pushConsole
@@ -443,8 +469,8 @@ export function MMApp(props) {
 	const pushConsole = useCallback(() => {
 		infoStack.push(consoleInfo.current);
 		setViewInfo(consoleInfo.current);
-		setViewType(viewType === ViewType.diagram ? ViewType.info : viewType)
-	}, [viewType]);
+		setStateViewType(viewType === ViewType.diagram ? ViewType.info : viewType)
+	}, [viewType, setStateViewType]);
 
 	/**
 	 * showHelp
@@ -529,9 +555,6 @@ export function MMApp(props) {
 	let title = '';
 	let infoView = null;
 	let infoNav = null;
-	const docElement = document.documentElement;
-	const docHeight = docElement.clientHeight-16;
-	const docWidth = docElement.clientWidth-16;
 	const infoWidth = (viewType !== ViewType.info) ? 320 : docWidth;
 	const toolHeight = 40;
 	const navHeight = 40;
@@ -593,6 +616,7 @@ export function MMApp(props) {
 			infoWidth: infoView ? infoWidth : 0,
 			diagramBox: diagramBox,
 			actions: actions,
+			dgmStateStack: dgmStateStack,
 		});
 	}
 
@@ -616,15 +640,15 @@ export function MMApp(props) {
 				onClick: () => {
 					switch (viewType) {
 						case ViewType.twoPanes:
-							setViewType(ViewType.info);
+							setStateViewType(ViewType.info);
 							break;
 
 						case ViewType.diagram:
-							setViewType(allow2Pane ? ViewType.twoPanes : ViewType.info);
+							setStateViewType(allow2Pane ? ViewType.twoPanes : ViewType.info);
 							break;
 
 						case ViewType.info:
-							setViewType(allow2Pane ? ViewType.twoPanes : ViewType.diagram);
+							setStateViewType(allow2Pane ? ViewType.twoPanes : ViewType.diagram);
 							break;
 						default:
 							break;
