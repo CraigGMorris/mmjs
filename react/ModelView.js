@@ -1,10 +1,8 @@
 'use strict';
 
 import {ToolView} from './ToolView.js';
-import {readClipboard, writeClipboard} from './Clipboard.js'
 
 const e = React.createElement;
-const useState = React.useState;
 const useEffect = React.useEffect;
 
 /**
@@ -19,47 +17,151 @@ export function ModelView(props) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const [testPaste, setTestPaste] = useState('Nothing pasted yet!');
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
 	if (updateResults.error) {
-		return e(
-			'div', {
-				id: 'result-error'
-			},
-			t(updateResults.error.msgKey, updateResults.error.args)
-		);
+		props.actions.popView();
+		return null;
 	}
 
-//	let t = props.t;
+	const fields = [];
+	if (updateResults && updateResults.length) {
+		const results = updateResults[0].results;
+		if (results.inputs.length) {
+			fields.push(
+				e(
+					'div', {
+						id: 'model__inputs-title',
+						key: 'inputsTitle',
+					},
+					t('react:modelInputsTitle'),
+				)
+			);
+		}
+		for (let input of results.inputs) {
+			const cmp = e(
+				'div', {
+					key: `input_${input.name}`,
+					className: 'model__input-field',
+					onClick: () => {
+						props.actions.pushTool(input.name, 'Expression');
+					},
+				},
+				e(
+					'div', {
+						className: 'model__input-field-name',
+					},
+					input.name,
+				),
+				e(
+					'div', {
+						className: 'model__input-field-formula',
+					},
+					'= ', input.formula
+				),
+				e(
+					'div', {
+						className: 'model__input-field-value',
+					},
+					'=> ',
+					input.value
+				)
+			);
+			fields.push(cmp);
+		}
+
+		if (results.outputs.length) {
+			fields.push(
+				e(
+					'div', {
+						id: 'model__outputs-title',
+						key: 'outputsTitle'
+					},
+					t('react:modelOutputsTitle'),
+				)
+			);
+		}
+
+		for (let output of results.outputs) {
+			const cmp = e(
+				'div', {
+					key: `output_${output.name}`,
+					className: 'model__output-field',
+					onClick: () => {
+						props.actions.pushTool(output.name, 'Expression');
+					},
+				},
+				e(
+					'div', {
+						className: 'model__output-field-name',
+					},
+					output.name,
+				),
+				e(
+					'div', {
+						className: 'model__output-field-value',
+					},
+					'=> ', output.value
+				)
+			);
+			fields.push(cmp);
+		}
+
+		if (results.others.length) {
+			fields.push(
+				e(
+					'div', {
+						id: 'model__others-title',
+						key: 'othersTitle'
+					},
+					t('react:modelOthersTitle'),
+				)
+			);
+		}
+		for (let other of results.others) {
+			const cmp = e(
+				'div', {
+					key: `other${other.name}`,
+					className: 'model__other-field',
+					onClick: () => {
+						if (other.type === 'Model') {
+							props.actions.pushModel(other.name)
+						}
+						else {
+							props.actions.pushTool(other.name, other.type);
+						}
+					},
+				},
+				e(
+					'div', {
+						className: 'model__other-field-type',
+					},
+					other.type, ': ',
+				),
+				e(
+					'div', {
+						className: 'model__other-field-name',
+					},
+					other.name
+				),
+			);
+			fields.push(cmp);
+		}
+	}
+
 	let displayComponent = e(
 		'div', {
-			key: 'model'
+			key: 'model',
+			id: 'model',
 		},
 		e(
-			'button', {
-				onClick: () => {
-					// navigator.clipboard.writeText('Hi Charlie');
-					writeClipboard('one two three');
-				}
+			'div', {
+				id: 'model__fields-list',
 			},
-			'Test Copy'
+			fields,
 		),
-		e(
-			'button', {
-				onClick: () => {
-					readClipboard().then(clipText => {
-						setTestPaste(clipText);
-					})
-				}
-			},
-			'Test Paste'
-		),
-		e(
-			'div', {},
-			testPaste
-		)
 	);
+
 	return e(
 		ToolView, {
 			id: 'tool-view',

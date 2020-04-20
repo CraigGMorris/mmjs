@@ -690,14 +690,106 @@ a:hover {
 	grid-area: nav / 1 / info / 1;
 }
 
-#model {
-	height: 100%;
-	font-size: 1em;
+#model__fields-list {
+	width: 100%;
+	border-bottom: solid 1px;
+	box-sizing: border-box;
+	overflow-y: auto;
+	height: calc(var(--info-height) - 30px);
+}
+
+#model__inputs-title {
+	border-bottom: solid 2px;
+	padding: 5px;
+}
+
+#model__outputs-title {
+	border-bottom: solid 2px;
+	border-top: solid 2px;
+	padding: 5px;
+}
+
+#model__others-title {
+	border-bottom: solid 2px;
+	border-top: solid 2px;
+	padding: 5px;
+}
+
+.model__input-field {
 	display: grid;
+	grid-template-rows: 1fr 1fr 1fr;
 	grid-template-columns: 1fr;
-	grid-template-rows: var(--input--height) 1fr;
 	grid-template-areas: "name"
-		"other"
+		"formula"
+		"value";
+	color: var(--link--color);
+	border-bottom: dashed 1px var(--border--color);
+	padding: 5px 0px;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.model__input-field-name {
+	grid-area: name;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.model__input-field-formula {
+	grid-area: formula;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.model__input-field-value {
+	grid-area: value;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.model__output-field {
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+	grid-template-columns: 1fr;
+	grid-template-areas: "name"
+		"value";
+	color: var(--link--color);
+	border-bottom: dashed 1px var(--border--color);
+	padding: 5px 0px;
+}
+
+.model__output-field-name {
+	grid-area: name;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.model__output-field-value {
+	grid-area: value;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.model__other-field {
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr 1fr;
+	grid-template-areas: "type name";
+	color: var(--link--color);
+	border-bottom: dashed 1px var(--border--color);
+	padding: 5px 0px;
+}
+
+.model__output-other-name {
+	grid-area: name;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.model__output-other-type {
+	grid-area: type;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 #sessions__wrapper {

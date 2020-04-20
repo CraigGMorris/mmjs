@@ -623,6 +623,7 @@ export class Diagram extends React.Component {
 				draggedTo: this.draggedTo,
 				pushModel: this.props.actions.pushModel,
 				pushTool: this.props.actions.pushTool,
+				updateView: this.props.actions.updateView,
 				dimmed: this.state.selectedObject && toolName !== this.state.selectedObject,
 				showContext: (shouldShow) => {
 					this.setState({
@@ -780,6 +781,7 @@ export class Diagram extends React.Component {
 				rect: this.state.selectionBox,
 				setDragType: this.setDragType,
 				draggedTo: this.draggedTo,
+				updateView: this.props.actions.updateView,
 				translate: this.state.translate,
 				scale: scale,
 				showContext: (shouldShow) => {
@@ -1147,7 +1149,10 @@ class ToolIcon extends React.Component {
 		}
 		this.setState({ dragging: false });
 		this.props.setDragType(null, null, {name: this.props.info.name});	
-		
+		if (this.panSum >= 1) {
+			this.props.updateView();  // to update model view input and output positions after tools dragged
+		}
+	
 		for (var i = 0; i < eCache.length; i++) {
 			if (eCache[i].id == e.pointerId) {
 				eCache.splice(i, 1);
@@ -1485,6 +1490,7 @@ class SelectionBox extends React.Component {
 		else {
 			this.setState({ dragging: false });
 			this.props.setDragType(null);
+			this.props.updateView();   // to update model view input and output positions after tools dragged
 		}
 
 		let eCache = this.eventCache;

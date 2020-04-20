@@ -325,7 +325,10 @@ export function MMApp(props) {
 				case 'Model':
 					doCommand('/ popmodel', () => {
 						if (dgmStateStack.length) {
-							diagramRef.current.setState(dgmStateStack.pop());
+							const dgmState = dgmStateStack.pop();
+							if (dgmState && diagramRef.current) {
+								diagramRef.current.setState(dgmState);
+							}
 						}
 						updateView(infoStack.length-1, false);
 					});
@@ -351,9 +354,17 @@ export function MMApp(props) {
 	 */
 	const pushModel = useCallback((modelName) => {
 		doCommand(`/ pushmodel ${modelName}`, (cmds) => {
-			dgmStateStack.push({...diagramRef.current.state});
+			if (diagramRef.current) {
+				dgmStateStack.push({...diagramRef.current.state});
+			}
+			else {
+				dgmStateStack.push(null);
+			}
 			const path = cmds[0].results;
 			if (cmds.length) {
+				while (infoStack.length > 1 && infoStack[infoStack.length - 1].viewKey !== 'Model') {
+					infoStack.pop();
+				}
 				const modelInfoState = {
 					title: modelName,
 					path: path,
@@ -361,9 +372,6 @@ export function MMApp(props) {
 					updateCommands: '',
 					updateResults: [],
 					viewKey: 'Model',
-				}
-				while (infoStack.length > 1 && infoStack[infoStack.length - 1].viewKey !== 'Model') {
-					infoStack.pop();
 				}
 				infoStack.push(modelInfoState);
 				setViewInfo(modelInfoState);
