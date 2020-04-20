@@ -695,7 +695,7 @@ a:hover {
 	border-bottom: solid 1px;
 	box-sizing: border-box;
 	overflow-y: auto;
-	height: calc(var(--info-height) - 30px);
+	height: calc(var(--info-height) - 33px);
 }
 
 #model__inputs-title {
