@@ -41,6 +41,9 @@ const commandCallBacks = new Map();
 // {Array} dgmStateStack - keeps diagram state when model is pushed over it
 let dgmStateStack = [];
 
+// time value used to avoid multiple alerts from same user operation
+let lastErrorTime = 0;
+
 // information need to generate initial root view component
 const initialInfo = {
 	title: 'root',
@@ -203,13 +206,20 @@ export function MMApp(props) {
 	 * @param {function} callBack - (cmds[]) => {}
 	 */
 	const doCommand = useCallback((cmd, callBack) => {
+		console.log(`doCommand ${cmd}`);
 		/**
 		 * errorAlert
 		 * @param {String} msg
 		 */
 		const errorAlert = (msg) => {
-			let s = `${props.t('mmcmd:error')}\n${msg}`;
-			alert(s);
+			const s = `${props.t('mmcmd:error')}\n${msg}`;
+
+			// avoid multiple alerts
+			const t = new Date().getTime();
+			if (t - lastErrorTime > 1000) {
+				alert(s);
+				lastErrorTime = new Date().getTime();
+			}
 		}
 
 		/**
