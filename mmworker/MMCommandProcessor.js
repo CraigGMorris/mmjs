@@ -305,7 +305,7 @@ class MMCommandProcessor {
  * @readonly
  * @enum {string}
  */
-/* export */ const PropertyType = Object.freeze({
+/* export */ const MMPropertyType = Object.freeze({
 	string: 'string',
 	int: 'int',
 	float: 'float',
@@ -313,7 +313,7 @@ class MMCommandProcessor {
 });
 /** Interface for property info
  * @interface PropertyInfo	
- * @property {PropertyType} type;
+ * @property {MMPropertyType} type;
  * @property {boolean} readOnly;
  */
 
@@ -379,8 +379,8 @@ class MMCommandProcessor {
 	get properties() {
 		return Object.assign({},
 			{
-			'name': {type: PropertyType.string, readOnly: true},
-			'className': {type: PropertyType.string, readOnly: true}
+			'name': {type: MMPropertyType.string, readOnly: true},
+			'className': {type: MMPropertyType.string, readOnly: true}
 			},
 			this.setProperties
 		);
@@ -545,7 +545,7 @@ class MMCommandProcessor {
 			propertyName = propertyName.substring(1);
 			if ( value.length > 0) {
 				this[propertyName] = value;
-				this.setProperties[propertyName] = { type: PropertyType.string, readOnly: false};
+				this.setProperties[propertyName] = { type: MMPropertyType.string, readOnly: false};
 			}
 			else {
 				delete this[propertyName];
@@ -556,16 +556,16 @@ class MMCommandProcessor {
 			let propInfo = this.properties[propertyName];
 			if (propInfo && !propInfo.readOnly) {
 				switch (propInfo.type) {
-					case PropertyType.string:
+					case MMPropertyType.string:
 						this[propertyName] = value;
 						break;
-					case PropertyType.int:
+					case MMPropertyType.int:
 						this[propertyName] = parseInt(value);
 						break;
-					case PropertyType.float:
+					case MMPropertyType.float:
 						this[propertyName] = parseFloat(value);
 						break;
-					case PropertyType.boolean:
+					case MMPropertyType.boolean:
 						if (value.length > 0 && value.toLocaleLowerCase()[0] == 't') {
 							this[propertyName] = true;
 						}

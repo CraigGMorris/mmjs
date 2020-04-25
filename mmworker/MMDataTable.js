@@ -7,7 +7,7 @@
 	MMNumberValue:readonly
 	MMFormula:readonly
 	MMUnit:readonly
-	PropertyType:readonly
+	MMPropertyType:readonly
 	theMMSession:readonly
 */
 
@@ -42,9 +42,9 @@ class MMDataTableColumn extends MMCommandObject {
 
 	get properties() {
 		let d = super.properties;
-		d['defaultValue'] = {type: PropertyType.string, readOnly: false};
-		d['displayUnit'] = {type: PropertyType.string, readOnly: false};
-		d['format'] = {type: PropertyType.string, readOnly: false};
+		d['defaultValue'] = {type: MMPropertyType.string, readOnly: false};
+		d['displayUnit'] = {type: MMPropertyType.string, readOnly: false};
+		d['format'] = {type: MMPropertyType.string, readOnly: false};
 		return d;
 	}
 

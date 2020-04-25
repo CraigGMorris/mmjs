@@ -6,7 +6,7 @@
 	MMFormula:readonly
 	MMNumberValue:readonly
 	MMTool:readonly
-	PropertyType:readonly
+	MMPropertyType:readonly
 	MMTableValue:readonly
 	MMTableValueColumn:readonly
 */
@@ -253,7 +253,7 @@ class MMMatrix extends MMTool {
 	/** @override */
 	get properties() {
 		let d = super.properties;
-		d['displayUnitName'] = {type: PropertyType.string, readOnly: false};
+		d['displayUnitName'] = {type: MMPropertyType.string, readOnly: false};
 		return d;
 	}
 

@@ -225,6 +225,15 @@ class MMValue {
 	}
 
 	/**
+	 * @method append
+	 * appends columns to value
+	 * @param {MMValue} additions
+	 */
+	append(/*additions*/) {
+		return null;
+	}
+
+	/**
 	 * @method jsonValue
 	 * @param {MMUnit} displayUnit
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
@@ -233,6 +242,19 @@ class MMValue {
 		this.exceptionWith('mmcmd:unimplemented');
 	}
 }
+
+/**
+ * Enum for dyadic units
+ * @readonly
+ * @enum {string}
+ */
+const MMDyadicUnitAction = Object.freeze({
+	none: '?',
+	equal: '=',
+	multiply: '*',
+	divide: '/',
+	power: '^',
+});
 
 /**
  * @class MMNumberValue
@@ -517,18 +539,59 @@ class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/**
+	 * @method append
+	 * appends columns to value
+	 * @param {MMValue} additions
+	*/
+	append(additions) {
+		additions = additions ? additions.numberValue() : null;
+		if (!additions) {
+			return this;
+		}
+		const thisColumnCount = this.columnCount;
+		const addColumnCount = additions.columnCount;
+		const addRowCount = additions.rowCount;
+		const columnCount = thisColumnCount + addColumnCount;
+		const rowCount = this.rowCount;
+
+		this.checkUnitDimensionsAreEqualTo(additions.unitDimensions);
+		const rv = new MMNumberValue(rowCount, columnCount, this.unitDimensions);
+		const rvValues = rv._values;
+		const thisValues = this._values;
+		const addValues = additions._values;
+
+		let column = 0;
+		// copy this to new value
+		for (let thisColumn = 0; thisColumn < thisColumnCount; thisColumn++) {
+			for (let row = 0; row < rowCount; row++) {
+				rvValues[row * columnCount + column] = thisValues[row * thisColumnCount + thisColumn];
+			}
+			column++;
+		}
+
+		for (let addColumn = 0; addColumn < addColumnCount; addColumn++) {
+			for (let row = 0; row < rowCount; row++) {
+				rvValues[row * columnCount + column] = addValues[(row % addRowCount) * addColumnCount + addColumn];
+			}
+			column++;
+		}
+	
+		return rv;
+	}
+
+
+
 	/*
 	 * dyadic functions
 	 */
 
 	/**
-	 * @method add
-	 * returns the sum of this and value
-	 * @param {MMNumberValue} value
-	 * @returns {MMNumberValue}
-	 */
-	add(value) {
-		this.checkUnitDimensionsAreEqualTo(value.unitDimensions);
+	* @method processDyadic
+	* @param {MMNumberValue} value
+	* @param {function} func
+	*/
+	processDyadic(value, func) {
 		let rv = this.dyadicNumberResult(value, this.unitDimensions);
 		let v1 = rv._values;
 		let v2 = value._values;
@@ -542,11 +605,24 @@ class MMNumberValue extends MMValue {
 			for(let j = 0; j < columnCount; j++) {
 				let cMine = j % this.columnCount;
 				let cValue = j % valueColumnCount;
-				v1[i*columnCount+j] = this._values[rMine*this.columnCount + cMine] +
-					v2[rValue*valueColumnCount + cValue];
+				v1[i*columnCount+j] = func(
+					this._values[rMine*this.columnCount + cMine],
+					v2[rValue*valueColumnCount + cValue]
+				);
 			}
 		}
-		return rv;
+		return rv;		
+	}
+
+	/**
+	 * @method add
+	 * returns the sum of this and value
+	 * @param {MMNumberValue} value
+	 * @returns {MMNumberValue}
+	 */
+	add(value) {
+		this.checkUnitDimensionsAreEqualTo(value.unitDimensions);
+		return this.processDyadic(value, (a,b) => a+b);
 	}
 
 	/**
@@ -557,24 +633,7 @@ class MMNumberValue extends MMValue {
 	 */
 	subtract(value) {
 		this.checkUnitDimensionsAreEqualTo(value.unitDimensions);
-		let rv = this.dyadicNumberResult(value, this.unitDimensions);
-		let v1 = rv._values;
-		let v2 = value._values;
-		let rowCount = rv.rowCount;
-		let columnCount = rv.columnCount;
-		let valueRowCount = value.rowCount;
-		let valueColumnCount = value.columnCount;
-		for(let i = 0; i < rowCount; i++) {
-			let rMine = i % this.rowCount;
-			let rValue = i % valueRowCount;
-			for(let j = 0; j < columnCount; j++) {
-				let cMine = j % this.columnCount;
-				let cValue = j % valueColumnCount;
-				v1[i*columnCount+j] = this._values[rMine*this.columnCount + cMine] -
-					v2[rValue*valueColumnCount + cValue];
-			}
-		}
-		return rv;
+		return this.processDyadic(value, (a,b) => a-b);
 	}
 
 	/**
@@ -584,23 +643,7 @@ class MMNumberValue extends MMValue {
 	 * @returns {MMNumberValue}
 	 */
 	multiply(value) {
-		let rv = this.dyadicNumberResult(value, this.unitDimensions);
-		let v1 = rv._values;
-		let v2 = value._values;
-		let rowCount = rv.rowCount;
-		let columnCount = rv.columnCount;
-		let valueRowCount = value.rowCount;
-		let valueColumnCount = value.columnCount;
-		for(let i = 0; i < rowCount; i++) {
-			let rMine = i % this.rowCount;
-			let rValue = i % valueRowCount;
-			for(let j = 0; j < columnCount; j++) {
-				let cMine = j % this.columnCount;
-				let cValue = j % valueColumnCount;
-				v1[i*columnCount+j] = this._values[rMine*this.columnCount + cMine] *
-					v2[rValue*valueColumnCount + cValue];
-			}
-		}
+		const rv = this.processDyadic(value, (a,b) => a*b);
 		rv.addUnitDimensions(value.unitDimensions);
 		return rv;
 	}
@@ -612,23 +655,7 @@ class MMNumberValue extends MMValue {
 	 * @returns {MMNumberValue}
 	 */
 	divide(value) {
-		let rv = this.dyadicNumberResult(value, this.unitDimensions);
-		let v1 = rv._values;
-		let v2 = value._values;
-		let rowCount = rv.rowCount;
-		let columnCount = rv.columnCount;
-		let valueRowCount = value.rowCount;
-		let valueColumnCount = value.columnCount;
-		for(let i = 0; i < rowCount; i++) {
-			let rMine = i % this.rowCount;
-			let rValue = i % valueRowCount;
-			for(let j = 0; j < columnCount; j++) {
-				let cMine = j % this.columnCount;
-				let cValue = j % valueColumnCount;
-				v1[i*columnCount+j] = this._values[rMine*this.columnCount + cMine] /
-					v2[rValue*valueColumnCount + cValue];
-			}
-		}
+		const rv = this.processDyadic(value, (a,b) => a/b);
 		rv.subtractUnitDimensions(value.unitDimensions);
 		return rv;
 	}
@@ -640,28 +667,13 @@ class MMNumberValue extends MMValue {
 	 * @returns {MMNumberValue}
 	 */
 	mod(value) {
-		let rv = this.dyadicNumberResult(value, this.unitDimensions);
-		let v1 = rv._values;
-		let v2 = value._values;
-		let rowCount = rv.rowCount;
-		let columnCount = rv.columnCount;
-		let valueRowCount = value.rowCount;
-		let valueColumnCount = value.columnCount;
-		for(let i = 0; i < rowCount; i++) {
-			let rMine = i % this.rowCount;
-			let rValue = i % valueRowCount;
-			for(let j = 0; j < columnCount; j++) {
-				let cMine = j % this.columnCount;
-				let cValue = j % valueColumnCount;
-				let first = Math.floor(Math.abs(this._values[rMine*this.columnCount + cMine]) + .1);
-				let second = Math.floor(Math.abs(v2[rValue*value.columnCount + cValue]) + .1);
-				if( second <= 0 ) {
-					return null;
-				}
-	
-				v1[i*columnCount+j] = first % second;
-			}
-		}
+		const rv = this.processDyadic(value, (a,b) => {
+			a % b;
+			// the objc version did the equivalent of the following,
+			// but I am not sure the floor operations should be included
+			// if not needed
+			// Math.floor(a + .1) % Math.floor(b + .1);
+		});
 		rv.subtractUnitDimensions(value.unitDimensions);
 		return rv;
 	}
@@ -688,23 +700,7 @@ class MMNumberValue extends MMValue {
 		if(value.valueCount > 1 && this.hasUnitDimensions()) {
 			this.exceptionWith('mmcmd:valuePowerOfArrayWithUnits');
 		}
-		let rv = this.dyadicNumberResult(value, this.unitDimensions);
-		let v1 = rv._values;
-		let v2 = value._values;
-		let rowCount = rv.rowCount;
-		let columnCount = rv.columnCount;
-		let valueRowCount = value.rowCount;
-		let valueColumnCount = value.columnCount;
-		for(let i = 0; i < rowCount; i++) {
-			let rMine = i % this.rowCount;
-			let rValue = i % valueRowCount;
-			for(let j = 0; j < columnCount; j++) {
-				let cMine = j % this.columnCount;
-				let cValue = j % valueColumnCount;
-				v1[i*columnCount+j] = Math.pow(this._values[rMine*this.columnCount + cMine],
-					v2[rValue*valueColumnCount + cValue]);
-			}
-		}
+		const rv = this.processDyadic(value, Math.pow);
 		rv.multiplyUnitDimensions(value.valueAtRowColumn(1,1));
 		return rv;
 	}
@@ -720,21 +716,18 @@ class MMNumberValue extends MMValue {
 		return new MMNumberValue(this.rowCount, this.columnCount, unitDimensions); 
 	}
 
-	/**
-	 * @member ln
-	 * returns natural log of this value
-	 * @returns {MMNumberValue}
+	/** @method genericMonadic
+	 * @param f - function taking a float value and returning the function result for it
+	 * @param {Number[]} unitDimensions - optional
 	 */
-	ln() {
-		this.checkUnitDimensionsAreEqualTo();
-		let rv = this.monadicResultWithUnitDimensions();
-		rv._values = this._values.map(Math.log);
+	genericMonadic(f, unitDimensions) {
+		this.checkUnitDimensionsAreEqualTo(unitDimensions);
+		let rv = new MMNumberValue(this.rowCount, this.columnCount, unitDimensions);
+		rv._values = this._values.map(f);
 		return rv;
 	}
 
-	/**
-	 * @member negative
-	 * returns this times -1
+	/** @method negative - returns this times -1
 	 * @returns {MMNumberValue}
 	 */
 	negative() {
@@ -766,6 +759,101 @@ class MMNumberValue extends MMValue {
 			}
 		}
 		return rv;
+	}
+
+	// complex value methods
+
+	/**
+	 * @method processComplexDyadic
+	 * @param {String} name - name of operation
+	 * @param {MMNumber} value - 2 column number value representing complex
+	 * @param {MMDyadicUnitAction} unitAction
+	 * @param {function} func
+	*/
+	processComplexDyadic(name, value, unitAction, func) {
+		let v1, v2;
+		[v1, v2] = this.complexNumberParameters(this, value);
+
+		const rowCount = (v2.rowCount > v1.rowCount) ? v2.rowCount : v1.rowCount;
+		let rv = new MMNumberValue(rowCount, 1, this.unitDimensions);
+		switch (unitAction) {
+			case MMDyadicUnitAction.none:
+				if (v1.hasUnitDimensions() || v2.hasUnitDimensions()) {
+					this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: name});
+				}
+				break;
+			case MMDyadicUnitAction.equal: 
+				v1.checkUnitDimensionsAreEqualTo(v2.unitDimensions);
+				break;
+			case MMDyadicUnitAction.multiply:
+				rv.addUnitDimensions(v2.unitDimensions);
+				break;
+			case MMDyadicUnitAction.divide:
+				rv.subtractUnitDimensions(v2.unitDimensions);
+				break;
+			case MMDyadicUnitAction.power:
+				if(v2.hasUnitDimensions()) {
+					this.exceptionWith('mmcmd:valuePowerHasUnits');
+				}
+				if(v2.valueCount > 1 && this.hasUnitDimensions()) {
+					this.exceptionWith('mmcmd:valuePowerOfArrayWithUnits');
+				}
+				rv.multiplyUnitDimensions(value.valueAtRowColumn(1,1));
+				break;
+			default:
+				return null;
+		}
+		const iv = rv.copyOf();
+		const rValues = rv._values;
+		const iValues = iv._values;
+		const count1 = v1.rowCount;
+		const count2 = v2.rowCount
+		for (let row = 0; row < rowCount; row++) {
+			const row1 = row % count1;
+			const row2 = row % count2;
+			const rThis = v1._values[(row1) * 2];  // columnCount must be 2
+			const iThis = v1._values[(row1) * 2 + 1];
+			const rValue = v2._values[(row2) * 2];  // columnCount must be 2
+			const iValue = v2._values[(row2) * 2 + 1];
+			let rResult, iResult;
+			[rResult, iResult] = func([rThis, iThis], [rValue, iValue]);
+			rValues[row] = rResult;
+			iValues[row] = iResult;
+		}
+
+		const displayUnit = theMMSession.unitSystem.baseUnitWithDimensions(rv.unitDimensions);
+		const rColumn = new MMTableValueColumn({
+			name: 'r',
+			displayUnit: displayUnit,
+			value: rv
+		})
+		const iColumn = new MMTableValueColumn({
+			name: 'i',
+			displayUnit: displayUnit,
+			value: iv
+		})
+		const complexValue = new MMTableValue({ columns: [rColumn, iColumn]});
+	
+		return complexValue;		
+	}
+
+	complexNumberParameters(v1, v2) {
+		if (v1.columnCount > 2 || v2.columnCount > 2) {
+			this.exceptionWith('mmcmd:formulaComplexColumnCount');
+		}
+
+		if (v1.columnCount === 1) {
+			// assume real and add zero img column
+			const zero = MMNumberValue.scalarValue(0, v1.unitDimensions);
+			v1 = v1.append(zero);
+		}
+
+		if (v2.columnCount === 1) {
+			// assume real and add zero img column
+			const zero = MMNumberValue.scalarValue(0, v2.unitDimensions);
+			v2 = v2.append(zero);
+		}
+		return [v1, v2];
 	}
 
 	/**
@@ -981,6 +1069,37 @@ class MMStringValue extends MMValue {
 			rv.setValue(this.valueAtRowColumn(r, number), r, 1);
 		}
 	
+		return rv;
+	}
+
+	/**
+	 * @method append
+	 * appends columns to value
+	 * @param {MMValue} additions
+	*/
+	append(additions) {
+		let rv = null;
+		const rowCount = this.rowCount
+		if (additions instanceof MMStringValue && rowCount === additions.rowCount) {
+			const thisColumnCount = this.columnCount;
+			const addColumnCount = additions.columnCount
+			const columnCount = thisColumnCount + addColumnCount;
+			rv = new MMStringValue(this.rowCount, columnCount);
+			let column = 1;
+			for (let thisColumn = 1; thisColumn <= thisColumnCount; thisColumn++) {
+				for (let row = 1; row <= rowCount; row++) {
+					rv.setValue(this.valueAtRowColumn(row, thisColumn), row, column);
+				}
+				column++;
+			}
+
+			for (let addColumn = 1; addColumn <= addColumnCount; addColumn++) {
+				for (let row = 1; row <= rowCount; row++) {
+					rv.setValue(additions.valueAtRowColumn(row, addColumn), row, column);
+				}
+				column++
+			}
+		}
 		return rv;
 	}
 
@@ -1803,5 +1922,46 @@ class MMTableValue extends MMValue {
 		return `Table [ ${this.rowCount}, ${this.columnCount} ]`;
 	}
 
+	/**
+	 * @method numberValue
+	 * @override
+	 * @returns MMNumberValue
+	 */
+	numberValue() {
+		let rv;
+		if (this.columnCount) {
+			let numericCount = 0;
+			let firstNumeric;
+			const nc =  this.columnCount;
+			for (let i = 0; i < nc; i++) {
+				const column = this.columns[i];
+				if (column.value instanceof MMNumberValue) {
+					numericCount++;
+					if (!firstNumeric) {
+						firstNumeric = column.value;
+					}
+					else {
+						if (!MMUnitSystem.areDimensionsEqual(firstNumeric.unitDimensions, column.value.unitDimensions)) {
+							this.exceptionWith('mmcmd:tableNumericUnits')
+						}
+					}
+				}
+			}
+
+			if (firstNumeric) {
+				rv = new MMNumberValue(this.rowCount, numericCount, firstNumeric.unitDimensions);
+				for (let r = 1; r <= this.rowCount; r++) {
+					let outColumn = 1;
+					for (let i = 0; i < nc; i++) {
+						const column = this.columns[i];
+						if (column.value instanceof MMNumberValue) {
+							rv.setValue(column.value.valueAtRowColumn(r, 1), r, outColumn++);
+						}
+					}
+				}
+			}
+		}
+		return rv;
+	}
 }
 

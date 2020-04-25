@@ -3,7 +3,7 @@
 /* globals
 	MMCommandParent:readonly
 	MMCommandObject:readonly
-	PropertyType:readonly
+	MMPropertyType:readonly
 	MMCommandMessage:readonly
 */
 /**
@@ -495,12 +495,12 @@ class MMUnit extends MMCommandObject {
 	
 	get properties() {
 		let d = super.properties;
-		d['scale'] = {type: PropertyType.float, readOnly: false};
-		d['offset'] = {type: PropertyType.float, readOnly: false};
-		d['notes'] = {type: PropertyType.string, readOnly: false};
-		d['isMaster'] = {type: PropertyType.boolean, readOnly: true};
-		d['calcType'] = {type: PropertyType.int, readOnly: true};
-		d['dimensionString'] = {type: PropertyType.string, readOnly: true};
+		d['scale'] = {type: MMPropertyType.float, readOnly: false};
+		d['offset'] = {type: MMPropertyType.float, readOnly: false};
+		d['notes'] = {type: MMPropertyType.string, readOnly: false};
+		d['isMaster'] = {type: MMPropertyType.boolean, readOnly: true};
+		d['calcType'] = {type: MMPropertyType.int, readOnly: true};
+		d['dimensionString'] = {type: MMPropertyType.string, readOnly: true};
 		return d;
 	}
 
@@ -1460,7 +1460,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 
 	get properties() {
 		let d = super.properties;
-		d['defaultSetName'] = {type: PropertyType.string, readOnly: false};
+		d['defaultSetName'] = {type: MMPropertyType.string, readOnly: false};
 		return d;
 	}
 

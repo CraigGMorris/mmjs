@@ -13,8 +13,51 @@
 	MMCommandObject:readonly
 	MMCommandMessage:readonly
 	theMMSession:readonly
-	PropertyType:readonly
+	MMPropertyType:readonly
+	MMDyadicUnitAction:readonly
 */
+
+const MMBaseDyadicFunctions = {
+	// base functions called per element by MM functions
+	
+	// low level complex calculation functions
+	// all argments and returns are 2 value arrays [re, img]
+	complex: (a, b) => {  // create a complex value (i.e. table representation)
+		return [a[0], b[0]];
+	},
+	cMultiply: (a, b) => {
+		// if just real
+		if (a[1] === 0.0 && b[1] === 0.0) {
+			return [a[0] * b[0], 0];
+		}
+		return [ a[0]*b[0] - a[1]*b[1], a[0]*b[1] + a[1]*b[0] ];
+	},
+	cDivide: (a, b) => {
+		if (b[1] === 0.0) {
+			// real denominator
+			return [a[0]/b[0], a[1]/b[0]];
+		}
+
+		if (Math.abs(b[0]) < Math.abs(b[1])) {
+			const x = b[0] / b[1];
+			const t = b[0] * x + b[1];
+
+			return [
+				(a[0] * x + a[1]) / t,
+				(a[1] * x - a[0]) / t
+			];		
+		}
+		else {
+			const x = b[1] / b[0];
+			const t = b[1] * x + b[0];
+
+			return [
+				(a[0] + a[1] * x) / t,
+				(a[1] - a[0] * x) / t
+			];
+		}
+	},
+}
 
 // formula operators
 
@@ -57,14 +100,53 @@ var MMFormulaOpDictionary = {
 };
 
 var mmFunctionDictionary = {
+	// log functions
+	'exp': (f) => {return new MMGenericSingleFunction(f, Math.exp)},
+	'ln': (f) => {return new MMGenericSingleFunction(f, Math.log)},
+	'log': (f) => {return new MMGenericSingleFunction(f, Math.log10)},
+	// trig functions
+	'sin': (f) => {return new MMGenericSingleFunction(f, Math.sin)},
+	'cos': (f) => {return new MMGenericSingleFunction(f, Math.cos)},
+	'tan': (f) => {return new MMGenericSingleFunction(f, Math.tan)},
+	'asin': (f) => {return new MMGenericSingleFunction(f, Math.asin)},
+	'acos': (f) => {return new MMGenericSingleFunction(f, Math.acos)},
+	'atan': (f) => {return new MMGenericSingleFunction(f, Math.atan)},
+	'pi': (f) => {return new MMPiFunction(f)},
+	'complex': (f) => {return new MMComplexDyadicFunction(f, 'comple', MMDyadicUnitAction.equal, MMBaseDyadicFunctions.complex)},
+	'cmult': (f) => {return new MMComplexDyadicFunction(f, 'cmult', MMDyadicUnitAction.multiply, MMBaseDyadicFunctions.cMultiply)},
+	'cdiv': (f) => {return new MMComplexDyadicFunction(f, 'cdiv', MMDyadicUnitAction.divide, MMBaseDyadicFunctions.cDivide)},
+	'polar': (f) => {return new MMPolarFunction(f)},
+
+	// hyperbolic functions
+
+	// complex number functions
+
+	// reduction functions
+
+	// comparison functions
+
+	// matrix functions
 	'array': (f) => {return new MMArrayFunction(f)},
 	'cc': (f) => {return new MMConcatFunction(f)},
 	'concat': (f) => {return new MMConcatFunction(f)},
-	'ln': (f) => {return new MMLnFunction(f)},
-	'table': (f) => {return new MMTableFunction(f)},
 	'cell': (f) => {return new MMMatrixCellFunction(f)},
-	'row': (f) => {return new MMMatrixRowFunction(f)},
 	'col': (f) => {return new MMMatrixColumnFunction(f)},
+	'row': (f) => {return new MMMatrixRowFunction(f)},
+
+	// statistical functions
+
+	// table functions
+	'table': (f) => {return new MMTableFunction(f)},
+
+	// lookup functions
+
+	// string functions
+
+	// time functions
+
+	// 3d transform functions
+
+	// miscellaneous functions
 	'rand': (f) => {return new MMRandFunction(f)},
 }
 
@@ -813,22 +895,6 @@ class MMSingleValueFunction extends MMFunctionOperator {
 }
 
 /**
- * @class MMLnFunction
- * @extends MMSingleValueFunction
- */
-class MMLnFunction extends MMSingleValueFunction {
-	/**
-	 * @method operationOn
-	 * @override
-	 * @param {MMNumberValue} value
-	 * @returns {MMValue}
-	 */
-	operationOn(value) {
-		return value.ln();
-	}
-}
-
-/**
  * @class MMMultipleArgunebtFunction
  * @extends MMFunctionOperator
  * @member {MMFormulaOperator[]} arguments
@@ -882,18 +948,166 @@ class MMMultipleArgumentFunction extends MMFunctionOperator {
 	}
 }
 
-/**
- * @class MMArrayFunction
- * @extends MMMultipleArgumentFunction
- */
+class MMGenericSingleFunction extends MMSingleValueFunction {
+	constructor(formula, func) {
+		super(formula);
+		this.func = func;
+	}
+
+	operationOn(value) {
+		return value.genericMonadic(this.func);
+	}
+}
+
+class MMPiFunction extends MMFunctionOperator {
+	processArguments(operandStack) {
+		if (operandStack.length > 0 && operandStack[operandStack.length - 1] instanceof MMOperandMarker) {
+			operandStack.pop()
+			return true;
+		}
+		return false;
+	}
+
+	value() {
+		return MMNumberValue.scalarValue(Math.PI);
+	}
+}
+
+class MMComplexDyadicFunction extends MMMultipleArgumentFunction {
+	constructor(formula, name, unitAction, func) {
+		super(formula);
+		this.name = name;
+		this.func = func;
+		this.unitAction = unitAction;
+	}
+
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && (this.arguments.length !==  2)) {
+			return false; // needs two arguments
+		}
+		return rv;
+	}
+
+	value() {
+		let v1 = this.arguments[1].value().numberValue();
+		let v2 = this.arguments[0].value().numberValue();
+		return v1.processComplexDyadic(name, v2, this.unitAction, this.func);
+	}
+}
+
+class MMPolarFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && (this.arguments.length < 1 || this.arguments.length >  2)) {
+			return false; // needs one or two arguments
+		}
+		return rv;
+	}
+
+	value() {
+		const argCount = this.arguments.length;
+		const arg1 = this.arguments[0].value();
+		if (!arg1 || !arg1.valueCount) {
+			return null;
+		}
+
+		if (argCount === 1 && arg1.columnCount !== 2) {
+			this.formula.functionError('polar', 'mmcmd:formulaPolarSingleError');
+			return null;
+		}
+
+		let v1 = null;
+		let v2 = null;
+
+		if (arg1 instanceof MMTableValue) {
+			v1 = arg1.columns[0].value.numberValue();
+			v2 = arg1.columns[1].value.numberValue();
+		}
+		else {
+			v1 = arg1.numberValue();
+			if (!v1) {
+				return null;
+			}
+
+			if (argCount == 2) {
+				const arg2 = this.arguments[1].value();
+				if (arg2) {
+					v2 = arg2.numberValue()
+				}
+				if (!v2) {
+					return null;
+				}
+			}
+			else {
+				v2 = v1.valueForIndexRowColumn(MMNumberValue.scalarValue(0), MMNumberValue.scalarValue(2));
+				v1 = v1.valueForIndexRowColumn(MMNumberValue.scalarValue(0), MMNumberValue.scalarValue(1));
+			}
+		}
+
+		v1.checkUnitDimensionsAreEqualTo(v2.unitDimensions);
+		// const count = Math.max(v1.valueCount, v2.valueCount);
+		// const a = new MMNumberValue(count, 1, v1.unitDimensions);
+		// const r = new MMNumberValue(count, 1, v1.unitDimensions);
+
+		return MMNumberValue.scalarValue(1.23);
+	}	
+	
+	// 	NSUInteger count = MAX( v1.valueCount, v2.valueCount );
+	// 	RtmNumericValue *a = [[ RtmNumericValue alloc ] initWithRows: count
+	// 														 columns: 1
+	// 													unitDimensions: nil ];
+	// 	RtmNumericValue *r = [[ RtmNumericValue alloc ] initWithRows: count
+	// 														 columns: 1
+	// 													unitDimensions: v1.unitDimensions ];
+		
+	// 	double *rV = r.values;
+	// 	double *aV = a.values;
+	// 	double *xV = v1.values;
+	// 	double *yV = v2.values;
+	// 	NSUInteger count1 = v1.valueCount;
+	// 	NSUInteger count2 = v2.valueCount;
+	// 	_Complex double z;
+		
+	// 	for ( int i = 0; i < count; i++ ) {
+	// 		NSUInteger i1 = i % count1;
+	// 		NSUInteger i2 = i % count2;
+	
+	// 		double x = xV[ i1 ];
+	// 		double y = yV[ i2 ];
+	// 		z = x + y * I;
+	// 		rV[ i ] = cabs( z );
+	// 		if ( x > 0 )
+	// 			aV[ i ] = atan( y/x );
+	// 		else if (x < 0.0 ) {
+	// 			if ( y >= 0.0 )
+	// 				aV[ i ] = atan( y/x ) + M_PI;
+	// 			else
+	// 				aV[ i ] = atan( y/x ) - M_PI;
+	// 		} else {  // x == 0
+	// 			if ( y > 0.0 )
+	// 				aV[ i ] = M_PI / 2.0;
+	// 			else if ( y > 0 )
+	// 				aV[ i ] = -M_PI / 2.0;
+	// 			else
+	// 				aV[ i ] = y/x;  // is indeterminant so use 0/0
+	// 		}
+	// 	}
+		
+	// 	RtmTableValueColumn *aColumn = [[ RtmTableValueColumn alloc ]
+	// 									initWithName: @"a"
+	// 									displayUnit: nil
+	// 									value: a ];
+	// 	RtmTableValueColumn *rColumn = [[ RtmTableValueColumn alloc ]
+	// 									initWithName: @"r"
+	// 									displayUnit: nil
+	// 									value: r ];
+	// 	return [[ RtmTableValue alloc ] initWithColumns: @[ rColumn, aColumn ]];
+	// }
+}
+
 class MMArrayFunction extends MMMultipleArgumentFunction {
 
-	/**
-	 * @override
-	 * @function processArguments
-	 * @param {MMFormulaOperator[]} operandStack
-	 * @returns {boolean}
-	 */
 	processArguments(operandStack) {
 		let rv = super.processArguments(operandStack);
 		if (rv && this.arguments.length < 2) {
@@ -902,11 +1116,6 @@ class MMArrayFunction extends MMMultipleArgumentFunction {
 		return rv;
 	}
 
-	/**
-	 * @method value
-	 * @override
-	 * @returns {MMValue}
-	 */
 	value() {
 		let argCount = this.arguments.length;
 		let initValue = this.arguments[0].value();
@@ -970,18 +1179,7 @@ class MMArrayFunction extends MMMultipleArgumentFunction {
 	}
 }
 
-/**
- * @class MMConcatFunction
- * @extends MMMultipleArgumentFunction
- */
 class MMConcatFunction extends MMMultipleArgumentFunction {
-
-	/**
-	 * @override
-	 * @function processArguments
-	 * @param {MMFormulaOperator[]} operandStack
-	 * @returns {boolean}
-	 */
 	processArguments(operandStack) {
 		let rv = super.processArguments(operandStack);
 		if (rv && this.arguments.length < 1) {
@@ -990,11 +1188,6 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 		return rv;
 	}
 
-	/**
-	 * @method value
-	 * @override
-	 * @returns {MMValue}
-	 */
 	value() {
 		let valueCount = 0;
 		let first;
@@ -1076,17 +1269,7 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 	}	
 }
 
-/**
- * @class MMRandFunction
- * @extends MMMultipleArgumentFunction
- */
 class MMRandFunction extends MMMultipleArgumentFunction {
-
-	/**
-	 * @method value
-	 * @override
-	 * @returns {MMValue}
-	 */
 	value() {
 		const argCount = this.arguments.length;
 
@@ -1120,18 +1303,7 @@ class MMRandFunction extends MMMultipleArgumentFunction {
 	}
 }
 
-/**
- * @class MMTableFunction
- * @extends MMMultipleArgumentFunction
- */
 class MMTableFunction extends MMMultipleArgumentFunction {
-
-	/**
-	 * @override
-	 * @function processArguments
-	 * @param {MMFormulaOperator[]} operandStack
-	 * @returns {boolean}
-	 */
 	processArguments(operandStack) {
 		let rv = super.processArguments(operandStack);
 		if (rv && this.arguments.length < 1) {
@@ -1140,11 +1312,6 @@ class MMTableFunction extends MMMultipleArgumentFunction {
 		return rv;
 	}
 
-	/**
-	 * @method value
-	 * @override
-	 * @returns {MMValue}
-	 */
 	value() {
 		const argCount = this.arguments.length;
 		const nameParam = this.arguments[argCount -  1].value();
@@ -1212,17 +1379,7 @@ class MMTableFunction extends MMMultipleArgumentFunction {
 	}
 }
 
-/**
- * @class MMMatrixCellFunction
- * @extends MMMultipleArgumentFunction
- */
 class MMMatrixCellFunction extends MMMultipleArgumentFunction {
-	/**
-	 * @override
-	 * @function processArguments
-	 * @param {MMFormulaOperator[]} operandStack
-	 * @returns {boolean}
-	 */
 	processArguments(operandStack) {
 		let rv = super.processArguments(operandStack);
 		if (rv && this.arguments.length < 1) {
@@ -1235,11 +1392,6 @@ class MMMatrixCellFunction extends MMMultipleArgumentFunction {
 		return rv;
 	}
 
-	/**
-	 * @method value
-	 * @override
-	 * @returns {MMValue}
-	 */
 	value() {
 		const matrix = this.formula.parent;
 		let rv = null;
@@ -1264,17 +1416,7 @@ class MMMatrixCellFunction extends MMMultipleArgumentFunction {
 	}
 }
 
-/**
- * @class MMMatrixRowFunction
- * @extends MMMultipleArgumentFunction
- */
 class MMMatrixRowFunction extends MMFunctionOperator {
-	/**
-	 * @override
-	 * @function processArguments
-	 * @param {MMFormulaOperator[]} operandStack
-	 * @returns {boolean}
-	 */
 	processArguments(operandStack) {
 		if ((this.formula.owner instanceof MMMatrix)) {
 			return false;
@@ -1293,28 +1435,13 @@ class MMMatrixRowFunction extends MMFunctionOperator {
 		return false;
 	}
 
-	/**
-	 * @method value
-	 * @override
-	 * @returns {MMValue}
-	 */
 	value() {
 		const matrix = this.formula.parent;
 		return MMNumberValue.scalarValue(matrix.currentRow, null);
 	}
 }
 
-/**
- * @class MMMatrixColumnFunction
- * @extends MMMultipleArgumentFunction
- */
 class MMMatrixColumnFunction extends MMFunctionOperator {
-	/**
-	 * @override
-	 * @function processArguments
-	 * @param {MMFormulaOperator[]} operandStack
-	 * @returns {boolean}
-	 */
 	processArguments(operandStack) {
 		if ((this.formula.owner instanceof MMMatrix)) {
 			return false;
@@ -1333,11 +1460,6 @@ class MMMatrixColumnFunction extends MMFunctionOperator {
 		return false;
 	}
 
-	/**
-	 * @method value
-	 * @override
-	 * @returns {MMValue}
-	 */
 	value() {
 		const matrix = this.formula.parent;
 		return MMNumberValue.scalarValue(matrix.currentColumn, null);
@@ -1368,7 +1490,7 @@ class MMFormula extends MMCommandObject {
 	/** @override */
 	get properties() {
 		let d = super.properties;
-		d['formula'] = {type: PropertyType.string, readOnly: false};
+		d['formula'] = {type: MMPropertyType.string, readOnly: false};
 		return d;
 	}
 

@@ -8,7 +8,7 @@
 	MMStringValue:readonly
 	MMToolValue:readonly
 	MMTableValue:readonly
-	PropertyType:readonly
+	MMPropertyType:readonly
 */
 
 /**
@@ -34,9 +34,9 @@ class MMExpression extends MMTool {
 	/** @override */
 	get properties() {
 		let d = super.properties;
-		d['isInput'] = {type: PropertyType.boolean, readOnly: false};
-		d['isOutput'] = {type: PropertyType.boolean, readOnly: false};
-		d['displayUnitName'] = {type: PropertyType.string, readOnly: false};  // for scalar displayUnit
+		d['isInput'] = {type: MMPropertyType.boolean, readOnly: false};
+		d['isOutput'] = {type: MMPropertyType.boolean, readOnly: false};
+		d['displayUnitName'] = {type: MMPropertyType.string, readOnly: false};  // for scalar displayUnit
 		return d;
 	}
 

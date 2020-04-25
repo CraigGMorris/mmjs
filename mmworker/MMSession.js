@@ -3,7 +3,7 @@
 /* global
 	MMCommandParent:readonly
 	MMUnitSystem:readonly
-	PropertyType:readonly
+	MMPropertyType:readonly
 	MMModel:readonly
 	MMNumberValue:readonly
 	MMStringValue:readonly
@@ -227,7 +227,7 @@ class MMSession extends MMCommandParent {
 
 	get properties() {
 		let d = super.properties;
-		d['storePath'] = {type: PropertyType.string, readOnly: false};
+		d['storePath'] = {type: MMPropertyType.string, readOnly: false};
 		return d;
 	}
 
@@ -1136,10 +1136,10 @@ class MMTool extends MMCommandParent {
 
 	get properties() {
 		let d = super.properties;
-		d['displayName'] = {type: PropertyType.string, readOnly: true};
-		d['description'] = {type: PropertyType.string, readOnly: true};
-		d['notes'] = {type: PropertyType.string, readOnly: false};
-		d['diagramNotes'] = {type: PropertyType.boolean, readOnly: false};
+		d['displayName'] = {type: MMPropertyType.string, readOnly: true};
+		d['description'] = {type: MMPropertyType.string, readOnly: true};
+		d['notes'] = {type: MMPropertyType.string, readOnly: false};
+		d['diagramNotes'] = {type: MMPropertyType.boolean, readOnly: false};
 		return d;
 	}
 
