@@ -17,22 +17,33 @@
 	MMDyadicUnitAction:readonly
 */
 
-const MMBaseDyadicFunctions = {
-	// base functions called per element by MM functions
-	
+const MMFormulaFactory = (token, formula) => {
+	// creates the operators and functions for MMFormula
+	// bewarned, this is a huge function
+
+	// start with the low level functions that operate on scalar values
+
 	// low level complex calculation functions
 	// all argments and returns are 2 value arrays [re, img]
-	complex: (a, b) => {  // create a complex value (i.e. table representation)
+	// most of the complex code was shamelessly adapted from Complex.js
+	// 		Copyright (c) 2016, Robert Eisele (robert@xarg.org)
+	// 		Dual licensed under the MIT or GPL Version 2 licenses.
+
+	// functions taking complex arguments or returning complex values represent them
+	// as two value arrays [re, img]
+	const complex = (a, b) => {  // create a complex value (i.e. table representation)
 		return [a[0], b[0]];
-	},
-	cMultiply: (a, b) => {
+	}
+
+	const cMultiply = (a, b) => { // multiply two complex numbers
 		// if just real
 		if (a[1] === 0.0 && b[1] === 0.0) {
 			return [a[0] * b[0], 0];
 		}
 		return [ a[0]*b[0] - a[1]*b[1], a[0]*b[1] + a[1]*b[0] ];
-	},
-	cDivide: (a, b) => {
+	}
+
+	const cDivide = (a, b) => { // divide (a/b) two complex numbers
 		if (b[1] === 0.0) {
 			// real denominator
 			return [a[0]/b[0], a[1]/b[0]];
@@ -56,10 +67,110 @@ const MMBaseDyadicFunctions = {
 				(a[1] - a[0] * x) / t
 			];
 		}
-	},
-}
+	}
 
-// formula operators
+	const logHypot = (a, b) => {
+		// Calculates log(sqrt(a^2+b^2)) in a way to avoid overflows
+		// utility function returning real scalar
+		const absA = Math.abs(a);
+		const absB = Math.abs(b);
+
+		if (a === 0) {
+			return Math.log(absB);
+		}
+
+		if (b === 0) {
+			return Math.log(absA);
+		}
+
+		if (absA < 3000 && absB < 3000) {
+			return Math.log(a * a + b * b) * 0.5;
+		}
+		return Math.log(a / Math.cos(Math.atan2(b, a)));
+	}
+
+	const cPower = (a, b) => { // raise complex number a to the power of complex number b
+		if (b[0] === 0 && b[1] === 0) {
+			return [1, 0];
+		}
+
+		if (b[1] === 0) {
+			// exponent is real
+			if (a[1] === 0 && a[0] >= 0) {
+				return [Math.pow(a[0], b[0])];
+			}
+		}
+	}
+
+	const factories = {
+	// const MMFormulaOpDictionary = {
+		'+': () => {return new MMAddOperator()},
+		'-': () => {return new MMSubtractOperator()},
+		'*': () => {return new MMMultiplyOperator()},
+		'/': () => {return new MMDivideOperator()},
+		'%': () => {return new MMModOperator()},
+		'^': () => {return new MMPowerOperator()},
+		':': (f) => {return new MMRangeOperator(f)},
+	// };
+
+	// const MMFunctionDictionary = {
+		// log functions
+		'exp': (f) => {return new MMGenericSingleFunction(f, Math.exp)},
+		'ln': (f) => {return new MMGenericSingleFunction(f, Math.log)},
+		'log': (f) => {return new MMGenericSingleFunction(f, Math.log10)},
+		// trig functions
+		'sin': (f) => {return new MMGenericSingleFunction(f, Math.sin)},
+		'cos': (f) => {return new MMGenericSingleFunction(f, Math.cos)},
+		'tan': (f) => {return new MMGenericSingleFunction(f, Math.tan)},
+		'asin': (f) => {return new MMGenericSingleFunction(f, Math.asin)},
+		'acos': (f) => {return new MMGenericSingleFunction(f, Math.acos)},
+		'atan': (f) => {return new MMGenericSingleFunction(f, Math.atan)},
+		'pi': (f) => {return new MMPiFunction(f)},
+
+		// hyperbolic functions
+
+		// complex number functions
+		'complex': (f) => {return new MMComplexDyadicFunction(f, 'complex', MMDyadicUnitAction.equal, complex)},
+		'cmult': (f) => {return new MMComplexDyadicFunction(f, 'cmult', MMDyadicUnitAction.multiply, cMultiply)},
+		'cdiv': (f) => {return new MMComplexDyadicFunction(f, 'cdiv', MMDyadicUnitAction.divide, cDivide)},
+		'polar': (f) => {return new MMPolarFunction(f)},
+
+		// reduction functions
+
+		// comparison functions
+
+		// matrix functions
+		'array': (f) => {return new MMArrayFunction(f)},
+		'cc': (f) => {return new MMConcatFunction(f)},
+		'concat': (f) => {return new MMConcatFunction(f)},
+		'cell': (f) => {return new MMMatrixCellFunction(f)},
+		'col': (f) => {return new MMMatrixColumnFunction(f)},
+		'row': (f) => {return new MMMatrixRowFunction(f)},
+
+		// statistical functions
+
+		// table functions
+		'table': (f) => {return new MMTableFunction(f)},
+
+		// lookup functions
+
+		// string functions
+
+		// time functions
+
+		// 3d transform functions
+
+		// miscellaneous functions
+		'rand': (f) => {return new MMRandFunction(f)},
+	}
+
+	let op;
+	const factory = factories[token];
+	if (factory) {
+		op = factory(formula);
+	}
+	return op;
+}
 
 /**
  * @class MMFormulaOperator
@@ -87,67 +198,6 @@ class MMFormulaOperator {
 	 * @param {Set} sources
 	 */
 	addInputSourcesToSet(/* sources */) {}
-}
-
-var MMFormulaOpDictionary = {
-	'+': () => {return new MMAddOperator()},
-	'-': () => {return new MMSubtractOperator()},
-	'*': () => {return new MMMultiplyOperator()},
-	'/': () => {return new MMDivideOperator()},
-	'%': () => {return new MMModOperator()},
-	'^': () => {return new MMPowerOperator()},
-	':': (f) => {return new MMRangeOperator(f)}
-};
-
-var mmFunctionDictionary = {
-	// log functions
-	'exp': (f) => {return new MMGenericSingleFunction(f, Math.exp)},
-	'ln': (f) => {return new MMGenericSingleFunction(f, Math.log)},
-	'log': (f) => {return new MMGenericSingleFunction(f, Math.log10)},
-	// trig functions
-	'sin': (f) => {return new MMGenericSingleFunction(f, Math.sin)},
-	'cos': (f) => {return new MMGenericSingleFunction(f, Math.cos)},
-	'tan': (f) => {return new MMGenericSingleFunction(f, Math.tan)},
-	'asin': (f) => {return new MMGenericSingleFunction(f, Math.asin)},
-	'acos': (f) => {return new MMGenericSingleFunction(f, Math.acos)},
-	'atan': (f) => {return new MMGenericSingleFunction(f, Math.atan)},
-	'pi': (f) => {return new MMPiFunction(f)},
-	'complex': (f) => {return new MMComplexDyadicFunction(f, 'comple', MMDyadicUnitAction.equal, MMBaseDyadicFunctions.complex)},
-	'cmult': (f) => {return new MMComplexDyadicFunction(f, 'cmult', MMDyadicUnitAction.multiply, MMBaseDyadicFunctions.cMultiply)},
-	'cdiv': (f) => {return new MMComplexDyadicFunction(f, 'cdiv', MMDyadicUnitAction.divide, MMBaseDyadicFunctions.cDivide)},
-	'polar': (f) => {return new MMPolarFunction(f)},
-
-	// hyperbolic functions
-
-	// complex number functions
-
-	// reduction functions
-
-	// comparison functions
-
-	// matrix functions
-	'array': (f) => {return new MMArrayFunction(f)},
-	'cc': (f) => {return new MMConcatFunction(f)},
-	'concat': (f) => {return new MMConcatFunction(f)},
-	'cell': (f) => {return new MMMatrixCellFunction(f)},
-	'col': (f) => {return new MMMatrixColumnFunction(f)},
-	'row': (f) => {return new MMMatrixRowFunction(f)},
-
-	// statistical functions
-
-	// table functions
-	'table': (f) => {return new MMTableFunction(f)},
-
-	// lookup functions
-
-	// string functions
-
-	// time functions
-
-	// 3d transform functions
-
-	// miscellaneous functions
-	'rand': (f) => {return new MMRandFunction(f)},
 }
 
 /**
@@ -1986,9 +2036,11 @@ class MMFormula extends MMCommandObject {
 				else if (token == '{') {
 					if (++i < nTokens) {
 						token = tokens[i];
-						let f = mmFunctionDictionary[token];
-						if (f) {
-							let op = f(this);
+						// let f = MMFunctionDictionary[token];
+						// if (f) {
+						// 	let op = f(this);
+						let op = MMFormulaFactory(token, this);
+						if (op) {
 							operatorStack.push(op);
 							treatMinusAsUnary = true;
 							op = new MMOperandMarker();
@@ -2024,9 +2076,11 @@ class MMFormula extends MMCommandObject {
 						op = new MMUnaryMinusOperator();
 					}
 					else {
-						let opFactory = MMFormulaOpDictionary[token];
-						if (opFactory) {
-							op = opFactory(this);
+						op = MMFormulaFactory(token, this);
+						// let opFactory = MMFormulaOpDictionary[token];
+						// if (opFactory) {
+							// op = opFactory(this);
+						if (op) {
 							let prevOp = operatorStack[operatorStack.length - 1];
 							while (!(prevOp instanceof MMParenthesisOperator) &&
 								!(prevOp instanceof MMFunctionOperator) &&
