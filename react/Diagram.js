@@ -913,7 +913,7 @@ export class Diagram extends React.Component {
 									text: 'Cut',
 									info: this.state.showContext.info,
 									action: (info) => {
-										this.props.actions.doCommand(`${this.state.path}.${info.name} saveobject`, (results) => {
+										this.props.actions.doCommand(`${this.state.path} copytool  ${info.name}`, (results) => {
 											if (!results.error) {
 												writeClipboard(results[0].results).then(() => {
 													deleteTool(info);
