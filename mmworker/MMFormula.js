@@ -99,7 +99,32 @@ const MMFormulaFactory = (token, formula) => {
 			if (a[1] === 0 && a[0] >= 0) {
 				return [Math.pow(a[0], b[0])];
 			}
+			else if (a[0] === 0) {
+				// base is completely imaginary
+				// is the exponent a whole number
+				switch ((b[0] % 4 + 4) % 4) {
+					case 0:
+						return [(Math.pow(a[1], b[0]), 0)];
+					case 1:
+						return [0, Math.pow(a[1], b[0])];
+					case 2:
+						return [-Math.pow(a[1], b[0]), 0];
+					case 3:
+						return [0, -Math.pow(a[1], b[0])];
+				}
+			}
 		}
+
+		if (a[0] === 0 && a[1] === 0 && b[0] > 0 && b[1] >= 0) {
+			return [0,0];
+		}
+
+		const arg = Math.atan2(a[1], a[0]);
+		var loh = logHypot(a[0], a[1]);
+
+		const r = Math.exp(b[0] * loh - b[1] * arg);
+		const i = b[1] * loh + b[0] * arg;
+		return [r * Math.cos(i), r * Math.sin(i)];					
 	}
 
 	const factories = {
@@ -133,6 +158,7 @@ const MMFormulaFactory = (token, formula) => {
 		'complex': (f) => {return new MMComplexDyadicFunction(f, 'complex', MMDyadicUnitAction.equal, complex)},
 		'cmult': (f) => {return new MMComplexDyadicFunction(f, 'cmult', MMDyadicUnitAction.multiply, cMultiply)},
 		'cdiv': (f) => {return new MMComplexDyadicFunction(f, 'cdiv', MMDyadicUnitAction.divide, cDivide)},
+		'cpow': (f) => {return new MMComplexDyadicFunction(f, 'cpow', MMDyadicUnitAction.power, cPower)},
 		'polar': (f) => {return new MMPolarFunction(f)},
 
 		// reduction functions
