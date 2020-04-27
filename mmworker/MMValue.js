@@ -1501,6 +1501,11 @@ class MMTableValueColumn {
 				this._displayUnit = displayUnit;
 				return;
 			}
+			else if (this._value.rowCount === 0) {
+				this._value.setUnitDimensions(displayUnit.dimensions);
+				this._displayUnit = displayUnit;
+				return;
+			}
 		}
 
 		this.exceptionWith('mmcmd:displayUnitTypeMismatch', { unitName: displayUnit.name });
@@ -1557,6 +1562,18 @@ class MMTableValueColumn {
 				dimensions = insertValue.unitDimensions;
 			}
 
+			if (insertValue instanceof MMNumberValue &&
+				!MMUnitSystem.areDimensionsEqual(insertValue.unitDimensions, dimensions))
+			{
+				if (this.rowCount === 0) {
+					this._displayUnit = theMMSession.unitSystem.baseUnitWithDimensions(insertValue.unitDimensions);
+					dimensions = insertValue.unitDimensions;
+				}
+				else {
+					this.exceptionWith('mmcmd:tableAddRowUnitMismatch', {name: this.name});
+				}
+			}
+
 			let newValue = new MMNumberValue(nTotalRows, 1, dimensions);
 			if (oldValue) {
 				for (let i = 0; i < rowNumber - 1; i++ ) {
@@ -1568,12 +1585,6 @@ class MMTableValueColumn {
 				}
 			}
 			
-			if (insertValue instanceof MMNumberValue &&
-				!MMUnitSystem.areDimensionsEqual(insertValue.unitDimensions, dimensions))
-			{
-				this.exceptionWith('mmcmd:tableAddRowUnitMismatch', {name: this.name});
-			}
-
 			const calcValue = (insertValue instanceof MMNumberValue) ? insertValue._values[0] : 0.0;
 			newValue._values[rowNumber -1] = calcValue;
 			this._value = newValue;
@@ -1704,6 +1715,9 @@ class MMTableValueColumn {
 	initFromSaved(saved) {
 		if (saved.format) {
 			this.format = saved.format;
+		}
+		if (saved.displayUnit && saved.displayUnit !== 'string') {
+			this.displayUnit = theMMSession.unitSystem.unitNamed(saved.displayUnit);
 		}
 		if (this.isString) {
 			this._value = MMStringValue.stringArrayValue(saved.sValues);
@@ -1846,7 +1860,7 @@ class MMTableValue extends MMValue {
 	constructor(context) {
 		if (context.columns) {
 			const initWithColumns = (columns) => {
-				this.columns = Object.assign({}, columns);
+				this.columns = Array.from(columns)  // create copy
 				this._nameDictionary = {};
 				for (const column in this.columns) {
 					this._nameDictionary[column.lowerCaseName] = column;

@@ -392,8 +392,14 @@ class MMDataTable extends MMTool {
 	 */
 	addRow(rowNumber) {
 		let successCount = 0;
+		let error;
 		for (let column of this.columnArray) {
-			column.addRow(rowNumber);
+			try {
+				column.addRow(rowNumber);
+			} catch(e) {
+				error = e;
+				break;
+			}
 			if (column.columnValue.rowCount !== this.rowCount + 1) {
 				break;
 			}
@@ -409,9 +415,15 @@ class MMDataTable extends MMTool {
 		}
 		else {
 			// not all columns successfully added row for some reason
+			if (rowNumber === 0 && successCount > 0) {
+				rowNumber = this.columnArray[0].columnValue.rowCount;
+			}
 			for (let i = 0; i < successCount; i++) {
 				const column = this.columnArray[i];
-				column.RowNumber(rowNumber);
+				column.columnValue.removeRowNumber(rowNumber);
+			}
+			if (error) {
+				throw error;
 			}
 			return -1;
 		}
