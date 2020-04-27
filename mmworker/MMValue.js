@@ -1377,7 +1377,12 @@ class MMTableValueColumn {
 			const unitName = context.displayUnit ? context.displayUnit : 'Fraction';
 			this._value = context.value;
 			this.format = null;
-			if (!this._value) {
+			if (this._value) {
+				if (unitName) {
+					this._displayUnit = theMMSession.unitSystem.unitNamed(unitName);
+				}
+			}
+			else {
 				if (unitName.toLowerCase() === 'string') {
 					this._value = new MMStringValue(0, 0);
 				}

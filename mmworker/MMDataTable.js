@@ -62,6 +62,7 @@ class MMDataTableColumn extends MMCommandObject {
 
 	set displayUnit(unitName) {
 		this.columnValue.displayUnit = unitName;
+		this.parent.forgetCalculated();
 	}
 
 	get format() {

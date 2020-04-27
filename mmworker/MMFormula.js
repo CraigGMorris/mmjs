@@ -311,14 +311,93 @@ class MMDyadicOperator extends MMFormulaOperator {
 	 * @returns {MMValue}
 	 */
 	valueFor(v1, v2) {
+		const numberOpTable = (vn, vt) => {
+			// table operation number
+			if (vn.columnCount !== 1) {
+				// number value can only have a single column
+				vn.exceptionWith('mmcmd:tableArithNonscalarColumnCount');
+			}
+			const columns = [];
+			for (let column of vt.columns) {
+				if (column.value instanceof MMStringValue) {
+					// string columns aren't affected by operation
+					columns.push(column);
+				}
+				else if (column.value instanceof MMNumberValue) {
+					// perform the numeric operation between column value and second operand
+					const newValue = this.operationOn(column.value, vn);
+					let displayUnit;
+					if (MMUnitSystem.areDimensionsEqual(column.value.unitDimensions, newValue.unitDimensions)) {
+						displayUnit = column.displayUnit;
+					}
+					const newColumn = new MMTableValueColumn({
+						name: column.name,
+						displayUnit: displayUnit.name,
+						value: newValue
+					});
+					columns.push(newColumn);
+				}
+			}
+			return new MMTableValue({columns: columns});
+		}
+
 		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
 			return this.operationOn(v1, v2);
 		}
 		else if (v1 instanceof MMStringValue && v2 instanceof MMStringValue) {
 			return this.operationOn(v1, v2);
 		}
+		else if (v1 instanceof MMTableValue) {
+			if (v1.rowCount !== 1 && v2.rowCount !== 1 && v1.rowCount !== v2.rowCount) {
+				// must have same row count or one must have only one row
+				v1.exceptionWith('mmcmd:tableArithRowCount');
+			}
+			if (v2 instanceof MMNumberValue) {
+				return numberOpTable(v2, v1);
+			}
+			else if (v2 instanceof MMTableValue) {
+				// table operation table
+				if (v1.columnCount !== v2.columnCount) {
+					v1.exceptionWith('mmcmd:tableTableArithColumnCount')
+				}
+				const columns = [];
+				for (let i = 0; i < v1.columnCount; i++) {
+					const column1 = v1.columns[i];
+					const column2 = v2.columns[i];
+					const value1 = column1.value;
+					const value2 = column2.value;
+					if (Object.getPrototypeOf(value1) != Object.getPrototypeOf(value2)) {
+						v1.exceptionWith('mmcmd:tableArithColumnMismatch');
+					}
+					if (value1 instanceof MMStringValue) {
+						if (v1.rowCount < v2.rowCount) {
+							columns.push(column2);
+						}
+						else {
+							columns.push(column1);
+						}
+					}
+					else if (value1 instanceof MMNumberValue) {
+						const newValue = this.operationOn(value1, value2);
+						let displayUnit = null;
+						if (MMUnitSystem.areDimensionsEqual(value1.unitDimensions, newValue.unitDimensions)) {
+							displayUnit = column1.displayUnit;
+						}
+						const newColumn = new MMTableValueColumn({
+							name: column1.name,
+							displayUnit: displayUnit.name,
+							value: newValue
+						})
+						columns.push(newColumn);
+					}
+				}
+				return new MMTableValue({columns: columns});
+			}
+		}
+		else if (v2 instanceof MMTableValue && v1 instanceof MMNumberValue) {
+			return numberOpTable(v1, v2);
+		}
 
-		// much to add for all other value classes
 		return null;
 	}
 
