@@ -824,12 +824,12 @@ class MMNumberValue extends MMValue {
 		const displayUnit = theMMSession.unitSystem.baseUnitWithDimensions(rv.unitDimensions);
 		const rColumn = new MMTableValueColumn({
 			name: 'r',
-			displayUnit: displayUnit,
+			displayUnit: displayUnit.name,
 			value: rv
 		})
 		const iColumn = new MMTableValueColumn({
 			name: 'i',
-			displayUnit: displayUnit,
+			displayUnit: displayUnit.name,
 			value: iv
 		})
 		const complexValue = new MMTableValue({ columns: [rColumn, iColumn]});
@@ -1374,15 +1374,20 @@ class MMTableValueColumn {
 	constructor(context) {
 		if (context.name) {
 			this.name = context.name;
-			const unitName = context.displayUnit ? context.displayUnit : 'Fraction';
 			this._value = context.value;
 			this.format = null;
 			if (this._value) {
-				if (unitName) {
-					this._displayUnit = theMMSession.unitSystem.unitNamed(unitName);
+				if (this._value instanceof MMNumberValue) {
+					if (context.displayUnit) {
+						this.displayUnit = theMMSession.unitSystem.unitNamed(context.displayUnit);
+					}
+					else {
+						this.displayUnit = theMMSession.unitSystem.baseUnitWithDimensions(this._value.unitDimensions);
+					}
 				}
 			}
 			else {
+				const unitName = context.displayUnit ? context.displayUnit : 'Fraction';
 				if (unitName.toLowerCase() === 'string') {
 					this._value = new MMStringValue(0, 0);
 				}

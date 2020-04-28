@@ -206,7 +206,7 @@ export function MMApp(props) {
 	 * @param {function} callBack - (cmds[]) => {}
 	 */
 	const doCommand = useCallback((cmd, callBack) => {
-		console.log(`doCommand ${cmd}`);
+		// console.log(`doCommand ${cmd}`);
 		/**
 		 * errorAlert
 		 * @param {String} msg
