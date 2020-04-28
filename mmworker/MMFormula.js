@@ -69,6 +69,24 @@ const MMFormulaFactory = (token, formula) => {
 		}
 	}
 
+	const hypot = (x, y) => {
+
+    var a = Math.abs(x);
+    var b = Math.abs(y);
+
+    if (a < 3000 && b < 3000) {
+      return Math.sqrt(a * a + b * b);
+    }
+
+    if (a < b) {
+      a = b;
+      b = x / y;
+    } else {
+      b = y / x;
+    }
+    return a * Math.sqrt(1 + b * b);
+  };
+
 	const logHypot = (a, b) => {
 		// Calculates log(sqrt(a^2+b^2)) in a way to avoid overflows
 		// utility function returning real scalar
@@ -127,6 +145,10 @@ const MMFormulaFactory = (token, formula) => {
 		return [r * Math.cos(i), r * Math.sin(i)];					
 	}
 
+	const cAbsolute = (a) => {
+		return hypot(a[0], a[1]);
+	}
+
 	const factories = {
 	// const MMFormulaOpDictionary = {
 		'+': () => {return new MMAddOperator()},
@@ -159,6 +181,7 @@ const MMFormulaFactory = (token, formula) => {
 		'cmult': (f) => {return new MMComplexDyadicFunction(f, 'cmult', MMDyadicUnitAction.multiply, cMultiply)},
 		'cdiv': (f) => {return new MMComplexDyadicFunction(f, 'cdiv', MMDyadicUnitAction.divide, cDivide)},
 		'cpow': (f) => {return new MMComplexDyadicFunction(f, 'cpow', MMDyadicUnitAction.power, cPower)},
+		'cabs': (f) => {return new MMCabsFunction(f, cAbsolute)},
 		'polar': (f) => {return new MMPolarFunction(f)},
 
 		// reduction functions
@@ -1028,12 +1051,24 @@ class MMSingleValueFunction extends MMFunctionOperator {
 		return null;
 	}
 
-		/**
+	/**
 	 * @method operationOnString
 	 * @param {MMStringValue} value
 	 * @returns {MMValue}
 	 */
 	operationOnString(/* value */) {
+		return null;
+	}
+
+	/**
+	 * @method operationOnTable
+	 * @param {MMTableValue} value
+	 * @returns {MMValue}
+	 */
+	operationOnTable(value) {
+		if (value) {
+			return this.operationOn(value.numberValue());
+		}
 		return null;
 	}
 
@@ -1151,7 +1186,32 @@ class MMComplexDyadicFunction extends MMMultipleArgumentFunction {
 	}
 }
 
+class MMCabsFunction extends MMSingleValueFunction {
+	constructor(formula, cAbsolute) {
+		super(formula);
+		this.cAbsolute = cAbsolute;
+	}
+
+	operationOn(v) {
+		if (v) {
+			if (v.columnCount !== 2) {
+				this.functionError('cabs', 'mmcmd:formulaComplexColumnCount');
+			}
+			const rowCount = v.rowCount;
+			const rv = new MMNumberValue(rowCount, 1, v.unitDimensions);
+			const cabs = this.cAbsolute;
+			for (let row = 1; row <= rowCount; row++) {
+				const cArg = [v.valueAtRowColumn(row, 1), v.valueAtRowColumn(row, 2)];
+				rv.setValue(cabs(cArg),row, 1);
+			}
+			return rv;
+		}
+	}
+}
+
 class MMPolarFunction extends MMMultipleArgumentFunction {
+	// convert cartesian x, y into angle and radius
+
 	processArguments(operandStack) {
 		let rv = super.processArguments(operandStack);
 		if (rv && (this.arguments.length < 1 || this.arguments.length >  2)) {
@@ -1201,64 +1261,38 @@ class MMPolarFunction extends MMMultipleArgumentFunction {
 		}
 
 		v1.checkUnitDimensionsAreEqualTo(v2.unitDimensions);
-		// const count = Math.max(v1.valueCount, v2.valueCount);
-		// const a = new MMNumberValue(count, 1, v1.unitDimensions);
-		// const r = new MMNumberValue(count, 1, v1.unitDimensions);
+		const count = Math.max(v1.valueCount, v2.valueCount);
+		const a = new MMNumberValue(count, 1);
+		const r = new MMNumberValue(count, 1, v1.unitDimensions);
 
-		return MMNumberValue.scalarValue(1.23);
+		const rV = r.values;
+		const aV = a.values;
+		const xV = v1.values;
+		const yV = v2.values;
+		const count1 = v1.valueCount;
+		const count2 = v2.valueCount;
+
+		for (let i = 0; i < count; i++) {
+			const i1 = i % count1;
+			const i2 = i % count2;
+			const x = xV[i1];
+			const y = yV[i2];
+			rV[i] = Math.sqrt(x*x + y*y);
+			aV[i] = Math.atan2(y, x);
+		}
+
+		const aColumn = new MMTableValueColumn({
+			name: 'a',
+			displayUnit: 'degree',
+			value: a
+		});
+		const rColumn = new MMTableValueColumn({
+			name: 'r',
+			value: r
+		});
+
+		return new MMTableValue({ columns: [rColumn, aColumn]})
 	}	
-	
-	// 	NSUInteger count = MAX( v1.valueCount, v2.valueCount );
-	// 	RtmNumericValue *a = [[ RtmNumericValue alloc ] initWithRows: count
-	// 														 columns: 1
-	// 													unitDimensions: nil ];
-	// 	RtmNumericValue *r = [[ RtmNumericValue alloc ] initWithRows: count
-	// 														 columns: 1
-	// 													unitDimensions: v1.unitDimensions ];
-		
-	// 	double *rV = r.values;
-	// 	double *aV = a.values;
-	// 	double *xV = v1.values;
-	// 	double *yV = v2.values;
-	// 	NSUInteger count1 = v1.valueCount;
-	// 	NSUInteger count2 = v2.valueCount;
-	// 	_Complex double z;
-		
-	// 	for ( int i = 0; i < count; i++ ) {
-	// 		NSUInteger i1 = i % count1;
-	// 		NSUInteger i2 = i % count2;
-	
-	// 		double x = xV[ i1 ];
-	// 		double y = yV[ i2 ];
-	// 		z = x + y * I;
-	// 		rV[ i ] = cabs( z );
-	// 		if ( x > 0 )
-	// 			aV[ i ] = atan( y/x );
-	// 		else if (x < 0.0 ) {
-	// 			if ( y >= 0.0 )
-	// 				aV[ i ] = atan( y/x ) + M_PI;
-	// 			else
-	// 				aV[ i ] = atan( y/x ) - M_PI;
-	// 		} else {  // x == 0
-	// 			if ( y > 0.0 )
-	// 				aV[ i ] = M_PI / 2.0;
-	// 			else if ( y > 0 )
-	// 				aV[ i ] = -M_PI / 2.0;
-	// 			else
-	// 				aV[ i ] = y/x;  // is indeterminant so use 0/0
-	// 		}
-	// 	}
-		
-	// 	RtmTableValueColumn *aColumn = [[ RtmTableValueColumn alloc ]
-	// 									initWithName: @"a"
-	// 									displayUnit: nil
-	// 									value: a ];
-	// 	RtmTableValueColumn *rColumn = [[ RtmTableValueColumn alloc ]
-	// 									initWithName: @"r"
-	// 									displayUnit: nil
-	// 									value: r ];
-	// 	return [[ RtmTableValue alloc ] initWithColumns: @[ rColumn, aColumn ]];
-	// }
 }
 
 class MMArrayFunction extends MMMultipleArgumentFunction {
