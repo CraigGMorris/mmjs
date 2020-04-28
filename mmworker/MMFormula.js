@@ -183,6 +183,7 @@ const MMFormulaFactory = (token, formula) => {
 		'cpow': (f) => {return new MMComplexDyadicFunction(f, 'cpow', MMDyadicUnitAction.power, cPower)},
 		'cabs': (f) => {return new MMCabsFunction(f, cAbsolute)},
 		'polar': (f) => {return new MMPolarFunction(f)},
+		'cart': (f) => {return new MMCartesianFunction(f)},
 
 		// reduction functions
 
@@ -1210,7 +1211,7 @@ class MMCabsFunction extends MMSingleValueFunction {
 }
 
 class MMPolarFunction extends MMMultipleArgumentFunction {
-	// convert cartesian x, y into angle and radius
+	// convert cartesian x, y into radius and angle
 
 	processArguments(operandStack) {
 		let rv = super.processArguments(operandStack);
@@ -1236,8 +1237,8 @@ class MMPolarFunction extends MMMultipleArgumentFunction {
 		let v2 = null;
 
 		if (arg1 instanceof MMTableValue) {
-			v1 = arg1.columns[0].value.numberValue();
-			v2 = arg1.columns[1].value.numberValue();
+			v2 = arg1.columns[0].value.numberValue();
+			v1 = arg1.columns[1].value.numberValue();
 		}
 		else {
 			v1 = arg1.numberValue();
@@ -1255,8 +1256,8 @@ class MMPolarFunction extends MMMultipleArgumentFunction {
 				}
 			}
 			else {
-				v2 = v1.valueForIndexRowColumn(MMNumberValue.scalarValue(0), MMNumberValue.scalarValue(2));
-				v1 = v1.valueForIndexRowColumn(MMNumberValue.scalarValue(0), MMNumberValue.scalarValue(1));
+				v2 = v1.valueForIndexRowColumn(MMNumberValue.scalarValue(0), MMNumberValue.scalarValue(1));
+				v1 = v1.valueForIndexRowColumn(MMNumberValue.scalarValue(0), MMNumberValue.scalarValue(2));
 			}
 		}
 
@@ -1267,16 +1268,16 @@ class MMPolarFunction extends MMMultipleArgumentFunction {
 
 		const rV = r.values;
 		const aV = a.values;
-		const xV = v1.values;
-		const yV = v2.values;
-		const count1 = v1.valueCount;
-		const count2 = v2.valueCount;
+		const yV = v1.values;
+		const xV = v2.values;
+		const countY = v1.valueCount;
+		const countX = v2.valueCount;
 
 		for (let i = 0; i < count; i++) {
-			const i1 = i % count1;
-			const i2 = i % count2;
-			const x = xV[i1];
-			const y = yV[i2];
+			const iX = i % countX;
+			const iY = i % countY;
+			const x = xV[iX];
+			const y = yV[iY];
 			rV[i] = Math.sqrt(x*x + y*y);
 			aV[i] = Math.atan2(y, x);
 		}
@@ -1292,6 +1293,92 @@ class MMPolarFunction extends MMMultipleArgumentFunction {
 		});
 
 		return new MMTableValue({ columns: [rColumn, aColumn]})
+	}	
+}
+
+class MMCartesianFunction extends MMMultipleArgumentFunction {
+	// convert polar radius and angle to cartesian x, y
+
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && (this.arguments.length < 1 || this.arguments.length >  2)) {
+			return false; // needs one or two arguments
+		}
+		return rv;
+	}
+
+	value() {
+		const argCount = this.arguments.length;
+		const arg1 = this.arguments[0].value();
+		if (!arg1 || !arg1.valueCount) {
+			return null;
+		}
+
+		if (argCount === 1 && arg1.columnCount !== 2) {
+			this.formula.functionError('cart', 'mmcmd:formulaPolarSingleError');
+			return null;
+		}
+
+		let v1 = null;
+		let v2 = null;
+
+		if (arg1 instanceof MMTableValue) {
+			v2 = arg1.columns[0].value.numberValue();
+			v1 = arg1.columns[1].value.numberValue();
+		}
+		else {
+			v1 = arg1.numberValue();
+			if (!v1) {
+				return null;
+			}
+
+			if (argCount == 2) {
+				const arg2 = this.arguments[1].value();
+				if (arg2) {
+					v2 = arg2.numberValue()
+				}
+				if (!v2) {
+					return null;
+				}
+			}
+			else {
+				v2 = v1.valueForIndexRowColumn(MMNumberValue.scalarValue(0), MMNumberValue.scalarValue(1));
+				v1 = v1.valueForIndexRowColumn(MMNumberValue.scalarValue(0), MMNumberValue.scalarValue(2));
+			}
+		}
+
+		if (!MMUnitSystem.areDimensionsEqual(v1.unitDimensions, null)) {
+			this.formula.functionError('cart', 'mmcmd:formulaAngleNotDimensionless');
+			return null;
+		}
+		const count = Math.max(v1.valueCount, v2.valueCount);
+		const x = new MMNumberValue(count, 1, v1.unitDimensions);
+		const y = new MMNumberValue(count, 1, v1.unitDimensions);
+
+		const xV = x.values;
+		const yV = y.values;
+		const aV = v1.values;
+		const rV = v2.values;
+		const countA = v1.valueCount;
+		const countR = v2.valueCount;
+
+		for (let i = 0; i < count; i++) {
+			const iA = i % countA;
+			const iR = i % countR;
+			xV[ i ] = rV[ iR ] * Math.cos( aV[ iA ]);
+			yV[ i ] = rV[ iR ] * Math.sin( aV[ iA ]);
+		}
+
+		const xColumn = new MMTableValueColumn({
+			name: 'x',
+			value: x
+		});
+		const yColumn = new MMTableValueColumn({
+			name: 'y',
+			value: y
+		});
+
+		return new MMTableValue({ columns: [xColumn, yColumn]})
 	}	
 }
 

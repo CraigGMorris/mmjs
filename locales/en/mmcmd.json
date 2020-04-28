@@ -9,6 +9,7 @@
 	"formulaArrayInitError": "The intialization variable for the array function must be numeric or a string",
 	"formulaBadUnit": "Unrecognized unit in formula",
 	"formulaBraceMismatch": "Mismatched function brace",
+	"formulaAngleNotDimensionless": "Angle value must be have dimensionless unit",
 	"formulaComplexColumnCount": "Arguments for a complex function must have only 1 or 2 columns",
 	"formulaException": "Error evaluating formula:\n{{formula}}\nin tool: {{path}}",
 	"formulaFunctionError": "Error in function {{name}}\nin: {{path}}\nformula: {{formula}}",
