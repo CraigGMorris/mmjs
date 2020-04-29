@@ -1420,17 +1420,6 @@ class MMIfFunction extends MMFunctionOperator {
 					return condition.ifStringThenElse(thenValue, elseValue);
 				}
 			}
-		// }
-		// else if (condition instanceof MMStringValue) {
-		// 	if (condition.valueCount === 1) {
-		// 		if (condition.values[0]) {
-		// 			return this.positiveArgument.value();
-		// 		}
-		// 		else {
-		// 			return this.negativeArgument.value();
-		// 		}
-		// 	}
-		// }
 	}
 
 	/**
