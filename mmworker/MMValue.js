@@ -241,6 +241,79 @@ class MMValue {
 	jsonValue(/* unit */) {
 		this.exceptionWith('mmcmd:unimplemented');
 	}
+
+	/**
+	 * @method ifThenElse
+	 * @param {MMNumberValue} thenValue 
+	 * @param {MMNumberValue} elseValue 
+	*/
+	ifThenElse(thenValue, elseValue) {
+		const valueCount = this.valueCount
+		if (valueCount === 1) {
+			if (this._values[0]) {
+				return thenValue;
+			}
+			else {
+				return elseValue;
+			}
+		}
+
+		thenValue.checkUnitDimensionsAreEqualTo(elseValue.unitDimensions);
+		const thenCount = thenValue.valueCount;
+		const elseCount = elseValue.valueCount;
+		let rv;
+		if (thenCount > elseCount) {
+			rv = this.dyadicNumberResult(thenValue, thenValue.unitDimensions);
+		}
+		else {
+			rv = this.dyadicNumberResult(elseValue, elseValue.unitDimensions);
+		}
+		const rvCount = rv.valueCount;
+		const v1 = rv._values;
+		const vThen = thenValue._values;
+		const vElse = elseValue._values;
+		const vThis = this._values;
+		for (let i = 0; i < rvCount; i++) {
+			v1[i] = vThis[i % valueCount] ? vThen[i % thenCount] : vElse[i % elseCount];
+		}
+		return rv;
+	}
+
+	/**
+	 * @method ifStringThenElse
+	 * @param {MMStringValue} thenValue 
+	 * @param {MMStringValue} elseValue 
+	*/
+	ifStringThenElse(thenValue, elseValue) {
+		const valueCount = this.valueCount
+		if (valueCount === 1) {
+			if (this._values[0]) {
+				return thenValue;
+			}
+			else {
+				return elseValue;
+			}
+		}
+		const thenCount = thenValue.valueCount;
+		const elseCount = elseValue.valueCount;
+		let rv;
+		if (thenCount > elseCount) {
+			rv = this.dyadicStringResult(thenValue);
+		}
+		else {
+			rv = this.dyadicStringResult(elseValue);
+		}
+		const rvCount = rv.valueCount;
+		for (let i = 0; i < rvCount; i++) {
+			rv.setValue(
+				this._values[i % valueCount]
+				? thenValue.valueAtCount(i % thenCount)
+				: elseValue.valueAtCount(i % elseCount),
+				i + 1, 1
+			);
+		}
+		return rv;
+	}
 }
 
 /**
@@ -668,7 +741,7 @@ class MMNumberValue extends MMValue {
 	 */
 	mod(value) {
 		const rv = this.processDyadic(value, (a,b) => {
-			a % b;
+			return a % b;
 			// the objc version did the equivalent of the following,
 			// but I am not sure the floor operations should be included
 			// if not needed
@@ -760,6 +833,82 @@ class MMNumberValue extends MMValue {
 		}
 		return rv;
 	}
+
+	// comparison methods
+
+	// /**
+	//  * @method ifStringThenElse
+	//  * @param {MMStringValue} thenValue 
+	//  * @param {MMStringValue} elseValue 
+	// */
+	// ifStringThenElse(thenValue, elseValue) {
+	// 	const valueCount = this.valueCount
+	// 	if (valueCount === 1) {
+	// 		if (this._values[0]) {
+	// 			return thenValue;
+	// 		}
+	// 		else {
+	// 			return elseValue;
+	// 		}
+	// 	}
+	// 	const thenCount = thenValue.valueCount;
+	// 	const elseCount = elseValue.valueCount;
+	// 	let rv;
+	// 	if (thenCount > elseCount) {
+	// 		rv = this.dyadicStringResult(thenValue);
+	// 	}
+	// 	else {
+	// 		rv = this.dyadicStringResult(elseValue);
+	// 	}
+	// 	const rvCount = rv.valueCount;
+	// 	for (let i = 0; i < rvCount; i++) {
+	// 		rv.setValue(
+	// 			this._values[i % valueCount]
+	// 			? thenValue.valueAtCount(i % thenCount)
+	// 			: elseValue.valueAtCount(i % elseCount),
+	// 			i + 1, 1
+	// 		);
+	// 	}
+	// 	return rv;
+	// }
+
+	// /**
+	//  * @method ifThenElse
+	//  * @param {MMNumberValue} thenValue 
+	//  * @param {MMNumberValue} elseValue 
+	// */
+	// ifThenElse(thenValue, elseValue) {
+	// 	const valueCount = this.valueCount
+	// 	if (valueCount === 1) {
+	// 		if (this._values[0]) {
+	// 			return thenValue;
+	// 		}
+	// 		else {
+	// 			return elseValue;
+	// 		}
+	// 	}
+
+	// 	thenValue.checkUnitDimensionsAreEqualTo(elseValue.unitDimensions);
+	// 	const thenCount = thenValue.valueCount;
+	// 	const elseCount = elseValue.valueCount;
+	// 	let rv;
+	// 	if (thenCount > elseCount) {
+	// 		rv = this.dyadicNumberResult(thenValue, thenValue.unitDimensions);
+	// 	}
+	// 	else {
+	// 		rv = this.dyadicNumberResult(elseValue, elseValue.unitDimensions);
+	// 	}
+	// 	const rvCount = rv.valueCount;
+	// 	const v1 = rv._values;
+	// 	const vThen = thenValue._values;
+	// 	const vElse = elseValue._values;
+	// 	const vThis = this._values;
+	// 	for (let i = 0; i < rvCount; i++) {
+	// 		v1[i] = vThis[i % valueCount] ? vThen[i % thenCount] : vElse[i % elseCount];
+	// 	}
+	// 	return rv;
+	// }
+
 
 	// complex value methods
 
@@ -1986,6 +2135,24 @@ class MMTableValue extends MMValue {
 			}
 		}
 		return rv;
+	}
+
+	/**
+	 * @method ifThenElse
+	 * table is not valid conditions
+	 * table[0,1] would be though
+	*/
+	ifThenElse() {
+		return null;
+	}
+
+	/**
+	 * @method ifStringThenElse
+	 * table is not valid conditions
+	 * table[0,1] would be though
+	*/
+	ifStringThenElse() {
+		return null;
 	}
 }
 

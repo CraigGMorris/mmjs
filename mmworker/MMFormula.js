@@ -188,6 +188,7 @@ const MMFormulaFactory = (token, formula) => {
 		// reduction functions
 
 		// comparison functions
+		'if': (f) => {return new MMIfFunction(f)},
 
 		// matrix functions
 		'array': (f) => {return new MMArrayFunction(f)},
@@ -1380,6 +1381,68 @@ class MMCartesianFunction extends MMMultipleArgumentFunction {
 
 		return new MMTableValue({ columns: [xColumn, yColumn]})
 	}	
+}
+
+class MMIfFunction extends MMFunctionOperator {
+	processArguments(operandStack) {
+		if (operandStack.length < 4) {
+			return false; // needs three arguments plus operand marker
+		}
+		this.negativeArgument = operandStack.pop();
+		this.positiveArgument = operandStack.pop();
+		this.conditionArgument = operandStack.pop();
+		const opMarker = operandStack.pop();
+		return opMarker instanceof MMOperandMarker;
+	}
+
+	value() {
+		const condition = this.conditionArgument.value();
+		// if (condition instanceof MMNumberValue) {
+			if (condition.valueCount === 1) {
+				if (condition.values[0]) {
+					return this.positiveArgument.value();
+				}
+				else {
+					return this.negativeArgument.value();
+				}
+			}
+			// value by value comparison
+			const thenValue = this.positiveArgument.value();
+			if (thenValue instanceof MMNumberValue) {
+				const elseValue = this.negativeArgument.value();
+				if (elseValue instanceof MMNumberValue) {
+					return condition.ifThenElse(thenValue, elseValue);
+				}
+			}
+			else if (thenValue instanceof MMStringValue) {
+				const elseValue = this.negativeArgument.value();
+				if (elseValue instanceof MMStringValue) {
+					return condition.ifStringThenElse(thenValue, elseValue);
+				}
+			}
+		// }
+		// else if (condition instanceof MMStringValue) {
+		// 	if (condition.valueCount === 1) {
+		// 		if (condition.values[0]) {
+		// 			return this.positiveArgument.value();
+		// 		}
+		// 		else {
+		// 			return this.negativeArgument.value();
+		// 		}
+		// 	}
+		// }
+	}
+
+	/**
+	 * @virtual addInputSourcesToSet
+	 * @param {Set} sources
+	 */
+	addInputSourcesToSet(sources) {
+		this.conditionArgument.addInputSourcesToSet(sources);
+		this.positiveArgument.addInputSourcesToSet(sources);
+		this.negativeArgument.addInputSourcesToSet(sources);
+	}
+
 }
 
 class MMArrayFunction extends MMMultipleArgumentFunction {
