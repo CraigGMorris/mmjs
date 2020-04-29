@@ -248,7 +248,8 @@ class MMFormulaOperator {
 	 * @virtual addInputSourcesToSet
 	 * @param {Set} sources
 	 */
-	addInputSourcesToSet(/* sources */) {}
+	// eslint-disable-next-line no-unused-vars
+	addInputSourcesToSet(sources) {}
 }
 
 /**
@@ -299,7 +300,8 @@ class MMMonadicOperator extends MMFormulaOperator {
 	 * @param {MMNumberValue} value
 	 * @returns {MMValue}
 	 */
-	operationOn(/* value) */) {
+	// eslint-disable-next-line no-unused-vars
+	operationOn(value) {
 		return null;
 	}
 
@@ -455,7 +457,8 @@ class MMDyadicOperator extends MMFormulaOperator {
 	 * @param {MMNumberValue} firstValue;
 	 * @param {MMNumberValue} secondValue;
 	 */
-	operationOn(/* firstValue, secondValue */) {
+	// eslint-disable-next-line no-unused-vars
+	operationOn(firstValue, secondValue) {
 		return null;
 	}
 
@@ -979,7 +982,8 @@ class MMFunctionOperator extends MMFormulaOperator {
 	 * @param {MMFormulaOperator[]} operandStack
 	 * @returns {boolean}
 	 */
-	processArguments(/* operandStack */) {
+	// eslint-disable-next-line no-unused-vars
+	processArguments(operandStack) {
 		// override for each function
 		return false;
 	}
@@ -1049,7 +1053,8 @@ class MMSingleValueFunction extends MMFunctionOperator {
 	 * @param {MMNumberValue} value
 	 * @returns {MMValue}
 	 */
-	operationOn(/* value */) {
+	// eslint-disable-next-line no-unused-vars
+	operationOn(value) {
 		return null;
 	}
 
@@ -1058,7 +1063,8 @@ class MMSingleValueFunction extends MMFunctionOperator {
 	 * @param {MMStringValue} value
 	 * @returns {MMValue}
 	 */
-	operationOnString(/* value */) {
+	// eslint-disable-next-line no-unused-vars
+	operationOnString(value) {
 		return null;
 	}
 

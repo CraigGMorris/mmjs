@@ -5,7 +5,8 @@
  * @param {*} language - for possible future use
  * textual data for function picker
  */
-export function functionPickerData(/* language */) {
+	// eslint-disable-next-line no-unused-vars
+	export function functionPickerData(language) {
 	const data = {
 		title: 'Formula Functions',
 		instructions: `

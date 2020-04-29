@@ -64,8 +64,9 @@ class MMValue {
 	 * @param {MMValue} columnIndex
 	 * @returns {MMValue}
 	 */
-	valueForIndexRowColumn(/* rowIndex, columnIndex */) {
-		return undefined;
+	// eslint-disable-next-line no-unused-vars
+	valueForIndexRowColumn(rowIndex, columnIndex) {
+		return null;
 	}
 
 	/**
@@ -137,7 +138,8 @@ class MMValue {
 	 * @param {MMUnit} unit - optional
 	 * @returns {String} 
 	 */
-	stringWithUnit(/* unit */) {
+	// eslint-disable-next-line no-unused-vars
+	stringWithUnit(unit) {
 		return '---';
 	}
 
@@ -148,7 +150,8 @@ class MMValue {
 	 * @param {MMUnit} outUnit
 	 * @returns {String}
 	 */
-	stringForRowColumnUnit(/* row, column, outUnit */) {
+	// eslint-disable-next-line no-unused-vars
+	stringForRowColumnUnit(row, column, outUnit) {
 		return '';
 	}
 
@@ -159,7 +162,8 @@ class MMValue {
 	 * @param {MMUnit} outUnit
 	 * @returns {String}
 	 */
-	stringForRowColumnWithUnit(/* row, column, outUnit */) {
+	// eslint-disable-next-line no-unused-vars
+	stringForRowColumnWithUnit(row, column, outUnit) {
 		return '';
 	}
 
@@ -203,7 +207,8 @@ class MMValue {
 	 * @return MMValue
 	 * overriden to concatanate two arrays into one
 	 */
-	concat(/* other */) {
+	// eslint-disable-next-line no-unused-vars
+	concat(other) {
 		return null;
 	}
 
@@ -220,7 +225,8 @@ class MMValue {
 	 * @param {Number} number 
 	 * @returns {MMValue}
 	 */
-	columnNumber(/* number */) {
+	// eslint-disable-next-line no-unused-vars
+	columnNumber(number) {
 		return null;
 	}
 
@@ -229,7 +235,8 @@ class MMValue {
 	 * appends columns to value
 	 * @param {MMValue} additions
 	 */
-	append(/*additions*/) {
+	// eslint-disable-next-line no-unused-vars
+	append(additions) {
 		return null;
 	}
 
@@ -238,7 +245,8 @@ class MMValue {
 	 * @param {MMUnit} displayUnit
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
-	jsonValue(/* unit */) {
+	// eslint-disable-next-line no-unused-vars
+	jsonValue(unit) {
 		this.exceptionWith('mmcmd:unimplemented');
 	}
 
@@ -1163,7 +1171,8 @@ class MMStringValue extends MMValue {
 	 * @param {MMUnit} unit - optional
 	 * @returns {String} 
 	 */
-	stringWithUnit(/* unit */) {
+	// eslint-disable-next-line no-unused-vars
+	stringWithUnit(unit) {
 		// ignore unit
 		if (this.valueCount == 1) {
 			return this._values[0];
@@ -1449,7 +1458,8 @@ class MMToolValue extends MMValue {
 	 * @param {MMUnit} unit - optional
 	 * @returns {String} 
 	 */
-	stringWithUnit(/* unit */) {
+	// eslint-disable-next-line no-unused-vars
+	stringWithUnit(unit) {
 	// ignore unit
 		if (this.valueCount == 1) {
 			return this._values[0].name;
@@ -2063,6 +2073,62 @@ class MMTableValue extends MMValue {
 	}
 
 	/**
+	 * @method valueForIndexRowColumn
+	 * @override
+	 * @param {MMValue} rowIndex
+	 * @param {MMValue} columnIndex
+	 * @returns {MMValue}
+	 */
+	valueForIndexRowColumn(rowIndex, columnIndex) {
+		let rv;
+		if( rowIndex instanceof MMNumberValue ) {
+			let rvColumns = [];
+			if (!columnIndex) {
+				rvColumns = this.columns;
+			}
+			else if (columnIndex instanceof MMNumberValue) {
+				if (columnIndex.valueCount === 1 && columnIndex.values[0] === 0) {
+					rvColumns = this.columns;
+				}
+				else {
+					const nColumns = columnIndex.valueCount;
+					for (let i = 0; i < nColumns; i++) {
+						let columnNumber = columnIndex.values[i];
+						if (columnNumber < 0) {
+							columnNumber += this.columnCount + 1;
+						}
+						if (columnNumber > this.columnCount) {
+							this.exceptionWith("mmcmd:tableValueIndexError");
+						}
+						const column = this.columns[columnNumber - 1];
+						rvColumns.push(column);
+					}
+				}
+			}
+			else if (columnIndex instanceof MMStringValue) {
+				const nColumns = columnIndex.valueCount;
+				for (let i = 0; i < nColumns; i++) {
+					const columnName = columnIndex.valueAtCount(i);
+					const column = this._nameDictionary[columnName];
+					if (!column) {
+						this.exceptionWith("mmcmd:tableValueIndexError");
+					}
+					rvColumns.push(column);
+				}
+			}
+			if (rvColumns.length === 1) {
+				return rvColumns[0].value.valueForIndexRowColumn(rowIndex, MMNumberValue.scalarValue(1));
+			}
+			else if (rv.Columns.length > 1) {
+				return new MMTableValue({
+					columns: rvColumns,
+					rowNumbers: rowIndex
+				})
+			}
+		}
+	}
+
+	/**
 	 * @method jsonValue
 	 * @override
 	 * @param {MMUnit[]} displayUnits
@@ -2091,7 +2157,8 @@ class MMTableValue extends MMValue {
 	 * @param {MMUnit} unit - optional
 	 * @returns {String} 
 	 */
-	stringWithUnit(/* unit */) {
+	// eslint-disable-next-line no-unused-vars
+	stringWithUnit(unit) {
 		return `Table [ ${this.rowCount}, ${this.columnCount} ]`;
 	}
 

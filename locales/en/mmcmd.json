@@ -57,6 +57,7 @@
 	"tableSetCellError": "Error setting table cell\n\nPath: {{path}}\nArgs: {{args}}",
 	"tableTypeMismatch": "Data table error\n\nString/Number type mismatch for row {{row}} of column {{column}} of {{table}}",
 	"tableUnitTypeMismatch": "Data table error\n\nUnit type mismatch for row {{row}} of column {{column}} of {{table}}",
+	"tableValueIndexError": "Illegal index in table value",
 	"valueMatrixBoundsError": "Index [{{row}},{{column}}] out of bounds [{{rowCount}},{{columnCount}}]",
 	"valuePowerHasUnits": "Exponent cannot have units",
 	"valuePowerOfArrayWithUnits": "Exponent cannot be an array if the raised value has units",

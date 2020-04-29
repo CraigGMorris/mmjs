@@ -1245,7 +1245,8 @@ class MMTool extends MMCommandParent {
 	 * @method changedFormula
 	 * @param {MMFormula} formula
 	 */
-	changedFormula(/* formula */) {
+	// eslint-disable-next-line no-unused-vars
+	changedFormula(formula) {
 		if (!theMMSession.isLoadingCase) {
 			this.forgetCalculated();
 		}
