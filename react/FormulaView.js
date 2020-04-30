@@ -458,10 +458,95 @@ export function FormulaEditor(props) {
 					setFormula(e.target.value);
 				},
 				onKeyDown: e => {
-					// watches for Shift Enter and sends command when it see it
-					if (e.shiftKey && e.key == 'Enter') {
+
+					if (e.key == 'Enter') {
+						if (e.shiftKey ) {
+							// watches for Shift Enter and sends command when it see it
+							e.preventDefault();
+							applyChanges(formula);
+							return;
+						}
+						else {
+							const selStart = e.target.selectionStart;
+							const selEnd = e.target.selectionEnd;
+							if (selStart === selEnd) {
+								let sel = selStart;
+								const text = e.target.value;
+								while (sel > 0 && text[sel - 1] !== '\n') {
+									sel--;
+								}
+								const lineStart = sel;
+								while (text[sel] === ' ' || text[sel] === '\t') {
+									sel++;
+								}
+								if (sel > lineStart) {
+									// Insert carriage return and indented text
+									document.execCommand('insertText', false, "\n" + text.substr(lineStart, sel-lineStart));
+
+									// Scroll caret visible
+									e.target.blur();
+									e.target.focus();
+									e.preventDefault();
+									return;
+								}
+							}
+						}
+					}
+					else if (e.key === 'Tab') {
+						let selStart = e.target.selectionStart;
+						let selEnd = e.target.selectionEnd;
+						const text = e.target.value;
+						if (selStart === selEnd) {
+							// These single character operations are undoable
+							if (!e.shiftKey) {
+								document.execCommand('insertText', false, "\t");
+							} else {
+								if (selStart > 0 && text[selStart-1] === '\t') {
+									document.execCommand('delete');
+								}
+							}
+						}
+						else {
+							// Block indent/unindent trashes undo stack.
+							// Select whole lines
+							while (selStart > 0 && text[selStart-1] != '\n') {
+								selStart--;
+							}
+							while (selEnd > 0 && text[selEnd-1]!='\n' && selEnd < text.length) {
+								selEnd++;
+							}
+
+							// Get selected text
+							let lines = text.substr(selStart, selEnd - selStart).split('\n');
+
+							// Insert tabs
+							for (let i = 0; i < lines.length; i++) {
+								// Don't indent last line if cursor at start of line
+								if (i === lines.length-1 && lines[i].length === 0) {
+									continue;
+								}
+
+								// Tab or Shift+Tab?
+								if (e.shiftKey)
+								{
+									if (lines[i].startsWith('\t')) {
+										lines[i] = lines[i].substr(1);
+									} else if (lines[i].startsWith("    ")) {
+										lines[i] = lines[i].substr(4);
+									}
+								}
+								else
+									lines[i] = "\t" + lines[i];
+							}
+							lines = lines.join('\n');
+
+							// Update the text area
+							e.target.value = text.substr(0, selStart) + lines + text.substr(selEnd);
+							e.target.selectionStart = selStart;
+							e.target.selectionEnd = selStart + lines.length; 
+						}
 						e.preventDefault();
-						applyChanges(formula);
+						return;
 					}
 				},
 			}
