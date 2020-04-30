@@ -230,7 +230,6 @@ export function DataTableView(props) {
 	const [display, setDisplay] = useState(DataTableDisplay.table);
 	const [selectedCell, setSelectedCell] = useState([0,0]);
 	const [selectedRows, setSelectedRows] = useState();
-	const [cellFormula, setCellFormula] = useState('');
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -240,13 +239,11 @@ export function DataTableView(props) {
 		if (state) {
 			setDisplay(state.display);
 			setSelectedCell(state.selectedCell);
-			setCellFormula(state.cellFormula);
 		}
 		else {
 			props.viewInfo.dataTableViewState = {
 				display: display,
 				selectedCell: selectedCell,
-				cellFormula: cellFormula,
 			};
 		}
 	
@@ -259,8 +256,7 @@ export function DataTableView(props) {
 
 	useEffect(() => {
 		props.viewInfo.dataTableViewState.selectedCell = selectedCell;
-		props.viewInfo.dataTableViewState.cellFormula = cellFormula;
-	}, [selectedCell, cellFormula, props.viewInfo])
+	}, [selectedCell, props.viewInfo])
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
@@ -272,46 +268,63 @@ export function DataTableView(props) {
 	const results = updateResults.length ? updateResults[0].results : {};
 	const path = results.path;
 	const value = results.value;
-	const formulaName = 'formula'; //`${selectedCell[0]}_${selectedCell[1]}_f`;
 	const columnNumber = selectedCell[1];
 	const selectedColumn = columnNumber > 0 ? value.v[columnNumber - 1] : null;
 	const unitType = columnNumber > 0 && columnNumber <= value.v.length ? value.v[columnNumber - 1].unitType : '';
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 
-	const addColumnButton = e(
-		'button', {
-			id: 'data__add-column-button',
-			onClick: () => {
-				if (value) {
-					props.actions.doCommand(`${path} addcolumn`, () => {
+	let addColumnButton, addRowButton, deleteRowsButton;
+
+	if (selectedRows) {
+		deleteRowsButton = e(
+			'button', {
+				id: 'deleteRowsButton',
+				onClick: () => {
+					props.actions.doCommand(`${path} removerows ${[...selectedRows].join(' ')}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
+						setSelectedCell([0, 0]);
 						setSelectedRows();
-						setSelectedCell([0, value.nc + 1]);
-						setDisplay(DataTableDisplay.editColumn);
-					});
+					});		
 				}
 			},
-		},
-		t('react:dataAddColumnButton'),
-	);
+			t('react:dataDeleteRowsButton', {count: selectedRows.size}),
+		)
+	}
+	else {
+		addColumnButton = e(
+			'button', {
+				id: 'data__add-column-button',
+				onClick: () => {
+					if (value) {
+						props.actions.doCommand(`${path} addcolumn`, () => {
+							props.actions.updateView(props.viewInfo.stackIndex);
+							setSelectedRows();
+							setSelectedCell([0, value.nc + 1]);
+							setDisplay(DataTableDisplay.editColumn);
+						});
+					}
+				},
+			},
+			t('react:dataAddColumnButton'),
+		);
 
-	const addRowButton = e(
-		'button', {
-			id: 'data__add-row-button',
-			onClick: () => {
-				if (value && value.nc > 0) {
-					props.actions.doCommand(`${path} addrow`, () => {
-						props.actions.updateView(props.viewInfo.stackIndex);
-						setSelectedCell([value.nr + 1, 1]);
-						setSelectedRows();
-						setCellFormula(value.v[0].defaultValue);
-					});
+		addRowButton = e(
+			'button', {
+				id: 'data__add-row-button',
+				onClick: () => {
+					if (value && value.nc > 0) {
+						props.actions.doCommand(`${path} addrow`, () => {
+							props.actions.updateView(props.viewInfo.stackIndex);
+							setSelectedCell([value.nr + 1, 1]);
+							setSelectedRows();
+						});
+					}
 				}
-			}
-		},
-		t('react:dataAddRowButton'),
-	)
+			},
+			t('react:dataAddRowButton'),
+		)
+	}
 
 	const tableButton = e(
 		'button', {
@@ -323,19 +336,12 @@ export function DataTableView(props) {
 		t('react:dataTableButton'),
 	);
 
-	const applyCellChanges = (formula, callBack) => {
-		setCellFormula(formula);
-		const path = props.viewInfo.path;
-		props.actions.doCommand(`__blob__${path} setcell ${selectedCell.join(' ')}__blob__${formula}`, callBack);
-	}
-
-
 	let displayComponent;
 	switch (display) {
 		case DataTableDisplay.table: {
 			const cellClick = (row, column) => {
 				if (column === 0 && row > 0) {  // row selection
-					const rowSet = new Set()
+					let rowSet = new Set()
 					if (selectedRows) {
 						selectedRows.forEach(v => rowSet.add(v));
 					}
@@ -345,15 +351,20 @@ export function DataTableView(props) {
 					else {
 						rowSet.add(row);
 					}
+					if (rowSet.size === 0) {
+						rowSet = null;
+					}
 					setSelectedRows(rowSet);
 					setSelectedCell([row,column]);
-					setCellFormula('');
 				}
 				else if (row === 0 && column > 0) {  //column selection
 					setSelectedCell([row,column]);
 					setSelectedRows();
-					setCellFormula('');
 					setDisplay(DataTableDisplay.editColumn);
+				}
+				else if (row === 0 && column === 0) {
+					setSelectedCell([row,column]);
+					setSelectedRows();				
 				}
 				else {
 					if (value && value.nr && value.nc) {
@@ -378,7 +389,20 @@ export function DataTableView(props) {
 
 					setSelectedCell([row,column]);
 					setSelectedRows();
-					setCellFormula(formulaString);
+					const pathParts = path.split('.');
+					const tableName = pathParts[pathParts.length - 1];
+					const columnName = results.value.v[column - 1].name;
+					const formulaTitle = `${tableName}[${row}, "${columnName}"]`;
+					props.actions.pushView('formulaEditor', formulaTitle, {
+						t: t,
+						formula: formulaString || '',
+						formulaOffset: 0,
+						modelPath: props.viewInfo.modelPath,
+						applyChanges: (formula, callBack) => {
+							const path = props.viewInfo.path;
+							props.actions.doCommand(`__blob__${path} setcell ${row} ${column}__blob__${formula}`, callBack);
+						},
+					});
 				}
 			}
 
@@ -403,45 +427,6 @@ export function DataTableView(props) {
 				}
 			}
 
-			let formulaLine;
-			if (selectedRows) {
-				formulaLine = e(
-					'button', {
-						id: 'deleteRowsButton',
-						onClick: () => {
-							props.actions.doCommand(`${path} removerows ${[...selectedRows].join(' ')}`, () => {
-								props.actions.updateView(props.viewInfo.stackIndex);
-								setSelectedCell([0, 0]);
-								setSelectedRows();
-								setCellFormula('');
-							});		
-						}
-					},
-					t('react:dataDeleteRowsButton', {count: selectedRows.size}),
-				)
-			}
-			else if (selectedCell[0] === 0 || selectedCell[1] === 0) {  // no formula for origin cell
-				formulaLine = e(
-					'div', {
-						id: 'datatable__origin-formula'
-					},
-					'---',
-				)
-			}
-			else {
-				formulaLine = e(
-					FormulaField, {
-						t: t,
-						actions: props.actions,
-						path: `${path}.${formulaName}`,
-						formula: cellFormula || '',
-						viewInfo: props.viewInfo,
-						infoWidth: props.infoWidth,
-						applyChanges: applyCellChanges,
-					}
-				)
-			}
-
 			displayComponent = e(
 				'div', {
 					id: 'datatable__table',
@@ -453,22 +438,15 @@ export function DataTableView(props) {
 					},
 					addRowButton,
 					addColumnButton,
+					deleteRowsButton,
 				),
-				e(
-					// formula field line
-					'div', {
-						id: 'expression__formula',
-					},
-					formulaLine,
-				),				
 				e(
 					TableView, {
 						id: 'datatable__value',
 						value: results.value,
 						actions: props.actions,
 						viewInfo: props.viewInfo,
-						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 4*nInputHeight - 14],
-						currentCell: selectedCell,
+						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 3*nInputHeight - 14],
 						selectedRows: selectedRows,
 						cellClick: cellClick,
 						longPress: longPress,

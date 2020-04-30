@@ -250,10 +250,9 @@ a:hover {
 #datatable__table {
 	display: grid;
 	grid-area: display-area;
-	grid-template-rows: var(--input--height) var(--input--height) 1fr;
+	grid-template-rows: var(--input--height) 1fr;
 	grid-template-columns: 1fr;
 	grid-template-areas: "display-buttons"
-		"formula"
 		"display";
 	grid-gap: 5px;
 	margin-top: 5px;
