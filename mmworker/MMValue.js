@@ -799,11 +799,12 @@ class MMNumberValue extends MMValue {
 
 	/** @method genericMonadic
 	 * @param f - function taking a float value and returning the function result for it
-	 * @param {Number[]} unitDimensions - optional
 	 */
-	genericMonadic(f, unitDimensions) {
-		this.checkUnitDimensionsAreEqualTo(unitDimensions);
-		let rv = new MMNumberValue(this.rowCount, this.columnCount, unitDimensions);
+	genericMonadic(f, ) {
+		if (this.hasUnitDimensions()) {
+			this.exceptionWith('mmcmd:formulaMonadicUnitNone');
+		}
+		let rv = new MMNumberValue(this.rowCount, this.columnCount);
 		rv._values = this._values.map(f);
 		return rv;
 	}
@@ -816,6 +817,19 @@ class MMNumberValue extends MMValue {
 		const count = this.valueCount;
 		for (let i = 0; i < count; i++) {
 			rv._values[i] = -this._values[i];
+		}
+		return rv;
+	}
+
+	/** @method abs - returns absolute value for real
+	 * @returns {MMNumberValue}
+	 */
+	abs() {
+		let rv = this.monadicResultWithUnitDimensions(this.unitDimensions);
+		const count = this.valueCount;
+		for (let i = 0; i < count; i++) {
+			const v = this._values[i];
+			rv._values[i] = v >= 0 ? v : -v;
 		}
 		return rv;
 	}
@@ -2031,7 +2045,7 @@ class MMTableValue extends MMValue {
 			const initWithColumns = (columns) => {
 				this.columns = Array.from(columns)  // create copy
 				this._nameDictionary = {};
-				for (const column in this.columns) {
+				for (const column of this.columns) {
 					this._nameDictionary[column.lowerCaseName] = column;
 				}
 			}
@@ -2042,7 +2056,7 @@ class MMTableValue extends MMValue {
 				const nRows = rowNumbers.valueCount;
 				super(nRows, nColumns);
 				let newColumns = [];
-				for (const column in columns) {
+				for (const column of columns) {
 					const newColumn = new MMTableValueColumn({rowNumbers: rowNumbers, column: column});
 					newColumns.push(newColumn);
 				}
@@ -2080,7 +2094,6 @@ class MMTableValue extends MMValue {
 	 * @returns {MMValue}
 	 */
 	valueForIndexRowColumn(rowIndex, columnIndex) {
-		let rv;
 		if( rowIndex instanceof MMNumberValue ) {
 			let rvColumns = [];
 			if (!columnIndex) {
@@ -2108,7 +2121,7 @@ class MMTableValue extends MMValue {
 			else if (columnIndex instanceof MMStringValue) {
 				const nColumns = columnIndex.valueCount;
 				for (let i = 0; i < nColumns; i++) {
-					const columnName = columnIndex.valueAtCount(i);
+					const columnName = columnIndex.valueAtCount(i).toLowerCase();
 					const column = this._nameDictionary[columnName];
 					if (!column) {
 						this.exceptionWith("mmcmd:tableValueIndexError");
@@ -2119,7 +2132,7 @@ class MMTableValue extends MMValue {
 			if (rvColumns.length === 1) {
 				return rvColumns[0].value.valueForIndexRowColumn(rowIndex, MMNumberValue.scalarValue(1));
 			}
-			else if (rv.Columns.length > 1) {
+			else if (rvColumns.length > 1) {
 				return new MMTableValue({
 					columns: rvColumns,
 					rowNumbers: rowIndex

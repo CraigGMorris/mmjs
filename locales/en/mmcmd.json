@@ -18,6 +18,7 @@
 	"formulaIndexMismatch": "Mismatched index operators []\nin: {{path}}\nformula: {{formula}}",
 	"formulaJSError": "Javascript error:\n{{error}}",
 	"formulaMissingTool": "Could not find tool {{name}}\nin formula {{formula}}\nin tool {{path}}",
+	"formulaMonadicUnitNone": "function requires argument have dimensionless unit (e.g. Fraction)",
 	"formulaInvalidNumber": "Invalid number in formula:\n{{formula}}\nin tool {{path}}",
 	"formulaParenMismatch": "Mismatched parenthesis\nin: {{path}}\nformula: {{formula}}",
 	"formulaPolarSingleError": "Single argument does not have two columns",

@@ -212,6 +212,7 @@ const MMFormulaFactory = (token, formula) => {
 		// 3d transform functions
 
 		// miscellaneous functions
+		'abs': (f) => {return new MMAbsFunction(f)},
 		'rand': (f) => {return new MMRandFunction(f)},
 	}
 
@@ -1191,6 +1192,19 @@ class MMComplexDyadicFunction extends MMMultipleArgumentFunction {
 		let v1 = this.arguments[1].value().numberValue();
 		let v2 = this.arguments[0].value().numberValue();
 		return v1.processComplexDyadic(name, v2, this.unitAction, this.func);
+	}
+}
+
+class MMAbsFunction extends MMSingleValueFunction {
+	constructor(formula, cAbsolute) {
+		super(formula);
+		this.cAbsolute = cAbsolute;
+	}
+
+	operationOn(v) {
+		if (v) {
+			return v.abs();
+		}
 	}
 }
 
@@ -2388,7 +2402,7 @@ class MMFormula extends MMCommandObject {
 						if (i < nTokens - 2 && token.endsWith('e')) {
 							let nextToken1 = tokens[++i];
 							let nextToken2 = tokens[++i];
-							token = nextToken1 + nextToken2;
+							token += nextToken1 + nextToken2;
 						}
 						let scalarValue = filterFloat(token);
 						if (isNaN(scalarValue)) {
