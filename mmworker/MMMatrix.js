@@ -107,7 +107,7 @@ class MatrixInputValue {
 		}
 
 		// wasn't number, so assume formula
-		const formula = new MMFormula(`f_${this.row}_${this.column}`, owner);
+		const formula = new MMFormula(`cell_${this.row}_${this.column}`, owner);
 		formula.formula = inputString;
 		this._input = formula;
 		this.state = MatrixValueState.formula;
@@ -304,9 +304,6 @@ class MMMatrix extends MMTool {
 		if (!this.value && !this.isCalculating) {
 			this.calculateValue();
 		}
-		if (this.value) {
-			results['value'] = this.jsonValue(this.displayUnit);
-		}
 
 		const cellInputs = {};
 		for (let key in this.cellInputs) {
@@ -317,6 +314,15 @@ class MMMatrix extends MMTool {
 			}
 		}
 		results['cellInputs'] = cellInputs;
+		let value = this.jsonValue(this.displayUnit);
+		if (!value || Object.keys(value).length === 0) {
+			value = {
+				t: 'n',
+				nr: this.rowCount,
+				nc: this.columnCount,
+			}
+		}
+		results['value'] = value;
 	}
 
 	jsonValue() {

@@ -368,8 +368,12 @@ export function TableView(props) {
 				}
 				else {
 					const vIndex = (row + rowOrigin) * nColumns + column + columnOrigin;
-					v = vIndex < nValues ? value.v[vIndex] : '';
-					displayedV = formatValue(v);
+					if (value.v) {
+						v = vIndex < nValues ? value.v[vIndex] : '';
+						displayedV = formatValue(v);
+					} else {
+						displayedV = '';
+					}
 				}
 				let cmp;
 				// use sub svg to clip long strings - only doing for string values at this point

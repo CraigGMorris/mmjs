@@ -170,7 +170,7 @@ export function MatrixView(props) {
 						id: 'matrix__cell-formula',
 						t: t,
 						actions: props.actions,
-						path: `${results.path}.f_${currentCell.join('_')}`,
+						path: `${results.path}.cell_${currentCell.join('_')}`,
 						formula: cellFormula,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
@@ -190,7 +190,7 @@ export function MatrixView(props) {
 					cellInputs: cellInputs,
 					currentCell: currentCell,
 				}
-			)
+			),
 		)
 	}
 
