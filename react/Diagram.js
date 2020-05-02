@@ -773,8 +773,9 @@ export class Diagram extends React.Component {
 				dy = (dy + ty)*scale;
 				cpdx = (cpdx + tx)*scale;
 				cpdy = (cpdy + ty)*scale;
+				const key = `${requestorName}->${toolName}`;
 				const cmp = e('path', {
-					key: `${ox}${oy}-${dx}${dy}`,
+					key: key,
 					fill: 'transparent',
 					stroke: 'black',
 					d: `M${ox} ${oy} C${cpox} ${cpoy} ${cpdx} ${cpdy} ${dx} ${dy}`
