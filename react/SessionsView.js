@@ -67,7 +67,7 @@ export class SessionsView extends React.Component {
 					}
 				}
 				await this.props.actions.doCommand(
-					`/ copy ${oldName} ${newName}`,
+					`/ copy "${oldName}" "${newName}"`,
 					() => {
 						this.props.actions.updateView(this.props.viewInfo.stackIndex);
 						this.setState({menuPath: ''});
@@ -100,7 +100,7 @@ export class SessionsView extends React.Component {
 					}
 				}
 				await this.props.actions.doCommand(
-					`/ rename ${oldName} ${newName}`,
+					`/ rename "${oldName}" "${newName}"`,
 					() => {
 						this.props.actions.updateView(this.props.viewInfo.stackIndex);
 						this.setState({menuPath: ''});

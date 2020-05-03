@@ -663,8 +663,42 @@ class MMCommandProcessor {
 	 */
 	splitArgsString(args) {
 		// reduce whitespace separators to single spaces
-		args = args.replace(/%s+/, ' ');
-		return args.split(' ');
+		if (/["']/.test(args)) {
+			let start = 0;
+			let i = 0;
+			const parts = [];
+			while (i < args.length) {
+				const c = args[i];
+				if (c === '"' || c === "'") {
+					if (i > start + 1) {
+						parts.push(args.substring(start, i))
+					}
+					start = ++i;
+					while (i < args.length && args[i] !== c) { i++; }
+					if (i > start + 1) {
+							parts.push(args.substring(start, i));
+							start = ++i;
+					}
+				}
+				else if (c === ' ') {
+					if (i > start + 1) {
+						parts.push(args.substring(start, i))
+					}
+					while (i < args.length && args[i] === ' ') { i++; }  // trim extra spaces
+					start = i; 
+				} else {
+					i++;
+				}
+			}
+			if (i > start + 1) {
+				parts.push(args.substring(start, i))
+			}
+			return parts;
+		}
+		else {
+			args = args.replace(/%s+/, ' ');
+			return args.split(' ');
+		}
 	}
 
 	/**

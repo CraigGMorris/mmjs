@@ -541,7 +541,7 @@ class MMSession extends MMCommandParent {
 			this.setError('mmcmd:noIndexedDB', {});
 			return;
 		}
-		let paths = command.args.split(' ');
+		const paths = this.splitArgsString(command.args);
 		let result = await this.copySession(paths[0], paths[1]);
 		command.results = result;
 	}
@@ -557,7 +557,7 @@ class MMSession extends MMCommandParent {
 			this.setError('mmcmd:noIndexedDB', {});
 			return;
 		}
-		let paths = command.args.split(' ');
+		const paths = this.splitArgsString(command.args);
 		let result = await this.renameSession(paths[0], paths[1]);
 		command.results = result;
 	}
