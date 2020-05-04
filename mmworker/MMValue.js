@@ -834,6 +834,23 @@ class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/** @method transpose
+	 *  @returns {MMNumberValue}
+	 */
+	transpose() {
+		const rowCount = this.rowCount;
+		const columnCount = this.columnCount
+		const rv = new MMNumberValue(columnCount, rowCount, this.unitDimensions);
+		const rvValues = rv._values;
+		const thisValues = this._values;
+		for (let i = 0; i < rowCount; i++) {
+			for (let j = 0; j < columnCount; j++) {
+				rvValues[j*rowCount+i] = thisValues[i*columnCount+j];
+			}
+		}
+		return rv;
+	}
+
 	/**
 	 * @method concat
 	 * @param  {MMNumberValue} other
@@ -1274,6 +1291,24 @@ class MMStringValue extends MMValue {
 		}
 		return rv;
 	}
+
+	/** @method transpose
+	 *  @returns {MMStringValue}
+	 */
+	transpose() {
+		const rowCount = this.rowCount;
+		const columnCount = this.columnCount
+		const rv = new MMStringValue(columnCount, rowCount);
+		const rvValues = rv._values;
+		const thisValues = this._values;
+		for (let i = 0; i < rowCount; i++) {
+			for (let j = 0; j < columnCount; j++) {
+				rvValues[j*rowCount+i] = thisValues[i*columnCount+j];
+			}
+		}
+		return rv;
+	}
+
 
 	/*
 	 * dyadic functions

@@ -169,7 +169,6 @@ class MMDataTable extends MMTool {
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'DataTable');
-		this.columnDictionary = {};
 		this.columnArray = [];
 		this.rowCount = 0;
 		this.insertFormula = new MMFormula('insertFormula', this);
@@ -579,6 +578,115 @@ class MMDataTable extends MMTool {
 		if (this.columnArray.length) {
 			this.rowCount = this.columnArray[0].columnValue.value.rowCount;
 		}
+	}
+
+	/** @method initFromCsv
+	 * @param {String} csv - with three definition lines at top
+	 * table en   where en is language code
+	 * "name1","name2" ... column names
+	 * "Fraction","Fraction" ... column display units
+	 */
+	initFromCsv(csv) {
+		let i = 0;
+		let line;
+		let re = new RegExp('.*?\\n');
+		const getLine = (i, re) => {
+			let match = csv.substring(i).match(re);
+			if (!match) {
+				this.setError('mmcmd:tableBadCsvHeader', {path: this.getPath()});
+				return [null, null];
+			}
+			let line = match[0];
+			i += match.index + line.length;
+			return [i, line];
+		}
+		[i, line] = getLine(i, re);
+		if (!line) { return; }
+		let csvSeparator = ',';
+		let locale = 'en';
+		if (line.length >= 7) {
+			csvSeparator = line[5];
+			locale = line.substring(6).trim();
+		}
+		let n = 1.1;
+		const decimalSeparator = n.toLocaleString(locale).substring(1,2);
+
+		[i, line] = getLine(i, re);
+		if (!line) {return;}
+		const columnNames = line.trim().split(csvSeparator);
+
+		[i, line] = getLine(i, re);
+		if (!line) {return;}
+		const unitNames = line.trim().split(csvSeparator);
+
+		if (unitNames.length !== columnNames.length) {
+			this.setError('mmcmd:tableCsvColumnCountsDiffer', {path: this.getPath()});
+			return;
+		}
+
+		const columns = this.columnArray;
+		const columnData = [];
+		const columnCount = columnNames.length;
+		if (columnCount === 0) {return;}
+		for (let i = 0; i < columnCount; i++) {
+			let columnName = columnNames[i];
+			columnName = columnName.substring(1,columnName.length -1);  // strip off the quotes
+			let unitName = unitNames[i];
+			unitName = unitName.substring(1,unitName.length -1);  // strip off the quotes
+			const column = new MMDataTableColumn(this, columnName, unitName);
+			columns.push(column);
+			columnData.push([]);
+		}
+
+		re = new RegExp('".*?"|[^,"\\n]+','ms');
+		let match = csv.substring(i).match(re);
+		let columnNumber = 0;
+		while (match) {
+			const column = columns[columnNumber];
+			let token = match[0];
+			i += match.index + token.length;
+
+			if (column.columnValue.isString) {
+				if (!token.startsWith('"')) {
+					this.setError('mmcmd:tableCsvExpectedString', {
+						path: this.getPath(),
+						token: token,
+						column: columnNumber+1,
+						row: columnData[columnNumber].length + 1
+					});
+					return;
+				}
+				token = token.substring(1,token.length - 1); // strip quotes
+				columnData[columnNumber].push(token);
+			}
+			else {
+				if (token.startsWith('"')) {
+					this.setError('mmcmd:tableCsvUnexpectedString', {
+						path: this.getPath(),
+						token: token,
+						column: columnNumber+1,
+						row: columnData[columnNumber].length + 1
+					});
+					return;
+				}
+				token = token.replace(decimalSeparator, '.');
+				columnData[columnNumber].push(token);
+			}
+			columnNumber = (columnNumber + 1) % columnCount;
+			match = csv.substring(i).match(re);
+		}
+
+		const rowCount = columnData[0].length;
+		for (let i = 1; i < columnCount; i++) {
+			if (columnData[i].length !== rowCount) {
+				this.setError('mmcmd:tableCsvRowCountsDiffer', {path: this.getPath()});
+				return;
+			}
+		}
+		for (let i = 0; i < columnCount; i++) {
+			columns[i].columnValue.updateFromStringArray(columnData[i]);
+		}
+		console.log('made it');
 	}
 
 	/**

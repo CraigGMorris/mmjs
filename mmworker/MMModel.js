@@ -253,53 +253,95 @@ class MMModel extends MMTool {
 		if (indicesMatch) {
 			const parts = indicesMatch[0].split(/\s+/,2);
 			if (parts.length === 2) {
-				const json = command.args.substring(indicesMatch[0].length);
-				const saved = JSON.parse(json);
 				const originX = parseFloat(parts[0]);
 				const originY = parseFloat(parts[1]);
-			if (saved.CopyObjects) {
-					const tools = saved.CopyObjects;
-
-					// need to adjust positions to offset from the supplied upper left
-					let minX = null;
-					let minY = null;
-					for(let toolInfo of tools) {
-						if (minX === null) {
-							minX = toolInfo.DiagramX;
-							minY = toolInfo.DiagramY;
+				const json = command.args.substring(indicesMatch[0].length);
+				const c = json[0];
+				if (c.match(/[-\d]/) || json.startsWith('matrix')) {
+					// starts with number or word matrix - assume matrix
+					let toolType = MMToolTypes["Matrix"];
+					if(!toolType) {
+						throw(this.t('mmcmd:modelInvalidToolType', {name: "Unknown", typeName: "Matrix"}));
+					}
+					let name = `x${this.nextToolNumber++}`;
+					while ( this.childNamed(name) ) {
+						name = `x${this.nextToolNumber++}`;
+					}	
+					let newTool = toolType.factory(name, this);
+					if (newTool) {
+						newTool.position = new MMPoint(originX, originY);
+						if (json.startsWith('matrix')) {
+							newTool.initFromNumberString(json.substring(6))
 						}
 						else {
-							minX = Math.min(minX, toolInfo.DiagramX);
-							minY = Math.min(minY, toolInfo.DiagramY);
+							newTool.initFromNumberString(json);
 						}
+						command.results = true;
 					}
-
-					const names = [];
-					for(let toolInfo of tools) {
-						toolInfo.DiagramX += originX - minX;
-						toolInfo.DiagramY += originY - minY;
-						const name = toolInfo.name;
-						let number = 1;
-						while ( this.childNamed(toolInfo.name) ) {
-							toolInfo.name = `${name}_${number++}`;
-						}
-						names.push(toolInfo.name);
-						this.restoreTool(toolInfo);
+				}
+				else if (json.startsWith('table')) {
+					// starts with word table - assume table csv
+					let toolType = MMToolTypes["DataTable"];
+					if(!toolType) {
+						throw(this.t('mmcmd:modelInvalidToolType', {name: "Unknown", typeName: "DataTable"}));
 					}
-					command.undo = `${this.getPath()} removetool ${names.join(' ')}`
+					let name = `x${this.nextToolNumber++}`;
+					while ( this.childNamed(name) ) {
+						name = `x${this.nextToolNumber++}`;
+					}	
+					let newTool = toolType.factory(name, this);
+					if (newTool) {
+						newTool.position = new MMPoint(originX, originY);
+						newTool.initFromCsv(json);
+						command.results = true;
+					}
 				}
 				else {
-					// just a single tool - probably copied from app based minion
-					saved.DiagramX = originX;
-					saved.DiagramY = originY;
-					let number = 1;
-					while ( this.childNamed(saved.name) ) {
-						saved.name = `${name}_${number++}`;
+					const saved = JSON.parse(json);
+					if (saved.CopyObjects) {
+						const tools = saved.CopyObjects;
+
+						// need to adjust positions to offset from the supplied upper left
+						let minX = null;
+						let minY = null;
+						for(let toolInfo of tools) {
+							if (minX === null) {
+								minX = toolInfo.DiagramX;
+								minY = toolInfo.DiagramY;
+							}
+							else {
+								minX = Math.min(minX, toolInfo.DiagramX);
+								minY = Math.min(minY, toolInfo.DiagramY);
+							}
+						}
+
+						const names = [];
+						for(let toolInfo of tools) {
+							toolInfo.DiagramX += originX - minX;
+							toolInfo.DiagramY += originY - minY;
+							const name = toolInfo.name;
+							let number = 1;
+							while ( this.childNamed(toolInfo.name) ) {
+								toolInfo.name = `${name}_${number++}`;
+							}
+							names.push(toolInfo.name);
+							this.restoreTool(toolInfo);
+						}
+						command.undo = `${this.getPath()} removetool ${names.join(' ')}`
 					}
-					this.restoreTool(saved);
-					command.undo = `${this.getPath()} removetool ${saved.name}`
+					else {
+						// just a single tool - probably copied from app based minion
+						saved.DiagramX = originX;
+						saved.DiagramY = originY;
+						let number = 1;
+						while ( this.childNamed(saved.name) ) {
+							saved.name = `${name}_${number++}`;
+						}
+						this.restoreTool(saved);
+						command.undo = `${this.getPath()} removetool ${saved.name}`
+					}
+					command.results = true;
 				}
-				command.results = true;
 			}
 		}
 	}

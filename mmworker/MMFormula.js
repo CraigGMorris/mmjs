@@ -196,7 +196,11 @@ const MMFormulaFactory = (token, formula) => {
 		'concat': (f) => {return new MMConcatFunction(f)},
 		'cell': (f) => {return new MMMatrixCellFunction(f)},
 		'col': (f) => {return new MMMatrixColumnFunction(f)},
+		'ncols': (f) => {return new MMColumnCountFunction(f)},
+		'nrows': (f) => {return new MMRowCountFunction(f)},
 		'row': (f) => {return new MMMatrixRowFunction(f)},
+		'tr': (f) => {return new MMTransposeFunction(f)},
+		'transpose': (f) => {return new MMTransposeFunction(f)},
 
 		// statistical functions
 
@@ -214,6 +218,7 @@ const MMFormulaFactory = (token, formula) => {
 		// miscellaneous functions
 		'abs': (f) => {return new MMAbsFunction(f)},
 		'rand': (f) => {return new MMRandFunction(f)},
+		'int': (f) => {return new MMGenericSingleFunction(f, Math.trunc)},
 	}
 
 	let op;
@@ -1811,6 +1816,44 @@ class MMMatrixColumnFunction extends MMFunctionOperator {
 	value() {
 		const matrix = this.formula.parent;
 		return MMNumberValue.scalarValue(matrix.currentColumn, null);
+	}
+}
+
+class MMRowCountFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		return MMNumberValue.scalarValue(v.rowCount);
+	}
+
+	operationOnString(v) {
+		return this.operationOn(v);
+	}
+
+	operationOnTable(v) {
+		return this.operationOn(v);
+	}
+}
+
+class MMColumnCountFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		return MMNumberValue.scalarValue(v.columnCount);
+	}
+
+	operationOnString(v) {
+		return this.operationOn(v);
+	}
+
+	operationOnTable(v) {
+		return this.operationOn(v);
+	}
+}
+
+class MMTransposeFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		return v.transpose();
+	}
+
+	operationOnString(v) {
+		return this.operationOn(v);
 	}
 }
 

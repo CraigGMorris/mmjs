@@ -379,7 +379,7 @@ class MMMatrix extends MMTool {
 		return o;
 	}
 
-		/**
+	/**
 	 * @method initFromSaved - initialize from stored object
 	 * @override
 	 * @param {Object} saved 
@@ -408,6 +408,25 @@ class MMMatrix extends MMTool {
 
 		this.rowCountFormula.formula = saved.rowCount;
 		this.columnCountFormula.formula = saved.columnCount;
+	}
+
+	/** initFromNumberString
+	 * @param s - string of comma or tab separated numbers, one row per line
+	 */
+	initFromNumberString(s) {
+		const rows = s.split('\n');
+		const rowCount = rows.length;
+		let columnCount = 0;
+		this.rowCountFormula.formula = `${rowCount}`;
+		for (let i = 0; i < rows.length; i++) {
+			const row = rows[i];
+			const columns = row.split(/[,\t]\s*/);
+			columnCount = Math.max(columnCount, columns.length);
+			for (let j = 0; j < columns.length; j++) {
+				this.setCellInput(i + 1, j + 1, columns[j]);
+			}
+		}
+		this.columnCountFormula.formula = `${columnCount}`;
 	}
 	
 	/**
