@@ -1,6 +1,7 @@
 'use strict';
 /* global
 	MMTool:readonly
+	MMToolValue:readonly
 	MMToolTypes:readonly
 	MMExpression:readonly
 	theMMSession:readonly
@@ -543,6 +544,38 @@ class MMModel extends MMTool {
 			}
 		}
 		command.undo = undoParts.join(' ');
+	}
+
+		/**
+	 * @override valueDescribedBy
+	 * @param {String} description
+	 * @param {MMTool} requestor
+	 * @returns {MMValue}
+	 */
+	valueDescribedBy(description, requestor) {
+		let value;
+		if (description) {
+			if (description.length === 0) {
+				return MMToolValue.scalarValue(this);
+			}
+			let toolName = description.split('.', 1);
+			let restOfPath;
+			if (toolName.length === 2) {
+				[toolName, restOfPath] = toolName;
+			}
+			else {
+				toolName = toolName[0];
+			}
+			toolName = toolName.toLowerCase();
+			const tool = this.children[toolName];
+			if (tool) {
+				value = tool.valueDescribedBy(restOfPath, requestor);
+			}
+			else {
+				value = super.valueDescribedBy(description, requestor);
+			}
+		}
+		return value;
 	}
 
 	/**

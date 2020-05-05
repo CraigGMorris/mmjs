@@ -30,7 +30,7 @@ class MMToolValue extends MMValue {
 
 	/** @static scalarValue
 	 * creates a MMToolValue with a single value
-	 * @param {String} value
+	 * @param {MMTool} value
 	 * @returns {MMToolValue}
 	 */
 	static scalarValue(value) {
