@@ -186,6 +186,15 @@ const MMFormulaFactory = (token, formula) => {
 		'cart': (f) => {return new MMCartesianFunction(f)},
 
 		// reduction functions
+		'min': (f) => {return new MMMinimumFunction(f)},
+		'minrows': (f) => {return new MMRowMinimumsFunction(f)},
+		'mincols': (f) => {return new MMColumnMinimumsFunction(f)},
+		'max': (f) => {return new MMMaximumFunction(f)},
+		'maxrows': (f) => {return new MMRowMaximumsFunction(f)},
+		'maxcols': (f) => {return new MMColumnMaximumsFunction(f)},
+		'sum': (f) => {return new MMSumFunction(f)},
+		'sumrows': (f) => {return new MMSumRowsFunction(f)},
+		'sumcols': (f) => {return new MMSumColumnsFunction(f)},
 
 		// comparison functions
 		'if': (f) => {return new MMIfFunction(f)},
@@ -1163,20 +1172,6 @@ class MMGenericSingleFunction extends MMSingleValueFunction {
 	}
 }
 
-class MMPiFunction extends MMFunctionOperator {
-	processArguments(operandStack) {
-		if (operandStack.length > 0 && operandStack[operandStack.length - 1] instanceof MMOperandMarker) {
-			operandStack.pop()
-			return true;
-		}
-		return false;
-	}
-
-	value() {
-		return MMNumberValue.scalarValue(Math.PI);
-	}
-}
-
 class MMComplexDyadicFunction extends MMMultipleArgumentFunction {
 	constructor(formula, name, unitAction, func) {
 		super(formula);
@@ -1200,15 +1195,96 @@ class MMComplexDyadicFunction extends MMMultipleArgumentFunction {
 	}
 }
 
-class MMAbsFunction extends MMSingleValueFunction {
-	constructor(formula, cAbsolute) {
-		super(formula);
-		this.cAbsolute = cAbsolute;
+class MMPiFunction extends MMFunctionOperator {
+	processArguments(operandStack) {
+		if (operandStack.length > 0 && operandStack[operandStack.length - 1] instanceof MMOperandMarker) {
+			operandStack.pop()
+			return true;
+		}
+		return false;
 	}
 
+	value() {
+		return MMNumberValue.scalarValue(Math.PI);
+	}
+}
+
+class MMAbsFunction extends MMSingleValueFunction {
 	operationOn(v) {
 		if (v) {
 			return v.abs();
+		}
+	}
+}
+
+class MMMinimumFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.min();
+		}
+	}
+}
+
+class MMRowMinimumsFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.minRows();
+		}
+	}
+}
+
+class MMColumnMinimumsFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.minColumns();
+		}
+	}
+}
+
+class MMMaximumFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.max();
+		}
+	}
+}
+
+class MMRowMaximumsFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.maxRows();
+		}
+	}
+}
+
+class MMColumnMaximumsFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.maxColumns();
+		}
+	}
+}
+
+class MMSumFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.sum();
+		}
+	}
+}
+
+class MMSumRowsFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.sumRows();
+		}
+	}
+}
+
+class MMSumColumnsFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.sumColumns();
 		}
 	}
 }

@@ -519,6 +519,153 @@ class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/** @method min
+	 * returns the minimum of all the values
+	 */
+	min() {
+		if (this.valueCount === 1) {
+			return this;
+		}
+		else if (this.valueCount > 0)  {
+			const min = Math.min(...(this._values));
+			return MMNumberValue.scalarValue(min, this.unitDimensions);
+		}
+		return null;
+	}
+
+	/** @method minRows
+	 * returns the minimum of each row
+	 */
+	minRows() {
+		const columnCount = this.columnCount;
+		const rowCount = this.rowCount;
+		const values = this._values;
+		const rv = new MMNumberValue(rowCount, 1, this.unitDimensions);
+		for (let r = 0; r < rowCount; r++) {
+			const start = r*columnCount;
+			const end = start + columnCount;
+			const min = Math.min(...(values.slice(start, end)));
+			rv._values[r] = min;
+		}
+		return rv;
+	}
+
+	/** @method minColumns
+	 * returns the minimum of each column
+	 */
+	minColumns() {
+		const columnCount = this.columnCount;
+		const rowCount = this.rowCount;
+		const values = this._values;
+		const rv = new MMNumberValue(1, columnCount, this.unitDimensions);
+		for (let c = 0; c < columnCount; c++) {
+			let min = Number.POSITIVE_INFINITY;
+			for (let r = 0; r < rowCount; r++) {
+				min = Math.min(min, values[r*columnCount + c]);
+			}
+			rv.values[c] = min;
+		}
+		return rv;
+	}
+
+	/** @method max
+	 * returns the maximum of all the values
+	 */
+	max() {
+		if (this.valueCount === 1) {
+			return this;
+		}
+		else if (this.valueCount > 0)  {
+			const max = Math.max(...(this._values));
+			return MMNumberValue.scalarValue(max, this.unitDimensions);
+		}
+		return null;
+	}
+
+	/** @method maxRows
+	 * returns the maximum of each row
+	 */
+	maxRows() {
+		const columnCount = this.columnCount;
+		const rowCount = this.rowCount;
+		const values = this._values;
+		const rv = new MMNumberValue(rowCount, 1, this.unitDimensions);
+		for (let r = 0; r < rowCount; r++) {
+			const start = r*columnCount;
+			const end = start + columnCount;
+			const max = Math.max(...(values.slice(start, end)));
+			rv._values[r] = max;
+		}
+		return rv;
+	}
+
+	/** @method maxColumns
+	 * returns the maximum of each column
+	 */
+	maxColumns() {
+		const columnCount = this.columnCount;
+		const rowCount = this.rowCount;
+		const values = this._values;
+		const rv = new MMNumberValue(1, columnCount, this.unitDimensions);
+		for (let c = 0; c < columnCount; c++) {
+			let max = Number.NEGATIVE_INFINITY;
+			for (let r = 0; r < rowCount; r++) {
+				max = Math.max(max, values[r*columnCount + c]);
+			}
+			rv.values[c] = max;
+		}
+		return rv;
+	}
+
+	/** @method sum
+	 * returns the sum of all values
+	 */
+	sum() {
+		let sum = 0;
+		const valueCount = this.valueCount;
+		const values = this._values;
+		for (let i = 0; i < valueCount; i++) {
+			sum += values[i];
+		}
+		return MMNumberValue.scalarValue(sum, this.unitDimensions);
+	}
+
+	/** @method sumRows
+	 * returns the sum of each row
+	 */
+	sumRows() {
+		const columnCount = this.columnCount;
+		const rowCount = this.rowCount;
+		const values = this._values;
+		const rv = new MMNumberValue(rowCount, 1, this.unitDimensions);
+		for (let r = 0; r < rowCount; r++) {
+			let sum = 0;
+			for (let c = 0; c < columnCount; c++) {
+				sum += values[r*columnCount + c];
+			}
+			rv.values[r] = sum;
+		}
+		return rv;
+	}
+
+	/** @method sumColumns
+	 * returns the sum of each column
+	 */
+	sumColumns() {
+		const columnCount = this.columnCount;
+		const rowCount = this.rowCount;
+		const values = this._values;
+		const rv = new MMNumberValue(1, columnCount, this.unitDimensions);
+		for (let c = 0; c < columnCount; c++) {
+			let sum = 0;
+			for (let r = 0; r < rowCount; r++) {
+				sum += values[r*columnCount + c];
+			}
+			rv.values[c] = sum;
+		}
+		return rv;
+	}
+
 	/** @method transpose
 	 *  @returns {MMNumberValue}
 	 */
@@ -536,6 +683,8 @@ class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	// dyadic functions
+	
 	/**
 	 * @method concat
 	 * @param  {MMNumberValue} other
