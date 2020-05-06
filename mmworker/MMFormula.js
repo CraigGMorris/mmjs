@@ -208,6 +208,7 @@ const MMFormulaFactory = (token, formula) => {
 		'ncols': (f) => {return new MMColumnCountFunction(f)},
 		'nrows': (f) => {return new MMRowCountFunction(f)},
 		'row': (f) => {return new MMMatrixRowFunction(f)},
+		'redim': (f) => {return new MMRedimFunction(f)},
 		'tr': (f) => {return new MMTransposeFunction(f)},
 		'transpose': (f) => {return new MMTransposeFunction(f)},
 
@@ -1731,6 +1732,25 @@ class MMRandFunction extends MMMultipleArgumentFunction {
 		return rv;
 	}
 }
+
+class MMRedimFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length < 2) {
+			return false; // needs at least two arguments
+		}
+		return rv;
+	}
+
+	value() {
+		const matrix = this.arguments[1].value();
+		if (matrix instanceof MMNumberValue || matrix instanceof MMStringValue) {
+			return matrix.redimension(this.arguments[0].value());
+		}
+		return null;
+	}
+}
+
 
 class MMTableFunction extends MMMultipleArgumentFunction {
 	processArguments(operandStack) {

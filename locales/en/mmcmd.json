@@ -25,6 +25,7 @@
 	"formulaPolarSingleError": "Single argument does not have two columns",
 	"formulaRangeUnits": "Arguments to range operator must be dimensionless\nin: {{path}}\nformula: {{formula}}",
 	"formulaRecursion": "Recursion Error\nSelf reference in formula {{formula}}\nTool path: {{path}}",
+	"formulaRedimCountError": "New column count does not evenly divide in redim",
 	"formulaSyntaxError": "Formula syntax Error\nin: {{path}}\nformula: {{formula}}",
 	"formulaUnknownFunction": "Unknown function {{f}}",
 	"jsonImportFailed": "Failed to initialize a session from the supplied json\n\n{{error}}",

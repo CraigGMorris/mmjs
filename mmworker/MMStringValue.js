@@ -226,6 +226,24 @@ class MMStringValue extends MMValue {
 		return rv;
 	}
 
+	/** @method redimension
+	 * return value reconfigured to given number of columns
+	 * @param {MMNumberValue} nColumns
+	 */
+	redimension(nColumns) {
+		let rv;
+		if (nColumns instanceof MMNumberValue && nColumns.valueCount) {
+			let columnCount = Math.floor(nColumns._values[0] + 0.01);
+			if (this.valueCount % columnCount !== 0) {
+				this.exceptionWith('mmcmd:formulaRedimCountError')
+			}
+			const rowCount = this.valueCount / columnCount;
+			rv = new MMStringValue(rowCount, columnCount, this.unitDimensions);
+			rv._values = Array.from(this._values);
+		}
+		return rv;
+	}
+
 	/** @method transpose
 	 *  @returns {MMStringValue}
 	 */
