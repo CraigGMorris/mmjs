@@ -242,14 +242,17 @@ export function TableView(props) {
 			if (format) {
 				format = format.split('.');	// if there is a decimal point, only interested in what is after it
 				format = format[format.length - 1];
-				const precision = parseInt(format);
+				let precision = parseInt(format);
+				if (isNaN(precision) || precision < 2 || precision > 36) {
+					precision = 8;
+				}
 				switch (format.slice(-1)) {  // last character should be format type
 					case 'f':
 						return v.toFixed(precision);
 					case 'e':
 						return v.toExponential(precision);
 					case 'x':
-						return v.toString(precision);
+						return `${precision}r` + v.toString(precision);
 				}
 			}
 			return v.toPrecision(8);

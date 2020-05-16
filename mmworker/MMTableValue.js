@@ -687,7 +687,7 @@ class MMTableValue extends MMValue {
 					}
 					else {
 						if (!MMUnitSystem.areDimensionsEqual(firstNumeric.unitDimensions, column.value.unitDimensions)) {
-							this.exceptionWith('mmcmd:tableNumericUnits')
+							this.exceptionWith('mmcmd:tableNumberValueUnits')
 						}
 					}
 				}
