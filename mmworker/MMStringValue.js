@@ -336,6 +336,28 @@ class MMStringValue extends MMValue {
 	}
 
 	/**
+	 * @method equal
+	 * returns 1 if this equals other are equal or 0 if not
+	 * @param {MMStringValue} other
+	 * @returns {MMStringValue}
+	 */
+	equal(other) {
+		let rv;
+		if (other instanceof MMStringValue) {
+			rv = this.dyadicStringResult(other);
+			const rvValues = rv._values;
+			const otherValues = other._values;
+			const thisValues = this._values;
+			const otherCount = other.valueCount;
+			const thisCount = this.valueCount;
+			for (let i = 0; i < thisCount; i++) {
+				rvValues[i] = (thisValues[i % thisCount] === otherValues[i % otherCount]) ? 1 : 0;
+			}
+		}
+		return rv;
+	}
+
+	/**
 	 * @method jsonValue
 	 * @override
 	 * @param {MMUnit} displayUnit

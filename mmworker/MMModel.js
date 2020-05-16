@@ -180,16 +180,27 @@ class MMModel extends MMTool {
 		for (let name of names) {
 			const tool = this.childNamed(name);
 			if (tool) {
-				const savedTool = tool.saveObject();
-				tool.forgetCalculated();
-				const success = this.removeChildNamed(name);
-				if (success) {
-					savedTools.push(savedTool);
+				let savedTool;
+				try {
+					savedTool = tool.saveObject();
+				}
+				catch(e) {
+					savedTool = null;
+				}
+				try {
+					tool.forgetCalculated();
+				}
+				finally {
+					if (this.removeChildNamed(name) && savedTool) {
+						savedTools.push(savedTool);
+					}
 				}
 			}
 		}
-		const json = JSON.stringify(savedTools);
-		command.undo = `__blob__${this.getPath()} restoretool__blob__${json}`;
+		if (savedTools.length) {
+			const json = JSON.stringify(savedTools);
+			command.undo = `__blob__${this.getPath()} restoretool__blob__${json}`;
+		}
 	}
 
 	/**

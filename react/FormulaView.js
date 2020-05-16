@@ -51,15 +51,20 @@ export function FormulaField(props) {
 				e.stopPropagation();
 				let offset = window.getSelection().anchorOffset;
 				offset = Math.max(0, offset);
-				const pathParts = props.path.split('.');
-				const title = pathParts[pathParts.length - 1]
-				props.actions.pushView('formulaEditor', title, {
-					t: t,
-					formula: props.formula,
-					formulaOffset: offset,
-					modelPath: props.viewInfo.modelPath,
-					applyChanges: applyChanges,
-				});
+				if (props.clickAction) {
+					props.clickAction(offset);
+				}
+				else {
+					const pathParts = props.path.split('.');
+					const title = pathParts[pathParts.length - 1]
+					props.actions.pushView('formulaEditor', title, {
+						t: t,
+						formula: props.formula,
+						formulaOffset: offset,
+						modelPath: props.viewInfo.modelPath,
+						applyChanges: applyChanges,
+					});
+				}
 			}
 		},
 		e(
@@ -356,9 +361,9 @@ function ValuePicker(props) {
 export function FormulaEditor(props) {
 	let t = props.t;
 
-	const [formula, setFormula] = useState(props.viewInfo.formula);
+	const [formula, setFormula] = useState(props.formula ? props.formula : props.viewInfo.formula);
 	const [display, setDisplay] = useState(FormulaDisplay.editor);
-	const offset = props.viewInfo.formulaOffset
+	const offset = props.formulaOffset ? props.formulaOffset : props.viewInfo.formulaOffset
 	const [selection, setSelection] = useState([offset,offset]);
 
 	// reference to editor textarea to keep track of selection and focus
@@ -403,7 +408,8 @@ export function FormulaEditor(props) {
 	}, [formula]);
 
 	const applyChanges = (formula) => {
-		props.viewInfo.applyChanges(formula, () => {
+		const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
+		f(formula, () => {
 			props.actions.popView();
 		});
 	}
@@ -554,13 +560,32 @@ export function FormulaEditor(props) {
 			}
 		),
 		e(
-			'button', {
-				id: 'formula-editor__apply',
-				onClick: () => {
-					applyChanges(formula);
-				}
+			'div', {
+				id: 'formula-editor__actions',
 			},
-			t('react:applyChanges')
+			e(
+				'button', {
+					id: 'formula-editor__cancel',
+					onClick: () => {
+						if (props.cancelAction) {
+							props.cancelAction();
+						}
+						else {
+							props.actions.popView();
+						}
+					}
+				},
+				t('react:cancel')
+			),
+			e(
+				'button', {
+					id: 'formula-editor__apply',
+					onClick: () => {
+						applyChanges(formula);
+					}
+				},
+				t('react:applyChanges')
+			)
 		)
 	);
 

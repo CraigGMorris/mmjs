@@ -198,6 +198,8 @@ const MMFormulaFactory = (token, formula) => {
 
 		// comparison functions
 		'if': (f) => {return new MMIfFunction(f)},
+		'eq': (f) => {return new MMEqualFunction(f)},
+		'ne': (f) => {return new MMNotEqualFunction(f)},
 
 		// matrix functions
 		'array': (f) => {return new MMArrayFunction(f)},
@@ -1023,7 +1025,7 @@ class MMSingleValueFunction extends MMFunctionOperator {
 	 */
 	constructor(formula) {
 		super(formula);
-		this.needsNumericArgument = true;
+		this.needsNumericArgument = true;	// true if operation works on number values, false if on string values
 		this.argument = null;
 	}
 
@@ -1089,9 +1091,55 @@ class MMSingleValueFunction extends MMFunctionOperator {
 	 * @param {MMTableValue} value
 	 * @returns {MMValue}
 	 */
-	operationOnTable(value) {
-		if (value) {
-			return this.operationOn(value.numberValue());
+	operationOnTable(tValue) {
+		const columns = tValue.columns;
+		const calcColumns = [];
+		for (let column of columns) {
+			const value = column.value;
+			if (value instanceof MMNumberValue) {
+				if (this.needsNumericArgument) {
+					const calcValue = this.operationOn(value);
+					if (!(calcValue instanceof MMNumberValue)) {
+						return null;
+					}
+					let displayUnit;
+					if (MMUnitSystem.areDimensionsEqual(value.unitDimensions, calcValue.unitDimensions)) {
+						displayUnit = column.displayUnit ? column.displayUnit.name : null;
+					}
+					const calcColumn = new MMTableValueColumn({
+						name: column.name,
+						displayUnit: displayUnit,
+						value: calcValue
+					});
+					calcColumns.push(calcColumn);
+				}
+				else {
+					// just include original column if operation does not apply to it
+					calcColumns.push(column);
+				}				
+			}
+			else if (value instanceof MMStringValue) {
+				if (!this.needsNumericArgument) {
+					const calcValue = this.operationOnString(value);
+					const calcColumn = new MMTableValueColumn({
+						name: column.name,
+						displayUnit: column.displayUnit,
+						value: calcValue
+					})
+					calcColumns.push(calcColumn);
+				}
+				else {
+					// just include original column if operation does not apply to it
+					calcColumns.push(column);
+				}				
+			}
+			else {
+				return null;
+			}
+		}
+
+		if (calcColumns.length) {
+			return new MMTableValue({columns: calcColumns});
 		}
 		return null;
 	}
@@ -1697,6 +1745,44 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 			}
 		}
 	}	
+}
+
+class MMEqualFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length < 2) {
+			return false; // needs at least two arguments
+		}
+		return rv;
+	}
+
+	value() {
+		const v1 = this.arguments[1].value();
+		const v2 = this.arguments[0].value();
+
+		if ((v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) ||
+			(v1 instanceof MMStringValue && v2 instanceof MMStringValue))
+		{
+			return v1.equal(v2);
+		}
+		return null;
+	}
+}
+
+class MMNotEqualFunction extends MMEqualFunction {
+	value() {
+		// get is equal value from super
+		const isEqual = super.value();
+		if (isEqual instanceof MMNumberValue) {
+			// got results
+			const v = isEqual._values;
+			const count = isEqual.valueCount;
+			for (let i = 0; i < count; i++) {
+				v[i] = v[i] === 0 ? 1.0 : 0.0;
+			}
+		}
+		return isEqual;
+	}
 }
 
 class MMRandFunction extends MMMultipleArgumentFunction {

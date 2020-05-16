@@ -1,5 +1,5 @@
 {
-	"applyChanges": "Apply Changes (Shift-Enter)",
+	"applyChanges": "Apply (Shift-Enter)",
 	"cancel": "Cancel",
 	"consoleReadCommands": "Read Command File",
 	"consoleReadPlaceHolder": "Enter command",
@@ -8,6 +8,7 @@
 	"customUnitsButtonValue": "Custom Units",
 	"dataAddColumnButton": "Add Column",
 	"dataAddRowButton": "Add Row",
+	"dataCancelButton": "Cancel",
 	"dataColumnFormat": "Format",
 	"dataColumnName": "Name",
 	"dataColumnPosition": "Column Number",
@@ -15,7 +16,7 @@
 	"dataColumnValue": "Initial Value",
 	"dataDeleteColumnButton": "Delete Column",
 	"dataDeleteRowsButton": "Delete {{count}} Rows",
-	"dataTableButton": "Table",
+	"dataUpdateButton": "Update",
 	"dgmButtonConsole": "Console",
 	"dgmButtonDiagram": "Diagram",
 	"dgmButtonExpand": "Expand",

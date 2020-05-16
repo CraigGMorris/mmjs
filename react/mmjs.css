@@ -223,15 +223,6 @@ a:hover {
 	width: 200px;
 }
 
-#datatable__edit-column {
-	display: grid;
-	grid-template-rows: var(--input--height) 1fr;
-	grid-template-areas: "display-buttons"
-		"column-view";
-	grid-gap: 5px;
-	margin-top: 5px;
-}
-
 .datatable__column-edit-section {
 	margin-top: 5px;
 	margin-bottom: 10px;
@@ -419,12 +410,13 @@ a:hover {
 #formula-editor__edit {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: var(--input--height) 1fr var(--input--height);
+	grid-template-rows: var(--input--height) var(--input--height) 1fr;
 	grid-template-areas: "toolbar"
-		"input"
-		"apply";
+		"actions"
+		"input";
 	height: 100%;
 	box-sizing: border-box;
+	grid-gap: 5px;
 }
 
 #formula-editor__toolbar {
@@ -443,8 +435,26 @@ a:hover {
 	grid-area: input;
 }
 
+#formula-editor__actions {
+	display: grid;
+	grid-area: actions;
+	grid-template-columns: 1fr 2fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: "cancel apply";
+	grid-gap: 10px;
+}
+
+#formula-editor__cancel {
+	grid-area: cancel;
+}
+
 #formula-editor__apply {
 	grid-area: apply;
+}
+
+#formula-editor__editor {
+	grid-area: input;
+	height: 100%;
 }
 
 #f-picker {

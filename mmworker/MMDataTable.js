@@ -5,6 +5,7 @@
 	MMTableValueColumn:readonly
 	MMTableValue:readonly
 	MMNumberValue:readonly
+	MMStringValue:readonly
 	MMFormula:readonly
 	MMUnit:readonly
 	MMPropertyType:readonly
@@ -182,6 +183,7 @@ class MMDataTable extends MMTool {
 		get verbs() {
 			let verbs = super.verbs;
 			verbs['addcolumn'] = this.addColumnCommand;
+			verbs['updatecolumn'] = this.updateColumnCommand;
 			verbs['addrow'] = this.addRowCommand;
 			verbs['removecolumn'] = this.removeColumnCommand;
 			verbs['removerows'] = this.removeRowsCommand;
@@ -219,25 +221,80 @@ class MMDataTable extends MMTool {
 	
 	/**
 	 * @method addColumn
-	 * @param {String} displayUnit - can be a string or a unit
-	 * if omitted, Fraction is assumed
-	 * if "string" then the column holds string values
-	 * this type cannot be later changed, although if can be changed to another unit of the same type
-	 * @param {String} name - should be valid for use in formula
+	 * @param {String} options - optional json string containing 
+	 * name: column name - default Field_n where n is columnNumber
+	 * columnNmber: n - the 1 based number where the column should be inserted
+	 * 		- default is as the last column
+	 * displayUnit: this unit also determines the column type - Fraction is assumed
+	 * 		- use "string" for a string column
+	 * 		- this type cannot be later changed, although if can be changed to another unit of the same type
+	 * defaultValue: a string containing a formula to be used as the initial value for new rows
+	 *   - should be the same type as designated by displayUnit
+	 * format: a string designating number of decimal points and type of number formatting
+	 * 		- types f: fixed 2f => 1.23, e: exp 2e => 1.23e0
+	 * 				x: radix - the precision number is now the radix (between 2 and 36)
+	 * 					123 for 16x => 16r7b for 8x => 8r173 2x => 2r1111011
 	 * @returns {MMDataTableColumn}
 	 */
-	addColumn(displayUnit, name) {
-		if (!name) {
-			const n = this.columnArray.length + 1;
-			name = `Field_${n}`;
+	addColumn(optionsJson) {
+		let options = {};
+		if (optionsJson && optionsJson.trim().startsWith('{')) {
+			try {
+				options = JSON.parse(optionsJson);
+			}
+			catch(e) {
+				this.setError('mmcmd:tableBadColumnJson', {path: this.getPath(), msg: e.message});
+				return;
+			}
 		}
-		const column = new MMDataTableColumn(this, name, displayUnit);
-		this.columnArray.push(column);
+		if (!options.name) {
+			let n = options.columnNumber;
+			if (!n) {
+				n = this.columnArray.length + 1;
+			}
+
+			options.name = `Field_${n}`;
+			while(this.childNamed(options.name)) {
+				options.name += '_1';
+			}
+		}
+
+		let insertValue;
+		if (options.defaultValue) {
+			this.insertFormula.formula = options.defaultValue;
+			insertValue = this.insertFormula.value();
+		}
+
+		let displayUnit = options.displayUnit;
+		if ((!displayUnit || !displayUnit.length) && insertValue instanceof MMNumberValue) {
+			displayUnit = theMMSession.unitSystem.baseUnitWithDimensions(insertValue.unitDimensions);
+		}
+
+		const column = new MMDataTableColumn(this, options.name, displayUnit);
+		column.defaultValue = options.defaultValue;
+		column.format = options.format;
+		if (options.columnNumber && options.columnNumber <= this.columnCount && options.columnNumber > 0) {
+			this.columnArray.splice(options.columnNumber - 1, 0, column);
+		}
+		else {
+			this.columnArray.push(column);
+		}
 
 		if (this.rowCount) {
-			const v = new MMNumberValue(this.rowCount, 1, column.columnValue.value.unitDimensions);
-			for (let i = 0; i < this.rowCount; i++ ) {
-				v.values[i] = 0.0;
+			let v;
+			if (options.displayUnit === 'string') {
+				v = new MMStringValue(this.rowCount, 1);
+				insertValue = insertValue ? insertValue.values[0] : ''
+				for (let i = 0; i < this.rowCount; i++ ) {
+					v.values[i] = insertValue;
+				}
+			}
+			else {
+				v = new MMNumberValue(this.rowCount, 1, column.columnValue.value.unitDimensions);
+				insertValue = insertValue ? insertValue.values[0] : 0.0;
+				for (let i = 0; i < this.rowCount; i++ ) {
+					v.values[i] = insertValue;
+				}
 			}
 			column.columnValue.updateAllRows(this.rowCount, v);
 		}
@@ -250,25 +307,113 @@ class MMDataTable extends MMTool {
 	 * @method addColumnCommand
 	 * add a column to the table
 	 * @param {MMCommand} command
-	 * command.args have should have a display unit and a column name
-	 * if display unit is omitted, Fraction is assumed
-	 * if display unit is "string" then the column holds string values
-	 * this type cannot be later changed, although if can be changed to another unit of the same type
-	 * if name is omitted, one will be fabricated
-	 * command.results is set to the generated column name
+	 * command.args is string containing json - see addColumn for details
 	 */
 	addColumnCommand(command) {
-		const parts = command.args.split(/\s/);
-		let name, displayUnit;
-		if (parts.length > 1) {
-			name = parts[1];
+		const column = this.addColumn(command.args);
+		if (!command.error && column) {
+			command.results = column.name;
+			command.undo = `${this.getPath()} removecolumn ${column.name}}`;
 		}
-		if (parts.length > 0) {
-			displayUnit = parts[0];
+	}
+
+	/**
+	 * @method updateColumn
+	 * @param {String} options - optional json string containing changes to column properties
+	 * see addColumn for details of the options
+	 * @returns {Object} the undo options necessary to reverse the update or null
+	 */
+	updateColumn(optionsJson) {
+		let options;
+		try {
+			options = JSON.parse(optionsJson);
 		}
-		const column = this.addColumn(displayUnit, name);
-		command.results = column.name;
-		command.undo = `${this.getPath()} removecolumn ${column.name}}`;
+		catch(e) {
+			this.setError('mmcmd:tableBadColumnJson', {path: this.getPath(), msg: e.message});
+			return;
+		}
+		
+		const column = options.name && this.childNamed(options.name);
+		if (!column) {
+			this.setError('mmcmd:tableUpdateNoName', {path: this.getPath(), name: options.name});
+			return;
+		}
+
+		const undoOptions = {};
+		if (options.newName) {
+			if (options.newName === column.name) {
+				if (this.childNamed(options.newName)) {
+					this.setError('mmcmd:tableDuplicateColumnName', {name: options.newName, path: this.getPath()});
+					return;
+				}
+			}
+			undoOptions.newName = column.name;
+			undoOptions.name = options.newName;
+			this.renameChild(column.name, options.newName);
+		}
+		else {
+			undoOptions.name = column.name;
+		}
+
+		if (options.displayUnit && options.displayUnit !== column.displayUnit) {
+			const oldUnit = column.displayUnit;
+			try {
+				column.displayUnit = options.displayUnit;
+			}
+			catch (e) {
+				this.setError(e.msgKey, e.args);
+				return undoOptions;
+			}
+			undoOptions.displayUnit = oldUnit;
+		}
+
+		if (options.defaultValue && options.defaultValue !== column.defaultValue) {
+			undoOptions.defaultValue = column.defaultValue || '';
+			column.defaultValue = options.defaultValue;
+		}
+
+		if (options.format && options.format !== column.formant) {
+			undoOptions.format = column.format || '';
+			column.format = options.format;
+		}
+
+		if (options.columnNumber) {
+			const toNumber = parseInt(options.columnNumber);
+			if ( toNumber > 0 && toNumber <= this.columnCount) {
+				let fromNumber = -1;
+				const lcname = column.name.toLowerCase();
+				for (let i = 0; i < this.columnCount; i++) {
+					if (lcname === this.columnArray[i].name.toLowerCase()) {
+						fromNumber = i + 1;
+						break;
+					}
+				}
+				if (toNumber >= 1) {
+					this.moveColumn(fromNumber, toNumber);
+					undoOptions.columnNumber = fromNumber;
+				}
+			}
+		}
+
+		this.forgetCalculated();
+		return undoOptions
+	}
+
+		/**
+	 * @method updateColumnCommand
+	 * update a columns properties
+	 * @param {MMCommand} command
+	 * command.args is string containing json - see addColumn for details
+	 */
+	updateColumnCommand(command) {
+		const undoOptions = this.updateColumn(command.args);
+		if (!command.error && undoOptions) {
+			if (Object.values(undoOptions).length > 1) {
+				command.results = undoOptions.name;
+				const undoString = JSON.stringify(undoOptions);
+				command.undo = `__blob__${this.getPath()} updatecolumn__blob__${undoString}`;
+			}
+		}
 	}
 
 	/**
@@ -707,23 +852,13 @@ class MMDataTable extends MMTool {
 			if (columnValue.isString) {
 				v.unitType = 'String';
 			}
-			else {
+			else if (column.columnValue.displayUnit) {
 				v.unitType = theMMSession.unitSystem.typeNameForUnitNamed(column.columnValue.displayUnit.name);
 			}
 			if (column.format) {
 				v.format = column.format;
 			}
 		}
-		// results['defaultValues'] = this.columnArray.map( column => column.defaultValue );
-		// results['unitTypes'] = this.columnArray.map(column => {
-		// 	const columnValue = column.columnValue;
-		// 	if (columnValue.isString) {
-		// 		return 'String';
-		// 	}
-		// 	else {
-		// 		return theMMSession.unitSystem.typeNameForUnitNamed(column.columnValue.displayUnit.name);
-		// 	}
-		// });
 		results['value'] = value;
 	}
 
