@@ -1318,6 +1318,15 @@ class MMTool extends MMCommandParent {
 	}
 
 	/**
+	 * @method renameTo
+	 * @param {MMCommand} command 
+	 */
+	renameto(command) {
+		this.forgetCalculated();
+		super.renameto(command);
+	}
+
+	/**
 	 * @method initFromSaved - initialize from stored object
 	 * @param {Object} saved 
 	 */
