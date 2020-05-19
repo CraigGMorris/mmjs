@@ -434,11 +434,11 @@ class MMNumberValue extends MMValue {
 	 */
 	mod(value) {
 		const rv = this.processDyadic(value, (a,b) => {
-			return a % b;
+			// return a % b;
 			// the objc version did the equivalent of the following,
 			// but I am not sure the floor operations should be included
 			// if not needed
-			// Math.floor(a + .1) % Math.floor(b + .1);
+			return Math.floor(Math.abs(a) + .1) % Math.floor(Math.abs(b) + .1);
 		});
 		rv.subtractUnitDimensions(value.unitDimensions);
 		return rv;
@@ -689,7 +689,7 @@ class MMNumberValue extends MMValue {
 	 * @method concat
 	 * @param  {MMNumberValue} other
 	 * @return MMNumberValue
-	 * overriden to concatanate two arrays into one
+	 * overriden to concatanate two value into one by row
 	 */
 	concat(other) {
 		let rv;

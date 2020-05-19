@@ -1,6 +1,7 @@
 {
 	"languageCode": "en",
 	"decimalSeparator": ",",
+	"appendTableRowMismatch": "Can't append table values with different row counts",
 	"concatTableColumnMismatch": "Can't concat table values with different column counts",
 	"dataTableDisplayName": "Data Table",
 	"displayUnitTypeMismatch": "Unit type mismatch in setting display unit {{unitName}} on table value",
@@ -69,6 +70,7 @@
 	"tableUnitTypeMismatch": "Data table error\n\nUnit type mismatch for row {{row}} of column {{column}} of {{table}}",
 	"tableUpdateNoName": "Could not find a column named '{{name}}' in {{path}}",
 	"tableValueIndexError": "Illegal index in table value",
+	"unitTypeMismatch": "Unit types don't match",
 	"valueMatrixBoundsError": "Index [{{row}},{{column}}] out of bounds [{{rowCount}},{{columnCount}}]",
 	"valuePowerHasUnits": "Exponent cannot have units",
 	"valuePowerOfArrayWithUnits": "Exponent cannot be an array if the raised value has units",

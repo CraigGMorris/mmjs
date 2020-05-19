@@ -204,7 +204,7 @@ class MMValue {
 	 * @method concat
 	 * @param  {MMValue} other
 	 * @return MMValue
-	 * overriden to concatanate two arrays into one
+	 * overriden to concatanate two values into one by row
 	 */
 	// eslint-disable-next-line no-unused-vars
 	concat(other) {

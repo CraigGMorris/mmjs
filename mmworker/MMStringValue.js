@@ -344,7 +344,7 @@ class MMStringValue extends MMValue {
 	equal(other) {
 		let rv;
 		if (other instanceof MMStringValue) {
-			rv = this.dyadicStringResult(other);
+			rv = this.dyadicNumberResult(other);
 			const rvValues = rv._values;
 			const otherValues = other._values;
 			const thisValues = this._values;
