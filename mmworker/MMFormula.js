@@ -1562,8 +1562,8 @@ class MMCartesianFunction extends MMMultipleArgumentFunction {
 			return null;
 		}
 		const count = Math.max(v1.valueCount, v2.valueCount);
-		const x = new MMNumberValue(count, 1, v1.unitDimensions);
-		const y = new MMNumberValue(count, 1, v1.unitDimensions);
+		const x = new MMNumberValue(count, 1, v2.unitDimensions);
+		const y = new MMNumberValue(count, 1, v2.unitDimensions);
 
 		const xV = x.values;
 		const yV = y.values;

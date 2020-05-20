@@ -723,7 +723,8 @@ class MMNumberValue extends MMValue {
 			const thisValues = this._values;
 			const otherCount = other.valueCount;
 			const thisCount = this.valueCount;
-			for (let i = 0; i < thisCount; i++) {
+			const count = Math.max(thisCount, otherCount);
+			for (let i = 0; i < count; i++) {
 				rvValues[i] = (thisValues[i % thisCount] === otherValues[i % otherCount]) ? 1 : 0;
 			}
 		}
