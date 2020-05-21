@@ -261,7 +261,7 @@ class MMModel extends MMTool {
 	 * in the form __blob__/.x paste x y__blob__ followed by the json text
 	 */
 	pasteCommand(command) {
-		const indicesMatch = command.args.match(/^[\d.]+\s+[\d.]+\s+/);
+		const indicesMatch = command.args.match(/^-*?[\d.]+\s+-*?[\d.]+\s+/);
 		if (indicesMatch) {
 			const parts = indicesMatch[0].split(/\s+/,2);
 			if (parts.length === 2) {
@@ -358,6 +358,21 @@ class MMModel extends MMTool {
 		}
 	}
 
+	/**
+	 * @method inputSources
+	 * @override
+	 * @returns {Set} contains tools referenced by this tool
+	 */
+	inputSources() {
+		let sources = super.inputSources();
+		for (const key in this.children) {
+			const tool = this.children[key];
+			if (tool instanceof MMExpression && tool.isInput) {
+				tool.formula.addInputSourcesToSet(sources);
+			}
+		}
+		return sources;
+	}
 
 	/**
 	 * @method diagramInfo

@@ -16,21 +16,8 @@ const e = React.createElement;
 function snapPosition(pos) {
 	let newX, newY;
 	
-	if (pos.x > 0) {
-		newX = Math.floor((pos.x + 2.5) / 5);
-	}
-	else {
-		newX = Math.floor((pos.x - 2.5) / 5);
-	}
-	newX *= 5;
-	
-	if (pos.y > 0) {
-		newY = Math.floor((pos.y + 2) / 5);
-	}
-	else {
-		newY = Math.floor((pos.y - 2) / 5);
-	}
-	newY *= 5;
+	newX = Math.floor((pos.x + 2.5) / 5)*5;
+	newY = Math.floor((pos.y + 2.5) / 5)*5;
 	return {x: newX, y: newY};
 }
 	
