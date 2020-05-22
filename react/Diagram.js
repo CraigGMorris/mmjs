@@ -761,10 +761,23 @@ export class Diagram extends React.Component {
 				cpdx = (cpdx + tx)*scale;
 				cpdy = (cpdy + ty)*scale;
 				const key = `${requestorName}->${toolName}`;
+				let connectColor = this.state.selectedObject ? 'grey' : 'black';
+				let strokeWidth = 1;
+				if (this.state.selectedObject) {
+					if (requestorName === this.state.selectedObject) {
+						connectColor = 'blue'
+						strokeWidth = 2;
+					}
+					else if (toolName === this.state.selectedObject) {
+						connectColor = 'green';
+						strokeWidth = 2;
+					}
+				}
 				const cmp = e('path', {
 					key: key,
 					fill: 'transparent',
-					stroke: 'black',
+					stroke: connectColor,
+					strokeWidth: strokeWidth,
 					d: `M${ox} ${oy} C${cpox} ${cpoy} ${cpdx} ${cpdy} ${dx} ${dy}`
 				});
 				connectList.push(cmp);
