@@ -266,18 +266,17 @@ class MMStringValue extends MMValue {
 	 * dyadic functions
 	 */
 
-	/**
-	 * @member add
-	 * returns the sum of this and value
-	 * @param {MMStringValue} value
-	 * @returns {MMStringValue}
-	 */
-	add(value) {
-		let rv = this.dyadicStringResult(value);
-		let v1 = rv._values;
+		/**
+	* @method processDyadic
+	* @param {MMStringValue} value
+	* @param {MMValue} calculatedValue - MMStringValue or MMNumberValue conforming to func function
+	* @param {function} func
+	*/
+	processDyadic(value, calculatedValue, func) {
+		let v1 = calculatedValue._values;
 		let v2 = value._values;
-		let rowCount = rv.rowCount;
-		let columnCount = rv.columnCount;
+		let rowCount = calculatedValue.rowCount;
+		let columnCount = calculatedValue.columnCount;
 		let valueRowCount = value.rowCount;
 		let valueColumnCount = value.columnCount;
 		for(let i = 0; i < rowCount; i++) {
@@ -286,11 +285,27 @@ class MMStringValue extends MMValue {
 			for(let j = 0; j < columnCount; j++) {
 				let cMine = j % this.columnCount;
 				let cValue = j % valueColumnCount;
-				v1[i*columnCount+j] = this._values[rMine*this.columnCount + cMine] +
-					v2[rValue*valueColumnCount + cValue];
+				v1[i*columnCount+j] = func(
+					this._values[rMine*this.columnCount + cMine],
+					v2[rValue*valueColumnCount + cValue]
+				);
 			}
 		}
-		return rv;
+		return calculatedValue;
+	}
+
+
+	/**
+	 * @member add
+	 * returns the sum of this and value
+	 * @param {MMStringValue} value
+	 * @returns {MMStringValue}
+	 */
+	add(value) {
+		let calculatedValue = this.dyadicStringResult(value);
+		return this.processDyadic(value, calculatedValue, (a, b) => {
+			return a + b;
+		});
 	}
 
 	/**
@@ -330,29 +345,6 @@ class MMStringValue extends MMValue {
 			}
 			for (let i = 0; i < other.valueCount; i++) {
 				rv.setValue(other.valueAtCount(i), valueCount++, 1);
-			}
-		}
-		return rv;
-	}
-
-	/**
-	 * @method equal
-	 * returns 1 if this equals other are equal or 0 if not
-	 * @param {MMStringValue} other
-	 * @returns {MMStringValue}
-	 */
-	equal(other) {
-		let rv;
-		if (other instanceof MMStringValue) {
-			rv = this.dyadicNumberResult(other);
-			const rvValues = rv._values;
-			const otherValues = other._values;
-			const thisValues = this._values;
-			const otherCount = other.valueCount;
-			const thisCount = this.valueCount;
-			const count = Math.max(thisCount, otherCount);
-			for (let i = 0; i < count; i++) {
-				rvValues[i] = (thisValues[i % thisCount] === otherValues[i % otherCount]) ? 1 : 0;
 			}
 		}
 		return rv;

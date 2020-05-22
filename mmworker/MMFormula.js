@@ -198,8 +198,14 @@ const MMFormulaFactory = (token, formula) => {
 
 		// comparison functions
 		'if': (f) => {return new MMIfFunction(f)},
-		'eq': (f) => {return new MMEqualFunction(f)},
-		'ne': (f) => {return new MMNotEqualFunction(f)},
+		'eq': (f) => {return new MMComparisonFunction(f, (a, b) => {return a === b ? 1 : 0;})},
+		'ne': (f) => {return new MMComparisonFunction(f, (a, b) => {return a !== b ? 1 : 0;})},
+		'lt': (f) => {return new MMComparisonFunction(f, (a, b) => {return a < b ? 1 : 0;})},
+		'le': (f) => {return new MMComparisonFunction(f, (a, b) => {return a <= b ? 1 : 0;})},
+		'gt': (f) => {return new MMComparisonFunction(f, (a, b) => {return a > b ? 1 : 0;})},
+		'ge': (f) => {return new MMComparisonFunction(f, (a, b) => {return a >= b ? 1 : 0;})},
+		'not': (f) => {return new MMGenericSingleFunction(f, (n) => { return n === 0 ? 1 : 0;})},
+		'and': (f) => {return new MMComparisonFunction(f, (a, b) => {return a !== 0 && b !== 0 ? 1 : 0;})},
 
 		// matrix functions
 		'append': (f) => {return new MMAppendFunction(f)},
@@ -1867,7 +1873,12 @@ class MMAppendFunction extends MMMultipleArgumentFunction {
 	}
 }
 
-class MMEqualFunction extends MMMultipleArgumentFunction {
+class MMComparisonFunction extends MMMultipleArgumentFunction {
+	constructor(formula, func) {
+		super(formula);
+		this.func = func;
+	}
+
 	processArguments(operandStack) {
 		let rv = super.processArguments(operandStack);
 		if (rv && this.arguments.length < 2) {
@@ -1880,28 +1891,14 @@ class MMEqualFunction extends MMMultipleArgumentFunction {
 		const v1 = this.arguments[1].value();
 		const v2 = this.arguments[0].value();
 
-		if ((v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) ||
-			(v1 instanceof MMStringValue && v2 instanceof MMStringValue))
-		{
-			return v1.equal(v2);
+		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
+			return v1.processDyadic(v2, this.func);
+		}
+		else if	(v1 instanceof MMStringValue && v2 instanceof MMStringValue) {
+			const rv = v1.dyadicNumberResult(v2);
+			return v1.processDyadic(v2, rv, this.func);
 		}
 		return null;
-	}
-}
-
-class MMNotEqualFunction extends MMEqualFunction {
-	value() {
-		// get is equal value from super
-		const isEqual = super.value();
-		if (isEqual instanceof MMNumberValue) {
-			// got results
-			const v = isEqual._values;
-			const count = isEqual.valueCount;
-			for (let i = 0; i < count; i++) {
-				v[i] = v[i] === 0 ? 1.0 : 0.0;
-			}
-		}
-		return isEqual;
 	}
 }
 
