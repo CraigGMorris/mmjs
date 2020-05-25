@@ -802,6 +802,155 @@ class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/**
+	 * @method luDecompostion
+	 * @param {Number[]} npivot 
+	 * pivot is an output vector that records the row permutations effected by partial pivoting.
+	 * it must be sized appropriately by the calling routine
+	 * based on Numerical Recipe in C
+	 * @return {Object} contains pivot:, a vector that records the row permutations effected by partial pivoting
+	 * and isEven: which is true if the number of row interchanges was even and false if odd
+	 */
+	luDecompostion() {
+		if (this.columnCount !== this.rowCount) {
+			this.exceptionWith('mmcmd:matrixLuDecompNotSquare')
+		}
+		const count = this.columnCount;
+		const pivot = [];
+		let isEven = true;
+		let imax = 0;
+		const vv = new Float64Array(count);
+
+		const values = this._values;
+		for (let i = 0; i < count; i++ ) {  // loop over rows to get implicit scaling information
+			let big = 0.0;
+			for (let j = 0; j < count; j++ ) {
+				const temp = Math.abs(values[count * i  + j]);
+				if (temp > big)
+					big = temp;
+			}
+			if (big === 0.0) {
+				this.exceptionWith('mmcmd:matrixLudecompSingular');
+			}
+			
+			vv[i] = 1.0 / big;  // save the scaling
+		}
+		
+		for (let j = 0; j < count; j++ ) {     // this loop is over columns of Crout.s method
+			for (let i = 0; i < j; i++) {
+				let sum = values[count * i + j];
+				for (let k = 0; k < i; k++) {
+					sum -= values[count * i + k] * values[count * k + j];
+				}
+				values[count * i + j] = sum;
+			}
+			
+			let big = 0.0;   // initialize the search for the largest pivot
+			for (let i = j; i < count; i++) {
+				let sum = values[count * i + j];
+				for (let k = 0; k < j; k++ ) {
+					sum -= values[count * i + k] * values[count * k + j];
+				}
+				
+				values[count * i + j] = sum;
+				
+				const dum = vv[i] * Math.abs(sum);
+				if ( dum >= big ) {
+					big = dum;  // is the figure of merit for the pivot better than the best so far
+					imax = i;
+				}
+			}
+			
+			if (j != imax) {       // do we need to interchange rows?
+				for (let k = 0; k < count; k++ ) { // yes - do so
+					const dum = values[count * imax + k];
+					values[count * imax + k] = values[count * j + k];
+					values[count * j + k] = dum;
+				}
+				isEven = !isEven;		// ...and change the parity of isEven
+				vv[imax] = vv[j];	// and interchange the scale factor
+			}
+			
+			pivot[j] = imax;
+			if (values[count * j + j] === 0.0) {  // if the pivot element is zero, then the matrix is singular.  For some applications on singular
+				values[count * j + j] = 1e-20;   // matricies, it is desirable to substitute a tiny number for zero
+			}
+			if (j !== count - 1 ) {   // Now, finally, divide by the pivot element
+				const dum = 1.0 / values[count * j + j];
+				for (let i = j + 1; i < count; i++) {
+					values[count * i + j] *= dum;
+				}
+			}
+		}
+		return {pivot: pivot, isEven: isEven}
+	}
+
+	/**
+	 * @method luBackSubstitute
+	 * @param {Float64Array} b 
+	 * @param {Number[]} pivot 
+	 * values in b are replaced with x in solving equation A*x = b
+	 * this matrix is A having undergone luDecomposition producing pivot
+	 */
+	luBackSubstitute(b, pivot) {
+		if (this.columnCount !== this.rowCount) {
+			this.exceptionWith('mmcmd:matrixLuBackSubNotSquare')
+		}
+		const count = this.columnCount;
+		const values = this._values;
+		let ii = -1;
+		for (let i = 0; i < count; i++) {	// when ii is a positive value it will become the index of the first
+			let ip = pivot[i];			// nonvanishing element of b. We now do the forward substitution.
+			let sum = b[ip];
+			b[ip] = b[i];
+			if (ii >= 0) {
+				for (let j = ii; j < i; j++) {
+					sum -= values[count * i + j] * b[j];
+				}
+			}
+			else if (sum !== 0.0) {
+				ii = i;		 // a nonzero element was encountered, so from now on we will have to do the sums in the loop above
+			}
+			b[i] = sum;
+		}
+		
+		for (let i = count - 1; i >= 0; i--) {	// now we do the backsubstitution
+			let sum = b[i];
+			for (let j = i + 1; j < count; j++) {
+				sum -= values[count * i + j] * b[j];
+			}
+			b[i] = sum /values[count * i + i];
+		}
+	}
+
+	/**
+	 * invert - inverts this matrix
+	 */
+	invert() {
+		if (this.columnCount !== this.rowCount) {
+			this.exceptionWith('mmcmd:matrixInvertNotSquare')
+		}
+		const count = this.columnCount;
+	
+		const col = new Float64Array(count);
+		const a = this.copyOf();
+		const rv = new MMNumberValue(count, count, this.unitDimensions);
+		rv.multiplyUnitDimensions(-1);
+		const rvValues = rv._values;
+		const decomp = a.luDecompostion();
+
+		for (let j = 0; j < count; j++) {
+			for (let i = 0; i < count; i++) {
+				col[i] = 0.0;
+			}
+			col[j] = 1.0;
+			a.luBackSubstitute(col, decomp.pivot);
+			for (let i = 0; i < count; i++) {
+				rvValues[count * i + j] = col[i];
+			}
+		}
+		return rv;
+	}
 
 	// complex value methods
 

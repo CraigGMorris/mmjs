@@ -216,6 +216,7 @@ const MMFormulaFactory = (token, formula) => {
 		'col': (f) => {return new MMMatrixColumnFunction(f)},
 		'cross': (f) => {return new MMCrossProductFunction(f)},
 		'dot': (f) => {return new MMMatrixMultiplyFunction(f)},
+		'invert': (f) => {return new MMInvertFunction(f)},
 		'ncols': (f) => {return new MMColumnCountFunction(f)},
 		'nrows': (f) => {return new MMRowCountFunction(f)},
 		'row': (f) => {return new MMMatrixRowFunction(f)},
@@ -2248,6 +2249,15 @@ class MMMatrixMultiplyFunction extends MMMultipleArgumentFunction {
 		return null;
 	}
 }
+
+class MMInvertFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.invert();
+		}
+	}
+}
+
 
 /**
  * @class MMFormula
