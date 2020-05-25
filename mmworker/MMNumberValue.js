@@ -725,6 +725,84 @@ class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/** @method cross
+	 * return cross product
+	 * @param {MMNumberValue} other
+	 * @return {MMNumberValue}
+	 */
+	cross(other) {
+		if (this.valueCount % 3 || other.valueCount % 3) {
+			this.exceptionWith('mmcmd:crossProductNotThree');
+		}
+		const maxValueCount = Math.max(this.valueCount, other.valueCount);
+
+		let nRows, nColumns;
+		if (maxValueCount > 3) {
+			nColumns = 3;
+			nRows = maxValueCount / 3;
+		}
+		else {
+			nRows = 3;
+			nColumns = 1;
+		}
+
+		const rv = new MMNumberValue(nRows, nColumns, this.unitDimensions);													 
+		const mValues = this._values;
+		const oValues = other._values;
+		const rValues = rv._values;
+		for (let n = 0; n < maxValueCount; n+= 3 ) {
+			const mOrigin = n % this.valueCount;
+			const oOrigin = n % other.valueCount;
+			
+			const a1 = mValues[0 + mOrigin ];
+			const a2 = mValues[ 1 + mOrigin ];
+			const a3 = mValues[ 2 + mOrigin ];
+			const b1 = oValues[ 0 + oOrigin ];
+			const b2 = oValues[ 1 + oOrigin ];
+			const b3 = oValues[ 2 + oOrigin ];
+			
+			rValues[n + 0] = a2*b3 - a3*b2;
+			rValues[n + 1] = a3*b1 - a1*b3;
+			rValues[n + 2] = a1*b2 - a2*b1;
+		}
+		
+		rv.addUnitDimensions(other.unitDimensions);
+		return rv;		
+	}
+
+	/** @method matrixMultiply
+	 * return the matrix multiplication of this by other - i.e. dot product
+	 * @param {MMNumberValue} other
+	 * @return {MMNumberValue}
+	 */
+	matrixMultiply(other) {
+		if (this.columnCount !== other.rowCount ) {
+			this.exceptionWith('mmcmd:matrixMultiplyeColsNeRows');
+		}
+		
+		const nRows = this.rowCount;
+		const nColumns = other.columnCount;
+		const rv = new MMNumberValue(nRows, nColumns, this.unitDimensions);
+
+		const myValues = this._values;
+		const myColumnCount = this.columnCount;
+		const oValues = other._values;
+		const rValues = rv._values;
+		for (let i = 0; i < nRows; i++) {
+			for (let j = 0; j < nColumns; j++) {
+				let sum = 0.0;
+				for (let k = 0; k < myColumnCount; k++) {
+					sum += myValues[myColumnCount * i + k] * oValues[nColumns * k + j];
+				}
+				rValues[nColumns * i + j] = sum;
+			}
+		}
+		
+		rv.addUnitDimensions(other.unitDimensions);
+		return rv;
+	}
+
+
 	// complex value methods
 
 	/**

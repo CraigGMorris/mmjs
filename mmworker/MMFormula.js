@@ -177,10 +177,10 @@ const MMFormulaFactory = (token, formula) => {
 		// hyperbolic functions
 
 		// complex number functions
-		'complex': (f) => {return new MMComplexDyadicFunction(f, 'complex', MMDyadicUnitAction.equal, complex)},
-		'cmult': (f) => {return new MMComplexDyadicFunction(f, 'cmult', MMDyadicUnitAction.multiply, cMultiply)},
-		'cdiv': (f) => {return new MMComplexDyadicFunction(f, 'cdiv', MMDyadicUnitAction.divide, cDivide)},
-		'cpow': (f) => {return new MMComplexDyadicFunction(f, 'cpow', MMDyadicUnitAction.power, cPower)},
+		'complex': (f) => {return new MMDyadicComplexFunction(f, 'complex', MMDyadicUnitAction.equal, complex)},
+		'cmult': (f) => {return new MMDyadicComplexFunction(f, 'cmult', MMDyadicUnitAction.multiply, cMultiply)},
+		'cdiv': (f) => {return new MMDyadicComplexFunction(f, 'cdiv', MMDyadicUnitAction.divide, cDivide)},
+		'cpow': (f) => {return new MMDyadicComplexFunction(f, 'cpow', MMDyadicUnitAction.power, cPower)},
 		'cabs': (f) => {return new MMCabsFunction(f, cAbsolute)},
 		'polar': (f) => {return new MMPolarFunction(f)},
 		'cart': (f) => {return new MMCartesianFunction(f)},
@@ -198,14 +198,14 @@ const MMFormulaFactory = (token, formula) => {
 
 		// comparison functions
 		'if': (f) => {return new MMIfFunction(f)},
-		'eq': (f) => {return new MMComparisonFunction(f, (a, b) => {return a === b ? 1 : 0;})},
-		'ne': (f) => {return new MMComparisonFunction(f, (a, b) => {return a !== b ? 1 : 0;})},
+		'eq': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a === b ? 1 : 0;})},
+		'ne': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a !== b ? 1 : 0;})},
 		'lt': (f) => {return new MMComparisonFunction(f, (a, b) => {return a < b ? 1 : 0;})},
 		'le': (f) => {return new MMComparisonFunction(f, (a, b) => {return a <= b ? 1 : 0;})},
 		'gt': (f) => {return new MMComparisonFunction(f, (a, b) => {return a > b ? 1 : 0;})},
 		'ge': (f) => {return new MMComparisonFunction(f, (a, b) => {return a >= b ? 1 : 0;})},
 		'not': (f) => {return new MMGenericSingleFunction(f, (n) => { return n === 0 ? 1 : 0;})},
-		'and': (f) => {return new MMComparisonFunction(f, (a, b) => {return a !== 0 && b !== 0 ? 1 : 0;})},
+		'and': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a !== 0 && b !== 0 ? 1 : 0;})},
 
 		// matrix functions
 		'append': (f) => {return new MMAppendFunction(f)},
@@ -214,6 +214,8 @@ const MMFormulaFactory = (token, formula) => {
 		'concat': (f) => {return new MMConcatFunction(f)},
 		'cell': (f) => {return new MMMatrixCellFunction(f)},
 		'col': (f) => {return new MMMatrixColumnFunction(f)},
+		'cross': (f) => {return new MMCrossProductFunction(f)},
+		'dot': (f) => {return new MMMatrixMultiplyFunction(f)},
 		'ncols': (f) => {return new MMColumnCountFunction(f)},
 		'nrows': (f) => {return new MMRowCountFunction(f)},
 		'row': (f) => {return new MMMatrixRowFunction(f)},
@@ -1228,7 +1230,41 @@ class MMGenericSingleFunction extends MMSingleValueFunction {
 	}
 }
 
-class MMComplexDyadicFunction extends MMMultipleArgumentFunction {
+class MMDyadicNumberFunction extends MMMultipleArgumentFunction {
+	constructor(formula, name, unitAction, func) {
+		super(formula);
+		this.name = name;
+		this.func = func;
+		this.unitAction = unitAction;
+	}
+
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && (this.arguments.length !==  2)) {
+			return false; // needs two arguments
+		}
+		return rv;
+	}
+
+	value() {
+		let v1 = this.arguments[1].value();
+		if (v1) {
+			v1 = v1.numberValue();
+			if (v1) {
+				let v2 = this.arguments[0].value();
+				if (v2) {
+					v2 = v2.numberValue();
+					if (v2) {
+						return v1.processDyadic(name, v2, this.unitAction, this.func);
+					}
+				}
+			}
+		}
+		return null;
+	}
+}
+
+class MMDyadicComplexFunction extends MMMultipleArgumentFunction {
 	constructor(formula, name, unitAction, func) {
 		super(formula);
 		this.name = name;
@@ -1737,6 +1773,9 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 		let argCount = this.arguments.length;
 		while (argCount-- > 0) {
 			const obj = this.arguments[argCount].value();
+			if (!obj) {
+				return null;
+			}
 		
 			if (!first) {
 				first = obj;
@@ -1895,10 +1934,25 @@ class MMComparisonFunction extends MMMultipleArgumentFunction {
 			return v1.processDyadic(v2, this.func);
 		}
 		else if	(v1 instanceof MMStringValue && v2 instanceof MMStringValue) {
-			const rv = v1.dyadicNumberResult(v2);
-			return v1.processDyadic(v2, rv, this.func);
+			return v1.processDyadic(v2, this.func, true);
 		}
 		return null;
+	}
+}
+
+class MMUnitlessComparisonFunction extends MMComparisonFunction {
+	value() {
+		const v1 = this.arguments[1].value();
+		const v2 = this.arguments[0].value();
+		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
+			const rv = v1.processDyadic(v2, this.func);
+			// rv with have the unitdimensions of v1 - remove them
+			rv.subtractUnitDimensions(v1.unitDimensions);
+			return rv
+		}
+		else {
+			return super.value();
+		}
 	}
 }
 
@@ -2153,6 +2207,45 @@ class MMTransposeFunction extends MMSingleValueFunction {
 
 	operationOnString(v) {
 		return this.operationOn(v);
+	}
+}
+
+class MMCrossProductFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length !== 2) {
+			return false; // needs two arguments
+		}
+		return rv;
+	}
+
+	value() {
+		const v1 = this.arguments[1].value();
+		const v2 = this.arguments[0].value();
+		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
+			return v1.cross(v2);
+		}
+		return null;
+	}
+
+}
+
+class MMMatrixMultiplyFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length !== 2) {
+			return false; // needs two arguments
+		}
+		return rv;
+	}
+
+	value() {
+		const v1 = this.arguments[1].value();
+		const v2 = this.arguments[0].value();
+		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
+			return v1.matrixMultiply(v2);
+		}
+		return null;
 	}
 }
 
