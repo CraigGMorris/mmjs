@@ -361,7 +361,7 @@ function ValuePicker(props) {
 export function FormulaEditor(props) {
 	let t = props.t;
 
-	const [formula, setFormula] = useState(props.formula ? props.formula : props.viewInfo.formula);
+	const [formula, setFormula] = useState(props.formula !== undefined ? props.formula : props.viewInfo.formula);
 	const [display, setDisplay] = useState(FormulaDisplay.editor);
 	const offset = props.formulaOffset ? props.formulaOffset : props.viewInfo.formulaOffset
 	const [selection, setSelection] = useState([offset,offset]);
@@ -370,42 +370,20 @@ export function FormulaEditor(props) {
 	const inputRef = React.useRef(null);
 
 	useEffect(() => {
-		// recover state on mount if it was saved in viewInfo
-		if (props.viewInfo.formulaEditorState) {
-			const saved = props.viewInfo.formulaEditorState;
-			setFormula(saved.formula);
-			setDisplay(saved.display);
-			setSelection(saved.selection);
-		}
-		else {
-			props.viewInfo.formulaEditorState = {
-				display: display,
-				selection: selection,
-				formula: formula,
-			}
-		}
-
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	useEffect(() => {
 		if (display === FormulaDisplay.editor) {
 			inputRef.current.focus();
 		}
-		props.viewInfo.formulaEditorState.display = display;
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [display]);
 
 	useEffect(() => {
 		inputRef.current.setSelectionRange(selection[0], selection[1]);
-		props.viewInfo.formulaEditorState.selection = selection;
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selection]);
 
-	useEffect(() => {
-		props.viewInfo.formulaEditorState.formula = formula;
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [formula]);
+	// useEffect(() => {
+	// // eslint-disable-next-line react-hooks/exhaustive-deps
+	// }, [formula]);
 
 	const applyChanges = (formula) => {
 		const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
