@@ -150,7 +150,7 @@ const MMFormulaFactory = (token, formula) => {
 	}
 
 	const factories = {
-	// const MMFormulaOpDictionary = {
+	// operators
 		'+': () => {return new MMAddOperator()},
 		'-': () => {return new MMSubtractOperator()},
 		'*': () => {return new MMMultiplyOperator()},
@@ -158,13 +158,12 @@ const MMFormulaFactory = (token, formula) => {
 		'%': () => {return new MMModOperator()},
 		'^': () => {return new MMPowerOperator()},
 		':': (f) => {return new MMRangeOperator(f)},
-	// };
 
-	// const MMFunctionDictionary = {
 		// log functions
 		'exp': (f) => {return new MMGenericSingleFunction(f, Math.exp)},
 		'ln': (f) => {return new MMGenericSingleFunction(f, Math.log)},
 		'log': (f) => {return new MMGenericSingleFunction(f, Math.log10)},
+
 		// trig functions
 		'sin': (f) => {return new MMGenericSingleFunction(f, Math.sin)},
 		'cos': (f) => {return new MMGenericSingleFunction(f, Math.cos)},
@@ -781,6 +780,8 @@ class MMIndexOperator extends MMFormulaOperator {
 	}
  }
 
+// operator functions
+
 /**
  * @class MMAddOperator
  * @extends MMDyadicOperator
@@ -1288,6 +1289,8 @@ class MMDyadicComplexFunction extends MMMultipleArgumentFunction {
 	}
 }
 
+// trig functions
+
 class MMPiFunction extends MMFunctionOperator {
 	processArguments(operandStack) {
 		if (operandStack.length > 0 && operandStack[operandStack.length - 1] instanceof MMOperandMarker) {
@@ -1299,167 +1302,6 @@ class MMPiFunction extends MMFunctionOperator {
 
 	value() {
 		return MMNumberValue.scalarValue(Math.PI);
-	}
-}
-
-class MMAbsFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		if (v) {
-			return v.abs();
-		}
-	}
-}
-
-class MMMinimumFunction extends MMMultipleArgumentFunction {
-	processArguments(operandStack) {
-		let rv = super.processArguments(operandStack);
-		if (rv && this.arguments.length < 1) {
-			return false; // needs at least one argument
-		}
-		return rv;
-	}
-
-	value() {
-		let min = null;
-		for (let arg of this.arguments) {
-			let vMin = arg.value();
-			if (vMin instanceof MMNumberValue) {
-				vMin = vMin.min();
-				if (min === null) {
-					min = vMin;
-				}
-				else {
-					if (MMUnitSystem.areDimensionsEqual(min.unitDimensions, vMin.unitDimensions)) {
-						if (vMin.values[0] < min.values[0]) {
-							min = vMin;
-						}
-					}
-					else {
-						this.formula.functionError('min', 'mmcmd:unitTypeMismatch');
-					}
-				}
-			}
-			else {
-				return null;
-			}
-		}
-		return min;
-	}
-}
-
-class MMRowMinimumsFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		if (v) {
-			return v.minRows();
-		}
-	}
-}
-
-class MMColumnMinimumsFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		if (v) {
-			return v.minColumns();
-		}
-	}
-}
-
-class MMMaximumFunction extends MMMultipleArgumentFunction {
-	processArguments(operandStack) {
-		let rv = super.processArguments(operandStack);
-		if (rv && this.arguments.length < 1) {
-			return false; // needs at least one argument
-		}
-		return rv;
-	}
-
-	value() {
-		let max = null;
-		for (let arg of this.arguments) {
-			let vMax = arg.value();
-			if (vMax instanceof MMNumberValue) {
-				vMax = vMax.max();
-				if (max === null) {
-					max = vMax;
-				}
-				else {
-					if (MMUnitSystem.areDimensionsEqual(max.unitDimensions, vMax.unitDimensions)) {
-						if (vMax.values[0] > max.values[0]) {
-							max = vMax;
-						}
-					}
-					else {
-						this.formula.functionError('max', 'mmcmd:unitTypeMismatch');
-					}
-				}
-			}
-			else {
-				return null;
-			}
-		}
-		return max;
-	}
-}
-
-class MMRowMaximumsFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		if (v) {
-			return v.maxRows();
-		}
-	}
-}
-
-class MMColumnMaximumsFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		if (v) {
-			return v.maxColumns();
-		}
-	}
-}
-
-class MMSumFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		if (v) {
-			return v.sum();
-		}
-	}
-}
-
-class MMSumRowsFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		if (v) {
-			return v.sumRows();
-		}
-	}
-}
-
-class MMSumColumnsFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		if (v) {
-			return v.sumColumns();
-		}
-	}
-}
-
-class MMCabsFunction extends MMSingleValueFunction {
-	constructor(formula, cAbsolute) {
-		super(formula);
-		this.cAbsolute = cAbsolute;
-	}
-
-	operationOn(v) {
-		if (v) {
-			if (v.columnCount !== 2) {
-				this.functionError('cabs', 'mmcmd:formulaComplexColumnCount');
-			}
-			const rowCount = v.rowCount;
-			const rv = new MMNumberValue(rowCount, 1, v.unitDimensions);
-			const cabs = this.cAbsolute;
-			for (let row = 1; row <= rowCount; row++) {
-				const cArg = [v.valueAtRowColumn(row, 1), v.valueAtRowColumn(row, 2)];
-				rv.setValue(cabs(cArg),row, 1);
-			}
-			return rv;
-		}
 	}
 }
 
@@ -1635,6 +1477,165 @@ class MMCartesianFunction extends MMMultipleArgumentFunction {
 	}	
 }
 
+// complex number functions
+
+class MMCabsFunction extends MMSingleValueFunction {
+	constructor(formula, cAbsolute) {
+		super(formula);
+		this.cAbsolute = cAbsolute;
+	}
+
+	operationOn(v) {
+		if (v) {
+			if (v.columnCount !== 2) {
+				this.functionError('cabs', 'mmcmd:formulaComplexColumnCount');
+			}
+			const rowCount = v.rowCount;
+			const rv = new MMNumberValue(rowCount, 1, v.unitDimensions);
+			const cabs = this.cAbsolute;
+			for (let row = 1; row <= rowCount; row++) {
+				const cArg = [v.valueAtRowColumn(row, 1), v.valueAtRowColumn(row, 2)];
+				rv.setValue(cabs(cArg),row, 1);
+			}
+			return rv;
+		}
+	}
+}
+
+// reduction functions
+
+class MMMinimumFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length < 1) {
+			return false; // needs at least one argument
+		}
+		return rv;
+	}
+
+	value() {
+		let min = null;
+		for (let arg of this.arguments) {
+			let vMin = arg.value();
+			if (vMin instanceof MMNumberValue) {
+				vMin = vMin.min();
+				if (min === null) {
+					min = vMin;
+				}
+				else {
+					if (MMUnitSystem.areDimensionsEqual(min.unitDimensions, vMin.unitDimensions)) {
+						if (vMin.values[0] < min.values[0]) {
+							min = vMin;
+						}
+					}
+					else {
+						this.formula.functionError('min', 'mmcmd:unitTypeMismatch');
+					}
+				}
+			}
+			else {
+				return null;
+			}
+		}
+		return min;
+	}
+}
+
+class MMRowMinimumsFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.minRows();
+		}
+	}
+}
+
+class MMColumnMinimumsFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.minColumns();
+		}
+	}
+}
+
+class MMMaximumFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length < 1) {
+			return false; // needs at least one argument
+		}
+		return rv;
+	}
+
+	value() {
+		let max = null;
+		for (let arg of this.arguments) {
+			let vMax = arg.value();
+			if (vMax instanceof MMNumberValue) {
+				vMax = vMax.max();
+				if (max === null) {
+					max = vMax;
+				}
+				else {
+					if (MMUnitSystem.areDimensionsEqual(max.unitDimensions, vMax.unitDimensions)) {
+						if (vMax.values[0] > max.values[0]) {
+							max = vMax;
+						}
+					}
+					else {
+						this.formula.functionError('max', 'mmcmd:unitTypeMismatch');
+					}
+				}
+			}
+			else {
+				return null;
+			}
+		}
+		return max;
+	}
+}
+
+class MMRowMaximumsFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.maxRows();
+		}
+	}
+}
+
+class MMColumnMaximumsFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.maxColumns();
+		}
+	}
+}
+
+class MMSumFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.sum();
+		}
+	}
+}
+
+class MMSumRowsFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.sumRows();
+		}
+	}
+}
+
+class MMSumColumnsFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.sumColumns();
+		}
+	}
+}
+
+// comparison functions
+
 class MMIfFunction extends MMFunctionOperator {
 	processArguments(operandStack) {
 		if (operandStack.length < 4) {
@@ -1684,6 +1685,113 @@ class MMIfFunction extends MMFunctionOperator {
 		this.negativeArgument.addInputSourcesToSet(sources);
 	}
 
+}
+
+class MMComparisonFunction extends MMMultipleArgumentFunction {
+	constructor(formula, func) {
+		super(formula);
+		this.func = func;
+	}
+
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length < 2) {
+			return false; // needs at least two arguments
+		}
+		return rv;
+	}
+
+	value() {
+		const v1 = this.arguments[1].value();
+		const v2 = this.arguments[0].value();
+
+		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
+			return v1.processDyadic(v2, this.func);
+		}
+		else if	(v1 instanceof MMStringValue && v2 instanceof MMStringValue) {
+			return v1.processDyadic(v2, this.func, true);
+		}
+		return null;
+	}
+}
+
+class MMUnitlessComparisonFunction extends MMComparisonFunction {
+	value() {
+		const v1 = this.arguments[1].value();
+		const v2 = this.arguments[0].value();
+		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
+			const rv = v1.processDyadic(v2, this.func);
+			// rv with have the unitdimensions of v1 - remove them
+			rv.subtractUnitDimensions(v1.unitDimensions);
+			return rv
+		}
+		else {
+			return super.value();
+		}
+	}
+}
+
+// matrix functions
+
+class MMAppendFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length < 1) {
+			return false; // needs at least one arguments
+		}
+		return rv;
+	}
+
+	value() {
+		let columnCount = 0;
+		let first;
+		let argCount = this.arguments.length;
+		while (argCount-- > 0) {
+			const obj = this.arguments[argCount].value();
+		
+			if (!first) {
+				first = obj;
+			}
+			else if (Object.getPrototypeOf(obj).constructor == Object.getPrototypeOf(first).constructor) {
+				if (first instanceof MMNumberValue) {
+					first.checkUnitDimensionsAreEqualTo(obj.unitDimensions);
+				}
+				else if (first instanceof MMTableValue) {
+					if (first.rowCount !== obj.rowCount) {
+						this.formula.functionError('append','mmcmd:appendTableRowMismatch');
+						return null;
+					}
+				}
+			}
+			else {
+				return null;
+			}
+			columnCount += obj.columnCount;
+		}
+
+		if (columnCount) {
+			if (first instanceof MMTableValue) {
+				argCount = this.arguments.length;
+				let columns = [];
+				while (argCount-- > 0) {
+					const table = this.arguments[argCount].value();
+					if (!(table instanceof MMTableValue)) {
+						return null;
+					}
+					columns = columns.concat(table.columns);
+				}
+				return new MMTableValue({columns: columns});
+			}
+			else {
+				argCount = this.arguments.length - 1;  // minus one to skip first
+				while (argCount-- > 0) {
+					const add = this.arguments[argCount].value();
+					first = first.append(add);
+				}
+				return first;
+			}
+		}
+	}
 }
 
 class MMArrayFunction extends MMMultipleArgumentFunction {
@@ -1756,6 +1864,20 @@ class MMArrayFunction extends MMMultipleArgumentFunction {
 			return null;
 		}
 		return rv;
+	}
+}
+
+class MMColumnCountFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		return MMNumberValue.scalarValue(v.columnCount);
+	}
+
+	operationOnString(v) {
+		return this.operationOn(v);
+	}
+
+	operationOnTable(v) {
+		return this.operationOn(v);
 	}
 }
 
@@ -1852,77 +1974,101 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 	}	
 }
 
-class MMAppendFunction extends MMMultipleArgumentFunction {
+class MMCrossProductFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length !== 2) {
+			return false; // needs two arguments
+		}
+		return rv;
+	}
+
+	value() {
+		const v1 = this.arguments[1].value();
+		const v2 = this.arguments[0].value();
+		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
+			return v1.cross(v2);
+		}
+		return null;
+	}
+
+}
+
+class MMInvertFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.invert();
+		}
+	}
+}
+
+class MMMatrixCellFunction extends MMMultipleArgumentFunction {
 	processArguments(operandStack) {
 		let rv = super.processArguments(operandStack);
 		if (rv && this.arguments.length < 1) {
 			return false; // needs at least one arguments
 		}
+		if ((this.formula.owner instanceof MMMatrix)) {
+			return false;
+		}
+
 		return rv;
 	}
 
 	value() {
-		let columnCount = 0;
-		let first;
-		let argCount = this.arguments.length;
-		while (argCount-- > 0) {
-			const obj = this.arguments[argCount].value();
-		
-			if (!first) {
-				first = obj;
-			}
-			else if (Object.getPrototypeOf(obj).constructor == Object.getPrototypeOf(first).constructor) {
-				if (first instanceof MMNumberValue) {
-					first.checkUnitDimensionsAreEqualTo(obj.unitDimensions);
-				}
-				else if (first instanceof MMTableValue) {
-					if (first.rowCount !== obj.rowCount) {
-						this.formula.functionError('append','mmcmd:appendTableRowMismatch');
-						return null;
+		const matrix = this.formula.parent;
+		let rv = null;
+		const savedRow = matrix.currentRow;
+		const savedColumn = matrix.currentColumn;
+		const v1 = this.arguments[1].value();
+		if (v1) {
+			const v2 = this.arguments[0].value();
+			if (v2) {
+				if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
+					const rowOffset = v1.valueAtRowColumn(1,1);
+					const columnOffset = v2.valueAtRowColumn(1,1);
+					if (rowOffset != 0 || columnOffset != 0) {
+						rv = matrix.numberValueAtOffsets(rowOffset, columnOffset);
 					}
 				}
 			}
-			else {
-				return null;
-			}
-			columnCount += obj.columnCount;
 		}
-
-		if (columnCount) {
-			if (first instanceof MMTableValue) {
-				argCount = this.arguments.length;
-				let columns = [];
-				while (argCount-- > 0) {
-					const table = this.arguments[argCount].value();
-					if (!(table instanceof MMTableValue)) {
-						return null;
-					}
-					columns = columns.concat(table.columns);
-				}
-				return new MMTableValue({columns: columns});
-			}
-			else {
-				argCount = this.arguments.length - 1;  // minus one to skip first
-				while (argCount-- > 0) {
-					const add = this.arguments[argCount].value();
-					first = first.append(add);
-				}
-				return first;
-			}
-		}
+		matrix.currentRow = savedRow;
+		matrix.currentColumn = savedColumn;
+		return rv;	
 	}
 }
 
-class MMComparisonFunction extends MMMultipleArgumentFunction {
-	constructor(formula, func) {
-		super(formula);
-		this.func = func;
+class MMMatrixColumnFunction extends MMFunctionOperator {
+	processArguments(operandStack) {
+		if ((this.formula.owner instanceof MMMatrix)) {
+			return false;
+		}
+
+		if (!operandStack || operandStack.length < 1) {
+			return false;
+		}
+
+		const arg = operandStack[operandStack.length - 1];
+		if (arg && arg instanceof MMOperandMarker) {
+			operandStack.pop();
+			return true;
+		}
+	
+		return false;
 	}
 
+	value() {
+		const matrix = this.formula.parent;
+		return MMNumberValue.scalarValue(matrix.currentColumn, null);
+	}
+}
+
+class MMMatrixMultiplyFunction extends MMMultipleArgumentFunction {
 	processArguments(operandStack) {
 		let rv = super.processArguments(operandStack);
-		if (rv && this.arguments.length < 2) {
-			return false; // needs at least two arguments
+		if (rv && this.arguments.length !== 2) {
+			return false; // needs two arguments
 		}
 		return rv;
 	}
@@ -1930,64 +2076,35 @@ class MMComparisonFunction extends MMMultipleArgumentFunction {
 	value() {
 		const v1 = this.arguments[1].value();
 		const v2 = this.arguments[0].value();
-
 		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
-			return v1.processDyadic(v2, this.func);
-		}
-		else if	(v1 instanceof MMStringValue && v2 instanceof MMStringValue) {
-			return v1.processDyadic(v2, this.func, true);
+			return v1.matrixMultiply(v2);
 		}
 		return null;
 	}
 }
 
-class MMUnitlessComparisonFunction extends MMComparisonFunction {
-	value() {
-		const v1 = this.arguments[1].value();
-		const v2 = this.arguments[0].value();
-		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
-			const rv = v1.processDyadic(v2, this.func);
-			// rv with have the unitdimensions of v1 - remove them
-			rv.subtractUnitDimensions(v1.unitDimensions);
-			return rv
+class MMMatrixRowFunction extends MMFunctionOperator {
+	processArguments(operandStack) {
+		if ((this.formula.owner instanceof MMMatrix)) {
+			return false;
 		}
-		else {
-			return super.value();
+
+		if (!operandStack || operandStack.length < 1) {
+			return false;
 		}
+
+		const arg = operandStack[operandStack.length - 1];
+		if (arg && arg instanceof MMOperandMarker) {
+			operandStack.pop();
+			return true;
+		}
+	
+		return false;
 	}
-}
 
-class MMRandFunction extends MMMultipleArgumentFunction {
 	value() {
-		const argCount = this.arguments.length;
-
-		let columnCount = 1, rowCount = 1, rowArg = 0;
-		if (argCount > 1) {
-			const v = this.arguments[0].value();
-			if (!v || !v.valueCount) {
-				return null;
-			}
-			columnCount = Math.floor(v._values[0] + 0.0001);
-			rowArg = 1;
-		}
-
-		if (argCount > 0) {
-			let v = this.arguments[rowArg].value();
-			v = v && v.numberValue();
-			if (!v.valueCount) {
-				return null;
-			}
-			rowCount = Math.floor(v._values[0] + 0.0001);
-		}
-
-		let rv = null;
-		rv = new MMNumberValue(rowCount, columnCount);
-		const valueCount = rv.valueCount;
-		const vRv = rv._values;
-		for (let i = 0; i < valueCount; i++) {
-			vRv[i] = Math.random();
-		}
-		return rv;
+		const matrix = this.formula.parent;
+		return MMNumberValue.scalarValue(matrix.currentRow, null);
 	}
 }
 
@@ -2009,6 +2126,31 @@ class MMRedimFunction extends MMMultipleArgumentFunction {
 	}
 }
 
+class MMRowCountFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		return MMNumberValue.scalarValue(v.rowCount);
+	}
+
+	operationOnString(v) {
+		return this.operationOn(v);
+	}
+
+	operationOnTable(v) {
+		return this.operationOn(v);
+	}
+}
+
+class MMTransposeFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		return v.transpose();
+	}
+
+	operationOnString(v) {
+		return this.operationOn(v);
+	}
+}
+
+// table functions
 
 class MMTableFunction extends MMMultipleArgumentFunction {
 	processArguments(operandStack) {
@@ -2086,178 +2228,49 @@ class MMTableFunction extends MMMultipleArgumentFunction {
 	}
 }
 
-class MMMatrixCellFunction extends MMMultipleArgumentFunction {
-	processArguments(operandStack) {
-		let rv = super.processArguments(operandStack);
-		if (rv && this.arguments.length < 1) {
-			return false; // needs at least one arguments
-		}
-		if ((this.formula.owner instanceof MMMatrix)) {
-			return false;
-		}
+// Miscellaneous functions
 
-		return rv;
-	}
-
-	value() {
-		const matrix = this.formula.parent;
-		let rv = null;
-		const savedRow = matrix.currentRow;
-		const savedColumn = matrix.currentColumn;
-		const v1 = this.arguments[1].value();
-		if (v1) {
-			const v2 = this.arguments[0].value();
-			if (v2) {
-				if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
-					const rowOffset = v1.valueAtRowColumn(1,1);
-					const columnOffset = v2.valueAtRowColumn(1,1);
-					if (rowOffset != 0 || columnOffset != 0) {
-						rv = matrix.numberValueAtOffsets(rowOffset, columnOffset);
-					}
-				}
-			}
-		}
-		matrix.currentRow = savedRow;
-		matrix.currentColumn = savedColumn;
-		return rv;	
-	}
-}
-
-class MMMatrixRowFunction extends MMFunctionOperator {
-	processArguments(operandStack) {
-		if ((this.formula.owner instanceof MMMatrix)) {
-			return false;
-		}
-
-		if (!operandStack || operandStack.length < 1) {
-			return false;
-		}
-
-		const arg = operandStack[operandStack.length - 1];
-		if (arg && arg instanceof MMOperandMarker) {
-			operandStack.pop();
-			return true;
-		}
-	
-		return false;
-	}
-
-	value() {
-		const matrix = this.formula.parent;
-		return MMNumberValue.scalarValue(matrix.currentRow, null);
-	}
-}
-
-class MMMatrixColumnFunction extends MMFunctionOperator {
-	processArguments(operandStack) {
-		if ((this.formula.owner instanceof MMMatrix)) {
-			return false;
-		}
-
-		if (!operandStack || operandStack.length < 1) {
-			return false;
-		}
-
-		const arg = operandStack[operandStack.length - 1];
-		if (arg && arg instanceof MMOperandMarker) {
-			operandStack.pop();
-			return true;
-		}
-	
-		return false;
-	}
-
-	value() {
-		const matrix = this.formula.parent;
-		return MMNumberValue.scalarValue(matrix.currentColumn, null);
-	}
-}
-
-class MMRowCountFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		return MMNumberValue.scalarValue(v.rowCount);
-	}
-
-	operationOnString(v) {
-		return this.operationOn(v);
-	}
-
-	operationOnTable(v) {
-		return this.operationOn(v);
-	}
-}
-
-class MMColumnCountFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		return MMNumberValue.scalarValue(v.columnCount);
-	}
-
-	operationOnString(v) {
-		return this.operationOn(v);
-	}
-
-	operationOnTable(v) {
-		return this.operationOn(v);
-	}
-}
-
-class MMTransposeFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		return v.transpose();
-	}
-
-	operationOnString(v) {
-		return this.operationOn(v);
-	}
-}
-
-class MMCrossProductFunction extends MMMultipleArgumentFunction {
-	processArguments(operandStack) {
-		let rv = super.processArguments(operandStack);
-		if (rv && this.arguments.length !== 2) {
-			return false; // needs two arguments
-		}
-		return rv;
-	}
-
-	value() {
-		const v1 = this.arguments[1].value();
-		const v2 = this.arguments[0].value();
-		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
-			return v1.cross(v2);
-		}
-		return null;
-	}
-
-}
-
-class MMMatrixMultiplyFunction extends MMMultipleArgumentFunction {
-	processArguments(operandStack) {
-		let rv = super.processArguments(operandStack);
-		if (rv && this.arguments.length !== 2) {
-			return false; // needs two arguments
-		}
-		return rv;
-	}
-
-	value() {
-		const v1 = this.arguments[1].value();
-		const v2 = this.arguments[0].value();
-		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
-			return v1.matrixMultiply(v2);
-		}
-		return null;
-	}
-}
-
-class MMInvertFunction extends MMSingleValueFunction {
+class MMAbsFunction extends MMSingleValueFunction {
 	operationOn(v) {
 		if (v) {
-			return v.invert();
+			return v.abs();
 		}
 	}
 }
 
+class MMRandFunction extends MMMultipleArgumentFunction {
+	value() {
+		const argCount = this.arguments.length;
+
+		let columnCount = 1, rowCount = 1, rowArg = 0;
+		if (argCount > 1) {
+			const v = this.arguments[0].value();
+			if (!v || !v.valueCount) {
+				return null;
+			}
+			columnCount = Math.floor(v._values[0] + 0.0001);
+			rowArg = 1;
+		}
+
+		if (argCount > 0) {
+			let v = this.arguments[rowArg].value();
+			v = v && v.numberValue();
+			if (!v.valueCount) {
+				return null;
+			}
+			rowCount = Math.floor(v._values[0] + 0.0001);
+		}
+
+		let rv = null;
+		rv = new MMNumberValue(rowCount, columnCount);
+		const valueCount = rv.valueCount;
+		const vRv = rv._values;
+		for (let i = 0; i < valueCount; i++) {
+			vRv[i] = Math.random();
+		}
+		return rv;
+	}
+}
 
 /**
  * @class MMFormula
