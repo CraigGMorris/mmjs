@@ -903,8 +903,21 @@ class MMDataTable extends MMTool {
 				case '':
 					value = this.tableValue();
 					break;
-				default:
-					value = super.valueDescribedBy(description, requestor);
+				default: {
+					const parts = description.split('.');
+					const toolName = parts[0].toLowerCase();
+					const column = this.childNamed(toolName);
+					if (column) {
+						value = column.columnValue;
+						if (value) {
+							value = value.value;
+						}
+					}
+
+					if (!value) {
+						value = super.valueDescribedBy(description, requestor);
+					}
+				}
 					break;
 			}
 		}

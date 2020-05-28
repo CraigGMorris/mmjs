@@ -208,10 +208,9 @@ class MMExpression extends MMTool {
 						let tool = value.valueAtRowColumn(1,1);
 						value = tool.valueDescribedBy(description, requestor);
 					}
-					/*
 					else if (value instanceof MMTableValue) {
 						value = value.columnNamed(description).value;
-					}*/
+					}
 					else {
 						value = super.valueDescribedBy(description, requestor);
 					}

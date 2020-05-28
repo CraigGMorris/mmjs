@@ -578,6 +578,14 @@ class MMTableValue extends MMValue {
 		return null;
 	}
 
+	/** @method columnNamed
+	 * @param name
+	 * @returns {MMTableValueColumn}
+	 */
+	columnNamed(name) {
+		return this._nameDictionary[name.toLowerCase()];
+	}
+
 	/**
 	 * @method valueForIndexRowColumn
 	 * @override
