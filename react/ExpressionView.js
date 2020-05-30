@@ -45,7 +45,9 @@ export function ExpressionView(props) {
 	}, []);
 
 	useEffect(() => {
-		props.viewInfo.expressionViewState.display = display;
+		if (props.viewInfo.expressionViewState) {
+			props.viewInfo.expressionViewState.display = display;
+		}
 	}, [display, props.viewInfo])
 
 	const t = props.t;
