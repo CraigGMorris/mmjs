@@ -215,6 +215,8 @@ const MMFormulaFactory = (token, formula) => {
 		'col': (f) => {return new MMMatrixColumnFunction(f)},
 		'cross': (f) => {return new MMCrossProductFunction(f)},
 		'dot': (f) => {return new MMMatrixMultiplyFunction(f)},
+		'eigval': (f) => {return new MMEigenValueFunction(f)},
+		'eigvect': (f) => {return new MMEigenVectorFunction(f)},
 		'invert': (f) => {return new MMInvertFunction(f)},
 		'ncols': (f) => {return new MMColumnCountFunction(f)},
 		'nrows': (f) => {return new MMRowCountFunction(f)},
@@ -1994,6 +1996,38 @@ class MMCrossProductFunction extends MMMultipleArgumentFunction {
 
 }
 
+class MMEigenValueFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.eigenValue();
+		}
+	}
+
+	operationOnTable() {return null}
+}
+
+class MMEigenVectorFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		let rv = super.processArguments(operandStack);
+		if (rv && this.arguments.length < 1) {
+			return false; // needs at least one arguments
+		}
+		return rv;
+	}
+
+	value() {
+		const matrix = this.arguments[1].value();
+		if (matrix instanceof MMNumberValue) {
+			const eigenValue = this.arguments[0].value();
+			if (eigenValue instanceof MMNumberValue) {
+				return matrix.eigenVectorForLamba(eigenValue);
+			}
+		}
+		
+		return null;	
+	}
+}
+
 class MMInvertFunction extends MMSingleValueFunction {
 	operationOn(v) {
 		if (v) {
@@ -2553,7 +2587,7 @@ class MMFormula extends MMCommandObject {
 		// helper functions
 		let filterFloat = (value) => {
 			const parts = value.split('e');
-			if (/^(-|\+)?([0-9]*(\.[0-9]+)?|Infinity)$/.test(parts[0])) {
+			if (/^(-|\+)?([0-9]*(\.[0-9]*)?|Infinity)$/.test(parts[0])) {
 				if (parts.length === 1) {
 					return Number(value);
 				}

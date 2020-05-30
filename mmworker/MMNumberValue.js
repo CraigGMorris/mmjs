@@ -720,7 +720,7 @@ class MMNumberValue extends MMValue {
 			}
 			const rowCount = this.valueCount / columnCount;
 			rv = new MMNumberValue(rowCount, columnCount, this.unitDimensions);
-			rv._values = Float64Array.from(this._values);
+			rv._values =  Float64Array.from(this._values);
 		}
 		return rv;
 	}
@@ -803,23 +803,22 @@ class MMNumberValue extends MMValue {
 	}
 
 	/**
-	 * @method luDecompostion
-	 * @param {Number[]} npivot 
+	 * @method luDecomposition
 	 * pivot is an output vector that records the row permutations effected by partial pivoting.
 	 * it must be sized appropriately by the calling routine
 	 * based on Numerical Recipe in C
-	 * @return {Object} contains pivot:, a vector that records the row permutations effected by partial pivoting
+	 * @return {Object} contains pivot:, a Int32Array that records the row permutations effected by partial pivoting
 	 * and isEven: which is true if the number of row interchanges was even and false if odd
 	 */
-	luDecompostion() {
+	luDecomposition() {
 		if (this.columnCount !== this.rowCount) {
-			this.exceptionWith('mmcmd:matrixLuDecompNotSquare')
+			this.exceptionWith('mmcmd:matrixNotSquare', {f: 'luDecomposition'})
 		}
 		const count = this.columnCount;
-		const pivot = [];
 		let isEven = true;
 		let imax = 0;
 		const vv = new Float64Array(count);
+		const pivot = new Int32Array(count);
 
 		const values = this._values;
 		for (let i = 0; i < count; i++ ) {  // loop over rows to get implicit scaling information
@@ -888,13 +887,13 @@ class MMNumberValue extends MMValue {
 	/**
 	 * @method luBackSubstitute
 	 * @param {Float64Array} b 
-	 * @param {Number[]} pivot 
+	 * @param {Int32Array} pivot 
 	 * values in b are replaced with x in solving equation A*x = b
 	 * this matrix is A having undergone luDecomposition producing pivot
 	 */
 	luBackSubstitute(b, pivot) {
 		if (this.columnCount !== this.rowCount) {
-			this.exceptionWith('mmcmd:matrixLuBackSubNotSquare')
+			this.exceptionWith('mmcmd:matrixNotSquare', {f: 'luBackSubstitute'})
 		}
 		const count = this.columnCount;
 		const values = this._values;
@@ -928,7 +927,7 @@ class MMNumberValue extends MMValue {
 	 */
 	invert() {
 		if (this.columnCount !== this.rowCount) {
-			this.exceptionWith('mmcmd:matrixInvertNotSquare')
+			this.exceptionWith('mmcmd:matrixNotSquare', {f: 'invert'})
 		}
 		const count = this.columnCount;
 	
@@ -937,7 +936,7 @@ class MMNumberValue extends MMValue {
 		const rv = new MMNumberValue(count, count, this.unitDimensions);
 		rv.multiplyUnitDimensions(-1);
 		const rvValues = rv._values;
-		const decomp = a.luDecompostion();
+		const decomp = a.luDecomposition();
 
 		for (let j = 0; j < count; j++) {
 			for (let i = 0; i < count; i++) {
@@ -949,6 +948,384 @@ class MMNumberValue extends MMValue {
 				rvValues[count * i + j] = col[i];
 			}
 		}
+		return rv;
+	}
+
+	// eigenvalue methods
+
+	/** @method balanceMatrix
+	 */
+	balanceMatrix() {
+		if (this.columnCount !== this.rowCount) {
+			this.exceptionWith('mmcmd:matrixNotSquare', {f: 'balanceMatrix'})
+		}
+		const count = this.columnCount;
+		const v = this._values;
+		const radix = 2.0;
+		const sqrrdx = radix * radix;
+		let done = false;
+		while (!done) {
+			done = true; // only do it once - if this stays, remove while
+			for (let i = 0; i < count; i++) {
+				let r = 0.0;
+				let c = 0.0;
+				for (let j = 0; j < count; j++ ) {
+					if (j != i) {
+						c +- Math.abs(v[count * j + i]);
+						r += Math.abs(v[count * i + j]);
+					}
+				}
+				
+				if ( c !== 0.0 && r !== 0.0 ) {
+					let g = r/radix;
+					let f = 1.0;
+					let s = c+r;
+					while (c < g) {
+						f *= radix;
+						c *= sqrrdx;
+					}
+					g = r * radix;
+					while (c > g) {
+						f /= radix;
+						c /= sqrrdx;
+					}
+					
+					if ((c + r)/f < 0.96 * s) {
+						done = true;
+						g = 1.0 / f;
+						for (let j = 0; j < count; j++)
+						v[count * i + j] *= g;
+						for (let j = 0; j < count; j++)
+							v[count * j + i] *= f;
+					}
+				}
+			}
+		}	
+	}
+
+	/** @method elemToHessenberg
+	 */
+	elimToHessenberg() {
+		if (this.columnCount !== this.rowCount) {
+			this.exceptionWith('mmcmd:matrixNotSquare', {f: 'elimToHessenberg'})
+		}
+		const count = this.columnCount;
+		const v = this._values;
+		const elementSwap = (i,j) => {
+			const temp = v[i];
+			v[i] = v[j];
+			v[j] = temp;
+		}
+		for (let m = 1; m < count - 1; m++) {
+			let x = 0.0;
+			let i = m;
+			for (let j = m; j < count ; j++) {  // find the pivot
+				if ( Math.abs(v[count * j + m-1]) > Math.abs(x)) {
+					x = v[count * j + m-1];
+					i = j;
+				}
+			}
+			
+			if (i != m) {   // interchange row and columns
+				for (let j = m - 1; j < count; j++ ) {
+					elementSwap(count * i + j, count * m + j);
+				}
+				for (let j = 0; j < count; j++) {
+					elementSwap(count * j + i, count * j + m);
+				}
+			}
+			
+			if (x !== 0.0 ) {   // carry out the elimination
+				for (i = m + 1; i < count; i++ ) {
+					let y = v[count * i + m-1];
+					if (y !== 0.0) {
+						y /= x;
+						v[count * i + m-1] = y;
+						for (let j = m; j < count; j++) {
+							v[count * i + j] -= y * v[count * m + j];
+						}
+						for (let j = 0; j < count; j++) {
+							v[count * j + m] += y * v[count * j + i];
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/** @mathod qrEigenVector
+	 * @param {Float64Array} wr - real parts
+	 * @param {Float64Array} wi - imaginary parts
+	 */
+	qrEigenVector(wr, wi) {
+		if (this.columnCount !== this.rowCount) {
+			this.exceptionWith('mmcmd:matrixNotSquare', {f: 'qrEigenVector'})
+		}
+		const count = this.columnCount;
+		const v = this._values;
+		const float_min = 1e-37;
+		const eigenSign = (a,b) => {
+			return (b) > 0 ? Math.abs(a) : -Math.abs(a);
+		}
+		let anorm = Math.abs(v[0]);  // compute matrix norm for possible use in locating single small subdiagonal element
+		for (let i = 1; i < count; i++ ) {
+			for (let j = i - 1; j < count; j++ ) {
+				anorm += Math.abs(v[count * i + j]);
+			}
+		}
+		let nn = count - 1;
+		let t =  0.0;   // gets changed only by an exceptional shift
+		while (nn >= 0) {   /// begin search for next eigenvalue
+			let its = 0;
+			let l;
+			do {
+				let s = 0.0;
+				for (l = nn; l >= 1; l-- ) {   // begin iteration: look for single small subdiagonal element
+					s = Math.abs(v[count * (l-1) + l-1]) + Math.abs(v[count * l + l]);
+					if (s === 0.0 ) {
+						s = anorm;
+					}
+					if (Math.abs(v[count * l + l-1]) <= float_min) {
+						break;
+					}
+				}
+				let x = v[count * nn + nn];
+				if (l === nn) {   //One root found
+					wr[nn] = x + t;
+					wi[nn--] = 0.0;
+				} else {
+					let y = v[count * (nn-1) + nn-1];
+					let w = v[count * nn + nn-1] * v[count * (nn-1) + nn];
+					if (l == (nn-1)) {   // two roots found
+						let p = 0.5 * ( y - x );
+						let q = p*p + w;
+						let z = Math.sqrt(Math.abs(q));
+						x += t;
+						if (q >= 0.0) {  // a real pair
+							z = p + eigenSign(z, p);
+							wr[nn-1] = wr[nn] = x + z;
+							if (z) {
+								wr[nn] = x - w /z;
+							}
+							wi[nn-1] = wi[nn] = 0.0;
+						} else {    // a complex pair
+							wr[nn-1] = wr[nn] = x + p;
+							wi[nn] = z;
+							wi[nn-1] = -z;
+						}
+						nn -= 2;
+					} else {   // No roots found.  Continue iteration
+						if ( its >= 30 ) {
+							this.exceptionWith('mmcmd:eigenQRIterations');
+						}
+						if (its == 10 || its == 20) {   // form exceptional shift
+							t += x;
+							for (let i = 0; i < nn; i++) {
+								v[count * i + i] -= x;
+							}
+							s = Math.abs(v[count * nn + nn-1]) + Math.abs(v[count * (nn-1) + nn-2]);
+							y = x = 0.75 * s;
+							w = -0.4375 * s * s;
+						}
+						++its;
+						let m;
+						let p, q, r, z;
+						for (m = nn - 2; m >= 0; m--) {   // form shift and then look for 2 consecutive small subdiagonal elements
+							z = v[count * m + m];
+							r = x - z;
+							s = y - z;
+							p = (r*s - w)/v[count * (m+1) + m] + v[count * m + m+1];  //  NR equation 11.6.23
+							q = v[count * (m+1) + m+1] -z - r -s;
+							r = v[count * (m+2) + m+1];
+							s = Math.abs(p) + Math.abs(q) + Math.abs(r);   // scale to prevent overflow or underflow
+							p /= s;
+							q /= s;
+							r /= s;
+							if (m === 0) {
+								break;
+							}
+							let u = Math.abs(v[count * m + m-1]) * (Math.abs(q) + Math.abs(r));
+							if ( u <= float_min ) {
+								break;   // NR equation 11.6.26
+							}
+						}
+						for (let i = m + 2; i <= nn; i++ ) {
+							v[count * i + i-2] = 0.0;
+							if (i != m + 2) {
+								v[count * i + i-3] = 0.0;
+							}
+						}
+						
+						for (let k = m; k <= nn-1; k++ ) {   // Double QR step on rows 1 to nn and columns m to nn
+							if ( k !== m ) {
+								p = v[count * k + k-1];   // begin setup of Householder vector
+								q = v[count * (k+1) + k-1];
+								r = 0.0;
+								if (k !== nn - 1) {
+									r = v[count * (k+2) + k-1];
+								}
+								x = Math.abs(p) + Math.abs(q) + Math.abs(r);
+								if (x) {
+									p /= x;   // scale to prevent overflow or underflow
+									q /= x;
+									r /= x;
+								}
+							}
+							s = eigenSign(Math.sqrt( p*p + q*q + r*r), p);
+							if (s) {
+								if (k === m ) {
+									if ( l !== m ) {
+										v[count * k + k-1] = -v[count * k + k-1];
+									}
+								} else {
+									v[count * k + k-1] = -s * x;
+								}
+								p += s;   // NR equations 11.6.24
+								x = p / s;
+								y = q / s;
+								z = r / s;
+								q /= p;
+								r /= p;
+								for (let j = k; j <= nn; j++ ) {   // row modification
+									p = v[count * k + j] + q * v[count * (k+1) + j];
+									if (k !== nn - 1) {
+										p += r * v[count * (k+2) + j];
+										v[count * (k+2) + j] -= p * z;
+									}
+									v[count * (k+1) + j] -= p * y;
+									v[count * k + j] -= p * x;
+								}
+								let mmin = nn < k + 3 ? nn : k + 3;   // column modification
+								for (let i = l; i <= mmin; i++) {
+									p = x * v[count * i + k] + y * v[count * i + k+1];
+									if ( k !== nn - 1 ) {
+										p += z * v[count * i + k+2];
+										v[count * i + k+2] -= p * r;
+									}
+									v[count * i + k+1] -= p * q;
+									v[count * i + k] -= p;
+								}
+							}
+						}
+					}
+				}
+			} while (l < nn-1);
+		}
+	}
+
+	/** @method eigenValue
+	 * @returns {MMTableValue}
+	 */
+	eigenValue() {
+		if (this.columnCount !== this.rowCount) {
+			this.exceptionWith('mmcmd:matrixNotSquare', {f: 'eigenValue'})
+		}
+		const count = this.columnCount;
+
+		const a = this.copyOf();
+		a.balanceMatrix();
+		a.elimToHessenberg();
+		const realVector = new MMNumberValue(count, 1);
+		const imgVector = new MMNumberValue(count, 1);
+		a.qrEigenVector(realVector._values, imgVector._values);
+		const realColumn = new MMTableValueColumn({name: 'r', value: realVector});
+		const imgColumn = new MMTableValueColumn({name: 'i', value: imgVector});
+		return new MMTableValue({columns: [realColumn, imgColumn]});			
+	}
+
+	/** @method eigenVector
+	 * @param {Float64Array} vector
+	 * @param {Number} lambda
+	 */
+	eigenVector(vector, lambda) {
+		if (this.columnCount !== this.rowCount) {
+			this.exceptionWith('mmcmd:matrixNotSquare', {f: 'eigenVector'})
+		}
+		const count = this.columnCount;
+		const previous = new Float64Array(count);
+		const a = this.copyOf();
+		const myValues = this._values;
+		const v = a._values;
+		for (let i = 0; i < count; i++) {
+			vector[i] = previous[i] = 1.0;  // initial guess
+			v[count * i + i] -= lambda;
+		}
+
+		const decomp = a.luDecomposition();
+		const pivot = decomp.pivot;
+		let iter = 0;
+		let maxIter = 20;
+		let sumError = 0;
+		do {
+			if (++iter > maxIter) {
+				break;
+			}
+			a.luBackSubstitute(vector, pivot);
+			
+			let normal = 0.0;
+			for (let i = 0; i < count; i++) {
+				normal += vector[i] * vector[i];
+			}
+			normal = Math.sqrt(normal);
+			
+			sumError = 0;
+			let foundNonZero = false;
+			for (let i = 0; i < count; i++) {
+				vector[i] = vector[i]/normal;
+				if (!foundNonZero && vector[i] !== 0.0) {
+					foundNonZero = true;
+					if (previous[i] * vector[i] < 0.0 ) {
+						// signs are different - scale all new values by -1
+						vector[i] *= -1;
+						normal *= -1;
+					}
+				}
+				// console.log(`iter ${iter} i ${i} v ${vector[i]}, p ${previous}`)`;
+				sumError += Math.abs(vector[i] - previous[i]);
+				previous[i] = vector[i];
+			}
+		} while (sumError/count > 1e-8);
+		
+		// check that result is valid
+		sumError = 0.0;
+		for (let i = 0; i < count; i++ ) {
+			let sumRow = 0.0;
+			for (let j = 0; j < count; j++) {
+				sumRow += myValues[count * i + j] * vector[j];
+			}
+			sumError = Math.abs( sumRow - lambda * vector[i] );
+		}
+		
+		if ( sumError/count > 1e-8 ) {
+			// matrix dot eigenvector not equal to eigenvalue time eigenvector
+			// return zero filled vector to indicate error
+			for (let i = 0; i < count; i++) {
+				vector[i] = 0.0;
+			}
+		}
+	}
+
+	/** @method eigenVectorForLamba
+	 * @param {MMNumberValue} lambda
+	 * @returns {MMNumberValue}
+	 */
+	eigenVectorForLamba(lambda) {
+		if (this.columnCount !== this.rowCount) {
+			this.exceptionWith('mmcmd:matrixNotSquare', {f: 'eigenVectorForLambda'})
+		}
+		const rowCount = this.rowCount
+		const lCount = lambda.valueCount;
+		const rv = new MMNumberValue(rowCount, lCount, this.unitDimensions);
+		const rvValues = rv._values;
+		
+		const vector = new Float64Array(rowCount);  // last solution trial
+		for (let j = 0; j < lCount; j++) {
+			this.eigenVector(vector, lambda._values[j])
+			for (let i = 0; i < rowCount; i++) {
+				rvValues[lCount * i + j] = vector[i];
+			}
+		}
+
 		return rv;
 	}
 
