@@ -149,6 +149,94 @@ const MMFormulaFactory = (token, formula) => {
 		return hypot(a[0], a[1]);
 	}
 
+  const cexp = (a) => {
+
+      const tmp = Math.exp(a[0]);
+
+      return [
+				tmp * Math.cos(a[1]),
+				tmp * Math.sin(a[1])
+			];
+		}
+		
+	const cln = (a) => {
+		const re = a[0];
+		const img = a[1];
+
+		return [
+			logHypot(re, img),
+			Math.atan2(img, re)
+		];
+	}
+
+	const csin = (a) => {
+		const r = a[0];
+		const i = a[1];
+		return [
+			Math.sin(r) * Math.cosh(i),
+			Math.cos(r) * Math.sinh(i)
+		];
+	}
+
+	const ccos = (a) => {
+		const r = a[0];
+		const i = a[1];
+		return [
+			Math.cos(r) * Math.cosh(i),
+			-Math.sin(r) * Math.sinh(i)
+		];
+	}
+
+	const ctan = (a) => {
+		const r = 2 * a[0];
+		const i = 2 *a[1];
+		const d = Math.cos(r) + Math.cosh(i);
+
+		return [
+			Math.sin(r) / d,
+			Math.sinh(i) / d
+		];
+	}
+
+	const casin = (a) => {
+		const r = a[0];
+		const i = a[1];
+		const t1 = cPower([i * i - r * r + 1, -2.0 * r * i], [0.5, 0]);
+		const t2 = cln([t1[0] - i, t1[1] + r]);
+		return [t2[1], -t2[0]];
+	}
+
+	const cacos = (a) => {
+		const r = a[0];
+		const i = a[1];
+		const t1 = cPower([i * i - r * r + 1, -2.0 * r * i], [0.5, 0]);
+		const t2 = cln([t1[0] - i, t1[1] + r]);
+		return [Math.PI / 2 - t2[1], t2[0]];
+	}
+
+	const catan = (a) => {
+		const r = a[0];
+		const i = a[1];
+		if (r === 0) {
+			if (i === 1) {
+				return [0.0, Infinity];
+			}
+
+			if (i === -1) {
+				return [0.0, -Infinity];
+			}
+		}
+
+		const d = r * r + (1.0 - i) * (1.0 - i);
+
+		const t1 = cln([
+			(1 - i * i - r * r) / d,
+			-2 * r / d
+		]);
+
+		return [-0.5 * t1[1], 0.5 * t1[0]];
+	}
+
 	const factories = {
 	// operators
 		'+': () => {return new MMAddOperator()},
@@ -172,8 +260,16 @@ const MMFormulaFactory = (token, formula) => {
 		'acos': (f) => {return new MMGenericSingleFunction(f, Math.acos)},
 		'atan': (f) => {return new MMGenericSingleFunction(f, Math.atan)},
 		'pi': (f) => {return new MMPiFunction(f)},
+		'polar': (f) => {return new MMPolarFunction(f)},
+		'cart': (f) => {return new MMCartesianFunction(f)},
 
 		// hyperbolic functions
+		'sinh': (f) => {return new MMGenericSingleFunction(f, Math.sinh)},
+		'cosh': (f) => {return new MMGenericSingleFunction(f, Math.cosh)},
+		'tanh': (f) => {return new MMGenericSingleFunction(f, Math.tanh)},
+		'asinh': (f) => {return new MMGenericSingleFunction(f, Math.asinh)},
+		'acosh': (f) => {return new MMGenericSingleFunction(f, Math.acosh)},
+		'atanh': (f) => {return new MMGenericSingleFunction(f, Math.atanh)},
 
 		// complex number functions
 		'complex': (f) => {return new MMDyadicComplexFunction(f, 'complex', MMDyadicUnitAction.equal, complex)},
@@ -181,8 +277,14 @@ const MMFormulaFactory = (token, formula) => {
 		'cdiv': (f) => {return new MMDyadicComplexFunction(f, 'cdiv', MMDyadicUnitAction.divide, cDivide)},
 		'cpow': (f) => {return new MMDyadicComplexFunction(f, 'cpow', MMDyadicUnitAction.power, cPower)},
 		'cabs': (f) => {return new MMCabsFunction(f, cAbsolute)},
-		'polar': (f) => {return new MMPolarFunction(f)},
-		'cart': (f) => {return new MMCartesianFunction(f)},
+		'cexp': (f) => {return new MMComplexSingleFunction(f, 'cexp', cexp)},
+		'cln': (f) => {return new MMComplexSingleFunction(f, 'cln', cln)},
+		'csin': (f) => {return new MMComplexSingleFunction(f, 'csin', csin)},
+		'ccos': (f) => {return new MMComplexSingleFunction(f, 'ccos', ccos)},
+		'ctan': (f) => {return new MMComplexSingleFunction(f, 'ctan', ctan)},
+		'casin': (f) => {return new MMComplexSingleFunction(f, 'casin', casin)},
+		'cacos': (f) => {return new MMComplexSingleFunction(f, 'cacos', cacos)},
+		'catan': (f) => {return new MMComplexSingleFunction(f, 'catan', catan)},
 
 		// reduction functions
 		'min': (f) => {return new MMMinimumFunction(f)},
@@ -1234,6 +1336,82 @@ class MMGenericSingleFunction extends MMSingleValueFunction {
 	}
 }
 
+class MMComplexSingleFunction extends MMSingleValueFunction {
+	constructor(formula, name, func) {
+		super(formula);
+		this.func = func;
+		this.name = name;
+	}
+
+	createComplex(count) {
+		const rOut = new MMNumberValue(count, 1);
+		const iOut = new MMNumberValue(count, 1);
+		const rColumn = new MMTableValueColumn({
+			name: 'r',
+			value: rOut
+		})
+		const iColumn = new MMTableValueColumn({
+			name: 'i',
+			value: iOut
+		})
+		return new MMTableValue({ columns: [rColumn, iColumn]});
+	}
+
+	operationOn(v) {
+		if (v) {
+			if (v.columnCount !== 2) {
+				this.formula.functionError(this.name, 'mmcmd:formulaComplexColumnCount');
+			}
+			if (v.hasUnitDimensions()) {
+				this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: this.name});
+			}
+			const rowCount = v.rowCount;
+			const rv = this.createComplex(rowCount);
+			const rOut = rv.columns[0].value.values;
+			const iOut = rv.columns[1].value.values;
+
+			const f = this.func;
+			for (let row = 0; row < rowCount; row++) {
+				const cArg = [v.valueAtRowColumn(row + 1, 1), v.valueAtRowColumn(row + 1, 2)];
+				const out = f(cArg);
+				rOut[row] = out[0];
+				iOut[row] = out[1];
+			}
+			return rv;
+		}
+		return null;
+	}
+
+	operationOnTable(v) {
+		if (v) {
+			if (v.columnCount !== 2) {
+				this.formula.functionError('cabs', 'mmcmd:formulaComplexColumnCount');
+			}
+			const rowCount = v.rowCount;
+			const re = v.columns[0].value;
+			const img = v.columns[1].value;
+			if (re.hasUnitDimensions() || img.hasUnitDimensions()) {
+				this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: name});
+			}
+			if (re instanceof MMNumberValue && img instanceof MMNumberValue) {
+				const rv = this.createComplex(rowCount);
+				const rOut = rv.columns[0].value.values;
+				const iOut = rv.columns[1].value.values;
+				const f = this.func;
+	
+				for (let row = 0; row < rowCount; row++) {
+					const cArg = [re.values[row], img.values[row]];
+					const out = f(cArg);
+					rOut[row] = out[0];
+					iOut[row] = out[1];
+				}
+				return rv;
+			}
+		}
+		return null;
+	}
+}
+
 class MMDyadicNumberFunction extends MMMultipleArgumentFunction {
 	constructor(formula, name, unitAction, func) {
 		super(formula);
@@ -1490,7 +1668,7 @@ class MMCabsFunction extends MMSingleValueFunction {
 	operationOn(v) {
 		if (v) {
 			if (v.columnCount !== 2) {
-				this.functionError('cabs', 'mmcmd:formulaComplexColumnCount');
+				this.formula.functionError('cabs', 'mmcmd:formulaComplexColumnCount');
 			}
 			const rowCount = v.rowCount;
 			const rv = new MMNumberValue(rowCount, 1, v.unitDimensions);
@@ -1501,6 +1679,32 @@ class MMCabsFunction extends MMSingleValueFunction {
 			}
 			return rv;
 		}
+		return null;
+	}
+
+	operationOnTable(v) {
+		if (v) {
+			if (v.columnCount !== 2) {
+				this.formula.functionError('cabs', 'mmcmd:formulaComplexColumnCount');
+			}
+			const rowCount = v.rowCount;
+			const rv = new MMNumberValue(rowCount, 1, v.unitDimensions);
+			const cabs = this.cAbsolute;
+			const re = v.columns[0].value;
+			const img = v.columns[1].value;
+
+			if (re instanceof MMNumberValue && img instanceof MMNumberValue) {
+				if (!MMUnitSystem.areDimensionsEqual(re.unitDimensions, img.unitDimensions)) {
+					this.formula.functionError('cabs', 'mmcmd:formulaFunctionUnitsEqual');
+				}
+				for (let row = 0; row < rowCount; row++) {
+					const cArg = [re.values[row], img.values[row]];
+					rv.values[row] = cabs(cArg);
+				}
+				return rv;
+			}
+		}
+		return null;
 	}
 }
 
