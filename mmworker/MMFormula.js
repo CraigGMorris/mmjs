@@ -237,6 +237,83 @@ const MMFormulaFactory = (token, formula) => {
 		return [-0.5 * t1[1], 0.5 * t1[0]];
 	}
 
+	const csinh = (a) => {
+		const r = a[0];
+		const i = a[1];
+		return [
+			Math.sinh(r) * Math.cos(i),
+			Math.cosh(r) * Math.sin(i)
+		];
+	}
+
+	const ccosh = (a) => {
+		const r = a[0];
+		const i = a[1];
+		return [
+			Math.cosh(r) * Math.cos(i),
+			Math.sinh(r) * Math.sin(i)
+		];
+	}
+
+	const ctanh = (a) => {
+		const r = 2 * a[0];
+		const i = 2 * a[1];
+		const d = Math.cosh(r) + Math.cos(i);
+
+		return [
+			Math.sinh(r) / d,
+			Math.sin(i) / d
+		];
+	}	
+
+	const casinh = (a) => {
+		const r = a[0];
+		const i = a[1];
+		const res = casin([i, -r]);
+		return [-res[1], res[0]];
+	}
+
+	const cacosh = (a) => {
+		const res = cacos(a);
+		if (res[1] <= 0.0) {
+			return [-res[1], res[0]];
+		}
+		else {
+			return [res[1], -res[0]];
+		}
+	}
+
+	const catanh = (a) => {
+		const r = a[0];
+		const i = a[1];
+
+		const noIM = r > 1 && i === 0;
+		const oneMinus = 1 - r;
+		const onePlus = 1 + r;
+		const d = oneMinus * oneMinus + i * i;
+
+		const x = (d !== 0)
+			? [
+				(onePlus * oneMinus - i * i) / d,
+				(i * oneMinus + onePlus * i) / d
+			]
+			: [
+				(r !== -1) ? (r / 0) : 0,
+				(i !== 0) ? (i / 0) : 0
+			];
+
+		const v = [
+			logHypot(x[0], x[1]) / 2,
+			Math.atan2(x[1], x[0]) / 2
+		];
+
+		if (noIM) {
+			v[1] = -v[1];
+		}
+		
+		return v;
+	}
+
 	const factories = {
 	// operators
 		'+': () => {return new MMAddOperator()},
@@ -285,6 +362,12 @@ const MMFormulaFactory = (token, formula) => {
 		'casin': (f) => {return new MMComplexSingleFunction(f, 'casin', casin)},
 		'cacos': (f) => {return new MMComplexSingleFunction(f, 'cacos', cacos)},
 		'catan': (f) => {return new MMComplexSingleFunction(f, 'catan', catan)},
+		'csinh': (f) => {return new MMComplexSingleFunction(f, 'csinh', csinh)},
+		'ccosh': (f) => {return new MMComplexSingleFunction(f, 'ccosh', ccosh)},
+		'ctanh': (f) => {return new MMComplexSingleFunction(f, 'ctanh', ctanh)},
+		'casinh': (f) => {return new MMComplexSingleFunction(f, 'casinh', casinh)},
+		'cacosh': (f) => {return new MMComplexSingleFunction(f, 'cacosh', cacosh)},
+		'catanh': (f) => {return new MMComplexSingleFunction(f, 'catanh', catanh)},
 
 		// reduction functions
 		'min': (f) => {return new MMMinimumFunction(f)},
