@@ -867,7 +867,7 @@ class MMSession extends MMCommandParent {
 				r.logValueWithHeader(`x*y`, results);
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 
-				r = x.divide(y);
+				r = x.divideBy(y);
 				r.logValueWithHeader(`x/y`, results);
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 
@@ -879,7 +879,7 @@ class MMSession extends MMCommandParent {
 				r.logValueWithHeader(`y*x`, results);
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 
-				r = y.divide(x);
+				r = y.divideBy(x);
 				r.logValueWithHeader(`y/x`, results);
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 
@@ -894,7 +894,7 @@ class MMSession extends MMCommandParent {
 				r.logValueWithHeader(`x*y`, results);
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 
-				r = x.divide(y);
+				r = x.divideBy(y);
 				r.logValueWithHeader(`x/y`, results);
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 
@@ -906,7 +906,7 @@ class MMSession extends MMCommandParent {
 				r.logValueWithHeader(`y*x`, results);
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 
-				r = y.divide(x);
+				r = y.divideBy(x);
 				r.logValueWithHeader(`y/x`, results);
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 
@@ -924,7 +924,7 @@ class MMSession extends MMCommandParent {
 				r.logValueWithHeader(`x*y`, results);
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 
-				r = x.divide(y);
+				r = x.divideBy(y);
 				r.logValueWithHeader(`x/y`, results);
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 
@@ -936,7 +936,7 @@ class MMSession extends MMCommandParent {
 				r.logValueWithHeader(`y*x`, results);
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 
-				r = y.divide(x);
+				r = y.divideBy(x);
 				r.logValueWithHeader(`y/x`, results);
 				results.push(`r = ${r.stringWithUnit(r.defaultUnit)}`);
 

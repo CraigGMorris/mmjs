@@ -8,6 +8,7 @@
 	MMValue:readonly
 	MMNumberValue:readonly
 	MMStringValue:readonly
+	MMFunctionResult:readonly
 */
 
 /**
@@ -733,5 +734,60 @@ class MMTableValue extends MMValue {
 	*/
 	ifStringThenElse() {
 		return null;
+	}
+
+	// statistical functions
+
+	calcMean(resultType, f) {
+		if (resultType === MMFunctionResult.rows || resultType === MMFunctionResult.all) {
+			const v = this.numberValue();
+			return v ? f(v) : null;
+		}
+
+		let rv = null;
+		if (this.columnCount) {
+			const newColumns = [];
+			for (let column of this.columns) {
+				const value = column.value;
+				if (value instanceof MMNumberValue) {
+					const mean = f(value);
+					if (mean === null) {
+						return null;
+					}
+					const newColumn = new MMTableValueColumn({
+						name: column.name,
+						value: mean,
+						displayUnit: column.displayUnit ? column.displayUnit.name : null,
+					});
+					newColumns.push(newColumn);
+				}
+			}
+			rv = new MMTableValue({columns: newColumns});
+		}
+		return rv;
+	}
+
+	averageOf(resultType) {
+		return this.calcMean(resultType, (v) => {
+			return v.averageOf(resultType);
+		})
+	}
+
+	medianOf(resultType) {
+		return this.calcMean(resultType, (v) => {
+			return v.medianOf(resultType);
+		})
+	}
+
+	geoMeanOf(resultType) {
+		return this.calcMean(resultType, (v) => {
+			return v.geoMeanOf(resultType);
+		})
+	}
+
+	harmonicMeanOf(resultType) {
+		return this.calcMean(resultType, (v) => {
+			return v.harmonicMeanOf(resultType);
+		})
 	}
 }

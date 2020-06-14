@@ -5,7 +5,8 @@
 	MMTableValue:readonly
 	MMTableValueColumn:readonly
 	MMUnitSystem:readonly
-	MMUnitDimensionType:readonly
+	MMUnitDimensionType:readonly,
+	MMFunctionResult:readonly,
 */
 
 /**
@@ -415,12 +416,12 @@ class MMNumberValue extends MMValue {
 	}
 
 	/**
-	 * @method divide
+	 * @method divideBy
 	 * returns the division of this by value
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
 	 */
-	divide(value) {
+	divideBy(value) {
 		const rv = this.processDyadic(value, (a,b) => a/b);
 		rv.subtractUnitDimensions(value.unitDimensions);
 		return rv;
@@ -1422,6 +1423,185 @@ class MMNumberValue extends MMValue {
 			v2 = v2.append(zero);
 		}
 		return [v1, v2];
+	}
+
+	// statistical functions
+	averageOf(resultType) {
+		let rv = null;
+		switch (resultType) {
+			case MMFunctionResult.all:
+				rv =  this.sum().divideBy(MMNumberValue.scalarValue(this.valueCount));
+				break;
+			case MMFunctionResult.rows:
+				rv = this.sumRows().divideBy(MMNumberValue.scalarValue(this.columnCount));
+				break;
+			case MMFunctionResult.columns:
+				rv = this.sumColumns().divideBy(MMNumberValue.scalarValue(this.rowCount));
+				break;
+		}
+		return rv;
+	}
+
+	geoMeanOf(resultType) {
+		const calc = (v, resultType) => {
+			let rv = null;
+			switch (resultType) {
+				case MMFunctionResult.all:
+					rv = v.genericMonadic(Math.log).sum().divideBy(
+						MMNumberValue.scalarValue(v.valueCount)
+					).genericMonadic(Math.exp);
+					break;
+				case MMFunctionResult.rows:
+					rv = v.genericMonadic(Math.log).sumRows().divideBy(
+						MMNumberValue.scalarValue(v.columnCount)
+					).genericMonadic(Math.exp);
+					break;
+				case MMFunctionResult.columns:
+					rv = v.genericMonadic(Math.log).sumColumns().divideBy(
+						MMNumberValue.scalarValue(v.rowCount)
+					).genericMonadic(Math.exp);
+					break;
+			}
+			return rv;
+		}
+		if (this.hasUnitDimensions()) {
+			const oneUnit = MMNumberValue.scalarValue(1, this.unitDimensions);
+			const unitlessValue = new MMNumberValue(this.rowCount, this.columnCount);
+			unitlessValue._values.set(this._values);
+			return calc(unitlessValue, resultType).multiply(oneUnit);
+		}
+		else {
+			return calc(this, resultType);
+		}
+	}
+
+	// statistical functions
+	harmonicMeanOf(resultType) {
+		let rv = null;
+		let one = MMNumberValue.scalarValue(1);  // unitless one
+		switch (resultType) {
+			case MMFunctionResult.all:
+				rv = one.divideBy(one.divideBy(this).sum().divideBy(MMNumberValue.scalarValue(this.valueCount)));
+				break;
+			case MMFunctionResult.rows:
+				rv = one.divideBy(one.divideBy(this).sumRows().divideBy(MMNumberValue.scalarValue(this.columnCount)));
+				break;
+			case MMFunctionResult.columns:
+				rv = one.divideBy(one.divideBy(this).sumColumns().divideBy(MMNumberValue.scalarValue(this.rowCount)));
+				break;
+		}
+		return rv;
+	}
+	
+
+	medianOf(resultType) {
+		const quickSelect = (array, count) => {
+			/*
+				*  This Quickselect routine is based on the algorithm described in
+				*  "Numerical recipes in C", Second Edition,
+				*  Cambridge University Press, 1992, Section 8.5, ISBN 0-521-43108-5
+				*  Original code by Nicolas Devillard - 1998. Public domain.
+				*/
+				let low = 0.0;
+				let high = count - 1;
+				let median = Math.floor((low + high) / 2.0)
+				let middle, ll, hh;
+				const swap = (a,b) => {
+					const t = array[a];
+					array[a] = array[b];
+					array[b] = t;
+				}
+			
+				for (;;) {
+					if (high <= low) { /* One element only */
+						return array[median] ;
+					}
+			
+					if (high === low + 1) {  /* Two elements only */
+						if (array[low] > array[high]) {
+							swap(low, high);
+						}
+						return array[median] ;
+					}
+				
+				/* Find median of low, middle and high items; swap into position low */
+				middle = Math.floor((low + high) / 2);
+				if (array[middle] > array[high])	{ swap(middle,high); }
+				if (array[low] > array[high])			{ swap(low, high); }
+				if (array[middle] > array[low])		{ swap(middle, low); }
+				
+				/* Swap low item (now in position middle) into position (low+1) */
+				swap(middle, low + 1);
+				
+				/* Nibble from each end towards middle, swapping items when stuck */
+				ll = low + 1;
+				hh = high;
+				for (;;) {
+					do { ll++; } while (array[low] > array[ll]);
+					do { hh--; } while (array[hh]  > array[low]);
+					
+					if (hh < ll) {
+						break;
+					}
+					swap(ll, hh);
+				}
+				
+				/* Swap middle item (in position low) back into correct position */
+				swap(low, hh);
+				
+				/* Re-set active partition */
+				if (hh <= median) {
+					low = ll;
+				}
+				if (hh >= median) {
+					high = hh - 1;
+				}
+			}
+		}
+
+		let rv = null;
+		switch (resultType) {
+			case MMFunctionResult.all:
+			{
+				const array = Float64Array.from(this._values);
+				const v = quickSelect(array, this.valueCount);
+				rv = MMNumberValue.scalarValue(v, this.unitDimensions);
+			}
+				break;
+				
+			case MMFunctionResult.rows:
+			{
+				const rowCount = this.rowCount;
+				const columnCount = this.columnCount;
+				rv = new MMNumberValue(rowCount, 1, this.unitDimensions);
+				for (let row = 0; row < rowCount; row++) {
+					const array = this._values.slice(row * columnCount, (row + 1) * columnCount);
+					rv._values[row] = quickSelect(array, columnCount);
+				}
+			}
+				break;
+				
+			case MMFunctionResult.columns:
+			{
+				const rowCount = this.rowCount;
+				const columnCount = this.columnCount;
+				rv = new MMNumberValue(1, columnCount, this.unitDimensions);
+				const v = this._values;
+				for (let column = 0; column < columnCount; column++) {
+					const array = [];
+					for (let row = 0; row < rowCount; row++) {
+						array.push(v[row * columnCount + column]);
+					}
+					rv._values[column] = quickSelect(array, rowCount);
+				}
+			}
+				break;
+				
+			default:
+				break;
+		}
+		
+		return rv;
 	}
 
 	/**
