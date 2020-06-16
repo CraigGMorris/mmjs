@@ -377,7 +377,7 @@ class MMTableValueColumn {
 				o.sValues = this._value.values;
 			}
 			else {
-				o.nValues = this._value.values;
+				o.nValues = Array.from(this._value.values);
 				o.unitDimensions = MMUnit.stringFromDimensions(this._value.unitDimensions);
 			}
 		}
@@ -754,10 +754,14 @@ class MMTableValue extends MMValue {
 					if (mean === null) {
 						return null;
 					}
+					let displayUnitName = null;
+					if (column.displayUnit && MMUnitSystem.areDimensionsEqual(mean.unitDimensions, column.displayUnit.unitDimensions)) {
+						displayUnitName = column.displayUnit.name;
+					}
 					const newColumn = new MMTableValueColumn({
 						name: column.name,
 						value: mean,
-						displayUnit: column.displayUnit ? column.displayUnit.name : null,
+						displayUnit: displayUnitName,
 					});
 					newColumns.push(newColumn);
 				}
@@ -788,6 +792,12 @@ class MMTableValue extends MMValue {
 	harmonicMeanOf(resultType) {
 		return this.calcMean(resultType, (v) => {
 			return v.harmonicMeanOf(resultType);
+		})
+	}
+
+	varianceOf(resultType) {
+		return this.calcMean(resultType, (v) => {
+			return v.varianceOf(resultType);
 		})
 	}
 }

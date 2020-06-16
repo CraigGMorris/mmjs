@@ -486,8 +486,8 @@ class MMNumberValue extends MMValue {
 	/** @method genericMonadic
 	 * @param f - function taking a float value and returning the function result for it
 	 */
-	genericMonadic(f, ) {
-		if (this.hasUnitDimensions()) {
+	genericMonadic(f, canHaveUnits = false) {
+		if (!canHaveUnits && this.hasUnitDimensions()) {
 			this.exceptionWith('mmcmd:formulaMonadicUnitNone');
 		}
 		let rv = new MMNumberValue(this.rowCount, this.columnCount);
@@ -1599,6 +1599,58 @@ class MMNumberValue extends MMValue {
 				
 			default:
 				break;
+		}
+		
+		return rv;
+	}
+
+	varianceOf(resultType) {
+		let rv = null;
+		const mean = this.averageOf(resultType);
+		const two = MMNumberValue.scalarValue(2);
+		switch (resultType) {
+			case MMFunctionResult.all: {
+				const count = MMNumberValue.scalarValue(this.valueCount - 1);
+				rv = this.subtract(mean).power(two).sum().divideBy(count);
+			}
+				break;
+			case MMFunctionResult.rows: {
+				const count = MMNumberValue.scalarValue(this.columnCount - 1);
+				rv = this.subtract(mean).power(two).sumRows().divideBy(count);
+			}
+				break;
+			case MMFunctionResult.columns:{
+				const count = MMNumberValue.scalarValue(this.rowCount - 1);
+				rv = this.subtract(mean).power(two).sumColumns().divideBy(count);
+			}
+				break;
+		}
+		return rv;
+	}
+
+	factorial() {
+		if (this.hasUnitDimensions()) {
+			this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: 'factorial'});
+		}
+		const rv = this.monadicResultWithUnitDimensions();
+		const v1 = rv._values;
+		const myValues = this._values;
+		const count = this.valueCount;
+		
+		for (let i = 0; i < count; i++ ) {
+			let n = Math.floor(myValues[i] + 0.5);
+			if ( n < 2 ) {
+				v1[i] = 1.0;
+			}
+			else {
+				if (n > 170) {
+					n = 171;  // largest IEEE number
+				}
+				let f = n;
+				for (let j = n - 1; j > 1; j--)
+					f *= j;
+				v1[i] = f;
+			}
 		}
 		
 		return rv;

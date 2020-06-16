@@ -426,6 +426,8 @@ const MMFormulaFactory = (token, formula) => {
 		'median': (f) => {return new MMMedianFunction(f)},
 		'geomean': (f) => {return new MMGeoMeanFunction(f)},
 		'harmmean': (f) => {return new MMHarmonicMeanFunction(f)},
+		'var': (f) => {return new MMVarianceFunction(f)},
+		'factorial': (f) => {return new MMFactorialFunction(f)},
 
 		// table functions
 		'table': (f) => {return new MMTableFunction(f)},
@@ -1399,7 +1401,7 @@ class MMSingleValueFunction extends MMFunctionOperator {
 					})
 					calcColumns.push(calcColumn);
 				}
-				else {
+				else if (!this.noStringColumns) {
 					// just include original column if operation does not apply to it
 					calcColumns.push(column);
 				}				
@@ -1484,13 +1486,14 @@ class MMMultipleArgumentFunction extends MMFunctionOperator {
 }
 
 class MMGenericSingleFunction extends MMSingleValueFunction {
-	constructor(formula, func) {
+	constructor(formula, func, canHaveUnits=false) {
 		super(formula);
 		this.func = func;
+		this.canHaveUnits = canHaveUnits;
 	}
 
 	operationOn(value) {
-		return value.genericMonadic(this.func);
+		return value.genericMonadic(this.func, this.canHaveUnits);
 	}
 }
 
@@ -1861,6 +1864,9 @@ class MMMinimumFunction extends MMMultipleArgumentFunction {
 		let min = null;
 		for (let arg of this.arguments) {
 			let vMin = arg.value();
+			if (vMin instanceof MMTableValue) {
+				vMin = vMin.numberValue();
+			}
 			if (vMin instanceof MMNumberValue) {
 				vMin = vMin.min();
 				if (min === null) {
@@ -1891,9 +1897,20 @@ class MMRowMinimumsFunction extends MMSingleValueFunction {
 			return v.minRows();
 		}
 	}
+
+	operationOnTable(v) {
+		if (v) {
+			return v.numberValue().minRows();
+		}
+	}
 }
 
 class MMColumnMinimumsFunction extends MMSingleValueFunction {
+	constructor(f) {
+		super(f);
+		this.noStringColumns = true;
+	}
+
 	operationOn(v) {
 		if (v) {
 			return v.minColumns();
@@ -1910,6 +1927,10 @@ class MMMaximumFunction extends MMMultipleArgumentFunction {
 		let max = null;
 		for (let arg of this.arguments) {
 			let vMax = arg.value();
+			if (vMax instanceof MMTableValue) {
+				vMax = vMax.numberValue();
+			}
+
 			if (vMax instanceof MMNumberValue) {
 				vMax = vMax.max();
 				if (max === null) {
@@ -1940,9 +1961,20 @@ class MMRowMaximumsFunction extends MMSingleValueFunction {
 			return v.maxRows();
 		}
 	}
+
+	operationOnTable(v) {
+		if (v) {
+			return v.numberValue().maxRows();
+		}
+	}
 }
 
 class MMColumnMaximumsFunction extends MMSingleValueFunction {
+	constructor(f) {
+		super(f);
+		this.noStringColumns = true;
+	}
+
 	operationOn(v) {
 		if (v) {
 			return v.maxColumns();
@@ -1956,17 +1988,34 @@ class MMSumFunction extends MMSingleValueFunction {
 			return v.sum();
 		}
 	}
+
+	operationOnTable(v) {
+		if (v) {
+			return v.numberValue().sum();
+		}
+	}
 }
 
-class MMSumRowsFunction extends MMSingleValueFunction {
+class MMSumRowsFunction extends MMSingleValueFunction {	
 	operationOn(v) {
 		if (v) {
 			return v.sumRows();
 		}
 	}
+
+	operationOnTable(v) {
+		if (v) {
+			return v.numberValue().sumRows();
+		}
+	}
 }
 
 class MMSumColumnsFunction extends MMSingleValueFunction {
+	constructor(f) {
+		super(f);
+		this.noStringColumns = true;
+	}
+
 	operationOn(v) {
 		if (v) {
 			return v.sumColumns();
@@ -2548,6 +2597,20 @@ class MMGeoMeanFunction extends MMGenericAverageFunction {
 class MMHarmonicMeanFunction extends MMGenericAverageFunction {
 	calculate(value, resultType) {
 		return value.harmonicMeanOf(resultType);
+	}
+}
+
+class MMVarianceFunction extends MMGenericAverageFunction {
+	calculate(value, resultType) {
+		return value.varianceOf(resultType);
+	}
+}
+
+class MMFactorialFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.factorial();
+		}
 	}
 }
 
