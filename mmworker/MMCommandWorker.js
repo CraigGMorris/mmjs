@@ -16,6 +16,7 @@ importScripts(
   'MMCommandProcessor.js',
   'MMSession.js',
   'mmunits/MMUnitSystem.js',
+  "MMMath.js",
   "MMValue.js",
   "MMNumberValue.js",
   "MMStringValue.js",
