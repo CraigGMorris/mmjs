@@ -358,10 +358,37 @@ class MMNumberValue extends MMValue {
 	* @param {MMNumberValue} value
 	* @param {function} func
 	*/
-	processDyadic(value, func) {
+	processDyadic(value, unitAction, func) {
 		let rv = this.dyadicNumberResult(value, this.unitDimensions);
 		let v1 = rv._values;
 		let v2 = value._values;
+		switch (unitAction) {
+			case MMDyadicUnitAction.none:
+				if (this.hasUnitDimensions() || value.hasUnitDimensions()) {
+					this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: name});
+				}
+				break;
+			case MMDyadicUnitAction.equal: 
+				this.checkUnitDimensionsAreEqualTo(value.unitDimensions);
+				break;
+			case MMDyadicUnitAction.multiply:
+				rv.addUnitDimensions(value.unitDimensions);
+				break;
+			case MMDyadicUnitAction.divide:
+				rv.subtractUnitDimensions(value.unitDimensions);
+				break;
+			case MMDyadicUnitAction.power:
+				if(value.hasUnitDimensions()) {
+					this.exceptionWith('mmcmd:valuePowerHasUnits');
+				}
+				if(value.valueCount > 1 && this.hasUnitDimensions()) {
+					this.exceptionWith('mmcmd:valuePowerOfArrayWithUnits');
+				}
+				rv.multiplyUnitDimensions(v1[0]);
+				break;
+			default:
+				return null;
+		}
 		let rowCount = rv.rowCount;
 		let columnCount = rv.columnCount;
 		let valueRowCount = value.rowCount;
@@ -388,8 +415,7 @@ class MMNumberValue extends MMValue {
 	 * @returns {MMNumberValue}
 	 */
 	add(value) {
-		this.checkUnitDimensionsAreEqualTo(value.unitDimensions);
-		return this.processDyadic(value, (a,b) => a+b);
+		return this.processDyadic(value, MMDyadicUnitAction.equal, (a,b) => a+b);
 	}
 
 	/**
@@ -399,8 +425,7 @@ class MMNumberValue extends MMValue {
 	 * @returns {MMNumberValue}
 	 */
 	subtract(value) {
-		this.checkUnitDimensionsAreEqualTo(value.unitDimensions);
-		return this.processDyadic(value, (a,b) => a-b);
+		return this.processDyadic(value, MMDyadicUnitAction.equal, (a,b) => a-b);
 	}
 
 	/**
@@ -410,8 +435,7 @@ class MMNumberValue extends MMValue {
 	 * @returns {MMNumberValue}
 	 */
 	multiply(value) {
-		const rv = this.processDyadic(value, (a,b) => a*b);
-		rv.addUnitDimensions(value.unitDimensions);
+		const rv = this.processDyadic(value, MMDyadicUnitAction.multiply, (a,b) => a*b);
 		return rv;
 	}
 
@@ -422,8 +446,7 @@ class MMNumberValue extends MMValue {
 	 * @returns {MMNumberValue}
 	 */
 	divideBy(value) {
-		const rv = this.processDyadic(value, (a,b) => a/b);
-		rv.subtractUnitDimensions(value.unitDimensions);
+		const rv = this.processDyadic(value, MMDyadicUnitAction.divide, (a,b) => a/b);
 		return rv;
 	}
 
@@ -434,14 +457,13 @@ class MMNumberValue extends MMValue {
 	 * @returns {MMNumberValue}
 	 */
 	mod(value) {
-		const rv = this.processDyadic(value, (a,b) => {
+		const rv = this.processDyadic(value, MMDyadicUnitAction.divide, (a,b) => {
 			// return a % b;
 			// the objc version did the equivalent of the following,
 			// but I am not sure the floor operations should be included
 			// if not needed
 			return Math.floor(Math.abs(a) + .1) % Math.floor(Math.abs(b) + .1);
 		});
-		rv.subtractUnitDimensions(value.unitDimensions);
 		return rv;
 	}
 
@@ -467,8 +489,7 @@ class MMNumberValue extends MMValue {
 		if(value.valueCount > 1 && this.hasUnitDimensions()) {
 			this.exceptionWith('mmcmd:valuePowerOfArrayWithUnits');
 		}
-		const rv = this.processDyadic(value, Math.pow);
-		rv.multiplyUnitDimensions(value.valueAtRowColumn(1,1));
+		const rv = this.processDyadic(value, MMDyadicUnitAction.power, Math.pow);
 		return rv;
 	}
 

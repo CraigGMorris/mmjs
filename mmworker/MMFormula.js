@@ -136,6 +136,8 @@ const MMFormulaFactory = (token, formula) => {
 		'harmmean': (f) => {return new MMHarmonicMeanFunction(f)},
 		'var': (f) => {return new MMVarianceFunction(f)},
 		'factorial': (f) => {return new MMFactorialFunction(f)},
+		'lngamma': (f) => {return new MMGenericSingleFunction(f, MMMath.lnGamma)},
+		'permut': (f) => {return new MMDyadicNumberFunction(f, 'permut', MMDyadicUnitAction.none, MMMath.permutation)},
 
 		// table functions
 		'table': (f) => {return new MMTableFunction(f)},
@@ -1302,7 +1304,7 @@ class MMDyadicNumberFunction extends MMMultipleArgumentFunction {
 				if (v2) {
 					v2 = v2.numberValue();
 					if (v2) {
-						return v1.processDyadic(name, v2, this.unitAction, this.func);
+						return v1.processDyadic(v2, this.unitAction, this.func);
 					}
 				}
 			}
@@ -1799,10 +1801,10 @@ class MMComparisonFunction extends MMMultipleArgumentFunction {
 		const v2 = this.arguments[0].value();
 
 		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
-			return v1.processDyadic(v2, this.func);
+			return v1.processDyadic(v2, MMDyadicUnitAction.equal, this.func);
 		}
 		else if	(v1 instanceof MMStringValue && v2 instanceof MMStringValue) {
-			return v1.processDyadic(v2, this.func, true);
+			return v1.processStringDyadic(v2, this.func, true);
 		}
 		return null;
 	}
@@ -1813,8 +1815,8 @@ class MMUnitlessComparisonFunction extends MMComparisonFunction {
 		const v1 = this.arguments[1].value();
 		const v2 = this.arguments[0].value();
 		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
-			const rv = v1.processDyadic(v2, this.func);
-			// rv with have the unitdimensions of v1 - remove them
+			const rv = v1.processDyadic(v2, MMDyadicUnitAction.equal, this.func);
+			// rv will have the unitdimensions of v1 - remove them
 			rv.subtractUnitDimensions(v1.unitDimensions);
 			return rv
 		}

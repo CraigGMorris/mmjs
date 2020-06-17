@@ -267,14 +267,14 @@ class MMStringValue extends MMValue {
 	 */
 
 	/**
-	* @method processDyadic
+	* @method processStringDyadic
 	* processes function that returns string value
 	* @param {MMStringValue} value
 	* @param {function} func
 	* @param isNumberResult - true if function has number result false if string result
 	* @return {MMValue} - MMStringValue unless isNumberResult is true, then MMNumberValue
 	*/
-	processDyadic(value, func, isNumberResult) {
+	processStringDyadic(value, func, isNumberResult) {
 		const calculatedValue = isNumberResult ?
 			this.dyadicNumberResult(value) : this.dyadicStringResult(value);
 		let v1 = calculatedValue._values;
@@ -305,7 +305,7 @@ class MMStringValue extends MMValue {
 	 * @returns {MMStringValue}
 	 */
 	add(value) {
-		return this.processDyadic(value, (a, b) => {
+		return this.processStringDyadic(value, (a, b) => {
 			return a + b;
 		});
 	}
