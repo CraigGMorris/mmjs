@@ -271,7 +271,9 @@ export function MMApp(props) {
 
 			if (error) {
 				if (error.msgKey) {
-					errorAlert(stringify(error));
+					if (error.msgKey !== 'cmd:subjectNotFound') {
+						errorAlert(stringify(error));
+					}
 				}
 				else {
 					errorAlert(error);

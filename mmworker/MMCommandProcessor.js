@@ -120,6 +120,9 @@ class MMCommandProcessor {
 			// now get verb and arguments
 			terms = this.getNextTerm(terms[1]);
 		}
+		else if(subjectPath.startsWith('/') || subjectPath.startsWith('.')) {
+			throw(this.t('cmd:subjectNotFound', {className: this.className, path: this.defaultObject.getPath(), subject: subjectPath}));
+		}
 		else {
 			// subject path is not valid path expression - assume it is command for defaultObject
 			// terms will already hold the verb and arguments

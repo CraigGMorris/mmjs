@@ -324,7 +324,10 @@ export function DataTableView(props) {
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
 	if (updateResults.error) {
-		props.actions.popView();
+		// use empty command just to defer popView
+		props.actions.doCommand('', () => {
+			props.actions.popView();
+		});
 		return null;
 	}
 

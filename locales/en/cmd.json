@@ -12,6 +12,7 @@
 	"nameAlreadyUsed": "The name {{name}} is already used by {{parent}}",
 	"propertyNotFound": "{{name}} does not have a property named {{propName}}",
 	"removedChild": "Removed {{name}}",
+	"subjectNotFound": "{{className}} {{path}} doesn't understand the subject {{subject}}",
 	"unknownClass": "Cannot create unknown class {{className}}",
 	"unknownCommand": "I don't know the command {{command}}",
 	"?help": "Usage: help [command you want usage for]\n\nWithout an argument returns list of all commands\n",

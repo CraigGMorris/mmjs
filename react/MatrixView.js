@@ -33,7 +33,7 @@ export function MatrixView(props) {
 	const columnCountFormula = results.columnCountFormula;
 	const rowCount = results.rowCount;
   const columnCount = results.columnCount;
-	const cellInputs = results.cellInputs;
+	const cellInputs = results.cellInputs || [];
 
 	const value = results.value;
 
@@ -70,7 +70,10 @@ export function MatrixView(props) {
 	}, []);
 
 	if (updateResults.error) {
-		props.actions.popView();
+		// use empty command just to defer popView
+		props.actions.doCommand('', () => {
+			props.actions.popView();
+		});
 		return null;
 	}
 
