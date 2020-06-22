@@ -1,6 +1,7 @@
 'use strict';
 /* global
 	theMMSession:readonly
+	MMMath:readonly
 	MMValue:readonly
 	MMTableValue:readonly
 	MMTableValueColumn:readonly
@@ -1178,7 +1179,7 @@ class MMNumberValue extends MMValue {
 							}
 						}
 						
-						for (let k = m; k <= nn-1; k++ ) {   // Double QR step on rows 1 to nn and columns m to nn
+						for (let k = m; k <= nn-1; k++ ) {   // const QR step on rows 1 to nn and columns m to nn
 							if ( k !== m ) {
 								p = v[count * k + k-1];   // begin setup of Householder vector
 								q = v[count * (k+1) + k-1];
@@ -1675,6 +1676,138 @@ class MMNumberValue extends MMValue {
 		}
 		
 		return rv;
+	}
+
+	normalDistribution(u, s, isCumulative) {
+		this.checkUnitDimensionsAreEqualTo(u.unitDimensions);
+		this.checkUnitDimensionsAreEqualTo(s.unitDimensions);
+
+		const rowCount = Math.max( this.rowCount, u.rowCount, s.rowCount);
+		const columnCount = Math.max( this.columnCount, u.columnCount,  s.columnCount );
+		const rv = new MMNumberValue(rowCount, columnCount);
+		const rvCount = rv.valueCount;
+		const uCount = u.valueCount;
+		const sCount = s.valueCount;
+		const tCount = this.valueCount
+		const uv = u._values;
+		const sv = s._values;
+		const tv = this._values;
+		const v1 = rv._values;
+		
+		for (let i = 0; i < rvCount; i++) {
+			if ( isCumulative ) {
+				v1[i] = MMMath.cumulativeNormal(( tv[i % tCount] - uv[i % uCount]) / sv[i % sCount]);
+			}
+			else {
+				v1[i] = Math.exp(-Math.pow( (tv[i % tCount ] - uv[i % uCount]), 2 ) / 2 /
+					Math.pow( sv[i % sCount], 2.0)) /
+					Math.pow(2 * Math.PI, 0.5) / sv[i % sCount];
+			}
+		}
+		
+		return rv;		
+	}
+
+	inverseNormalProbability(u, s) {
+		if (this.hasUnitDimensions()) {
+			this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: 'norminv p'});
+		}
+		u.checkUnitDimensionsAreEqualTo(s.unitDimensions);
+
+		const rowCount = Math.max( this.rowCount, u.rowCount, s.rowCount);
+		const columnCount = Math.max( this.columnCount, u.columnCount,  s.columnCount );
+		const rv = new MMNumberValue(rowCount, columnCount, u.unitDimensions);
+		const rvCount = rv.valueCount;
+		const uCount = u.valueCount;
+		const sCount = s.valueCount;
+		const tCount = this.valueCount
+		const uv = u._values;
+		const sv = s._values;
+		const tv = this._values;
+		const v1 = rv._values;
+		for (let i = 0; i < rvCount; i++) {
+			v1[i] = MMMath.inverseNormal(tv[i % tCount]) * sv[i % sCount] + uv[i % uCount];
+		}
+		return rv;
+	}
+
+	binomialDistribution(success, probability) {  // where this is the number of trials
+		if (this.hasUnitDimensions() || success.hasUnitDimensions() || probability.hasUnitDimensions()) {
+			this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: 'binomdist'});
+		}
+
+		const rowCount = Math.max( this.rowCount, success.rowCount, probability.rowCount);
+		const columnCount = Math.max( this.columnCount, success.columnCount,  probability.columnCount );
+		const rv = new MMNumberValue(rowCount, columnCount);
+		const rvCount = rv.valueCount;
+		const pCount = probability.valueCount;
+		const sCount = success.valueCount;
+		const nCount = this.valueCount
+		const pv = probability._values;
+		const sv = success._values;
+		const nv = this._values;
+		const v1 = rv._values;
+		for (let i = 0; i < rvCount; i++) {
+			const n = nv[i % nCount];
+			const p = pv[i % pCount];
+			const s = sv[i % sCount];
+			v1[i] = MMMath.combination(n, s) * Math.pow(p, s) * Math.pow(1 - p, n - s);
+		}
+		return rv;
+	}
+
+	betaDistribution(a, b) {  // where this is x (0 <= x <= 1)
+		if (this.hasUnitDimensions() || a.hasUnitDimensions() || b.hasUnitDimensions()) {
+			this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: 'betadist'});
+		}
+		
+		const rowCount = Math.max( this.rowCount, a.rowCount, b.rowCount);
+		const columnCount = Math.max( this.columnCount, a.columnCount,  b.columnCount );
+		const rv = new MMNumberValue(rowCount, columnCount);
+		const rvCount = rv.valueCount;
+		const aCount = a.valueCount;
+		const bCount = b.valueCount;
+		const xCount = this.valueCount
+		const av = a._values;
+		const bv = b._values;
+		const xv = this._values;
+		const v1 = rv._values;
+		for (let i = 0; i < rvCount; i++) {
+			const x = xv[i % xCount];
+			const a = av[i % aCount];
+			const b = bv[i % bCount];
+			v1[i] = MMMath.betai(a, b, x);
+		}
+
+		return rv;
+	}
+
+	chiTest(expected) {
+		if (this.hasUnitDimensions() || expected.hasUnitDimensions()) {
+			this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: 'chitest'});
+		}
+		const mmx2 = this.subtract(expected).power(MMNumberValue.scalarValue(2)).divideBy(expected).sum();
+		const x2 = mmx2.values[0];
+		const r = this.rowCount;
+		const c = this.columnCount;
+		let df = 0;
+		if (r == 1) {
+			if (c == 1) {
+				return null;
+			}
+			else {
+				df = c - 1;
+			}
+		}
+		else if (c == 1) {
+			df = r - 1;
+		}
+		else {
+			df = (r - 1)*(c - 1);
+		}
+
+		const p = MMMath.gammaQ(df/2, x2/2);
+		return MMNumberValue.scalarValue(p);
 	}
 
 	/**

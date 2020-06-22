@@ -138,6 +138,15 @@ const MMFormulaFactory = (token, formula) => {
 		'factorial': (f) => {return new MMFactorialFunction(f)},
 		'lngamma': (f) => {return new MMGenericSingleFunction(f, MMMath.lnGamma)},
 		'permut': (f) => {return new MMDyadicNumberFunction(f, 'permut', MMDyadicUnitAction.none, MMMath.permutation)},
+		'combin': (f) => {return new MMDyadicNumberFunction(f, 'combin', MMDyadicUnitAction.none, MMMath.combination)},
+		'normdist': (f) => {return new MMNormalDistFunction(f)},
+		'norminv': (f) => {return new MMInverseNormalFunction(f)},
+		'binomdist': (f) => {return new MMBinomialDistFunction(f)},
+		'betadist': (f) => {return new MMBetaDistFunction(f)},
+		'chidist': (f) => {return new MMDyadicNumberFunction(f, 'combin', MMDyadicUnitAction.none, (x2, df) => {
+			return MMMath.gammaQ(df/2, x2/2);})
+		},
+		'chitest': (f) => {return new MMChiTestFunction(f)},
 
 		// table functions
 		'table': (f) => {return new MMTableFunction(f)},
@@ -2321,6 +2330,132 @@ class MMFactorialFunction extends MMSingleValueFunction {
 		if (v) {
 			return v.factorial();
 		}
+	}
+}
+
+class MMNormalDistFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 3);
+	}
+
+	value() {
+		const argCount = this.arguments.length;
+		let arg = this.arguments[argCount -  1].value()
+		const x = arg ? arg.numberValue() : null;
+
+		arg = this.arguments[argCount -  2].value()
+		const u = arg ? arg.numberValue() : null;
+
+		arg = this.arguments[argCount -  3].value()
+		const s = arg ? arg.numberValue() : null;
+			
+		if (x && u && s ) {
+			let isCumulative = true;
+			if ( argCount > 3 ) {
+				let cumulative = this.arguments[argCount -  4].value();
+				cumulative = cumulative ? cumulative.numberValue() : null;
+				if (cumulative) {
+					isCumulative = cumulative.values[0] === 0;
+				}
+			}
+			
+			return x.normalDistribution(u, s, isCumulative);
+		}
+		
+		return null;
+	}
+}
+
+class MMInverseNormalFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 3);
+	}
+
+	value() {
+		const argCount = this.arguments.length;
+		let arg = this.arguments[argCount -  1].value()
+		const p = arg ? arg.numberValue() : null;
+
+		arg = this.arguments[argCount -  2].value()
+		const u = arg ? arg.numberValue() : null;
+
+		arg = this.arguments[argCount -  3].value()
+		const s = arg ? arg.numberValue() : null;
+			
+		if (p && u && s ) {
+			return p.inverseNormalProbability(u, s);
+		}
+		
+		return null;
+	}
+}
+
+class MMBinomialDistFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 3);
+	}
+
+	value() {
+		const argCount = this.arguments.length;
+		let arg = this.arguments[argCount -  1].value()
+		const n = arg ? arg.numberValue() : null;
+
+		arg = this.arguments[argCount -  2].value()
+		const s = arg ? arg.numberValue() : null;
+
+		arg = this.arguments[argCount -  3].value()
+		const p = arg ? arg.numberValue() : null;
+			
+		if (n && s && p ) {
+			return n.binomialDistribution(s, p);
+		}
+		
+		return null;
+	}
+}
+
+class MMBetaDistFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 3);
+	}
+
+	value() {
+		const argCount = this.arguments.length;
+		let arg = this.arguments[argCount -  1].value()
+		const x = arg ? arg.numberValue() : null;
+
+		arg = this.arguments[argCount -  2].value()
+		const a = arg ? arg.numberValue() : null;
+
+		arg = this.arguments[argCount -  3].value()
+		const b = arg ? arg.numberValue() : null;
+			
+		if (x && a && b ) {
+			return x.betaDistribution(a, b);
+		}
+		
+		return null;
+	}
+}
+
+class MMChiTestFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const argCount = this.arguments.length;
+		let arg = this.arguments[argCount -  1].value()
+		const actual = arg ? arg.numberValue() : null;
+
+		arg = this.arguments[argCount -  2].value()
+		const expected = arg ? arg.numberValue() : null;
+
+		if (actual && expected ) {
+			return actual.chiTest(expected);
+		}
+		
+		return null;
 	}
 }
 
