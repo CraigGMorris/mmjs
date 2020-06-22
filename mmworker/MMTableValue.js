@@ -107,13 +107,13 @@ class MMTableValueColumn {
 				}
 				let nValue = new MMNumberValue(nRows, 1, dimensions);
 				for (let i = 1; i <= nRows; i++) {
-					let rowIndex = rowNumbers[i - 1] - 1;
+					let rowIndex = rowNumbers.values[i - 1] - 1;
 					// if rowIndex is negative, then count back from the end
 					if (rowIndex < 0) {
 						rowIndex = column.value.valueCount + rowIndex +  1;
 					}
 					if (rowIndex < column.value.valueCount) {
-						nValue.setValue(column.value[rowIndex], i, 1);
+						nValue.setValue(column.value.values[rowIndex], i, 1);
 					}
 				}
 				this._value = nValue;
@@ -546,7 +546,11 @@ class MMTableValue extends MMValue {
 			const nColumns = columns ? columns.length : 0;
 			if (context.rowNumbers) {
 				const rowNumbers = context.rowNumbers;
-				const nRows = rowNumbers.valueCount;
+				let nRows = rowNumbers.valueCount;
+				if (rowNumbers.values[0] === 0 && nColumns) {
+					nRows = columns[0].rowCount;
+				}
+
 				super(nRows, nColumns);
 				let newColumns = [];
 				for (const column of columns) {
