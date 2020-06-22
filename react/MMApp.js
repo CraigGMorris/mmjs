@@ -264,7 +264,7 @@ export function MMApp(props) {
 			let stringify = (msg) => {
 				let s = props.t(msg.msgKey, msg.args);
 				if (msg.child) {
-					s += '\n' + stringify(msg.child);
+					s = stringify(msg.child) + '\n' + s;
 				}
 				return s;
 			}
