@@ -655,4 +655,46 @@ const MMMath = {
 			return MMMath.gammaCf(a, x);
 		}
 	},
+
+	avevar: (data, n) => {
+		let ave = 0.0;
+		let svar = 0.0;
+		for (let j = 0; j < n; j++ )
+			ave += data[ j ];
+		ave /= n;
+		
+		for (let j = 0; j < n; j++ ) {
+			const s = data[j] - ave;
+			svar += s*s;
+		}
+		svar /= (n-1);
+
+		return [ave, svar];
+	},
+
+	ttest: (data1, n1, data2, n2) => {
+		let ave1, var1, ave2, var2;
+		[ave1, var1] = MMMath.avevar( data1, n1);
+		[ave2, var2] = MMMath.avevar( data2, n2);
+		const df = n1 + n2 - 2;
+		const svar = ((n1-1) * var1 + (n2-1) * var2) / df;
+		const t = (ave1-ave2) / Math.sqrt( svar*(1.0/n1 + 1.0/n2));
+		return MMMath.betai( 0.5 * df, 0.5, df/(df + t*t));
+	},
+
+	tptest: (data1, data2, n) => {
+		let ave1, var1, ave2, var2;
+		[ave1, var1] = MMMath.avevar( data1, n);
+		[ave2, var2] = MMMath.avevar( data2, n);
+
+		let cov = 0;
+		for (let j = 0; j < n; j++ ) {
+			cov += (data1[j] - ave1) * (data2[j] - ave2);
+		}
+		const df = n - 1;
+		cov /= df;
+		const sd = Math.sqrt((var1 + var2 - 2.0*cov) / n);
+		const t = (ave1 - ave2) / sd;
+		return MMMath.betai(0.5*df, 0.5, df/(df + t * t));
+	}
 }

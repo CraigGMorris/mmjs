@@ -30,6 +30,7 @@
 	"formulaRecursion": "Recursion Error\nSelf reference in formula {{formula}}\nTool path: {{path}}",
 	"formulaRedimCountError": "New column count does not evenly divide in redim",
 	"formulaSyntaxError": "Formula syntax Error\nin: {{path}}\nformula: {{formula}}",
+	"formulaTptestSizeMismatch": "Arguments to tptest must have the same number of values.",
 	"formulaUnknownFunction": "Unknown function {{f}}",
 	"jsonImportFailed": "Failed to initialize a session from the supplied json\n\n{{error}}",
 	"matrixCellValueNotScalar": "Cell value is not a scalar\n\npath: {{path}}\nrow: {{row}}\ncolumn: {{column}}\nformula: {{formula}}",

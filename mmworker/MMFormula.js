@@ -147,6 +147,8 @@ const MMFormulaFactory = (token, formula) => {
 			return MMMath.gammaQ(df/2, x2/2);})
 		},
 		'chitest': (f) => {return new MMChiTestFunction(f)},
+		'ttest': (f) => {return new MMStudentTFunction(f)},
+		'tptest': (f) => {return new MMPairedStudentTFunction(f)},
 
 		// table functions
 		'table': (f) => {return new MMTableFunction(f)},
@@ -2453,6 +2455,48 @@ class MMChiTestFunction extends MMMultipleArgumentFunction {
 
 		if (actual && expected ) {
 			return actual.chiTest(expected);
+		}
+		
+		return null;
+	}
+}
+
+class MMStudentTFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const argCount = this.arguments.length;
+		let arg = this.arguments[argCount -  1].value()
+		const a = arg ? arg.numberValue() : null;
+
+		arg = this.arguments[argCount -  2].value()
+		const b = arg ? arg.numberValue() : null;
+
+		if (a && b ) {
+			return a.studentT(b);
+		}
+		
+		return null;
+	}
+}
+
+class MMPairedStudentTFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const argCount = this.arguments.length;
+		let arg = this.arguments[argCount -  1].value()
+		const a = arg ? arg.numberValue() : null;
+
+		arg = this.arguments[argCount -  2].value()
+		const b = arg ? arg.numberValue() : null;
+
+		if (a && b ) {
+			return a.pairedStudentT(b);
 		}
 		
 		return null;

@@ -385,7 +385,7 @@ class MMNumberValue extends MMValue {
 				if(value.valueCount > 1 && this.hasUnitDimensions()) {
 					this.exceptionWith('mmcmd:valuePowerOfArrayWithUnits');
 				}
-				rv.multiplyUnitDimensions(v1[0]);
+				rv.multiplyUnitDimensions(v2[0]);
 				break;
 			default:
 				return null;
@@ -1808,6 +1808,21 @@ class MMNumberValue extends MMValue {
 
 		const p = MMMath.gammaQ(df/2, x2/2);
 		return MMNumberValue.scalarValue(p);
+	}
+
+	studentT(b) {
+		this.checkUnitDimensionsAreEqualTo(b.unitDimensions);
+		const v = MMMath.ttest(this._values, this.valueCount, b._values, b.valueCount);
+		return MMNumberValue.scalarValue(v);
+	}
+
+	pairedStudentT(b) {
+		this.checkUnitDimensionsAreEqualTo(b.unitDimensions);
+		if (this.valueCount != b.valueCount) {
+			this.exceptionWith('mmcmd:formulaTptestSizeMismatch')
+		}
+		const v = MMMath.tptest(this._values, b._values, b.valueCount);
+		return MMNumberValue.scalarValue(v);
 	}
 
 	/**
