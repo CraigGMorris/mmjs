@@ -244,7 +244,7 @@ export function TableView(props) {
 				format = format[format.length - 1];
 				let precision = parseInt(format);
 				if (isNaN(precision) || precision < 2 || precision > 36) {
-					precision = 7;
+					precision = 8;
 				}
 				switch (format.slice(-1)) {  // last character should be format type
 					case 'f':
@@ -255,7 +255,7 @@ export function TableView(props) {
 						return `${precision}r` + v.toString(precision);
 				}
 			}
-			return v.toPrecision(7);
+			return v.toPrecision(8);
 		}
 		else {
 			return '???';
