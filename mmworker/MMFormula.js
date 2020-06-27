@@ -103,10 +103,10 @@ const MMFormulaFactory = (token, formula) => {
 		'if': (f) => {return new MMIfFunction(f)},
 		'eq': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a === b ? 1 : 0;})},
 		'ne': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a !== b ? 1 : 0;})},
-		'lt': (f) => {return new MMComparisonFunction(f, (a, b) => {return a < b ? 1 : 0;})},
-		'le': (f) => {return new MMComparisonFunction(f, (a, b) => {return a <= b ? 1 : 0;})},
-		'gt': (f) => {return new MMComparisonFunction(f, (a, b) => {return a > b ? 1 : 0;})},
-		'ge': (f) => {return new MMComparisonFunction(f, (a, b) => {return a >= b ? 1 : 0;})},
+		'lt': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a < b ? 1 : 0;})},
+		'le': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a <= b ? 1 : 0;})},
+		'gt': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a > b ? 1 : 0;})},
+		'ge': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a >= b ? 1 : 0;})},
 		'not': (f) => {return new MMGenericSingleFunction(f, (n) => { return n === 0 ? 1 : 0;})},
 		'and': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a !== 0 && b !== 0 ? 1 : 0;})},
 
@@ -422,7 +422,7 @@ class MMDyadicOperator extends MMFormulaOperator {
 						}
 						const newColumn = new MMTableValueColumn({
 							name: column1.name,
-							displayUnit: displayUnit.name,
+							displayUnit: displayUnit ? displayUnit.name : null,
 							value: newValue
 						})
 						columns.push(newColumn);
@@ -2018,12 +2018,12 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 			if (first instanceof MMTableValue) {
 				const columnCount =  first.columnCount;
 				let a = [];
-				for (let column in first.columns) {
+				for (let column of first.columns) {
 					if (column.value) {
 						a.push(column.value);
 					}
 				}
-				argCount = this.arguments.length;
+				argCount = this.arguments.length - 1;  // subtract 1 to skip first
 				while (argCount-- > 0) {
 					const tableValue = this.arguments[argCount].value();
 					if (!(tableValue instanceof MMTableValue)) {
@@ -2051,7 +2051,7 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 					const firstColumn = first.columns[i];
 					a[i] = new MMTableValueColumn({
 						name: firstColumn.name,
-						displayUnit: firstColumn.displayUnit,
+						displayUnit: firstColumn.displayUnit ? firstColumn.displayUnit.name : null,
 						value: a[i]
 					});
 				}
