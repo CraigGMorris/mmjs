@@ -9,6 +9,7 @@
 	MMToolValue:readonly
 	MMTableValue:readonly
 	MMPropertyType:readonly
+	MMUnitSystem:readonly
 */
 
 /**
@@ -209,7 +210,8 @@ class MMExpression extends MMTool {
 						value = tool.valueDescribedBy(description, requestor);
 					}
 					else if (value instanceof MMTableValue) {
-						value = value.columnNamed(description).value;
+						const column = value.columnNamed(description);
+						value = column ? column.value : null;
 					}
 					else {
 						value = super.valueDescribedBy(description, requestor);
@@ -253,12 +255,11 @@ class MMExpression extends MMTool {
 		let value = this.valueForRequestor();
 		let json = {}
 		if (value) {
-			if (value instanceof MMTableValue) {
-				json = value.jsonValue(this.tableUnits);
+			let displayUnit = (value instanceof MMTableValue)  ? this.tableUnits : this.displayUnit;
+			if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, this.dimensions)) {
+				displayUnit = null;  // display unit is wrong type - ignore and use default
 			}
-			else {
-				json = value.jsonValue(this.displayUnit);
-			}
+			json = value.jsonValue(displayUnit);
 		}
 		return json;
 	}
