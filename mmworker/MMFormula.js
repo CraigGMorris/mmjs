@@ -152,8 +152,15 @@ const MMFormulaFactory = (token, formula) => {
 
 		// table functions
 		'table': (f) => {return new MMTableFunction(f)},
+		'colnames': (f) => {return new MMColumnNamesFunction(f)},
+		'groupsum': (f) => {return new MMGroupTableFunction(f, 'sum')},
+		'groupmin': (f) => {return new MMGroupTableFunction(f, 'min')},
+		'groupmax': (f) => {return new MMGroupTableFunction(f, 'max')},
 
 		// lookup functions
+		'lookup': (f) => {return new MMLookupFunction(f)},
+		'indexof': (f) => {return new MMIndexOfFunction(f)},
+		'select': (f) => {return new MMSelectFunction(f)},
 
 		// string functions
 
@@ -2576,6 +2583,212 @@ class MMTableFunction extends MMMultipleArgumentFunction {
 		return new MMTableValue({columns: columns});
 	}
 }
+
+class MMColumnNamesFunction extends MMSingleValueFunction {
+	operationOnTable(v) {
+		const nameCount = v.columnCount;
+		const rv = new MMStringValue(nameCount, 1);
+		let i = 0;
+		for (let column of v.columns) {
+			rv.setValueAtCount(column.name,i++);
+		}
+		
+		return rv;	
+	}
+}
+
+class MMGroupTableFunction extends MMMultipleArgumentFunction {
+	constructor(f, action) {
+		super(f);
+		this.action = action;
+	}
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const t = this.arguments[1].value();
+		const s = this.arguments[0].value();
+		if (!(t instanceof MMTableValue) || !(s instanceof MMStringValue)) {
+			this.formula.setError('mmcmd:formulaGroupArgs', {
+				path: this.formula.parent.getPath(),
+				action: this.action,
+				formula: this.formula.truncatedFormula()
+			});
+			return null;
+		}
+
+		const keyColumn = t.columnNamed(s.values[0]);
+		if (!keyColumn) {
+			return null;
+		}
+		const keyValues = keyColumn.value;
+		let isStringKey = false;
+		if (keyValues instanceof MMStringValue) {
+			isStringKey = true;
+		}
+		const rowCount = t.rowCount;
+		const columns = [];
+		for (let column of t.columns) {
+			if (column.value instanceof MMNumberValue && column !== keyColumn) {
+				columns.push(column);
+			}
+		}
+		const columnCount = columns.length;
+		const sums = {};
+		const sortedKeys = [];
+		for (let row = 0; row < rowCount; row++) {
+			const key = keyValues.valueAtCount(row);
+			let sum = sums[key];
+			if (!sum) {
+				sum = new MMNumberValue(columnCount, 1);
+				switch (this.action) {
+					case 'min':
+						for(let i = 0; i < columnCount; i++) {
+							sum.values[i] = Number.MAX_VALUE;
+						}
+						break;
+						case 'max':
+							for(let i = 0; i < columnCount; i++) {
+								sum.values[i] = -Number.MAX_VALUE;
+							}
+							break;
+					}
+				sums[key] = sum;
+				sortedKeys.push(key);
+			}
+			let i = 0;
+			for (let column of columns) {
+				const v = column.value;
+				switch (this.action) {
+					case 'sum':
+						sum.values[i++] += v.values[row];
+						break;
+
+					case 'min':
+					sum.values[i] = Math.min(sum.values[i], v.values[row]);
+					i++;
+					break;
+					
+					case 'max':
+					sum.values[i] = Math.max(sum.values[i], v.values[row]);
+					i++;
+					break;
+					
+					default:
+						return null;
+					}
+			}
+		}
+
+		let keyValue = null;
+		const sumsCount = Object.keys(sums).length;
+		if (isStringKey) {
+			keyValue = new MMStringValue(sumsCount, 1);
+		}
+		else {
+			keyValue = new MMNumberValue(sumsCount, keyValues.unitDimensions);
+		}
+
+		let row = 0;
+		for (let key of sortedKeys) {
+			keyValue.setValueAtCount(key, row++)
+		}
+
+		const newColumns = [
+			new MMTableValueColumn({
+				name: s.valueAtCount(0),
+				value: keyValue
+			})
+		];
+
+		for (let i = 0; i < columnCount; i++) {
+			const oldColumn = columns[i];
+			const oldValue = oldColumn.value;
+			const v = new MMNumberValue(sumsCount, 1, oldValue.unitDimensions);
+			for (let row = 0; row < sumsCount; row++) {
+				const key = sortedKeys[row];
+				const sumV = sums[key];
+				v.values[row] = sumV.values[i];
+			}
+
+			const column = new MMTableValueColumn({
+				name: oldColumn.name,
+				displayUnit: oldColumn.displayUnit ? oldColumn.displayUnit.name : null,
+				value: v
+			});
+			newColumns.push(column);
+		}
+		return new MMTableValue({
+			columns: newColumns
+		});
+	}
+}
+
+// Lookup functions
+
+class MMLookupFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 3);
+	}
+
+	value() {
+		const lookup = this.arguments[2].value();
+		const index = this.arguments[1].value();
+		const values = this.arguments[0].value();
+
+		if (lookup instanceof MMNumberValue &&
+				index instanceof MMNumberValue &&
+				values instanceof MMNumberValue
+			) {
+			return lookup.lookup(index, values);
+		}
+	}
+}
+
+class MMIndexOfFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const value = this.arguments[1].value();
+		const array = this.arguments[0].value();
+		if (array && value) {
+			if (
+				(array instanceof MMNumberValue || array instanceof MMStringValue) &&
+				Object.getPrototypeOf(array) === Object.getPrototypeOf(value)
+			) {
+				return array.indexOf(value);
+			}
+			else {
+				this.formula.setError('mmcmd:formulaIndexOfTypeError');
+				return null;
+			}
+		}
+	}
+}
+
+class MMSelectFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const v = this.arguments[1].value();
+		const b = this.arguments[0].value();
+		if ((v instanceof MMValue) && (b instanceof MMNumberValue)) {
+			return v.select(b);
+		}
+		return null;
+	}
+}
+
+// String functions
+
+// Time functions
+
+// 3D Transform functions
 
 // Miscellaneous functions
 

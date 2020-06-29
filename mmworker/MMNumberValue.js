@@ -1825,6 +1825,59 @@ class MMNumberValue extends MMValue {
 		return MMNumberValue.scalarValue(v);
 	}
 
+	// Lookup functions
+
+	lookup(index, values) {
+		this.checkUnitDimensionsAreEqualTo(index.unitDimensions);
+		if ( values.valueCount !== index.valueCount) {
+			this.exceptionWith('mmcmd:formulaLookupSizeMismatch');
+		}
+
+		if (values.valueCount < 2) {
+			this.exceptionWith('mmcmd:formulaLookupTooSmall');
+		}		
+
+		const rv = new MMNumberValue(this.rowCount, this.columnCount, values.unitDimensions);
+		const last = values.valueCount - 1;
+		const myValueCount = this.valueCount;
+		const myValues = this._values;
+		const iValues = index._values;
+		const vValues = values._values;
+
+		for (let i = 0; i < myValueCount; i++) {
+			const l = myValues[i];
+			let v0, v1, i0, i1;
+			// v0 = v1 = i0 = i1 = 0.0;  // just to get rid of analyze errors
+			if (l < iValues[0] ) {
+				i0 = iValues[0];
+				i1 = iValues[1];
+				v0 = vValues[0];
+				v1 = vValues[1];
+			}
+			else if ( l > iValues[values.valueCount - 1]) {
+				i0 = iValues[last - 1];
+				i1 = iValues[last];
+				v0 = vValues[last - 1];
+				v1 = vValues[last];
+			}
+			else {
+				for (let j = 0; j < last; j++) {
+					if (l >= iValues[j] && l <= iValues[j + 1] ) {
+						i0 = iValues[ j ];
+						i1 = iValues[ j + 1 ];
+						v0 = vValues[ j ];
+						v1 = vValues[ j + 1 ];
+						break;
+					}
+				}
+			}
+			
+			const m = (v1 - v0) / (i1 - i0);
+			rv.values[i] = v0 + m * (l - i0);
+		}
+		return rv;
+	}
+
 	/**
 	 * @method jsonValue
 	 * @override

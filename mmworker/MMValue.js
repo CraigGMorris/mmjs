@@ -3,6 +3,8 @@
 	MMCommandMessage:readonly
 	MMNumberValue:readonly
 	MMStringValue:readonly
+	MMTableValue:readonly
+	MMTableValueColumn:readonly
 */
 
 /**
@@ -321,4 +323,105 @@ class MMValue {
 		}
 		return rv;
 	}
+
+		// Lookup functions
+
+		indexOf(value) {
+			const valueCount = value.valueCount;
+			const myValueCount = this.valueCount;
+			const myColumnCount = this.columnCount;
+			const vValues = value._values;
+			const myValues = this._values;
+			const rv = new MMNumberValue(valueCount, 2);
+			const rvValues = rv._values;
+			
+			for (let j = 0; j < valueCount; j++) {
+				const v = vValues[j];
+				for (let i = 0; i <= myValueCount; i++) {
+					if (v === myValues[i]) {
+						const row = Math.floor((i / myColumnCount) + 1.1);
+						const column = Math.floor((i - ((row - 1) * myColumnCount)) + 1.1);
+						rvValues[j * 2] = row;
+						rvValues[j * 2 + 1] = column;
+						break;
+					}
+				}
+			}
+		
+			return rv;
+		}	
+
+		select(selector) {
+			if (!selector) {
+				return null;
+			}
+
+			if (selector.columnCount > 1) {
+				this.exceptionWith('mmcmd:formulaSelectColumns');
+			}
+			if (selector.rowCount !== this.rowCount) {
+				this.exceptionWith('mmcmd:formulaSelectRowMismatch');
+			}
+
+			let newRowCount = 0;
+			let myRowCount = this.rowCount;
+			const sValues = selector.values;
+
+			for (let i = 0; i < myRowCount; i++) {
+				if (sValues[i] != 0.0) {
+					newRowCount++;
+				}
+			}
+			if (newRowCount) {
+				let rv;
+				if (this instanceof MMTableValue) {
+					if (!this.columns.length) {
+						return null;
+					}
+					const newColumns = [];
+					for (let column of this.columns ) {
+						const cValue = column.value;
+						if (!cValue) {
+							return null;
+						}
+						const selectedValues = cValue.select(selector);
+						if (!selectedValues) {
+							return null;
+						}
+
+						const newColumn = new MMTableValueColumn({
+							name: column.name,
+							displayUnit: column.displayUnit ? column.displayUnit.name : null,
+							value: selectedValues
+						});
+						newColumns.push(newColumn);
+						
+					}
+					return new MMTableValue({
+						columns: newColumns
+					});
+				}
+				else {
+					if (this instanceof MMNumberValue) {
+						rv = new MMNumberValue(newRowCount, this.columnCount, this.unitDimensions);
+					}
+					else if (this instanceof MMStringValue) {
+						rv = new MMStringValue(newRowCount, this.columnCount);
+					}
+					const rvValues = rv.values;
+					const myValues = this._values;
+					let newRow = 0;
+					const myColumnCount = this.columnCount;
+					for (let r = 0; r < myRowCount; r++) {
+						if (sValues[r] !== 0.0) {
+							for (let c = 0; c < myColumnCount; c++) {
+								rvValues[newRow * myColumnCount + c] = myValues[r * myColumnCount + c];
+							}
+							newRow++;
+						}
+					}
+					return rv;
+				}
+			}
+		}	
 }
