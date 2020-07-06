@@ -163,6 +163,17 @@ const MMFormulaFactory = (token, formula) => {
 		'select': (f) => {return new MMSelectFunction(f)},
 
 		// string functions
+		'fmt': (f) => {return new MMFormatFunction(f)},
+		'join': (f) => {return new MMJoinFunction(f)},
+		'split': (f) => {return new MMSplitFunction(f)},
+		'match': (f) => {return new MMMatchFunction(f)},
+		'replace': (f) => {return new MMReplaceFunction(f)},
+		'strfind': (f) => {return new MMStringFindFunction(f)},
+		'strlen': (f) => {return new MMStringLengthFunction(f)},
+		'substr': (f) => {return new MMSubstringFunction(f)},
+		'lowercase': (f) => {return new MMLowerCaseFunction(f)},
+		'uppercase': (f) => {return new MMUpperCaseFunction(f)},
+		'utf8': (f) => {return new MMUtf8Function(f)},
 
 		// time functions
 
@@ -2786,6 +2797,225 @@ class MMSelectFunction extends MMMultipleArgumentFunction {
 
 // String functions
 
+class MMFormatFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const argCount = this.arguments.length;
+		let argNo = 0;
+		let unit = null;
+		if (argCount > 2) {
+			const unitParam = this.arguments[argNo++].value();
+			if (!(unitParam instanceof MMStringValue)) {
+				this.formula.setError('mmcmd:formulaFmtUnitError');
+				return null;
+			}
+			const unitName = unitParam.values[0];
+			unit = theMMSession.unitSystem.unitNamed(unitName);
+		}
+		const value = this.arguments[argNo++].value();
+		const format = this.arguments[argNo].value();
+		if (format instanceof MMStringValue && value instanceof MMNumberValue) {
+			return format.format(value, unit)
+		}
+		return null;
+	}
+}
+
+class MMJoinFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const argCount = this.arguments.length;		
+		if (argCount == 2) {
+			const array = this.arguments[1].value();
+			const join = this.arguments[0].value();
+			if (array instanceof MMStringValue && join instanceof MMStringValue) {
+				return array.join(join);
+			}
+		}
+		else if (argCount === 3) {
+			const array = this.arguments[2].value();
+			const columnJoin = this.arguments[1].value();
+			const rowJoin = this.arguments[0].value();
+			if (
+				array instanceof MMStringValue &&
+				columnJoin instanceof MMStringValue &&
+				rowJoin instanceof MMStringValue
+			) {
+				return array.join(columnJoin, rowJoin);
+			}
+		}	
+	}	
+}
+
+class MMSplitFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 1);
+	}
+
+	value() {
+		const argCount = this.arguments.length;	
+		if (argCount === 1) {
+			const s = this.arguments[0].value();
+			if (s instanceof MMStringValue) {
+				return s.split();
+			}
+		}	
+		else if (argCount == 2) {
+			const s = this.arguments[1].value();
+			const separator = this.arguments[0].value();
+			if (s instanceof MMStringValue && separator instanceof MMStringValue) {
+				return s.split(separator);
+			}
+		}
+		else if (argCount === 3) {
+			const s = this.arguments[2].value();
+			const columnSep = this.arguments[1].value();
+			const rowSep = this.arguments[0].value();
+			if (
+				s instanceof MMStringValue &&
+				columnSep instanceof MMStringValue &&
+				rowSep instanceof MMStringValue
+			) {
+				return s.split(columnSep, rowSep);
+			}
+		}	
+	}	
+}
+
+class MMMatchFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		let argNo = 0;
+		const sValue = this.arguments[argNo++].value();
+		const regex = this.arguments[argNo].value();
+		if (regex instanceof MMStringValue && sValue instanceof MMStringValue) {
+			return sValue.processStringDyadic(regex, (s, r) => {
+				const m = s.match(r);
+				if (m) {
+					return m[0];
+				}
+				else {
+					return '';
+				}
+			}, false);
+		}
+		return null;
+	}
+}
+
+class MMReplaceFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 3);
+	}
+
+	value() {
+		const s = this.arguments[0].value();
+		const replace = this.arguments[1].value();
+		const match = this.arguments[2].value();
+
+		if (s instanceof MMStringValue &&
+				replace instanceof MMStringValue &&
+				match instanceof MMStringValue
+			) {
+			return s.replace(match, replace);
+		}
+	}
+}
+
+class MMStringFindFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const regex = this.arguments[0].value();
+		const sValue = this.arguments[1].value();
+		if (regex instanceof MMStringValue && sValue instanceof MMStringValue) {
+			return sValue.find(regex);
+		}
+		return null;
+	}
+}
+
+class MMStringLengthFunction extends MMSingleValueFunction {
+	operationOnString(v) {
+		let rv = new MMNumberValue(v.rowCount, v.columnCount);
+		rv._values = v._values.map(s => s.length);
+		return rv;
+	}
+}
+
+class MMSubstringFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const argCount = this.arguments.length;
+		let s, from, length;
+		if (argCount > 2) {
+			s = this.arguments[2].value()
+			from = this.arguments[1].value();
+			length = this.arguments[0].value();	
+		}
+		else {
+			s = this.arguments[1].value()
+			from = this.arguments[0].value();
+		}
+		if (from instanceof MMNumberValue && (!length || length instanceof MMNumberValue)) {
+			return s.subString(from, length);
+		}
+		return null;
+	}
+}
+
+class MMLowerCaseFunction extends MMSingleValueFunction {
+	operationOnString(v) {
+		const rv = new MMStringValue(v.rowCount, v.columnCount);
+		rv._values = v._values.map(s => s.toLowerCase());
+		return rv;
+	}
+}
+
+class MMUpperCaseFunction extends MMSingleValueFunction {
+	operationOnString(v) {
+		const rv = new MMStringValue(v.rowCount, v.columnCount);
+		rv._values = v._values.map(s => s.toUpperCase());
+		return rv;
+	}
+}
+
+class MMUtf8Function extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v.valueCount) {
+			const rv = new MMStringValue(1, 1);
+			rv._values[0] = v._values.map(n => String.fromCharCode(n)).join('');
+			return rv;
+		}
+		return null;
+	}
+
+	operationOnString(v) {
+		if (v.valueCount) {
+			const s = v._values[0];
+			if (s.length) {
+				const rv = new MMNumberValue(s.length, 1);
+				rv._values = s.split('').map(c => c.charCodeAt(0));
+				return rv;
+			}
+		}
+		return null;
+	}
+}
 // Time functions
 
 // 3D Transform functions

@@ -37,6 +37,7 @@
 	"formulaSelectRowMismatch": "Select function selector has wrong number of rows",
 	"formulaSyntaxError": "Formula syntax Error\nin: {{path}}\nformula: {{formula}}",
 	"formulaTptestSizeMismatch": "Arguments to tptest must have the same number of values.",
+	"formulaFmtUnitError": "If present, a third fmt function argument must be a unit",
 	"formulaUnknownFunction": "Unknown function {{f}}",
 	"jsonImportFailed": "Failed to initialize a session from the supplied json\n\n{{error}}",
 	"matrixCellValueNotScalar": "Cell value is not a scalar\n\npath: {{path}}\nrow: {{row}}\ncolumn: {{column}}\nformula: {{formula}}",

@@ -191,7 +191,7 @@ class MMValue {
 	/**
 	 * @method dyadicStringResult
 	 * creates MMStringValue with size of other parameter
-	 * @param {MMStringValue} other
+	 * @param {MMValue} other
 	 * @returns {MMStringValue}
 	 */
 	dyadicStringResult(other) {

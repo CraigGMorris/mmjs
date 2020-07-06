@@ -353,6 +353,328 @@ class MMStringValue extends MMValue {
 	}
 
 	/**
+	 * @method format
+	 * @param {MMNumberValue} value 
+	 * @param {MMUnit} unit 
+	 */
+	format(value, unit) {
+		const f = (v, format) => {
+			if (format) {
+				format = format.split('.');	// if there is a decimal point, only interested in what is after it
+				format = format[format.length - 1];
+				let precision = parseInt(format);
+				if (isNaN(precision) || precision < 0 || precision > 36) {
+					precision = 8;
+				}
+				switch (format.slice(-1)) {  // last character should be format type
+					case 'f':
+						return v.toFixed(precision);
+					case 'e':
+						return v.toExponential(precision);
+					case 'x':
+						return `${precision}r` + v.toString(precision);
+				}
+			}
+			return v.toPrecision(8);
+		}
+
+		if (unit) {
+			value.checkUnitDimensionsAreEqualTo(unit.dimensions);
+		}
+		const rv = this.dyadicStringResult(value);
+		const rowCount = rv.rowCount;
+		const columnCount = rv.columnCount;
+		const rvValues = rv._values;
+		const myRowCount = this.rowCount;
+		const myColumnCount = this.columnCount
+		const myValues = this._values;
+		const vValues = value._values;
+		const vRowCount = value.rowCount;
+		const vColumnCount = value.columnCount;
+		for (let i = 0; i < rowCount;  i++) {
+			const rMine = i % myRowCount;
+			const rValue = i % vRowCount;
+			for (let j = 0; j < columnCount; j++) {
+				const cMine = j % myColumnCount;
+				const cValue = j % vColumnCount;
+				const fmt = myValues[rMine * myColumnCount + cMine];
+				let v = vValues[rValue * vColumnCount + cValue];
+				if (unit) {
+					v = unit.convertFromBase(v);
+				}
+				rvValues[i * columnCount + j] = f(v, fmt);
+			}
+		}
+		return rv;	
+	}
+
+	/**
+	 * @method join
+	 * @param {MMStringValue} join1 
+	 * @param {MMStringValue} join2 - // optional
+	 */
+	join(join1, join2) {
+		const myValueCount = this.valueCount;
+		const myValues = this._values;
+		const myRowCount = this.rowCount;
+		const myColumnCount = this.columnCount;
+		if (join2) {
+			// use join to join columns and rowJoin to join rows
+			if (myValueCount && join1.valueCount && join2.valueCount) {
+				let rowJoin = join2._values[0];
+				rowJoin = rowJoin.replace(/\\n/, '\n');
+				rowJoin = rowJoin.replace(/\\t/, '\t');
+
+				let colJoin = join1._values[0];
+				colJoin = colJoin.replace(/\\n/, '\n');
+				colJoin = colJoin.replace(/\\t/, '\t');
+				const rows = [];
+				for (let i = 0; i < myRowCount; i++) {
+					const columns = [];
+					for (let j = 0; j < myColumnCount; j++) {
+						columns.push(myValues[i * myColumnCount + j]);
+					}
+					const s = columns.join(colJoin);
+					rows.push(s);
+				}
+				return MMStringValue.scalarValue(rows.join(rowJoin));
+			}
+		}
+		else {	
+			let joinValue = join1._values[0];
+			joinValue = joinValue.replace(/\\n/, '\n');
+			joinValue = joinValue.replace(/\\t/, '\t');
+			if ( myValueCount && join1.valueCount ) {
+				if ( myColumnCount == 1 || myRowCount == 1 ) { 
+					return MMStringValue.scalarValue(this._values.join(joinValue));
+				}
+				else {
+					// matrix - return array with columns joined into one column
+					const rv = new MMStringValue(myRowCount, 1);
+					const rvValues = rv._values;
+					for (let i = 0; i < myRowCount; i++ ) {
+						const columns = [];
+						for (let j = 0; j < myColumnCount; j++ ) {
+							columns.push(myValues[i * myColumnCount + j]);
+						}
+						rvValues[i] = columns.join(joinValue);
+					}
+					return rv;
+				}
+			}
+		}
+	}
+
+	/**
+	 * @method split
+	 * @param {MMStringValue} sep1 
+	 * @param {MMStringValue} sep2 - // optional
+	 */
+	split(sep1, sep2) {
+		const myValueCount = this.valueCount;
+		const myValues = this._values;
+		if (sep2) {
+			if (myValueCount && sep1.valueCount && sep2.valueCount) {
+				const rowSep = sep2._values[0];
+				const rowArray = this._values[0].split(rowSep);
+				const rowCount = rowArray.length;
+				if (rowCount) {
+					const columnSep = sep1._values[0];
+
+					// determine the number of columns in the first row
+					const columnCount = rowArray[0].split(columnSep).length;
+					const rv = new MMStringValue(rowCount, columnCount);
+					const rvValues = rv._values;
+					for(let row = 0; row < rowCount; row++) {
+						const columnArray = rowArray[row].split(columnSep);
+						const copyCount = columnArray.length;  // incase it is different from columnCount
+						for(let column = 0; column < columnCount && column < copyCount; column++) {
+							rvValues[row * columnCount + column] = columnArray[column];
+						}
+						for (let column = copyCount + 1; column < columnCount; column++) {
+							rvValues[row * columnCount + column] = "";
+						}
+					}
+					return rv;
+				}
+			}
+		}
+		else if (sep1) { // single separator
+			const separator = sep1._values[0];
+			const a = myValues[0].split(separator);
+			if (myValueCount && sep1.valueCount) {
+				if (myValueCount === 1) {
+					const count = a.length;
+					if (count) {
+						const rv = new MMStringValue(count, 1);
+						const rvValues = rv._values;
+						for (let i = 0; i < count; i++) {
+							rvValues[i] = a[i];
+						}
+						return rv;
+					}
+				}
+				else {
+					// string is array - split each value into columns
+					const columnCount = myValues[0].split(separator).length;
+					if (columnCount) {
+						const rv = new MMStringValue(myValueCount, columnCount);
+						const rvValues = rv._values;
+						for (let row = 0; row < myValueCount; row++) {
+							const columnArray = myValues[row].split(separator);
+							const copyCount = columnArray.length;
+							for(let column = 0; column < columnCount && column < copyCount; column++) {
+								rvValues[row * columnCount + column] = columnArray[column];
+							}
+							for (let column = copyCount + 1; column < columnCount; column++) {
+								rvValues[row * columnCount + column] = "";
+							}
+						}
+						return rv;
+					}
+				}
+			}
+		}
+		else {
+			// no separator - split into characters
+			if (myValueCount) {
+				const s = myValues[0];
+				const rowCount = s.length;
+				if (rowCount) {
+					const rv = new MMStringValue(rowCount, 1);
+					const rvValues = rv._values;
+					for(let i = 0; i < rowCount; i++) {
+						rvValues[i] = s[i];
+					}
+					return rv;
+				}
+				else {
+					return MMStringValue.scalarValue("");
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @method replace
+	 * @param {MMStringValue} match
+	 * @param {MMStringValue} replace 
+	 */
+	replace(match, replace) {
+		const myValues = this._values;
+		const matchRowCount = match.rowCount;
+		const matchColumnCount = match.columnCount;
+		if ( matchRowCount !== replace.rowCount || matchColumnCount !== replace.columnCount ) {
+			return null;
+		}
+		const myRowCount = this.rowCount;
+		const myColumnCount = this.columnCount;
+		const rv = this.dyadicStringResult(match);
+		const rvValues = rv._values;
+		const rowCount = rv.rowCount;
+		const columnCount = rv.columnCount;
+		const vMatch = match._values;
+		const vReplace = replace._values;
+
+		for (let i = 0; i < rowCount; i++) {
+			const rMine = i % myRowCount;
+			const rMatch = i % matchRowCount;
+			for (let j = 0; j < columnCount; j++) {
+				const cMine = j % myColumnCount;
+				const cMatch = j % matchColumnCount;
+				const s = myValues[rMine * myColumnCount + cMine];
+				const sMatch = new RegExp(vMatch[rMatch * matchColumnCount + cMatch]);
+				const sReplace = vReplace[rMatch * matchColumnCount + cMatch];
+				rvValues[i * columnCount + j] = s.replace(sMatch, sReplace);
+			}
+		}
+
+	return rv;
+	}
+
+	/**
+	 * @method subString
+	 * @param {MMStringValue} from
+	 * @param {MMStringValue} length 
+	 */
+	subString(from, length) {
+		const myValueCount = this.valueCount;
+		const myValues = this._values;
+		const myRowCount = this.rowCount;
+		const myColumnCount = this.columnCount;
+		const rv = new MMStringValue(myRowCount, myColumnCount);
+		const rvValues = rv._values;
+		const fromCount = from.valueCount;
+		const vFrom = from._values;
+		const lengthCount = length ? length.valueCount : 0;
+		const vLength = length ? length._values : null;
+
+		for (let i = 0; i < myValueCount; i++) {
+			let start = Math.floor(vFrom[i % fromCount] + 0.01);
+			let s = myValues[i];
+			let sLength = s.length;
+			if (start > 0) {
+				start--; // make 0 origin
+			}
+			else {
+				start = sLength + start;
+				if (start < 0) {
+					start = 0;
+				}
+			}
+			
+			if (start >= s.length ) {
+				s = '';
+			}
+			else {
+				if ( !lengthCount )
+					sLength -= start;
+				else {
+					const l = Math.floor(vLength[i % lengthCount] + 0.01);
+					if (l < 0 || start + l > sLength) {
+						sLength = sLength - start;
+					}
+					else {
+						sLength = l;
+					}
+				}
+
+				s = s.substring(start, start + sLength);
+			}
+
+			rvValues[i] = s;
+		}
+	
+		return rv;
+}
+
+	/**
+	 * @method find
+	 * @param {MMStringValue} regex 
+	 */
+	find(regex) {
+		const myValueCount = this.valueCount;
+		const myValues = this._values;
+		const rxCount = regex.valueCount;
+		const rxValues = regex._values;
+		const rv = new MMNumberValue(myValueCount, 2);
+		const rvValues = rv._values;
+		for (let i = 0; i < myValueCount; i++ ) {
+			const m = myValues[i].match(rxValues[i % rxCount]);
+			if (m) {
+				rvValues[i * 2] = m.index + 1;
+				rvValues[i * 2 + 1] = m[0].length;
+			}
+			else {
+				rvValues[i * 2] = 0;
+				rvValues[i * 2 + 1] = 0;
+			}
+		}
+		return rv;
+	}
+
+	/**
 	 * @method jsonValue
 	 * @override
 	 * @param {MMUnit} displayUnit
