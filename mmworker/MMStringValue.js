@@ -360,20 +360,35 @@ class MMStringValue extends MMValue {
 	format(value, unit) {
 		const f = (v, format) => {
 			if (format) {
-				format = format.split('.');	// if there is a decimal point, only interested in what is after it
-				format = format[format.length - 1];
+				const parts = format.split('.');	// split on decimal point, if there is one
+				let width = 0;
+				format = parts[parts.length - 1];
+				if (parts.length && parts[0].length) {
+					const widthField = parts[0].replace(/[^\d]+/,'');
+					if (widthField.length) {
+						width = parseInt(widthField);
+					}
+				}
 				let precision = parseInt(format);
 				if (isNaN(precision) || precision < 0 || precision > 36) {
 					precision = 8;
 				}
+				let s = ''
 				switch (format.slice(-1)) {  // last character should be format type
 					case 'f':
-						return v.toFixed(precision);
+						s = v.toFixed(precision);
+						break;
 					case 'e':
-						return v.toExponential(precision);
+						s = v.toExponential(precision);
+						break;
 					case 'x':
-						return `${precision}r` + v.toString(precision);
+						s = `${precision}r` + v.toString(precision);
+						break;
 				}
+				if (width > s.length) {
+					s = s.padStart(width);
+				}
+				return s;
 			}
 			return v.toPrecision(8);
 		}
