@@ -256,7 +256,7 @@ class MMExpression extends MMTool {
 		let json = {}
 		if (value) {
 			let displayUnit = (value instanceof MMTableValue)  ? this.tableUnits : this.displayUnit;
-			if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, this.dimensions)) {
+			if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, value.unitDimensions)) {
 				displayUnit = null;  // display unit is wrong type - ignore and use default
 			}
 			json = value.jsonValue(displayUnit);
