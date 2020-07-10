@@ -1878,6 +1878,176 @@ class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	// time functions
+
+	mktime() {
+		const rv = this.monadicResultWithUnitDimensions([0, 0, 1, 0, 0, 0, 0]);
+		const rvValues = rv._values;
+		const myValueCount = this.valueCount;
+		const myValues = this._values;
+		for (let iValue = 0; iValue < myValueCount; iValue++) {
+			let v = myValues[iValue];
+			const yearSign = Math.sign(v);
+			v *= yearSign;
+			
+			let year = Math.floor(v / 10000.0 + 0.01);
+			v -= year * 10000;
+			year *= yearSign;
+			
+			const month = Math.floor(v / 100.0 + 0.01);
+			v -= month * 100.0;
+			
+			const day = Math.floor(v + .01);
+			v -= day;
+			
+			v *= 1000000.0;
+			
+			const hour = Math.floor(v  / 10000.0 + 0.01);	
+			v -= hour * 10000.0;
+			
+			const minute = Math.floor(v / 100.0 + 0.01);
+			v -= minute * 100.0;
+			
+			const second = Math.floor(v + 0.01);
+
+			const seconds = Date.UTC(year, month - 1, day, hour, minute, second);
+			rvValues[iValue] = seconds/1000;
+		}
+		
+		return rv;
+	}
+
+	date() {
+		const rv = this.monadicResultWithUnitDimensions();
+		const rvValues = rv._values;
+		const myValueCount = this.valueCount;
+		const myValues = this._values;
+		for (let iValue = 0; iValue < myValueCount; iValue++) {
+			const v = myValues[iValue];
+			const date = new Date(v * 1000);
+			const year = date.getUTCFullYear();
+			const yearSign = Math.sign(year);
+			const result = year * yearSign * 10000 +
+				(date.getUTCMonth() + 1) * 100 +
+				date.getUTCDate() +
+				date.getUTCHours() / 100 +
+				date.getUTCMinutes() / 10000 +
+				date.getUTCSeconds() / 1000000;
+			rvValues[iValue] = result * yearSign;
+		}
+		return rv;
+	}
+
+	// 3D transform functions
+
+	static rollForAngle(angle) {
+		const rv = new MMNumberValue(4,4);
+		const v = rv._values;
+		v[0] = Math.cos( angle );	// [1,1] (1 based)
+		v[1] = Math.sin( angle );	// [1,2]
+		v[4] = -Math.sin( angle );	// [2,1]
+		v[5] = Math.cos( angle );	// [2,2]
+		v[10] = 1.0;	// [3,3]
+		v[15] = 1.0;	// [4,4]
+	
+		return rv;	
+	}
+
+	roll() {
+		this.checkUnitDimensionsAreEqualTo(null);
+		if (this.valueCount) {
+			return MMNumberValue.rollForAngle(this._values[0]);
+		}
+		return null;
+	}
+
+	static pitchForAngle(angle) {
+		const rv = new MMNumberValue(4,4);
+		const v = rv._values;
+		v[0] = 1.0;	// [1,1] (1 based)
+		v[5] = Math.cos( angle );	// [2,2]
+		v[6] = Math.sin( angle );	// [2,3]
+		v[9] = -Math.sin( angle );	// [3,2]
+		v[10] = Math.cos( angle );	// [3,3]
+		v[15] = 1.0;	// [4,4]
+		
+		return rv;
+	}
+
+	pitch() {
+		this.checkUnitDimensionsAreEqualTo(null);
+		if (this.valueCount) {
+			return MMNumberValue.pitchForAngle(this._values[0]);
+		}
+		return null;
+	}
+
+	static yawForAngle(angle) {
+		const rv = new MMNumberValue(4,4);
+		const v = rv._values;
+		v[0] = Math.cos( angle );	// [1,1] (1 based)
+		v[2] = -Math.sin( angle );	// [1,3]
+		v[5] = 1.0;	// [2,2]
+		v[8] = Math.sin( angle );	// [3,1]
+		v[10] = Math.cos( angle );	// [3,3]
+		v[15] = 1.0;	// [4,4]
+		
+		return rv;
+		}
+
+		yaw() {
+			this.checkUnitDimensionsAreEqualTo(null);
+			if (this.valueCount) {
+				return MMNumberValue.yawForAngle(this._values[0]);
+			}
+			return null;
+		}
+
+		translate() {
+			if (this.valueCount >= 3) {
+				const rv = new MMNumberValue(4,4, this.unitDimensions);
+				const v = rv._values;
+				const myValues = this._values;
+				v[3] = myValues[ 0 ];	// [1,4] (1 based)
+				v[7] = myValues[ 1 ];	// [2,4]
+				v[11] = myValues[ 2 ];	// [3,4]
+				v[0] = 1.0;	// [1,1]
+				v[5] = 1.0;	// [2,2]
+				v[10] = 1.0;	// [3,3]
+				v[15] = 1.0;	// [4,4]
+
+				return rv;
+			}
+			else {
+				this.exceptionWith('mmcmd:formulaTranslateDimError')				
+			}
+		}
+
+		scale() {
+			let x = 1.0;
+			let y = 1.0;
+			let z = 1.0;
+			const myValues = this._values;
+			if (this.valueCount == 1) {
+				x = y = z = myValues[0];
+			} else if (this.valueCount >= 3) {
+				x = myValues[0];
+				y = myValues[1];
+				z = myValues[2];
+			} else {
+				this.exceptionWith('mmcmd:formulaScaleDimError')				
+			}
+		
+			const rv = new MMNumberValue(4, 4, this.unitDimensions);
+			const v = rv._values;
+			v[0] = x;	// [1,1] (1 based)
+			v[5] = y;	// [2,2]
+			v[10] = z;	// [3,3]
+			v[15] = 1.0;	// [4,4]
+		
+			return rv;
+		}
+	
 	/**
 	 * @method jsonValue
 	 * @override

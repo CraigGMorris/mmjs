@@ -109,6 +109,7 @@ const MMFormulaFactory = (token, formula) => {
 		'ge': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a >= b ? 1 : 0;})},
 		'not': (f) => {return new MMGenericSingleFunction(f, (n) => { return n === 0 ? 1 : 0;})},
 		'and': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a !== 0 && b !== 0 ? 1 : 0;})},
+		'or': (f) => {return new MMOrFunction(f)},
 
 		// matrix functions
 		'append': (f) => {return new MMAppendFunction(f)},
@@ -176,8 +177,17 @@ const MMFormulaFactory = (token, formula) => {
 		'utf8': (f) => {return new MMUtf8Function(f)},
 
 		// time functions
+		'mktime': (f) => {return new MMMktimeFunction(f)},
+		'date': (f) => {return new MMDateFunction(f)},
+		'now': (f) => {return new MMNowFunction(f)},
+		'timezone': (f) => {return new MMTimezoneFunction(f)},
 
 		// 3d transform functions
+		'pitch': (f) => {return new MMPitchFunction(f)},
+		'roll': (f) => {return new MMRollFunction(f)},
+		'yaw': (f) => {return new MMYawFunction(f)},
+		'scale': (f) => {return new MMScaleFunction(f)},
+		'translate': (f) => {return new MMTranslateFunction(f)},
 
 		// miscellaneous functions
 		'abs': (f) => {return new MMAbsFunction(f)},
@@ -1855,6 +1865,98 @@ class MMUnitlessComparisonFunction extends MMComparisonFunction {
 	}
 }
 
+class MMOrFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const count = this.arguments.length;
+		const arg1 = this.arguments[count - 1];
+		const first = arg1.value();
+		const valueCount = first.valueCount;
+		
+		if (valueCount == 1) {
+			for (let i = count; i > 0; i--) {
+				const arg = this.arguments[i - 1];
+				const v = arg.value();
+				if ( v === null ) {
+					return null;
+				}
+				
+				if (v instanceof MMNumberValue) {
+					if (v.valueCount && v.values[0]) {
+						return v;
+					}
+				}
+				else if (v instanceof MMStringValue) {
+					if (v.valueCount && v.values[0].length) {
+						return v;
+					}
+				}
+			}
+			return MMNumberValue.scalarValue(0);
+		}
+		else {
+			// check arguments are compatible
+			const values = [];
+			for (let i = count; i > 0; i--) {
+				const arg = this.arguments[i - 1];
+				const v = arg.value();
+				if (v == null) {
+					return null;
+				}
+				
+				values.push(v);
+				if (v.valueCount != valueCount && v.valueCount != 1) {
+					this.formula.functionError('or','mmcmd:formulaOrSizeMismatch');
+					return null;
+				}
+				
+				if (!(v instanceof MMNumberValue) && !(v instanceof MMStringValue)) {
+					this.formula.functionError('or','mmcmd:formulaOrArgTypeError');
+					return null;					
+				}
+			}
+			
+			const rv = new MMNumberValue(first.rowCount, first.columnCount);
+			const rvValues = rv.values;
+			
+			for (let j = 0; j < valueCount; j++) {
+				// start with false;
+				rvValues[j] = 0.0;
+				for (const v of values ) {
+					if (v instanceof MMNumberValue) {
+						if (v.valueCount == 1) {
+							if (v.values[0] != 0.0) {
+								rvValues[j] = 1.0;
+							}
+						}
+						else {
+							if (v.values[j] != 0.0 ) {
+								rvValues[j] = 1.0;
+							}
+						}
+					} else {  // MMStringValue
+						if (v.valueCount == 1) {
+							if (v.values[0].length) {
+								rvValues[j] = 1.0;
+							}
+						}
+						else {
+							if (v.values[j].length) {
+								rvValues[j] = 1.0;
+							}
+						}
+					}
+				}
+			}
+			return rv;
+		}
+	}
+}
+
+
 // matrix functions
 
 class MMAppendFunction extends MMMultipleArgumentFunction {
@@ -3018,7 +3120,93 @@ class MMUtf8Function extends MMSingleValueFunction {
 }
 // Time functions
 
+class MMMktimeFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.mktime();
+		}
+	}
+}
+
+class MMDateFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.date();
+		}
+	}
+}
+
+class MMNowFunction extends MMFunctionOperator {
+	processArguments(operandStack) {
+		if (operandStack.length > 0 && operandStack[operandStack.length - 1] instanceof MMOperandMarker) {
+			operandStack.pop()
+			return true;
+		}
+		return false;
+	}
+
+	value() {
+		const d = new Date();
+		return MMNumberValue.scalarValue(d.getTime() / 1000, [0,0,1,0,0,0,0]);
+	}
+}
+
+class MMTimezoneFunction extends MMFunctionOperator {
+	processArguments(operandStack) {
+		if (operandStack.length > 0 && operandStack[operandStack.length - 1] instanceof MMOperandMarker) {
+			operandStack.pop()
+			return true;
+		}
+		return false;
+	}
+
+	value() {
+		const n = (new Date()).getTimezoneOffset() * -60;
+		return MMNumberValue.scalarValue(n, [0,0,1,0,0,0,0]);
+	}
+}
+
 // 3D Transform functions
+
+class MMRollFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.roll();
+		}
+	}
+}
+
+class MMPitchFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.pitch();
+		}
+	}
+}
+
+class MMYawFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.yaw();
+		}
+	}
+}
+
+class MMTranslateFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.translate();
+		}
+	}
+}
+
+class MMScaleFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.scale();
+		}
+	}
+}
 
 // Miscellaneous functions
 
