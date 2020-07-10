@@ -40,6 +40,7 @@
 	"formulaSelectRowMismatch": "Select function selector has wrong number of rows",
 	"formulaSyntaxError": "Formula syntax Error\nin: {{path}}\nformula: {{formula}}",
 	"formulaTptestSizeMismatch": "Arguments to tptest must have the same number of values.",
+	"formulaTransformDimError": "Invalid argument dimensions in transform",
 	"formulaTranslateDimError": "Translate argument must be array 3 long",
 	"formulaFmtUnitError": "If present, a third fmt function argument must be a unit",
 	"formulaUnknownFunction": "Unknown function {{f}}",

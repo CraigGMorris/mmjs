@@ -188,6 +188,7 @@ const MMFormulaFactory = (token, formula) => {
 		'yaw': (f) => {return new MMYawFunction(f)},
 		'scale': (f) => {return new MMScaleFunction(f)},
 		'translate': (f) => {return new MMTranslateFunction(f)},
+		'transform': (f) => {return new MMTransformFunction(f)},
 
 		// miscellaneous functions
 		'abs': (f) => {return new MMAbsFunction(f)},
@@ -1953,6 +1954,22 @@ class MMOrFunction extends MMMultipleArgumentFunction {
 			}
 			return rv;
 		}
+	}
+}
+
+class MMTransformFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 1);
+	}
+
+	value() {
+		const trans = this.arguments[1].value();
+		const coords = this.arguments[0].value();
+
+		if (trans instanceof MMNumberValue && coords instanceof MMNumberValue) {
+			return trans.transform(coords);
+		}
+		return null;
 	}
 }
 
