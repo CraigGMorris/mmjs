@@ -171,7 +171,7 @@ export function ExpressionView(props) {
 						return v;
 					}
 					else if (typeof v === 'number') {
-						return v.toPrecision(8);
+						return v.toPrecision(16);
 					}
 					else {
 						return '???';

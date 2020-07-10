@@ -430,11 +430,11 @@ class MMUnit extends MMCommandObject {
 	 * @returns {Number}
 	 */
 	static convertSecondsToDate(seconds, typeFlag) {
-		let date = new Date(seconds * 1000);
+		const date = new Date(seconds * 1000);
 		let result = 0;
-		let year = date.getFullYear();
-		let month = date.getMonth() + 1;
-		let day = date.getDate();
+		let year = date.getUTCFullYear();
+		const month = date.getUTCMonth() + 1;
+		const day = date.getUTCDate();
 		let isBC = false;
 		if (year < 0) {
 			year = -year;
@@ -451,7 +451,7 @@ class MMUnit extends MMCommandObject {
 				result = month * 1000000. + day * 10000.0 + year;
 				break;
 		}
-		result += date.getHours() / 100.0 + date.getMinutes() / 10000. + date.getSeconds() / 1000000.0;
+		result += date.getUTCHours() / 100.0 + date.getUTCMinutes() / 10000. + date.getUTCSeconds() / 1000000.0;
 		if (isBC) {
 			result = -result;
 		}

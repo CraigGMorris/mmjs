@@ -255,7 +255,13 @@ export function TableView(props) {
 						return `${precision}r` + v.toString(precision);
 				}
 			}
-			return v.toPrecision(8);
+			const absV = Math.abs(v);
+			if (absV !== 0 && (absV >= 100000000 || absV < 1e-3)) {
+				return v.toExponential(8)
+			}
+			else {
+				return v.toFixed(4);
+			}
 		}
 		else {
 			return '???';
