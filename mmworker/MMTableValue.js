@@ -33,7 +33,7 @@ class MMTableValueColumn {
 	 * @constructor
 	 * @param {Object} context
 	 * context can have one of two forms
-	 * the first has the name {String}, displayUnit {MMUnit} and value  {MMValue}
+	 * the first has the name {String}, displayUnit {String} and value  {MMValue}
 	 * the second has rowNumbers {MMNumberValue} and column {MMTableValueColumn} amd
 	 * creates a copy of column containing just the rows listed in rowNumbers 
 	 */
@@ -78,20 +78,23 @@ class MMTableValueColumn {
 			this.format = column.format;
 			const rowNumbers = context.rowNumbers;
 			const nRows = rowNumbers.valueCount;
+			const rowNValues = rowNumbers.values;
+			const columnValues = column.value.values;
+			const columnValueCount = column.value.valueCount;
 			// if rowNumbers is scalar 0, then the whole column is used
-			if (nRows === 1 && rowNumbers.values[0] ===  0) {
+			if (nRows === 1 && rowNValues[0] ===  0) {
 				this._value = column.value;
 			}
 			else if (column.isString) {
 				let sValue = new MMStringValue(nRows, 1);
 				for (let i = 1; i <= nRows; i++) {
-					let rowIndex = rowNumbers[i - 1] - 1;
+					let rowIndex = rowNValues[i - 1] - 1;
 					// if rowIndex is negative, then count back from the end
 					if (rowIndex < 0) {
-						rowIndex = column.value.valueCount + rowIndex +  1;
+						rowIndex = columnValueCount + rowIndex +  1;
 					}
-					if (rowIndex < column.value.valueCount) {
-						sValue.setValue(column.value[rowIndex], i, 1);
+					if (rowIndex < columnValueCount) {
+						sValue.setValue(columnValues[rowIndex], i, 1);
 					}
 				}
 				this._value = sValue;
@@ -107,13 +110,13 @@ class MMTableValueColumn {
 				}
 				let nValue = new MMNumberValue(nRows, 1, dimensions);
 				for (let i = 1; i <= nRows; i++) {
-					let rowIndex = rowNumbers.values[i - 1] - 1;
+					let rowIndex = rowNValues[i - 1] - 1;
 					// if rowIndex is negative, then count back from the end
 					if (rowIndex < 0) {
-						rowIndex = column.value.valueCount + rowIndex +  1;
+						rowIndex = columnValueCount + rowIndex +  1;
 					}
-					if (rowIndex < column.value.valueCount) {
-						nValue.setValue(column.value.values[rowIndex], i, 1);
+					if (rowIndex < columnValueCount) {
+						nValue.setValue(columnValues[rowIndex], i, 1);
 					}
 				}
 				this._value = nValue;
