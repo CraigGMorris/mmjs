@@ -228,8 +228,13 @@ export function MMApp(props) {
 		 * @param {String} msg
 		 */
 		const warningAlert = (msg) => {
-			let s = `${props.t('mmcmd:warning')}\n${msg}`;
-			alert(s);
+			// avoid multiple alerts
+			const t = new Date().getTime();
+			if (t - lastErrorTime > 1000) {
+				const s = `${props.t('mmcmd:alert')}\n\n${msg}`;
+				alert(s);
+				lastErrorTime = new Date().getTime();
+			}
 		}
 
 		commandCallBacks.set(callBackId, callBack);
