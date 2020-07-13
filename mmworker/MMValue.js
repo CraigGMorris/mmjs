@@ -134,6 +134,38 @@ class MMValue {
 		return rv;
 	}
 
+		/** @method iSort
+	 * @returns MMNumberValue - contains indexes sorted by first column values;
+	 */
+	iSort() {
+		const values = [];
+		const indicies = [];
+		const columnCount = this.columnCount;
+		const myValues = this._values;
+		const rowCount = this.rowCount;
+		for (let i = 0; i < rowCount; i++) {
+			indicies.push(i);
+			values.push(myValues[i*columnCount]);  // first column
+		}
+		indicies.sort((a,b) => {
+			const va = values[a];
+			const vb = values[b];
+			if (va < vb) {
+				return -1;
+			}
+			if (va > vb) {
+				return 1;
+			}
+			return 0;
+		});
+		const rv = new MMNumberValue(rowCount, 1);
+		const rvValues = rv._values;
+		for (let i = 0; i < rowCount; i++) {
+			rvValues[i] = indicies[i] + 1;
+		}
+		return rv;
+	}
+
 	/**
 	 * @method stringWithUnit
 	 * @param {MMUnit} unit - optional

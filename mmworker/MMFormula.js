@@ -192,9 +192,17 @@ const MMFormulaFactory = (token, formula) => {
 
 		// miscellaneous functions
 		'abs': (f) => {return new MMAbsFunction(f)},
-		'numeric': (f) => {return new MMNumericFunction(f)},
+		'alert': (f) => {return new MMAlertFunction(f)},
+		'baseunit': (f) => {return new MMBaseUnitFunction(f)},
+		'defunit': (f) => {return new MMDefaultUnitFunction(f)},
+		'eval': (f) => {return new MMEvalFunction(f)},
+		'evaljs': (f) => {return new MMEvalJSFunction(f)},
 		'int': (f) => {return new MMGenericSingleFunction(f, Math.trunc)},
+		'numeric': (f) => {return new MMNumericFunction(f)},
 		'rand': (f) => {return new MMRandFunction(f)},
+		'sign': (f) => {return new MMGenericSingleFunction(f, Math.sign)},
+		'isort': (f) => {return new MMISortFunction(f)},
+		'sort': (f) => {return new MMSortFunction(f)},
 	}
 
 	let op;
@@ -3235,6 +3243,248 @@ class MMAbsFunction extends MMSingleValueFunction {
 	}
 }
 
+class MMAlertFunction extends MMSingleValueFunction {
+	operationOnString(v) {
+		if (v.valueCount > 0) {
+			const msg = (v.valueCount > 1) ? v._values[0] + '\n\n' + v._values[1] : v._values[0];
+			this.formula.setWarning('mmcmd:alertMessage', {msg: msg});
+		}
+		else {
+			this.formula.setWarning('mmcmd:emptyAlert')
+		}
+	}
+}
+
+class MMBaseUnitFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		return MMNumberValue.scalarValue(1, v.unitDimensions);
+	}
+}
+
+class MMDefaultUnitFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		const name = v.defaultUnit.name;
+		return MMStringValue.scalarValue(name);
+	}
+}
+
+class MMEvalFunction extends MMSingleValueFunction {
+	constructor(f) {
+		super(f);
+		this.evalFormula = new MMFormula('evalFormula', this.formula.parent);
+	}
+
+	operationOnString(s) {
+		if (s.valueCount) {
+			this.evalFormula.formula = s._values[0];
+			return this.evalFormula.value();
+		}
+	}
+}
+
+class MMEvalJSFunction extends MMMultipleArgumentFunction {
+	constructor(f) {
+		super(f);
+		this.cachedCode = null;
+		this.jsFunction = null;
+	}
+
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 1);
+	}
+
+	value() {
+		const makeValue = (element, rowCount, columnCount) => {
+			const values = element.values;
+			const unitName = element.unit;
+			let unit = null;
+			let isStringValue = false;
+			if (typeof unitName === 'string') {
+				if (unitName === 'string') {
+					isStringValue = true;
+				}
+			}
+			let rv;
+			if (isStringValue) {
+				rv = new MMStringValue(rowCount,columnCount);
+			}
+			else {
+				unit = theMMSession.unitSystem.unitNamed(unitName);
+				const unitDimensions = unit ? unit.dimensions : null;
+				rv = new MMNumberValue(rowCount, columnCount, unitDimensions);
+			}
+			const rvValues = rv.values;
+			const valueCount = rowCount * columnCount;
+			for (let i = 0; i < valueCount; i++) {
+				let v = values[i];
+				if (isStringValue) {
+					if (typeof v === 'string') {
+						rvValues[i] = v;
+					}
+				}
+				else if (typeof v === 'number') {
+					if (unit) {
+						v = unit.convertToBase(v);
+					}
+					rvValues[i] = v;
+				}
+			}
+			return rv;
+		}
+		const argCount = this.arguments.length;
+		const codeValue = this.arguments[argCount - 1].value();
+		if (codeValue instanceof MMStringValue && codeValue.valueCount) {
+			const code = codeValue.values[0];
+			if (code.length) {
+				const evalArgs = [];
+				for (let argNo = argCount - 2; argNo >= 0; argNo--) {
+					const argValue = this.arguments[argNo].value();
+					if (argValue === null) {
+						return null;
+					}
+					if (argValue instanceof MMStringValue) {
+						evalArgs.push({unit: 'string', columns: argValue.columnCount, values: argValue.values});
+					}
+					else if (argValue instanceof MMNumberValue) {
+						const baseUnit = theMMSession.unitSystem.baseUnitWithDimensions(argValue.unitDimensions);
+						evalArgs.push({unit: baseUnit.name, columns: argValue.columnCount, values: argValue.values});
+					}
+					else if (argValue instanceof MMTableValue) {
+						const columnCount = argValue.columnCount;
+						const tableColumns = [];
+						for (let columnNumber = 0; columnNumber < columnCount; columnNumber++) {
+							const tableColumn = argValue.columns[columnNumber];
+							const value = tableColumn.value;
+							if (value instanceof MMStringValue) {
+								tableColumns.push({name: tableColumn.name, unit: 'string', values: value._values});
+							}
+							else {
+								let unitName = tableColumn.displayUnit.name;
+								const unit = theMMSession.unitSystem.unitNamed(unitName);
+								const valueCount = value.valueCount;
+								const values = [];
+								const baseValues = value.values;
+								for (let i = 0; i < valueCount; i++) {
+									values.push(unit.convertFromBase(baseValues[i]));
+								}
+								tableColumns.push({name: tableColumn.name, unit: unitName, values: values});
+							}
+						}
+						evalArgs.push(tableColumns);
+					}
+					else {
+						this.formula.setError('mmcmd:evaljsBadArg', {
+							argNo: argCount - argNo,
+							formula: this.formula.truncatedFormula(),
+							path: this.formula.parent.getPath()
+						});
+						return null;
+					}
+				}
+
+				if (!this.jsFunction || this.cachedCode !== code) {
+					this.jsFunction = new Function('"use strict";const mm_args = arguments[0];' + code);
+					this.cachedCode = code;
+					console.log('compiled: ' + code);
+				}
+				const jsReturn = this.jsFunction(evalArgs);
+				if (!jsReturn) {
+					return null;
+				}
+				if (typeof jsReturn === "string") {
+					return MMStringValue.scalarValue(jsReturn);
+				}
+				else if (typeof jsReturn === 'number') {
+					return MMNumberValue.scalarValue(jsReturn);
+				}
+				else if (jsReturn.buffer) {  // if it has buffer, assume float64array
+					if (jsReturn.length) {
+						return MMNumberValue.numberArrayValue(jsReturn);
+					}
+				}
+				else if (Array.isArray(jsReturn)) {
+					if (jsReturn.length) {
+						if (typeof jsReturn[0] === 'number') {
+							return MMNumberValue.numberArrayValue(jsReturn);
+						}
+						if (typeof jsReturn[0] === 'string') {
+							return MMStringValue.stringArrayValue(jsReturn);
+						}
+						if (typeof jsReturn[0] === 'object') {
+							const count = jsReturn.length;
+							const columns = [];
+							let rowCount = 0;	// will fill in from first column values
+							for (let i = 0; i < count; i++) {
+								const element = jsReturn[i];
+								if (typeof element === 'object') {
+									if (!(typeof element.name === 'string')) {
+										this.formula.setError('mmcmd:evaljsNoColumnName', {
+											colNo: i + 1,
+											formula: this.formula.truncatedFormula(),
+											path: this.formula.parent.getPath()
+										});
+										return null;
+									}
+									const name = element.name;
+									if (!Array.isArray(element.values)) {
+										this.formula.setError('mmcmd:evaljsNoValues', {
+											colNo: i + 1,
+											formula: this.formula.truncatedFormula(),
+											path: this.formula.parent.getPath()
+										});
+										return null;
+									}
+									const values = element.values;
+									if (i === 0) {
+										rowCount = values.length;
+									}
+									else if (rowCount !== values.length) {
+										this.formula.setError('mmcmd:evaljsUnequalRowCount', {
+											formula: this.formula.truncatedFormula(),
+											path: this.formula.parent.getPath()
+										});
+										return null;
+									}
+									const columnValue = makeValue(element, rowCount, 1);
+									const tableColumn = new MMTableValueColumn({
+										name: name,
+										displayUnit: element.unit,
+										value: columnValue
+									});
+									columns.push(tableColumn);
+								}
+							}
+							return new MMTableValue({columns: columns});
+						}
+					}
+				}
+				else if (typeof jsReturn === 'object') {
+					const values = jsReturn.values;
+					if (!Array.isArray(values)) {
+						this.formula.setError('mmcmd:evaljsNoObjValues', {
+							formula: this.formula.truncatedFormula(),
+							path: this.formula.parent.getPath()
+						});
+						return null;
+					}
+					let columnCount = (typeof jsReturn.columns === 'number') ? jsReturn.columns : 1;
+					const valueCount = values.length;
+					if (valueCount % columnCount) {
+						this.formula.setError('mmcmd:evaljsBadColumnCount', {
+							formula: this.formula.truncatedFormula(),
+							columnCount: columnCount,
+							valueCount: valueCount,
+							path: this.formula.parent.getPath()
+						});
+						return null;
+					}
+					return makeValue(jsReturn, valueCount/columnCount, columnCount);
+				}
+			}
+		}
+	}
+}
+
 class MMNumericFunction extends MMSingleValueFunction {
 	/**
 	 * @method value
@@ -3281,6 +3531,57 @@ class MMRandFunction extends MMMultipleArgumentFunction {
 			vRv[i] = Math.random();
 		}
 		return rv;
+	}
+}
+
+class MMISortFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.iSort();
+		}
+	}
+
+	operationOnString(v) {
+		if (v) {
+			return v.iSort();
+		}
+	}
+
+	operationOnTable(v) {
+		if (v && v.columnCount) {
+			const column = v.columns[0];
+			return column.value.iSort();
+		}
+	}
+}
+
+class MMSortFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			const indicies = v.iSort();
+			if (indicies) {
+				return v.valueForIndexRowColumn(indicies)
+			}
+		}
+	}
+
+	operationOnString(v) {
+		if (v) {
+			const indicies = v.iSort();
+			if (indicies) {
+				return v.valueForIndexRowColumn(indicies)
+			}
+		}
+	}
+
+	operationOnTable(v) {
+		if (v && v.columnCount) {
+			const column = v.columns[0];
+			const indicies = column.value.iSort();
+			if (indicies) {
+				return v.valueForIndexRowColumn(indicies)
+			}
+		}
 	}
 }
 
