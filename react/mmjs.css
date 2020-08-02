@@ -78,6 +78,10 @@ input:disabled {
 	background-color: var(--input--disabled-bgcolor);
 }
 
+input[type=checkbox] {
+	height: 20px;
+}
+
 textarea {
 	overflow: auto;
 	text-align: left;
@@ -157,7 +161,7 @@ a:hover {
 
 .checkbox-and-label {
 	display: grid;
-	grid-template-columns: 30px 1fr;
+	grid-template-columns: 50px 1fr;
 	grid-template-rows: 1fr;
 }
 
@@ -322,20 +326,13 @@ a:hover {
 
 #expression__options {
 	grid-area: options;
-	display: grid;
-	grid-template-columns: 1fr 8em;
-	grid-template-rows: 1fr;
-	grid-template-areas: "toolbar in-out";
-	grid-gap: 5px;
-	box-sizing: border-box;
 }
 
 #expression__in-out-boxes {
 	display: grid;
-	grid-area: in-out;
-	grid-template-columns: 4em 4em;
+	grid-template-columns: 1fr 1fr;
 	grid-template-rows: 1fr;
-	grid-template-areas: "is-input is-output tool-bar";
+	grid-template-areas: "is-input is-output";
 }
 
 #expression__is-input {
@@ -880,6 +877,65 @@ a:hover {
 .sessions__entry {
 	display: grid;
 	grid-template-columns: 1fr 30px;
+}
+
+#solver__button-fields {
+	width: 100%;
+	display: grid;
+	grid-template-rows: var(--input--height);
+	grid-template-columns: 1fr 1fr 1fr;
+	margin-top: 10px;
+	column-gap: 10px;
+}
+
+#solver__function-list {
+	overflow: auto;
+	height: calc(var(--info-height) - 145px);
+	border: solid 1px;
+	margin-top: 5px;
+}
+
+.solver__function {
+	display: grid;
+	grid-template-columns: 30px 1fr;
+	grid-template-rows: var(--input--height) var(--input--height);
+	grid-template-areas: "flabel formula"
+		"clabel count";
+	border: solid 1px;
+	margin-bottom: 5px;
+	padding: 5px;
+}
+
+.solver__formula-label {
+	grid-area: flabel;
+}
+
+.solver__func-formula {
+	grid-area: formula;
+}
+
+.solver__count-label {
+	grid-area: clabel;
+}
+
+.solver__count-formula {
+	grid-area: count;
+}
+
+.solver__fx-and-rm {
+	display: grid;
+	grid-template-columns: 1fr 20px;
+}
+
+.solver__delete-button {
+	color: red;
+}
+
+#solver__max-fields {
+	display: grid;
+	grid-template-rows: var(--input--height);
+	grid-template-columns: 1fr 1fr;
+	margin-top: 5px;
 }
 
 #tableview__value-svg {

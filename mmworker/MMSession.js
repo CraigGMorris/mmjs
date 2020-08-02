@@ -13,6 +13,7 @@
 	MMCommandMessage:readonly
 	MMMatrix:readonly
 	MMDataTable:readonly
+	MMSolver:readonly
 	theMMSession:readonly
 	MMToolValue:readonly
 */
@@ -324,6 +325,7 @@ class MMSession extends MMCommandParent {
 	 */
 	async loadSession(path) {
 		try {
+			this.isLoadingCase = true;
 			let result = await this.storage.load(path);
 			new MMUnitSystem(this);  // clear any user units and sets
 			this.initializeFromJson(result, path);
@@ -332,6 +334,9 @@ class MMSession extends MMCommandParent {
 		catch(e) {
 			const msg = (typeof e === 'string') ? e : e.message;
 			this.setError('mmcmd:sessionLoadFailed', {path: path, error: msg});
+		}
+		finally {
+			this.isLoadingCase = false;
 		}
 	}
 
@@ -1098,6 +1103,10 @@ const MMToolTypes = {
 		factory: (name, parent) => {return new MMDataTable(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:dataTableDisplayName'),
 	},
+	"Solver": {
+		factory: (name, parent) => {return new MMSolver(name, parent)},
+		displayName: new MMCommandMessage('mmcmd:solverDisplayName'),
+	}
 };
 
 /**

@@ -523,6 +523,7 @@ class MMDataTable extends MMTool {
 		const parts = command.args.split(/\s/);
 		if (parts.length !== 2) {
 			this.setError('mmcmd:?tableMoveColumn', {path: this.getPath(), name: name});
+			return;
 		}
 		const fromNumber = parseInt(parts[0]);
 		const toNumber = parseInt(parts[1]);

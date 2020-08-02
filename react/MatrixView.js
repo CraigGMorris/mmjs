@@ -10,7 +10,7 @@ const useState = React.useState;
 const useEffect = React.useEffect;
 
 /**
- * Enum for data table display types.
+ * Enum for matrix display types.
  * @readonly
  * @enum {string}
  */

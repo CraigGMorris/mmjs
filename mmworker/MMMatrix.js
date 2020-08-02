@@ -25,9 +25,9 @@ const MatrixValueState = Object.freeze({
 
 
 /**
- * @class MatrixInputValue
+ * @class MMMatrixInputValue
  */
-class MatrixInputValue {
+class MMMatrixInputValue {
 	constructor(row, column) {
 		this.row = row;
 		this.column = column;
@@ -549,7 +549,7 @@ class MMMatrix extends MMTool {
 		let inputValue = this.cellInputs[key];
 		if (inputString && inputString.length) {
 			if (!inputValue) {
-				inputValue = new MatrixInputValue(row, column);
+				inputValue = new MMMatrixInputValue(row, column);
 				this.cellInputs[key] = inputValue;
 			}
 			if (inputValue.state === MatrixValueState.error || inputValue.input !== inputString) {
@@ -756,15 +756,16 @@ class MMMatrix extends MMTool {
 				const column = Number(indexStrings[1]);
 				return this.numberValue(row, column);
 			}
-			return null;
+			return false;
 		}
 
 		if (this.isCalculating) {
 			rv = getCellValue(lcDescription);
 			if (rv) {
 				this.addRequestor(requestor);
+				return rv;
 			}
-			return rv;
+			return null;
 		}
 		else if (!this.value) {
 			this.calculateValue();
@@ -794,11 +795,15 @@ class MMMatrix extends MMTool {
 		}
 		else {
 			rv = getCellValue(lcDescription);
+			if (rv === false) {
+				return super.valueDescribedBy(lcDescription, requestor);
+			}
 		}
 
 		if (rv) {
 			this.addRequestor(requestor)
 		}
+
 		return rv;
 	}
 }

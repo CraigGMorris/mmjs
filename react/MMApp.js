@@ -10,6 +10,7 @@ import {ModelView} from './ModelView.js';
 import {ExpressionView} from './ExpressionView.js';
 import {MatrixView} from './MatrixView.js';
 import {DataTableView} from './DataTableView.js';
+import {SolverView} from './SolverView.js';
 import {FormulaEditor} from './FormulaView.js';
 
 const e = React.createElement;
@@ -118,6 +119,7 @@ export function MMApp(props) {
 		'Expression': ExpressionView,
 		'Matrix': MatrixView,
 		'DataTable': DataTableView,
+		'Solver': SolverView
 	}
 
 	// information need to generate a console view component
