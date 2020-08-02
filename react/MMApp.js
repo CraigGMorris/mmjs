@@ -296,6 +296,7 @@ export function MMApp(props) {
 			}
 			if (results.id) {
 				const savedCallBack = commandCallBacks.get(results.id);
+				// console.log(`cmd call back for ${results[0].expression}`);
 				commandCallBacks.delete(results.id);
 				if (savedCallBack) {
 					savedCallBack(results);
@@ -332,6 +333,7 @@ export function MMApp(props) {
 					top.updateResults = cmds;
 					setViewInfo({...top});
 					updateDiagram(rescaleDiagram);
+					doCommand('/ autosave');
 				});
 			}
 			else {

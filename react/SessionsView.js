@@ -265,33 +265,35 @@ export class SessionsView extends React.Component {
 				sessionPaths = [];
 			}
 			for (let path of sessionPaths) {
-				let selectedClass = (path === currentPath) ? ' entry--selected' : '';
-				let cmp = e(
-					'div', {
-						className: 'sessions__entry' + selectedClass,
-						key: key++,
-					},
-					e(
+				if (!path.startsWith('(')) {  // skip (autosave) and perhaps others
+					let selectedClass = (path === currentPath) ? ' entry--selected' : '';
+					let cmp = e(
 						'div', {
-							className: 'sessions__entry-name',
-							value: path,
-							onClick: loadSession,
+							className: 'sessions__entry' + selectedClass,
+							key: key++,
 						},
-						path
-					),
-					e(
-						'div', {
-							className: 'sessions__entry-menu',
-							value: path,
-							onClick: e => {
-								let path = e.target.getAttribute('value');
-								this.setState({menuPath: path});
-							}
-						},
-						'\u2699'
+						e(
+							'div', {
+								className: 'sessions__entry-name',
+								value: path,
+								onClick: loadSession,
+							},
+							path
+						),
+						e(
+							'div', {
+								className: 'sessions__entry-menu',
+								value: path,
+								onClick: e => {
+									let path = e.target.getAttribute('value');
+									this.setState({menuPath: path});
+								}
+							},
+							'\u2699'
+						)
 					)
-				)
-				sessionList.push(cmp);
+					sessionList.push(cmp);
+				}
 			}
 			let listSection = e(
 				'div', {

@@ -206,7 +206,8 @@ class MMSession extends MMCommandParent {
 		// construct the unit system - it will add itself to my children
 		new MMUnitSystem(this);
 		this.storage = new MMSessionStorage();
-		this.newSession();
+		this.autoSavePath = '(autoSaved)';
+		this.loadAutoSaved();
 	}
 
 	/** @method newSession
@@ -267,6 +268,9 @@ class MMSession extends MMCommandParent {
 		if (storePath) {
 			this.storePath = storePath;
 		}
+		else if (saveObject.CaseName) {
+			this.storePath = saveObject.CaseName;
+		}
 		this.processor.defaultObject = rootModel;
 	}
 
@@ -319,6 +323,28 @@ class MMSession extends MMCommandParent {
 		}
 	}
 
+	/** @method autoSaveSession
+	 * save the session in persistent storage as _autosave
+	 * returns the autosave path
+	 */
+	async autoSaveSession() {
+		if (!this.isLoadingCase) {
+			const caseJson = this.sessionAsJson();
+			// console.log(`autosave ${this.storePath}`);
+			try {
+				await this.storage.save(this.autoSavePath, caseJson);
+			}
+			catch(e) {
+				const msg = (typeof e === 'string') ? e : e.message;
+				this.setError('mmcmd:sessionSaveFailed', {path: this.autoSavePath, error: msg});
+			}
+			return this.autoSavePath;
+		}
+		else {
+			return 'skipped';
+		}
+	}
+
 	/** @method loadSession
 	 * load the session from persistent storage
 	 * @param {String} path - the path to load from
@@ -334,6 +360,23 @@ class MMSession extends MMCommandParent {
 		catch(e) {
 			const msg = (typeof e === 'string') ? e : e.message;
 			this.setError('mmcmd:sessionLoadFailed', {path: path, error: msg});
+		}
+		finally {
+			this.isLoadingCase = false;
+		}
+	}
+
+	/** @method loadAutoSaved
+	 * load the autosaved session from persistent storage
+	 */
+	async loadAutoSaved() {
+		try {
+			this.isLoadingCase = true;
+			this.newSession();
+			let result = await this.storage.load(this.autoSavePath);
+			new MMUnitSystem(this);  // clear any user units and sets
+			this.initializeFromJson(result);
+			return result;
 		}
 		finally {
 			this.isLoadingCase = false;
@@ -399,6 +442,7 @@ class MMSession extends MMCommandParent {
 		verbs['listsessions'] = this.listSessionsCommand;
 		verbs['new'] = this.newSessionCommand;
 		verbs['save'] =  this.saveSessionCommand;
+		verbs['autosave'] = this.autoSaveCommand;
 		verbs['load'] = this.loadSessionCommand;
 		verbs['copy'] = this.copySessionCommand;
 		verbs['delete'] = this.deleteSessionCommand;
@@ -503,6 +547,19 @@ class MMSession extends MMCommandParent {
 		}
 		await this.saveSession(command.args);
 		command.results = `copied to: ${this.storePath}`;
+	}
+
+	/**
+	 * @method autoSaveCommand
+	 * verb
+	 */
+	async autoSaveCommand(command) {
+		if (!indexedDB) {
+			this.setError('mmcmd:noIndexedDB', {});
+			return;
+		}
+		const path = await this.autoSaveSession();
+		command.results = `copied to: ${path}`;
 	}
 
 	/**
