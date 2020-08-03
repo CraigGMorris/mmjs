@@ -87,7 +87,9 @@ export class Diagram extends React.Component {
 		this.onPointerMove = this.onPointerMove.bind(this);
 		this.onWheel = this.onWheel.bind(this);
 
-		this.getModelInfo();
+		this.getModelInfo(true);
+		// kludge to get a deferred call so a restored auto saved session is rescaled
+		this.doCommand('', () => { this.getModelInfo(true)});
 	}
 
 	/**
