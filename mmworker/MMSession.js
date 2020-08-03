@@ -374,9 +374,14 @@ class MMSession extends MMCommandParent {
 			this.isLoadingCase = true;
 			this.newSession();
 			let result = await this.storage.load(this.autoSavePath);
-			new MMUnitSystem(this);  // clear any user units and sets
-			this.initializeFromJson(result);
+			if (result) {
+				new MMUnitSystem(this);  // clear any user units and sets
+				this.initializeFromJson(result);
+			}
 			return result;
+		}
+		catch(e) {
+			this.newSession();
 		}
 		finally {
 			this.isLoadingCase = false;
