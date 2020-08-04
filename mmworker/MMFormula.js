@@ -3385,7 +3385,7 @@ class MMEvalJSFunction extends MMMultipleArgumentFunction {
 				if (!this.jsFunction || this.cachedCode !== code) {
 					this.jsFunction = new Function('"use strict";const mm_args = arguments[0];' + code);
 					this.cachedCode = code;
-					console.log('compiled: ' + code);
+					// console.log('compiled: ' + code);
 				}
 				const jsReturn = this.jsFunction(evalArgs);
 				if (!jsReturn) {
@@ -3705,13 +3705,7 @@ class MMFormula extends MMCommandObject {
 	 */
 	refreshCommand(command) {
 		this.parent.forgetCalculated();
-		const value = this.value();
-		if (value) {
-			command.results = value.jsonValue();
-		}
-		else {
-			command.results = 'unknown';
-		}
+		command.results = 'forgotten';
 	}
 
 	/**
