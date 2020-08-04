@@ -359,6 +359,27 @@ class MMMatrix extends MMTool {
 	}
 
 	/**
+	 * @method inputSources
+	 * @override
+	 * @returns {Set} contains tools referenced by this tool
+	 */
+	inputSources() {
+		let sources = super.inputSources();
+		this.columnCountFormula.addInputSourcesToSet(sources);
+		this.rowCountFormula.addInputSourcesToSet(sources);
+		for (const key in this.cellInputs) {
+			const input = this.cellInputs[key];
+			const formula = input.formula;
+			if (formula) {
+				formula.addInputSourcesToSet(sources);
+			}
+		}
+	
+		return sources;
+	}
+
+
+	/**
 	 * @method saveObject
 	 * @override
 	 * @returns {Object} object that can be converted to json for save file
