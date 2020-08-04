@@ -1433,3 +1433,8 @@ a:hover {
 .value-picker__selection {
 	color: var(--link--color);
 }
+
+#worker__status-message {
+	text-align: center;
+	margin-top: 5px;
+}

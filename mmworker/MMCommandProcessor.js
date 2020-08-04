@@ -156,6 +156,7 @@ class MMCommandProcessor {
 		let results = [];
 		if (typeof commands === 'object') {
 			results.id = commands.id;
+			results.timeoutId = commands.timeoutId;
 			commands = commands.cmdString;
 		}
 		try {

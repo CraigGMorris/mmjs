@@ -139,6 +139,7 @@ export function MMApp(props) {
 	const [allow2Pane, setAllow2Pane] = useState(twoPane);
 	const [viewType, setViewType] = useState(twoPane ? ViewType.twoPanes : ViewType.diagram);
 	const [viewInfo, setViewInfo] = useState(initialInfo);
+	const [statusMessage, setStatusMessage] = useState('');
 
 	const diagramRef = React.useRef(null);
 
@@ -182,7 +183,7 @@ export function MMApp(props) {
 				dgmStateStack.push(null);
 			}
 		}
-		console.log(`new view type ${newType}`);
+		// console.log(`new view type ${newType}`);
 		setViewType(newType);
 	}, [viewType]);
 
@@ -239,13 +240,22 @@ export function MMApp(props) {
 			}
 		}
 
+		// console.log(`cmd ${callBackId} ${cmd}`);
 		commandCallBacks.set(callBackId, callBack);
-		let cmdObject = {cmdString: cmd, id: callBackId++};
+		const timeoutId = setTimeout(() => {
+				setStatusMessage(props.t('mmcmd:calculating'));
+		}, 200);
+		let cmdObject = {cmdString: cmd, id: callBackId++, timeoutId: timeoutId};
 		pipe.doCommand(cmdObject, (results) => {
+			clearTimeout(results.timeoutId);
 			let error = results.error;
 			let warning;
 			if (!error) {
 				for (let result of results) {
+					if (result.verb && result.verb === 'status') {
+						setStatusMessage(result.results);
+						continue;
+					}
 					if (result.error) {
 						error = result.error;
 						break;
@@ -295,8 +305,9 @@ export function MMApp(props) {
 				}
 			}
 			if (results.id) {
+				setStatusMessage('');
 				const savedCallBack = commandCallBacks.get(results.id);
-				// console.log(`cmd call back for ${results[0].expression}`);
+				// console.log(`cmd call back ${results.id} ${results.length ? results[0].expression : 'empty'}`);
 				commandCallBacks.delete(results.id);
 				if (savedCallBack) {
 					savedCallBack(results);
@@ -650,114 +661,125 @@ export function MMApp(props) {
 		expandText = t('react:dgmButtonInfo');
 	}
 
-	let viewKeys = new Set(infoStack.map(v => v.viewKey));		
-	const infoTools = e(
-		'div', {
-			id: 'info-tools',
-		},
-		e(
-			'button', {
-				id:'info-tools__expand-button',
-				className: 'info-tools__button',
-				onClick: () => {
-					switch (viewType) {
-						case ViewType.twoPanes:
-							setStateViewType(ViewType.info);
-							break;
-
-						case ViewType.diagram:
-							setStateViewType(allow2Pane ? ViewType.twoPanes : ViewType.info);
-							break;
-
-						case ViewType.info:
-							setStateViewType(allow2Pane ? ViewType.twoPanes : ViewType.diagram);
-							break;
-						default:
-							break;
-					}
-				}
+	let viewKeys = new Set(infoStack.map(v => v.viewKey));
+	let infoTools;
+	if (statusMessage && statusMessage.length) {
+		infoTools = e(
+			'div', {
+				id: 'worker__status-message'
 			},
-			expandText
-		),
-		e('button', {
-			id:'info-tools__undo-button',
-			className: 'info-tools__button',
-			disabled: !undoStack.length,
-			onClick: () => {
-				let undo = undoStack.pop();
-				if (undo) {
-					if (undo.startsWith('__blob__')) {
-						undo = undo.replace(/^__blob__/,'__blob__undo ');
-					}
-					else {
-						undo = 'undo ' + undo;
-					}
-					doCommand(undo, () => {
-						updateView(infoStack.length - 1);
-						updateDiagram();
-					});
-				}	
-			}
+			statusMessage
+		);
+	}
+	else {
+		infoTools = e(
+			'div', {
+				id: 'info-tools',
 			},
-			t('react:dgmButtonUndo')
-		),
-		e(
+			e(
 				'button', {
-				id:'info-tools__redo-button',
+					id:'info-tools__expand-button',
+					className: 'info-tools__button',
+					onClick: () => {
+						switch (viewType) {
+							case ViewType.twoPanes:
+								setStateViewType(ViewType.info);
+								break;
+
+							case ViewType.diagram:
+								setStateViewType(allow2Pane ? ViewType.twoPanes : ViewType.info);
+								break;
+
+							case ViewType.info:
+								setStateViewType(allow2Pane ? ViewType.twoPanes : ViewType.diagram);
+								break;
+							default:
+								break;
+						}
+					}
+				},
+				expandText
+			),
+			e('button', {
+				id:'info-tools__undo-button',
 				className: 'info-tools__button',
-				disabled: !redoStack.length,
+				disabled: !undoStack.length,
 				onClick: () => {
-					let redo = redoStack.pop();
-					if (redo) {
-						if (redo.startsWith('__blob__')) {
-							redo = redo.replace(/^__blob__/,'__blob__redo ');
+					let undo = undoStack.pop();
+					if (undo) {
+						if (undo.startsWith('__blob__')) {
+							undo = undo.replace(/^__blob__/,'__blob__undo ');
 						}
 						else {
-							redo = 'redo ' + redo;
+							undo = 'undo ' + undo;
 						}
-						doCommand(redo, () => {
+						doCommand(undo, () => {
 							updateView(infoStack.length - 1);
 							updateDiagram();
 						});
+					}	
+				}
+				},
+				t('react:dgmButtonUndo')
+			),
+			e(
+					'button', {
+					id:'info-tools__redo-button',
+					className: 'info-tools__button',
+					disabled: !redoStack.length,
+					onClick: () => {
+						let redo = redoStack.pop();
+						if (redo) {
+							if (redo.startsWith('__blob__')) {
+								redo = redo.replace(/^__blob__/,'__blob__redo ');
+							}
+							else {
+								redo = 'redo ' + redo;
+							}
+							doCommand(redo, () => {
+								updateView(infoStack.length - 1);
+								updateDiagram();
+							});
+						}
 					}
-				}
-			},
-			t('react:dgmButtonRedo')
-		),
-		e(
-			'button', {
-				id:'info-tools__unit-button',
-				className: 'info-tools__button',
-				disabled: viewKeys.has('units'),
-				onClick: () => {
-					pushView('units', 'react:unitsTitle');
-				}
-			},
-			t('react:dgmButtonUnits')
-		),
-		e(
-			'button', {
-				id:'info-tools__console-button',
-				className: 'info-tools__button',
-				disabled: viewKeys.has('console'),
-				onClick: () => {
-					pushConsole();
-				}
-			},
-			t('react:dgmButtonConsole')
-		),
-		e(
+				},
+				t('react:dgmButtonRedo')
+			),
+			e(
 				'button', {
-				id:'info-tools__sessions-button',
-				className: 'info-tools__button',
-				disabled: viewKeys.has('sessions'),
-				onClick: () => {
-					pushView('sessions', 'react:sessionsTitle');
-				}
-			},
-			t('react:dgmButtonSessions')
-		),
-	);
+					id:'info-tools__unit-button',
+					className: 'info-tools__button',
+					disabled: viewKeys.has('units'),
+					onClick: () => {
+						pushView('units', 'react:unitsTitle');
+					}
+				},
+				t('react:dgmButtonUnits')
+			),
+			e(
+				'button', {
+					id:'info-tools__console-button',
+					className: 'info-tools__button',
+					disabled: viewKeys.has('console'),
+					onClick: () => {
+						pushConsole();
+					}
+				},
+				t('react:dgmButtonConsole')
+			),
+			e(
+					'button', {
+					id:'info-tools__sessions-button',
+					className: 'info-tools__button',
+					disabled: viewKeys.has('sessions'),
+					onClick: () => {
+						pushView('sessions', 'react:sessionsTitle');
+					}
+				},
+				t('react:dgmButtonSessions')
+			),
+		);
+	}
 
 	let wrapper;
 	const onePaneStyle = {

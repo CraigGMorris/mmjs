@@ -4,6 +4,7 @@
 	"alert": "Alert",
 	"alertMessage": "{{msg}}",
 	"appendTableRowMismatch": "Can't append table values with different row counts",
+	"calculating": "Calculating",
 	"concatTableColumnMismatch": "Can't concat table values with different column counts",
 	"crossProductNot3": "The number of values in cross product arguments must be divisible by 3",
 	"dataTableDisplayName": "Data Table",
