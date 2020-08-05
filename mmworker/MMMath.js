@@ -295,6 +295,7 @@ const MMMath = {
 	},
 
 	// statistical functions
+
 	lnGamma: (xx) => {
 		// returns ln gamma xx for xx > 0.  Full accuracy is obtained for xx > 1.
 		// NR claims for 0 < xx < 1 the reflection formula (NR 6.1.4) should be used first,
@@ -696,5 +697,131 @@ const MMMath = {
 		const sd = Math.sqrt((var1 + var2 - 2.0*cov) / n);
 		const t = (ave1 - ave2) / sd;
 		return MMMath.betai(0.5*df, 0.5, df/(df + t * t));
+	},
+
+	// equation solvers
+
+	/**
+	 * @method brentSolve
+	 * @param {Object} required
+	 * required must have:
+	 *  fx(x) function returning the function evaluation of x
+	 *  setErrorDescription(s) function for setting an error message;
+	 * 	setStatus(s) function for setting status message
+	 * @param {Object} options
+	 * 	options can have options (see code below for defaults):
+	 *  maxIterations
+	 *  relTolerance - relative tolerance
+	 *  absTolerance - absolute tolerance
+	 *  xLower
+	 *  xUpper
+	 */
+
+	// brentSolve
+	brentSolve: (required, options={}) => {
+		// required in options
+		const functionValue = required.fx;
+		const setErrorDescription = required.setErrorDescription;
+		const setStatus = required.setStatus;
+
+		// optional in options
+		const maxIterations = options.maxIterations || 200;
+		const eps = options.relTolerance || 1.0e-10;
+		const fTolerance = options.absTolerance || 1e-5;
+		let a = options.xLower !== undefined ? options.xLower : -1;
+		let b = options.xUpper !== undefined ? options.xUpper : 1;
+
+		let c = b;
+		let d = 0.0;
+		let e = 0.0;	
+		
+		// function is calculated for bounds
+		let fa = functionValue(a);
+		let fb = functionValue(b);
+		
+		if (( fa > 0.0 && fb > 0.0 ) || ( fa < 0.0 && fb < 0.0 )) {
+			setErrorDescription('mmcmd:mathBrentNoBracket')
+			return -1;
+		}
+		
+		let fc = fb;
+		let tStart = new Date().getTime();
+		let iter;
+		for (iter = 1; iter <= maxIterations; iter++ ) {
+			if (( fb > 0.0 && fc > 0.0 ) || ( fb < 0.0 && fc < 0.0 )) {
+				c = a;    // rename a, b, c and adjust bounding interval d
+				fc = fa;
+				d = b - a;
+				e = d;
+			}
+			
+			if ( Math.abs( fc ) < Math.abs( fb ) ) {
+				a = b;
+				b = c;
+				c = a;
+				fa = fb;
+				fb = fc;
+				fc = fa;
+			}
+			
+			let tol1 = 2.0 * eps * Math.abs( b ) + 0.5 * fTolerance;
+			let xm = 0.5 * (  c - b );
+			if ( Math.abs( xm ) <= tol1 || fb == 0.0 ) {
+				// [ delegate setErrorDescription: nil ];
+				return iter;
+			}
+			
+			if ( Math.abs( e ) >= tol1 && Math.abs( fa ) > Math.abs( fb ) ) {
+				let s = fb/fa;    // Attempt inverse quadratic interpolation
+				let p, q, r;
+				if ( a == c ) {
+					p = 2.0 * xm * s;
+					q = 1.0 - s;
+				}
+				else {
+					q = fa/fc;
+					r = fb/fc;
+					p = s * ( 2.0*xm*q*(q - r) - (b-a)*(r-1.0));
+					q = (q-1.0)*(r-1.0)*(s-1.0);
+				}
+				
+				if ( p > 0.0 )   // check whether in bounds
+					q = -q;
+				
+				p = Math.abs(p);
+				const min1 = 3.0*xm*q - Math.abs(tol1*q);
+				const min2 = Math.abs( e*q );
+				
+				if ( 2.0*p < Math.min( min1, min2 ) ) {
+					e = d;    // Accept interpolation
+					d = p/q;
+				}
+				else {
+					d = xm;   // Interpolation failed, use bisection
+					e = d;
+				}
+			}
+			else {      // bounds decreasing too slowly, use bisection
+				d = xm;
+				e = d;
+			}
+			
+			a = b;    // Move last best guess to a
+			fa = fb;
+			if ( Math.abs( d ) > tol1 )   // Evaluate new trial root
+				b += d;
+			else
+				b += Math.abs( tol1 ) * (( xm < 0.0) ? -1.0 : 1.0 );
+			
+			fb = functionValue(b)
+			const tNow = new Date().getTime();
+			if (tNow - tStart > 1000) {
+				setStatus('mmcmd:mathBrentIterating', {iter: iter, error: fb});
+				tStart = tNow;
+			}
+		}
+		
+		setErrorDescription('mmcmd:mathBrentIterExceeded', {iter: iter});
+		return iter;
 	}
 }

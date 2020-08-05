@@ -5,6 +5,8 @@
 	MMPropertyType:readonly
 	MMNumberValue:readonly
 	theMMSession:readonly
+	MMMath:readonly
+	MMCommandMessage:readonly
 */
 
 /**
@@ -25,6 +27,7 @@ class MMSolver extends MMTool {
 		this.maxJacobianFormula.formula = '5';
 		this.isHidingInfo = false;  // needed because the formula assigns will reset
 		this.isEnabled = false;
+		this.isRunning = false;
 		this.isInError = false;
 		this.isConverged = false;
 		this.functions = [];
@@ -384,6 +387,62 @@ class MMSolver extends MMTool {
 	}
 
 	/**
+	 * @method solve
+	 */
+	solve() {
+		// check if all the fx can be calculated
+		this.isRunning = true;
+		this.isConverged = false;
+		const functionCount = this.functions.length;
+		let totalNumberOfEqns = 0;
+		for (let i = 0; i < functionCount; i++) {
+			const func = this.functions[i]
+			const cx = func.countFormula.value();
+			if (!cx) { return; }
+			const fx = func.errorFormula.value();
+			if (!fx) { return; }
+
+			const nx = cx.values[0];
+			if (fx.valueCount !== nx) {
+				this.setError('mmcmd:solverCountMismatch', {fn: i+1, nFx: fx.valueCount, nx: nx});
+				this.isRunning = false;
+				this.isEnabled = false;
+				return;
+			}
+			totalNumberOfEqns += nx;
+		}
+
+		try {
+			if (totalNumberOfEqns === 1) {
+				MMMath.brentSolve({
+					fx: (x) => {
+						this.forgetStep();
+						const func = this.functions[0];
+						func.outputs[0] = x;
+						const fx = this.valueDescribedBy('f1');
+						if (fx instanceof MMNumberValue) {
+							return fx.values[0];
+						}
+						else {
+							let msg = new MMCommandMessage('mmcmd:solverFxFail', {path: this.getPath()});
+							throw(msg);
+						}
+					}
+				})
+			}
+		}
+		catch(e) {
+			this.isInError = true;
+			this.isConverged = false;
+			this.caughtException(e);
+		}
+		finally {
+			this.isRunning = false;
+		}
+
+	}
+
+	/**
 	 * @override valueDescribedBy
 	 * @return {MMNumberValue}
 	 * @param {String} description
@@ -392,23 +451,40 @@ class MMSolver extends MMTool {
 	 */
 	valueDescribedBy(description, requestor) {
 		const lcDescription = description.toLowerCase();
+		if (lcDescription.length === 0 || this.functions.length === 0) {
+			return super.valueDescribedBy(description, requestor);
+		}
+		if (lcDescription === 'solved') {
+			if (this.isConverged && this.isEnabled && !this.isInError) {
+				return MMNumberValue.scalarValue(1);
+			}
+			else {
+				return null;
+			}
+		}
+
+		if (lcDescription.startsWith('c')) {
+			const n = parseInt(lcDescription.substring(1));
+			if (isNaN(n) || n < 1 || n > this.functions.length) {
+				return null;
+			}
+			const v = this.functions[n-1].countFormula.value();
+			if (v) {
+				this.addRequestor(requestor);
+			}
+			return v;
+		}
+
+		if (!this.isConverged && !this.isRunning && this.isEnabled && !this.isInError) {
+			this.solve();
+		}
+
 		if (lcDescription.startsWith('f')) {
 			const n = parseInt(lcDescription.substring(1));
 			if (isNaN(n) || n < 1 || n > this.functions.length) {
 				return null;
 			}
 			const v = this.functions[n-1].errorFormula.value();
-			if (v) {
-				this.addRequestor(requestor);
-			}
-			return v;
-		}
-		else if (lcDescription.startsWith('c')) {
-			const n = parseInt(lcDescription.substring(1));
-			if (isNaN(n) || n < 1 || n > this.functions.length) {
-				return null;
-			}
-			const v = this.functions[n-1].countFormula.value();
 			if (v) {
 				this.addRequestor(requestor);
 			}
@@ -428,6 +504,24 @@ class MMSolver extends MMTool {
 			const outputs = this.getOutputs(n-1);
 			return MMNumberValue.numberArrayValue(outputs);
 		}
+	}
+
+		/**
+	 * @method inputSources
+	 * @override
+	 * @returns {Set} contains tools referenced by this tool
+	 */
+	inputSources() {
+		let sources = super.inputSources();
+		this.maxIterFormula.addInputSourcesToSet(sources);
+		this.maxJacobianFormula.addInputSourcesToSet(sources);
+		const functionCount = this.functions.length;
+		for (let i = 0; i < functionCount; i++) {
+			const func = this.functions[i];
+			func.errorFormula.addInputSourcesToSet(sources);
+			func.countFormula.addInputSourcesToSet(sources);
+		}
+		return sources;
 	}
 
 	/**

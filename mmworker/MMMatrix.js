@@ -378,7 +378,6 @@ class MMMatrix extends MMTool {
 		return sources;
 	}
 
-
 	/**
 	 * @method saveObject
 	 * @override
