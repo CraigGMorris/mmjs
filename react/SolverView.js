@@ -249,7 +249,7 @@ export function SolverView(props) {
 							checked: results.isEnabled,
 							onChange: () => {
 								// toggle the isOutput property
-								const value = props.viewInfo.updateResults[0].results.isOutput ? 'f' : 't';
+								const value = props.viewInfo.updateResults[0].results.isEnabled ? 'f' : 't';
 								props.actions.doCommand(`${props.viewInfo.path} set isEnabled ${value}`, () => {
 									props.actions.updateView(props.viewInfo.stackIndex);
 								});						

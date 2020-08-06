@@ -89,14 +89,13 @@ class MMSolver extends MMTool {
 					countFormula: new MMFormula(`count_${functionNumber+1}`, this),
 					outputs: [0]
 				};
-		
+				this.functions[functionNumber] = func;
 				func.errorFormula.formula = errorFormula;
 				func.countFormula.formula = countFormula;
 				const outputs = saved[`o${functionNumber}`];
 				if (outputs) {
 					func.outputs = outputs;
 				}
-				this.functions[functionNumber] = func;
 				functionNumber++;
 			}
 			else {
@@ -209,7 +208,7 @@ class MMSolver extends MMTool {
 			this.isEnabled = newState;
 			if (newState && !this.isConverged) {
 				this.isInError = false;
-				this.calculate();
+				this.solve();
 			}
 		}
 	}
@@ -393,6 +392,10 @@ class MMSolver extends MMTool {
 		// check if all the fx can be calculated
 		this.isRunning = true;
 		this.isConverged = false;
+		const maxIterations = this.maxIterFormula.value();
+		if (!maxIterations) {
+			return;
+		}
 		const functionCount = this.functions.length;
 		let totalNumberOfEqns = 0;
 		for (let i = 0; i < functionCount; i++) {
@@ -424,17 +427,88 @@ class MMSolver extends MMTool {
 							return fx.values[0];
 						}
 						else {
-							let msg = new MMCommandMessage('mmcmd:solverFxFail', {path: this.getPath()});
-							throw(msg);
+							this.isInError = true;
+							this.setError('mmcmd:solverFxFail', {path: this.getPath()});
+							return;
 						}
+					},
+					setError: (msgKey) => {
+						this.isInError = true;
+						this.isConverged = false;
+						const cmdMsg = new MMCommandMessage('mmcmd:solverError', {path: this.getPath()});
+						this.setError(msgKey, {}, cmdMsg);
+						return;
+					},
+					setStatus: (msg) => {
+						this.processor.statusCallBack(msg);
 					}
-				})
+				},
+				{maxIterations: maxIterations.values[0]});
+			}
+			else {
+				const x = new Float64Array(totalNumberOfEqns);
+				let eqnNo = 0;
+				for (let i = 0; i < functionCount; i++) {
+					const func = this.functions[i];
+					const outputCount = func.outputs.length;
+					for (let j = 0; j < outputCount; j++) {
+						x[eqnNo++] = func.outputs[j];
+					}
+				}
+				
+				MMMath.broydenSolve(totalNumberOfEqns, x, {
+					calcFx: (n, x, fx) => {
+						this.forgetStep();
+						// assing the x values to the appropriate function outputs
+						const functionCount = this.functions.length;
+						let eqnNo = 0;
+						for (let i = 0; i < functionCount; i++) {
+							const func = this.functions[i];
+							const outputCount = func.outputs.length;
+							for (let j = 0; j < outputCount; j++) {
+								func.outputs[j] = x[eqnNo++];
+							}
+						}
+						
+						eqnNo = 0;
+						const fxCount = fx.length;
+						for (let i = 0; i < functionCount && eqnNo < fxCount; i++) {
+							const value = this.valueDescribedBy(`f${i+1}`);
+							if (value && value instanceof MMNumberValue) {
+								const arraySize = value.valueCount;
+								if (arraySize + eqnNo > fxCount) {
+									throw(this.t('mmcmd:solverCalcOverrun', {path: this.getPath()}));
+								}
+								for (let j = 0; j < arraySize && eqnNo < fxCount; j++, eqnNo++) {
+									fx[eqnNo] = value.values[ j ];
+								}
+							}
+							else {
+								throw(this.t('mmcmd:solverCalcFailure'), {path: this.getPath()});
+							}
+						}
+					},
+					setError: (msgKey) => {
+						this.isInError = true;
+						this.isConverged = false;
+						const cmdMsg = new MMCommandMessage('mmcmd:solverError', {path: this.getPath()});
+						this.setError(msgKey, {}, cmdMsg);
+						return;
+					},
+					setStatus: (msg) => {
+						this.processor.statusCallBack(msg);
+					}
+				},
+				{
+
+				});
 			}
 		}
 		catch(e) {
 			this.isInError = true;
 			this.isConverged = false;
-			this.caughtException(e);
+			this.setError('mmcmd:solverError', {path: this.getPath(), msg: e.message});
+			return;
 		}
 		finally {
 			this.isRunning = false;

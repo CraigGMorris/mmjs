@@ -706,7 +706,7 @@ const MMMath = {
 	 * @param {Object} required
 	 * required must have:
 	 *  fx(x) function returning the function evaluation of x
-	 *  setErrorDescription(s) function for setting an error message;
+	 *  setError(s) function for setting an error message;
 	 * 	setStatus(s) function for setting status message
 	 * @param {Object} options
 	 * 	options can have options (see code below for defaults):
@@ -719,9 +719,9 @@ const MMMath = {
 
 	// brentSolve
 	brentSolve: (required, options={}) => {
-		// required in options
+		// required
 		const functionValue = required.fx;
-		const setErrorDescription = required.setErrorDescription;
+		const setErrorDescription = required.setError;
 		const setStatus = required.setStatus;
 
 		// optional in options
@@ -823,5 +823,522 @@ const MMMath = {
 		
 		setErrorDescription('mmcmd:mathBrentIterExceeded', {iter: iter});
 		return iter;
+	},
+
+	qrDecomp: (n, a, c, d) => {
+		// n is Number, a c d are Float64arrays
+		// Constructs the QR decomposition of a.  The upper triangle matrix R is returned in the upper triangle of a,
+		// except for the diagonal elements of R, which are returned in d.  The function return value is true if singularity is
+		// encountered during the decomposition, but the decomposition is completed in this case;  otherwise it returns false
+		
+		let singular = false;
+		
+		for (let k = 0; k < n - 1; k++) {
+			let scale = 0.0;
+			for (let i = k; i < n; i++) {
+				scale = Math.max( scale, Math.abs( a[i*n+k] ));
+			}
+			
+			if (scale == 0.0) {
+				singular = true;   // singular case
+				c[k] = 0.0;
+				d[k] = 0.0;
+			}
+			else {      // form Qk and Qk * A
+				for (let i = k; i < n; i++ ) {
+					a[i*n+k] /= scale;
+				}
+				
+				let sum = 0.0;
+				for (let i = k; i < n; i++ ) {
+					sum += a[i*n+k] * a[i*n+k];
+				}
+				let sigma = Math.sqrt(sum) * Math.sign(a[k*n+k] );
+				if ( sigma == 0 ) {
+					sigma = 1e-30;  // just to avoid division by zero and resulting nans
+				}
+				a[k*n+k] += sigma;
+				c[k] = sigma * a[k*n+k];
+				d[k] = -scale * sigma;
+				for (let j = k + 1; j < n; j++) {
+					let sum = 0.0;
+					for (let i = k; i < n; i++ ) {
+						sum += a[i*n+k] * a[i*n+j];
+					}
+					const tau = sum / c[k];
+					for (let i = k; i < n; i++ ) {
+						a[i*n+j] -= tau * a[i*n+k];
+					}
+				}
+			}
+		}
+		d[n - 1] = a[(n - 1)*n + n-1];
+		if ( d[n - 1] == 0.0 )
+			singular = true;
+		
+		return singular;
+	},
+	
+	qrRotate: (n, i, a, b, r, qt) => {
+		// n, i, a and b are integers, r and qt are Float64Arrays
+		// Given matrices r and qt, carry out a Jacobi rotation on rows i and i + 1 of each matrix.
+		// a and b are the parameters of the rotation: cos theta = a /sqrt( a^2 + b^2 ),
+		// sin theta = b / sqrt( a^2 + b^2 )
+		
+		let c, s, fact;
+		if (a === 0.0) {   // Avoid unnecessary over or underflow
+			c = 0.0;
+			s = (b >= 0.0) ? 1.0 : -1.0;
+		}
+		else if (Math.abs(a) > Math.abs(b)) {
+			fact = b / a;
+			c = (1.0 / Math.sqrt( 1.0 + (fact*fact))) * Math.sign(a);
+			s = fact * c;
+		}
+		else {
+			fact = a/b;
+			s =  (1.0 / Math.sqrt( 1.0 + (fact*fact) )) * Math.sign(b);
+			c = fact * s;
+		}
+		
+		for (let j = i; j < n; j++) {   // Premultiply r by Jacobi rotation
+			const y = r[i*n+j];
+			const w = r[(i+1)*n + j];
+			r[i*n+j] = c*y - s*w;
+			r[(i+1)*n + j] = s*y + c*w;
+		}
+		
+		for (let j = 0; j < n; j++) {   // Premultiply qt by Jacobi rotation
+			const y = qt[i*n+j];
+			const w = qt[(i+1)*n + j];
+			qt[i*n+j] = c*y - s*w;
+			qt[(i+1)*n + j] = s*y + c*w;
+		}
+	},
+
+	qrUpdate: (n, r, qt, u, v) => {
+		// n is number, the rest are Float64Array
+		// Given the QR decomposition of some n x n matrix, calculates the QR decomposition of the
+		// matrix Q * (R + u cross v). Note that Q transpose is input and returned in qt
+		
+		let k
+		for (k = n - 1; k >= 0; k--) {
+			if (u[k] != 0.0) { // find largest k such that u(k) <> 0
+				break;
+			}
+		}
+		if ( k < 0 ) {
+			k = 0;
+		}
+		
+		for (let i = k - 1; i >= 0; i--) {   // Transform R + u cross v to upper Hessenberg
+			MMMath.qrRotate(n, i, u[i], -u[i+1], r, qt);
+			if (u[i] == 0.0) {
+				u[i] = Math.abs( u[i+1] );
+			}
+			else if (Math.abs(u[i]) > Math.abs(u[i+1]) ) {
+				const temp = u[i+1] / u[i];
+				u[i] = Math.abs(u[i]) * Math.sqrt(1.0 + temp*temp);
+			}
+			else {
+				const temp = u[i]/u[i+1];
+				u[i] = Math.abs( u[i+1] ) * Math.sqrt(1.0 + temp*temp);
+			}
+		}
+		
+		for (let j = 0; j < n; j++)
+			r[n+j] += u[0] * v[j];
+		
+		for (let i = 0; i < k; i++)
+			MMMath.qrRotate(n, i, r[i*n+i], -r[(i+1)*n + i], r, qt);  // transform upper Hessenberg to upper triangular
+	},
+	
+	rSolve: (n, a, d, b) => {
+		// n is a Number, a, d, b are Float64Arrays
+		// solves the set of n linear equations R*x = b where R is an upper triangle matrix stored in a and d, which are input as
+		// the output of qrDecomp and are not modified.  b is input as the right hand side vector and is overwritten
+		// with the solution vector
+				
+		b[n - 1] /= d[n - 1];
+		for (let i = n - 2; i >= 0; i--) {
+			let sum = 0.0;
+			for (let j = i + 1; j < n; j++ )
+				sum += a[i*n+j] * b[j];
+			b[i] = ( b[i] - sum ) / d[i];
+		}
+	},
+	
+	lineSearch: (n, xold, fold, g, p, x, fx, stepMax, dxTolerance, delegate) => {
+		// delegate must contain functions
+		// calcFx(n, x, fx) and
+		// setError(errorMessageKey)
+
+		const calcFx = delegate.calcFx;	
+		const alf = 1.0e-4;
+		let f2 = 0.0;
+		let alam2 = 0.0;
+		let sum = 0.0;
+
+		for (let i = 0; i < n; i++) {
+			sum += p[i] * p[i];
+		}
+
+		sum = Math.sqrt( sum );
+		
+		if (sum > stepMax) {
+			for (let i = 0; i < n; i++) {
+				p[i] *= stepMax / sum;   // scale if attempted step was too big
+			}
+		}
+		
+		let slope = 0.0;
+		for (let i = 0; i < n; i++) {
+			slope += g[i] * p[i];
+		}
+		
+		if ( slope >= 0.0 ) {
+			delegate.setError('mmcmd:mathLineSearchRoundOff')
+			return [false, 0];
+		}
+		
+		let test = 0.0;  // Compute lambda min
+		for (let i = 0; i < n; i++) {
+			const temp = Math.abs( p[i]) / Math.max(Math.abs(xold[i]), 1.0);
+			if (temp > test) {
+				test = temp;
+			}
+		}
+		
+		const alamin = dxTolerance / test;
+		let alam = 1.0;     // Always try full Newton step first
+		for(;;) {
+			let tmplam;
+			for (let i = 0; i < n; i++) {
+				x[i] = xold[i] + alam * p[i];
+			}
+
+			calcFx(n, x, fx);   // perform whatever calculation there is
+			
+			let f = 0.0;
+			for (let i = 0; i < n; i++) {
+				f += fx[i] * fx[i];
+			}
+			f *= 0.5;
+			
+			if (alam < alamin) {  // convergence on delta x. For zero finding caller should verify convergence
+				return [true, f];
+			}
+			else if (f <= fold + alf * alam * slope) {
+				return [false, 0];   // insufficient function decrease
+			}
+			else {             // back track
+				if (alam == 1.0) {
+					tmplam = -slope / ( 2.0 * (f - fold - slope) );   // first time
+				}
+				else {       // subsequent back tracks
+					const rhs1 = f - fold - alam * slope;
+					const rhs2 = f2 - fold - alam2 * slope;
+					const a = (rhs1/(alam*alam) - rhs2/(alam2*alam2)) / (alam - alam2);
+					const b = ( -alam2*rhs1 / (alam*alam) + alam*rhs2 / (alam2*alam2) ) / ( alam - alam2 );
+					if ( a == 0.0 ) {
+						tmplam = -slope / (2.0 * b);
+					}
+					else {
+						const disc = b*b - 3.0*a*slope;
+						if (disc < 0.0) {
+							tmplam = 0.5 * alam;
+						}
+						else if (b <= 0.0) {
+							tmplam = (-b + Math.sqrt(disc)) / (3.0*a);
+						}
+						else {
+							tmplam = -slope / (b + Math.sqrt(disc));
+						}
+					}
+					
+					if (tmplam > 0.5*alam) {
+						tmplam = 0.5*alam;           // lambda <= 0.5lambda1
+					}
+				}
+			}
+			
+			alam2 = alam;
+			f2 = f;
+			alam = Math.max(tmplam, 0.1 * alam);   // lambda >= 0.1lambda1
+		}
+	},
+	
+	forwardDifference: (n, x, fx, dummyF, df, eps, calcFx) => {
+		const rootEps = Math.sqrt(eps);
+		for (let j = 0; j < n; j++) {
+			const temp = x[j];
+			let h = rootEps * Math.abs( temp );
+			if (h == 0.0) {
+				h = rootEps;
+			}
+			x[j] = temp + h;     // trick to reduce finite precision error
+			h = x[j] - temp;
+			calcFx(n, x, dummyF);
+			x[j] = temp;
+			for (let i = 0; i < n; i++) {
+				df[i*n+j] = ( dummyF[i] - fx[i]) / h;
+			}
+		}
+	},
+
+	/**
+	 * @method broydenSolve
+	 * @param {Number} n - number of equations
+	 * @param {Float64Arrat} x - starts as initial x
+	 * @param {Object} required
+	 * required must have:
+	 *  calcFx(n, x, fx) function calculating the function evaluation of x
+	 *     returned in fx
+	 *  setError(s) function for setting an error message;
+	 * 	setStatus(s) function for setting status message
+	 * @param {Object} options
+	 * 	options can have options (see code below for defaults):
+	 *  maxIterations
+	 *  maxJacobians
+	 *  eps
+	 *  fTolerance
+	 *  maxStepLength
+	 *  minTolerance
+	 *  startWithIdentity
+	 */
+	broydenSolve: (n, x, required, options) => {
+		// required
+		const calcFx = required.calcFx;
+		const setError = required.setError;
+		const setStatus = required.setStatus;
+		
+		// get any available parameters or set defaults
+		const maxIterations = options.maxIterations || 200;
+		const maxJacobians = options.maxJacobians || 5;
+		const eps = options.eps || 1e-10
+		const fTolerance = options.fTolerance || 1e-5;
+		const dxTolerance = options.dxTolerance || eps;
+		const maxStepLength = options.maxStepLength || 100;
+		const minTolerance = options.minTolerance || 1e-6;
+		const startWithIdentity = options.startWithIdentity || false;
+
+		// function is calculated for that x
+		const fx = new Float64Array(n);
+		calcFx(n, x, fx);
+
+		let f = 0.0;
+		let test = 0.0;
+		for (let i = 0; i < n; i++) {
+			f += fx[i] * fx[i];
+			test = Math.max( test, Math.abs( fx[i]));
+		}
+		f *= 0.5;
+		
+		if (test < 0.01 * fTolerance) {
+			return;
+		}
+		
+		const c = new Float64Array(n);
+		const d = new Float64Array(n);
+		const g = new Float64Array(n);
+		const p = new Float64Array(n);
+		const s = new Float64Array(n);
+		const t = new Float64Array(n);
+		const w = new Float64Array(n);
+		const xold = new Float64Array(n);
+		const fvold = new Float64Array(n);
+		const qt = new Float64Array(n*n);
+		const r = new Float64Array(n*n);
+		
+		// Calculate stpmax for line searches
+		let sum = 0.0;
+		for (let i = 0; i < n; i++ ) {
+			sum += x[i]*x[i];
+		}
+		
+		const stepMax = maxStepLength * Math.max(Math.sqrt(sum), n );		
+		let tStart = new Date().getTime();
+
+		let restrt = true;    // Ensure initial Jacobian gets computed
+		let iter;
+		for (let jacobTry = 1; jacobTry <= maxJacobians; jacobTry++) {
+			for (iter = 1; iter <= maxIterations; iter++) {   // start interation loop
+				if (restrt) {
+					setStatus('mmcmd:mathJacobianCalc');
+					if (startWithIdentity && iter == 1) {  // use identity matrix as initial jacobian
+						r.fill(0.0);
+						for (let i = 0; i < n; i++) {
+							r[i*n+i] = 1.0;
+						}
+					}
+					else {
+						MMMath.forwardDifference(n, x, fx, fvold, r, eps, calcFx);   // initialize or reinitialize Jacobian in r
+						if (MMMath.qrDecomp(n, r, c, d) ) {   // QR decomposition of Jacobian
+							setError('mmcmd:mathJacobianSingular');
+							return;
+						}
+					}
+					qt.fill(0);
+					for (let i = 0; i < n; i++) {
+						qt[i*n+i] = 1.0;
+					}
+					for (let k = 0; k < n; k++) {
+						if (c[k] != 0.0) {
+							for (let j = 0; j < n; j++) {
+								let sum = 0.0;
+								for (let i = k; i < n; i++) {
+									sum += r[i*n+k] * qt[i*n+j];
+								}
+								sum /= c[k];
+								for (let i = k; i < n; i++) {
+									qt[i*n+j] -= sum * r[i*n+k];
+								}
+							}
+						}
+					}
+					for (let i = 0; i < n; i++) {   // form R explicitly
+						r[i*n+i] = d[i];
+						for (let j = 0; j < i; j++) {
+							r[i*n+j] = 0.0;
+						}
+					}
+				}
+				else {         // carry out Broyden update
+					for (let i = 0; i < n; i++) {
+						s[i] = x[i] - xold[i];     // s = dx
+					}
+					
+					for(let i = 0; i < n; i++) {     // t = R * s
+						let sum = 0.0;
+						for (let  j = 0; j < n; j++) {
+							sum += r[i*n+j] * s[j];
+						}
+						t[i] = sum;
+					}
+					
+					let skip = true;
+					for (let i = 0; i < n; i++) {     // w = dF - B*s
+						let sum = 0.0;
+						for (let j = 0; j < n; j++) {
+							sum += qt[j*n+i] * t[j];
+						}
+						
+						w[i] = fx[i] - fvold[i] - sum;
+						if (Math.abs(w[i]) > eps * Math.abs(fx[i]) + Math.abs(fvold[i])) {   // don't update with noisy components of w
+							skip = false;
+						}
+						else {
+							w[i] = 0.0;
+						}
+					}
+					
+					if (!skip) {
+						for (let i = 0; i < n; i++) {      // t = Q transpose * w
+							let sum = 0.0;
+							for (let j = 0; j < n; j++ ) {
+								sum += qt[i*n+j] * w[j];
+							}
+							t[i] = sum;
+						}
+						
+						let den = 0.0;
+						for (let i = 0; i < n; i++) {
+							den += s[i] * s[i];
+						}
+						for (let i = 0; i < n; i++) {
+							s[i] /= den;    // store s/(s*s) in s
+						}
+						
+						MMMath.qrUpdate(n, r, qt, t, s);  // update R and Q transpose
+						for (let i = 0; i < n; i++) {
+							if ( r[i*n+i] == 0.0) {
+								setError('mmcmd:mathJacobianSingular');
+								return;
+							}
+							d[i] = r[i*n+i];   // diagonal of R stored in d
+						}
+					}
+				}
+				
+				for (let i = 0; i < n; i++) {   // right hand side for linear equations is Q transpose * F
+					let sum = 0.0;
+					for (let j = 0; j < n; j++) {
+						sum += qt[i*n+j] * fx[j];
+					}
+					p[i] = -sum;
+				}
+				
+				for (let i = n - 1; i >= 0; i--) {     // compute grad f approx = (Q*R) tranpose * F for the line search
+					let sum = 0.0;
+					for(let j = 0; j <= i; j++) {
+						sum -= r[j*n+i] * p[j];
+					}
+					g[i] = sum;
+				}
+				
+				for (let i = 0; i < n; i++) {     // Store x and F
+					xold[i] = x[i];
+					fvold[i] = fx[i];
+				}
+				
+				MMMath.rSolve(n, r, d, p);    // Solve linear equations
+				let check;
+				[check, f] = MMMath.lineSearch(n, xold, f, g, p, x, fx, stepMax, dxTolerance, required);  // returns new x, f and fx
+				
+				let test = 0.0;  // test for convergence on function values
+				for (let i = 0; i < n; i++) {
+					test = Math.max(test, Math.abs(fx[i]));
+				}
+
+				const tNow = new Date().getTime();
+				if (tNow - tStart > 1000) {
+					setStatus('mmcmd:mathBroydenIterating', {iter: iter, error: test});
+					tStart = tNow;
+				}
+	
+				if (test < fTolerance) {
+					return;
+				}
+				if (check) {   // true if line search failed to find a new x
+					if (restrt) {
+						setError('mmcmd:mathLineSearchFailed');
+						return
+					}
+					else {
+						let test = 0.0;  // check for gradient of f zero, ie spurious convergence
+						let den = Math.max(f, 0.5 * n);
+						for (let i = 0; i < n; i++) {
+							let temp = Math.abs(g[i]) * Math.max(Math.abs(x[i]), 1.0) / den;
+							if (temp > test) {
+								test = temp;
+							}
+						}
+						if (test < minTolerance) {
+							setError('mmcmd:mathBroydenSpurious');
+							return;
+						}
+						else {
+							restrt = true;    // try reinitializing the Jacobian
+						}
+					}
+				}
+				else {       // successful step;  will use Broyden update for next test
+					restrt = false;
+					let test = 0.0;    // test for convergence of dx
+					for (let i = 0; i < n; i++) {
+						let temp = (Math.abs(x[i] - xold[i])) / Math.max(Math.abs(x[i] ), 1.0);
+						if (temp > test) {
+							test = temp;
+						}
+					}				
+					if (test < dxTolerance)  {
+						return   // success
+					}
+				}
+			}
+			restrt = true;
+		}
+		
+		setError('mmcmd:mathBroydenIterExceeded', {iter: iter});
 	}
 }
