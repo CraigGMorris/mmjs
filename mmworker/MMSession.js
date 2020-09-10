@@ -14,6 +14,7 @@
 	MMMatrix:readonly
 	MMDataTable:readonly
 	MMSolver:readonly
+	MMOde:readonly
 	theMMSession:readonly
 	MMToolValue:readonly
 */
@@ -1168,7 +1169,12 @@ const MMToolTypes = {
 	"Solver": {
 		factory: (name, parent) => {return new MMSolver(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:solverDisplayName'),
+	},
+	"Ode": {
+		factory: (name, parent) => {return new MMOde(name, parent)},
+		displayName: new MMCommandMessage('mmcmd:odeDisplayName'),
 	}
+
 };
 
 /**

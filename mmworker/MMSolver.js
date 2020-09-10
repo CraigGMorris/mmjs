@@ -334,12 +334,11 @@ class MMSolver extends MMTool {
 	}
 
 	/**
-	 * @method removeFunctionCommand
+	 * @method resetOutputsCommand
 	 * @param {MMCommand} command
-	 * command.args should be the 1 based row number of the function to remove
 	 */
 	resetOutputsCommand(command) {
-		this.resetOutputs;
+		this.resetOutputs();
 		command.results = 'reset done';
 	}
 
@@ -518,7 +517,6 @@ class MMSolver extends MMTool {
 
 	/**
 	 * @override valueDescribedBy
-	 * @return {MMNumberValue}
 	 * @param {String} description
 	 * @param {MMTool} requestor
 	 * @returns {MMValue}
@@ -530,6 +528,7 @@ class MMSolver extends MMTool {
 		}
 		if (lcDescription === 'solved') {
 			if (this.isConverged && this.isEnabled && !this.isInError) {
+				this.addRequestor(requestor);
 				return MMNumberValue.scalarValue(1);
 			}
 			else {
@@ -580,7 +579,7 @@ class MMSolver extends MMTool {
 		}
 	}
 
-		/**
+	/**
 	 * @method inputSources
 	 * @override
 	 * @returns {Set} contains tools referenced by this tool
@@ -603,7 +602,6 @@ class MMSolver extends MMTool {
 	 * @override
 	 * @param {MMFormula} formula
 	 */
-	// eslint-disable-next-line no-unused-vars
 	changedFormula(formula) {
 		if (!theMMSession.isLoadingCase) {
 			this.setEnabled(false);

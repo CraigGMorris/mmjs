@@ -27,7 +27,8 @@ importScripts(
   "MMMatrix.js",
   "MMFormula.js",
   "MMDataTable.js",
-  "MMSolver.js"
+  "MMSolver.js",
+  "MMOde.js"
 );
 
 class MMCommandWorker {

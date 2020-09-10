@@ -209,7 +209,7 @@ class MMModel extends MMTool {
 	 */
 	restoreTool(tool) {
 		const name = tool.name;
-		const typeName = tool.Type.replace(' ','').replace('Equation','');
+		const typeName = tool.Type.replace('ODE Solver','Ode').replace(' ','').replace('Equation','');
 		const toolType = MMToolTypes[typeName];
 		if(!toolType) {
 			throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: tool.Type}));
@@ -454,7 +454,7 @@ class MMModel extends MMTool {
 		let tools = saved.Objects;
 		for (let tool of tools) {
 			const name = tool.name;
-			const typeName = tool.Type.replace(' ','').replace('Equation','');
+			const typeName = tool.Type.replace('ODE Solver', 'Ode').replace(' ','').replace('Equation','');
 			const toolType = MMToolTypes[typeName];
 			if(!toolType) {
 				throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: tool.Type}));
