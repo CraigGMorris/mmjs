@@ -170,7 +170,7 @@
 	"?odeRun": "usage: run",
 	"?sessionCopy": "Create a copy of a session\n\nusage: copy fromPath toPath",
 	"?sessionDelete": "Delete a session\n\nusage: delete path",
-	"?sessionGetJson": "Returns the json of session suitable for storing.\nPath is only used for json case name\n\nusage: getjson {path}",
+	"?sessionGetJson": "Returns the json of session suitable for storing.\nIf path is supplied, that session will be returned\n\nusage: getjson {path}",
 	"?sessionList": "List the local sessions\n\nusage: listsessions",
 	"?sessionLoad": ":oads session at path\n\nusage: load path",
 	"?sessionNew": "Create an empty session with name path or _unnamed if omitted\n\nusage: new {path}",

@@ -309,50 +309,78 @@ class MMModel extends MMTool {
 					}
 				}
 				else {
-					const saved = JSON.parse(json);
-					if (saved.CopyObjects) {
-						const tools = saved.CopyObjects;
+					try {
+						const saved = JSON.parse(json);
+						if (saved.CopyObjects) {
+							const tools = saved.CopyObjects;
 
-						// need to adjust positions to offset from the supplied upper left
-						let minX = null;
-						let minY = null;
-						for(let toolInfo of tools) {
-							if (minX === null) {
-								minX = toolInfo.DiagramX;
-								minY = toolInfo.DiagramY;
+							// need to adjust positions to offset from the supplied upper left
+							let minX = null;
+							let minY = null;
+							for(let toolInfo of tools) {
+								if (minX === null) {
+									minX = toolInfo.DiagramX;
+									minY = toolInfo.DiagramY;
+								}
+								else {
+									minX = Math.min(minX, toolInfo.DiagramX);
+									minY = Math.min(minY, toolInfo.DiagramY);
+								}
+							}
+
+							const names = [];
+							for(let toolInfo of tools) {
+								toolInfo.DiagramX += originX - minX;
+								toolInfo.DiagramY += originY - minY;
+								const name = toolInfo.name;
+								let number = 1;
+								while ( this.childNamed(toolInfo.name) ) {
+									toolInfo.name = `${name}_${number++}`;
+								}
+								names.push(toolInfo.name);
+								this.restoreTool(toolInfo);
+							}
+							command.undo = `${this.getPath()} removetool ${names.join(' ')}`
+						}
+						else {
+							let name;
+							let tool
+							if (saved.CaseName && saved.RootModel) {
+								// it is a copied session paste the root model with name CaseName
+								name = saved.CaseName.replace(/\s/g,'_');
+								tool = saved.RootModel;
+								tool.name = name;
+							}
+							else if (saved.name) {
+								// just a single tool - probably copied from app based minion
+								name = saved.name;
+								tool = saved;
 							}
 							else {
-								minX = Math.min(minX, toolInfo.DiagramX);
-								minY = Math.min(minY, toolInfo.DiagramY);
+								return; // invalid object
 							}
-						}
-
-						const names = [];
-						for(let toolInfo of tools) {
-							toolInfo.DiagramX += originX - minX;
-							toolInfo.DiagramY += originY - minY;
-							const name = toolInfo.name;
+							tool.DiagramX = originX;
+							tool.DiagramY = originY;
 							let number = 1;
-							while ( this.childNamed(toolInfo.name) ) {
-								toolInfo.name = `${name}_${number++}`;
+							while ( this.childNamed(name) ) {
+								name = `${name}_${number++}`;
 							}
-							names.push(toolInfo.name);
-							this.restoreTool(toolInfo);
+							this.restoreTool(tool);
+							command.undo = `${this.getPath()} removetool ${name}`
 						}
-						command.undo = `${this.getPath()} removetool ${names.join(' ')}`
+						command.results = true;
 					}
-					else {
-						// just a single tool - probably copied from app based minion
-						saved.DiagramX = originX;
-						saved.DiagramY = originY;
-						let number = 1;
-						while ( this.childNamed(saved.name) ) {
-							saved.name = `${name}_${number++}`;
-						}
-						this.restoreTool(saved);
-						command.undo = `${this.getPath()} removetool ${saved.name}`
+					catch(e) {
+						// don't know what it is, so create expression with string
+						let name = `x${this.nextToolNumber++}`;
+						while ( this.childNamed(name) ) {
+							name = `x${this.nextToolNumber++}`;
+						}	
+						const exp = new MMExpression(name, this);
+						exp.position = new MMPoint(originX, originY)
+						exp.formula.formula = "'" + json;
+						command.undo = `${this.getPath()} removetool ${name}`			
 					}
-					command.results = true;
 				}
 			}
 		}

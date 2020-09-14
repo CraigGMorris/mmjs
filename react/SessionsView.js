@@ -1,4 +1,5 @@
 'use strict';
+import { writeClipboard } from "./Clipboard.js";
 
 const e = React.createElement;
 
@@ -59,10 +60,10 @@ export class SessionsView extends React.Component {
 		}
 
 		let copySession = async (oldName) => {
-			let newName = prompt(t('react:sessionsCopyPrompt', {oldName: oldName}));
+			let newName = prompt(t('react:sessionsDuplicatePrompt', {oldName: oldName}));
 			if (newName) {
 				if (sessionPaths.map(n => n.toLocaleLowerCase()).includes(newName.toLocaleLowerCase())) {
-					if (!confirm(t('react:sessionsCopyOverwrite', {oldName: oldName, newName: newName}))) {
+					if (!confirm(t('react:sessionsDuplicateOverwrite', {oldName: oldName, newName: newName}))) {
 						return;
 					}
 				}
@@ -110,6 +111,33 @@ export class SessionsView extends React.Component {
 			}
 		}
 
+		let clipSession = async (path) => {
+			await this.props.actions.doCommand(
+				`/ getjson ${path}`,
+				(results) => {
+					writeClipboard(results[0].results);
+					this.setState({menuPath: ''});
+				}
+			)
+		}
+
+		let exportSession = async path => {
+			await this.props.actions.doCommand(
+				`/ getjson ${path}`,
+				(results) => {
+					if (results && results.length) {
+						const json = results[0].results;
+						const blob = new Blob([json], {type : "text/plain"});
+						const link = document.createElement('a');
+						link.download = path;
+						link.href = URL.createObjectURL(blob);
+						link.click();
+						URL.revokeObjectURL(link.href);
+					}
+				}
+			);
+		}
+
 		let sections = [];
 		if (this.state.menuPath) {
 			sections.push(e(
@@ -140,7 +168,18 @@ export class SessionsView extends React.Component {
 						copySession(this.state.menuPath);
 					},
 				},
-				t('react:sessionsCopyButton')
+				t('react:sessionsDuplicateButton')
+			));
+			sections.push(e(
+				'button', {
+					id: 'sessions__menu-clip',
+					key: 'menu-clip',
+					className: 'sessions__menu-button',
+					onClick: () => {
+						clipSession(this.state.menuPath);
+					},
+				},
+				t('react:sessionsClipButton')
 			));
 			sections.push(e(
 				'button', {
@@ -152,6 +191,17 @@ export class SessionsView extends React.Component {
 					},
 				},
 				t('react:sessionsRenameButton')
+			));
+			sections.push(e(
+				'button', {
+					id: 'sessions__menu-export',
+					key: 'menu-export',
+					className: 'sessions__menu-button',
+					onClick: async () => {
+						exportSession(this.state.menuPath);			
+					},
+				},
+				t('react:sessionsExportButton'),
 			));
 			sections.push(e(
 				'button', {
@@ -236,7 +286,7 @@ export class SessionsView extends React.Component {
 				),
 				e(
 					'button', {
-						id: 'sessions__download-button',
+						id: 'sessions__export-button',
 						onClick: async () => {
 							let cmd = '/ getjson';
 							await this.props.actions.doCommand(
@@ -256,7 +306,7 @@ export class SessionsView extends React.Component {
 							);			
 						},
 					},
-					t('react:sessionsDownloadButton'),
+					t('react:sessionsExportButton'),
 				),
 			);
 

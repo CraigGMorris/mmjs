@@ -634,10 +634,22 @@ class MMSession extends MMCommandParent {
 	 * @method getJsonCommand
 	 * verb
 	 * @param {MMCommand} command
-	 * command.args optionall contains the store path for the session
+	 * command.args optional contains the path of a stored session to get json for
 	 */
 	async getJsonCommand(command) {
-		command.results = this.sessionAsJson(command.args);
+		if (command.args) {
+			try {
+				let result = await this.storage.load(command.args);
+				command.results = result;
+			}
+			catch(e) {
+				const msg = (typeof e === 'string') ? e : e.message;
+				this.setError('mmcmd:sessionLoadFailed', {path: command.args, error: msg});
+			}
+		}
+		else {
+			command.results = this.sessionAsJson();
+		}
 	}
 
 	/**
