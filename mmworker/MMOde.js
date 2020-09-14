@@ -13,6 +13,7 @@
 	MMTableValueColumn:readonly
 	MMDivideOperator:readonly
 	MMMultiplyOperator: readonly
+	MMMath: readonly
 */
 
 /**
@@ -27,7 +28,7 @@ class MMOde extends MMTool {
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Ode');
-		this.odeT = MMNumberValue.scalarValue(1); // this is just t in user interface, but t is already used by MMCommandObject
+		this.odeT = MMNumberValue.scalarValue(0); // this is just t in user interface, but t is already used by MMCommandObject
 		this.initialYFormula = new MMFormula('y0', this);
 		this.derivativeFormula = new MMFormula('dy', this);
 		this.nextTFormula = new MMFormula('nextT', this);
@@ -102,7 +103,7 @@ class MMOde extends MMTool {
 		else {
 			if (this.odeT && this.cachedY) {
 				o['T'] = this.odeT.values[0];
-				o['tUnit'] = MMUnit.stringFromDimensions(this.odeT.values.unitDimensions);
+				o['tUnit'] = MMUnit.stringFromDimensions(this.odeT.unitDimensions);
 				const count = this.cachedY ? this.cachedY.length : 0;
 				const a = [];
 				for (let i = 0; i < count; i++) {
@@ -917,7 +918,10 @@ class MMOdeSolver {
 			BAD_K:							-24,
 			BAD_T:							-25,
 			BAD_DKY:						-26,
-			TOO_CLOSE:					-27
+			TOO_CLOSE:					-27,
+			NO_FAILURES:				0,
+			FAIL_BAD_J:					1,
+			FAIL_OTHER:					2
 		})
 		this.ode = ode;
 		const count = ode.cachedY.values.length;
@@ -926,6 +930,8 @@ class MMOdeSolver {
 		if (ode.isStiff) {
 			this.qmax = 5;  // max order
 			this.M = new Float64Array(count*count);				// array for keeping matrix for newton solver
+			this.savedJ = new Float64Array(count*count);	// saved jacobian
+			this.newtonStepNumber = 0;
 		}
 		else {
 			this.qmax = 12; // max order
@@ -943,7 +949,7 @@ class MMOdeSolver {
 																						// this vector is scaled to give the est. local err.
 		this.acor_indx;													// index of the zn vector with saved acor
 		this.tempv = new Float64Array(count);		// temporary storage vector
-		this.fTemp = new Float64Array(count);		// temporary storage vector
+		this.ftemp = new Float64Array(count);		// temporary storage vector
 		this.zn = [];		// Nordsieck array, of size N x (q+1).
 										// zn[j] is a vector of length N (j=0,...,q) 
 										// zn[j] = [1/factorial(j)] * h^j * (jth      
@@ -959,6 +965,7 @@ class MMOdeSolver {
 		this.relTol = ode.relTol.values[0];
 
 		this.stepNumber = 0;
+		this.setupStepNumber = 0;		// step number of last setup call
 		this.h = 0;						// current step size 
 		this.next_h;          // step size to be used on the next step
 		this.eta;             // eta = hprime / h
@@ -1043,7 +1050,7 @@ class MMOdeSolver {
 				if (!this.getDKy(tout, 0, yout)) {					
 					return {succeeded: false, t: this.tn};
 				}
-				return {suceeded: true, t: tout};
+				return {succeeded: true, t: tout};
 			}	
 		}	// end stopping tests block
 
@@ -1114,7 +1121,7 @@ class MMOdeSolver {
 				break;
 			}
 		}
-		return {suceeded: true, t: tout};	
+		return {succeeded: true, t: tout};	
 	}
 
 	/**
@@ -1138,9 +1145,11 @@ class MMOdeSolver {
 		const savedT = this.tn;
 		let ncf = 0;
 		let nErrors = 0;
+		let flag = this.flags.FIRST_CALL;
 		let dsm;
 	
-		if ((this.stepNumber > 0) && (this.hprime !== this.h)) {
+		// console.log(`step ${this.stepNumber} hprime ${this.hprime} h ${this.h}`);
+		if ((this.stepNumber > 0) && (this.hprime != this.h)) {
 			this.adjustParams();
 		}
 
@@ -1149,7 +1158,6 @@ class MMOdeSolver {
 		for(;;) {  
 			this.predict();  
 			this.set();
-			let flag = this.flags.FIRST_CALL;
 			if (this.ode.isStiff) {
 				flag = this.newtonSolve(flag);
 			}
@@ -1161,6 +1169,7 @@ class MMOdeSolver {
 				const returnValue = this.doErrorTest(savedT, nErrors);
 				dsm = returnValue.dsm;
 				nErrors = returnValue.nErrors;
+				// console.log(`rv ${returnValue.succeeded} t ${this.tn} dsm ${dsm} nErrors ${nErrors}`);
 				if (returnValue.succeeded === true) {
 					// error okay, exit loop
 					break;
@@ -1387,21 +1396,42 @@ class MMOdeSolver {
 	adjustParams() {
 		const deltaQ = this.qprime - this.q; // should be -1, 0 or 1
 		if (deltaQ) {
-			if (this.q !==2 || deltaQ === 1) {
-				// don't adjust q to 1
-				if (this.ode.isStiff) {
-					this.adjustBDF(deltaQ);
-				}
-				else {
-					this.adjustAdams(deltaQ);
-				}
-			}
+			this.adjustOrder(deltaQ);
 			this.q = this.qprime;
 			this.L = this.q+1;
 			this.qwait = this.L;
 		}
-		this.rescale();
-	
+		this.rescale();	
+	}
+
+	/*
+ * CVAdjustOrder
+ *
+ * This routine is a high level routine which handles an order
+ * change by an amount deltaq (= +1 or -1). If a decrease in order
+ * is requested and q==2, then the routine returns immediately.
+ * Otherwise CVAdjustAdams or CVAdjustBDF is called to handle the
+ * order change (depending on the value of lmm).
+ */
+
+	/**
+	 * @method adjustOrder
+	 * @param {Number} deltaQ
+	 * This routine is a high level routine which handles an order
+	 * change by an amount deltaq (= +1 or -1). If a decrease in order
+	 * is requested and q==2, then the routine returns immediately.
+	 * Otherwise adjustAdams or adjustBDF is called to handle the
+	 * order change (depending on the value of this.ode.isStiff).
+	 */
+	adjustOrder(deltaQ) {
+		if (this.q == 2 && deltaQ != 1) { return; }
+
+		if (this.ode.isStiff) {
+			this.adjustBDF(deltaQ);
+		}
+		else {
+			this.adjustAdams(deltaQ);
+		}	
 	}
 
 	/**
@@ -1489,7 +1519,7 @@ class MMOdeSolver {
 				}
 			}
 			const A1 = (-alpha0 - alpha1) / prod;
-			this.vScale(A1, this.zn[this.indx_acor], this,this.zn[this.L]);
+			this.vScale(A1, this.zn[this.indx_acor], this.zn[this.L]);
 			for (let j = 2; j <= this.q; j++) {
 				this.vLinearSum(l[j], this.zn[this.L], 1, this.zn[j], this.zn[j]);
 			}  
@@ -1851,11 +1881,230 @@ class MMOdeSolver {
 	 *   LSOLVE_FAIL	--->  halt the integration
 	 *   CONV_FAIL		--->  predict again or stop if too many
 	*/
-	newtonSolve() {
+	newtonSolve(flag) {
 		const vtemp1 = this.acor;  /* rename acor as vtemp1 for readability  */
-		const vtemp2 = this.y;     /* rename y as vtemp2 for readability     */
-		const vtemp3 = this.tempv; /* rename tempv as vtemp3 for readability */
+
+		/* Set flag convfail, input to lsetup for its evaluation decision */
+		let convFail = flag === this.flags.FIRST_CALL || flag === this.flags.PREV_ERR_FAIL;
+		convFail = convFail ? this.flags.NO_FAILURES : this.flags.FAIL_OTHER;
+
+		/* Decide whether or not to call setup routine (if one exists) */
+		let callSetup = (flag === this.flags.PREV_CONV_FAIL) ||
+			(flag === this.flags.PREV_ERR_FAIL) ||
+			(this.stepNumber === 0) ||
+			(this.stepNumber >= this.setupStepNumber + 20) ||
+			(Math.abs(this.gamrat-1) > 0.3);
+
+		/* Looping point for the solution of the nonlinear system.
+     Evaluate f at the predicted y, call denseSetup if indicated, and
+     call newtonIteration for the Newton iteration itself.      */
+  
+		for(;;) {
+			if (!this.ode.calcDy(this.tn, this.zn[0], this.ftemp)) {
+				this.nfe++;
+				return this.flags.RHSFUNC_FAIL;
+			}
+			this.nfe++;
 	
+			if (callSetup) {
+				const result =this.denseSetup(convFail, this.zn[0], this.ftemp, vtemp1);
+				callSetup = false;
+				this.gamrat = this.crate = 1; 
+				this.gammap = this.gamma;
+				this.setupStepNumber = this.stepNumber;
+				/* Return if lsetup failed */
+				if (!result) { return this.flags.LSETUP_FAIL; }
+			}
+
+			// Set acor to zero and load prediction into y vector
+			this.acor.fill(0);
+			this.vScale(1, this.zn[0], this.y);
+			
+			// Do the Newton iteration
+			const iterReturn = this.newtonIteration();
+			// console.log(`iterReturn ${iterReturn}`);
+
+			/* If there is a convergence failure and the Jacobian-related 
+       data appears not to be current, loop again with a call to lsetup
+			 in which convfail=CV_FAIL_BAD_J.  Otherwise return.
+			*/
+			if (iterReturn !== this.flags.TRY_AGAIN) {
+				return iterReturn;
+			}
+	
+			callSetup = true;
+			convFail = this.flags.FAIL_BAD_J;
+		}
+	}
+
+	/**
+	 * @method ewtonIteration
+	 *
+	 * This routine performs the Newton iteration. If the iteration succeeds,
+	 * it returns the value SUCCESS. If not, it may signal the newtonSolve 
+	 * routine to call denseSetup again and reattempt the iteration, by
+	 * returning the value TRY_AGAIN. (In this case, newtonSolve must set 
+	 * convfail to FAIL_BAD_J before calling setup again). 
+	 * Otherwise, this routine returns one of the appropriate values 
+	 * LSOLVE_FAIL, RHSFUNC_FAIL or CONV_FAIL back to newtonSolve.
+	 */
+
+	newtonIteration() {
+		let m = 0;
+		let delp = 0;
+		/* Looping point for Newton iteration */
+		for(;;) {
+			/* Evaluate the residual of the nonlinear system*/
+			const b = this.tempv;
+			this.vLinearSum(this.rl1, this.zn[1], 1, this.acor, b);
+			this.vLinearSum(this.gamma, this.ftemp, -1, b, b);
+			
+			// Call the back substitute function function to solve the matrix
+			MMMath.luBackSubstitute(this.y.length, this.M, b, this.pivot);
+			if (this.gamrat !== 1) {
+				this.vScale(1/(1 + this.gamrat), b, b);
+			}
+			
+			/* Get WRMS norm of correction; add correction to acor and y */
+			const del = this.vWrmsNorm(b, this.ewt);
+			this.vLinearSum(1, this.acor, 1, b, this.acor);
+			this.vLinearSum(1, this.zn[0], 1, this.acor, this.y);
+			
+			/* Test for convergence.  If m > 0, an estimate of the convergence
+				rate constant is stored in crate, and used in the test.        */
+			if (m > 0) {
+				this.crate = Math.max(0.3 * this.crate, del/delp);
+			}
+			const dcon = del * Math.min(1, this.crate) / this.tq[4];
+			
+			if (dcon <= 1) {
+				this.acnrm = (m == 0) ? del : this.vWrmsNorm(this.acor, this.ewt);
+				// console.log(`nlstep ${this.setupStepNumber} acnrm ${this.acnrm} ewt ${this.ewt}`);
+				this.jcur = false;
+				return this.flags.SUCCESS; /* Nonlinear system was solved successfully */
+			}
+			m++;
+
+			/* Stop at 3 iterations or if iter. seems to be diverging.
+				If still not converged and Jacobian data is not current, 
+				signal to try the solution again                            */
+			if (m == 3 || (m >= 2 && del > 2*delp)) {
+				if (!this.jcur) {
+					return this.flags.TRY_AGAIN;
+				}
+				else {
+					return this.flags.CONV_FAIL;
+				}
+			}
+			
+			/* Save norm of correction, evaluate f, and loop again */
+			delp = del;
+			if (!this.ode.calcDy(this.tn, this.y, this.ftemp)) {
+				this.nfe++;
+				return this.flags.RHSFUNC_FAIL;
+			}
+			this.nfe++;
+		} /* end loop */
+	}
+
+
+	/**
+	 * denseSetup
+	 * @param {Number} convFail 
+	 * @param {Float64Arrat} ypred 
+	 * @param {Float64Arrat} fpred 
+	 * @param {Float64Arrat} vtemp1 
+	 * @returns {boolean} true if the LU was complete; otherwise false
+	 * This routine does the setup operations for the dense linear solver.
+	 * It makes a decision whether or not to call the Jacobian evaluation
+	 * routine based on various state variables, and if not it uses the 
+	 * saved copy.  In any case, it constructs the Newton matrix 
+	 * M = I - gamma*J, updates counters, and calls the dense LU 
+	 * factorization routine.
+	 */
+	denseSetup(convFail, ypred, fpred, vtemp1) {
+		/* Use stepNumber, gamma/gammap, and convfail to set J eval. flag jok */
+		const dgamma = Math.abs((this.gamma/this.gammap) - 1);
+		const jbad = (this.stepNumber === 0) ||
+			(this.stepNumber > this.newtonStepNumber + 50) ||
+			((convFail === this.flags.FAIL_BAD_J) && (dgamma < 0.2)) ||
+			(convFail === this.flags.FAIL_OTHER);
+
+		const jok = !jbad;
+		if (jok) {
+			/* If jok = TRUE, use saved copy of J */
+			this.jcur = false;
+			this.vCopy(this.savedJ, this.M);
+		}
+		else {
+			/* If jok = fase, call calcJacobian routine for new J value */
+			this.newtonStepNumber = this.stepNumber;
+			this.jcur = true; 
+			this.M.fill(0);
+			if (!this.calcJacobian(this.tn, ypred, fpred, this.M, vtemp1)) {
+				this.setError('mmcmd:odeJacobianError', {path: this.getPath()});
+				return false;
+			}
+			// for (let ij = 0; ij < 3; ij++) {
+			// 	for (let jj = 0; jj < 3; jj++) {
+			// 		console.log(`jac ${ij} ${jj} ${this.M[ij*3 + jj]}`);
+			// 	}
+			// }
+			this.vCopy(this.M, this.savedJ);
+		}
+		// scale
+		const N = ypred.length;
+		const N2 = N*N;
+		const m = this.M
+		for (let i = 0; i < N2; i++) {
+			m[i] *= -this.gamma;
+		}
+		// add identity
+		for (let i = 0; i < N; i++) {
+			m[i*N + i] += 1;
+		}
+
+		// Do LU factorization of M
+		const luResult = MMMath.luDecomposition(N, m);
+		if (luResult.error) {
+			return false;
+		}
+		this.pivot = luResult.pivot;
+		return true;
+	}
+
+	/**
+	 * @method calcJacobian
+	 * @param {Number} t 
+	 * @param {Float64Array} y 
+	 * @param {Float64Array} fy 
+	 * @param {Float64Array} Jac 
+	 * @param {Float64Array} ftemp 
+	 * @returns {boolean} true if successful
+	 */
+	calcJacobian(t, y, fy, Jac, ftemp) {
+		/* Set minimum increment based on EPSILON and norm of f */
+		const N = y.length;
+		const srur = Math.sqrt(Number.EPSILON);
+		const fnorm = this.vWrmsNorm(fy, this.ewt);
+		const minInc = fnorm != 0 ? (1000 * this.h * Number.EPSILON * N * fnorm) : 1;
+		for (let j = 0; j < N; j++) {
+			/* Generate the jth col of J(tn,y) */
+			const yjSaved = y[j];
+			const inc = Math.max(srur*Math.abs(yjSaved), minInc/this.ewt[j]);
+			y[j] += inc;
+			if (!this.ode.calcDy(t, y, ftemp)) {
+				this.nfe++;
+				return false;
+			}
+			this.nfe++;
+			y[j] = yjSaved;
+			const inc_inv = 1/inc;
+			for (let i = 0; i < N; i++) {
+				Jac[i*N + j] = inc_inv * (ftemp[i] - fy[i]);
+			}		
+		}
+		return true;
 	}
 
 	/**
@@ -1931,7 +2180,7 @@ class MMOdeSolver {
 
 		/* Set h ratio eta from dsm, rescale, and return for retry of step */
 		if (returnValue.nErrors <= 3) {
-			this.eta = 1 / Math.pow(6*returnValue.dsm, 1/this.L) + 1e-6;
+			this.eta = 1 / (Math.pow(6*returnValue.dsm, 1/this.L) + 1e-6);
 			this.eta = Math.max(0.1, this.eta);
 			if (returnValue.nErrors >= 2) {
 				this.eta = Math.min(this.eta, 0.2);
@@ -1988,7 +2237,7 @@ class MMOdeSolver {
 	*/
 	setErrorWeight(ycur, weight) {
 		this.vAbs(ycur, this.tempv);
-		if (this.ode.absTol.length === 1) {
+		if (this.ode.absTol.valueCount === 1) {
 			this.vScale(this.relTol, this.tempv, this.tempv);
 			this.vAddConst(this.tempv, this.absTol, this.tempv);
 		}
@@ -2194,6 +2443,14 @@ class MMOdeSolver {
 	 * Performs the operation z = c*x
 	 */
 	vScale(c, x, z) {
+		if (x === z) {	// BLAS usage: scale x <- cx
+			const count = x.length;
+			for (let i = 0; i < count; i++) {
+				x[i] *= c;
+			}
+			return;
+		}
+
 		if (c === 1) {
 			this.vCopy(x, z);
 			return;

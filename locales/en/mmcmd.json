@@ -93,6 +93,7 @@
 	"odeDyCountMismatch": "dy count does not match y count in ODE {{path}}",
 	"odeDyUnitMismatch": "dy units are not compatible with y * t units in ODE {{path}}",
 	"odeErrFailure": "Error test failures occurred too many times during one internal time step\nor minimum step size was reached\nin ODE {{path}}",
+	"odeJacobianError": "Could not calculate Jacobian in ODE {{path}}",
 	"odeException": "ODE Solver Exception in {{path}}\n\n{{msg}}",
 	"odeMissingDy": "Could not calculate dY in ODE {{path}}",
 	"odeNextTEndTMismatch": "Next T must have same units as End T for ODE {{path}}",
