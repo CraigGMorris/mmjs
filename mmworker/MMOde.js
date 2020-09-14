@@ -573,7 +573,7 @@ class MMOde extends MMTool {
 				return returnValue(MMNumberValue.scalarValue(this.nextRecordNumber + 1));
 
 			default:
-				if (lcDescription.match(/^r\\d+$/)) {
+				if (lcDescription.match(/^r\d+$/)) {
 					const rNumber = parseInt(lcDescription.substring(1));
 					return returnValue(this.valueForRecorded(rNumber));
 				}
@@ -610,7 +610,7 @@ class MMOde extends MMTool {
 					for (let rNumber = 1; rNumber <= count; rNumber++) {
 						const columnName = this.columnNameForRecorded(rNumber);
 						if (lcDescription == columnName.toLowerCase()) {
-							return returnValue(this.valueForRecord(rNumber));
+							return returnValue(this.valueForRecorded(rNumber));
 						}
 					}
 				}
