@@ -353,6 +353,22 @@ class MMUnit extends MMCommandObject {
 		return dimensions.map(n => String(n)).join(' ');
 	}
 
+	static dimensionsFromString(dimensionString) {
+		// convert the dimension string to doubles
+		const parts = dimensionString.split(/[, ]+/);
+		const partsLength = parts.length;
+		const dimensions = [];
+		for(let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
+			if (i < partsLength) {
+				dimensions.push(parseFloat(parts[i]));
+			}
+			else {
+				dimensions.push(0);
+			}
+		}
+		return dimensions;
+	}
+
 		/**
 	 * @static convertDateToSeconds
 	 * @param {Number} dateValue
