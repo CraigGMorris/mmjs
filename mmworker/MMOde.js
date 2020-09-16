@@ -40,6 +40,7 @@ class MMOde extends MMTool {
 		this.absTolFormula = new MMFormula('absTol', this);
 		this.absTolFormula.formula = '1.0e-10*{baseunit $.y}';
 		this.recordedValueFormulas = [];
+		this.lastRecordedFormula = 1;		// used for naming recorded value formulas
 		this.recordedValues = [];
 		this.isHidingInfo = false;  // needed because the formula assigns will reset
 		this.nextRecordNumber = 0;
@@ -75,6 +76,39 @@ class MMOde extends MMTool {
 		}
 		
 		return sources;
+	}
+
+		/**
+	 * @method toolViewInfo
+	 * @override
+	 * @param {MMCommand} command
+	 * command.results contains the info for tool info view
+	 */
+	toolViewInfo(command) {
+		super.toolViewInfo(command);
+		const results = command.results;
+		results.isStiff = this.isStiff;
+		results.shouldAutoRun = this.shouldAutoRun;
+
+		const fReturn = (formula) => {
+			const v = formula.value();
+			const vString = v ? v.stringWithUnit() : '';
+			return [formula.name, formula.formula, vString];
+		}
+		const formulas = [];
+		formulas.push(fReturn(this.initialYFormula));
+		formulas.push(fReturn(this.derivativeFormula));
+		formulas.push(fReturn(this.nextTFormula));
+		formulas.push(fReturn(this.endTFormula));
+		formulas.push(fReturn(this.relTolFormula));
+		formulas.push(fReturn(this.absTolFormula));
+		for (let rv of this.recordedValueFormulas) {
+			formulas.push(fReturn(rv));
+		}
+		results.t = this.odeT.values[0];
+		results.tunit = theMMSession.unitSystem.typeNameForUnitNamed(this.odeT.defaultUnit.name);
+
+		results.formulas = formulas;
 	}
 
 	/**
@@ -216,11 +250,11 @@ class MMOde extends MMTool {
 	}
 
 	get shouldAutoRun() {
-		return this._ishouldAutoRun;
+		return this._shouldAutoRun;
 	}
 
 	set shouldAutoRun(newValue) {
-		this._ishouldAutoRun = (newValue) ? true : false;
+		this._shouldAutoRun = (newValue) ? true : false;
 	}
 
 	/** @override */
@@ -228,6 +262,8 @@ class MMOde extends MMTool {
 		let verbs = super.verbs;
 		verbs['run'] = this.runCommand;
 		verbs['reset'] = this.resetCommand;
+		verbs['addrecorded'] = this.addRecordedCommand;
+		verbs['removerecorded'] = this.removeRecordedCommand;
 		return verbs;
 	}
 
@@ -239,7 +275,9 @@ class MMOde extends MMTool {
 	getVerbUsageKey(command) {
 		let key = {
 			run: 'mmcmd:?odeRun',
-			reset: 'mmcmd:?odeReset'
+			reset: 'mmcmd:?odeReset',
+			addrecorded: 'mmcmd:?odeAddRecorded',
+			removerecorded: 'mmcmd:?odeRemoveRecorded',
 		}[command];
 		if (key) {
 			return key;
@@ -268,6 +306,24 @@ class MMOde extends MMTool {
 	}
 	
 	/**
+	 * @method addRecordedCommand
+	 * @param {MMCommand} command
+	 */
+	addRecordedCommand(command) {
+		this.addRecordedValue();
+		command.results = 'added recorded';
+	}
+
+	/**
+	 * @method removeRecordedCommand
+	 * @param {MMCommand} command
+	 */
+	removeRecordedCommand(command) {
+		this.removeRecordedValue(parseInt(command.args));
+		command.results = 'removed recorded';
+	}
+
+	/**
 	 * @method changedFormula
 	 * @override
 	 * @param {MMFormula} formula
@@ -290,7 +346,7 @@ class MMOde extends MMTool {
 				this.cachedY = null;
 				this.odeT.values[0] = 0.0;
 				this.resetRecordedValues();
-				this.nextTFormula = 0;
+				this.nextRecordNumber = 0;
 				this.isSolved = false;
 			}
 		}
@@ -323,13 +379,27 @@ class MMOde extends MMTool {
 	 * @returns MMFormula
 	 */
 	addRecordedValue() {
-		const formula = new MMFormula('$.t', this);
+		const formula = new MMFormula(`r${this.lastRecordedFormula++}`, this);
+		formula.formula = '$.t';
 		this.recordedValueFormulas.push(formula);
 		this.recordedValues.push([]);
 		if (!theMMSession.isLoadingCase) {
 			this.reset();
 		}
-				return formula;
+		return formula;
+	}
+
+	/**
+	 * @method removeRecordValue
+	 * @param {Number} n - the number to remove 
+	 */
+	removeRecordedValue(n) {
+		if (n >= 1 && n <= this.recordedValueFormulas.length) {
+			n--;
+			this.recordedValueFormulas.splice(n,1);
+			this.recordedValues.splice(n,1);
+			this.reset();
+		}
 	}
 
 	/**

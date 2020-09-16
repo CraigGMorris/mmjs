@@ -19,7 +19,7 @@ const SolverDisplay = Object.freeze({
 
 /**
  * SolverView
- * info view for model
+ * info view for equation solver
  */
 export function SolverView(props) {
 	const [display, setDisplay] = useState(SolverDisplay.input);

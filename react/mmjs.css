@@ -798,6 +798,52 @@ a:hover {
 	overflow: hidden;
 }
 
+#ode__button-fields {
+	width: 100%;
+	display: grid;
+	grid-template-rows: var(--input--height);
+	grid-template-columns: 1fr 1fr 1fr;
+	margin-top: 10px;
+	column-gap: 10px;
+}
+
+#ode__check-boxes {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: "is-stiff autorun";
+}
+
+.ode__input {
+	/* display: grid;
+	grid-template-columns: 30px 1fr;
+	grid-template-rows: var(--input--height) var(--input--height);
+	grid-template-areas: "flabel formula"
+		"clabel count"; */
+	border-bottom: solid 1px;
+	margin-bottom: 5px;
+	padding: 5px;
+}
+
+#ode__input-list {
+	overflow: auto;
+	height: calc(var(--info-height) - 145px);
+	border: solid 1px;
+	margin-top: 20px;
+}
+
+#ode__is-stiff {
+	grid-area: is-stiff;
+}
+
+#ode__autorun {
+	grid-area: autorun;
+}
+.ode__record-desc-line {
+	display: grid;
+	grid-template-columns: 1fr 100px;
+}
+
 #sessions__wrapper {
 	display: grid;
 	grid-template-rows: 50px 1fr 1fr;
