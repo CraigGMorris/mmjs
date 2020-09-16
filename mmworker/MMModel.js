@@ -348,6 +348,10 @@ class MMModel extends MMTool {
 							if (saved.CaseName && saved.RootModel) {
 								// it is a copied session paste the root model with name CaseName
 								name = saved.CaseName.replace(/\s/g,'_');
+								while ( this.childNamed(name) ) {
+									name = `x${this.nextToolNumber++}`;
+								}	
+			
 								tool = saved.RootModel;
 								tool.name = name;
 							}
@@ -365,6 +369,7 @@ class MMModel extends MMTool {
 							while ( this.childNamed(name) ) {
 								name = `${name}_${number++}`;
 							}
+							tool.name = name;
 							this.restoreTool(tool);
 							command.undo = `${this.getPath()} removetool ${name}`
 						}
