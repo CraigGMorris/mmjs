@@ -478,7 +478,14 @@ class MMDataTable extends MMTool {
 	 * @param {Object} saved - from json
 	 */
 	restoreColumn(columnNumber, saved) {
-		const displayUnit = saved.sValues ? 'string' : saved.displayUnitl
+		let displayUnit = saved.sValues ? 'string' : saved.displayUnit;
+		if (!displayUnit && saved.unitDimensions) {
+			const dimensions = MMUnit.dimensionsFromString(saved.unitDimensions);
+			displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(dimensions);
+			if (displayUnit) {
+				displayUnit = displayUnit.name;
+			}
+		}
 		const column = new MMDataTableColumn(this, saved.name, displayUnit);
 		column.initFromSaved(saved);
 		this.columnArray.splice(columnNumber - 1, 0, column);
