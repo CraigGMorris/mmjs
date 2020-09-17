@@ -477,7 +477,7 @@ export class Diagram extends React.Component {
 					if (this.state.showClipboard) {
 						this.setState({showClipboard: false});
 					}
-					else if (e.clientY - this.props.diagramBox.top > 15) {
+					else if (e.clientY - this.props.diagramBox.top > 25) {
 						// bring up context menu, but only if click is below title and return text
 						this.setState((state) => {
 							const scale = state.scale;
@@ -827,6 +827,38 @@ export class Diagram extends React.Component {
 					y: 25,
 					text: pathParts[pathParts.length-1],
 					textClick: () => {this.getModelInfo(true);}
+				})
+			);
+			textList.push(
+				e(ClickableDiagramText, {
+					key: 'zoomin',
+					x: this.props.diagramBox.width - 40,
+					y: 30,
+					text: '🔼',
+					textClick: () => {
+						this.setState((state) => {
+							const newScale = Math.max(0.1, state.scale * 1.2);
+							return {
+								scale: newScale,
+							}
+						})
+					}
+				})
+			)
+			textList.push(
+				e(ClickableDiagramText, {
+					key: 'zoomout',
+					x: this.props.diagramBox.width - 15,
+					y: 30,
+					text: '🔽',
+					textClick: () => {
+						this.setState((state) => {
+							const newScale = Math.max(0.1, state.scale / 1.2);
+							return {
+								scale: newScale,
+							}
+						})
+					}
 				})
 			)
 		}
@@ -1604,7 +1636,7 @@ class ClickableDiagramText extends React.Component {
 			style: {
 				pointerEvents: 'auto',
 				fill: 'blue',
-				font: '15px sans-serif',
+				font: '20px sans-serif',
 			},
 			x: this.props.x,
 			y: this.props.y,
