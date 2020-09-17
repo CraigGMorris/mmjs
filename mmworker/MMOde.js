@@ -171,65 +171,71 @@ class MMOde extends MMTool {
 	 * @param {Object} saved 
 	 */
 	initFromSaved(saved) {
-		super.initFromSaved(saved);
-		this.initialYFormula.formula = saved.y0Formula.Formula;
-		this.derivativeFormula.formula = saved.dyFormula.Formula;
-		this.nextTFormula.formula = saved.nextTFormula.Formula;
-		this.endTFormula.formula = saved.endTFormula.Formula;
-		this.relTolFormula.formula = saved.relTolFormula.Formula;
-		this.absTolFormula.formula = saved.absTolFormula.Formula;
+		this.isLoadingCase = true;
+		try {
+			super.initFromSaved(saved);
+			this.initialYFormula.formula = saved.y0Formula.Formula;
+			this.derivativeFormula.formula = saved.dyFormula.Formula;
+			this.nextTFormula.formula = saved.nextTFormula.Formula;
+			this.endTFormula.formula = saved.endTFormula.Formula;
+			this.relTolFormula.formula = saved.relTolFormula.Formula;
+			this.absTolFormula.formula = saved.absTolFormula.Formula;
 
-		const recordedFormulas = saved.recFormulas;
-		if (recordedFormulas) {
-			for (let recordedFormula of recordedFormulas) {
-				const formula = this.addRecordedValue();
-				formula.formula = recordedFormula.Formula;
+			const recordedFormulas = saved.recFormulas;
+			if (recordedFormulas) {
+				for (let recordedFormula of recordedFormulas) {
+					const formula = this.addRecordedValue();
+					formula.formula = recordedFormula.Formula;
+				}
+			}
+			this._isStiff = saved.Stiff ? true : false;
+			this._shouldAutoRun = saved.AutoRun ? true : false;
+		
+			const t = saved.T;
+			if (t) {
+				const a = saved.cachedY;
+				if (a) {
+					this.odeT.values[0] = t;
+					const parseDimensions = (s) => {
+						if (s) {
+							return s.split(' ').map(d => parseFloat(d));
+						}
+					}
+					this.odeT = MMNumberValue(t, parseDimensions(saved.tUnit));
+					const count = a.length;
+					const nColumns = saved.nColumns;
+					const columnCount = nColumns ? parseInt(nColumns) : 1;
+					const rowCount = count / columnCount;
+					if (saved.yUnits) {
+						// the saved Ys all have the same units and yUnits remains null
+						this.cachedY = new MMNumberValue(rowCount,  columnCount, parseDimensions(saved.yUnits));
+						this.cachedY._values = Float64Array.from(a);
+					}
+					else {
+						const ytUnits = saved.ytUnits;
+						if (ytUnits) {
+							const columns = [];
+							for (let savedColumn of ytUnits) {
+								const dimensions = parseDimensions(saved.unitDimensions);
+								const displayUnit = dimensions ? MMUnitSystem.defaultUnitWithDimensions(dimensions) : 'Fraction';
+								columns.push(new MMTableValueColumn({
+									name: savedColumn.name,
+									displayUnit: displayUnit,
+									value: MMNumberValue.scalarValue(1, dimensions)
+								}));
+							}
+							this.yUnits = new MMTableValue({columns: columns});
+						}
+					}
+				}
+
+				if (!this._shouldAutoRun && saved.solved) {
+					this.isSolved = true;
+				}
 			}
 		}
-		this._isStiff = saved.Stiff ? true : false;
-		this._shouldAutoRun = saved.AutoRun ? true : false;
-	
-		const t = saved.T;
-		if (t) {
-			const a = saved.cachedY;
-			if (a) {
-				this.odeT.values[0] = t;
-				const parseDimensions = (s) => {
-					if (s) {
-						return s.split(' ').map(d => parseFloat(d));
-					}
-				}
-				this.odeT = MMNumberValue(t, parseDimensions(saved.tUnit));
-				const count = a.length;
-				const nColumns = saved.nColumns;
-				const columnCount = nColumns ? parseInt(nColumns) : 1;
-				const rowCount = count / columnCount;
-				if (saved.yUnits) {
-					// the saved Ys all have the same units and yUnits remains null
-					this.cachedY = new MMNumberValue(rowCount,  columnCount, parseDimensions(saved.yUnits));
-					this.cachedY._values = Float64Array.from(a);
-				}
-				else {
-					const ytUnits = saved.ytUnits;
-					if (ytUnits) {
-						const columns = [];
-						for (let savedColumn of ytUnits) {
-							const dimensions = parseDimensions(saved.unitDimensions);
-							const displayUnit = dimensions ? MMUnitSystem.defaultUnitWithDimensions(dimensions) : 'Fraction';
-							columns.push(new MMTableValueColumn({
-								name: savedColumn.name,
-								displayUnit: displayUnit,
-								value: MMNumberValue.scalarValue(1, dimensions)
-							}));
-						}
-						this.yUnits = new MMTableValue({columns: columns});
-					}
-				}
-			}
-
-			if (!this._shouldAutoRun && saved.solved) {
-				this.isSolved = true;
-			}
+		finally {
+			this.isLoadingCase = false;
 		}
 	}
 
@@ -383,7 +389,7 @@ class MMOde extends MMTool {
 		formula.formula = '$.t';
 		this.recordedValueFormulas.push(formula);
 		this.recordedValues.push([]);
-		if (!theMMSession.isLoadingCase) {
+		if (!this.isLoadingCase) {
 			this.reset();
 		}
 		return formula;

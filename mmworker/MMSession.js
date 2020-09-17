@@ -304,7 +304,7 @@ class MMSession extends MMCommandParent {
 			ModelPath: modelPath,
 			RootModel: rootSave,
 		}
-		return JSON.stringify(sessionSave);//, null, '');
+		return JSON.stringify(sessionSave, null, '\t');
 	}
 
 	/** @method saveSession
