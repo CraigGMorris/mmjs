@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "Tests",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
+	"SelectedObject": "errorCount",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -17593,8 +17593,8 @@
 									{
 										"name": "s",
 										"Notes": "",
-										"DiagramX": 100,
-										"DiagramY": 290,
+										"DiagramX": 105,
+										"DiagramY": 285,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17603,34 +17603,10 @@
 										}
 									},
 									{
-										"name": "r",
-										"Notes": "",
-										"DiagramX": 100,
-										"DiagramY": 265,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "\"(?<=^|\\s)\\w{\" +\n{cc\n\t\"1\", \"2\", \"3\",\n\t\"4\", \"5\", \"6\", \"8\"\n} +\n\"}(?=$|[^\\w])\""
-										}
-									},
-									{
-										"name": "m1",
-										"Notes": "",
-										"DiagramX": 180,
-										"DiagramY": 265,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{match r[2], s}"
-										}
-									},
-									{
 										"name": "m",
 										"Notes": "",
-										"DiagramX": 180,
-										"DiagramY": 290,
+										"DiagramX": 185,
+										"DiagramY": 260,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17641,7 +17617,7 @@
 									{
 										"name": "s2",
 										"Notes": "",
-										"DiagramX": 100,
+										"DiagramX": 105,
 										"DiagramY": 315,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
@@ -17653,20 +17629,20 @@
 									{
 										"name": "m2",
 										"Notes": "",
-										"DiagramX": 180,
-										"DiagramY": 340,
+										"DiagramX": 185,
+										"DiagramY": 315,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{match r[-2:-1] {tr s2}}"
+											"Formula": "{replace \" \", \"\" {match r[-2:-1] {tr s2}}}"
 										}
 									},
 									{
 										"name": "expectedM",
 										"Notes": "",
-										"DiagramX": 180,
-										"DiagramY": 315,
+										"DiagramX": 185,
+										"DiagramY": 285,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17675,22 +17651,10 @@
 										}
 									},
 									{
-										"name": "errorM1",
-										"Notes": "",
-										"DiagramX": 255,
-										"DiagramY": 265,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{ne m1 \"It\"}"
-										}
-									},
-									{
 										"name": "errorM",
 										"Notes": "",
-										"DiagramX": 255,
-										"DiagramY": 290,
+										"DiagramX": 260,
+										"DiagramY": 260,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17701,8 +17665,8 @@
 									{
 										"name": "expectedM2",
 										"Notes": "",
-										"DiagramX": 180,
-										"DiagramY": 365,
+										"DiagramX": 185,
+										"DiagramY": 340,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17713,7 +17677,7 @@
 									{
 										"name": "errorM2",
 										"Notes": "",
-										"DiagramX": 255,
+										"DiagramX": 260,
 										"DiagramY": 315,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
@@ -17725,15 +17689,27 @@
 									{
 										"name": "errorCount",
 										"Notes": "",
-										"DiagramX": 255,
-										"DiagramY": 340,
+										"DiagramX": 260,
+										"DiagramY": 345,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "errorM +\nerrorM1 +\nerrorM2"
+											"Formula": "errorM +\nerrorM2"
 										},
 										"isOutput": "y"
+									},
+									{
+										"name": "r",
+										"Notes": "",
+										"DiagramX": 105,
+										"DiagramY": 260,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "\"\\b\\w{\" +\n{cc\n\t\"1\", \"2\", \"3\",\n\t\"4\", \"5\", \"6\", \"8\"\n} +\n\"}\\b\""
+										}
 									}
 								]
 							},
@@ -17751,7 +17727,7 @@
 										"name": "s",
 										"Notes": "",
 										"DiagramX": 100,
-										"DiagramY": 260,
+										"DiagramY": 275,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17760,22 +17736,10 @@
 										}
 									},
 									{
-										"name": "r",
-										"Notes": "",
-										"DiagramX": 100,
-										"DiagramY": 235,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "\"(?<=^|\\s)\\w{\" +\n{cc\n\t\"1\", \"2\", \"3\",\n\t\"4\", \"5\", \"6\", \"8\"\n} +\n\"}(?=$|[^\\w])\""
-										}
-									},
-									{
 										"name": "s2",
 										"Notes": "",
 										"DiagramX": 100,
-										"DiagramY": 285,
+										"DiagramY": 310,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17787,7 +17751,7 @@
 										"name": "test1",
 										"Notes": "",
 										"DiagramX": 185,
-										"DiagramY": 235,
+										"DiagramY": 250,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17799,7 +17763,7 @@
 										"name": "test2",
 										"Notes": "",
 										"DiagramX": 185,
-										"DiagramY": 285,
+										"DiagramY": 305,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17811,7 +17775,7 @@
 										"name": "expected1",
 										"Notes": "",
 										"DiagramX": 185,
-										"DiagramY": 260,
+										"DiagramY": 280,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17823,7 +17787,7 @@
 										"name": "expected2",
 										"Notes": "",
 										"DiagramX": 185,
-										"DiagramY": 310,
+										"DiagramY": 330,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17835,7 +17799,7 @@
 										"name": "error1",
 										"Notes": "",
 										"DiagramX": 260,
-										"DiagramY": 260,
+										"DiagramY": 280,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17847,7 +17811,7 @@
 										"name": "error2",
 										"Notes": "",
 										"DiagramX": 260,
-										"DiagramY": 285,
+										"DiagramY": 305,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17859,7 +17823,7 @@
 										"name": "errorCount",
 										"Notes": "",
 										"DiagramX": 260,
-										"DiagramY": 310,
+										"DiagramY": 330,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -17867,6 +17831,18 @@
 											"Formula": "error1 + error2"
 										},
 										"isOutput": "y"
+									},
+									{
+										"name": "r",
+										"Notes": "",
+										"DiagramX": 100,
+										"DiagramY": 250,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "\"\\b\\w{\" +\n{cc\n\t\"1\", \"2\", \"3\",\n\t\"4\", \"5\", \"6\", \"8\"\n} +\n\"}\\b\""
+										}
 									}
 								]
 							},
@@ -17913,7 +17889,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "\"(?<=^|\\s)\\w{\" +\n{cc\n\t\"1\", \"2\", \"3\",\n\t\"4\", \"5\", \"6\", \"8\"\n} +\n\"}(?=$|[^\\w])\""
+											"Formula": "\"\\b\\w{\" +\n{cc\n\t\"1\", \"2\", \"3\",\n\t\"4\", \"5\", \"6\", \"8\"\n} +\n\"}\\b\""
 										}
 									},
 									{
