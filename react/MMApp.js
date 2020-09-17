@@ -796,7 +796,6 @@ export function MMApp(props) {
 					id: 'mmapp__wrapper--two-pane',
 					style: {
 						gridTemplateColumns: `1fr ${infoWidth}px`,
-						gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
 					},
 				},
 				e(
@@ -806,14 +805,22 @@ export function MMApp(props) {
 					},
 					e(ErrorBoundary, {}, diagram)
 				),
-				infoNav,
-				e(ErrorBoundary, {
-					// handleBoundraryError: () => {
-					// 	popView();
-					// 	alert(t('mmcmd:viewError'));
-					// }
-				}, infoView),
-				infoTools,
+				e(
+					'div', {
+						id: 'mmapp__info-view',
+						style: {
+							gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
+						}
+					},
+					infoNav,
+					e(ErrorBoundary, {
+						// handleBoundraryError: () => {
+						// 	popView();
+						// 	alert(t('mmcmd:viewError'));
+						// }
+					}, infoView),
+					infoTools,
+				)
 			);
 			break;
 
