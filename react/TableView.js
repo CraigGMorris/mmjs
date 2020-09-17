@@ -287,53 +287,6 @@ export function TableView(props) {
 			colorClass = 'tableview__cell--' + ((column + columnOrigin) % 2 ? 'color1' : 'color2');
 		}
 
-		const columnLabelBox = e(
-			'rect', {
-				className: colorClass,
-				x: x,
-				y: yPadding,
-				width: cellWidth,
-				height: cellHeight,
-				key: `colbox${column}`,
-			}
-		);
-		cells.push(columnLabelBox);
-		if (value.t === 't') {
-			const tableColumn = value.v[column + columnOrigin];
-			const columnLabel = e(
-				'text', {
-					className: 'result-table__column-label',
-					x: x + xTextPad,
-					y: cellHeight * 0.5,
-					key: `col${column}`,
-				},
-				tableColumn.name
-			);
-			cells.push(columnLabel);
-			const unitLabel = e(
-				'text', {
-					className: 'result-table__column-label',
-					x: x + xTextPad,
-					y: cellHeight * 0.9,
-					key: `colUnit${column}`,
-				},
-				tableColumn.dUnit
-			);
-			cells.push(unitLabel);
-
-		}
-		else {
-			const columnLabel = e(
-				'text', {
-					x: x + xTextPad,
-					y: cellHeight * 0.8,
-					key: `col${column}`
-				},
-				`${(column + columnOrigin + 1)}`
-			);
-			cells.push(columnLabel);
-		}
-
 		for (let row = 0; row < nDisplayedRows; row++) {
 			const offsetRow = row + rowOrigin + 1;
 			const y = (row + 2) * cellHeight + rowOrigin*cellHeight - offset.y;
@@ -451,6 +404,53 @@ export function TableView(props) {
 				);
 				cells.push(rowLabel);
 			}
+		}
+		
+		const columnLabelBox = e(
+			'rect', {
+				className: colorClass,
+				x: x,
+				y: yPadding,
+				width: cellWidth,
+				height: cellHeight,
+				key: `colbox${column}`,
+			}
+		);
+		cells.push(columnLabelBox);
+		if (value.t === 't') {
+			const tableColumn = value.v[column + columnOrigin];
+			const columnLabel = e(
+				'text', {
+					className: 'result-table__column-label',
+					x: x + xTextPad,
+					y: cellHeight * 0.5,
+					key: `col${column}`,
+				},
+				tableColumn.name
+			);
+			cells.push(columnLabel);
+			const unitLabel = e(
+				'text', {
+					className: 'result-table__column-label',
+					x: x + xTextPad,
+					y: cellHeight * 0.9,
+					key: `colUnit${column}`,
+				},
+				tableColumn.dUnit
+			);
+			cells.push(unitLabel);
+
+		}
+		else {
+			const columnLabel = e(
+				'text', {
+					x: x + xTextPad,
+					y: cellHeight * 0.8,
+					key: `col${column}`
+				},
+				`${(column + columnOrigin + 1)}`
+			);
+			cells.push(columnLabel);
 		}
 	}
 
