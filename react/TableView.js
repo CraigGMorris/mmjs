@@ -36,7 +36,7 @@ export function TableView(props) {
 
 
 	const cellHeight = 30;
-	const cellWidth = 110;
+	const cellWidth = 120;
 	const rowLabelWidth = 50;
 
 	const value = props.value;
@@ -260,7 +260,7 @@ export function TableView(props) {
 				return v.toExponential(8)
 			}
 			else {
-				return v.toFixed(4);
+				return v.toFixed(5);
 			}
 		}
 		else {
@@ -405,7 +405,7 @@ export function TableView(props) {
 				cells.push(rowLabel);
 			}
 		}
-		
+
 		const columnLabelBox = e(
 			'rect', {
 				className: colorClass,
