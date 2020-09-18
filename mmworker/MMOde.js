@@ -460,7 +460,7 @@ class MMOde extends MMTool {
 				a.push(recValue.copyOf());
 			}
 			else {
-				this.setError('mmcmd:odeRecordValueError', {number: i + 1, path: this.getPath()});
+				this.setError('mmcmd:recordValueError', {number: i + 1, path: this.getPath()});
 				return false;
 			}
 		}
@@ -483,7 +483,7 @@ class MMOde extends MMTool {
 				for (let row = 0; row < aLength; row++) {
 					const v = a[row];
 					if (v.valueCount !== firstLength) {
-						this.setError('mmcmd:odeRecordLengthError', {path: this.getPath()});
+						this.setError('mmcmd:recordLengthError', {path: this.getPath()});
 						return null;
 					}
 					for (let column = 0; column < firstLength; column++) {
@@ -496,7 +496,7 @@ class MMOde extends MMTool {
 		return null;
 	}
 
-		/**
+	/**
 	 * @method columnNameForRecorded
 	 * @param {Number} rNumber - the record value number
 	 * @returns {String} - the name for recorded value rNumber
@@ -554,6 +554,36 @@ class MMOde extends MMTool {
 				return v;
 			}
 		};
+
+		const makeTable = () => {
+			{
+				const count = this.recordedValues.length;
+				const columns = [];
+				for (let rNumber = 1; rNumber <= count; rNumber++) {
+					const columnName = this.columnNameForRecorded(rNumber);
+					const v = this.valueForRecorded(rNumber);
+					if (!columnName || !v) {
+						return null;
+					}
+					if (v.columnCount > 1) {
+						for (let cNumber = 1; cNumber <= v.columnCount; cNumber++) {
+							const name = columnName + `_${cNumber}`;
+							const column = new MMTableValueColumn({
+								name: name, displayUnit: v.defaultUnit.name, value: v.columnNumber(cNumber)
+							});
+							columns.push(column);
+						}
+					}
+					else {
+						const column = new MMTableValueColumn({
+							name: columnName, displayUnit: v.defaultUnit.name, value: v
+						});
+						columns.push(column);
+					}
+				}
+				return returnValue(new MMTableValue({columns: columns}));
+			}
+		}
 
 		switch (lcDescription) {
 			case 't':
@@ -648,37 +678,13 @@ class MMOde extends MMTool {
 			case 'i':
 				return returnValue(MMNumberValue.scalarValue(this.nextRecordNumber + 1));
 
+			case 'table':
+				return makeTable();
+
 			default:
 				if (lcDescription.match(/^r\d+$/)) {
 					const rNumber = parseInt(lcDescription.substring(1));
 					return returnValue(this.valueForRecorded(rNumber));
-				}
-				else if (lcDescription === 'table') {
-					const count = this.recordedValues.length;
-					const columns = [];
-					for (let rNumber = 1; rNumber <= count; rNumber++) {
-						const columnName = this.columnNameForRecorded(rNumber);
-						const v = this.valueForRecorded(rNumber);
-						if (!columnName || !v) {
-							return null;
-						}
-						if (v.columnCount > 1) {
-							for (let cNumber = 1; cNumber <= v.columnCount; cNumber++) {
-								const name = columnName + `_${cNumber}`;
-								const column = new MMTableValueColumn({
-									name: name, displayUnit: v.defaultUnit.name, value: v.columnNumber(cNumber)
-								});
-								columns.push(column);
-							}
-						}
-						else {
-							const column = new MMTableValueColumn({
-								name: columnName, displayUnit: v.defaultUnit.name, value: v
-							});
-							columns.push(column);
-						}
-					}
-					return returnValue(new MMTableValue({columns: columns}));
 				}
 				else {
 					// see if it matches any recorded value comment

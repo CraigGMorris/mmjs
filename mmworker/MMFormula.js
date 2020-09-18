@@ -3618,6 +3618,9 @@ class MMFormula extends MMCommandObject {
 	}
 
 	set formula(newFormula) {
+		if (typeof newFormula === 'number') {
+			newFormula = `${newFormula}`;
+		}
 		if (newFormula && newFormula.length == 0) {
 			newFormula = null;
 		}

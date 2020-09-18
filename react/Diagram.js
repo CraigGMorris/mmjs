@@ -1018,7 +1018,14 @@ export class Diagram extends React.Component {
 									action: () => {
 										addTool('Ode');
 									}
-								},							]
+								},
+								{
+									text: 'Iterator',
+									action: () => {
+										addTool('Iterator');
+									}
+								},
+							]
 						}
 					)
 				}
@@ -1255,6 +1262,7 @@ class ToolIcon extends React.Component {
 			DataTable: 'rgba(231,235,231,.8)',
 			Solver: 'rgba(225,237,250,.8)',
 			Ode: 'rgba(216,221,250,.8)',
+			Iterator: 'rgba(255,232,217,.8)'
 		}
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;
