@@ -617,6 +617,46 @@ a:hover {
 	grid-area: sessions;
 }
 
+#iter__control-line {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: "autorun addrecord";
+	padding-top: 5px;
+}
+
+#iter__current-i-x {
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	margin-left: 20px;
+}
+
+.iter__input {
+	border-bottom: solid 1px;
+	margin-bottom: 5px;
+	padding: 5px;
+}
+
+#iter__input-list {
+	overflow: auto;
+	height: calc(var(--info-height) - 115px);
+	border: solid 1px;
+	margin-top: 20px;
+}
+
+#iter__autorun {
+	grid-area: autorun;
+}
+
+#iter__addrecord-button {
+	grid-area: addrecord;
+}
+
+.iter__record-desc-line {
+	display: grid;
+	grid-template-columns: 1fr 100px;
+}
+
 #matrix {
 	display: grid;
 	grid-template-columns: 1fr;
@@ -817,14 +857,10 @@ a:hover {
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: 1fr;
 	grid-template-areas: "is-stiff autorun";
+	padding-top: 5px;
 }
 
 .ode__input {
-	/* display: grid;
-	grid-template-columns: 30px 1fr;
-	grid-template-rows: var(--input--height) var(--input--height);
-	grid-template-areas: "flabel formula"
-		"clabel count"; */
 	border-bottom: solid 1px;
 	margin-bottom: 5px;
 	padding: 5px;
@@ -832,7 +868,7 @@ a:hover {
 
 #ode__input-list {
 	overflow: auto;
-	height: calc(var(--info-height) - 145px);
+	height: calc(var(--info-height) - 155px);
 	border: solid 1px;
 	margin-top: 20px;
 }
@@ -844,6 +880,11 @@ a:hover {
 #ode__autorun {
 	grid-area: autorun;
 }
+
+#ode__current-t {
+	margin-left: 20px;
+}
+
 .ode__record-desc-line {
 	display: grid;
 	grid-template-columns: 1fr 100px;

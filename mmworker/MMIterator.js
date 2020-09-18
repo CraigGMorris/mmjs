@@ -6,9 +6,6 @@
 	MMNumberValue:readonly
 	MMTableValueColumn:readonly
 	MMTableValue:readonly
-	theMMSession:readonly
-	MMMath:readonly
-	MMCommandMessage:readonly
 */
 
 /**
@@ -109,6 +106,19 @@ class MMIterator extends MMTool {
 	}
 
 	/**
+	 * @method removeRecordValue
+	 * @param {Number} n - the number to remove 
+	 */
+	removeRecordedValue(n) {
+		if (n >= 1 && n <= this.recordedValueFormulas.length) {
+			n--;
+			this.recordedValueFormulas.splice(n,1);
+			this.recordedValues.splice(n,1);
+			this.reset();
+		}
+	}
+
+	/**
 	 * @method reset - resets to begining of run, discarding any calculations
 	 */
 	reset() {
@@ -148,6 +158,18 @@ class MMIterator extends MMTool {
 		this.recordedValues = [];
 		for (let i = 0; i < count; i++) {
 			this.recordedValues.push([]);
+		}
+	}
+
+	/**
+	 * @override forgetCalculated
+	 */
+	forgetCalculated() {
+		if (!this.forgetRecursionBlockIsOn) {
+			this.reset();
+			if (this.shouldAutoRun) {
+				this.isSolved = false;
+			}
 		}
 	}
 
@@ -373,4 +395,123 @@ class MMIterator extends MMTool {
 			this.isSolved = test && this.shouldAutoRun;
 		}
 	}
+
+	/**
+	 * @method inputSources
+	 * @override
+	 * @returns {Set} contains tools referenced by this tool
+	 */
+	inputSources() {
+		let sources = super.inputSources();
+		this.whileFormula.addInputSourcesToSet(sources);
+		this.initialXFormula.addInputSourcesToSet(sources);
+		this.nextXFormula.addInputSourcesToSet(sources);
+	
+		for (let formula of this.recordedValueFormulas) {
+			formula.addInputSourcesToSet(sources);
+		}
+		
+		return sources;
+	}
+
+	/** @override */
+	get properties() {
+		let d = super.properties;
+		d['shouldAutoRun'] = {type: MMPropertyType.boolean, readOnly: false};
+		return d;
+	}
+
+	get shouldAutoRun() {
+		return this._shouldAutoRun;
+	}
+
+	set shouldAutoRun(newValue) {
+		this._shouldAutoRun = (newValue) ? true : false;
+	}
+
+	/** @override */
+		get verbs() {
+			let verbs = super.verbs;
+			verbs['reset'] = this.resetCommand;
+			verbs['addrecorded'] = this.addRecordedCommand;
+			verbs['removerecorded'] = this.removeRecordedCommand;
+			return verbs;
+		}
+	
+		/** @method getVerbUsageKey
+		 * @override
+		 * @param {string} command - command to get the usage key for
+		 * @returns {string} - the i18n key, if it exists
+		 */
+		getVerbUsageKey(command) {
+			let key = {
+				reset: 'mmcmd:?iterReset',
+				addrecorded: 'mmcmd:?iterAddRecorded',
+				removerecorded: 'mmcmd:?iterRemoveRecorded',
+			}[command];
+			if (key) {
+				return key;
+			}
+			else {
+				return super.getVerbUsageKey(command);
+			}
+		}
+
+	/**
+	 * @method resetCommand
+	 * @param {MMCommand} command
+	 */
+	resetCommand(command) {
+		this.reset();
+		command.results = 'reset done';
+	}
+	
+	/**
+	 * @method addRecordedCommand
+	 * @param {MMCommand} command
+	 */
+	addRecordedCommand(command) {
+		this.addRecordedValue();
+		command.results = 'added recorded';
+	}
+
+	/**
+	 * @method removeRecordedCommand
+	 * @param {MMCommand} command
+	 */
+	removeRecordedCommand(command) {
+		this.removeRecordedValue(parseInt(command.args));
+		command.results = 'removed recorded';
+	}
+
+	/**
+	 * @method toolViewInfo
+	 * @override
+	 * @param {MMCommand} command
+	 * command.results contains the info for tool info view
+	 */
+	toolViewInfo(command) {
+		super.toolViewInfo(command);
+		const results = command.results;
+		results.shouldAutoRun = this.shouldAutoRun;
+
+		const fReturn = (formula) => {
+			const v = formula.value();
+			const vString = v ? v.stringWithUnit() : '';
+			return [formula.name, formula.formula, vString];
+		}
+		const formulas = [];
+		formulas.push(fReturn(this.whileFormula));
+		formulas.push(fReturn(this.initialXFormula));
+		formulas.push(fReturn(this.nextXFormula));
+		for (let rv of this.recordedValueFormulas) {
+			formulas.push(fReturn(rv));
+		}
+		results.i = this.i.values[0];
+		results.x = this.x ? this.x.values[0] : '';
+		results.xunit = this.x ? this.x.defaultUnit.name : '';
+
+		results.formulas = formulas;
+	}
+
 }

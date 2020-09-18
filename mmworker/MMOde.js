@@ -4,7 +4,6 @@
 	MMFormula:readonly
 	MMPropertyType:readonly
 	MMNumberValue:readonly
-	theMMSession:readonly
 	MMNumberValue:readonly
 	MMUnitSystem:readonly
 	MMUnit:readonly
@@ -78,7 +77,7 @@ class MMOde extends MMTool {
 		return sources;
 	}
 
-		/**
+	/**
 	 * @method toolViewInfo
 	 * @override
 	 * @param {MMCommand} command
@@ -106,7 +105,7 @@ class MMOde extends MMTool {
 			formulas.push(fReturn(rv));
 		}
 		results.t = this.odeT.values[0];
-		results.tunit = theMMSession.unitSystem.typeNameForUnitNamed(this.odeT.defaultUnit.name);
+		results.tunit = this.odeT.defaultUnit.name;
 
 		results.formulas = formulas;
 	}

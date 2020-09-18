@@ -8,21 +8,21 @@ const useEffect = React.useEffect;
 const useState = React.useState;
 
 /**
- * Enum for matrix display types.
+ * Enum fordisplay types.
  * @readonly
  * @enum {string}
  */
-const OdeDisplay = Object.freeze({
+const DisplayType = Object.freeze({
 	input: 0,
 	formulaEditor: 1
 });
 
 /**
- * OdeView
- * info view for ode
+ * IteratorView
+ * info view for iterator
  */
-export function OdeView(props) {
-	const [display, setDisplay] = useState(OdeDisplay.input);
+export function IteratorView(props) {
+	const [display, setDisplay] = useState(DisplayType.input);
 	const [formulaIndex, setFormulaIndex] = useState('')
 	const [formulaOffset, setFormulaOffset] = useState(0);
 
@@ -48,24 +48,26 @@ export function OdeView(props) {
 		return (formula) => {
 			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
-				setDisplay(OdeDisplay.input);
+				setDisplay(DisplayType.input);
 			});
 		}
 	}
 
+	const formulas = results.formulas;
+	const formulaCount = formulas ? formulas.length : 0;
 	let displayComponent;
-	if (display === OdeDisplay.formulaEditor) {
-		const formulaName = results.formulas[formulaIndex][0];
+	if (display === DisplayType.formulaEditor && formulaIndex < formulaCount) {
+		const formulaName = formulas[formulaIndex][0];
 		displayComponent = e(
 			FormulaEditor, {
-				id: 'ode-formula-editor',
+				id: 'iter__formula-editor',
 				key: 'editor',
 				t: t,
 				viewInfo: props.viewInfo,
-				formula: results.formulas[formulaIndex][1],
+				formula: formulas[formulaIndex][1],
 				formulaOffset: formulaOffset,
 				cancelAction: () => {
-					setDisplay(OdeDisplay.input);
+					setDisplay(DisplayType.input);
 				},
 				applyChanges: applyChanges(formulaName),
 			}
@@ -73,8 +75,6 @@ export function OdeView(props) {
 	}
 	else {
 		const inputComponents = [];
-		const formulas = results.formulas;
-		const formulaCount = formulas ? formulas.length : 0;
 		let recordedCount = 1;
 		for (let i = 0; i < formulaCount; i++) {
 			const formulaInfo = formulas[i];
@@ -86,17 +86,17 @@ export function OdeView(props) {
 				const localCount = recordedCount++; // need value in this scope for click handler
 				description = e(
 					'div', {
-						className: 'ode__record-desc-line',
+						className: 'iter__record-desc-line',
 					},
 					e(
 						'div', {
-							className: 'ode__recorded-desc'
+							className: 'iter__recorded-desc'
 						},
-						t('react:odeInput-recorded', {n: localCount})
+						t('react:iterInput-recorded', {n: localCount})
 					),
 					e(
 						'button', {
-							className: 'ode__recorded-delete',
+							className: 'iter__recorded-delete',
 							onClick: () => {
 								props.actions.doCommand(`${props.viewInfo.path} removerecorded ${localCount}`, () => {
 									props.actions.updateView(props.viewInfo.stackIndex);
@@ -107,22 +107,22 @@ export function OdeView(props) {
 				);
 			}
 			else {
-				description = t(`react:odeInput-${name}`);
+				description = t(`react:iterInput-${name}`);
 			}
 			inputComponents.push(e(
 				'div', {
-					className: 'ode__input',
+					className: 'iter__input',
 					key: name,
 				},
 				e(
 					'div', {
-						className: 'ode__formula-label'
+						className: 'input__formula-label'
 					},
 					description
 				),
 				e(
 					FormulaField, {
-						className: 'ode__input-formula',
+						className: 'input__input-formula',
 						t: t,
 						actions: props.actions,
 						path: `${results.path}.name`,
@@ -132,13 +132,13 @@ export function OdeView(props) {
 						clickAction: (offset) => {
 							setFormulaOffset(offset);
 							setFormulaIndex(i);
-							setDisplay(OdeDisplay.formulaEditor);
+							setDisplay(DisplayType.formulaEditor);
 						}
 					}
 				),
 				e(
 					'div', {
-						className: 'ode__input-display'
+						className: 'input__input-display'
 					},
 					displayString
 				)
@@ -146,61 +146,31 @@ export function OdeView(props) {
 		}
 		displayComponent = e(
 			'div', {
-				key: 'ode',
-				id: 'ode',
+				key: 'iter',
+				id: 'iter',
 			},
 			e(
-				// stiff and auto runcheck boxes
+				// enabled check boxe and add recorded button
 				'div', {
-					id: 'ode__check-boxes',
+					id: 'iter__control-line',
 				},
-				e(
-					// stiff check box
-					'div', {
-						id: 'ode__is-stiff',
-						className: 'checkbox-and-label',
-					},
-					e(
-						'label', {
-							id: 'ode__is-stiff-label',
-							className: 'checkbox__label',
-							htmlFor: 'ode__is-stiff-checkbox'
-						},
-						t('react:odeIsStiff')
-					),
-					e(
-						'input', {
-							id: 'ode__is-stiff-checkbox',
-							className: 'checkbox__input',
-							type: 'checkbox',
-							checked: results.isStiff,
-							onChange: () => {
-								// toggle the isStiff property
-								const value = results.isStiff ? 'f' : 't';
-								props.actions.doCommand(`${props.viewInfo.path} set isStiff ${value}`, () => {
-									props.actions.updateView(props.viewInfo.stackIndex);
-								});						
-							}
-						},
-					),
-				),
 				e(
 					// autorun check box
 					'div', {
-						id: 'ode__autorun',
+						id: 'iter__autorun',
 						className: 'checkbox-and-label',
 					},
 					e(
 						'label', {
-							id: 'ode__autorun-label',
+							id: 'iter__autorun-label',
 							className: 'checkbox__label',
-							htmlFor: 'ode__autorun-checkbox'
+							htmlFor: 'iter__autorun-checkbox'
 						},
-						t('react:odeAutoRun'),
+						t('react:iterAutoRun'),
 					),
 					e(
 						'input', {
-							id: 'ode__autorun-checkbox',
+							id: 'iter__autorun-checkbox',
 							className: 'checkbox__input',
 							type: 'checkbox',
 							checked: results.shouldAutoRun,
@@ -212,56 +182,43 @@ export function OdeView(props) {
 								});						
 							}
 						},
-					),	
+					),
 				),
-			),
-			e(
-				'div', {
-					id: 'ode__current-t',
-				},
-				`T = ${results.t} ${results.tunit}`
-			),
-			e(
-				'div', {
-					id: 'ode__button-fields'
-				},
 				e(
 					'button', {
-						id: 'ode__addrecord-button',
+						id: 'iter__addrecord-button',
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addrecorded`, () => {
+								setFormulaOffset(0);
+								setFormulaIndex(formulaCount);
+								setDisplay(DisplayType.formulaEditor);	
 								props.actions.updateView(props.viewInfo.stackIndex);
 							})
 						}
 					},
-					t('react:odeAddRecordButton')
+					t('react:iterAddRecordButton')
+				),		
+			),
+			e(
+				'div', {
+					id: 'iter__current-i-x',
+				},
+				e(
+					'div', {
+						id: 'iter__i-value'
+					},
+					`i = ${results.i}`
 				),
 				e(
-					'button', {
-						id: 'ode__reset-button',
-						onClick: () => {
-							props.actions.doCommand(`${props.viewInfo.path} reset`, () => {
-								props.actions.updateView(props.viewInfo.stackIndex);
-							})
-						}
+					'div', {
+						id: 'iter__x-value'
 					},
-					t('react:odeResetButton')
-				),
-				e(
-					'button', {
-						id: 'ode__run-button',
-						onClick: () => {
-							props.actions.doCommand(`${props.viewInfo.path} run`, () => {
-								props.actions.updateView(props.viewInfo.stackIndex);
-							});							
-						}
-					},
-					t('react:odeRunButton')
+					`i = ${results.x}  ${results.xunit}`
 				),
 			),
 			e(
 				'div', {
-					id: 'ode__input-list'
+					id: 'iter__input-list'
 				},
 				inputComponents
 			)

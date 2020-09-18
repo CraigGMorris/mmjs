@@ -12,6 +12,7 @@ import {MatrixView} from './MatrixView.js';
 import {DataTableView} from './DataTableView.js';
 import {SolverView} from './SolverView.js';
 import {OdeView} from './OdeView.js';
+import {IteratorView} from './IteratorView.js';
 import {FormulaEditor} from './FormulaView.js';
 
 const e = React.createElement;
@@ -122,6 +123,7 @@ export function MMApp(props) {
 		'DataTable': DataTableView,
 		'Solver': SolverView,
 		'Ode': OdeView,
+		'Iterator': IteratorView,
 	}
 
 	// information need to generate a console view component
