@@ -31,6 +31,7 @@ class MMSolver extends MMTool {
 		this.isInError = false;
 		this.isConverged = false;
 		this.functions = [];
+		this.isLoadingCase = false;
 		this.addFunction();
 	}
 
@@ -78,53 +79,59 @@ class MMSolver extends MMTool {
 	 * @param {Object} saved 
 	 */
 	initFromSaved(saved) {
-		super.initFromSaved(saved);
-		let functionNumber = 0;
-		for (;;) {
-			const errorFormula = saved[`f${functionNumber}`];
-			const countFormula = saved[`c${functionNumber}`];
-			if (typeof errorFormula === 'string' && typeof countFormula === 'string') {
-				const func = {
-					errorFormula: new MMFormula(`formula_${functionNumber+1}`, this),
-					countFormula: new MMFormula(`count_${functionNumber+1}`, this),
-					outputs: [0]
-				};
-				this.functions[functionNumber] = func;
-				func.errorFormula.formula = errorFormula;
-				func.countFormula.formula = countFormula;
-				const outputs = saved[`o${functionNumber}`];
-				if (outputs) {
-					func.outputs = outputs;
+		this.isLoadingCase = true;
+		try {
+			super.initFromSaved(saved);
+			let functionNumber = 0;
+			for (;;) {
+				const errorFormula = saved[`f${functionNumber}`];
+				const countFormula = saved[`c${functionNumber}`];
+				if (typeof errorFormula === 'string' && typeof countFormula === 'string') {
+					const func = {
+						errorFormula: new MMFormula(`formula_${functionNumber+1}`, this),
+						countFormula: new MMFormula(`count_${functionNumber+1}`, this),
+						outputs: [0]
+					};
+					this.functions[functionNumber] = func;
+					func.errorFormula.formula = errorFormula;
+					func.countFormula.formula = countFormula;
+					const outputs = saved[`o${functionNumber}`];
+					if (outputs) {
+						func.outputs = outputs;
+					}
+					functionNumber++;
 				}
-				functionNumber++;
+				else {
+					break;
+				}
 			}
-			else {
-				break;
+
+			const maxIter = saved.maxIter;
+			if (maxIter) {
+				if (typeof maxIter === 'number') {
+					this.maxIterFormula.formula = `${maxIter}`;
+				}
+				else if (typeof maxIter === 'string') {
+					this.maxIterFormula.formula = maxIter;
+				}
+			}
+
+			const maxJacobians = saved.maxJacobians;
+			if (maxJacobians) {
+				if (typeof maxJacobians === 'number') {
+					this.maxJacobianFormula.formula = `${maxJacobians}`;
+				}
+				else if (typeof maxIter === 'string') {
+					this.maxJacobiansFormula.formula = maxJacobians;
+				}
+			}
+
+			if (saved.Enabled) {
+				this.isEnabled = true;
 			}
 		}
-
-		const maxIter = saved.maxIter;
-		if (maxIter) {
-			if (typeof maxIter === 'number') {
-				this.maxIterFormula.formula = `${maxIter}`;
-			}
-			else if (typeof maxIter === 'string') {
-				this.maxIterFormula.formula = maxIter;
-			}
-		}
-
-		const maxJacobians = saved.maxJacobians;
-		if (maxJacobians) {
-			if (typeof maxJacobians === 'number') {
-				this.maxJacobianFormula.formula = `${maxJacobians}`;
-			}
-			else if (typeof maxIter === 'string') {
-				this.maxJacobiansFormula.formula = maxJacobians;
-			}
-		}
-
-		if (saved.Enabled) {
-			this.isEnabled = true;
+		finally {
+			this.isLoadingCase = false;
 		}
 	}
 
@@ -140,7 +147,7 @@ class MMSolver extends MMTool {
 	}
 
 	set isEnabled(newValue) {
-		this._isEnabled = (newValue) ? true : false;
+		this.setEnabled(newValue ? true : false);
 	}
 	
 	/** @method addFunction
@@ -204,9 +211,9 @@ class MMSolver extends MMTool {
 	 * @param {boolean} newState
 	 */
 	setEnabled(newState) {
-		if (this.isEnabled !== newState) {
-			this.isEnabled = newState;
-			if (newState && !this.isConverged) {
+		if (this._isEnabled !== newState) {
+			this._isEnabled = newState;
+			if (!this.isLoadingCase && newState && !this.isConverged) {
 				this.isInError = false;
 				this.solve();
 			}
@@ -400,9 +407,11 @@ class MMSolver extends MMTool {
 		for (let i = 0; i < functionCount; i++) {
 			const func = this.functions[i]
 			const cx = func.countFormula.value();
-			if (!cx) { return; }
 			const fx = func.errorFormula.value();
-			if (!fx) { return; }
+			if (!fx || !cx) {
+				this.isRunning = false;
+				return;
+			}
 
 			const nx = cx.values[0];
 			if (fx.valueCount !== nx) {
@@ -439,10 +448,13 @@ class MMSolver extends MMTool {
 						return;
 					},
 					setStatus: (msg) => {
-						this.processor.statusCallBack(msg);
+						this.processor.statusCallBack(this.t(msg));
 					}
 				},
 				{maxIterations: maxIterations.values[0]});
+				if (!this.isInError) {
+					this.isConverged = true;
+				}
 			}
 			else {
 				const x = new Float64Array(totalNumberOfEqns);
@@ -495,12 +507,15 @@ class MMSolver extends MMTool {
 						return;
 					},
 					setStatus: (msg) => {
-						this.processor.statusCallBack(msg);
+						this.processor.statusCallBack(this.t(msg));
 					}
 				},
 				{
 
 				});
+				if (!this.isInError) {
+					this.isConverged = true;
+				}
 			}
 		}
 		catch(e) {

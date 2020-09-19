@@ -257,7 +257,8 @@ export function MMApp(props) {
 			if (!error) {
 				for (let result of results) {
 					if (result.verb && result.verb === 'status') {
-						setStatusMessage(result.results);
+						const msg = props.t(result.results.msgKey, result.results.args);
+						setStatusMessage(msg);
 						continue;
 					}
 					if (result.error) {

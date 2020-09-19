@@ -20,6 +20,10 @@ class MMIterator extends MMTool {
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Iterator');
+		this.recordedValueFormulas = [];
+		this.lastRecordedFormula = 1;		// used for naming recorded value formulas
+		this.recordedValues =	[];
+
 		this.i = MMNumberValue.scalarValue(1);
 
 		this.whileFormula = new MMFormula('while', this);
@@ -33,9 +37,6 @@ class MMIterator extends MMTool {
 
 		this.x = null;
 		this.isHidingInfo = false;   // needed because the formula assigns will reset
-		this.recordedValueFormulas = [];
-		this.lastRecordedFormula = 1;		// used for naming recorded value formulas
-		this.recordedValues =	[];
 		this.shouldAutoRun = false;
 		this.isSolved = false;
 		this.isSolving = false;
@@ -123,7 +124,7 @@ class MMIterator extends MMTool {
 	 */
 	reset() {
 		this.resetRecordedValues();
-		this.i.values[0] = 0;
+		this.i.values[0] = 1;
 		this.forgetStep();
 		this.isSolved = false
 		this.x = null;
@@ -357,7 +358,7 @@ class MMIterator extends MMTool {
 			this.processor.statusCallBack(this.t('mmcmd:iterStatus', {
 				name: this.name,
 				i: this.i.stringUsingUnit(),
-				x: this.x.stringUsingUnit(),
+				x: this.x ? this.x.stringUsingUnit() : '',
 			}));
 		}
 
@@ -383,6 +384,7 @@ class MMIterator extends MMTool {
 				if (now - lastStatusTime > 1000) {
 					setStatus();
 					lastStatusTime = now;
+					console.log(`iter i ${this.i.values[0]} test ${test.values[0]}`);
 				}
 			}
 		}
@@ -427,6 +429,7 @@ class MMIterator extends MMTool {
 
 	set shouldAutoRun(newValue) {
 		this._shouldAutoRun = (newValue) ? true : false;
+		this.reset();
 	}
 
 	/** @override */

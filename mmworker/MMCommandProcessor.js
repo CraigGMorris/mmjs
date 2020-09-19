@@ -88,7 +88,7 @@ class MMCommandProcessor {
 		return new MMCommandMessage(key, args);
 	}
 
-	/** @param {function} cb - msgKey: string => void */
+	/** @param {function} cb - MMCommandMessage => void */
 	setStatusCallBack(cb) {
 		this.statusCallBack = cb;
 	}
