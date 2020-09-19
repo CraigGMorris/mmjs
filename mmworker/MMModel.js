@@ -309,8 +309,14 @@ class MMModel extends MMTool {
 					}
 				}
 				else {
+					let saved = null;
 					try {
-						const saved = JSON.parse(json);
+						saved = JSON.parse(json);
+					}
+					catch(e) {
+						saved = null;
+					}
+					if (saved) {
 						if (saved.CopyObjects) {
 							const tools = saved.CopyObjects;
 
@@ -375,7 +381,7 @@ class MMModel extends MMTool {
 						}
 						command.results = true;
 					}
-					catch(e) {
+					else {
 						// don't know what it is, so create expression with string
 						let name = `x${this.nextToolNumber++}`;
 						while ( this.childNamed(name) ) {
