@@ -108,7 +108,7 @@ const MMFormulaFactory = (token, formula) => {
 		'gt': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a > b ? 1 : 0;})},
 		'ge': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a >= b ? 1 : 0;})},
 		'not': (f) => {return new MMGenericSingleFunction(f, (n) => { return n === 0 ? 1 : 0;})},
-		'and': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a !== 0 && b !== 0 ? 1 : 0;})},
+		'and': (f) => {return new MMAndFunction(f)},
 		'or': (f) => {return new MMOrFunction(f)},
 
 		// matrix functions
@@ -1955,6 +1955,97 @@ class MMOrFunction extends MMMultipleArgumentFunction {
 						else {
 							if (v.values[j].length) {
 								rvValues[j] = 1.0;
+							}
+						}
+					}
+				}
+			}
+			return rv;
+		}
+	}
+}
+
+class MMAndFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const count = this.arguments.length;
+		const arg1 = this.arguments[count - 1];
+		const first = arg1.value();
+		const valueCount = first.valueCount;
+		
+		if (valueCount === 1) {
+			for (let i = count; i > 0; i--) {
+				const arg = this.arguments[i - 1];
+				const v = arg.value();
+				if ( v === null ) {
+					return null;
+				}
+				
+				if (v instanceof MMNumberValue) {
+					if (!v.valueCount || !v.values[0]) {
+						return MMNumberValue.scalarValue(0);
+					}
+				}
+				else if (v instanceof MMStringValue) {
+					if (!v.valueCount || !v.values[0].length) {
+						return MMNumberValue.scalarValue(0);
+					}
+				}
+			}
+			return MMNumberValue.scalarValue(1);
+		}
+		else {
+			// check arguments are compatible
+			const values = [];
+			for (let i = count; i > 0; i--) {
+				const arg = this.arguments[i - 1];
+				const v = arg.value();
+				if (v == null) {
+					return null;
+				}
+				
+				values.push(v);
+				if (v.valueCount != valueCount && v.valueCount != 1) {
+					this.formula.functionError('or','mmcmd:formulaAndSizeMismatch');
+					return null;
+				}
+				
+				if (!(v instanceof MMNumberValue) && !(v instanceof MMStringValue)) {
+					this.formula.functionError('or','mmcmd:formulaAndArgTypeError');
+					return null;					
+				}
+			}
+			
+			const rv = new MMNumberValue(first.rowCount, first.columnCount);
+			const rvValues = rv.values;
+			
+			for (let j = 0; j < valueCount; j++) {
+				// start with true;
+				rvValues[j] = 1.0;
+				for (const v of values ) {
+					if (v instanceof MMNumberValue) {
+						if (v.valueCount == 1) {
+							if (v.values[0] == 0.0) {
+								rvValues[j] = 0;
+							}
+						}
+						else {
+							if (v.values[j] == 0.0 ) {
+								rvValues[j] = 0;
+							}
+						}
+					} else {  // MMStringValue
+						if (v.valueCount == 1) {
+							if (v.values[0].length === 0) {
+								rvValues[j] = 0;
+							}
+						}
+						else {
+							if (v.values[j].length === 0) {
+								rvValues[j] = 0;
 							}
 						}
 					}
@@ -4011,7 +4102,7 @@ class MMFormula extends MMCommandObject {
 
 		// end helper functions start actual parse
 
-		if (this.isInError) {
+		if (!this._formula || this.isInError) {
 			return null;   // prevents multiple error messages about same problem
 		}
 		this._resultOperator = null;

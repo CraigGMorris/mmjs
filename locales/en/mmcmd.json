@@ -19,6 +19,8 @@
 	"evaljsNoObjValues": "evaljs - nno value in object return\n\nin: {{path}}\nformula: {{formula}}",
 	"evaljsUnequalRowCount": "evaljs - all columns must have the same number of values\n\nin: {{path}}\nformula: {{formula}}",
 	"exprDisplayName": "Expression",
+	"formulaAndSizeMismatch": "All nonscalar arguments for the and function must be the same size",
+	"formulaAndArgTypeError": "And function arguments must be strings or numbers",
 	"formulaArgCountError": "Incorrect number of arguments\nin: {{path}}\nformula: {{formula}}",
 	"formulaArrayInitError": "The intialization variable for the array function must be numeric or a string",
 	"formulaBadUnit": "Unrecognized unit in formula",
