@@ -375,19 +375,13 @@ class MMSolver extends MMTool {
 	 */
 	forgetCalculated() {
 		this.forgetStep();
-		try {
-			this.forgetRecursionBlockIsOn = true;
-			if (this.isInError && this.isEnabled) {
-				this.isInError = false;
-				this.resetOutputs();
-				this.setEnabled(true);
-			}
-			else {
-				this.isInError = false;
-			}
+		if (this.isInError && this.isEnabled) {
+			this.isInError = false;
+			this.resetOutputs();
+			this.setEnabled(true);
 		}
-		finally {
-			this.forgetRecursionBlockIsOn = false;
+		else {
+			this.isInError = false;
 		}
 	}
 
@@ -450,8 +444,7 @@ class MMSolver extends MMTool {
 					setStatus: (msg) => {
 						this.processor.statusCallBack(this.t(msg));
 					}
-				},
-				{maxIterations: maxIterations.values[0]});
+				}, {maxIterations: maxIterations.values[0]});
 				if (!this.isInError) {
 					this.isConverged = true;
 				}
