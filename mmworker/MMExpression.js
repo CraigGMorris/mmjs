@@ -161,13 +161,17 @@ class MMExpression extends MMTool {
 	forgetCalculated() {
 		if (!this.forgetRecursionBlockIsOn) {
 			this.forgetRecursionBlockIsOn = true;
-			for (let requestor of this.valueRequestors) {
-				requestor.forgetCalculated();
+			try {
+				for (let requestor of this.valueRequestors) {
+					requestor.forgetCalculated();
+				}
+				this.valueRequestors.clear();
+				super.forgetCalculated();
+				this.cachedValue = null;
 			}
-			this.valueRequestors.clear();
-			super.forgetCalculated();
-			this.cachedValue = null;
-			this.forgetRecursionBlockIsOn = false;
+			finally {
+				this.forgetRecursionBlockIsOn = false;
+			}
 		}
 	}
 
