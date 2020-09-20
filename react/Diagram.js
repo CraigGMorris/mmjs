@@ -984,45 +984,51 @@ export class Diagram extends React.Component {
 							t: t,
 							menu: [
 								{
-									text: 'Expression',
+									text: this.props.t('mmcmd:exprDisplayName'),
 									action: () => {
 										addTool('Expression');
 									}
 								},
 								{
-									text: 'Data Table',
+									text: this.props.t('mmcmd:dataTableDisplayName'),
 									action: () => {
 										addTool('DataTable');
 									}
 								},
 								{
-									text: 'Matrix',
+									text: this.props.t('mmcmd:matrixDisplayName'),
 									action: () => {
 										addTool('Matrix');
 									}
 								},
 								{
-									text: 'Model',
+									text: this.props.t('mmcmd:modelDisplayName'),
 									action: () => {
 										addTool('Model');
 									}
 								},
 								{
-									text: 'Function Solver',
+									text: this.props.t('mmcmd:solverDisplayName'),
 									action: () => {
 										addTool('Solver');
 									}
 								},
 								{
-									text: 'ODE',
+									text: this.props.t('mmcmd:odeDisplayName'),
 									action: () => {
 										addTool('Ode');
 									}
 								},
 								{
-									text: 'Iterator',
+									text: this.props.t('mmcmd:iterDisplayName'),
 									action: () => {
 										addTool('Iterator');
+									}
+								},
+								{
+									text: this.props.t('mmcmd:optDisplayName'),
+									action: () => {
+										addTool('Optimizer');
 									}
 								},
 							]
@@ -1262,7 +1268,8 @@ class ToolIcon extends React.Component {
 			DataTable: 'rgba(231,235,231,.8)',
 			Solver: 'rgba(225,237,250,.8)',
 			Ode: 'rgba(216,221,250,.8)',
-			Iterator: 'rgba(255,232,217,.8)'
+			Iterator: 'rgba(255,232,217,.8)',
+			Optimizer: 'rgba(237,212,217,.8)',
 		}
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;
