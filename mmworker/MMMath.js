@@ -829,6 +829,7 @@ const MMMath = {
 	 *  absTolerance - absolute tolerance
 	 *  xLower
 	 *  xUpper
+	 * @return {[Number, Number]} - array containg x and fx - null if failed
 	 */
 
 	// brentSolve
@@ -855,7 +856,7 @@ const MMMath = {
 		
 		if (( fa > 0.0 && fb > 0.0 ) || ( fa < 0.0 && fb < 0.0 )) {
 			setErrorDescription('mmcmd:mathBrentNoBracket')
-			return -1;
+			return;
 		}
 		
 		let fc = fb;
@@ -882,7 +883,7 @@ const MMMath = {
 			let xm = 0.5 * (  c - b );
 			if ( Math.abs( xm ) <= tol1 || fb == 0.0 ) {
 				// [ delegate setErrorDescription: nil ];
-				return iter;
+				return [xm, fb];
 			}
 			
 			if ( Math.abs( e ) >= tol1 && Math.abs( fa ) > Math.abs( fb ) ) {
@@ -936,7 +937,7 @@ const MMMath = {
 		}
 		
 		setErrorDescription('mmcmd:mathBrentIterExceeded', {iter: iter});
-		return iter;
+		return;
 	},
 
 	qrDecomp: (n, a, c, d) => {
