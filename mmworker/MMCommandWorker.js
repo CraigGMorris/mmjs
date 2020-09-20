@@ -29,7 +29,8 @@ importScripts(
   "MMDataTable.js",
   "MMSolver.js",
   "MMOde.js",
-  "MMIterator.js"
+  "MMIterator.js",
+  "MMOptimizer.js"
 );
 
 class MMCommandWorker {

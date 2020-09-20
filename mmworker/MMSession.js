@@ -16,6 +16,7 @@
 	MMSolver:readonly
 	MMOde:readonly
 	MMIterator:readonly
+	MMOptimizer:readonly
 	theMMSession:readonly
 	MMToolValue:readonly
 */
@@ -1190,7 +1191,11 @@ const MMToolTypes = {
 	"Iterator": {
 		factory: (name, parent) => {return new MMIterator(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:iterDisplayName'),
-	}
+	},
+	"Optimizer": {
+		factory: (name, parent) => {return new MMOptimizer(name, parent)},
+		displayName: new MMCommandMessage('mmcmd:optDisplayName'),
+	},
 };
 
 /**
