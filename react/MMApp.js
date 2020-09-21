@@ -12,6 +12,7 @@ import {MatrixView} from './MatrixView.js';
 import {DataTableView} from './DataTableView.js';
 import {SolverView} from './SolverView.js';
 import {OdeView} from './OdeView.js';
+import {OptimizerView} from './OptimizerView.js';
 import {IteratorView} from './IteratorView.js';
 import {FormulaEditor} from './FormulaView.js';
 
@@ -124,6 +125,7 @@ export function MMApp(props) {
 		'Solver': SolverView,
 		'Ode': OdeView,
 		'Iterator': IteratorView,
+		'Optimizer': OptimizerView,
 	}
 
 	// information need to generate a console view component

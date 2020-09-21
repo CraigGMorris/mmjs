@@ -890,6 +890,42 @@ a:hover {
 	grid-template-columns: 1fr 100px;
 }
 
+#opt__button-fields {
+	width: 100%;
+	display: grid;
+	grid-template-rows: var(--input--height);
+	grid-template-columns: 1fr 1fr;
+	margin-top: 10px;
+	padding-bottom: 10px;
+	border-bottom: solid 1px;
+	column-gap: 10px;
+}
+
+#opt__fx-fields {
+	margin-bottom: 5px;
+}
+
+#opt__output-header {
+	background-color: var(--input--bgcolor);
+	height: var(--input--height);
+	padding-top: 10px;
+}
+
+#opt__output-list {
+	overflow: auto;
+	height: calc(var(--info-height) - 250px);
+	border: solid 1px;
+	margin-top: 5px;
+}
+
+.opt__line {
+	display: grid;
+	grid-template-columns: 40px 1fr;
+	border-bottom: solid 1px;
+	margin-bottom: 5px;
+	padding: 5px;
+}
+
 #sessions__wrapper {
 	display: grid;
 	grid-template-rows: 50px 1fr 1fr;

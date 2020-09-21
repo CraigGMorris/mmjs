@@ -17,9 +17,9 @@ class MMOptimizer extends MMTool {
 	 * @param {MMModel} parentModel
 	 */
 	constructor(name, parentModel) {
-		super(name, parentModel, 'Solver');
-		this.optimizedFormula = new MMFormula('optimized', this);
-		this.countFormula = new MMFormula('count', this);
+		super(name, parentModel, 'Optimizer');
+		this.fxFormula = new MMFormula('optFormula', this);
+		this.countFormula = new MMFormula('countFormula', this);
 		this._numberOfOutputs = 0;
 		this.outputs = null;
 		this.commonP1 = null;
@@ -37,6 +37,7 @@ class MMOptimizer extends MMTool {
 		this.cGold = 0.3819660;
 		this.gOld = 1.618034;
 		this.gLimit = 100.;
+		this.isLoadingCase = false;
 	}
 
 	/**
@@ -45,17 +46,23 @@ class MMOptimizer extends MMTool {
 	 * @param {Object} saved 
 	 */
 	initFromSaved(saved) {
-		super.initFromSaved(saved);
-		this.optimizedFormula.formula = saved.optFormula.Formula;
-		this.countFormula.formula = saved.countFormula.Formula;
+		try {
+			this.isLoadingCase = true;
+			super.initFromSaved(saved);
+			this.fxFormula.formula = saved.optFormula.Formula;
+			this.countFormula.formula = saved.countFormula.Formula;
 
-		const a = saved.outputs;
-		if (a) {
-			this.numberOfOutputs = a.length;
-			this.outputs = Float64Array.from(a);
+			const a = saved.outputs;
+			if (a) {
+				this.numberOfOutputs = a.length;
+				this.outputs = Float64Array.from(a);
+			}
+			if (saved.Enabled) {
+				this.isEnabled = true;
+			}
 		}
-		if (saved.isEnabled) {
-			this.isOptimized = true;
+		finally {
+			this.isLoadingCase = false;
 		}
 	}
 
@@ -68,7 +75,7 @@ class MMOptimizer extends MMTool {
 		let o = super.saveObject();
 		o['Type'] = 'Optimizer';
 
-		o['optFormula'] = {Formula: this.optimizedFormula.formula};
+		o['optFormula'] = {Formula: this.fxFormula.formula};
 		o['countFormula'] = {Formula: this.countFormula.formula};
 		if (this.outputs) {
 			o['outputs'] = Array.from(this.outputs);
@@ -106,12 +113,7 @@ class MMOptimizer extends MMTool {
 		const v = this.countFormula.value();
 		if (v && v instanceof MMNumberValue) {
 			const n = Math.floor(v.values[0] + 0.1);
-			if (n !== this._numberOfOutputs) {
-				this._isEnabled = false;
-				this.commonP1 = new Float64Array(n);
-				this.commonXi = new Float64Array(n);
-				this._numberOfOutputs = n;
-			}
+			this.numberOfOutputs = n;
 			return n;
 		}
 		return 0;
@@ -119,10 +121,8 @@ class MMOptimizer extends MMTool {
 
 	set numberOfOutputs(n) {
 		if (n !== this._numberOfOutputs) {
-			this._isEnabled = false;
-			this.commonP1 = new Float64Array(n);
-			this.commonXi = new Float64Array(n);
 			this._numberOfOutputs = n;
+			this.resetOutputs()
 		}
 	}
 
@@ -135,7 +135,9 @@ class MMOptimizer extends MMTool {
 		}
 		this.isOptimized = false;
 		this.isEnabled = false;
-		this.forgetCalculated();
+		if (this.isLoadingCase) {
+			this.forgetCalculated();
+		}
 	}
 
 	/** @override */
@@ -204,6 +206,10 @@ class MMOptimizer extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
+		if (!description || description.length === 0) {
+			return super.valueDescribedBy(description, requestor);
+		}
+
 		const lcDescription = description.toLowerCase();
 
 		if (lcDescription === 'solved') {
@@ -216,7 +222,7 @@ class MMOptimizer extends MMTool {
 			}
 		}
 
-		if (this.isOptimized && !this.isRunning && !this.isInError) {
+		if (this.isEnabled && !this.isOptimized && !this.isRunning && !this.isInError) {
 			this.optimize();
 		}
 
@@ -229,7 +235,7 @@ class MMOptimizer extends MMTool {
 		};
 
 		if (lcDescription === 'fx') {
-			return returnValue(this.optimizedFormula.numberValue());
+			return returnValue(this.fxFormula.numberValue());
 		}
 
 		if ( !lcDescription.length || !this._numberOfOutputs ) {
@@ -253,12 +259,40 @@ class MMOptimizer extends MMTool {
 	}
 
 	/**
+	 * @method toolViewInfo
+	 * @override
+	 * @param {MMCommand} command
+	 * command.results contains the info for tool info view
+	 */
+	toolViewInfo(command) {
+		super.toolViewInfo(command);
+		const results = command.results;
+		results['formulas'] = {
+			'optFormula': this.fxFormula.formula,
+			'countFormula': this.countFormula.formula,
+		}
+
+		const fx = this.fxFormula.value();
+		results['fx'] = fx ? fx.stringWithUnit() : '---';
+		const n = this.numberOfOutputs;
+		for (let i = 0; i < n; i++) {
+			results['outputs'] = Array.from(this.outputs);
+		}
+
+		results['isEnabled'] = this.isEnabled;
+		results['isOptimized'] = this.isOptimized;
+		results['isInError'] = this.isInError;
+
+		return results;
+	}
+
+	/**
 	 * @method evaluateFunction - evaluates the optimize formula with the current outputs
 	 * @returns {Number} the result of the evaluation or null if failed
 	 */
 	evaluateFunction() {
 		this.forgetCalculated();
-		const v = this.optimizedFormula.value();
+		const v = this.fxFormula.value();
 		if (v instanceof MMNumberValue) {
 			return v.values[0];
 		}
@@ -603,16 +637,16 @@ class MMOptimizer extends MMTool {
 	 * @method optimize
 	 */
 	optimize() {
-		if (this.isRunning) {
+		if (this.isRunning || this.isLoadingCase) {
 			return;
 		}
 		this.isOptimized = false;
-		if (!(this.optimizedFormula.value() instanceof MMNumberValue)) {
-			return;
-		}
-
 		this.isRunning = true;
 		try {
+			if (!(this.fxFormula.value() instanceof MMNumberValue)) {
+				return;
+			}
+
 			this.powell();
 		}
 		catch(e) {
