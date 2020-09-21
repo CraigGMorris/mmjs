@@ -563,7 +563,7 @@ class MMToolReferenceOperator extends MMFormulaOperator {
 		super();
 		this.referencePath = path;
 		this.formula = formula;
-		this.recusionCount = 0;
+		this.recursionCount = 0;
 	}
 
 	/**
@@ -576,7 +576,7 @@ class MMToolReferenceOperator extends MMFormulaOperator {
 			return null;
 		}
 
-		if (this.recusionCount > 2) {
+		if (this.recursionCount > 2) {
 			this.formula.setError('mmcmd:formulaRecursion', {
 				formula: this.formula.truncatedFormula(),
 				path: this.formula.parent.getPath()
@@ -600,13 +600,12 @@ class MMToolReferenceOperator extends MMFormulaOperator {
 			}
 
 			let returnValue;
-			this.recusionCount++;
 			try {
 				this.recursionCount++;
 				returnValue = tool.valueDescribedBy(args, this.formula.parent);
 			}
 			finally {
-				this.recusionCount--;
+				this.recursionCount--;
 			}
 			return returnValue;
 		}
