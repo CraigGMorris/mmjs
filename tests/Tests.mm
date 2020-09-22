@@ -8,7 +8,7 @@
 	"CaseName": "Tests",
 	"DefaultUnitSet": "SI",
 	"SelectedObject": "errorCount",
-	"ModelPath": "/.root",
+	"ModelPath": "/.root.Tools.Optimizer.Rosenbrock",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
@@ -26223,8 +26223,8 @@
 											"Formula": "2"
 										},
 										"outputs": [
-											5.488284271169636,
-											5.347915470233115
+											5.488284258528384,
+											5.3479154716382515
 										],
 										"Enabled": true
 									},
@@ -26380,8 +26380,8 @@
 											"Formula": "2"
 										},
 										"outputs": [
-											1.0000000326556415,
-											1.0000000784201268
+											1.0000000453113695,
+											1.0000001025169982
 										],
 										"Enabled": true
 									},
@@ -26431,7 +26431,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{sum {gt\n\t{cc fxError, xError}, \n\ttolerance * 10\n}}"
+											"Formula": "{sum {gt\n\t{cc fxError, xError}, \n\ttolerance * 20\n}}"
 										},
 										"isOutput": "y"
 									}
