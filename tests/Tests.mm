@@ -7,8 +7,8 @@
 	"UserUnits": [],
 	"CaseName": "Tests",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "errorCount",
-	"ModelPath": "/.root.Tools.Optimizer.Rosenbrock",
+	"SelectedObject": "",
+	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
@@ -19605,11 +19605,11 @@
 			},
 			{
 				"name": "errorCount",
-				"Notes": "",
-				"DiagramX": 175,
-				"DiagramY": 160,
+				"Notes": "Need to reset and re-optimize\neach optimizer to really test as outputs are saved when already optimized.",
+				"DiagramX": 170,
+				"DiagramY": 235,
 				"HideInfo": "y",
-				"DiagramNotes": "n",
+				"DiagramNotes": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{sum\n\t{cc\n\t\toperatorsErrorCount,\n\t\tfunctionsErrorCount,\n\t\ttoolsErrorCount\n\t}\n}"
@@ -19619,7 +19619,7 @@
 				"name": "operatorsErrorCount",
 				"Notes": "",
 				"DiagramX": 170,
-				"DiagramY": 185,
+				"DiagramY": 160,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
 				"Type": "Expression",
@@ -19631,7 +19631,7 @@
 				"name": "functionsErrorCount",
 				"Notes": "",
 				"DiagramX": 170,
-				"DiagramY": 210,
+				"DiagramY": 185,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
 				"Type": "Expression",
@@ -26108,7 +26108,7 @@
 								"name": "triangulate",
 								"Notes": "",
 								"DiagramX": 90,
-								"DiagramY": 210,
+								"DiagramY": 215,
 								"HideInfo": "n",
 								"DiagramNotes": "n",
 								"Type": "Model",
@@ -26223,10 +26223,11 @@
 											"Formula": "2"
 										},
 										"outputs": [
-											5.488284258528384,
-											5.3479154716382515
+											5.488284073027628,
+											5.347912960643539
 										],
-										"Enabled": true
+										"Enabled": true,
+										"Optimized": true
 									},
 									{
 										"name": "optX",
@@ -26323,7 +26324,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{sum\n\t{gt\n\t\txyErrors\n\t\ttolerance * 500\n\t}\n}"
+											"Formula": "{sum\n\t{gt\n\t\txyErrors\n\t\ttolerance\n\t}\n}"
 										},
 										"isOutput": "y"
 									},
@@ -26380,10 +26381,11 @@
 											"Formula": "2"
 										},
 										"outputs": [
-											1.0000000453113695,
-											1.0000001025169982
+											0.9999999999999118,
+											0.9999999999998105
 										],
-										"Enabled": true
+										"Enabled": true,
+										"Optimized": true
 									},
 									{
 										"name": "fxError",
@@ -26431,7 +26433,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{sum {gt\n\t{cc fxError, xError}, \n\ttolerance * 20\n}}"
+											"Formula": "{sum {gt\n\t{cc fxError, xError}, \n\ttolerance\n}}"
 										},
 										"isOutput": "y"
 									}
@@ -26439,11 +26441,11 @@
 							},
 							{
 								"name": "errorCount",
-								"Notes": "",
+								"Notes": "Need to reset and re-optimize\neach optimizer to really test as outputs are saved when already optimized.",
 								"DiagramX": 170,
 								"DiagramY": 160,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "rosenbrock.errorCount +\ntriangulate.errorCount"
@@ -26458,7 +26460,7 @@
 				"name": "toolsErrorCount",
 				"Notes": "",
 				"DiagramX": 170,
-				"DiagramY": 235,
+				"DiagramY": 210,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
 				"Type": "Expression",
