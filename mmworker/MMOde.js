@@ -13,6 +13,7 @@
 	MMDivideOperator:readonly
 	MMMultiplyOperator: readonly
 	MMMath: readonly
+	theMMSession: readonly
 */
 
 /**
@@ -137,7 +138,7 @@ class MMOde extends MMTool {
 			if (this.odeT && this.cachedY) {
 				o['T'] = this.odeT.values[0];
 				o['tUnit'] = MMUnit.stringFromDimensions(this.odeT.unitDimensions);
-				const count = this.cachedY ? this.cachedY.length : 0;
+				const count = this.cachedY ? this.cachedY.valueCount : 0;
 				const a = [];
 				for (let i = 0; i < count; i++) {
 					let x = this.cachedY.values[i];
@@ -154,7 +155,7 @@ class MMOde extends MMTool {
 					})
 				}
 				else {
-					o['yunits'] = MMUnit.stringFromDimensions(this.cachedY.unitDimensions);
+					o['ytunits'] = MMUnit.stringFromDimensions(this.cachedY.unitDimensions);
 				}
 				if (this.isSolved) {
 					o['solved'] = 'y';
@@ -191,35 +192,40 @@ class MMOde extends MMTool {
 			this._shouldAutoRun = saved.AutoRun ? true : false;
 		
 			const t = saved.T;
-			if (t) {
-				const a = saved.cachedY;
-				if (a) {
-					this.odeT.values[0] = t;
-					const parseDimensions = (s) => {
-						if (s) {
-							return s.split(' ').map(d => parseFloat(d));
-						}
+			if (typeof t === 'number') {
+				this.odeT.values[0] = t;
+				const parseDimensions = (s) => {
+					if (s) {
+						return s.split(' ').map(d => parseFloat(d));
 					}
-					this.odeT = MMNumberValue(t, parseDimensions(saved.tUnit));
+				}
+				this.odeT = MMNumberValue.scalarValue(t, parseDimensions(saved.tUnit));
+				const a = saved.cachedYs;
+				if (a) {
 					const count = a.length;
 					const nColumns = saved.nColumns;
 					const columnCount = nColumns ? parseInt(nColumns) : 1;
 					const rowCount = count / columnCount;
-					if (saved.yUnits) {
+					if (saved.yunits) {
 						// the saved Ys all have the same units and yUnits remains null
-						this.cachedY = new MMNumberValue(rowCount,  columnCount, parseDimensions(saved.yUnits));
+						this.cachedY = new MMNumberValue(rowCount,  columnCount, parseDimensions(saved.yunits));
 						this.cachedY._values = Float64Array.from(a);
 					}
 					else {
-						const ytUnits = saved.ytUnits;
-						if (ytUnits) {
+						// y units are different and stored in table this.yUnits
+						this.cachedY = new MMNumberValue(rowCount,  columnCount);
+						this.cachedY._values = Float64Array.from(a);
+						const ytunits = saved.ytunits;
+						if (ytunits) {
 							const columns = [];
-							for (let savedColumn of ytUnits) {
-								const dimensions = parseDimensions(saved.unitDimensions);
-								const displayUnit = dimensions ? MMUnitSystem.defaultUnitWithDimensions(dimensions) : 'Fraction';
+							for (let savedColumn of ytunits) {
+								const dimensions = parseDimensions(savedColumn.unitDimensions);
+								const displayUnitName = dimensions ?
+									theMMSession.unitSystem.defaultUnitWithDimensions(dimensions).name :
+									'Fraction';
 								columns.push(new MMTableValueColumn({
 									name: savedColumn.name,
-									displayUnit: displayUnit,
+									displayUnit: displayUnitName,
 									value: MMNumberValue.scalarValue(1, dimensions)
 								}));
 							}
@@ -422,6 +428,8 @@ class MMOde extends MMTool {
 		this.odeT.setValue(0,1,1);
 		this.nextRecordNumber = 0;
 		this.isSolved = false;
+		this.cachedY = null;
+		this.forgetStep();
 	}
 
 	/**
@@ -1264,7 +1272,7 @@ class MMOdeSolver {
 			}
 			else {
 				// nonlinear solver failed; restore zn
-				this.restore();
+				this.restore(savedT);
 				if (
 					flag === this.flags.RHSFUNC_FAIL ||
 					flag == this.flags.LSETUP_FAIL ||
