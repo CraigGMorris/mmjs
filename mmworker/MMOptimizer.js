@@ -60,6 +60,9 @@ class MMOptimizer extends MMTool {
 			if (saved.Enabled) {
 				this.isEnabled = true;
 			}
+			if (saved.Optimized) {
+				this.isOptimized = true;
+			}
 		}
 		finally {
 			this.isLoadingCase = false;
@@ -82,6 +85,9 @@ class MMOptimizer extends MMTool {
 		}
 		if (this.isEnabled) {
 			o['Enabled'] = true;
+		}
+		if (this.isOptimized) {
+			o['Optimized'] = true;
 		}
 		return o;
 	}
@@ -135,7 +141,7 @@ class MMOptimizer extends MMTool {
 		}
 		this.isOptimized = false;
 		this.isEnabled = false;
-		if (this.isLoadingCase) {
+		if (!this.isLoadingCase) {
 			this.forgetCalculated();
 		}
 	}
