@@ -259,6 +259,19 @@ class MMOptimizer extends MMTool {
 	}
 
 	/**
+	 * @method inputSources
+	 * @override
+	 * @returns {Set} contains tools referenced by this tool
+	 */
+	inputSources() {
+		let sources = super.inputSources();
+		this.fxFormula.addInputSourcesToSet(sources);
+		this.countFormula.addInputSourcesToSet(sources);
+		return sources;
+	}
+
+
+	/**
 	 * @method toolViewInfo
 	 * @override
 	 * @param {MMCommand} command
