@@ -44,7 +44,7 @@
 	"modelOutputsTitle": "Output Expressions",
 	"modelOthersTitle": "Internal Tools",
 	"odeAddRecordButton": "Add Recording",
-	"odeAutoRun": "Solve",
+	"odeAutoRun": "Auto Run",
 	"odeInput-recorded": "Recorded Value {{n}}",
 	"odeInput-y0": "Y0 - Initial Values",
 	"odeInput-dy": "dY/dT - Derivative Values",
