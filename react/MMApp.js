@@ -566,15 +566,15 @@ export function MMApp(props) {
 	 */
 	const setUpdateCommands = useCallback((stackIndex, commands) => {
 		if (stackIndex < infoStack.length) {
-			let top = infoStack[infoStack.length-1];
+			let top = infoStack[stackIndex];
 			doCommand(commands, (cmds) => {
 				top.updateCommands = commands;
 				top.updateResults = cmds;
-				setViewInfo(top);
-				updateView(stackIndex);
+				setViewInfo({...top});
+				updateDiagram();
 			});
 		}
-	}, [doCommand, updateView]);
+	}, [doCommand, updateDiagram]);
 
 	// {method[]} actions - methods passed to components
 	let actions = {
