@@ -383,6 +383,7 @@ class MMOptimizer extends MMTool {
 				q = Math.abs( q );
 				let etemp = e;
 				e = d;
+				// console.log(`brent a ${a} b ${b} x ${x}`);
 				if (Math.abs( p ) >= Math.abs(0.5 * q * etemp) || p <= q * (a-x) || p >= q * (b-x)) {
 					if (x >= xm) {
 						e = a - x;
@@ -543,7 +544,7 @@ class MMOptimizer extends MMTool {
 				fu = this.fInOneDimension(u);
 			}
 			else {   // reject parabolic u, use default magnification
-				u = cx + this.gOd * (cx - bx);
+				u = cx + this.gOld * (cx - bx);
 				fu = this.fInOneDimension(u);
 			}
 							
