@@ -212,13 +212,13 @@ class MMGraphX extends MMGraphAxis {
 	constructor(graph, n) {
 		super(graph, `x${n}`);
 		this.number = n;
-		this.yLines = [];
+		this.yValues = [];
 		this.zValue = null;
-		this.addYLine();
+		this.addYValue();
 		if (graph.numberOfXValues > 0) {
 			const firstX = graph.xForIndex(0);
 			if (firstX.zValue) {
-				this.addZLine();
+				this.addZValue();
 			}
 		}
 	}
@@ -230,10 +230,10 @@ class MMGraphX extends MMGraphAxis {
 	 */
 	saveObject() {
 		const o = super.saveObject();
-		const count = this.yLines.length;
+		const count = this.yValues.length;
 		for (let i = 0; i < count; i++) {
-			const yLine = this.yLines[i];
-			o[`Y${i + 1}`] = yLine.saveObject();
+			const yValue = this.yValues[i];
+			o[`Y${i + 1}`] = yValue.saveObject();
 		}
 
 		if (this.zValue) {
@@ -249,17 +249,17 @@ class MMGraphX extends MMGraphAxis {
 	 */
 	initFromSaved(saved) {
 		super.initFromSaved(saved);
-		this.yLines = [];
-		let savedLine;
-		for(let i = 1; (savedLine = saved[`Y${i}`]); i++) {
-			const yLine = this.addYLine();
-			yLine.initFromSaved(savedLine);
+		this.yValues = [];
+		let savedValue;
+		for(let i = 1; (savedValue = saved[`Y${i}`]); i++) {
+			const yValue = this.addYValue();
+			yValue.initFromSaved(savedValue);
 		}
 
 		const savedZ = saved.Z1;
 		if (savedZ) {
-			const zLine = this.addZLine();
-			zLine.initFromSaved(savedZ);
+			const zValue = this.addZValue();
+			zValue.initFromSaved(savedZ);
 		}
 	}
 
@@ -296,62 +296,62 @@ class MMGraphX extends MMGraphAxis {
 		addValue(o, 'max', this.name, this.displayUnit);
 
 		const yValues = [];
-		const count = this.yLines.length;
+		const count = this.yValues.length;
 		for (let i = 0; i < count; i++) {
-			const yValue = {}
-			const yLine = this.yLines[i];
+			const yInfo = {}
+			const yValue = this.yValues[i];
 			const name = `y${this.number}_${i + 1}`;
-			yValue.name = name;
-			yValue.v = yLine.formula.formula;
-			yValue.vmin = yLine.minFormula.formula;
-			yValue.vmax = yLine.maxFormula.formula;
+			yInfo.name = name;
+			yInfo.v = yValue.formula.formula;
+			yInfo.vmin = yValue.minFormula.formula;
+			yInfo.vmax = yValue.maxFormula.formula;
 			if (!this.zValue) {
-				yValue.lineType = yLine.lineType;
+				yInfo.lineType = yValue.lineType;
 			}
-			if (yLine.displayUnit) {
-				yValue.unit = yLine.displayUnit.name;
+			if (yValue.displayUnit) {
+				yInfo.unit = yValue.displayUnit.name;
 			}
 			else {
 				const value = this.graph.valueDescribedBy(yValue.name);
 				if (value) {
-					yValue.unit = value.defaultUnit.name;
+					yInfo.unit = value.defaultUnit.name;
 				}			
 			}	
-			if (yValue.unit) {
-				yValue.unitType = theMMSession.unitSystem.typeNameForUnitNamed(yValue.unit);
+			if (yInfo.unit) {
+				yInfo.unitType = theMMSession.unitSystem.typeNameForUnitNamed(yValue.unit);
 			}
 	
-			addValue(yValue, 'min', name, yLine.displayUnit);
-			addValue(yValue, 'max', name, yLine.displayUnit);
-			yValues.push(yValue);
+			addValue(yInfo, 'min', name, yValue.displayUnit);
+			addValue(yInfo, 'max', name, yValue.displayUnit);
+			yValues.push(yInfo);
 		}
 		o.yValues = yValues;
 
 		if (this.zValue) {
-			const zValue = {};
-			const zLine = this.zValue;
+			const zInfo = {};
+			const zValue = this.zValue;
 			const name = `z${this.number}`;
-			zValue.name = name;
-			zValue.v = zLine.formula.formula;
-			zValue.vmin = zLine.minFormula.formula;
-			zValue.vmax = zLine.maxFormula.formula;
-			zValue.lineType = zLine.lineType;
-			if (zLine.displayUnit) {
-				zValue.unit = zLine.displayUnit.name;
+			zInfo.name = name;
+			zInfo.v = zValue.formula.formula;
+			zInfo.vmin = zValue.minFormula.formula;
+			zInfo.vmax = zValue.maxFormula.formula;
+			zInfo.lineType = zValue.lineType;
+			if (zValue.displayUnit) {
+				zInfo.unit = zValue.displayUnit.name;
 			}
 			else {
-				const value = this.graph.valueDescribedBy(zValue.name);
+				const value = this.graph.valueDescribedBy(zInfo.name);
 				if (value) {
-					zValue.unit = value.defaultUnit.name;
+					zInfo.unit = value.defaultUnit.name;
 				}			
 			}	
-			if (zValue.unit) {
-				zValue.unitType = theMMSession.unitSystem.typeNameForUnitNamed(zValue.unit);
+			if (zInfo.unit) {
+				zInfo.unitType = theMMSession.unitSystem.typeNameForUnitNamed(zInfo.unit);
 			}
 
-			addValue(zValue, 'min', name, zLine.displayUnit);
-			addValue(zValue, 'max', name, zLine.displayUnit);
-			o.zValue = zValue;
+			addValue(zInfo, 'min', name, zValue.displayUnit);
+			addValue(zInfo, 'max', name, zValue.displayUnit);
+			o.zValue = zInfo;
 		}
 		return o;
 	}
@@ -361,16 +361,16 @@ class MMGraphX extends MMGraphAxis {
 	 */
 	forget() {
 		super.forget();
-		for (let yLine of this.yLines) {
-			yLine.forget();
+		for (let yValue of this.yValues) {
+			yValue.forget();
 		}
 		if (this.zValue) {
 			this.zValue.forget();
 		}
 	}
 
-	get numberOfYLines() {
-		return this.yLines.length;
+	get numberOfYValues() {
+		return this.yValues.length;
 	}
 
 	/**
@@ -379,46 +379,46 @@ class MMGraphX extends MMGraphAxis {
 	 * @returns {MMGraphY}
 	 */
 	yForIndex(index) {
-		return this.yLines[index];
+		return this.yValues[index];
 	}
 
 	/**
-	 * @method addYLine
+	 * @method addYValue
 	 * @returns {MMGraphY} - the new line
 	 */
-	addYLine() {
-		const n = this.yLines.length + 1;
-		const line = new MMGraphY(this.graph, `y${this.number}_${n}`);
-		this.yLines.push(line);
+	addYValue() {
+		const n = this.yValues.length + 1;
+		const yValue = new MMGraphY(this.graph, `y${this.number}_${n}`);
+		this.yValues.push(yValue);
 		this.graph.forgetCalculated();
-		return line;
+		return yValue;
 	}
 
 	/**
-	 * @method addYLineAtIndex
+	 * @method addYValueAtIndex
 	 * @param {Number} index zero based
-	 * @returns {MMGraphY} - the new line
+	 * @returns {MMGraphY} - the new Value
 	 */
-	addYLineAtIndex(index) {
-		for (let i = this.yLines.length - 1; i >= index - 1; i--) {
-			this.yLines[i].renameTo(`y${this.number}_${i + 2}`);
+	addYValueAtIndex(index) {
+		for (let i = this.yValues.length - 1; i >= index - 1; i--) {
+			this.yValues[i].renameTo(`y${this.number}_${i + 2}`);
 		}
-		const newLine = new MMGraphY(this.graph, `y${this.number}_${index + 1}`);
-		this.yLines.splice(index - 1, 0, newLine);
+		const newValue = new MMGraphY(this.graph, `y${this.number}_${index + 1}`);
+		this.yValues.splice(index - 1, 0, newValue);
 		this.graph.forgetCalculated();
-		return newLine;
+		return newValue;
 	}
 
 	/**
-	 * @method removeYLineAtIndex
+	 * @method removeYValueAtIndex
 	 * @param {Number} index zero based
 	 */
-	removeYLineAtIndex(index) {
-		if (index >= 0 && this.yLines.length > 1) {
-			this.yLines[index - 1].removeChildren();
-			this.yLines.splice(index - 1,1);
-			for (let i = index; i < this.yLines.length; i++) {
-				this.yLines[i].renameTo(`y${this.number}_${i + 1}`);
+	removeYValueAtIndex(index) {
+		if (index >= 0 && this.yValues.length > 1) {
+			this.yValues[index - 1].removeChildren();
+			this.yValues.splice(index - 1,1);
+			for (let i = index; i < this.yValues.length; i++) {
+				this.yValues[i].renameTo(`y${this.number}_${i + 1}`);
 			}
 			this.graph.forgetCalculated();
 		}
@@ -428,19 +428,19 @@ class MMGraphX extends MMGraphAxis {
 	}
 
 	/**
-	 * @method addZLine
-	 * @returns {MMGraphY} - the new line
+	 * @method addZValue
+	 * @returns {MMGraphY} - the new value
 	 */
-	addZLine() {
+	addZValue() {
 		this.zValue = new MMGraphY(this.graph, `z${this.number}`);
 		this.graph.forgetCalculated();
 		return this.zValue;
 	}
 
 	/**
-	 * @method removeZLine
+	 * @method removeZValue
 	 */
-	removeZLine() {
+	removeZValue() {
 		if (this.zValue) {
 			this.zValue.removeChildren()
 			this.zValue = null;
@@ -455,7 +455,7 @@ class MMGraphX extends MMGraphAxis {
 		this.graph.removeChildNamed(this.name);
 		this.graph.removeChildNamed('min' + this.name);
 		this.graph.removeChildNamed('max' + this.name);
-		for (let yValue of this.yLines) {
+		for (let yValue of this.yValues) {
 			yValue.removeChildren()
 		}
 		if (this.zValue) {
@@ -470,9 +470,9 @@ class MMGraphX extends MMGraphAxis {
 	renumberTo(n) {
 		this.name = `x${n}`;
 		this.number = n;
-		const nY = this.yLines.length;
+		const nY = this.yValues.length;
 		for (let i = 0; i < nY; i++) {
-			this.yLines[i].renameTo(`y${n}_${i+1}`);
+			this.yValues[i].renameTo(`y${n}_${i+1}`);
 		}
 		if (this.zValue) {
 			this.zValue.renameTo(`z${n}`);
@@ -621,9 +621,9 @@ class MMGraph extends MMTool {
 			
 			if (xNumber > 0 && xNumber <= this.xValues.length) {
 				const xValue = this.xValues[xNumber - 1];
-				if (yNumber > 0 && yNumber <= xValue.numberOfYLines) {
-					const yLine = xValue.yForIndex(yNumber - 1);
-					return returnValue(yLine.values);
+				if (yNumber > 0 && yNumber <= xValue.numberOfYValues) {
+					const yValue = xValue.yForIndex(yNumber - 1);
+					return returnValue(yValue.values);
 				}
 			}
 		}
@@ -721,15 +721,15 @@ class MMGraph extends MMTool {
 			let rv;
 			if (xNumber > 0 && xNumber <= this.xValues.length) {
 				const xValue = this.xValues[xNumber - 1];
-				if (yNumber > 0 && yNumber <= xValue.numberOfYLines) {
-					const yLine = xValue.yForIndex(yNumber - 1);
-					rv = yLine.minValue;
+				if (yNumber > 0 && yNumber <= xValue.numberOfYValues) {
+					const yValue = xValue.yForIndex(yNumber - 1);
+					rv = yValue.minValue;
 					
 					if (!rv) {
 						if (yNumber > 1 ) {
 							const y1 = xValue.yForIndex(yNumber - 2);
-							if (yLine.values && y1.values &&
-								MMUnitSystem.areDimensionsEqual(yLine.values.unitDimensions, y1.values.unitDimensions))
+							if (yValue.values && y1.values &&
+								MMUnitSystem.areDimensionsEqual(yValue.values.unitDimensions, y1.values.unitDimensions))
 							{
 								rv = this.valueDescribedBy(`miny${xNumber}_${yNumber-1}`, requestor);
 							}
@@ -737,14 +737,14 @@ class MMGraph extends MMTool {
 						else if (xNumber > 1) {
 							const x1 = this.xValues[xNumber - 2];
 						const y1 = x1.yForIndex(0);
-							if (yLine.values && y1.values &&
-								MMUnitSystem.areDimensionsEqual(yLine.values.unitDimensions, y1.values.unitDimensions))
+							if (yValue.values && y1.values &&
+								MMUnitSystem.areDimensionsEqual(yValue.values.unitDimensions, y1.values.unitDimensions))
 							{
 								rv = this.valueDescribedBy(`miny${xNumber-1}_1`);
 							}
 						}
 						if (!rv) {
-							rv = yLine.values ? yLine.values.min() : null;
+							rv = yValue.values ? yValue.values.min() : null;
 						}
 					}
 				}
@@ -774,15 +774,15 @@ class MMGraph extends MMTool {
 			let rv;
 			if (xNumber > 0 && xNumber <= this.xValues.length) {
 				const xValue = this.xValues[xNumber - 1];
-				if (yNumber > 0 && yNumber <= xValue.numberOfYLines) {
-					const yLine = xValue.yForIndex(yNumber - 1);
-					rv = yLine.maxValue;
+				if (yNumber > 0 && yNumber <= xValue.numberOfYValues) {
+					const yValue = xValue.yForIndex(yNumber - 1);
+					rv = yValue.maxValue;
 					
 					if (!rv) {
 						if (yNumber > 1 ) {
 							const y1 = xValue.yForIndex(yNumber - 2);
-							if (yLine.values && y1.values &&
-								MMUnitSystem.areDimensionsEqual(yLine.values.unitDimensions, y1.values.unitDimensions))
+							if (yValue.values && y1.values &&
+								MMUnitSystem.areDimensionsEqual(yValue.values.unitDimensions, y1.values.unitDimensions))
 							{
 								rv = this.valueDescribedBy(`maxy${xNumber}_${yNumber-1}`, requestor);
 							}
@@ -790,14 +790,14 @@ class MMGraph extends MMTool {
 						else if (xNumber > 1) {
 							const x1 = this.xValues[xNumber - 2];
 							const y1 = x1.yForIndex(0);
-							if (yLine.values && y1.values &&
-								MMUnitSystem.areDimensionsEqual(yLine.values.unitDimensions, y1.values.unitDimensions))
+							if (yValue.values && y1.values &&
+								MMUnitSystem.areDimensionsEqual(yValue.values.unitDimensions, y1.values.unitDimensions))
 							{
 								rv = this.valueDescribedBy(`maxy${xNumber-1}_1`);
 							}
 						}
 						if (!rv) {
-							rv = yLine.values ? yLine.values.max() : null;
+							rv = yValue.values ? yValue.values.max() : null;
 						}
 					}
 				}
@@ -918,7 +918,7 @@ class MMGraph extends MMTool {
 				enableY = false;
 				enableZ = false;
 			}
-			else if (xValue.numberOfYLines != 1) {
+			else if (xValue.numberOfYValues != 1) {
 				enableZ = false;
 			}
 		}
@@ -979,7 +979,7 @@ class MMGraph extends MMTool {
 				return xValue.zValue;
 			}
 			if (prefix === 'y' && typeof yNumber === 'number') {
-				return xValue.yLines[yNumber];
+				return xValue.yValues[yNumber];
 			}
 		}
 		return null;
@@ -1056,15 +1056,15 @@ class MMGraph extends MMTool {
 					}
 					case 'y': {
 						const yNumber = parts.length > 1 ? parseInt(parts[1]) : 1;
-						if (xValue.yLines.length < 2) {
+						if (xValue.yValues.length < 2) {
 							this.setWarning('mmcmd:graphCantDeleteLast', {path: this.getPath(), vName: 'Y'});
 							return;
 						}
-						const yValue = xValue.yLines[yNumber - 1];
+						const yValue = xValue.yValues[yNumber - 1];
 						if (yValue) {
 							const savedY = yValue.saveObject();
 							savedY.axisName = name;
-							xValue.removeYLineAtIndex(yNumber);
+							xValue.removeYValueAtIndex(yNumber);
 							const undoString = JSON.stringify(savedY);
 							command.undo = `__blob__${this.getPath()} restoreaxis__blob__${undoString}`;
 							return;
@@ -1080,7 +1080,7 @@ class MMGraph extends MMTool {
 						if (zValue) {
 							const savedZ = zValue.saveObject();
 							savedZ.axisName = name;
-							xValue.removeZLine();
+							xValue.removeZValue();
 							const undoString = JSON.stringify(savedZ);
 							command.undo = `__blob__${this.getPath()} restoreaxis__blob__${undoString}`;
 							return;
@@ -1113,7 +1113,7 @@ class MMGraph extends MMTool {
 				const xValue = this.xValues[xNumber - 1];
 				if (xValue) {
 					const yNumber = parts.length > 1 ? parseInt(parts[1]) : 1;
-					const yValue = xValue.addYLineAtIndex(yNumber);
+					const yValue = xValue.addYValueAtIndex(yNumber);
 					yValue.initFromSaved(axis);
 					return;
 				}
@@ -1122,7 +1122,7 @@ class MMGraph extends MMTool {
 			case 'z': {
 				const xValue = this.xValues[xNumber - 1];
 				if (xValue) {
-					const zValue = xValue.addZLine();
+					const zValue = xValue.addZValue();
 					zValue.initFromSaved(axis);
 					return;
 				}
