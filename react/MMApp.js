@@ -14,6 +14,7 @@ import {SolverView} from './SolverView.js';
 import {OdeView} from './OdeView.js';
 import {OptimizerView} from './OptimizerView.js';
 import {IteratorView} from './IteratorView.js';
+import {GraphView} from './GraphView.js';
 import {FormulaEditor} from './FormulaView.js';
 
 const e = React.createElement;
@@ -126,6 +127,7 @@ export function MMApp(props) {
 		'Ode': OdeView,
 		'Iterator': IteratorView,
 		'Optimizer': OptimizerView,
+		'Graph': GraphView,
 	}
 
 	// information need to generate a console view component

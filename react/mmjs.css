@@ -69,7 +69,7 @@ input {
 	padding-right: 3px;
 	border: solid 1px;
 	border-radius: 5px;
-	color: var(--input--color);
+	color: var(--link--color);
 	background-color: var(--input--bgcolor);
 }
 
@@ -163,6 +163,7 @@ a:hover {
 	display: grid;
 	grid-template-columns: 50px 1fr;
 	grid-template-rows: 1fr;
+	color: var(--link--color);
 }
 
 .checkbox__label {
@@ -392,6 +393,12 @@ a:hover {
 	grid-area: formula-display;
 	white-space: nowrap;
 	overflow: hidden;
+	background-color: var(--input--bgcolor);
+	box-sizing: border-box;
+	padding-left: 3px;
+	padding-right: 3px;
+	border: solid 1px;
+	border-radius: 5px;
 }
 
 .formula-field__refresh {
@@ -521,6 +528,62 @@ a:hover {
 	margin: 5px auto;
 	display: flex;
 	justify-content: center;
+}
+
+#graph__button-fields {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	grid-gap: 5px;
+	height: var(--input--height);
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.graph__display-unit {
+	color: var(--link--color);
+}
+
+#graph__input-rows {
+	border-top: solid 1px var(--border--color);
+	overflow: auto;
+	height: calc(var(--info-height) - 80px);
+}
+
+.graph__input-row {
+	display: grid;
+	grid-template-rows: 1fr var(--input--height);
+	border-bottom: solid 1px var(--border--color);
+	padding-bottom: 5px;
+	padding-top: 5px;
+}
+
+.graph__input-row-buttons {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr 40px;
+	grid-gap: 5px;
+	grid-template-areas: "line scatter bar bardot delete";
+	padding-top: 5px;
+}
+
+.graph__type-button {
+	justify-self: center;
+}
+
+.graph__type-selected {
+	color: var(--link--color);
+}
+
+.graph__row-delete-button {
+	justify-self: right;
+	grid-area: delete;
+	color: red;
+	padding-right: 5px;
+}
+
+.graph__row-inputs {
+	display: grid;
+	grid-template-columns: 50px 2fr 1fr;
+	grid-gap: 5px;
 }
 
 #info-view {

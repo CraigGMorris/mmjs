@@ -30,7 +30,8 @@ importScripts(
   "MMSolver.js",
   "MMOde.js",
   "MMIterator.js",
-  "MMOptimizer.js"
+  "MMOptimizer.js",
+  "MMGraph.js"
 );
 
 class MMCommandWorker {

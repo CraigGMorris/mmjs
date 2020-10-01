@@ -1031,6 +1031,12 @@ export class Diagram extends React.Component {
 										addTool('Optimizer');
 									}
 								},
+								{
+									text: this.props.t('mmcmd:graphDisplayName'),
+									action: () => {
+										addTool('Graph');
+									}
+								},
 							]
 						}
 					)
@@ -1270,6 +1276,7 @@ class ToolIcon extends React.Component {
 			Ode: 'rgba(216,221,250,.8)',
 			Iterator: 'rgba(255,232,217,.8)',
 			Optimizer: 'rgba(237,212,217,.8)',
+			Graph: 'rgba(224,247,247,.8)',
 		}
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;

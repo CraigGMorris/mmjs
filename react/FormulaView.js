@@ -72,7 +72,6 @@ export function FormulaField(props) {
 				className: 'formula-field__text-display',
 			},
 			props.formula
-			// '= ' + props.formula
 		),
 		e(
 			'div', {

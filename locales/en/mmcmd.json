@@ -55,6 +55,12 @@
 	"formulaTransformDimError": "Invalid argument dimensions in transform",
 	"formulaTranslateDimError": "Translate argument must be array 3 long",
 	"formulaFmtUnitError": "If present, a third fmt function argument must be a unit",
+	"graphCantDelete3DZ": "Can't delete Z value if there is another X value\n\nGraph: {{path}}",
+	"graphCantDeleteLast": "Can't Delete Last {{vName}} in graph\n\n{{path}}",
+	"graphDisplayName": "Graph",
+	"graphRemoveFailed": "Count not remove axis {{name}}",
+	"graphRestoreFail": "Could not restore {{name}}",
+	"graphUnitError": "Graph {{type}} value unit dimensions mismatch in {{path}}\n\n:\nv: {{v}}\n{{type}}:{{vtype}}",
 	"iterDisplayName": "Iterator",
 	"iterStatus": "{{name}} i: {{i}} x: {{x}}",
 	"formulaUnknownFunction": "Unknown function {{f}}",
@@ -168,6 +174,10 @@
 	"?setColumnUnit": "set the display unit for a column\n\nusage: setcolumnunit columnNumber unitName",
 	"?formulaRefresh": "reevaluate the formula\n\nusage: refresh",
 	"?formulaValue": "return formula value as json\n\nusage: value",
+	"?graphRemoveAxis": "removes the named axis\n\nusage removeaxis axisName",
+	"?graphRestoreAxis": "used by undo to restore graph axis\n\nusage: restoreaxis recoveryJson",
+	"?graphSetLineType": "set the line type to line, scatter, bar or bar+dot\n\nusage: setlinetype lineName type",
+	"?graphSetUnit": "set the display unit for an axis\n\nusage: setunit axisName unitName",
 	"?iterAddRecorded": "Add a recording formula\n\nusage addrecorded",
 	"?iterRemoveRecorded": "Remove a recording formula\n\nremoverecorded n\n\nwhere n is one based",
 	"?iterReset": "reset the iterator to the initial state\n\nusage: reset",
@@ -206,5 +216,6 @@
 	"?tableRestoreRows": "used by undo to restore a deleted table row\n\nusage restorerows recoveryJson",
 	"?tableSetCell": "sets value of cell\n\nusage: setcell rowNumber columnNumber value",
 	"?toolViewInfo": "returns json information about tool used for info views\n\nusage: toolviewinfo",
-	"?toolValue": "returns value as json\n\nusage: value"
+	"?toolValue": "returns value as json\n\nusage: value",
+	"?valueJson": "returns json for tool value described by description\n\nusage: value description"
 }

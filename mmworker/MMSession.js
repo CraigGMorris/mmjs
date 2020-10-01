@@ -17,6 +17,7 @@
 	MMOde:readonly
 	MMIterator:readonly
 	MMOptimizer:readonly
+	MMGraph:readonly
 	theMMSession:readonly
 	MMToolValue:readonly
 */
@@ -366,6 +367,7 @@ class MMSession extends MMCommandParent {
 		}
 		finally {
 			this.isLoadingCase = false;
+			await this.autoSaveSession();
 		}
 	}
 
@@ -1196,6 +1198,10 @@ const MMToolTypes = {
 		factory: (name, parent) => {return new MMOptimizer(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:optDisplayName'),
 	},
+	"Graph": {
+		factory: (name, parent) => {return new MMGraph(name, parent)},
+		displayName: new MMCommandMessage('mmcmd:graphDisplayName'),
+	},
 };
 
 /**
@@ -1262,6 +1268,7 @@ class MMTool extends MMCommandParent {
 	get verbs() {
 		let verbs = super.verbs;
 		verbs['toolviewinfo'] = this.toolViewInfo;
+		verbs['value'] = this.valueJson;
 		return verbs;
 	}
 
@@ -1272,7 +1279,8 @@ class MMTool extends MMCommandParent {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			addtool: 'mmcmd:?toolViewInfo',
+			toolViewInfo: 'mmcmd:?toolViewInfo',
+			value: 'mmcmd:?valueJson',
 		}[command];
 		if (key) {
 			return key;
@@ -1310,6 +1318,20 @@ class MMTool extends MMCommandParent {
 			modelPath: parent.getPath(),
 			notes: this.notes,
 			diagramNotes: this.diagramNotes,
+		}
+	}
+
+	/**
+	 * @method valueJson
+	 * @returns {String} json value for valueDescribedBy
+	 */
+	valueJson(command) {
+		const value = this.valueDescribedBy(command.args);
+		if (value) {
+			command.results = JSON.stringify(value);
+		}
+		else {
+			command.results = '';
 		}
 	}
 
