@@ -297,7 +297,7 @@ export function GraphView(props) {
 					'button', {
 						id: 'graph__addx-button',
 						onClick: () => {
-							props.actions.doCommand(`${props.viewInfo.path} addx`, () => {
+							props.actions.doCommand(`${props.viewInfo.path} addaxis x`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);
 							})
 						}
@@ -309,7 +309,7 @@ export function GraphView(props) {
 						id: 'graph__addy-button',
 						disabled: !results.enableY,
 						onClick: () => {
-							props.actions.doCommand(`${props.viewInfo.path} addy`, () => {
+							props.actions.doCommand(`${props.viewInfo.path} addaxis y`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);
 							})
 						}
@@ -321,7 +321,7 @@ export function GraphView(props) {
 						id: 'graph__addz-button',
 						disabled: !results.enableZ,
 						onClick: () => {
-							props.actions.doCommand(`${props.viewInfo.path} addz`, () => {
+							props.actions.doCommand(`${props.viewInfo.path} addaxis z`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);
 							})
 						}

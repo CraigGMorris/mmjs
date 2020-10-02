@@ -930,6 +930,7 @@ class MMGraph extends MMTool {
 	/** @override */
 	get verbs() {
 		let verbs = super.verbs;
+		verbs['addaxis'] = this.addAxisCommand;
 		verbs['setlinetype'] = this.setLineTypeCommand;
 		verbs['setunit'] = this.setUnitCommand;
 		verbs['removeaxis'] = this.removeAxisCommand;
@@ -944,6 +945,7 @@ class MMGraph extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
+			addaxis: 'mmcmd:?graphAddAxis',
 			setlinetype: 'mmcmd:?graphSetLineType',
 			setunit: 'mmcmd:?graphSetUnit',
 			removeaxis: 'mmcmd:?graphRemoveAxis',
@@ -983,6 +985,76 @@ class MMGraph extends MMTool {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @method addAxisCommand
+	 * @param {MMCommand} command 
+	 */
+	addAxisCommand(command) {
+		const name = command.args;
+		if (name) {
+			const parts = name.split('_');
+			if (parts) {
+				const axisType = parts[0][0];
+				switch(axisType) {
+					case 'x': {
+						let xValue;
+						if (parts[0].length > 1) {
+							const xNumber = parseInt(parts[0].subtring(1));
+							if (xNumber > 0 && xNumber <= this.xValues.length) {
+								xValue = this.addXValueAtIndex(xNumber);
+							}
+						}
+						else {
+							xValue = this.addXValue();
+						}
+						if (xValue) {
+							command.undo = `${this.getPath()} removeaxis ${xValue.name}`;
+							return;
+						}
+						break;
+					}
+
+					case 'y': {
+						let xNumber;
+						if (parts[0].length > 1) {
+							xNumber = parseInt(parts[0].subtring(1));
+						}
+						else {
+							xNumber = this.xValues.length;
+						}
+						const xValue = this.xValues[xNumber - 1];
+						if (xValue) {
+							const yNumber = parts.length > 1 ? parseInt(parts[1]) : 0;
+							if (typeof yNumber === 'number') {
+								const yValue = yNumber ? xValue.addYValueAtIndex(yNumber) : xValue.addYValue();
+								command.undo = `${this.getPath()} removeaxis ${yValue.name}`;
+								return;
+							}
+						}
+						break;
+					}
+					case 'z': {
+						let xNumber;
+						if (parts[0].length > 1) {
+							xNumber = parseInt(parts[0].subtring(1));
+						}
+						else {
+							xNumber = this.xValues.length;
+						}
+						const xValue = this.xValues[xNumber - 1];
+						if (xValue) {
+							const zValue = xValue.addZValue();
+							command.undo = `${this.getPath()} removeaxis ${zValue.name}`;
+							return;
+						}
+						break;
+					}
+				}
+			}
+		}
+		this.setError('mmcmd:graphAddFail', {path: this.getPath(), name: name});
 	}
 	
 	/**
@@ -1037,7 +1109,7 @@ class MMGraph extends MMTool {
 		const name = command.args;
 		if (name.length > 1) {
 			const prefix = name[0];
-			const parts = name.substring(1).split(/\s+/);
+			const parts = name.substring(1).split('_');
 			const xNumber = parseInt(name.substring(1)) - 1;
 			const xValue = this.xValues[xNumber];
 			if (xValue) {
@@ -1100,7 +1172,7 @@ class MMGraph extends MMTool {
 		const axis = JSON.parse(command.args);
 		const name = axis.axisName;
 		const prefix = name[0];
-		const parts = name.substring(1).split(/\s+/);
+		const parts = name.substring(1).split('_');
 		const xNumber = parseInt(parts[0]);
 		switch(prefix) {
 			case 'x': {
