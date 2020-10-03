@@ -171,6 +171,21 @@ class MMOptimizer extends MMTool {
 	}
 	
 	/**
+	 * @method parameters
+	 * i.e. things that can be appended to a formula value
+	 */
+	parameters() {
+		let p = super.parameters();
+		p.push('solved');
+		p.push('x');
+		p.push('fx');
+		for (let i = 1; i <= this._numberOfOutputs; i++) {
+			p.push(`$(i)`);
+		}
+		return p;
+	}
+
+	/**
 	 * @method resetCommand
 	 * @param {MMCommand} command
 	 */

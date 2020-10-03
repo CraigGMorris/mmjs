@@ -1622,6 +1622,8 @@ a:hover {
 
 #value-picker__param-list {
 	text-align: center;
+	overflow: auto;
+	height: calc(var(--info-height) - 95px);
 }
 
 #value-picker__path-list {

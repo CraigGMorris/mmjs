@@ -199,9 +199,10 @@ class MMIterator extends MMTool {
 	/**
 	 * @method columnNameForRecorded
 	 * @param {Number} rNumber - the record value number
+	 * @param {Boolean} commentOnly - if present and true, null will be return if no comment on formula
 	 * @returns {String} - the name for recorded value rNumber
 	 */
-	columnNameForRecorded(rNumber) {
+	columnNameForRecorded(rNumber, commentOnly) {
 		if (rNumber > 0 && rNumber <= this.recordedValues.length) {
 			const formula = this.recordedValueFormulas[rNumber - 1];
 			const parts = formula.formula.split("'");
@@ -209,8 +210,9 @@ class MMIterator extends MMTool {
 				const comment = parts[1].trim();
 				return comment.replace(/\s/g,'_');
 			}
-			else
+			else if (!commentOnly) {
 				return formula.formula;
+			}
 		}
 		return null;
 	}
@@ -337,8 +339,8 @@ class MMIterator extends MMTool {
 					// see if it matches any recorded value comment
 					const count = this.recordedValueFormulas.length;
 					for (let rNumber = 1; rNumber <= count; rNumber++) {
-						const columnName = this.columnNameForRecorded(rNumber);
-						if (lcDescription == columnName.toLowerCase()) {
+						const columnName = this.columnNameForRecorded(rNumber, true);
+						if (columnName && lcDescription == columnName.toLowerCase()) {
 							return returnValue(this.valueForRecorded(rNumber));
 						}
 					}
@@ -459,6 +461,32 @@ class MMIterator extends MMTool {
 				return super.getVerbUsageKey(command);
 			}
 		}
+
+	/**
+	 * @method parameters
+	 * i.e. things that can be appended to a formula value
+	 */
+	parameters() {
+		let p = super.parameters();
+		p.push('solved');
+		p.push('i');
+		p.push('x');
+		p.push('initx');
+		p.push('nextx');
+		p.push('while');
+		p.push('table');
+
+		const count = this.recordedValueFormulas.length;
+		for (let i = 1; i <= count; i++) {
+			p.push(`r${i}`);
+			const recordedName = this.columnNameForRecorded(i, true);
+			if (recordedName) {
+				p.push(recordedName);
+			}
+		}
+
+		return p;
+	}
 
 	/**
 	 * @method resetCommand

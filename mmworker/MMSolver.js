@@ -303,6 +303,20 @@ class MMSolver extends MMTool {
 		}
 	}
 
+	/**
+	 * @method parameters
+	 * i.e. things that can be appended to a formula value
+	 */
+	parameters() {
+		let p = super.parameters();
+		p.push('solved');
+		for (let i = 1; i <= this.functions.length; i++) {
+			p.push(`f${i}`);
+			p.push(`${i}`);
+			p.push(`c${i}`);
+		}
+		return p;
+	}
 
 	/**
 	 * @method getOutputs

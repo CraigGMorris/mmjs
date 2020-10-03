@@ -218,7 +218,22 @@ class MMDataTable extends MMTool {
 				return super.getVerbUsageKey(command);
 			}
 		}
-	
+
+	/**
+	 * @method parameters
+	 * i.e. things that can be appended to a formula value
+	 */
+	parameters() {
+		let p = super.parameters();
+		p.push('nrows');
+		p.push('ncols');
+		p.push('table');
+		for (let column of this.columnArray) {
+			p.push(column.name);
+		}
+		return p;
+	}
+
 	/**
 	 * @method addColumn
 	 * @param {String} options - optional json string containing 

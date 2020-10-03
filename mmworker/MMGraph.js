@@ -960,6 +960,54 @@ class MMGraph extends MMTool {
 	}
 
 	/**
+	 * @method parameters
+	 * i.e. things that can be appended to a formula value
+	 */
+	parameters() {
+		let p = super.parameters();
+		p.push('x');
+		p.push('minx');
+		p.push('maxx');
+		p.push('svg');
+		p.push('table');
+		const xCount = this.xValues.length;
+		const is3d = this.xValues[0].zValue != null;
+		for (let i = 1; i <= xCount; i++) {
+			p.push(`x${i}`);
+			p.push(`minx${i}`);
+			p.push(`maxx${i}`);
+			p.push(`table${i}`);
+			if (is3d) {
+				p.push(`y${i}`);
+				p.push(`miny${i}`);
+				p.push(`maxy${i}`);
+				p.push(`z${i}`);
+				p.push(`minz${i}`);
+				p.push(`maxz${i}`);
+				p.push(`svg${i}`);
+			}
+			else {
+				const xValue = this.xValues[i - 1];			
+				const yCount = xValue.numberOfYValues;
+				
+				for (let j = 1; j <= yCount;  j++) {
+					p.push(`y${i}_${j}`);
+				}
+				for (let j = 1; j <= yCount;  j++) {
+					p.push(`miny${i}_${j}`);
+				}
+				for (let j = 1; j <= yCount;  j++) {
+					p.push(`maxy${i}_${j}`);
+				}
+				for (let j = 1; j <= yCount;  j++) {
+					p.push(`svg${i}_${j}`);
+				}
+			}
+		}
+		return p;
+	}
+
+	/**
 	 * @method axisFromName
 	 * @param {String} name
 	 * parse name like y2_1 and return the corresponding axiz
