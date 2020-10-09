@@ -2,12 +2,10 @@
 /* global
 	MMTool:readonly
 	MMFormula:readonly
-	MMPropertyType:readonly
 	MMNumberValue:readonly
+	MMStringValue:readonly
 	theMMSession:readonly
 	MMUnitSystem:readonly
-	MMMath:readonly
-	MMCommandMessage:readonly
 */
 
 /**
@@ -122,6 +120,19 @@ class MMGraphAxis {
 	}
 
 	/**
+	 * @method title
+	 */
+	get title() {
+		const parts = this.formula.formula.split("'");
+		if (parts.length > 1) {
+			return parts[1].trim();
+		}
+		else {
+			return this.formula.formula.substring(0,10);
+		}
+	}
+
+	/**
 	 * @method forget
 	 */
 	forget() {
@@ -158,6 +169,70 @@ class MMGraphAxis {
 		this.graph.removeChildNamed(this.name);
 		this.graph.removeChildNamed('min' + this.name);
 		this.graph.removeChildNamed('max' + this.name);
+	}
+
+	/**
+	 * @method plotLabels
+	 * @param {Number} count
+	 * @returns {[Number, Number, [String]]} - min, max and the axis labels
+	 */
+	plotLabels(count) {
+		const labels = [];
+		let min = 0;
+		let max = 1;
+		if (this.values) {
+			let displayUnit = this.displayUnit;
+			if (!displayUnit)
+				displayUnit = this.values.defaultUnit;
+			const minValue = this.graph.valueDescribedBy(`min${this.name}`);
+			min = minValue ? minValue.values[0] : 0;
+			const maxValue = this.graph.valueDescribedBy(`max${this.name}`);
+			max = maxValue ? maxValue.values[0] : 1;
+
+			let step = (max - min) / (count - 1);
+
+			for (let i = 0; i < count; i++) {
+				let labelValue = step * i + min;
+				if (displayUnit) {
+					labelValue = displayUnit.convertFromBase(labelValue);
+				}
+				
+				let labelText = null;
+				if (labelValue != 0.0 && (Math.abs(labelValue) > 100000000.0 || Math.abs(labelValue) < 0.01)) {
+					labelText = labelValue.toFixed(7);
+				}
+				else {
+					labelText = labelValue.toFixed(5);
+				}
+				
+				labelText = labelText.trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
+				labels.push(labelText);
+			}
+		}
+		return [min, max, labels];
+	}
+
+	/**
+	 * @method plotInfo()
+	 * returns stringifiable object with info needed to plot
+	 */
+	plotInfo() {
+		const [min, max, labels] = this.plotLabels(5);
+		const info = {
+			name: this.name,
+			title: this.title,
+			minValue: min,
+			maxValue: max,
+			unit: this.displayUnit ? this.displayUnit.name : null,
+			labels: labels,
+		}
+		if (this.values) {
+			if (this.values.columnCount > 1) {
+				info.columnCount = this.values.columnCount;
+			}
+			info.values = Array.from(this.values.values)
+		}
+		return info;
 	}
 }
 
@@ -196,6 +271,16 @@ class MMGraphY extends MMGraphAxis {
 	initFromSaved(saved) {
 		super.initFromSaved(saved);
 		this.lineType = saved.lineType;
+	}
+
+	/**
+	 * @method plotInfo()
+	 * returns stringifiable object with info needed to plot
+	 */
+	plotInfo() {
+		const info = super.plotInfo();
+		info.lineType = this.lineType;
+		return info;
 	}
 }
 
@@ -354,6 +439,19 @@ class MMGraphX extends MMGraphAxis {
 			o.zValue = zInfo;
 		}
 		return o;
+	}
+
+	/**
+	 * @method plotInfo()
+	 * returns stringifiable object with info needed to plot
+	 */
+	plotInfo() {
+		const info = super.plotInfo();
+		info.yInfo = this.yValues.map(y => y.plotInfo());
+		if (this.zValue) {
+			info.yInfo = this.zValue.plotInfo();
+		}
+		return info;
 	}
 
 	/**
@@ -679,7 +777,7 @@ class MMGraph extends MMTool {
 			let rv;
 			if (xNumber > 0 && xNumber <= this.xValues.length) {
 				const xValue = this.xValues[xNumber - 1];
-				rv = xValue.minValue;
+				rv = xValue.maxValue;
 				
 				if (!rv) {
 					if (xNumber > 1) {
@@ -887,6 +985,213 @@ class MMGraph extends MMTool {
 	}
 
 	/**
+	 * @method svgForDescription
+	 * @param {String} description
+	 * @returns {Array} svg strings
+	 */
+	svgForDescription(description) {
+		const lcDescription = description.toLowerCase();
+		let xAxisIndex = 0;
+		let yAxisIndex = 0;
+		if (lcDescription.length > 3) {
+			const pathParts = lcDescription.substring(3).split('_');
+			if (pathParts.length > 1) {
+				xAxisIndex = parseInt(pathParts[0]) - 1;
+				yAxisIndex = parseInt(pathParts[1]) - 1;
+				
+			}
+			else if (pathParts.length === 1) {
+				xAxisIndex = parseInt(pathParts[0]) - 1;
+				
+			}
+			if (xAxisIndex >= this.xValues.length) {
+				xAxisIndex = 0;
+			}
+		}
+
+		const height = 500.0;
+		const width = 500.0;	
+		
+		const lines = [];
+		const svgId = `svg_${this.name}`
+		lines.push(`<svg id="${svgId}" viewBox="0,0,${width},${height}">`);
+		
+		const zCount = this.xValues[0].numberOfZLines;
+		const lineColors =  ['Blue', '#009900', 'Brown', 'Orange', 'Purple', '#e60000', '#cccc00'];
+		const nColors = lineColors.length;
+		let colorNumber = 0;
+
+		if (zCount > 0) { // 3d
+			console.log('not yet implemented');
+		}
+		else { // 2d
+			// determine color to start with
+			let colorStart = 0;
+			for (let i = 0; i < xAxisIndex; i++) {
+				const x = this.xValues[i];
+				colorStart += x.numberOfYValues;
+			}
+	
+			const xValue = this.xValues[xAxisIndex];
+			if (yAxisIndex >= xValue.numberOfValues ) {
+				yAxisIndex = 0;
+			}
+
+			let xValues = xValue.values;
+			let lineColor = lineColors[xAxisIndex % nColors];
+	
+			const xTitle = xValue.title;
+			lines.push(`<text class="svg_xlabel" x="${width}" y="${height - 25}" stroke="${lineColor}" text-anchor="end">${xTitle}</text>`);
+	
+			if (xValues instanceof MMNumberValue ) {			
+				const scale = 1.0;
+
+				const [minX, maxX, xLabels] = xValue.plotLabels(5);
+				const xLabelCount = xLabels.length;
+				let step = width / (xLabelCount - 1);
+
+				const gridFormat = (x1, x2, y1, y2) => {
+					return `<line class="svg_gridlines" x1="${x1}" x2="${x2}" y1="${y1}" y2="${y2}" stroke="black"/>`
+				}
+				lines.push('<g class="svg_grid">"');
+				lines.push('<g class="svg_gridx">"');
+
+				for (let i = 0; i < xLabelCount; i++) {
+					const centerX = i * step;
+					lines.push(gridFormat(centerX, centerX, height, 0.0));
+					
+					const labelText = xLabels[i];
+					let anchor;
+					let labelX = centerX;
+					if (i === 0) {
+						anchor = 'start';
+						labelX = 5.0;
+					}
+					else if (i === xLabelCount - 1) {
+						anchor = 'end';
+					}
+					else {
+						anchor = 'middle';
+					}
+					lines.push(`<text  class="svg_xlabel" x="${labelX}" y="${height - 5.0}" stroke="${lineColor}" text-anchor="${anchor}">${labelText}</text>`);
+				}
+				lines.push('</g>');
+				lines.push('<g class="svg_gridy">');
+	
+				const yValue = xValue.yForIndex(yAxisIndex);
+				const yLabels = yValue.plotLabels(5)[2];
+				const yLabelCount = yLabels.length;
+				lineColor = lineColors[(yAxisIndex + colorStart) % nColors];
+
+				step = height / ( yLabelCount - 1);
+				for (let i = 0; i < yLabelCount; i++) {
+					const centerY = i * step;
+					lines.push(gridFormat(0.0, width, centerY, centerY));
+					
+					let yString = yLabels[i];
+					if (i == 0 && yValue.formula.formula ) {
+						yString += ' '+ yValue.title;
+					}
+					let labelY = centerY - 5.0;
+					if (i == yLabelCount - 1) {
+						labelY -= 20.0;
+					}
+					else if (i == 0) {
+						labelY = 20.0;
+					}
+	
+					lines.push(`<text class="svg_ylabel" x="5.0" y="${labelY}" stroke="${lineColor}" text-anchor="start">${yString}</text>`);
+				}
+				lines.push('</g>');
+				lines.push('</g>');
+				
+				// lines
+				lines.push('<g class="svg_lines">');
+				const xCount = this.xValues.length;
+				for (let xNumber = 0; xNumber < xCount; xNumber++) {
+					const xValue = this.xValues[xNumber];
+					const xValues = xValue.values;					
+					const nLines = xValue.numberOfYValues;
+					const nPoints = xValues.valueCount;
+					const scaleForX = (minX === maxX) ? 0.1 : scale * width / (maxX - minX);
+
+					for (let lineNumber = 0; lineNumber < nLines; lineNumber++) {
+						const lineClass = `svg_line_${xNumber+1}_${lineNumber+1}`;
+						const yValue = xValue.yForIndex(lineNumber);
+						
+						let yValues = null;
+						try {
+							yValues = yValue.values;
+						}
+						catch(e) {
+							return null;
+						}
+						const lineType = yValue.lineType;
+						if (yValues instanceof MMNumberValue) {
+							const n = Math.min(nPoints, yValues.valueCount);
+							const [minY, maxY] = yValue.plotLabels(5);
+							const scaleForY = (minY == maxY) ? 0.1 : scale * height / (maxY - minY);
+
+							const rowCount = xValues.rowCount;
+							const columnCount = xValues.columnCount;
+							
+							for (let col = 0; col < columnCount; col++) {
+								lineColor = lineColors[colorNumber++ % nColors];
+								const path = [];
+								if (lineType === MMGraphLineType.dot || lineType === MMGraphLineType.barWithDot) {
+									path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="${lineColor}" opacity="0.4" d="`);
+								}
+								else {
+									path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="none" d="`);
+								}
+
+								for (let row = 0; row < rowCount; row++) {
+									const pointCount = row*columnCount + col;
+									if (pointCount < n) {
+										const x = xValues.values[pointCount];
+										const y = yValues.values[pointCount];
+										
+										const scaledY = (-(y - minY) * scaleForY + height).toFixed(5);
+										const scaledY0 = (minY * scaleForY + height).toFixed(5);
+										const scaledX = ((x - minX) * scaleForX).toFixed(5);
+
+										switch(lineType) {
+											case MMGraphLineType.bar:
+											case MMGraphLineType.barWithDot: 
+												path.push(`M ${scaledX} ${scaledY}`);
+												path.push(`L ${scaledX} ${scaledY0}`);
+												if (lineType === MMGraphLineType.bar)
+													break;
+												// fall through and add dot as well for barWithDot
+												
+											case MMGraphLineType.dot:
+												path.push(`M ${scaledX} ${scaledY} m -1 0 a 1,1 0 1,0 2,0 a 1,1 0 1,0 -2,0`);
+												break;
+												
+											default:
+												if (row == 0) {
+													path.push(`M ${scaledX} ${scaledY}`);
+												}
+												else {
+													path.push(`L ${scaledX} ${scaledY}`);
+												}
+												break;
+										}		
+									}
+								}															
+								lines.push(path.join(' ') + '"/>');
+							}
+						}
+					}
+				}
+			}
+			lines.push('</g>');
+		}
+		lines.push('</svg>');
+		return MMStringValue.scalarValue(lines.join('\n'));
+	}
+
+	/**
 	 * @method toolViewInfo
 	 * @override
 	 * @param {MMCommand} command
@@ -927,6 +1232,16 @@ class MMGraph extends MMTool {
 		results['enableZ'] = enableZ;
 	}
 
+	/**
+	 * @method plotInfo()
+	 * returns stringifiable object with info needed to plot
+	 */
+	plotInfo() {
+		return {
+			xInfo: this.xValues.map(x => x.plotInfo())
+		}
+	}
+
 	/** @override */
 	get verbs() {
 		let verbs = super.verbs;
@@ -935,6 +1250,8 @@ class MMGraph extends MMTool {
 		verbs['setunit'] = this.setUnitCommand;
 		verbs['removeaxis'] = this.removeAxisCommand;
 		verbs['restoreaxis'] = this.restoreAxisCommand;
+		verbs['svg'] = this.svgCommand;
+		verbs['plotinfo'] = this.plotInfoCommand;
 		return verbs;
 	}
 
@@ -950,6 +1267,8 @@ class MMGraph extends MMTool {
 			setunit: 'mmcmd:?graphSetUnit',
 			removeaxis: 'mmcmd:?graphRemoveAxis',
 			restoreaxis: 'mmcmd:?graphRestoreAxis',
+			svg: 'mmcmd:?graphSvg',
+			plotinfo: 'mmcmd:?graphPlotInfo',
 		}[command];
 		if (key) {
 			return key;
@@ -1252,6 +1571,23 @@ class MMGraph extends MMTool {
 		this.setError(`mmcmd:graphRestoreFail`, {name: name});
 	}
 
+	/**
+	 * @method svgCommand
+	 * @param {MMCommand} command
+	 */
+	svgCommand(command) {
+		const svgValue = this.svgForDescription(command.args);
+		command.results = svgValue ? svgValue.values[0] : '';
+		return;
+	}
+
+	/**
+	 * @method plotInfoCommand
+	 * @param {MMCommand} command
+	 */
+	plotInfoCommand(command) {
+		command.results = this.plotInfo();
+	}
 
 	/**
 	 * @method addXValue

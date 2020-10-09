@@ -573,6 +573,18 @@ a:hover {
 	color: var(--link--color);
 }
 
+#graph__plot-view {
+	background-color: white;
+	height: calc(var(--info-height) - 80px);
+}
+
+#graph__svg {
+	background-color: white;
+}
+
+/* #graph__svg-plot2d {
+} */
+
 .graph__row-delete-button {
 	justify-self: right;
 	grid-area: delete;
