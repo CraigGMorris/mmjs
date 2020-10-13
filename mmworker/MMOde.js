@@ -726,7 +726,7 @@ class MMOde extends MMTool {
 					// see if it matches any recorded value comment
 					const count = this.recordedValueFormulas.length;
 					for (let rNumber = 1; rNumber <= count; rNumber++) {
-						const columnName = this.columnNameForRecorded(rNumber, true);
+						const columnName = this.columnNameForRecorded(rNumber, false);
 						if (columnName && lcDescription == columnName.toLowerCase()) {
 							return returnValue(this.valueForRecorded(rNumber));
 						}
