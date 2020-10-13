@@ -217,19 +217,26 @@ class MMGraphAxis {
 	 * returns stringifiable object with info needed to plot
 	 */
 	plotInfo() {
-		const [min, max, labels] = this.plotLabels(5);
 		const info = {
 			name: this.name,
 			title: this.title,
-			minValue: min,
-			maxValue: max,
-			unit: this.displayUnit ? this.displayUnit.name : null,
-			labels: labels,
 		}
 		if (this.values) {
 			if (this.values.columnCount > 1) {
 				info.columnCount = this.values.columnCount;
 			}
+			let displayUnit = this.displayUnit;
+			if (!displayUnit) {
+				displayUnit = this.values.defaultUnit;
+			}
+			info.unit = displayUnit.name;
+			const minValue = this.graph.valueDescribedBy(`min${this.name}`);
+			info.minValue = minValue ? minValue.values[0] : 0;
+			info.minLabel = displayUnit.convertFromBase(info.minValue);
+			const maxValue = this.graph.valueDescribedBy(`max${this.name}`);
+			info.maxValue = maxValue ? maxValue.values[0] : 1
+			info.maxLabel = displayUnit.convertFromBase(info.maxValue);
+
 			info.values = Array.from(this.values.values)
 		}
 		return info;
@@ -1210,6 +1217,7 @@ class MMGraph extends MMTool {
 
 		const xValue = this.xValues[0];
 		const is3d = xValue.zValue !== null;
+		results['isKnown'] = xValue.values != null && xValue.yValues[0].values != null;
 		let enableY = true;
 		let enableZ = true;
 		if (this.numberOfXValues > 1) {
@@ -1453,15 +1461,18 @@ class MMGraph extends MMTool {
 	 */
 	setUnitCommand(command) {
 		const args = command.args.split(/\s+/);
-		if (args.length > 1) {
+		if (args.length > 0) {
 			const axis = this.axisFromName(args[0]);
 			if (axis) {
-				const unit = theMMSession.unitSystem.unitNamed(args[1]);
-				if (unit) {
+				const unit = args[1] ? theMMSession.unitSystem.unitNamed(args[1]) : null;
+				if (axis.displayUnit) {
 					command.undo = `${this.getPath()} setUnit ${args[0]} ${axis.displayUnit.name}`;
-					axis.displayUnit = unit;
-					return;
 				}
+				else {
+					command.undo = `${this.getPath()} setUnit ${args[0]}`;
+				}
+				axis.displayUnit = unit;
+				return;
 			}
 		}
 		this.setError('mmcmd:?graphSetUnit');

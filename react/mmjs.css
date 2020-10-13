@@ -580,10 +580,8 @@ a:hover {
 
 #graph__svg {
 	background-color: white;
+	font-size: 11pt;
 }
-
-/* #graph__svg-plot2d {
-} */
 
 .graph__row-delete-button {
 	justify-self: right;
