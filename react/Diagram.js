@@ -62,7 +62,6 @@ export class Diagram extends React.Component {
 		this.panSum = 0;
 		this.eventCache = [];
 		this.pinch = 0;
-		this.node = React.createRef();
 		const savedState = props.dgmStateStack.pop();
 		if (savedState) {
 			// if the diagram is being reconstructed after an expand, use the pushed state
