@@ -130,7 +130,7 @@ export function TableView(props) {
 
 		setDragType(TableViewDragType.none);
 		const panSum = Math.abs(dragOrigin.x - x) + Math.abs(dragOrigin.y - y);
-		if (panSum < 1.0 ) {
+		if (panSum < 5 ) {
 			const [row, column] = xyToRowColumn(x, y);
 			const t = new Date().getTime();
 			if (longPress && (t - pointerStartTime > 500)) {

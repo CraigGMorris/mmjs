@@ -468,7 +468,7 @@ export class Diagram extends React.Component {
 		e.preventDefault();
 		let eCache = this.eventCache;
 		if ( eCache.length === 1 && this.pinch === 0) {
-			if (this.panSum < 1) {
+			if (this.panSum < 5) {
 				const t = new Date().getTime();
 				if (t - this.pointerStartTime > 500) {
 					this.createSelectionBox(e.clientX, e.clientY);
@@ -1119,8 +1119,10 @@ export class Diagram extends React.Component {
 				id: 'diagram__wrapper',
 				ref: node => this.node = node,
 				style: {
-					height: '100%',
-					width: '100%',
+					height: dgmBox.height,
+					width: dgmBox.width,
+					// height: '100%',
+					// width: '100%',
 				},
 			},
 			e(
@@ -1132,10 +1134,26 @@ export class Diagram extends React.Component {
 					},
 					viewBox: viewBox,
 					onPointerDown: this.onPointerDown,
-					onTouchMove: e => {
-						e.preventDefault();
-						e.stopPropagation();
-					},
+					// onTouchStart: e => {
+					// e.preventDefault();
+					// e.stopPropagation();
+					// 	console.log('dgm touch start')
+					// },
+					// onTouchMove: e => {
+					// e.preventDefault();
+					// e.stopPropagation();
+					// 	console.log('dgm touch move')
+					// },
+					// 	onTouchEnd: e => {
+					// e.preventDefault();
+					// e.stopPropagation();
+					// 	console.log('dgm touch end')
+					// },		
+					// onTouchCancel: e => {
+					// e.preventDefault();
+					// e.stopPropagation();
+					// 	console.log('dgm touch cancel')
+					// },						
 				},
 				toolList,
 				connectList,
@@ -1201,7 +1219,7 @@ class ToolIcon extends React.Component {
 		e.stopPropagation();
 		e.preventDefault();
 		if ( eCache.length === 1) {
-			if (this.panSum < 1) {
+			if (this.panSum < 5) {
 				const t = new Date().getTime();
 				if (t - this.pointerStartTime > 500) {
 					this.props.showContext({
@@ -1222,7 +1240,7 @@ class ToolIcon extends React.Component {
 		}
 		this.setState({ dragging: false });
 		this.props.setDragType(null, null, {name: this.props.info.name});	
-		if (this.panSum >= 1) {
+		if (this.panSum >= 5) {
 			this.props.updateView();  // to update model view input and output positions after tools dragged
 		}
 	
@@ -1466,12 +1484,24 @@ class ToolIcon extends React.Component {
 			e(
 				'rect', {
 					onPointerDown: this.onPointerDown,
-					// onClick: this.onClick,
+					// onTouchMove: e => {
+					// 	e.preventDefault();
+					// 	e.stopPropagation();
+					// },
+					// onTouchEnd: e => {
+					// 	e.preventDefault();
+					// 	e.stopPropagation();
+					// },		
+					// onTouchCancel: e => {
+					// 	e.preventDefault();
+					// 	e.stopPropagation();
+					// },	
 					x: (x + translate.x)*scale,
 					y: (y + translate.y)*scale,
 					width: objectWidth*scale,
 					height: objectHeight*scale
-				}),
+				},
+			),				
 			textComponents,
 			notesComponent
 		);
@@ -1552,7 +1582,7 @@ class SelectionBox extends React.Component {
 	onPointerUp(e) {
     e.stopPropagation();
 		e.preventDefault();
-		if (this.panSum < 1) {
+		if (this.panSum < 5) {
 			const t = new Date().getTime();
 			if (t - this.pointerStartTime > 500) {
 				console.log(`sb long press  ${this.panSum}`);
@@ -1640,16 +1670,44 @@ class SelectionBox extends React.Component {
 class ClickableDiagramText extends React.Component {
 	constructor(props) {
 		super(props);
-		this.onClick = this.onClick.bind(this);
+		// this.onClick = this.onClick.bind(this);
+		this.onPointerDown = this.onPointerDown.bind(this);
+		this.onPointerUp = this.onPointerUp.bind(this);
+		this.onPointerLeave = this.onPointerLeave.bind(this);
+		this.pointerDown = false;
 	}
 
-	onClick(e) {
-    // only left Pointer button
-		if (e.button !== 0) return;
+	// onClick(e) {
+  //   // only left Pointer button
+	// 	if (e.button !== 0) return;
+	// 	this.props.textClick(e);
+  //   e.stopPropagation()
+  //   e.preventDefault()
+	// }
+
+	onPointerDown(e) {
+		this.pointerDown = true;
+		e.stopPropagation();
+		e.preventDefault();
+	}
+
+	onPointerLeave(e) {
+		this.pointerDown = false;
+		e.stopPropagation();
+		e.preventDefault();
+	}
+
+	onPointerUp(e) {
+	// only left Pointer button
+		if (!this.pointerDown) { 
+			return;
+		}
+		this.pointerDown = false;
 		this.props.textClick(e);
     e.stopPropagation()
     e.preventDefault()
 	}
+
 
 	render() {
 		return e('text', {
@@ -1662,7 +1720,10 @@ class ClickableDiagramText extends React.Component {
 			},
 			x: this.props.x,
 			y: this.props.y,
-			onClick: this.onClick,
+			// onClick: this.onClick,
+			onPointerDown: this.onPointerDown,
+			onPointerUp: this.onPointerUp,
+			onPointerLeave: this.onPointerLeave,
 			}, this.props.text);
 	}
 }

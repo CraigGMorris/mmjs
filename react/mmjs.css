@@ -578,10 +578,22 @@ a:hover {
 	height: calc(var(--info-height) - 80px);
 }
 
-#graph__svg {
+#graph__svg-plot2d {
+	/* touch-action: none needed to prevent pinch from zooming entire window on ios */
+	touch-action: none;
+	/* below needed to prevent long presses on diagram from selecting text on ios */
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* #graph__svg {
 	background-color: white;
 	font-size: 11pt;
-}
+} */
 
 .graph__row-delete-button {
 	justify-self: right;
@@ -597,7 +609,7 @@ a:hover {
 }
 
 #info-view {
-	height: 100%;
+	/* height: 100%; */
 	grid-area: info;
 	padding-left: var(--info-view--padding);
 	padding-right: var(--info-view--padding);
@@ -714,7 +726,7 @@ a:hover {
 	overflow: auto;
 	height: calc(var(--info-height) - 115px);
 	border: solid 1px;
-	margin-top: 20px;
+	margin-top: 5px;
 }
 
 #iter__autorun {
@@ -760,9 +772,9 @@ a:hover {
 	display: grid;
 	grid-template-rows: 1fr;
 	grid-template-columns: 4em 1fr 4em 1fr;
+	grid-gap: 3px;
 	width: 100%;
 	align-self: center;
-	padding: 3px;
 	border-top: solid 1px var(--border--color);
 }
 
@@ -770,17 +782,35 @@ a:hover {
 	display: grid;
 	grid-area: out-units;
 	grid-template-columns: 1fr auto;
+	padding-top: 3px;
 }
 
 #matrix__output-unit {
 	color: var(--link--color);
+	margin-right: 5px;
 }
 
 #mmapp__wrapper--two-pane {
 	font-size: 1em;
 	width: 100%;
 	display: grid;
-	grid-template-areas: "diagram info";
+	grid-template-areas: "diagram divider info";
+}
+
+#mmapp__two-pane-divider {
+	grid-area: divider;
+	cursor: ew-resize;
+	background-color: blue;
+	border: solid 1px white;
+	/* touch-action: none needed to prevent pinch from zooming entire window on ios */
+	touch-action: none;
+	/* below needed to prevent long presses on diagram from selecting text on ios */
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 #mmapp__info-view {
@@ -958,6 +988,10 @@ a:hover {
 	margin-left: 20px;
 }
 
+#ode__run-button {
+	margin-right: 5px;
+}
+
 .ode__record-desc-line {
 	display: grid;
 	grid-template-columns: 1fr 100px;
@@ -987,7 +1021,6 @@ a:hover {
 #opt__output-list {
 	overflow: auto;
 	height: calc(var(--info-height) - 250px);
-	border: solid 1px;
 	margin-top: 5px;
 }
 
@@ -996,6 +1029,7 @@ a:hover {
 	grid-template-columns: 40px 1fr;
 	border-bottom: solid 1px;
 	margin-bottom: 5px;
+	margin-right: 5px;
 	padding: 5px;
 }
 
@@ -1112,6 +1146,7 @@ a:hover {
 	grid-template-rows: var(--input--height) var(--input--height);
 	grid-template-areas: "flabel formula"
 		"clabel count";
+	grid-gap: 5px;
 	border: solid 1px;
 	margin-bottom: 5px;
 	padding: 5px;
@@ -1200,6 +1235,7 @@ a:hover {
 	height: var(--input--height);
 	box-sizing: border-box;
 	padding-top: 5px;
+	padding-right: 2px;
 }
 
 #tool-view__name {

@@ -46,7 +46,7 @@
 	"iterAutoRun": "Enabled",
 	"iterInput-while": "While - continue condition",
 	"iterInput-initialX": "Intial X",
-	"iterInput-nextT": "Next X",
+	"iterInput-nextX": "Next X",
 	"iterInput-recorded": "Recorded Value {{n}}",
 	"matrixRowCountLabel": "# Rows",
 	"matrixColumnCountLabel": "# Cols",

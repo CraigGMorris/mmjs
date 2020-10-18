@@ -478,7 +478,7 @@ class Plot2D extends React.Component {
 		e.preventDefault();
 		let eCache = this.eventCache;
 		if (eCache.length === 1 && this.pinch === 0) {
-			if (this.panSum < 1) {
+			if (this.panSum < 5) {
 				const t = new Date().getTime();
 				if (t - this.pointerStartTime > 500) {
 					// reset to home
@@ -928,10 +928,10 @@ class Plot2D extends React.Component {
 				viewBox: viewBox,
 				ref: node => this.node = node,
 				onPointerDown: this.onPointerDown,
-				onTouchMove: e => {
-					e.preventDefault();
-					e.stopPropagation();
-				},
+				// onTouchMove: e => {
+				// 	e.preventDefault();
+				// 	e.stopPropagation();
+				// },
 			},
 			e(
 				'rect', {

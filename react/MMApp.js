@@ -146,8 +146,10 @@ export function MMApp(props) {
 	const twoPane = docWidth >= 640;
 	const [allow2Pane, setAllow2Pane] = useState(twoPane);
 	const [viewType, setViewType] = useState(twoPane ? ViewType.twoPanes : ViewType.diagram);
+	const [rightPaneWidth, setRightPaneWidth] = useState(320);
 	const [viewInfo, setViewInfo] = useState(initialInfo);
 	const [statusMessage, setStatusMessage] = useState('');
+	const [dividerPointer, setDividerPointer] = useState(null);
 
 	const diagramRef = React.useRef(null);
 
@@ -597,19 +599,28 @@ export function MMApp(props) {
 	let title = '';
 	let infoView = null;
 	let infoNav = null;
-	const infoWidth = (viewType !== ViewType.info) ? 320 : docWidth;
+	const infoWidth = (viewType !== ViewType.info) ? rightPaneWidth : docWidth;
+	// console.log(`docWidth ${docWidth} docHeight ${docHeight}`);
 	const toolHeight = 40;
 	const navHeight = 40;
+	const dividerWidth = 1;
+
 	const infoHeight = docHeight - navHeight - toolHeight;
 	document.documentElement.style.setProperty('--info-height', `${infoHeight}px`);
-	let diagramBox = {top: 9, left: 9, height: docHeight, width: docWidth - infoWidth}
+	let diagramBox = {top: 9, left: 9, height: docHeight, width: docWidth - infoWidth - dividerWidth}
+	// console.log(`diagramBox ${diagramBox.width} ${diagramBox.height}`);
 	if (viewType !== ViewType.diagram) {
 		let i = infoStack.length-1;
 		previousTitle = i > 0 ? infoStack[i-1].title : '';
 		title = viewInfo.title;
+		const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 		infoView = e(
 			'div', {
 				id: 'info-view',
+				style: {
+					width: infoWidth - 2*nInfoViewPadding,
+					height: infoHeight,
+				}
 			},
 			e(infoViews[viewInfo.viewKey], {
 				key: viewInfo.path,
@@ -793,7 +804,7 @@ export function MMApp(props) {
 	let wrapper;
 	const onePaneStyle = {
 		width: `${docWidth}px`,
-		gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
+		// gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
 	};
 
 	switch (viewType) {
@@ -802,7 +813,7 @@ export function MMApp(props) {
 				'div',{
 					id: 'mmapp__wrapper--two-pane',
 					style: {
-						gridTemplateColumns: `1fr ${infoWidth}px`,
+						gridTemplateColumns: `1fr ${dividerWidth} ${infoWidth}px`,
 					},
 				},
 				e(
@@ -810,13 +821,64 @@ export function MMApp(props) {
 						id: 'mmapp__diagram--two-pane',
 						className: 'mmapp__diagram',
 					},
-					e(ErrorBoundary, {}, diagram)
+					e(ErrorBoundary, {width: diagramBox.width, height: diagramBox.height}, diagram)
+				),
+				e(
+					'div', {
+						id: 'mmapp__two-pane-divider',
+						style: {
+							width: dividerWidth
+						},
+						onPointerDown: (e) => {
+							e.stopPropagation();
+							e.preventDefault();					
+							setDividerPointer(e.clientX);
+							console.log(`div capture ${e.pointerId}`);
+							e.target.setPointerCapture(e.pointerId);
+						},
+						onPointerMove: (e) => {
+							if (dividerPointer) {
+								e.stopPropagation();
+								e.preventDefault();
+								const newX = rightPaneWidth + dividerPointer - e.clientX;
+								if (newX > 320) {	
+									setRightPaneWidth(newX);
+									setDividerPointer(e.clientX);
+								}
+							}
+						},
+						onPointerUp: (e) => {
+							e.stopPropagation();
+							e.preventDefault();					
+							console.log(`div release ${e.pointerId}`);
+							e.target.releasePointerCapture(e.pointerId);
+							setDividerPointer(null);
+						},
+						// onTouchStart: e => {
+						// 	e.preventDefault();
+						// 	e.stopPropagation();
+						// },		
+						// onTouchEnd: e => {
+						// 	e.preventDefault();
+						// 	e.stopPropagation();
+						// },		
+						// onTouchMove: e => {
+						// 	e.preventDefault();
+						// 	e.stopPropagation();
+						// },		
+						// onTouchCancel: e => {
+						// 	e.preventDefault();
+						// 	e.stopPropagation();
+						// },		
+					}
 				),
 				e(
 					'div', {
 						id: 'mmapp__info-view',
 						style: {
 							gridTemplateRows: `${navHeight}px 1fr ${toolHeight}px`,
+							// width: infoWidth,
+							// height: infoHeight,
 						}
 					},
 					infoNav,
