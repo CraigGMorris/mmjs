@@ -149,7 +149,6 @@ export function MMApp(props) {
 	const [rightPaneWidth, setRightPaneWidth] = useState(320);
 	const [viewInfo, setViewInfo] = useState(initialInfo);
 	const [statusMessage, setStatusMessage] = useState('');
-	const [dividerPointer, setDividerPointer] = useState(null);
 
 	const diagramRef = React.useRef(null);
 
@@ -603,11 +602,10 @@ export function MMApp(props) {
 	// console.log(`docWidth ${docWidth} docHeight ${docHeight}`);
 	const toolHeight = 40;
 	const navHeight = 40;
-	const dividerWidth = 1;
 
 	const infoHeight = docHeight - navHeight - toolHeight;
 	document.documentElement.style.setProperty('--info-height', `${infoHeight}px`);
-	let diagramBox = {top: 9, left: 9, height: docHeight, width: docWidth - infoWidth - dividerWidth}
+	let diagramBox = {top: 9, left: 9, height: docHeight, width: docWidth - infoWidth}
 	// console.log(`diagramBox ${diagramBox.width} ${diagramBox.height}`);
 	if (viewType !== ViewType.diagram) {
 		let i = infoStack.length-1;
@@ -670,6 +668,9 @@ export function MMApp(props) {
 			diagramBox: diagramBox,
 			actions: actions,
 			dgmStateStack: dgmStateStack,
+			isTwoPane: (viewType === ViewType.twoPanes),
+			rightPaneWidth: rightPaneWidth,
+			setRightPaneWidth: setRightPaneWidth,
 		});
 	}
 
@@ -813,7 +814,7 @@ export function MMApp(props) {
 				'div',{
 					id: 'mmapp__wrapper--two-pane',
 					style: {
-						gridTemplateColumns: `1fr ${dividerWidth} ${infoWidth}px`,
+						gridTemplateColumns: `1fr ${infoWidth}px`,
 					},
 				},
 				e(
@@ -822,55 +823,6 @@ export function MMApp(props) {
 						className: 'mmapp__diagram',
 					},
 					e(ErrorBoundary, {width: diagramBox.width, height: diagramBox.height}, diagram)
-				),
-				e(
-					'div', {
-						id: 'mmapp__two-pane-divider',
-						style: {
-							width: dividerWidth
-						},
-						onPointerDown: (e) => {
-							e.stopPropagation();
-							e.preventDefault();					
-							setDividerPointer(e.clientX);
-							console.log(`div capture ${e.pointerId}`);
-							e.target.setPointerCapture(e.pointerId);
-						},
-						onPointerMove: (e) => {
-							if (dividerPointer) {
-								e.stopPropagation();
-								e.preventDefault();
-								const newX = rightPaneWidth + dividerPointer - e.clientX;
-								if (newX > 320) {	
-									setRightPaneWidth(newX);
-									setDividerPointer(e.clientX);
-								}
-							}
-						},
-						onPointerUp: (e) => {
-							e.stopPropagation();
-							e.preventDefault();					
-							console.log(`div release ${e.pointerId}`);
-							e.target.releasePointerCapture(e.pointerId);
-							setDividerPointer(null);
-						},
-						// onTouchStart: e => {
-						// 	e.preventDefault();
-						// 	e.stopPropagation();
-						// },		
-						// onTouchEnd: e => {
-						// 	e.preventDefault();
-						// 	e.stopPropagation();
-						// },		
-						// onTouchMove: e => {
-						// 	e.preventDefault();
-						// 	e.stopPropagation();
-						// },		
-						// onTouchCancel: e => {
-						// 	e.preventDefault();
-						// 	e.stopPropagation();
-						// },		
-					}
 				),
 				e(
 					'div', {

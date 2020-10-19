@@ -823,18 +823,19 @@ export class Diagram extends React.Component {
 			textList.push(
 				e(ClickableDiagramText, {
 					key: 'name',
-					x: this.props.diagramBox.width/2,
+					x: (this.props.diagramBox.width - (this.props.isTwoPane ? 180 : 130))/2,
 					y: 25,
-					text: pathParts[pathParts.length-1],
+					text: pathParts[pathParts.length-1] + ' ⌂',
 					textClick: () => {this.getModelInfo(true);}
 				})
 			);
 			textList.push(
 				e(ClickableDiagramText, {
 					key: 'zoomin',
-					x: this.props.diagramBox.width - 40,
+					x: this.props.diagramBox.width - (this.props.isTwoPane ? 130 : 80),
 					y: 30,
-					text: '🔼',
+					text: '+',
+					size: 30,
 					textClick: () => {
 						this.setState((state) => {
 							const newScale = Math.max(0.1, state.scale * 1.2);
@@ -848,9 +849,10 @@ export class Diagram extends React.Component {
 			textList.push(
 				e(ClickableDiagramText, {
 					key: 'zoomout',
-					x: this.props.diagramBox.width - 15,
-					y: 30,
-					text: '🔽',
+					x: this.props.diagramBox.width - (this.props.isTwoPane ? 80 : 30),
+					y: 35,
+					text: '-',
+					size: 50,
 					textClick: () => {
 						this.setState((state) => {
 							const newScale = Math.max(0.1, state.scale / 1.2);
@@ -860,7 +862,18 @@ export class Diagram extends React.Component {
 						})
 					}
 				})
-			)
+			);
+			if (this.props.isTwoPane) {
+				textList.push(
+					e(Divider, {
+						key: 'divider',
+						x: this.props.diagramBox.width - 30,
+						y: 30,
+						setRightPaneWidth: this.props.setRightPaneWidth,
+						rightPaneWidth: this.props.rightPaneWidth,
+					})
+				);
+			}
 		}
 
 		let contextMenu;
@@ -1675,15 +1688,8 @@ class ClickableDiagramText extends React.Component {
 		this.onPointerUp = this.onPointerUp.bind(this);
 		this.onPointerLeave = this.onPointerLeave.bind(this);
 		this.pointerDown = false;
+		this.size = props.size || 20;
 	}
-
-	// onClick(e) {
-  //   // only left Pointer button
-	// 	if (e.button !== 0) return;
-	// 	this.props.textClick(e);
-  //   e.stopPropagation()
-  //   e.preventDefault()
-	// }
 
 	onPointerDown(e) {
 		this.pointerDown = true;
@@ -1716,7 +1722,7 @@ class ClickableDiagramText extends React.Component {
 			style: {
 				pointerEvents: 'auto',
 				fill: 'blue',
-				font: '20px sans-serif',
+				font: `${this.size}px sans-serif`,
 			},
 			x: this.props.x,
 			y: this.props.y,
@@ -1725,6 +1731,66 @@ class ClickableDiagramText extends React.Component {
 			onPointerUp: this.onPointerUp,
 			onPointerLeave: this.onPointerLeave,
 			}, this.props.text);
+	}
+}
+
+class Divider extends React.Component {
+	constructor(props) {
+		super(props);
+		// this.onClick = this.onClick.bind(this);
+		this.onPointerDown = this.onPointerDown.bind(this);
+		this.onPointerUp = this.onPointerUp.bind(this);
+		this.onPointerMove = this.onPointerMove.bind(this);
+		this.setRightPaneWidth = props.setRightPaneWidth;
+		this.rightPaneWidth = props.rightPaneWidth;
+	}
+
+	onPointerDown(e) {
+		e.stopPropagation();
+		e.preventDefault();					
+		this.dividerPointer = e.clientX;
+		console.log(`div capture ${e.pointerId}`);
+		e.target.setPointerCapture(e.pointerId);
+	}
+
+	onPointerMove(e) {
+		if (this.dividerPointer) {
+			e.stopPropagation();
+			e.preventDefault();
+			const newX = this.rightPaneWidth + this.dividerPointer - e.clientX;
+			if (newX > 320) {
+				this.rightPaneWidth = newX;
+				this.setRightPaneWidth(newX);
+				this.dividerPointer = e.clientX;
+			}
+		}		
+	}
+
+	onPointerUp(e) {
+		e.stopPropagation();
+		e.preventDefault();					
+		console.log(`div release ${e.pointerId}`);
+		e.target.releasePointerCapture(e.pointerId);
+		this.dividerPointer = null;
+	}
+
+
+	render() {
+		return e('text', {
+			id: this.props.id,
+			className: 'diagram__divider-icon',
+			style: {
+				pointerEvents: 'auto',
+				fill: 'blue',
+				font: '30px sans-serif',
+			},
+			x: this.props.x,
+			y: this.props.y,
+			// onClick: this.onClick,
+			onPointerDown: this.onPointerDown,
+			onPointerUp: this.onPointerUp,
+			onPointerMove: this.onPointerMove,
+		}, '⇔');
 	}
 }
 
