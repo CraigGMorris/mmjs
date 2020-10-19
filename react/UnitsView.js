@@ -179,7 +179,7 @@ export class UserUnitsView extends React.Component {
 					'input', {
 						id: 'user-units__input',
 						value: this.state.input,
-						width: this.props.infoWidth - 25,
+						// width: this.props.infoWidth - 25,
 						placeholder: t('react:userUnitsPlaceHolder'),
 						onChange: (event) => {
 							// keeps input field in sync

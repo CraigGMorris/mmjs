@@ -1,15 +1,14 @@
 :root {
 	--body--bgcolor: #1c1c1c;
 	--body--color: #fff;
-	/* --link--color: #5e98f5; */
 	--link--color: rgb(109, 203, 253);
 	--link--color-hover: #c5fc98fe;
 	--diagram--bgcolor: #eeffee;
-	/* --diagram--bgcolor: #cae2ca; */
 	--info-nav--bgcolor: #111;
 	--info-view--padding: 5px;
 	--border--color: #fff;
 	--button--border-color: #d1d1d1;
+	--button--active-color: #666;
 	--input--color: #fff;
 	--input--bgcolor: rgb(51, 51, 51);
 	--input--disabled-color: #77a;
@@ -32,11 +31,12 @@
 		--body--bgcolor: #fafafa;
 		--body--color: #000;
 		--link--color: blue;
-		--link--color-hover: #000;
+		--link--color-hover: #108020;
 		--diagram--bgcolor: #eeffee;
 		--info-nav--bgcolor: #f3f3f3;
 		--border--color: #000;
 		--button--border-color: #bababa;
+		--button--active-color: #ccc;
 		--input--color: #000;
 		--input--bgcolor: #fff;
 		--input--disabled-color: #555;
@@ -73,6 +73,10 @@ input {
 	background-color: var(--input--bgcolor);
 }
 
+input:hover {
+	color: var(--link--color-hover);
+}
+
 input:disabled {
 	color: var(--input--disabled-color);
 	background-color: var(--input--disabled-bgcolor);
@@ -107,13 +111,31 @@ button {
 	color: var(--link--color);
 	background-color: var(--input-bgcolor);
 	border-radius: 5px;
+	border: solid 1px;
 	font-size: 12pt;
 	height: 28px;
+	cursor: pointer;
+}
+
+button:active {
+	background-color: var(--button--active-color);
 }
 
 button:disabled {
 	color: var(--input--disabled-color);
 	background-color: var(--input--disabled-bgcolor);
+}
+
+button:focus {
+	outline: none;
+}
+
+button:focus-visible {
+	outline: 2px solid var(--border--color);
+}
+
+button:hover {
+	color: var(--link--color-hover);
 }
 
 .input-file-button {
@@ -151,6 +173,11 @@ svg text {
 	pointer-events: none;
 }
 
+svg text:hover {
+	stroke: var(--link--color-hover);
+	fill: var(--link--color-hover);
+}
+
 a {
 	color: var(--link--color);
 }
@@ -169,6 +196,10 @@ a:hover {
 .checkbox__label {
 	grid-area: 1 / 2 / 1 / 2;
 	align-self: center;
+}
+
+.checkbox-and-label:hover {
+	color: var(--link--color-hover);
 }
 
 .checkbox__input {
@@ -237,6 +268,11 @@ a:hover {
 
 #datatable__column-unit {
 	color: var(--link--color);
+	cursor: pointer;
+}
+
+#datatable__column-unit:hover {
+	color: var(--link--color-hover);
 }
 
 #datatable__column-delete-button {
@@ -276,10 +312,16 @@ a:hover {
 	fill: var(--input--bgcolor);
 }
 
-.diagram__content-menu-text {
+.diagram__context-menu-text {
 	fill: var(--link--color);
-	border: solid 1px var(--border--color);
+	stroke: var(--link--color);
 }
+
+/* alas this did not work. Hover seems to be ignored for nested svg things
+.diagram__context-menu-text:hover {
+	stroke: var(--link--color-hover);
+	fill: var(--link--color-hover);
+} */
 
 #diagram__wrapper {
 	/* touch-action: none needed to prevent pinch from zooming entire window on ios */
@@ -367,16 +409,11 @@ a:hover {
 	box-sizing: border-box;
 	padding-top: 2px;
 	color: var(--link--color);
+	cursor: pointer;
 }
 
-#expression__info-button {
-	grid-area: info-button;
-	border-radius: 10px;
-	height: 20px;
-	width: 20px;
-	font-size: 10pt;
-	border: 1;
-	text-align: center;
+#expression__units:hover {
+	color: var(--link--color-hover);
 }
 
 .formula-field {
@@ -387,6 +424,11 @@ a:hover {
 	width: 100%;
 	box-sizing: border-box;
 	color: var(--link--color);
+	cursor: pointer;
+}
+
+.formula-field:hover {
+	color: var(--link--color-hover);
 }
 
 .formula-field__text-display {
@@ -504,6 +546,11 @@ a:hover {
 .f-picker__section-header {
 	color: var(--link--color);
 	padding: 3px 0;
+	cursor: pointer;
+}
+
+.f-picker__section-header:hover {
+	color: var(--link--color-hover);
 }
 
 .f-picker__comment {
@@ -518,6 +565,11 @@ a:hover {
 	color: var(--link--color);
 	border-top: solid 1px var(--border--color);
 	padding: 3px 0;
+	cursor: pointer;
+}
+
+.f-picker__f-def:hover {
+	color: var(--link--color-hover);
 }
 
 #f-picker__f-desc {
@@ -541,6 +593,11 @@ a:hover {
 
 .graph__display-unit {
 	color: var(--link--color);
+	cursor: pointer;
+}
+
+.graph__display-unit:hover {
+	color: var(--link--color-hover);
 }
 
 #graph__input-rows {
@@ -571,6 +628,11 @@ a:hover {
 
 .graph__type-selected {
 	color: var(--link--color);
+	cursor: pointer;
+}
+
+.graph__type-selected:hover {
+	color: var(--link--color-hover);
 }
 
 #graph__plot-view {
@@ -644,6 +706,11 @@ a:hover {
 	grid-area: back;
 	margin-left: 10px;
 	color: var(--link--color);
+	cursor: pointer;
+}
+
+#info-nav__back:hover {
+	color: var(--link--color-hover);
 }
 
 #info-nav__title {
@@ -656,6 +723,11 @@ a:hover {
 	color: var(--link--color);
 	margin-right: 10px;
 	justify-self: right;
+	cursor: pointer;
+}
+
+#info-nav__help:hover {
+	color: var(--link--color-hover);
 }
 
 #info-tools {
@@ -675,7 +747,6 @@ a:hover {
 	background: transparent;
 	border: 0;
 	font-size: 10pt;
-	color: var(--link--color);
 }
 
 #info-tools__expand-button {
@@ -788,6 +859,11 @@ a:hover {
 #matrix__output-unit {
 	color: var(--link--color);
 	margin-right: 5px;
+	cursor: pointer;
+}
+
+#matrix__output-unit:hover {
+	color: var(--link--color-hover);
 }
 
 #mmapp__wrapper--two-pane {
@@ -881,6 +957,11 @@ a:hover {
 	padding: 5px 0px;
 	box-sizing: border-box;
 	width: 100%;
+	cursor: pointer;
+}
+
+.model__input-field:hover {
+	color: var(--link--color-hover);
 }
 
 .model__input-field-name {
@@ -910,6 +991,11 @@ a:hover {
 	color: var(--link--color);
 	border-bottom: dashed 1px var(--border--color);
 	padding: 5px 0px;
+	cursor: pointer;
+}
+
+.model__output-field:hover {
+	color: var(--link--color-hover);
 }
 
 .model__output-field-name {
@@ -932,6 +1018,11 @@ a:hover {
 	color: var(--link--color);
 	border-bottom: dashed 1px var(--border--color);
 	padding: 5px 0px;
+	cursor: pointer;
+}
+
+.model__other-field:hover {
+	color: var(--link--color-hover);
 }
 
 .model__output-other-name {
@@ -1058,6 +1149,13 @@ a:hover {
 
 #sessions__import-button {
 	grid-area: import;
+	border: solid 1px;
+	border-color: var(--link--color);
+}
+
+#sessions__import-button:hover {
+	color: var(--link--color-hover);
+	border-color: var(--link--color-hover);
 }
 
 #sessions__export-button {
@@ -1246,8 +1344,8 @@ a:hover {
 	grid-area: note-toggle;
 	font-size: 8pt;
 	text-align: center;
-	color: var(--link--color);
 	box-sizing: border-box;
+	cursor: pointer;
 }
 
 #tool-view__notes {
@@ -1264,6 +1362,7 @@ a:hover {
 	display: grid;
 	grid-template-columns: 1fr 6em;
 	grid-template-areas: "notes-title notes-diagram";
+	padding-top: 5px;
 }
 
 #tool-view__notes-title {
@@ -1275,9 +1374,14 @@ a:hover {
 	font-size: 8pt;
 	text-align: center;
 	vertical-align: middle;
-	color: var(--link--color);
+	/* color: var(--link--color); */
 	box-sizing: border-box;
+	cursor: pointer;
 }
+
+/* #tool-view__diagram-notes-toggle:hover {
+	color: var(--link--color-hover);
+} */
 
 #tool-view__notes-input {
 	grid-area: notes-input;
@@ -1319,8 +1423,8 @@ a:hover {
 .units__set-select {
 	display: grid;
 	grid-template-columns: 1fr 3fr;
-	grid-template-rows: var(--input--height);
 	border-top: solid 1px;
+	padding: 5px;
 }
 
 .units__set-select input {
@@ -1333,19 +1437,23 @@ a:hover {
 	grid-area: 1 / 2 / 1 / 2;
 	color: var(--body--color);
 	font-weight: bold;
-	padding-top: 8px; 
 }
 
 .units__label {
 	grid-area: 1 / 2 / 1 / 2;
 	color: var(--link--color);
-	padding-top: 8px; 
+	padding-top: 8px;
+	cursor: pointer;
+}
+
+.units__label:hover {
+	color: var(--link--color-hover);
 }
 
 #user-units {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: 60px 1fr;
+	grid-template-rows: 70px 1fr;
 	grid-template-areas: "inputsection"
 		"unitslist";
 	height: 100%	
@@ -1357,12 +1465,13 @@ a:hover {
 	grid-template-columns: 80px 1fr;
 	grid-template-rows: 1fr 1fr;
 	grid-template-areas: "label input"
-		"example example"	
+		"example example";
+	grid-gap: 5px;
+	margin-right: 5px;
 }
 
 #user-units__input-label {
 	grid-area: label;
-	margin-left: 10px;
 	margin-top: 10px	
 }
 
@@ -1370,8 +1479,6 @@ a:hover {
 	grid-area: input;
 	justify-self: center;
 	font-size: 10pt;
-	padding-left: 5px;
-	margin-left: 10px;
 	margin-top: 5px;
 	border: solid 1px
 }
@@ -1403,10 +1510,14 @@ a:hover {
 	color: var(--link--color);
 	grid-area: definition;
 	margin-left: 10px;
+	cursor: pointer
+}
+
+.user-units__definition:hover {
+	color: var(--link--color-hover);
 }
 
 .user-units__type {
-	color: var(--link--color);
 	grid-area: unittype;
 	margin-left: 10px;
 }
@@ -1479,6 +1590,11 @@ a:hover {
 	margin-left: 10px;
 	font-size: 14pt;
 	overflow: hidden;
+	cursor: pointer;
+}
+
+.unit-sets__list-set-name:hover {
+	color: var(--link--color-hover);
 }
 
 .unit-sets__list-set-type {
@@ -1496,6 +1612,11 @@ a:hover {
 	align-self: center;
 	width: 30px;
 	border-radius: 10px;
+	cursor: pointer;
+}
+
+#unit-sets__info:hover {
+	color: var(--link--color-hover);
 }
 
 #unit-set {
@@ -1588,7 +1709,11 @@ a:hover {
 	grid-area: unit;
 	margin-left: 5px;
 	color: var(--link--color);
+	cursor: pointer;
+}
 
+.unit-set__unit:hover {
+	color: var(--link--color-hover);
 }
 
 .unit-set__delete {
@@ -1664,6 +1789,11 @@ a:hover {
 
 .value-picker__param {
 	color: var(--link--color);
+	cursor: pointer;
+}
+
+.value-picker__param:hover {
+	color: var(--link--color-hover);
 }
 
 #value-picker__param-list {
@@ -1677,10 +1807,6 @@ a:hover {
 	box-sizing: border-box;
 	padding: 3px;
 	text-align: center;
-}
-
-.value-picker__selection {
-	color: var(--link--color);
 }
 
 #worker__status-message {

@@ -1776,7 +1776,7 @@ class ContextMenu extends React.Component {
 			const cmp = e(
 				'text', {
 					key: lineNumber,
-					className: 'diagram__content-menu-text',
+					className: 'diagram__context-menu-text',
 					x: 20 + this.config.offset.x,
 					y: this.config.offset.y + (lineNumber + 1) * this.config.itemHeight,
 				},
