@@ -8,7 +8,7 @@
 	"CaseName": "Tests",
 	"DefaultUnitSet": "SI",
 	"SelectedObject": "",
-	"ModelPath": "/.root",
+	"ModelPath": "/.root.Tools",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
@@ -20643,6 +20643,27 @@
 												"defaultValue": "0 Fraction"
 											}
 										]
+									},
+									{
+										"name": "graph",
+										"Notes": "The pendulum position versus time, with the angle displayed in degrees rather than radians.",
+										"DiagramX": 120,
+										"DiagramY": 335,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Graph",
+										"X1": {
+											"v": "ode.Time 'Time",
+											"vmin": "",
+											"vmax": "",
+											"Y1": {
+												"v": "ode.theta 'Theta",
+												"vmin": "0",
+												"vmax": "360 degree",
+												"unit": "degree",
+												"lineType": 0
+											}
+										}
 									}
 								]
 							},
@@ -20897,7 +20918,7 @@
 										},
 										"recFormulas": [
 											{
-												"Formula": "$.t"
+												"Formula": "$.t'Time"
 											},
 											{
 												"Formula": "theta 'theta"
@@ -22482,6 +22503,53 @@
 										"Formula": {
 											"Formula": "{gt\n\t{numeric\n\t\t{abs diffTable}/\n\t\t{table diffTable,\n\t\t\t1 s, 1, 1\n\t\t}\n\t},\n\t1e-5\n}\n'chaotic system so loose\nerror check"
 										}
+									},
+									{
+										"name": "graph",
+										"Notes": "          Angle vs time",
+										"DiagramX": 280,
+										"DiagramY": 350,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Graph",
+										"X1": {
+											"v": "ode.Time 'Time",
+											"vmin": "",
+											"vmax": "",
+											"Y1": {
+												"v": "ode.theta[0,1] 'Theta1",
+												"vmin": "",
+												"vmax": "",
+												"lineType": 0
+											},
+											"Y2": {
+												"v": "ode.theta[0,2] 'Theta2",
+												"vmin": "",
+												"vmax": "",
+												"lineType": 0
+											}
+										}
+									},
+									{
+										"name": "xy2graph",
+										"Notes": "A plot of the x/y coordinates of pendulum 2 (the outer pendulum)",
+										"DiagramX": 280,
+										"DiagramY": 385,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Graph",
+										"X1": {
+											"v": "x2",
+											"vmin": "-l[1] - l[2]",
+											"vmax": "l[1] + l[2]",
+											"unit": "m",
+											"Y1": {
+												"v": "y2",
+												"vmin": "-l[1] - l[2]",
+												"vmax": "l[1] + l[2]",
+												"lineType": 0
+											}
+										}
 									}
 								]
 							},
@@ -22540,7 +22608,7 @@
 										"name": "recorded",
 										"Notes": "The recorded values",
 										"DiagramX": 155,
-										"DiagramY": 485,
+										"DiagramY": 450,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
@@ -22552,7 +22620,7 @@
 										"name": "range",
 										"Notes": "A plot versus log t will be more useful than one versus t, but the first value of t is 0 and should be skipped.  This expression just calculates that range for use in other expressions.",
 										"DiagramX": 155,
-										"DiagramY": 370,
+										"DiagramY": 335,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
@@ -22564,7 +22632,7 @@
 										"name": "logT",
 										"Notes": "The log (base 10) of the recorded values of t (skipping the first one).",
 										"DiagramX": 155,
-										"DiagramY": 435,
+										"DiagramY": 400,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
@@ -22619,7 +22687,7 @@
 										"name": "diffTable",
 										"Notes": "",
 										"DiagramX": 150,
-										"DiagramY": 525,
+										"DiagramY": 490,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -22631,7 +22699,7 @@
 										"name": "errorCount",
 										"Notes": "",
 										"DiagramX": 150,
-										"DiagramY": 580,
+										"DiagramY": 545,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -22644,7 +22712,7 @@
 										"name": "errors",
 										"Notes": "",
 										"DiagramX": 150,
-										"DiagramY": 555,
+										"DiagramY": 520,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -22881,6 +22949,38 @@
 										},
 										"rowCount": "54",
 										"columnCount": "4"
+									},
+									{
+										"name": "graph",
+										"Notes": "A plot and table of the reaction progress.  Plotting against log t is necessary to capture the fast moving events that occur early.  Also y2 never exists in quantity, so its maximum is set quite low.",
+										"DiagramX": 150,
+										"DiagramY": 570,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Graph",
+										"X1": {
+											"v": "logT",
+											"vmin": "-5",
+											"vmax": "7",
+											"Y1": {
+												"v": "ode.y1[range] ' Y1",
+												"vmin": "0",
+												"vmax": "1",
+												"lineType": 0
+											},
+											"Y2": {
+												"v": "ode.y2[range] 'Y2",
+												"vmin": "0",
+												"vmax": "5.e-5",
+												"lineType": 0
+											},
+											"Y3": {
+												"v": "ode.y3[range] ' Y3",
+												"vmin": "0",
+												"vmax": "1",
+												"lineType": 0
+											}
+										}
 									}
 								]
 							},
@@ -22989,7 +23089,7 @@
 										"name": "dp",
 										"Notes": "This two cell matrix has the formula for the derivative of prey population wrt time in the row one cell and for the predator derivative in the row two cell.\n\nThus this is the derivative array for the integrator.\n ",
 										"DiagramX": 125,
-										"DiagramY": 125,
+										"DiagramY": 190,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Matrix",
@@ -23005,7 +23105,7 @@
 										"name": "p",
 										"Notes": "This is the calculated prey and predator populations, with the values being in rows one and two respectively.",
 										"DiagramX": 125,
-										"DiagramY": 70,
+										"DiagramY": 135,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
@@ -23016,8 +23116,8 @@
 									{
 										"name": "PreyPop",
 										"Notes": "Population of prey at each recorded time.",
-										"DiagramX": 210,
-										"DiagramY": 60,
+										"DiagramX": 125,
+										"DiagramY": 100,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
@@ -23042,8 +23142,8 @@
 									{
 										"name": "Time",
 										"Notes": "The recorded integration times.",
-										"DiagramX": 210,
-										"DiagramY": 25,
+										"DiagramX": 120,
+										"DiagramY": 60,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
@@ -24680,6 +24780,52 @@
 										"Formula": {
 											"Formula": "{gt\n\t{numeric\n\t\t{abs diffTable}\n\t},\n\t1e-8\n}"
 										}
+									},
+									{
+										"name": "plot",
+										"Notes": "Plots the prey and predator populations versus time.\n\nYou may want to adjust the two y axis maximums if you adjust the Population object input values such that the current ranges aren't appropriate.",
+										"DiagramX": 210,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Graph",
+										"X1": {
+											"v": "Time",
+											"vmin": "",
+											"vmax": "",
+											"Y1": {
+												"v": "PreyPop'Prey",
+												"vmin": "0",
+												"vmax": "2000",
+												"lineType": 0
+											},
+											"Y2": {
+												"v": "PredPop'Predator",
+												"vmin": "0",
+												"vmax": "2000",
+												"lineType": 0
+											}
+										}
+									},
+									{
+										"name": "plot2",
+										"Notes": "Plots the prey verus predator populations.\n\nYou may want to adjust the axis maximums if you adjust the Population object input values such that the current ranges aren't appropriate.",
+										"DiagramX": 210,
+										"DiagramY": 60,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Graph",
+										"X1": {
+											"v": "PreyPop'Prey",
+											"vmin": "0",
+											"vmax": "2000",
+											"Y1": {
+												"v": "PredPop'Predator",
+												"vmin": "0",
+												"vmax": "2000",
+												"lineType": 0
+											}
+										}
 									}
 								]
 							},
@@ -24881,10 +25027,10 @@
 										"Formula": "ed"
 									},
 									{
-										"Formula": "f"
+										"Formula": "f 'f"
 									},
 									{
-										"Formula": "Re"
+										"Formula": "Re 'Re"
 									}
 								],
 								"AutoRun": "y"
@@ -24897,7 +25043,7 @@
 								"DiagramNotes": "n",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{table\n\t{replace \"0*$\",\"\",\n\t\t{replace \"\\s*\", \"\",\n\t\t\t{fmt \"f_%-8.6f\",edlist}\n\t\t},\n\t},\n\t{tr edcases.f}\n}"
+									"Formula": "{table\n\t{replace \"0*$\",\"\",\n\t\t{replace \"\\s*\", \"\",\n\t\t\t\"f_\"+{fmt \"%-8.6f\",edlist}\n\t\t},\n\t},\n\t{tr edcases.f}\n}"
 								}
 							},
 							{
@@ -26091,6 +26237,162 @@
 									"Formula": "{sum errors}"
 								},
 								"isOutput": "y"
+							},
+							{
+								"name": "Friction_Factors",
+								"Notes": "Tap the Y axis labels to step through the e/D lines.  A Y label of f_001 would indicate that colour is for the e/D = 0.001 line.",
+								"DiagramX": 135,
+								"DiagramY": 345,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Graph",
+								"X1": {
+									"v": "logRe",
+									"vmin": "3",
+									"vmax": "8",
+									"Y1": {
+										"v": "ftable.f_0.05' f_0.05",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y2": {
+										"v": "ftable.f_0.04' f_0.04",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y3": {
+										"v": "ftable.f_0.03' f_0.03",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y4": {
+										"v": "ftable.f_0.02' f_0.02",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y5": {
+										"v": "ftable.f_0.015' f_0.015",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y6": {
+										"v": "ftable.f_0.01' f_0.01",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y7": {
+										"v": "ftable.f_0.008' f_0.008",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y8": {
+										"v": "ftable.f_0.006' f_0.006",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y9": {
+										"v": "ftable.f_0.004' f_0.004",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y10": {
+										"v": "ftable.f_0.002' f_0.002",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y11": {
+										"v": "ftable.f_0.001' f_0.001",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y12": {
+										"v": "ftable.f_0.0008' f_0.0008",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y13": {
+										"v": "ftable.f_0.0006' f_0.0006",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y14": {
+										"v": "ftable.f_0.0004' f_0.0004",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y15": {
+										"v": "ftable.f_0.0002' f_0.0002",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y16": {
+										"v": "ftable.f_0.0001' f_0.0001",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y17": {
+										"v": "ftable.f_0.00005' f_0.00005",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y18": {
+										"v": "ftable.f_0.00001' f_0.00001",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y19": {
+										"v": "ftable.f_0.000005' f_0.000005",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									},
+									"Y20": {
+										"v": "ftable.f_0.000001' f_0.000001",
+										"vmin": "0",
+										"vmax": ".02",
+										"lineType": 0
+									}
+								},
+								"X2": {
+									"v": "ReLaminar",
+									"vmin": "3",
+									"vmax": "8",
+									"Y1": {
+										"v": "fLaminar",
+										"vmin": "0",
+										"vmax": "0.02",
+										"lineType": 0
+									}
+								},
+								"X3": {
+									"v": "OperatingRe",
+									"vmin": "3",
+									"vmax": "8",
+									"Y1": {
+										"v": "OperatingF",
+										"vmin": "0",
+										"vmax": "0.02",
+										"lineType": 1
+									}
+								}
 							}
 						]
 					},
@@ -26340,6 +26642,41 @@
 											"Formula": "tolerance"
 										},
 										"isInput": "y"
+									},
+									{
+										"name": "Position_Plot",
+										"Notes": "The circles representing the reported distances from each transmitter to the receiver are plotted in blue, while the optimized location is plotted as the green dot.\n\nNote that the y scale is specified as 1.25 times the x scale.  This will be appropriate for any of the devices in portrait orientation or in the iPad pop up window, but the circles will appear as ovals in landscape mode on the iPhone or iPod Touch or full screen landscape mode on the iPad.",
+										"DiagramX": 165,
+										"DiagramY": 320,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Graph",
+										"X1": {
+											"v": "x",
+											"vmin": "-5 km",
+											"vmax": "20 km",
+											"unit": "km",
+											"Y1": {
+												"v": "y",
+												"vmin": "-5 km",
+												"vmax": "20 km",
+												"unit": "km",
+												"lineType": 0
+											}
+										},
+										"X2": {
+											"v": "optX",
+											"vmin": "-5 km",
+											"vmax": "20 km",
+											"unit": "km",
+											"Y1": {
+												"v": "optY",
+												"vmin": "-5 km",
+												"vmax": "20 km",
+												"unit": "km",
+												"lineType": 1
+											}
+										}
 									}
 								]
 							},
