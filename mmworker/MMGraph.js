@@ -478,6 +478,10 @@ class MMGraphX extends MMGraphAxis {
 		return this.yValues.length;
 	}
 
+	get numberOfZValues() {
+		return this.zValue ? this.zValue.length : 0;
+	}
+
 	/**
 	 * @method yForIndex
 	 * @param {Number} index 
@@ -940,7 +944,7 @@ class MMGraph extends MMTool {
 							}
 						}
 					if (!rv) {
-						rv = this.zValue ? this.zValue.values.min() : null;
+						rv = xValue.zValue.values ? xValue.zValue.values.min() : null;
 					}
 				}
 			}
@@ -1023,13 +1027,406 @@ class MMGraph extends MMTool {
 		const svgId = `svg_${this.name}`
 		lines.push(`<svg id="${svgId}" viewBox="0,0,${width},${height}">`);
 		
-		const zCount = this.xValues[0].numberOfZLines;
 		const lineColors =  ['Blue', '#009900', 'Brown', 'Orange', 'Purple', '#e60000', '#cccc00'];
 		const nColors = lineColors.length;
 		let colorNumber = 0;
 
-		if (zCount > 0) { // 3d
-			console.log('not yet implemented');
+		if (this.xValues[0].zValue) { // 3d
+			let lineColor = lineColors[xAxisIndex % nColors];
+	
+			const aspect = width / height;
+			const boxScale = 1.8;
+
+			const pitch = MMNumberValue.pitchForAngle(Math.PI * 0.4);
+			const roll = MMNumberValue.rollForAngle(Math.PI * -0.22);
+			let transform = pitch.matrixMultiply(roll);
+			const translate = new MMNumberValue(3, 1);
+			const labelPos = new MMNumberValue(1, 3);
+
+			if (aspect < 1.0) {
+				translate.values[0] = 1.2;
+				translate.values[1] = 0.0;
+				translate.values[2] = 1.0 - aspect;
+			}
+			else {
+				translate.values[0] = 0.2 + aspect;
+				translate.values[1] = 0.0;
+				translate.values[2] = 0.0;
+			}
+			transform = transform.matrixMultiply(translate.translate());
+
+			let dScale;
+			if (aspect < 1.0) {
+				dScale = width / boxScale;
+			}
+			else {
+				dScale = height / boxScale;
+			}
+			
+			const scale = MMNumberValue.scalarValue(dScale);
+			// const dCoords = [
+			// 	[0, 1, 1],
+			// 	[0, 1, 0],
+			// 	[0, 0, 0],
+			// 	[1, 0, 0]
+			// ];
+			
+			const coords = new MMNumberValue(3, 3);
+			const v = coords.values;
+			const gridFormat = (x1, y1, x2, y2, x3, y3) => {
+				return `<path class="svg_gridlines" fill="none" d="M ${x1} ${y1} L ${x2} ${y2} L ${x3} ${y3}"/>`;
+			}
+			// const gridFormat4 = (x1, y1, x2, y2, x3, y3, x4, y4) => {
+			// 	return `<path class="svg_gridlines" fill="none" d="M ${x1} ${y1} L ${x2} ${y2} L ${x3} ${y3} L ${x4} ${y4}"/>`;
+			// }
+			const labelFormat = (x, y, color, anchor, text) => {
+				return `<text  class="svg_label" x="${x}" y="${y}" stroke="${color}" text-anchor="${anchor}">${text}</text>`;
+			}
+			const titleFormat = (x, y, color, anchor, text) => {
+				return `<text  class="svg_title" x="${x}" y="${y}" stroke="${color}" text-anchor="${anchor}">${text}</text>`;
+			}
+			const unitFormat = (x, y, color, anchor, text) => {
+				return `<text  class="svg_unit" x="${x}" y="${y}" stroke="${color}" text-anchor="${anchor}">${text}</text>`;
+			}
+			
+			lines.push('<g class="svg_grid" stroke="#b3b3b3">');
+
+			// x labels and grid
+			{
+				const xValue = this.xValues[xAxisIndex];
+				const xValues = xValue.values;
+				const yValue = xValue.yForIndex(0);
+				const yValues = yValue.values;
+				const zValue = xValue.zValue;
+				const zValues = zValue.values;
+
+				const xLabels = xValue.plotLabels(5)[2];
+				const xLabelCount = xLabels.length;
+				const yLabels = yValue.plotLabels(5)[2];
+				const yLabelCount = yLabels.length;
+				const zLabels = zValue.plotLabels(5)[2];
+				const zLabelCount = zLabels.length;
+
+				lines.push('<g class="svg_gridx">');
+				let xUnit = xValue.displayUnit;
+				if (!xUnit) {
+					xUnit = xValues.defaultUnit;
+				}
+
+				labelPos.values[0] = 0.3;
+				labelPos.values[1] = -0.5;
+				labelPos.values[2] = -0.05;
+				let labelCoords = transform.transform(labelPos);
+				labelCoords = labelCoords.multiply(scale);
+				lines.push(titleFormat(labelCoords.values[0], // x
+					height - labelCoords.values[1], // y
+					lineColor, 'middle', xValue.title
+				));
+
+				labelPos.values[0] = 0.3;
+				labelPos.values[1] = -0.5;
+				labelPos.values[2] = -0.12;
+				labelCoords = transform.transform(labelPos).multiply(scale);
+				lines.push(unitFormat(labelCoords.values[0], // x
+					height - labelCoords.values[1], // y
+					lineColor, 'middle', xUnit.name
+				));
+
+				for (let i = 0; i < yLabelCount; i++) {
+					const x = i / (yLabelCount - 1);
+					// v is coords.values
+					v[0] = x; v[1] = 0; v[2] = 0;
+					v[3] = x; v[4] = 1; v[5] = 0;
+					v[6] = x; v[7] = 1; v[8] = 1;
+					
+					const transformed = transform.transform(coords).multiply(scale);
+					const tv = transformed.values;
+					lines.push(gridFormat(
+						tv[0],  // x1
+						height - tv[1],	// y1
+						tv[3],  // x2
+						height - tv[4],	// y2
+						tv[6],  // x3
+						height - tv[7],	// y3
+					))
+				}
+
+				for (let i = 0; i < xLabelCount; i++) {
+					const xLabel = xLabels[i];
+					labelPos.values[0] = i / (xLabelCount - 1);
+					labelPos.values[1] = 0.0;
+					labelPos.values[2] = -0.12;
+					labelCoords = transform.transform(labelPos).multiply(scale);
+					lines.push(labelFormat(
+						labelCoords.values[0], // x
+						height - labelCoords.values[1], // y
+						lineColor, 'middle', xLabel
+					));
+				}
+				lines.push('</g>'); // svg_gridx
+			
+				// y labels and grid
+				lines.push('<g class="svg_gridy">');
+				let yUnit = yValue.displayUnit;
+				if ( !yUnit ) {
+					yUnit = yValues.defaultUnit;
+				}
+				labelPos.values[0] = -0.2;
+				labelPos.values[1] = 0.5;
+				labelPos.values[2] = -0.1;
+				labelCoords = transform.transform(labelPos).multiply(scale);
+				lines.push(titleFormat(
+					labelCoords.values[0],	// x
+					height - labelCoords.values[1],	// y
+					lineColor, "middle", yValue.title
+				));
+								
+				labelPos.values[0] = -0.2;
+				labelPos.values[1] = 0.5;
+				labelPos.values[2] = -0.17;
+				
+				labelCoords = transform.transform(labelPos).multiply(scale);
+				lines.push(unitFormat(
+					labelCoords.values[0],	// x
+					height - labelCoords.values[1],	// y
+					lineColor, "middle", yUnit.name
+				));
+
+				for (let i = 0; i < yLabelCount; i++) {
+					const y = i / (yLabelCount - 1);
+					// v is coords.values
+					v[0] = 0; v[1] = y; v[2] = 0;
+					v[3] = 1; v[4] = y; v[5] = 0;
+					v[6] = 1; v[7] = y; v[8] = 1;
+
+					const transformed = transform.transform(coords).multiply(scale);
+					const tv = transformed.values;
+					lines.push(gridFormat(
+						tv[0],  // x1
+						height - tv[1],	// y1
+						tv[3],  // x2
+						height - tv[4],	// y2
+						tv[6],  // x3
+						height - tv[7],	// y3
+					))
+				}
+
+				for (let i = 0; i < yLabelCount; i++) {
+					const yLabel = yLabels[i];				
+					labelPos.values[0] = -0.05;
+					labelPos.values[1] = i / (yLabelCount - 1);
+					labelPos.values[2] = -0.05;
+					labelCoords = transform.transform(labelPos).multiply(scale);
+					lines.push(labelFormat(
+						labelCoords.values[0], // x
+						height - labelCoords.values[1], // y
+						lineColor, 'end', yLabel
+					));	
+				}			
+				lines.push('</g>'); // svg_gridy
+
+				// z labels and grid
+				lines.push('<g class="svg_gridz">');
+				let zUnit = zValue.displayUnit;
+				if ( !zUnit ) {
+					zUnit = zValues.defaultUnit;
+				}
+				labelPos.values[0] = -0.05;
+				labelPos.values[1] = 1.0;
+				labelPos.values[2] = 0.4;
+					labelCoords = transform.transform(labelPos).multiply(scale);
+				lines.push(titleFormat(
+					labelCoords.values[0],	// x
+					height - labelCoords.values[1],	// y
+					lineColor, "end", zValue.title
+				));
+
+				labelPos.values[0] = -0.05;
+				labelPos.values[1] = 1.0;
+				labelPos.values[2] = 0.35;
+				labelCoords = transform.transform(labelPos).multiply(scale);
+				lines.push(unitFormat(
+					labelCoords.values[0],	// x
+					height - labelCoords.values[1],	// y
+					lineColor, "end", zUnit.name
+				));
+
+				for (let i = 0; i < zLabelCount; i++) {
+					const z = i / (zLabelCount - 1);
+					// v is coords.values
+					v[0] = 0; v[1] = 1; v[2] = z;
+					v[3] = 1; v[4] = 1; v[5] = z;
+					v[6] = 1; v[7] = 0; v[8] = z;
+
+					const transformed = transform.transform(coords).multiply(scale);
+					const tv = transformed.values;
+					lines.push(gridFormat(
+						tv[0],  // x1
+						height - tv[1],	// y1
+						tv[3],  // x2
+						height - tv[4],	// y2
+						tv[6],  // x3
+						height - tv[7],	// y3
+					))
+				}
+
+				for (let i = 0; i < zLabelCount; i++) {
+					const zLabel = zLabels[i];				
+					labelPos.values[0] = -0.02;
+					labelPos.values[1] = 1;
+					labelPos.values[2] = i / (zLabelCount - 1);
+					labelCoords = transform.transform(labelPos).multiply(scale);
+					lines.push(labelFormat(
+						labelCoords.values[0], // x
+						height - labelCoords.values[1], // y
+						lineColor, 'end', zLabel
+					));	
+				}	
+				lines.push('</g>'); // svg_gridz
+				lines.push('</g>');	// svg_grid
+			}
+
+			// add the lines
+			const renderLines = (lines, height, lineColor, lineClass, lineType, output) => {
+				const isnormal = (n) => {
+					return !isNaN(n) && n !== Infinity && n !== -Infinity;
+				}
+				const v = lines.values;
+				switch (lineType) {
+					case MMGraphLineType.bar:
+					case MMGraphLineType.barWithDot:
+					case MMGraphLineType.dot: {
+						const radius = 3.0;
+						const count = lines.rowCount;
+						for (let row = 0; row < count; row++) {
+							const offset = row * 3;
+							const x = v[offset];
+							const y = v[offset + 1];
+							if (isnormal(x) && isnormal(y)) {
+								output.push(`<circle stroke="${lineColor}" fill="${lineColor}" class="${lineClass}" cx="${x + radius}" cy="${height - y}" r="${radius}"/>`);
+							}
+						}
+					}
+						break;
+						
+					default: {
+						const v = lines.values;
+						let x = v[0];
+						let y = v[1];
+						if (isnormal(x) && isnormal(y)) {
+							const count = lines.rowCount;
+							const path = []
+							path.push(`<path stroke="${lineColor}" fill="none" class="${lineClass}" d="M ${x} ${height - y}`);
+							for (let row = 1; row < count; row++) {
+								const offset = row * 3;
+								x = v[offset];
+								y = v[offset + 1];
+								if (isnormal(x) && isnormal(y)) {
+									path.push(`L ${x} ${height - y}`);
+								}
+							}
+							path.push('"/>');
+							output.push(path.join(' '));
+						}
+					}
+						break;
+				}
+			}
+			lines.push('<g class="svg_lines">');
+			let colorNumber = 0;						
+			for (let xNumber = 0; xNumber < this.xValues.length; xNumber++) {
+				const xValue = this.xValues[xNumber];
+				let xValues = xValue.values;
+				const lineClass = `svg_line_${xNumber+1}`;
+				lineColor = lineColors[colorNumber++ % nColors];
+				const [minX, maxX] = xValue.plotLabels();
+				const scaleForX = (minX === maxX) ? 0.1 : 1.0 / (maxX - minX);
+				
+				let numMin = MMNumberValue.scalarValue(minX, xValues.unitDimensions);
+				let numScale = MMNumberValue.scalarValue(scaleForX);
+				xValues = xValues.subtract(numMin).multiply(numScale);
+				xValues.setUnitDimensions(numScale.unitDimensions);  // need to make unitless
+
+				const yValue = xValue.yValues[0];
+				let yValues = yValue.values;
+				if (yValues.columnCount != 1 && xValues.columnCount == 1) {
+					yValues = yValues.redimension(MMNumberValue.scalarValue(1));
+				}
+				const [minY, maxY] = yValue.plotLabels();
+				const scaleForY = (minY === maxY ) ? 0.1 : 1.0 / (maxY - minY);
+				numMin = MMNumberValue.scalarValue(minY, yValues.unitDimensions);
+				numScale = MMNumberValue.scalarValue(scaleForY);
+				yValues = yValues.subtract(numMin).multiply(numScale);
+				yValues.setUnitDimensions(numScale.unitDimensions);  // need to make unitless
+
+				const zValue = xValue.zValue;
+				let zValues = zValue.values;
+				const lineType = zValue.lineType;
+				const [minZ, maxZ] = zValue.plotLabels();
+				const scaleForZ = (minZ === maxZ ) ? 0.1 : 1.0 / (maxZ - minZ);
+				numMin = MMNumberValue.scalarValue(minZ, zValues.unitDimensions);
+				numScale = MMNumberValue.scalarValue(scaleForZ);
+				zValues = zValues.subtract(numMin).multiply(numScale);
+				zValues.setUnitDimensions(numScale.unitDimensions);  // need to make unitless
+
+				if (zValues.valueCount == xValues.valueCount * yValues.valueCount) {
+					// surface plot
+					const columnCount = yValues.valueCount;
+					const rowCount = xValues.valueCount;
+					// x lines
+					let zTemp = new MMNumberValue(columnCount, 1, zValues.unitDimensions);
+					for (let row = 0; row < rowCount; row++) {
+						const xConst = new MMNumberValue(columnCount, 1, xValues.unitDimensions);						
+						const xRow = xValues.values[row];
+						for (let col = 0; col < columnCount; col++) {
+							xConst.values[col] = xRow;
+							zTemp.values[col] = zValues.values[columnCount*row + col];
+						}
+						let coords = xConst.append(yValues).append(zTemp);
+						coords = transform.transform(coords).multiply(scale);
+						renderLines(coords, height, lineColor, lineClass, lineType, lines);
+					}
+					
+					// y lines
+					zTemp = new MMNumberValue(rowCount, 1, zValues.unitDimensions);
+					for (let col = 0; col < columnCount; col++) {
+						const yConst = new MMNumberValue(rowCount, 1, yValues.unitDimensions);
+						
+						const yCol = yValues.values[col];
+						for (let row = 0; row < rowCount; row++) {
+							yConst.values[row] = yCol;
+							zTemp.values[row] = zValues.values[row * columnCount + col];
+						}
+						let coords = xValues.append(yConst).append(zTemp);
+						coords = transform.transform(coords).multiply(scale);
+						renderLines(coords, height, lineColor, lineClass, lineType, lines);
+					}
+				}
+				else if (xValues.columnCount > 1 && xValues.columnCount === yValues.columnCount && xValues.columnCount === zValues.columnCount) {
+					// each column is represented by a separate set of lines
+					const  columnCount = xValues.columnCount;
+					for (let column = 0; column < columnCount; column++) {
+						const columnIndex = MMNumberValue.scalarValue(column + 1.0);
+						const rowIndex = MMNumberValue.scalarValue(0);
+						const xColumn = xValues.valueForIndexRowColumn(rowIndex, columnIndex);
+						const yColumn = yValues.valueForIndexRowColumn(rowIndex, columnIndex);
+						const zColumn = zValues.valueForIndexRowColumn(rowIndex, columnIndex);
+						let coords = xColumn.append(yColumn).append(zColumn);
+						coords = transform.transform(coords).multiply(scale);
+						renderLines(coords, height, lineColor, lineClass, lineType, lines);
+					}
+				}
+				else {
+					// line plot
+					let coords = xValues.append(yValues).append(zValues);
+					coords = transform.transform(coords).multiply(scale);
+					renderLines(coords, height, lineColor, lineClass, lineType, lines);
+				}
+			}
+
+			lines.push('</g>')	// svg_lines
+
+			console.log('3d');
 		}
 		else { // 2d
 			// determine color to start with
