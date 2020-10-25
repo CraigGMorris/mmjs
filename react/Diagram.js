@@ -1362,7 +1362,7 @@ class ToolIcon extends React.Component {
 							stroke: (info.result) ? textColor : 'red',
 						}
 					}, info.result ? (
-						info.result
+						info.result.substring(0,30)
 					) :	'?'
 				),
 			);

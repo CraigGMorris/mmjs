@@ -354,7 +354,7 @@ export function TableView(props) {
 								x: xTextPad,
 								y: cellHeight * 0.8,
 							},
-							displayedV
+							displayedV.substring(0,30)
 						)
 					);	
 				}
