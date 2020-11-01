@@ -456,7 +456,7 @@ class MMGraphX extends MMGraphAxis {
 		const info = super.plotInfo();
 		info.yInfo = this.yValues.map(y => y.plotInfo());
 		if (this.zValue) {
-			info.yInfo = this.zValue.plotInfo();
+			info.zInfo = this.zValue.plotInfo();
 		}
 		return info;
 	}
@@ -1063,14 +1063,7 @@ class MMGraph extends MMTool {
 				dScale = height / boxScale;
 			}
 			
-			const scale = MMNumberValue.scalarValue(dScale);
-			// const dCoords = [
-			// 	[0, 1, 1],
-			// 	[0, 1, 0],
-			// 	[0, 0, 0],
-			// 	[1, 0, 0]
-			// ];
-			
+			const scale = MMNumberValue.scalarValue(dScale);			
 			const coords = new MMNumberValue(3, 3);
 			const v = coords.values;
 			const gridFormat = (x1, y1, x2, y2, x3, y3) => {
@@ -1132,8 +1125,8 @@ class MMGraph extends MMTool {
 					lineColor, 'middle', xUnit.name
 				));
 
-				for (let i = 0; i < yLabelCount; i++) {
-					const x = i / (yLabelCount - 1);
+				for (let i = 0; i < xLabelCount; i++) {
+					const x = i / (xLabelCount - 1);
 					// v is coords.values
 					v[0] = x; v[1] = 0; v[2] = 0;
 					v[3] = x; v[4] = 1; v[5] = 0;

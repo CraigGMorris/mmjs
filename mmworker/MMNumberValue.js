@@ -1911,87 +1911,87 @@ class MMNumberValue extends MMValue {
 		v[15] = 1.0;	// [4,4]
 		
 		return rv;
+	}
+
+	yaw() {
+		this.checkUnitDimensionsAreEqualTo(null);
+		if (this.valueCount) {
+			return MMNumberValue.yawForAngle(this._values[0]);
 		}
+		return null;
+	}
 
-		yaw() {
-			this.checkUnitDimensionsAreEqualTo(null);
-			if (this.valueCount) {
-				return MMNumberValue.yawForAngle(this._values[0]);
-			}
-			return null;
-		}
-
-		translate() {
-			if (this.valueCount >= 3) {
-				const rv = new MMNumberValue(4,4, this.unitDimensions);
-				const v = rv._values;
-				const myValues = this._values;
-				v[3] = myValues[ 0 ];	// [1,4] (1 based)
-				v[7] = myValues[ 1 ];	// [2,4]
-				v[11] = myValues[ 2 ];	// [3,4]
-				v[0] = 1.0;	// [1,1]
-				v[5] = 1.0;	// [2,2]
-				v[10] = 1.0;	// [3,3]
-				v[15] = 1.0;	// [4,4]
-
-				return rv;
-			}
-			else {
-				this.exceptionWith('mmcmd:formulaTranslateDimError')				
-			}
-		}
-
-		scale() {
-			let x = 1.0;
-			let y = 1.0;
-			let z = 1.0;
-			const myValues = this._values;
-			if (this.valueCount == 1) {
-				x = y = z = myValues[0];
-			} else if (this.valueCount >= 3) {
-				x = myValues[0];
-				y = myValues[1];
-				z = myValues[2];
-			} else {
-				this.exceptionWith('mmcmd:formulaScaleDimError')				
-			}
-		
-			const rv = new MMNumberValue(4, 4, this.unitDimensions);
+	translate() {
+		if (this.valueCount >= 3) {
+			const rv = new MMNumberValue(4,4, this.unitDimensions);
 			const v = rv._values;
-			v[0] = x;	// [1,1] (1 based)
-			v[5] = y;	// [2,2]
-			v[10] = z;	// [3,3]
-			v[15] = 1.0;	// [4,4]
-		
-			return rv;
-		}
-
-		transform(coords) {
-			const myValueCount = this.valueCount;
-			if (myValueCount !== 16 || coords.valueCount === 0 || coords.valueCount % 3 ) {
-				this.exceptionWith('mmcmd:formulaTransformDimError')
-			}
-		
-			const nRows = coords.valueCount / 3;
-			const rv = new MMNumberValue(coords.rowCount, coords.columnCount, this.unitDimensions);
-									
-			const cValues = coords._values;
-			const rvValues = rv._values;
 			const myValues = this._values;
-			for (let rowNumber = 0; rowNumber < nRows; rowNumber++) {
-				for (let i = 0; i < 3; i++ ) {
-					let sum = 0.0;
-					for (let k = 0; k < 3; k++ ) {
-						sum += myValues[i * 4 + k] * cValues[rowNumber * 3 + k];
-					}
-					sum += myValues[i * 4 + 3];
-					rvValues[rowNumber * 3 + i] = sum;
-				}
-			}
-			
-			rv.addUnitDimensions(coords.unitDimensions);
+			v[3] = myValues[ 0 ];	// [1,4] (1 based)
+			v[7] = myValues[ 1 ];	// [2,4]
+			v[11] = myValues[ 2 ];	// [3,4]
+			v[0] = 1.0;	// [1,1]
+			v[5] = 1.0;	// [2,2]
+			v[10] = 1.0;	// [3,3]
+			v[15] = 1.0;	// [4,4]
+
 			return rv;
 		}
+		else {
+			this.exceptionWith('mmcmd:formulaTranslateDimError')				
+		}
+	}
+
+	scale() {
+		let x = 1.0;
+		let y = 1.0;
+		let z = 1.0;
+		const myValues = this._values;
+		if (this.valueCount == 1) {
+			x = y = z = myValues[0];
+		} else if (this.valueCount >= 3) {
+			x = myValues[0];
+			y = myValues[1];
+			z = myValues[2];
+		} else {
+			this.exceptionWith('mmcmd:formulaScaleDimError')				
+		}
+	
+		const rv = new MMNumberValue(4, 4, this.unitDimensions);
+		const v = rv._values;
+		v[0] = x;	// [1,1] (1 based)
+		v[5] = y;	// [2,2]
+		v[10] = z;	// [3,3]
+		v[15] = 1.0;	// [4,4]
+	
+		return rv;
+	}
+
+	transform(coords) {
+		const myValueCount = this.valueCount;
+		if (myValueCount !== 16 || coords.valueCount === 0 || coords.valueCount % 3 ) {
+			this.exceptionWith('mmcmd:formulaTransformDimError')
+		}
+	
+		const nRows = coords.valueCount / 3;
+		const rv = new MMNumberValue(coords.rowCount, coords.columnCount, this.unitDimensions);
+								
+		const cValues = coords._values;
+		const rvValues = rv._values;
+		const myValues = this._values;
+		for (let rowNumber = 0; rowNumber < nRows; rowNumber++) {
+			for (let i = 0; i < 3; i++ ) {
+				let sum = 0.0;
+				for (let k = 0; k < 3; k++ ) {
+					sum += myValues[i * 4 + k] * cValues[rowNumber * 3 + k];
+				}
+				sum += myValues[i * 4 + 3];
+				rvValues[rowNumber * 3 + i] = sum;
+			}
+		}
+		
+		rv.addUnitDimensions(coords.unitDimensions);
+		return rv;
+	}
 	
 	/**
 	 * @method jsonValue
