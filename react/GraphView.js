@@ -1230,11 +1230,6 @@ class Plot3D extends React.Component {
 		const lineColors =  ['Blue', '#009900', 'Brown', 'Orange', 'Purple', '#e60000', '#cccc00'];
 		const nColors = lineColors.length;
 
-		let colorStart = 0;
-		for (let i = 0; i < xAxisIndex; i++) {
-			const x = info.xInfo[i];
-			colorStart += x.yInfo.length;
-		}
 		let lineColor = lineColors[xAxisIndex % nColors];
 
 		const elements = [
@@ -1720,6 +1715,37 @@ class Plot3D extends React.Component {
 
 			if (zValues.length == xValues.length * yValues.length) {
 				// surface plot
+				const columnCount = yValues.length;
+				const rowCount = xValues.length;
+				// x lines
+				let zTemp = new Float64Array(columnCount);
+				for (let row = 0; row < rowCount; row++) {
+					const xConst = new Float64Array(columnCount);						
+					const xRow = xValues[row];
+					for (let col = 0; col < columnCount; col++) {
+						xConst[col] = xRow;
+						zTemp[col] = zValues[columnCount*row + col];
+					}
+					let coords = append(columnCount, xConst, append(columnCount, yValues, zTemp));
+					coords = multiply(transformCoords(transform, coords), scale);
+					const areaClass = `svg_xarea_${xNumber+1}_${row}`
+					renderLines(coords, height, lineColor, areaClass, lineType, lineElements);			
+				}
+				
+				// y lines
+				zTemp = new Float64Array(rowCount);
+				for (let col = 0; col < columnCount; col++) {
+					const yConst = new Float64Array(rowCount);					
+					const yCol = yValues[col];
+					for (let row = 0; row < rowCount; row++) {
+						yConst[row] = yCol;
+						zTemp[row] = zValues[row * columnCount + col];
+					}
+					let coords = append(rowCount, xValues, append(rowCount, yConst, zTemp));
+					coords = multiply(transformCoords(transform, coords), scale);
+					const areaClass = `svg_yarea_${xNumber+1}_${col}`
+					renderLines(coords, height, lineColor, areaClass, lineType, lineElements);			
+				}				
 			}
 			else {
 				// line plot
