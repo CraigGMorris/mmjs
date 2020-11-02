@@ -652,6 +652,18 @@ a:hover {
 	user-select: none;
 }
 
+#graph__svg-plot3d {
+	/* touch-action: none needed to prevent pinch from zooming entire window on ios */
+	touch-action: none;
+	/* below needed to prevent long presses on diagram from selecting text on ios */
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
 /* #graph__svg {
 	background-color: white;
 	font-size: 11pt;
@@ -1329,6 +1341,12 @@ a:hover {
 	text-align: center;
 	box-sizing: border-box;
 	cursor: pointer;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 #tool-view__notes {

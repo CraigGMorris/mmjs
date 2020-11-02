@@ -572,14 +572,12 @@ class Plot2D extends React.Component {
 				this.pinch = newPinch;
 				this.panSum += this.pinch;
 			}
-			const clientX = (eCache[0].x + eCache[1].x) / 2;
-			const clientY = (eCache[0].y + eCache[1].y) / 2;
 
 			this.setState((state) => {
 				const newScale = Math.max(0.1, state.scale * ratio);
 				const newTranslate = {
-					x: clientX/newScale - clientX/state.scale + state.translate.x,
-					y: clientY/newScale - clientY/state.scale + state.translate.y
+					x: state.translate.x + (this.width/2 - state.translate.x) * (1 - newScale/state.scale),
+					y: state.translate.y + (this.height/2 - state.translate.y) * (1 - newScale/state.scale)
 				}
 				return {
 					scale: newScale,
@@ -961,17 +959,18 @@ class Plot3D extends React.Component {
 		this.height = 500.0;
 		this.width = 500.0;
 		this.panSum = 0;
+		this.isPanning = false;
 		this.eventCache = [];
 		this.pinch = 0;
+		this.isRotating = false;
+		this.lastRotationX = null;
 
 		this.state = {
 			xAxisIndex: 0,
 			scale: this.height/1.8,
 			pan: {x: 0, y: 0, z: 0},
-			isPanning: false,
 			pinchScale: 1,
 			rotation: 0,
-			isRotating: false,
 		}
 		this.onPointerDown = this.onPointerDown.bind(this);
 		this.onPointerUp = this.onPointerUp.bind(this);
@@ -1025,11 +1024,12 @@ class Plot3D extends React.Component {
 		e.stopPropagation();
 		e.preventDefault();
 		let eCache = this.eventCache;
-		if (this.state.isRotating) {
-			this.setState({isRotating: false});
+		if (this.isRotating) {
+			this.isRotating = false;
+			this.lastRotationX = null;
 		}
-		else if (this.state.isPanning) {
-			this.setState({isPanning: false})
+		else if (this.isPanning) {
+			this.isPanning = false;
 		}
 		else if (eCache.length === 1 && this.pinch === 0) {
 			if (this.panSum < 5) {
@@ -1047,7 +1047,7 @@ class Plot3D extends React.Component {
 					if (svgPoint.y > this.height - 40) {
 						this.incrementXAxis();
 					}
-					else if (!this.state.isRotating && svgPoint.y < 40 && svgPoint.x > 400) {
+					else if (!this.isRotating && svgPoint.y < 40 && svgPoint.x > 400) {
 						e.target.releasePointerCapture(e.pointerId);
 						this.node.removeEventListener('pointermove', this.onPointerMove);
 						this.node.removeEventListener('pointerup', this.onPointerUp);	
@@ -1086,15 +1086,19 @@ class Plot3D extends React.Component {
 			this.panSum += Math.abs(deltaX) + Math.abs(deltaY);
 			this.touch0 = {x: e.clientX, y: e.clientY};
 			const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY})
-			if (!this.state.isPanning && (this.state.isRotating || svgPoint.y < 50)) {
-				this.setState((state) => {
-					return {
-						rotation: state.rotation + e.movementX / 100.0,
-						isRotating: true
-					}
-				});
+			if (!this.isPanning && (this.isRotating || svgPoint.y < 50)) {
+				this.isRotating = true;
+				if (this.lastRotationX !== null) {
+					this.setState((state) => {
+						return {
+							rotation: state.rotation + (e.clientX - this.lastRotationX) / 100.0,
+						}
+					});
+				}
+				this.lastRotationX = e.clientX;
 			}
 			else {
+				this.isPanning = true;
 				this.setState((state) => {
 					let dx = e.clientX - state.lastPointer.x;
 					let dy = e.clientY - state.lastPointer.y;
@@ -1120,7 +1124,6 @@ class Plot3D extends React.Component {
 							y: state.pan.y + dy / this.height, // * this.height / boxWidth,
 							z: state.pan.z + dz / this.height, // * this.height / boxWidth,
 						},
-						isPanning: true,
 						lastPointer: {x: e.clientX, y: e.clientY}
 					};
 				});
