@@ -1747,6 +1747,21 @@ class Plot3D extends React.Component {
 					renderLines(coords, height, lineColor, areaClass, lineType, lineElements);			
 				}				
 			}
+			else if (xValue.columnCount > 1 && xValue.columnCount === yValue.columnCount && xValue.columnCount === zValue.columnCount) {
+				// each column is represented by a separate set of lines
+				const  columnCount = xValue.columnCount;
+				const rowCount = xValues.length / columnCount;
+				let coords = new Float64Array(rowCount * 3);
+				for (let column = 0; column < columnCount; column++) {
+					for (let row = 0; row < rowCount; row++) {
+						coords[row * 3] = xValues[row * columnCount + column];
+						coords[row * 3 + 1] = yValues[row * columnCount + column];
+						coords[row * 3 + 2] = zValues[row * columnCount + column];
+					}
+					coords = multiply(transformCoords(transform, coords), scale);
+					renderLines(coords, height, lineColor, `svg_column_${column}`, lineType, lineElements);			
+				}
+			}			
 			else {
 				// line plot
 				let rowCount = xValues.length;
