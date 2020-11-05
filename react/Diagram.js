@@ -1347,7 +1347,7 @@ class ToolIcon extends React.Component {
 							fill: textColor,
 							stroke: textColor
 						}
-					}, info.formula
+					}, info.formula.substring(0,30)
 				),
 				e(
 					'text', {
