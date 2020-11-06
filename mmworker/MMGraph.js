@@ -6,6 +6,8 @@
 	MMStringValue:readonly
 	theMMSession:readonly
 	MMUnitSystem:readonly
+	MMTableValue:readonly
+	MMTableValueColumn:readonly
 */
 
 /**
@@ -988,11 +990,215 @@ class MMGraph extends MMTool {
 			return returnValue(rv);
 		}
 		else if (lcDescription.startsWith("table")) {
-			return this.tableValueForDescription(lcDescription);
+			const rv = this.tableValueForDescription(lcDescription);
+			if (rv) {
+				this.addRequestor(requestor);
+			}
+			return rv;
 		}
 		else if (lcDescription.startsWith("svg")) {
-			return this.svgForDescription(lcDescription);
+			const rv = this.svgForDescription(lcDescription);
+			if (rv) {
+				this.addRequestor(requestor);
+			}
+			return rv;
 		}
+	}
+
+	/**
+	 * @method tableValueForDescription
+	 * @param {String} description
+	 * @returns {MMTableValue}
+	 */
+	tableValueForDescription(description) {
+		description = description.toLowerCase();
+		let returnValue = null;
+		if (description === 'table') {
+			description = 'table1';
+		}
+		const xNumber = parseInt(description.substring(5));
+		if (xNumber > 0 && xNumber <= this.xValues.length) {
+			const xValue = this.xValues[xNumber - 1];
+			if (xValue) {
+				const nYLines = xValue.yValues.length;
+				const a = [];
+				let columnName = this.columnNameForAxis(xValue);
+				let v = xValue.values;
+				if (!v) { return null; }
+
+				const zValue = xValue.zValue;
+				const yValue0 = xValue.yValues[0];
+				let isSurface3D = false;
+				if (zValue && zValue.values && yValue0 && yValue0.values) {
+					isSurface3D =zValue.values.valueCount === v.valueCount * yValue0.values.valueCount;
+				}
+				
+				if (!isSurface3D) {
+					if (v.columnCount === 1) {
+						let column = new MMTableValueColumn({
+							name: columnName,
+							displayUnit: xValue.displayUnit ? xValue.displayUnit.name : null,
+							value: v
+						});
+						a.push(column);
+
+						for (let i = 0; i < nYLines; i++) {
+							const yValue = xValue.yValues[i];
+							columnName = this.columnNameForAxis(yValue);
+							v = yValue.values;
+							if (!v) { return null; }
+							if (v.rowCount == 1 && v.columnCount > 1) {
+								v = v.transpose();
+							}
+							
+							column = new MMTableValueColumn({
+								name: columnName,
+								displayUnit: yValue.displayUnit ? yValue.displayUnit.name : null,
+								value: v
+							});
+							a.push(column);
+						}
+	
+						if (zValue) {
+							columnName = this.columnNameForAxis(zValue);
+							v = zValue.values;
+							if (!v) { return null; }
+							if (v.rowCount === 1 && v.columnCount > 1) {
+								v = v.transpose();
+							}
+							column = new MMTableValueColumn({
+								name: columnName,
+								displayUnit: zValue.displayUnit ? zValue.displayUnit.name : null,
+								value: v
+							});
+							a.push(column);
+						}
+					}
+					else {
+						// multiple columns
+						const zero = MMNumberValue.scalarValue(0);
+						for (let col = 1; col <= v.columnCount; col++) {
+							const columnNumber = MMNumberValue.scalarValue(col);
+							const columnValue = v.valueForIndexRowColumn(zero, columnNumber);
+							const numberedName = `${columnName}_${col}`;
+							const column = new MMTableValueColumn({
+								name: numberedName,
+								displayUnit: xValue.displayUnit ? xValue.displayUnit.name : null,
+								value: columnValue
+							});
+							a.push(column);
+							for (let i = 0; i < nYLines; i++) {
+								const yValue = xValue.yValues[i];
+								const yColumnName = this.columnNameForAxis(yValue);
+								const columnV = yValue.values;
+								if (!columnV) { return null; }
+	
+								const columnValue = columnV.valueForIndexRowColumn(zero, columnNumber);
+								const numberedName = `${yColumnName}_${col}`;
+								const column = new MMTableValueColumn({
+									name: numberedName,
+									displayUnit: yValue.displayUnit ? yValue.displayUnit.name : null,
+									value: columnValue
+								});
+								a.push(column);
+
+								if (zValue) {
+									const zColumnName = this.columnNameForAxis(zValue);
+									const columnV = zValue.values;
+									if (!columnV) { return null; }
+		
+									const columnValue = columnV.valueForIndexRowColumn(zero, columnNumber);
+									const numberedName = `${zColumnName}_${col}`;
+									const column = new MMTableValueColumn({
+										name: numberedName,
+										displayUnit: zValue.displayUnit ? zValue.displayUnit.name : null,
+										value: columnValue
+									});
+									a.push(column);
+								}
+
+							}		
+						}
+
+						// for (let i = 0; i < nYLines; i++) {
+						// 	const yValue = xValue.yValues[i];
+						// 	columnName = this.columnNameForAxis(yValue);
+						// 	v = yValue.values;
+						// 	if (!v) { return null; }
+
+						// 	for (let col = 1; col <= v.columnCount; col++) {
+						// 		const columnNumber = MMNumberValue.scalarValue(col);
+						// 		const columnValue = v.valueForIndexRowColumn(zero, columnNumber);
+						// 		const numberedName = `${columnName}_${col}`;
+						// 		const column = new MMTableValueColumn({
+						// 			name: numberedName,
+						// 			displayUnit: yValue.displayUnit ? yValue.displayUnit.name : null,
+						// 			value: columnValue
+						// 		});
+						// 		a.push(column);
+						// 	}	
+					}
+				}
+				else {
+					// surface3d
+					const zValues = zValue.values;
+					const yValues = yValue0.values;
+					if (zValues && yValues) {
+						const xCount = v.valueCount;
+						const yCount = yValues.valueCount;
+						const zCount = zValues.valueCount;
+						const xTemp = new MMNumberValue(zCount, 1, v.unitDimensions);
+						const yTemp = new MMNumberValue(zCount, 1, yValues.unitDimensions);
+						const zTemp = new MMNumberValue(zCount, 1, zValues.unitDimensions);
+	
+						let row = 0;
+						const vx = v.values;
+						const vy = yValues.values;
+						const vz = zValues.values;
+						const vxt = xTemp.values;
+						const vyt = yTemp.values;
+						const vzt = zTemp.values;
+
+						if (zCount == xCount * yCount) {
+							for (let ix = 0; ix < xCount; ix++) {
+								for (let iy = 0; iy < yCount; iy++ ) {
+									vxt[row] = vx[ix];
+									vyt[row] = vy[iy];
+									vzt[row] = vz[row];
+									row++;
+								}
+							}
+							let column = new MMTableValueColumn({
+								name: columnName,
+								displayUnit: xValue.displayUnit ? xValue.displayUnit.name : null,
+								value: xTemp
+							});
+							a.push(column);
+
+							columnName = this.columnNameForAxis(yValue0);
+							column = new MMTableValueColumn({
+								name: columnName,
+								displayUnit: yValue0.displayUnit ? yValue0.displayUnit.name : null,
+								value: yTemp
+							});
+							a.push(column);
+	
+							columnName = this.columnNameForAxis(zValue);
+							column = new MMTableValueColumn({
+								name: columnName,
+								displayUnit: zValue.displayUnit ? zValue.displayUnit.name : null,
+								value: zTemp
+							});
+							a.push(column);
+						}	
+					}
+				}
+
+				returnValue = new MMTableValue({columns: a});
+			}
+		}
+
+		return returnValue;
 	}
 
 	/**
@@ -1398,13 +1604,14 @@ class MMGraph extends MMTool {
 				else if (xValues.columnCount > 1 && xValues.columnCount === yValues.columnCount && xValues.columnCount === zValues.columnCount) {
 					// each column is represented by a separate set of lines
 					const  columnCount = xValues.columnCount;
+					const rowCount = xValues.rowCount;
+					let coords = new MMNumberValue(rowCount, 3);
 					for (let column = 0; column < columnCount; column++) {
-						const columnIndex = MMNumberValue.scalarValue(column + 1.0);
-						const rowIndex = MMNumberValue.scalarValue(0);
-						const xColumn = xValues.valueForIndexRowColumn(rowIndex, columnIndex);
-						const yColumn = yValues.valueForIndexRowColumn(rowIndex, columnIndex);
-						const zColumn = zValues.valueForIndexRowColumn(rowIndex, columnIndex);
-						let coords = xColumn.append(yColumn).append(zColumn);
+						for (let row = 0; row < rowCount; row++) {
+							coords.values[row * 3] = xValues.values[row * columnCount + column];
+							coords.values[row * 3 + 1] = yValues.values[row * columnCount + column];
+							coords.values[row * 3 + 2] = zValues.values[row * columnCount + column];
+						}		
 						coords = transform.transform(coords).multiply(scale);
 						renderLines(coords, height, lineColor, lineClass, lineType, lines);
 					}
