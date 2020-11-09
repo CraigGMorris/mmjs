@@ -203,6 +203,7 @@ const MMFormulaFactory = (token, formula) => {
 		'sign': (f) => {return new MMGenericSingleFunction(f, Math.sign)},
 		'isort': (f) => {return new MMISortFunction(f)},
 		'sort': (f) => {return new MMSortFunction(f)},
+		'wfetch': (f) => {return new MMWFetchFunction(f)},
 	}
 
 	let op;
@@ -3672,6 +3673,37 @@ class MMSortFunction extends MMSingleValueFunction {
 				return v.valueForIndexRowColumn(indicies)
 			}
 		}
+	}
+}
+
+class MMWFetchFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const argCount = this.arguments.length;
+		const methodArg = this.arguments[argCount - 1].value();
+		const urlArg = this.arguments[argCount - 2].value();
+		const request = new XMLHttpRequest();
+		request.open(methodArg.values[0], urlArg.values[0], false);
+		request.withCredentials = true;
+		if (argCount > 2) {
+			const headerArg = this.arguments[argCount - 3].value();
+			if (headerArg instanceof MMStringValue) {
+				for (let i = 0; i + 1 < headerArg.valueCount; i += 2) {
+					request.setRequestHeader(headerArg.values[i], headerArg.values[i+1]);
+				}
+			}
+		}
+		const data = argCount > 3 ? this.arguments[0].value().values[0] : null;
+		try {
+			request.send(data);
+		}
+		catch(e) {
+			return MMStringValue.scalarValue(e.message);
+		}
+		return MMStringValue.scalarValue(request.responseText);
 	}
 }
 
