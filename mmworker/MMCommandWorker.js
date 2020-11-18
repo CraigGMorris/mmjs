@@ -31,7 +31,8 @@ importScripts(
   "MMOde.js",
   "MMIterator.js",
   "MMOptimizer.js",
-  "MMGraph.js"
+  "MMGraph.js",
+  "MMHtmlPage.js"
 );
 
 class MMCommandWorker {

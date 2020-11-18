@@ -8,7 +8,7 @@ const useEffect = React.useEffect;
 const useState = React.useState;
 
 /**
- * Enum for matrix display types.
+ * Enum for solver display types.
  * @readonly
  * @enum {string}
  */

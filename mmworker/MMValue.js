@@ -23,6 +23,15 @@ class MMValue {
 		this.valueCount = rowCount * columnCount;
 	}
 
+	/**
+	 * @method defaultUnit
+	 * @returns {MMUnit}
+	 */
+	get defaultUnit() {
+		return null;
+	}
+
+
 	/** @method exceptionWith
 	 * throws a MMCommandMessage
 	 * @param {string} key	for i18n
@@ -134,7 +143,7 @@ class MMValue {
 		return rv;
 	}
 
-		/** @method iSort
+	/** @method iSort
 	 * @returns MMNumberValue - contains indexes sorted by first column values;
 	 */
 	iSort() {
@@ -271,6 +280,45 @@ class MMValue {
 	// eslint-disable-next-line no-unused-vars
 	append(additions) {
 		return null;
+	}
+
+	/**
+	 * @method htmlValue
+	 * @returns {String}
+	 */
+	htmlValue() {
+		let rv;
+		if (this.valueCount === 0) {
+			rv = '';
+		}
+		else if (this.valueCount == 1) {
+			rv = this.stringForRowColumnWithUnit(1, 1, this.defaultUnit);
+		}
+		else {
+			const lines = [];
+			let unitName = '&nbsp';
+			if (this.defaultUnit && this.defaultUnit.name) {
+				unitName = this.defaultUnit.name;
+			}
+			lines.push('\n<table>');
+			lines.push(`\t<tr>\n\t\t<td>${unitName}</td>`);
+			for (let column = 1; column <= this.columnCount; column++) {
+				lines.push(`\t\t<td>${column}</td>`);
+			}
+			lines.push('\t</tr>');
+			for (let row = 1; row <= this.rowCount; row++) {
+				lines.push(`<tr>\n\t\t<td>${row}</td>`)
+				for (let column = 1; column <= this.columnCount; column++) {
+					const v = this.stringForRowColumnUnit(row, column, this.defaultUnit);
+					lines.push(`\t\t<td>${v}</td>`)
+				}
+				lines.push('\t</tr>');
+			}
+			lines.push('</table>\n');
+			rv = lines.join('\n');
+	
+		}
+		return rv;
 	}
 
 	/**

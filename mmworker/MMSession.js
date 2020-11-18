@@ -18,6 +18,7 @@
 	MMIterator:readonly
 	MMOptimizer:readonly
 	MMGraph:readonly
+	MMHtmlPage:readonly
 	theMMSession:readonly
 	MMToolValue:readonly
 */
@@ -1201,6 +1202,10 @@ const MMToolTypes = {
 	"Graph": {
 		factory: (name, parent) => {return new MMGraph(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:graphDisplayName'),
+	},
+	"HTMLForm": {
+		factory: (name, parent) => {return new MMHtmlPage(name, parent)},
+		displayName: new MMCommandMessage('mmcmd:htmlPageDisplayName'),
 	},
 };
 

@@ -1050,6 +1050,12 @@ export class Diagram extends React.Component {
 										addTool('Graph');
 									}
 								},
+								{
+									text: this.props.t('mmcmd:htmlPageDisplayName'),
+									action: () => {
+										addTool('HTMLForm');
+									}
+								},
 							]
 						}
 					)
@@ -1308,6 +1314,7 @@ class ToolIcon extends React.Component {
 			Iterator: 'rgba(255,232,217,.8)',
 			Optimizer: 'rgba(237,212,217,.8)',
 			Graph: 'rgba(224,247,247,.8)',
+			HtmlPage: 'rgba(217,204,230,.8)',
 		}
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;

@@ -582,6 +582,22 @@ a:hover {
 	justify-content: center;
 }
 
+#htmlpage {
+	height: 100%;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: var(--input--height) 1fr;
+	grid-template-areas: "formula"
+		"display";
+	box-sizing: border-box;
+	grid-gap: 2px;
+}
+
+#htmlpage__iframe {
+	height: 99%;
+	width: 100%;
+}
+
 #graph__button-fields {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
