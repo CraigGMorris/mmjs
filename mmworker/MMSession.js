@@ -211,7 +211,7 @@ class MMSession extends MMCommandParent {
 		// construct the unit system - it will add itself to my children
 		new MMUnitSystem(this);
 		this.storage = new MMSessionStorage();
-		this.autoSavePath = '(autoSaved)';
+		this.savedLastPathId = '(lastPath)';
 		this.loadAutoSaved();
 	}
 
@@ -221,7 +221,7 @@ class MMSession extends MMCommandParent {
 	 */
 	newSession(storePath) {
 		if (!storePath) {
-			storePath = '_unnamed';
+			storePath = '(unnamed)';
 		}
 		this.nextToolLocation = this.unknownPosition;
 		this.rootModel = MMToolTypes['Model'].factory('root', this);
@@ -329,24 +329,38 @@ class MMSession extends MMCommandParent {
 	}
 
 	/** @method autoSaveSession
-	 * save the session in persistent storage as _autosave
+	 * save the session in persistent storage 
 	 * returns the autosave path
 	 */
 	async autoSaveSession() {
 		if (!this.isLoadingCase) {
 			const caseJson = this.sessionAsJson();
-			// console.log(`autosave ${this.storePath}`);
 			try {
-				await this.storage.save(this.autoSavePath, caseJson);
+				await this.storage.save(this.storePath, caseJson);
 			}
 			catch(e) {
 				const msg = (typeof e === 'string') ? e : e.message;
-				this.setError('mmcmd:sessionSaveFailed', {path: this.autoSavePath, error: msg});
+				this.setError('mmcmd:sessionSaveFailed', {path: this.storePath, error: msg});
 			}
-			return this.autoSavePath;
+			return this.storePath;
 		}
 		else {
 			return 'skipped';
+		}
+	}
+
+	/**
+	 * @method saveLastSessionPath
+	 */
+	async saveLastSessionPath() {
+		if (this.storePath) {
+			try {
+				await this.storage.save(this.savedLastPathId, this.storePath);
+			}
+			catch(e) {
+				const msg = (typeof e === 'string') ? e : e.message;
+				console.log(msg);
+			}
 		}
 	}
 
@@ -369,6 +383,7 @@ class MMSession extends MMCommandParent {
 		finally {
 			this.isLoadingCase = false;
 			await this.autoSaveSession();
+			await this.saveLastSessionPath()
 		}
 	}
 
@@ -379,12 +394,15 @@ class MMSession extends MMCommandParent {
 		try {
 			this.isLoadingCase = true;
 			this.newSession();
-			let result = await this.storage.load(this.autoSavePath);
-			if (result) {
-				new MMUnitSystem(this);  // clear any user units and sets
-				this.initializeFromJson(result);
+			const lastPath = await this.storage.load(this.savedLastPathId);
+			if (lastPath) {
+				let result = await this.storage.load(lastPath);
+				if (result) {
+					new MMUnitSystem(this);  // clear any user units and sets
+					this.initializeFromJson(result);
+				}
+				return result;
 			}
-			return result;
 		}
 		catch(e) {
 			this.newSession();
@@ -542,6 +560,7 @@ class MMSession extends MMCommandParent {
 	 */
 	newSessionCommand(command) {
 		this.newSession(command.args);
+		this.saveLastSessionPath();
 		command.results = this.storePath;
 	}
 

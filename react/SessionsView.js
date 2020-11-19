@@ -248,7 +248,7 @@ export class SessionsView extends React.Component {
 						id: 'sessions__save-button',
 						onClick: async () => {
 							let cmd = '/ save';
-							if (currentPath === '_unnamed') {
+							if (currentPath === '(unnamed)') {
 								let path = prompt(t('react:sessionsSaveNamePrompt'));
 								if (path) {
 									cmd += ' ' + path;
