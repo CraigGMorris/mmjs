@@ -411,6 +411,35 @@ export function GraphView(props) {
 	);
 }
 
+const convertDateValue = (seconds, unit) => {
+	const date = new Date(seconds * 1000);
+	let result = 0;
+	let year = date.getUTCFullYear();
+	const month = date.getUTCMonth() + 1;
+	const day = date.getUTCDate();
+	let isBC = false;
+	if (year < 0) {
+		year = -year;
+		isBC = true;
+	}
+	switch (unit) {
+		case 'date':
+			result = year * 10000. + month * 100.0 + day;
+			break;
+		case 'dated':
+			result = day * 1000000. + month * 10000.0 + year;
+			break;
+		case 'datem':
+			result = month * 1000000. + day * 10000.0 + year;
+			break;
+	}
+	result += date.getUTCHours() / 100.0 + date.getUTCMinutes() / 10000. + date.getUTCSeconds() / 1000000.0;
+	if (isBC) {
+		result = -result;
+	}
+	return result;
+}
+
 /**
  * Plot2D
  * react component that creates svg to display 2d graph
@@ -714,6 +743,7 @@ class Plot2D extends React.Component {
 			let step = width / (xLabelCount - 1);
 			let labelStep = (axisX.maxLabel - axisX.minLabel) / (xLabelCount - 1);
 			const xLabelTranslate = (axisX.minLabel - axisX.maxLabel) * (translate.x / width) / scale;
+			const xIsDate = (axisX.unit === 'date' || axisX.unit === 'dated' || axisX.unit === 'datem');
 
 			const gridFormat = (key, x1, x2, y1, y2) => {
 				return e(
@@ -732,6 +762,9 @@ class Plot2D extends React.Component {
 			const labelText = (labelValue) => {
 				if (labelValue != 0.0 && (Math.abs(labelValue) > 100000000.0 || Math.abs(labelValue) < 0.01)) {
 					return labelValue.toExponential(2);
+				}
+				else if (labelValue >= 1000000.0) {
+					return labelValue.toFixed(0).trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
 				}
 				else {
 					return labelValue.toFixed(3).trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
@@ -755,7 +788,10 @@ class Plot2D extends React.Component {
 				else {
 					anchor = 'middle';
 				}
-				const labelValue = (axisX.minLabel + xLabelTranslate) + i * labelStep / scale;
+				let labelValue = (axisX.minLabel + xLabelTranslate) + i * labelStep / scale;
+				if (xIsDate) {
+					labelValue = convertDateValue(labelValue, axisX.unit);
+				}
 				xLabelElements.push(e(
 					'text', {
 						className: 'graph__svg-xlabel',
@@ -1434,16 +1470,21 @@ class Plot3D extends React.Component {
 			return textFormat(key, 'svg_unit', x, y, color, anchor, text)
 		}
 		
-		const labelValues = (labelPan, minLabel, maxLabel, nLabels) => {
+		const labelValues = (labelPan, minLabel, maxLabel, nLabels, unit) => {
 			const labels = [];
 			const labelScale = (minLabel === maxLabel) ? 0.1 : pinchScale / (maxLabel - minLabel);
+			const isDate = (unit === 'date' || unit === 'dated' || unit === 'datem');
 			for (let i = 0; i < nLabels; i++) {
 				const labelValue = i * (maxLabel - minLabel) / pinchScale / (nLabels - 1) + minLabel - labelPan / labelScale;
-				if (labelValue != 0.0 && (Math.abs(labelValue) > 100000000.0 || Math.abs(labelValue) < 0.01)) {
+				if (isDate) {
+					const dateValue = convertDateValue(labelValue, unit);
+					labels.push(dateValue.toFixed(0).trim().replace(/(\.\d[^0]*)(0+$)/,'$1'));
+				}
+				else if (labelValue != 0.0 && (Math.abs(labelValue) > 100000000.0 || Math.abs(labelValue) < 0.01)) {
 					labels.push(labelValue.toExponential(2));
 				}
 				else {
-				labels.push(labelValue.toFixed(3).trim().replace(/(\.\d[^0]*)(0+$)/,'$1'));
+					labels.push(labelValue.toFixed(3).trim().replace(/(\.\d[^0]*)(0+$)/,'$1'));
 				}
 			}
 			return labels;
@@ -1494,7 +1535,7 @@ class Plot3D extends React.Component {
 			))
 		}
 
-		const xLabels = labelValues(pan.x, xValue.minLabel, xValue.maxLabel, nLabels);
+		const xLabels = labelValues(pan.x, xValue.minLabel, xValue.maxLabel, nLabels, xValue.unit);
 		for (let i = 0; i < nLabels; i++) {
 			const xLabel = xLabels[i];
 			labelPos[0] = i / (nLabels - 1);
@@ -1549,7 +1590,7 @@ class Plot3D extends React.Component {
 			))
 		}
 
-		const yLabels = labelValues(pan.y, yValue.minLabel, yValue.maxLabel, nLabels);
+		const yLabels = labelValues(pan.y, yValue.minLabel, yValue.maxLabel, nLabels, yValue.unit);
 		for (let i = 0; i < nLabels; i++) {
 			const yLabel = yLabels[i];
 			labelPos[0] = -0.05;
@@ -1605,7 +1646,7 @@ class Plot3D extends React.Component {
 		}
 
 		nLabels = 5;
-		const zLabels = labelValues(pan.z, zValue.minLabel, zValue.maxLabel, nLabels);
+		const zLabels = labelValues(pan.z, zValue.minLabel, zValue.maxLabel, nLabels, zValue.unit);
 		for (let i = 0; i < nLabels; i++) {
 			const zLabel = zLabels[i];
 			labelPos[0] = -0.02;

@@ -234,11 +234,18 @@ class MMGraphAxis {
 			info.unit = displayUnit.name;
 			const minValue = this.graph.valueDescribedBy(`min${this.name}`);
 			info.minValue = minValue ? minValue.values[0] : 0;
-			info.minLabel = displayUnit.convertFromBase(info.minValue);
 			const maxValue = this.graph.valueDescribedBy(`max${this.name}`);
 			info.maxValue = maxValue ? maxValue.values[0] : 1
-			info.maxLabel = displayUnit.convertFromBase(info.maxValue);
-
+			if (info.unit === 'date' || info.unit === 'dated' || info.unit === 'datem') {
+				// date values cannot be interpolated, so the view will have to convert them
+				// one by one from the base values;
+				info.minLabel = info.minValue;
+				info.maxLabel = info.maxValue;
+			}
+			else {
+				info.minLabel = displayUnit.convertFromBase(info.minValue);
+				info.maxLabel = displayUnit.convertFromBase(info.maxValue);
+			}
 			info.values = Array.from(this.values.values)
 		}
 		return info;
