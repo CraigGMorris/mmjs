@@ -47,7 +47,7 @@ export function ModelView(props) {
 					key: `input_${input.name}`,
 					className: 'model__input-field',
 					onClick: () => {
-						props.actions.pushTool(input.name, 'Expression');
+						props.actions.viewTool(input.name, 'Expression');
 					},
 				},
 				e(
@@ -91,7 +91,7 @@ export function ModelView(props) {
 					key: `output_${output.name}`,
 					className: 'model__output-field',
 					onClick: () => {
-						props.actions.pushTool(output.name, 'Expression');
+						props.actions.viewTool(output.name, 'Expression');
 					},
 				},
 				e(
@@ -131,7 +131,7 @@ export function ModelView(props) {
 							props.actions.pushModel(other.name)
 						}
 						else {
-							props.actions.pushTool(other.name, other.type);
+							props.actions.viewTool(other.name, other.type);
 						}
 					},
 				},

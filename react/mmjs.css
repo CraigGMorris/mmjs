@@ -657,6 +657,7 @@ a:hover {
 }
 
 #graph__svg-plot2d {
+	font-size: 12pt;
 	/* touch-action: none needed to prevent pinch from zooming entire window on ios */
 	touch-action: none;
 	/* below needed to prevent long presses on diagram from selecting text on ios */
@@ -669,6 +670,7 @@ a:hover {
 }
 
 #graph__svg-plot3d {
+	font-size: 12pt;
 	/* touch-action: none needed to prevent pinch from zooming entire window on ios */
 	touch-action: none;
 	/* below needed to prevent long presses on diagram from selecting text on ios */
@@ -679,11 +681,6 @@ a:hover {
 	-ms-user-select: none;
 	user-select: none;
 }
-
-/* #graph__svg {
-	background-color: white;
-	font-size: 11pt;
-} */
 
 .graph__row-delete-button {
 	justify-self: right;

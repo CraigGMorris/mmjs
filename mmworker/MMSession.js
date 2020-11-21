@@ -1222,7 +1222,7 @@ const MMToolTypes = {
 		factory: (name, parent) => {return new MMGraph(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:graphDisplayName'),
 	},
-	"HTMLForm": {
+	"HtmlPage": {
 		factory: (name, parent) => {return new MMHtmlPage(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:htmlPageDisplayName'),
 	},

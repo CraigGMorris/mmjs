@@ -224,37 +224,100 @@ class MMHtmlPage extends MMTool {
 	 * performs action indicated in jsonMessage
 	 */
 	action(jsonMessage) {
+		const response = {}
 		try {
 			const message = JSON.parse(jsonMessage);
+			if (message.callBackNumber !== null) {
+				response.callBackNumber = message.callBackNumber;
+			}
 			if (message.inputs) {
-				// const newInputs = {};
-				const actions = {};
 				let foundNewInput = false;
 				for (let inputName of Object.keys(message.inputs)) {
 					const lcInputName = inputName.toLowerCase()
-					if (inputName.startsWith('mm_')) {
-						actions[lcInputName] = message.inputs[inputName];
-						console.log(`action ${inputName}`);
-					}
-					else {
-						const input = message.inputs[inputName];
-						const newValue = (isNaN(input) || isNaN(parseFloat(input))) ? input : parseFloat(input);
-						if (newValue != this.inputs[lcInputName]) {
-							this.inputs[lcInputName] = newValue;
-							foundNewInput = true;
-						}	
-					}
+					const input = message.inputs[inputName];
+					const newValue = (isNaN(input) || isNaN(parseFloat(input))) ? input : parseFloat(input);
+					if (newValue != this.inputs[lcInputName]) {
+						this.inputs[lcInputName] = newValue;
+						console.log(`input ${lcInputName} = ${newValue}`);
+						foundNewInput = true;
+					}	
 				}
 				if (foundNewInput) {
-					// this.inputs = newInputs;
 					this.forgetCalculated();
 				}
 				console.log(this.inputs);
 			}
-			// switch(message.action) {
-			// 	case 'post':
-			// }
-			const response = {update: true}
+
+			const actions = {};
+			if (message.requests) {
+				const requestResults = {};
+				for (let name of Object.keys(message.requests)) {
+					if (name.startsWith('mm_')) {
+						actions[name.toLowerCase()] = message.requests[name];
+						console.log(`action ${name}`)
+					}
+					else {
+						const formula = new MMFormula(`r_${name}`, this);
+						formula.formula = message.requests[name];
+						const mmResult = formula.value();
+						let reqResult;
+						if (!mmResult) {
+							reqResult = '';
+						}
+						else if (mmResult instanceof MMValue) {
+							const v = mmResult.values;
+							if (mmResult.valueCount === 1) {
+								reqResult = v[0];
+							}
+							else if (mmResult.rowCount > 1 && mmResult.columnCount > 1) {
+								reqResult = [];
+								const columnCount = mmResult.columnCount;
+								for (let r = 0; r < mmResult.rowCount; r++) {
+									const row = [];
+									reqResult.push(row);
+									for (let c = 0; c < columnCount; c++) {
+										row[c] = v[r*columnCount + c];
+									}
+								}
+							}
+							else if (mmResult.valueCount > 1) {
+								reqResult = [];
+								for (let r = 0; r < mmResult.rowCount; r++) {
+									reqResult[r] = v[r];
+								}
+							}	
+						}
+
+						requestResults[name] = reqResult;
+					}
+				}
+				response.results = requestResults;
+			}
+			if (!message.callBackNumber && Object.keys(actions).length === 0) {
+				response.update = true;
+			}
+
+			for (let action of Object.keys(actions)) {
+				switch (action) {
+					case 'mm_view': {
+						const name = actions[action].toLowerCase();
+						const target = this.parent.children[name];
+						if (target) {
+							response.view = {name: actions[action], type: target.typeName};
+						}
+					}
+						break;
+					case 'mm_push': {
+						const name = actions[action].toLowerCase();
+						const target = this.parent.children[name];
+						if (target) {
+							response.push = {name: actions[action], path: target.getPath(), type: target.typeName};
+						}
+						break;
+					}
+				}
+			}
+
 			return response;
 		}
 		catch(e) {
@@ -278,12 +341,21 @@ class MMHtmlPage extends MMTool {
 	 */
 	htmlForRequestor(requestor) {
 		const messageCode = `
+<script>
+window.onerror = function (e) {
+	alert('Error: ' + e);
+};
+</script>
 <script> 
-var callBackNumber = 0;
+var callBackNumber = 1;
 const callBacks = {}
 
 const handleMessage = (e) => {
-	console.log('iframe got: ' + e.data);
+	const results = e.data;
+	if (results && results.callBackNumber) {
+		callBacks[results.callBackNumber](results.results);
+		delete callBacks[results.callBackNumber]
+	}
 }
 window.addEventListener('message', handleMessage);
 const mmpost = (inputs, requests, callBack) => {
@@ -298,7 +370,7 @@ const mmpost = (inputs, requests, callBack) => {
 	}
 	if (callBack) {
 		message.callBackNumber = callBackNumber;
-		callBacks[callBackNumber] = callBack;
+		callBacks[callBackNumber++] = callBack;
 	}
 	window.parent.postMessage('htmlPage' + JSON.stringify(message), '*');
 }

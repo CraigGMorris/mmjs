@@ -465,14 +465,32 @@ export function MMApp(props) {
 		popView();
 	},[popView]);
 
+const pushTool = useCallback((toolName, path, toolType) => {
+	const updateCommand = `${path} toolViewInfo`;
+	doCommand(updateCommand, (cmds) => {
+		let newInfoState = {
+			title: (toolName ? toolName : ''),
+			path: (path ? path : ''),
+			modelPath: cmds[0].results.modelPath,
+			stackIndex: infoStack.length,
+			updateCommands: updateCommand,			// commands used to update the view state
+			updateResults: cmds,		// result of doCommand on the updateCommands
+			viewKey: toolType,
+		};
+		infoStack.push(newInfoState);
+		setViewInfo(newInfoState);
+		setStateViewType(viewType === ViewType.diagram ? ViewType.info : viewType);
+		updateDiagram();
+	});
+}, [doCommand, updateDiagram, viewType, setStateViewType]);
 
 	/**
-	 * pushTool
+	 * viewTool
 	 * pushes tool named on to the infoview
 	 * @param {String} toolName
 	 * @param {String} toolType
 	 */
-	const pushTool = useCallback((toolName, toolType) => {
+	const viewTool = useCallback((toolName, toolType) => {
 		let top = infoStack[infoStack.length - 1];
 		while (infoStack.length > 1 && top.viewKey !== 'Model') {
 			if (top.title === toolName && top.viewKey === toolType) {
@@ -486,26 +504,9 @@ export function MMApp(props) {
 		if (!toolName || !toolType) {
 			return;  // pushing nothing clears stack to top model
 		}
-
-		top = infoStack[infoStack.length - 1];
-		const path = `${top.path}.${toolName}`;
-		const updateCommand = `${path} toolViewInfo`;
-		doCommand(updateCommand, (cmds) => {
-			let newInfoState = {
-				title: (toolName ? toolName : ''),
-				path: (path ? path : ''),
-				modelPath: cmds[0].results.modelPath,
-				stackIndex: infoStack.length,
-				updateCommands: updateCommand,			// commands used to update the view state
-				updateResults: cmds,		// result of doCommand on the updateCommands
-				viewKey: toolType,
-			};
-			infoStack.push(newInfoState);
-			setViewInfo(newInfoState);
-			setStateViewType(viewType === ViewType.diagram ? ViewType.info : viewType);
-			updateDiagram();
-		});
-	}, [doCommand, updateDiagram, updateView, viewType, setStateViewType]);
+		const path = `${top.path}.${toolName}`;	
+		pushTool(toolName, path, toolType);
+	}, [updateView, pushTool]);
 
 	/**
 	 * pushConsole
@@ -586,6 +587,7 @@ export function MMApp(props) {
 		doCommand: doCommand,
 		pushModel: pushModel,
 		popModel: popModel,
+		viewTool: viewTool,
 		pushTool: pushTool,
 		pushView: pushView,
 		popView: popView,

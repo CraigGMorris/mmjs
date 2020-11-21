@@ -207,7 +207,7 @@
 	"?sessionGetJson": "Returns the json of session suitable for storing.\nIf path is supplied, that session will be returned\n\nusage: getjson {path}",
 	"?sessionList": "List the local sessions\n\nusage: listsessions",
 	"?sessionLoad": ":oads session at path\n\nusage: load path",
-	"?sessionNew": "Create an empty session with name path or _unnamed if omitted\n\nusage: new {path}",
+	"?sessionNew": "Create an empty session with name path or (unnamed) if omitted\n\nusage: new {path}",
 	"?sessionPopModel": "Switch current model to its parent\n\nusage popmodel",
 	"?sessionPushModel": "Switch current model to the child model named modelName\n\nusage pushmodel modelName",
 	"?sessionSave": "Save session to path or to current path if omitted\n\nusage: save {path}",

@@ -43,10 +43,25 @@ export function HtmlPageView(props) {
 				props.actions.doCommand(`__blob__${results.path} htmlaction__blob__${message}`, (results) => {
 					if (results && results[0] && results[0].results) {
 						const received = results[0].results;
-						source.postMessage('got results', '*');
-						if (received.update) {
+						if (received.results) {
+							source.postMessage(received, '*');
+						}
+						if (received.view) {
+							console.log(`view ${received.view.name} ${received.view.type}`);
+							props.actions.viewTool(received.view.name, received.view.type);
+							props.actions.updateDiagram();
+						}
+						else if (received.push) {
+							console.log(`push ${received.push.name} ${received.push.type}`);
+							props.actions.pushTool(received.push.name, received.push.path, received.push.type);
+							props.actions.updateDiagram();
+						}
+						else if (received.update) {
 							console.log('updating');
 							props.actions.updateView(props.viewInfo.stackIndex);
+						}
+						else {
+							props.actions.updateDiagram();
 						}
 						// setDisplay(HtmlPageDisplay.main);
 					}
@@ -134,7 +149,7 @@ export function HtmlPageView(props) {
 				'iframe', {
 					id: 'htmlpage__iframe',
 					srcDoc: results.html,
-					sandbox: 'allow-scripts',
+					sandbox: 'allow-scripts allow-modals',
 				},
 			)
 		)

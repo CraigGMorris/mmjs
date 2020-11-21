@@ -619,7 +619,7 @@ export class Diagram extends React.Component {
 				setDragType: this.setDragType,
 				draggedTo: this.draggedTo,
 				pushModel: this.props.actions.pushModel,
-				pushTool: this.props.actions.pushTool,
+				viewTool: this.props.actions.viewTool,
 				updateView: this.props.actions.updateView,
 				dimmed: this.state.selectedObject && toolName !== this.state.selectedObject,
 				showContext: (shouldShow) => {
@@ -928,7 +928,7 @@ export class Diagram extends React.Component {
 				case ContextMenuType.tool: {
 					const deleteTool = (info) => {
 						if (info.name === this.state.selectedObject) {
-							this.props.actions.pushTool();  // empty parameters clears infostack
+							this.props.actions.viewTool();  // empty parameters clears infostack
 						}
 						this.props.actions.doCommand(`${this.state.path} removetool ${info.name}`, () => {
 							this.setState({showContext: null});
@@ -985,7 +985,7 @@ export class Diagram extends React.Component {
 								this.props.actions.pushModel(toolName);
 							}
 							else {
-								this.props.actions.pushTool(toolName, type);
+								this.props.actions.viewTool(toolName, type);
 							}
 						})
 						this.setState({showContext: null});
@@ -1053,7 +1053,7 @@ export class Diagram extends React.Component {
 								{
 									text: this.props.t('mmcmd:htmlPageDisplayName'),
 									action: () => {
-										addTool('HTMLForm');
+										addTool('HtmlPage');
 									}
 								},
 							]
@@ -1088,7 +1088,7 @@ export class Diagram extends React.Component {
 						for (let name of sel.keys()) {
 							names.push(name);
 							if (name === this.state.selectedObject) {
-								this.props.actions.pushTool();  // empty parameters clears infostack
+								this.props.actions.viewTool();  // empty parameters clears infostack
 							}
 						}
 
@@ -1252,7 +1252,7 @@ class ToolIcon extends React.Component {
 						this.props.pushModel(this.props.info.name);
 					}
 					else {
-						this.props.pushTool(this.props.info.name, this.props.info.toolTypeName);
+						this.props.viewTool(this.props.info.name, this.props.info.toolTypeName);
 					}
 				}
 			}
