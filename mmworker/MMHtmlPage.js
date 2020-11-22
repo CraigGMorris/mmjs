@@ -5,6 +5,8 @@
 	MMValue:readonly
 	MMStringValue:readonly
 	MMNumberValue:readonly
+	theMMSession:readonly
+	MMDataTable:readonly
 */
 
 /**
@@ -163,49 +165,51 @@ class MMHtmlPage extends MMTool {
 				value = MMStringValue.scalarValue(this.formula.formula);
 			}
 		}
-		else {
+		else if (this.inputs) {
 			const inputValue = this.inputs[lcDescription];
-			const valueType = typeof inputValue;
-			if (valueType === 'string') {
-				value = MMStringValue.scalarValue(inputValue);
-			}
-			else if (valueType === 'number') {
-				value = MMNumberValue.scalarValue(inputValue);
-			}
-			else if (Array.isArray(inputValue)) {
-				const rowCount = inputValue.length;
-				if (rowCount) {
-					const firstValue = inputValue[0];
-					if (typeof firstValue === 'string') {
-						value = new MMStringValue(rowCount, 1);
-					}
-					else if (typeof firstValue === 'number') {
-						value = new MMNumberValue(rowCount, 1);
-					}
-					if (value) {
-						const v = value.values;
-						for (let i = 0; i < rowCount; i++) {
-							v[i] = inputValue[i];
+			if (inputValue) {
+				const valueType = typeof inputValue;
+				if (valueType === 'string') {
+					value = MMStringValue.scalarValue(inputValue);
+				}
+				else if (valueType === 'number') {
+					value = MMNumberValue.scalarValue(inputValue);
+				}
+				else if (Array.isArray(inputValue)) {
+					const rowCount = inputValue.length;
+					if (rowCount) {
+						const firstValue = inputValue[0];
+						if (typeof firstValue === 'string') {
+							value = new MMStringValue(rowCount, 1);
 						}
-					}
-					else if (Array.isArray(firstValue)) {
-						const columnCount = firstValue.length;
-						if (columnCount) {
-							const firstColumnValue = firstValue[0];
-							if (typeof firstColumnValue === 'string') {
-								value = new MMStringValue(rowCount, columnCount);
+						else if (typeof firstValue === 'number') {
+							value = new MMNumberValue(rowCount, 1);
+						}
+						if (value) {
+							const v = value.values;
+							for (let i = 0; i < rowCount; i++) {
+								v[i] = inputValue[i];
 							}
-							else if (typeof firstColumnValue === 'number') {
-								value = new MMNumberValue(rowCount, columnCount);
-							}
-							if (value) {
-								const v = value.values;
-								for (let r = 0; r < rowCount; r++) {
-									for (let c = 0; c < columnCount; c++) {
-										v[r*columnCount + c] = inputValue[r][c];
-									}
+						}
+						else if (Array.isArray(firstValue)) {
+							const columnCount = firstValue.length;
+							if (columnCount) {
+								const firstColumnValue = firstValue[0];
+								if (typeof firstColumnValue === 'string') {
+									value = new MMStringValue(rowCount, columnCount);
+								}
+								else if (typeof firstColumnValue === 'number') {
+									value = new MMNumberValue(rowCount, columnCount);
+								}
+								if (value) {
+									const v = value.values;
+									for (let r = 0; r < rowCount; r++) {
+										for (let c = 0; c < columnCount; c++) {
+											v[r*columnCount + c] = inputValue[r][c];
+										}
+									}	
 								}	
-							}	
+							}
 						}
 					}
 				}
@@ -236,16 +240,17 @@ class MMHtmlPage extends MMTool {
 					const lcInputName = inputName.toLowerCase()
 					const input = message.inputs[inputName];
 					const newValue = (isNaN(input) || isNaN(parseFloat(input))) ? input : parseFloat(input);
+					if (!this.inputs) {
+						this.inputs = {}
+					}
 					if (newValue != this.inputs[lcInputName]) {
 						this.inputs[lcInputName] = newValue;
-						console.log(`input ${lcInputName} = ${newValue}`);
 						foundNewInput = true;
-					}	
+					}
 				}
 				if (foundNewInput) {
 					this.forgetCalculated();
 				}
-				console.log(this.inputs);
 			}
 
 			const actions = {};
@@ -313,8 +318,58 @@ class MMHtmlPage extends MMTool {
 						if (target) {
 							response.push = {name: actions[action], path: target.getPath(), type: target.typeName};
 						}
-						break;
 					}
+						break;
+					case 'mm_addrow': {
+						const name = actions[action].toLowerCase();
+						const target = this.parent.children[name];
+						if (target && target instanceof MMDataTable) {
+							target.addRow(0);
+						}
+					}
+						break;
+					case 'mm_deleterows': {
+						const actionValue = actions[action];
+						const rows = actionValue.rows;
+						const name = actionValue.table;
+						if (Array.isArray(rows) && name) {
+							const target = this.parent.children[name];
+							if (target) {
+								target.removeRows(rows);
+							}
+						}
+					}
+						break;
+					case 'mm_refresh': {
+						const name = actions[action].toLowerCase();
+						const target = this.parent.children[name];
+						if (target) {
+							target.forgetCalculated();
+						}
+					}
+						break;
+					case 'mm_update': {
+						response.update = true;
+					}
+						break;
+					case 'mm_clear': {
+						if (actions[action]) {
+							this.inputs = null;
+							this.forgetCalculated();
+						}
+					}
+						break;
+					case 'mm_load': {
+						const path = actions[action].toLowerCase();
+						if (path) {
+							theMMSession.loadSession(path);
+							response.popView = true;
+						}
+					}
+						break;
+					default:
+						this.setError('mmcmd:htmlBadAction', {action: action, path: this.getPath()});
+						break;
 				}
 			}
 
