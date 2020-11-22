@@ -3385,6 +3385,12 @@ class MMEvalJSFunction extends MMMultipleArgumentFunction {
 	}
 
 	value() {
+		// change disabled to false if you want to enable evaljs and understand the risks
+		const disabled = true;
+		if (disabled) {
+			this.formula.setError('mmcmd:evaljsDisabled');
+			return;
+		}
 		const makeValue = (element, rowCount, columnCount) => {
 			const values = element.values;
 			const unitName = element.unit;
