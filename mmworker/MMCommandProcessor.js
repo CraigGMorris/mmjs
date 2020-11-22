@@ -140,7 +140,9 @@ class MMCommandProcessor {
 		command.verb = verb;
 		command.args = terms[1];
 
+		this.currentCommand = command;
 		await subject.performCommand(command);
+		this.currentCommand = null;
 		return true;
 	}
 
@@ -416,8 +418,8 @@ class MMCommandProcessor {
 	 */
 	setError(key, args, child) {
 		// ignore if error already set so first error is reported
-		if (this.command && !this.command.error) {
-			this.command.error = this.t(key, args, child);
+		if (this.processor.currentCommand && !this.processor.currentCommand.error) {
+			this.processor.currentCommand.error = this.t(key, args, child);
 		}
 	}
 
