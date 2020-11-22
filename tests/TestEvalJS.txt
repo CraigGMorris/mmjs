@@ -1,0 +1,361 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [],
+	"CaseName": "TestEvalJS",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "errorCount",
+	"ModelPath": "/.root",
+	"RootModel": {
+		"name": "root",
+		"Notes": "",
+		"DiagramX": 0,
+		"DiagramY": 0,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "x1",
+				"Notes": "",
+				"DiagramX": -100,
+				"DiagramY": 25,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "1:3"
+				}
+			},
+			{
+				"name": "arrayObj",
+				"Notes": "",
+				"DiagramX": -100,
+				"DiagramY": 75,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{evaljs \"\nreturn [{\n\t\tname: 'Name',\n\t\tunit: 'string',\n\t\tvalues: ['Tom', 'Dick', 'Harry']\n\t},\n\t{\n\t\tname: 'Length',\n\t\tunit: 'ft',\n\t\tvalues: [1,2,3]\n\t}];\n\"}"
+				},
+				"tableUnits": {}
+			},
+			{
+				"name": "arrayN",
+				"Notes": "",
+				"DiagramX": -100,
+				"DiagramY": 50,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{evaljs \"\nconst v = mm_args[0].values;\nreturn v;\",\n\tx1\n}"
+				}
+			},
+			{
+				"name": "arrayObj2",
+				"Notes": "",
+				"DiagramX": -100,
+				"DiagramY": 100,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{evaljs \"\nconst input = mm_args[0];\nconst out = [];\nfor (let x of input.values) {\n\tout.push(x*2);\n}\nreturn [{\n\t\tname: 'Name',\n\t\tunit: 'string',\n\t\tvalues: ['Tom', 'Dick', 'Harry']\n\t},\n\t{\n\t\tname: 'Length',\n\t\tunit: 'ft',\n\t\tvalues: out\n\t}];\n\", x1\n}"
+				},
+				"tableUnits": {}
+			},
+			{
+				"name": "object",
+				"Notes": "",
+				"DiagramX": -100,
+				"DiagramY": 125,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{evaljs \"\nconst input = mm_args[0];\nconst out = [];\nfor (let x of input.values) {\n\tout.push(x*2);\n}\nreturn {\n\tcolumns: 3,\n\tunit: 'ft',\n\tvalues: out\n\t};\n\", x1 * {tr 1:4}}"
+				},
+				"displayUnit": "ft"
+			},
+			{
+				"name": "jsSArrayCode",
+				"DiagramX": -100,
+				"DiagramY": 200,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "'return [\"one\", \"two\", \"three\"];"
+				}
+			},
+			{
+				"name": "jsTableCode",
+				"DiagramX": -100,
+				"DiagramY": 250,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "'return [\n\t{\n\t\tname: \"First\",\n\t\tunit: \"string\",\n\t\tvalues: [ \"one\", \"two\", \"three\"]\n\t},\n\t{\n\t\tname: \"Second\",\n\t\tunit: \"ft/s\",\n\t\tvalues: [ 1, 2, 3]\n\t}\n]"
+				}
+			},
+			{
+				"name": "jsStringCode",
+				"DiagramX": -100,
+				"DiagramY": 300,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "'const v = {\tunit: \"string\",\n\tcolumns: 3,\n\tvalues: [\"one\", \"two\", \"three\", \"four\", \"five\", \"six\"]\n};\nreturn v;"
+				}
+			},
+			{
+				"name": "jsNumericCode",
+				"DiagramX": -100,
+				"DiagramY": 350,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "'\nconst v = {\tunit: \"mph\",\n\tcolumns: 3,\n\tvalues: [50, 60, 70, 80, 90, 100]\n};\nreturn v"
+				}
+			},
+			{
+				"name": "jsNumber",
+				"DiagramX": -100,
+				"DiagramY": 150,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{evaljs \"return Math.pow(2,8);\"}"
+				}
+			},
+			{
+				"name": "jsNArray",
+				"DiagramX": -100,
+				"DiagramY": 175,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{evaljs \"return [1, 2, 3];\"}"
+				}
+			},
+			{
+				"name": "jsSArray",
+				"DiagramX": -100,
+				"DiagramY": 225,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{evaljs jsSArrayCode}"
+				}
+			},
+			{
+				"name": "jsTable",
+				"DiagramX": -100,
+				"DiagramY": 275,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{evaljs jsTableCode}"
+				}
+			},
+			{
+				"name": "jsStringObject",
+				"DiagramX": -100,
+				"DiagramY": 325,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{evaljs jsStringCode}"
+				}
+			},
+			{
+				"name": "jsNumberObject",
+				"DiagramX": -100,
+				"DiagramY": 375,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{evaljs jsNumericCode}"
+				},
+				"displayUnit": "mph"
+			},
+			{
+				"name": "ArrayObjError",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 75,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc\n\t{ne arrayObj.Name,\n\t\texpectedTable.Name\n\t},\n\t{ne arrayObj.Length,\n\t\texpectedTable.Length\n\t}\t\n}"
+				}
+			},
+			{
+				"name": "expectedTable",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 50,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{table {cc \"Name\", \"length\"},\n\t{cc\n\t\t\"Tom\",\n\t\t\"Dick\",\n\t\t\"Harry\"\n\t},\n\t{cc 1,2,3} * 1 ft\n}"
+				},
+				"tableUnits": {
+					"2": "ft"
+				}
+			},
+			{
+				"name": "objectError",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 125,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{ne object,\n\t2 ft *\n\t{redim\n\t\tx1 * {tr 1:4},\n\t\t3\n\t}\n}"
+				}
+			},
+			{
+				"name": "jsNumberError",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 150,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{ne jsNumber, 256}"
+				}
+			},
+			{
+				"name": "jsArrayError",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 175,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{ne jsNArray, {cc 1,2,3}}"
+				}
+			},
+			{
+				"name": "arrayNError",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 25,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{ne arrayN, {cc 1,2,3}}"
+				}
+			},
+			{
+				"name": "jsSArrayError",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 225,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{ne jsSArray,\n\t{cc \"one\",\"two\",\"three\"}\n}"
+				}
+			},
+			{
+				"name": "expectedJsTable",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 250,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{table {cc\n\t\t\"First\", \"Second\"\n\t},\n\t{cc\n\t\t\"one\",\n\t\t\"two\",\n\t\t\"three\"\n\t},\n\t{cc 1,2,3} * 1 \"ft/s\"\n}"
+				},
+				"tableUnits": {
+					"2": "ft/s"
+				}
+			},
+			{
+				"name": "jsTableError",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 275,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc\n\t{ne jsTable.First,\n\t\texpectedJsTable.First\n\t},\n\t{ne jsTable.Second,\n\t\texpectedJSTable.Second\n\t}\t\n}"
+				}
+			},
+			{
+				"name": "jsSObjectError",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 325,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{ne jsStringObject,\n\t{redim\n\t\t{cc\n\t\t\t\"one\",\n\t\t\t\"two\",\n\t\t\t\"three\",\n\t\t\t\"four\",\n\t\t\t\"five\",\n\t\t\t\"six\"\n\t\t},\n\t\t3\n\t}\n}"
+				}
+			},
+			{
+				"name": "jsNObjectError",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 350,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{ne jsNumberObject,\n\t{redim\n\t\t1 mph * {cc\n\t\t\t50, 60, 70,\n\t\t\t80, 90, 100\n\t\t}, 3\n\t}\n}"
+				}
+			},
+			{
+				"name": "errorCount",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 375,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{sum {cc\n\tarrayNError,\n\tarrayObjError,\n\tarrayObj2Error,\n\tobjectError,\n\tjsNumberError,\n\tjsArrayError,\n\tjsSArrayError,\n\tjsTableError,\n\tjsSObjectError,\n\tjsNObjectError\n}}"
+				},
+				"isOutput": "y"
+			},
+			{
+				"name": "ArrayObj2Error",
+				"Notes": "",
+				"DiagramX": -15,
+				"DiagramY": 100,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc\n\t{ne arrayObj2.Name,\n\t\texpectedTable.Name\n\t},\n\t{ne arrayObj2.Length,\n\t\texpectedTable.Length * 2\n\t}\t\n}"
+				}
+			}
+		]
+	}
+}

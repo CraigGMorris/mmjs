@@ -1,0 +1,94 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [],
+	"CaseName": "fetch",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "",
+	"ModelPath": "/.root",
+	"RootModel": {
+		"name": "root",
+		"Notes": "",
+		"DiagramX": 0,
+		"DiagramY": 0,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "baseUrl",
+				"DiagramX": -125,
+				"DiagramY": -15,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "'http://localhost:5984/"
+				}
+			},
+			{
+				"name": "wget",
+				"Notes": "",
+				"DiagramX": -50,
+				"DiagramY": 45,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{wfetch \"GET\", baseUrl + \"/mmtest/Test_1\"}"
+				}
+			},
+			{
+				"name": "putJson",
+				"Notes": "",
+				"DiagramX": -125,
+				"DiagramY": 75,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "'{\"msg\": \"test from put\"}"
+				}
+			},
+			{
+				"name": "put",
+				"Notes": "",
+				"DiagramX": -50,
+				"DiagramY": 75,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{wfetch\n\t\"PUT\",\n\tbaseUrl +\n\t\t\"mmtest/Test_\" +\n\t\t{fmt\n\t\t\t\"%.6f\",\n\t\t\t{date {now}}\n\t\t},\n\t{cc\n\t\t\"Content-Type\",\n\t\t\"application/json\",\n\t\t\"Accept\",\n\t\t\"application/json\"\n\t},\n\tputJson\n}"
+				}
+			},
+			{
+				"name": "logout",
+				"Notes": "",
+				"DiagramX": -50,
+				"DiagramY": 15,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{wfetch\n\t\"DELETE\",\n\t baseUrl + \"_session\",\n\t{cc\n\t\t\"Content-Type\",\n\t\t\"application/json; charset=utf-8\"\n\t}\n}"
+				}
+			},
+			{
+				"name": "login",
+				"DiagramX": -50,
+				"DiagramY": -15,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{wfetch\n\t\"POST\",\n\t baseUrl + \"_session\",\n\t{cc\n\t\t\"Content-Type\",\n\t\t\"application/x-www-form-urlencoded\"\n\t},\n\t\"name=mm&password=mmjs\"\n}"
+				}
+			}
+		]
+	}
+}
