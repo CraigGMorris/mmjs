@@ -798,7 +798,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					className: 'info-tools__button',
 					disabled: viewKeys.has('sessions'),
 					onClick: () => {
-						pushView('sessions', 'react:sessionsTitle');
+						pushView('sessions', 'react:sessionsTitle', {rootFolder: ''});
 					}
 				},
 				t('react:dgmButtonSessions')

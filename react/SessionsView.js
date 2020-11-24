@@ -10,12 +10,23 @@ const e = React.createElement;
 export class SessionsView extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {menuPath: ''};
+		this.state = {
+			menuPath: '',
+			currentFolder: null
+		};
 	}
 
 	componentDidMount() {
 		this.props.actions.setUpdateCommands(this.props.viewInfo.stackIndex,
 			`/ listsessions`);
+	}
+
+	componentDidUpdate() {
+		// when pushing a folder view, update commands needs to be set as componentDidMount isn't called
+		if (this.props.viewInfo.updateCommands !== '/ listsessions') {
+			this.props.actions.setUpdateCommands(this.props.viewInfo.stackIndex,
+				`/ listsessions`);	
+		}
 	}
 
 	render() {
@@ -140,6 +151,7 @@ export class SessionsView extends React.Component {
 
 		let sections = [];
 		if (this.state.menuPath) {
+			const isFolder = this.state.menuPath.endsWith('/');
 			sections.push(e(
 				'div', {
 					id: 'sessions__menu-title',
@@ -159,61 +171,65 @@ export class SessionsView extends React.Component {
 				},
 				t('react:cancel')
 			));
-			sections.push(e(
-				'button', {
-					id: 'sessions__menu-copy',
-					key: 'menu-copy',
-					className: 'sessions__menu-button',
-					onClick: () => {
-						copySession(this.state.menuPath);
+
+			if (!isFolder) {
+				// folder actions aren't implemented yet
+				sections.push(e(
+					'button', {
+						id: 'sessions__menu-rename',
+						key: 'menu-rename',
+						className: 'sessions__menu-button',
+						onClick: () => {
+							renameSession(this.state.menuPath);
+						},
 					},
-				},
-				t('react:sessionsDuplicateButton')
-			));
-			sections.push(e(
-				'button', {
-					id: 'sessions__menu-clip',
-					key: 'menu-clip',
-					className: 'sessions__menu-button',
-					onClick: () => {
-						clipSession(this.state.menuPath);
+					t('react:sessionsRenameButton')
+				));
+				sections.push(e(
+					'button', {
+						id: 'sessions__menu-delete',
+						key: 'menu-delete',
+						className: 'sessions__menu-button',
+						onClick: () => {
+							deleteSession(this.state.menuPath);
+						},
 					},
-				},
-				t('react:sessionsClipButton')
-			));
-			sections.push(e(
-				'button', {
-					id: 'sessions__menu-rename',
-					key: 'menu-rename',
-					className: 'sessions__menu-button',
-					onClick: () => {
-						renameSession(this.state.menuPath);
+					t('react:sessionsDeleteButton')
+				));
+					sections.push(e(
+					'button', {
+						id: 'sessions__menu-copy',
+						key: 'menu-copy',
+						className: 'sessions__menu-button',
+						onClick: () => {
+							copySession(this.state.menuPath);
+						},
 					},
-				},
-				t('react:sessionsRenameButton')
-			));
-			sections.push(e(
-				'button', {
-					id: 'sessions__menu-export',
-					key: 'menu-export',
-					className: 'sessions__menu-button',
-					onClick: async () => {
-						exportSession(this.state.menuPath);			
+					t('react:sessionsDuplicateButton')
+				));
+				sections.push(e(
+					'button', {
+						id: 'sessions__menu-clip',
+						key: 'menu-clip',
+						className: 'sessions__menu-button',
+						onClick: () => {
+							clipSession(this.state.menuPath);
+						},
 					},
-				},
-				t('react:sessionsExportButton'),
-			));
-			sections.push(e(
-				'button', {
-					id: 'sessions__menu-delete',
-					key: 'menu-delete',
-					className: 'sessions__menu-button',
-					onClick: () => {
-						deleteSession(this.state.menuPath);
+					t('react:sessionsClipButton')
+				));
+				sections.push(e(
+					'button', {
+						id: 'sessions__menu-export',
+						key: 'menu-export',
+						className: 'sessions__menu-button',
+						onClick: async () => {
+							exportSession(this.state.menuPath);			
+						},
 					},
-				},
-				t('react:sessionsDeleteButton')
-			));
+					t('react:sessionsExportButton'),
+				));
+			}
 
 			return e(
 				'div', {
@@ -314,8 +330,83 @@ export class SessionsView extends React.Component {
 				alert('sessionPaths undefined in SessionsView');
 				sessionPaths = [];
 			}
+			if (sessionPaths.length === 0 && this.props.viewInfo.sessionPaths) {
+				sessionPaths = this.props.viewInfo.sessionPaths;
+			}
+
+			const foundFolders = new Set();
+			const rootFolder = this.props.viewInfo.rootFolder;
+			const regex = new RegExp('^' + rootFolder + '.*?/');
 			for (let path of sessionPaths) {
-				if (!path.startsWith('(')) {  // skip (autosave) and perhaps others
+				let showPath = path.startsWith(rootFolder);
+				if (path.startsWith('(')) {  // skip (autosave) and perhaps others
+					showPath = false;
+				}
+				else {
+					// check for folders
+					const match = path.match(regex);
+					if (match) {
+						if (path.startsWith(rootFolder)) {
+							path = match[0];
+							// has folder already been found?
+							let found = false;
+							for (let folder of foundFolders) {
+								if (path.startsWith(folder)) {
+									found = true;
+									break
+								}
+							}
+							if (!found) {
+								// add a folder entry
+								foundFolders.add(path);
+								// hide the normal entry and add a folder one
+								showPath = false;
+								let cmp = e(
+									'div', {
+										className: 'sessions__entry',
+										key: key++,
+									},
+									e(
+										'div', {
+											className: 'sessions__folder-name',
+											value: path,
+											onClick: () => {
+												this.props.actions.pushView('sessions', path, {
+													rootFolder: path,
+													sessionPaths: sessionPaths
+												})
+											},
+										},
+										path
+									),
+									// commented out menu button - haven't implemented the actions for a folder
+									// each indivual file can be changed though
+								// 	e(
+								// 		'div', {
+								// 			className: 'sessions__entry-menu',
+								// 			value: path,
+								// 			onClick: e => {
+								// 				let path = e.target.getAttribute('value');
+								// 				this.setState({menuPath: path});
+								// 			}
+								// 		},
+								// 		'\u2699'
+								// 	)
+								)
+								sessionList.push(cmp);
+							}
+							else {
+								// hide other folder sessions
+								showPath = false;
+							}
+						}
+						else {
+							showPath = false;
+						}
+					}
+				}
+
+				if (showPath) {
 					let selectedClass = (path === currentPath) ? ' entry--selected' : '';
 					let cmp = e(
 						'div', {
@@ -363,26 +454,3 @@ export class SessionsView extends React.Component {
 		}
 	}
 }
-/* 
-const fileDownloadButton = document.getElementById('save');
-function localStorageToFile() {
-    const csv = JSON.stringify(localStorage['autosave']);
-    const csvAsBlob = new Blob([csv], {type: 'text/plain'});
-    const fileNameToSaveAs = 'local-storage.txt';
-    const downloadLink = document.getElementById('save');
-    downloadLink.download = fileNameToSaveAs;
-    if (window.URL !== null) {
-        // Chrome allows the link to be clicked without actually adding it to the DOM
-        downloadLink.href = window.URL.createObjectURL(csvAsBlob);
-        downloadLink.target = `_blank`;
-    } else {
-        downloadLink.href = window.URL.createObjectURL(csvAsBlob);
-        downloadLink.target = `_blank`;
-        downloadLink.style.display = 'none';
-        // add .download so works in Firefox desktop.
-        document.body.appendChild(downloadLink.download);
-    }
-    downloadLink.click();
-}
-// file download button event listener
-fileDownloadButton.addEventListener('click', localStorageToFile);       */
