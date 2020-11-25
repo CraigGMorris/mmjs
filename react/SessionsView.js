@@ -133,6 +133,7 @@ export class SessionsView extends React.Component {
 		}
 
 		let exportSession = async path => {
+			path = path.split('/').pop();
 			await this.props.actions.doCommand(
 				`/ getjson ${path}`,
 				(results) => {
@@ -312,7 +313,7 @@ export class SessionsView extends React.Component {
 										const json = results[0].results;
 										const blob = new Blob([json], {type : "text/plain"});
 										const link = document.createElement('a');
-										link.download = currentPath;
+										link.download = currentPath.split('/').pop();
 										link.href = URL.createObjectURL(blob);
 										link.click();
 										URL.revokeObjectURL(link.href);
