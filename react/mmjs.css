@@ -401,7 +401,7 @@ a:hover {
 
 #expression__string-text {
 	width: 100%;
-	height: 100%;
+	height: calc(var(--info-height) - calc(var(--input--height) * 2));
 }
 
 #expression__units {
