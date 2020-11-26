@@ -374,6 +374,7 @@ class MMSession extends MMCommandParent {
 			let result = await this.storage.load(path);
 			new MMUnitSystem(this);  // clear any user units and sets
 			this.initializeFromJson(result, path);
+			this.storePath = path;
 			return result;
 		}
 		catch(e) {
@@ -400,6 +401,7 @@ class MMSession extends MMCommandParent {
 				if (result) {
 					new MMUnitSystem(this);  // clear any user units and sets
 					this.initializeFromJson(result);
+					this.storePath = lastPath;
 				}
 				return result;
 			}

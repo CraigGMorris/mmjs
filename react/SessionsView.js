@@ -420,7 +420,7 @@ export class SessionsView extends React.Component {
 								value: path,
 								onClick: loadSession,
 							},
-							path
+							path.substring(rootFolder.length)
 						),
 						e(
 							'div', {
