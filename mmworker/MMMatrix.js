@@ -744,9 +744,6 @@ class MMMatrix extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
-		if (!description) {
-			return super.valueDescribedBy(description, requestor);
-		}
 		let rv = null;
 		const lcDescription = description ? description.toLowerCase() : '';
 		if (lcDescription === 'solved') {
