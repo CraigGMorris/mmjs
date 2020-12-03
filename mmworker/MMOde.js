@@ -558,10 +558,10 @@ class MMOde extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
-		const lcDescription = description.toLowerCase();
-		if (lcDescription.length === 0) {
+		if (!description) {
 			return super.valueDescribedBy(description, requestor);
 		}
+		const lcDescription = description.toLowerCase();
 		if (lcDescription === 'solved') {
 			if (this.isSolved) {
 				this.addRequestor(requestor);

@@ -227,7 +227,7 @@ class MMOptimizer extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
-		if (!description || description.length === 0) {
+		if (!description) {
 			return super.valueDescribedBy(description, requestor);
 		}
 

@@ -155,4 +155,18 @@ class MMToolValue extends MMValue {
 		}
 		return rv;
 	}
+	
+		/**
+	 * @method jsonValue
+	 * @override
+	 * @returns {Object} - representation of value using unit, suitable for conversion to json
+	 */
+	jsonValue() {
+		return {
+			t: 's',
+			v: this._values.map(t => t.name),
+			nr: this.rowCount,
+			nc: this.columnCount
+		}
+	}
 }

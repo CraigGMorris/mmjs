@@ -146,11 +146,11 @@ class MMHtmlPage extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
-		const lcDescription = description.toLowerCase();
-		let value = null;
-		if (lcDescription.length === 0) {
+		if (!description) {
 			return super.valueDescribedBy(description, requestor);
 		}
+		const lcDescription = description.toLowerCase();
+		let value = null;
 		if (lcDescription === 'html') {
 			if (!this.processedHtml) {
 				this.htmlForRequestor(requestor);

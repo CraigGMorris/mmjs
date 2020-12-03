@@ -244,7 +244,7 @@ class MMSession extends MMCommandParent {
 	 * @param {string} json 
 	 * @param {string} storePath - default storage location
 	 */
-	initializeFromJson(json, storePath) {
+	async initializeFromJson(json, storePath) {
 		let saveObject;
 		try {
 			saveObject = JSON.parse(json);
@@ -264,16 +264,16 @@ class MMSession extends MMCommandParent {
 		}
 
 		let rootModel = MMToolTypes['Model'].factory('root', this);
-		rootModel.initFromSaved(saveObject.RootModel);
+		if (storePath) {
+			this.storePath = storePath;
+		}
+		await rootModel.initFromSaved(saveObject.RootModel);
 
 		this.nextToolLocation = this.unknownPosition;
 		this.rootModel = rootModel;
 		this.currentModel = rootModel;
 		this.modelStack = [rootModel];
-		if (storePath) {
-			this.storePath = storePath;
-		}
-		else if (saveObject.CaseName) {
+		if (!storePath) {
 			this.storePath = saveObject.CaseName;
 		}
 		this.processor.defaultObject = rootModel;
@@ -373,7 +373,7 @@ class MMSession extends MMCommandParent {
 			this.isLoadingCase = true;
 			let result = await this.storage.load(path);
 			new MMUnitSystem(this);  // clear any user units and sets
-			this.initializeFromJson(result, path);
+			await this.initializeFromJson(result, path);
 			this.storePath = path;
 			return result;
 		}
@@ -383,7 +383,6 @@ class MMSession extends MMCommandParent {
 		}
 		finally {
 			this.isLoadingCase = false;
-			await this.autoSaveSession();
 			await this.saveLastSessionPath()
 		}
 	}
@@ -400,7 +399,7 @@ class MMSession extends MMCommandParent {
 				let result = await this.storage.load(lastPath);
 				if (result) {
 					new MMUnitSystem(this);  // clear any user units and sets
-					this.initializeFromJson(result);
+					await this.initializeFromJson(result, lastPath);
 					this.storePath = lastPath;
 				}
 				return result;
@@ -687,7 +686,7 @@ class MMSession extends MMCommandParent {
 	async importCommand(command) {
 		try {
 			new MMUnitSystem(this);  // clear any user units and sets
-			this.initializeFromJson(command.args);
+			await this.initializeFromJson(command.args);
 			command.results = this.storePath;
 		}
 		catch(e) {

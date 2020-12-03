@@ -439,6 +439,7 @@ class MMSolver extends MMTool {
 						const func = this.functions[0];
 						func.outputs[0] = x;
 						const fx = this.valueDescribedBy('f1');
+						console.log(`x ${x} fx ${fx}`);
 						if (fx instanceof MMNumberValue) {
 							return fx.values[0];
 						}
@@ -544,10 +545,10 @@ class MMSolver extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
-		const lcDescription = description.toLowerCase();
-		if (lcDescription.length === 0 || this.functions.length === 0) {
+		if (!description || this.functions.length === 0) {
 			return super.valueDescribedBy(description, requestor);
 		}
+		const lcDescription = description.toLowerCase();
 		if (lcDescription === 'solved') {
 			if (this.isConverged && this.isEnabled && !this.isInError) {
 				this.addRequestor(requestor);

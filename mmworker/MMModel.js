@@ -9,6 +9,43 @@
 */
 
 /**
+ * @class MMImportModelInfo - information about imported models
+ * @member {String} sessionName
+ * @member {Array} inputFormulas
+ */
+class MMImportModelInfo {
+	/**
+	 * @constructor
+	 * @param {string} sessionName 
+	 */
+	constructor(sessionName) {
+		this.sessionName = sessionName;
+		this.inputFormulas = null;
+	}
+
+	/**
+	 * @method saveObject
+	 * @returns {Object} object that can be converted to json for save file
+	 */
+	saveObject() {
+		const o = {'name': this.sessionName}
+		if (this.inputFormulas) {
+			o.inputs = this.inputFormulas;
+		}
+		return o;
+	}
+
+	/**
+	 * @method initFromSaved - initialize from stored object
+	 * @param {Object} saved 
+	 */
+	initFromSaved(saved) {
+		this.sessionName = saved.name;
+		this.inputFormulas = saved.inputs;
+	}
+}
+
+/**
  * @class MMModel - Math Minion tool contaioner
  * @extends MMTool
  * @member {Number} nextToolNumber
@@ -36,6 +73,9 @@ class MMModel extends MMTool {
 		verbs['setpositions'] = this.setPositions;
 		verbs['copytool'] = this.copyToolCommand;
 		verbs['paste'] = this.pasteCommand;
+		verbs['import'] = this.importCommand;
+		verbs['makelocal'] = this.makeLocalCommand;
+		verbs['restoreimport'] = this.restoreImportCommand;
 
 		return verbs;
 	}
@@ -53,7 +93,10 @@ class MMModel extends MMTool {
 			dgminfo: 'mmcmd:?modelDgmInfo',
 			setpositions: 'mmcmd:?modelSetPositions',
 			copytool: 'mmcmd:?modelCopyTool',
-			paste: 'mmcmd:?modelPaste'
+			paste: 'mmcmd:?modelPaste',
+			import: 'mmcmd:?modelImport',
+			makelocal: 'mmcmd:?modelMakeLocal',
+			restoreimport: 'mmcmd:?modelRestoreImport'
 		}[command];
 		if (key) {
 			return key;
@@ -134,6 +177,11 @@ class MMModel extends MMTool {
 				name = `x${this.nextToolNumber++}`;
 			}	
 		}
+		let isImport = false;
+		if (typeName === 'Import') {
+			typeName = 'Model';
+			isImport = true;
+		}
 		let toolType = MMToolTypes[typeName];
 		if(!toolType) {
 			throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: typeName}));
@@ -162,6 +210,9 @@ class MMModel extends MMTool {
 				else {
 					newTool.position = {x: 10, y: maxY + 30};
 				}
+			}
+			if (isImport) {
+				newTool.importInfo = new MMImportModelInfo('');
 			}
 			command.results = name;
 			command.undo = this.getPath() + ' removetool ' + name;
@@ -402,23 +453,37 @@ class MMModel extends MMTool {
 	}
 
 	/**
+	 * @method inputExpressions
+	 * @returns {Array}
+	 * returns the contained expressions marked as inputs
+	 */
+	inputExpressions() {
+		const inputs = [];
+		for (const key in this.children) {
+			const tool = this.children[key];
+			if (tool instanceof MMExpression && tool.isInput) {
+				inputs.push(tool);
+			}
+		}
+		return inputs;
+	}
+
+	/**
 	 * @method inputSources
 	 * @override
 	 * @returns {Set} contains tools referenced by this tool
 	 */
 	inputSources() {
-		let sources = super.inputSources();
-		for (const key in this.children) {
-			const tool = this.children[key];
-			if (tool instanceof MMExpression && tool.isInput) {
-				tool.formula.addInputSourcesToSet(sources);
-			}
+		const sources = super.inputSources();
+		const inputs = this.inputExpressions();
+		for (const exp of inputs) {
+			exp.formula.addInputSourcesToSet(sources);
 		}
 		return sources;
 	}
 
 	/**
-	 * @method diagramInfo
+	 * @method diagramInfoCommand
 	 * @param {MMCommand} command
 	 * command.results contains the info needed for model diagram
 	 */
@@ -459,13 +524,21 @@ class MMModel extends MMTool {
 					}
 				}
 			}
+			if (tool instanceof MMModel && tool.importInfo != null) {
+				toolInfo.import = tool.importInfo.sessionName;
+			}
+
 			tools[tool.name] = toolInfo;
 		}
 
-		return {
+		const info = {
 			path: this.getPath(),
 			tools: tools,
 		};
+		if (this.importInfo) {
+			info.import = this.importInfo.sessionName;
+		}
+		return info;
 	}
 
 	/**
@@ -473,29 +546,66 @@ class MMModel extends MMTool {
 	 * @returns {Object} object that can be converted to json for save file
 	 */
 	saveObject() {
-		let tools = [];
-		for (const key in this.children) {
-			const tool = this.children[key];
-			let saveTool = tool.saveObject();
-			tools.push(saveTool);
+		const o = super.saveObject();
+		o.Type = 'Model';
+		o.diagramScale = 1;	// need to fix this - get from interface?
+
+		if (this.importInfo) {
+			this.determineImportInputFormulas();
+			o.import = this.importInfo.saveObject();
+		}
+		else {
+			let tools = [];
+			for (const key in this.children) {
+				const tool = this.children[key];
+				let saveTool = tool.saveObject();
+				tools.push(saveTool);
+			}
+			o.Objects = tools;
 		}
 
-		return Object.assign({}, super.saveObject(), {
-			Type: 'Model',
-			diagramScale: 1,  // need to fix this - get from interface
-			Objects: tools
-		});
+		return o;
 	}
 
 	/**
 	 * @method initFromSaved - initialize from stored object
 	 * @param {Object} saved 
 	 */
-	initFromSaved(saved) {
+	async initFromSaved(saved) {
 		super.initFromSaved(saved);
+		if (saved.Objects) {
+			this.constructToolsFromSaved(saved.Objects);
+		}
+		else {
+			if (saved.import) {
+				const importInfo = new MMImportModelInfo();
+				importInfo.initFromSaved(saved.import);
+				// check for recursion
+				let parent = this.parent;
+				const lcImportName = theMMSession.storePath + '/' + importInfo.sessionName.toLowerCase();
+				let alreadyImported = lcImportName === theMMSession.storePath.toLowerCase();
+				while (parent) {
+					if (parent.importInfo && parent.importInfo.sessionName.toLowerCase() === lcImportName) {
+						alreadyImported = true;
+						this.setError('mmcmd:modelRecursiveImport', {importName: importInfo.sessionName, path: this.getPath()});
+						break;
+					}
+					parent = parent.parent;
+				}
+				if (!alreadyImported) {
+					await this.setImportInfo(importInfo);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @method constructToolsFromSaved
+	 * @param {Object} savedTools
+	 */
+	constructToolsFromSaved(savedTools) {
 		theMMSession.pushModel(this);
-		let tools = saved.Objects;
-		for (let tool of tools) {
+		for (let tool of savedTools) {
 			const name = tool.name;
 			const typeName = tool.Type
 				.replace('ODE Solver', 'Ode')
@@ -564,7 +674,7 @@ class MMModel extends MMTool {
 				others.push({
 					name: tool.name,
 					type: tool.typeName,				
-				})
+				});
 			}
 		}
 
@@ -592,6 +702,9 @@ class MMModel extends MMTool {
 		results.inputs = inputs.sort(positionSort);
 		results.outputs = outputs.sort(positionSort);
 		results.others = others.sort(positionSort);
+		if (this.importInfo) {
+			results.importSource = this.importInfo.sessionName;
+		}
 	}
 
 	/**
@@ -626,27 +739,28 @@ class MMModel extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
+		if (!description) {
+			return super.valueDescribedBy(description, requestor);
+		}
 		let value;
-		if (description) {
-			if (description.length === 0) {
-				return MMToolValue.scalarValue(this);
-			}
-			let toolName = description.split('.', 1);
-			let restOfPath;
-			if (toolName.length === 2) {
-				[toolName, restOfPath] = toolName;
-			}
-			else {
-				toolName = toolName[0];
-			}
-			toolName = toolName.toLowerCase();
-			const tool = this.children[toolName];
-			if (tool) {
-				value = tool.valueDescribedBy(restOfPath, requestor);
-			}
-			else {
-				value = super.valueDescribedBy(description, requestor);
-			}
+		if (description.length === 0) {
+			return MMToolValue.scalarValue(this);
+		}
+		let toolName = description.split('.', 1);
+		let restOfPath;
+		if (toolName.length === 2) {
+			[toolName, restOfPath] = toolName;
+		}
+		else {
+			toolName = toolName[0];
+		}
+		toolName = toolName.toLowerCase();
+		const tool = this.children[toolName];
+		if (tool) {
+			value = tool.valueDescribedBy(restOfPath, requestor);
+		}
+		else {
+			value = super.valueDescribedBy(description, requestor);
 		}
 		return value;
 	}
@@ -658,6 +772,168 @@ class MMModel extends MMTool {
 		super.forgetAllCalculations();
 		for(let key in this.children) {
 			this.children[key].forgetAllCalculations();
+		}
+	}
+
+	/**
+	 * @method makeImportUndo
+	 * @returns {String} undo command
+	 * makes an undo command for import
+	 */
+	makeImportUndo() {
+		const savedImport = this.importInfo ? this.importInfo.saveObject() : null;
+		if (savedImport) {
+			return `__blob__${this.getPath()} restoreimport__blob__${JSON.stringify(savedImport)}`;
+		}
+		else {
+			return `${this.getPath()} makelocal`;
+		}
+	}
+
+	/**
+	 * @method importCommand
+	 * @param {MMCommand} command
+	 * command.results equal importInfo
+	 */
+	async importCommand(command) {
+		const undoCommand = this.makeImportUndo();
+		const importInfo = new MMImportModelInfo(command.args);
+		await this.setImportInfo(importInfo);
+		command.undo = undoCommand;
+		command.results = this.importInfo;
+	}
+
+	/**
+	 * @method makeLocalCommand
+	 * @param {MMCommand} command
+	 * command.results equal importInfo
+	 */
+	async makeLocalCommand(command) {
+		if (this.importInfo) {
+			command.undo = this.makeImportUndo();
+			command.results = this.importInfo;
+			this.importInfo = null;
+			}
+	}
+
+	/**
+	 * @method restoreImportCommand
+	 * @param {MMCommand} command
+	 * command.args should be the undo json
+	 * in the form __blob__/.x restoreimport__blob__ followed by the json text
+	 * if importInfo previously existed, or just restoremport if none did
+	 */
+	async restoreImportCommand(command) {
+		if (command.args) {
+			const undoCommand = this.makeImportUndo();
+			const restoreInfo = JSON.parse(command.args);
+			const importToRestore = new MMImportModelInfo();
+			importToRestore.initFromSaved(restoreInfo);
+			await this.setImportInfo(importToRestore);
+			command.undo = undoCommand;
+			command.results = importToRestore;
+		}
+	}
+
+	/**
+	 * @method determineImportInputFormulas
+	 */
+	determineImportInputFormulas() {
+		const formulas = {};
+		const inputs = this.inputExpressions();
+		for (const exp of inputs) {
+			if (exp.formula.formula )
+				formulas[exp.name] = exp.formula.formula;
+		}
+		this.importInfo.inputFormulas = formulas;	
+	}
+
+	async setImportInfo(importInfo) {
+		if (importInfo === null) { // make it local
+			this.importInfo = importInfo;
+			return;
+		}	
+	
+		if (!this.parent || this.importInfo == importInfo) {
+			return;  // can't set on root
+		}
+
+		if (Object.keys(this.children).length && importInfo.inputFormulas === null) {
+			// resetting source and no new input formulas - retain old
+			if (!this.importInfo ) {
+				this.importInfo = new MMImportModelInfo();
+			}
+			this.determineImportInputFormulas();
+			importInfo.inputFormulas = this.importInfo.inputFormulas;
+		}
+
+		const removeCurrentContents = () => {
+			// remove current contents
+			for (const name of Object.keys(this.children)) {
+				const tool = this.childNamed(name);
+				if (tool instanceof MMTool) {
+					try {
+						tool.forgetCalculated();
+					}
+					finally {
+						this.removeChildNamed(name);
+					}
+				}
+			}
+		}
+	
+		let importName = importInfo.sessionName;
+		if (!importName) {
+			removeCurrentContents();
+			this.importInfo = importInfo;
+			return;
+		}
+
+		// get the session from local storage
+		if (importName.startsWith('/')) {
+			// absolute path - just strip leading slash
+			importName = importName.substring(1);
+		}
+		else if (this.parent.importInfo ) {
+			const parentPath = this.parent.importInfo.sessionName.replace(/\/[^/]+$/,'/');
+			importName = parentPath + importName
+		}
+		else if (theMMSession.storePath.match(/\//) ){
+			// relative - prepend current session folder
+			importName = theMMSession.storePath.replace(/\/[^/]+$/,'/') + importName;
+		}
+		const savedJson = await theMMSession.storage.load(importName);
+		if (!savedJson) {
+			this.setError('mmcmd:sessionImportNotFound', {name: importName, path: this.getPath()});
+			return;
+		}
+
+		removeCurrentContents();
+
+		this.importInfo = importInfo;
+		try {
+			const savedCase = JSON.parse(savedJson)
+			const savedTools = savedCase.RootModel.Objects;
+			if (savedTools) {
+				this.constructToolsFromSaved(savedTools);
+				if (importInfo.inputFormulas) {
+					for (const expName of Object.keys(importInfo.inputFormulas)) {
+						const exp = this.childNamed(expName);
+						exp.formula.formula = importInfo.inputFormulas[expName];
+					}
+					importInfo.inputFormulas = null;
+				}
+			}
+		}
+		catch (e) {
+			this.setError('mmcmd:modelImportJsonError', {name: importName, path: this.getPath()});
+			let exprName = `x${this.nextToolNumber++}`;
+			while (this.childNamed(exprName)) {
+				exprName = `x${this.nextToolNumber++}`;
+			}	
+
+			const expr = new MMExpression(exprName, this);
+			expr.formula.formula = "'" + savedJson;
 		}
 	}
 }

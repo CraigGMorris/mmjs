@@ -107,6 +107,8 @@ export class Diagram extends React.Component {
 						selectedObject: modelInfo.selectedObject,
 					};
 
+					newState.import = modelInfo.import;
+
 					if (rescale) {
 						let maxX = -1.e6;
 						let maxY = -1.e6;
@@ -132,7 +134,8 @@ export class Diagram extends React.Component {
 								scale = 3.0;
 							}
 							newState['scale'] = scale;
-							newState['translate'] = {x: -minX + 30.0 / scale, y: -minY + 40.0 /scale};
+							const yOffset = modelInfo.import != null ? 100 : 40; 
+							newState['translate'] = {x: -minX + 30.0 / scale, y: -minY + yOffset /scale};
 						}
 					}
 					return newState;
@@ -874,6 +877,28 @@ export class Diagram extends React.Component {
 					})
 				);
 			}
+			if (this.state.import != null) {
+				textList.push(
+					e(
+						'text', {
+							className: 'diagram__import-warning',
+							key: 'import1',
+							x: 20,
+							y: 50,
+						},
+						this.props.t('react:dgmImportWarning1', {source: this.state.import})
+					),
+					e(
+						'text', {
+							className: 'diagram__import-warning',
+							key: 'import2',
+							x: 20,
+							y: 75,
+						},
+						this.props.t('react:dgmImportWarning2', {source: this.state.import})
+					)
+				);
+			}	
 		}
 
 		let contextMenu;
@@ -981,6 +1006,9 @@ export class Diagram extends React.Component {
 						this.props.actions.doCommand(`${this.state.path} addtool ${type} ${position.x} ${position.y}`, (results) => {
 							this.setState({showContext: null});
 							const toolName = results[0].results;
+							if (type === 'Import') {
+								type = 'Model';
+							}
 							if (type === 'Model') {
 								this.props.actions.pushModel(toolName);
 							}
@@ -1054,6 +1082,12 @@ export class Diagram extends React.Component {
 									text: this.props.t('mmcmd:htmlPageDisplayName'),
 									action: () => {
 										addTool('HtmlPage');
+									}
+								},
+								{
+									text: this.props.t('mmcmd:modelImportDisplayName'),
+									action: () => {
+										addTool('Import');
 									}
 								},
 							]
@@ -1153,26 +1187,6 @@ export class Diagram extends React.Component {
 					},
 					viewBox: viewBox,
 					onPointerDown: this.onPointerDown,
-					// onTouchStart: e => {
-					// e.preventDefault();
-					// e.stopPropagation();
-					// 	console.log('dgm touch start')
-					// },
-					// onTouchMove: e => {
-					// e.preventDefault();
-					// e.stopPropagation();
-					// 	console.log('dgm touch move')
-					// },
-					// 	onTouchEnd: e => {
-					// e.preventDefault();
-					// e.stopPropagation();
-					// 	console.log('dgm touch end')
-					// },		
-					// onTouchCancel: e => {
-					// e.preventDefault();
-					// e.stopPropagation();
-					// 	console.log('dgm touch cancel')
-					// },						
 				},
 				toolList,
 				connectList,
@@ -1354,7 +1368,7 @@ class ToolIcon extends React.Component {
 							fill: textColor,
 							stroke: textColor
 						}
-					}, info.formula.substring(0,30)
+					}, info.formula ? info.formula.substring(0,30) : ''
 				),
 				e(
 					'text', {
@@ -1375,6 +1389,7 @@ class ToolIcon extends React.Component {
 			);
 		}
 		else {
+			const typeName = info.import != null ? 'Imported' : info.toolTypeName;
 			textComponents = e(
 				'svg', {
 					className: 'diagram__text-components',
@@ -1398,7 +1413,7 @@ class ToolIcon extends React.Component {
 							stroke: toolTypeColor
 						}
 					},
-					info.toolTypeName + ':'
+					typeName + ':'
 				),
 				e(
 					'text', {

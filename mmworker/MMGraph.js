@@ -693,11 +693,10 @@ class MMGraph extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
-		const lcDescription = description.toLowerCase();
-		if (lcDescription.length === 0) {
+		if (!description) {
 			return super.valueDescribedBy(description, requestor);
 		}
-
+		const lcDescription = description.toLowerCase();
 		// convenience function to add requestor is return value is known
 		const returnValue = (v) => {
 			if (v) {

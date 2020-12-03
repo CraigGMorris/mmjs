@@ -3,6 +3,7 @@
 import {ToolView} from './ToolView.js';
 
 const e = React.createElement;
+const useState = React.useState;
 const useEffect = React.useEffect;
 
 /**
@@ -11,14 +12,22 @@ const useEffect = React.useEffect;
  */
 export function ModelView(props) {
 
+	const t = props.t;
+	const updateResults = props.viewInfo.updateResults;
+
+	const [importSource, setImportSource] = useState('');
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const t = props.t;
-	const updateResults = props.viewInfo.updateResults;
+	useEffect(() => {
+		if (updateResults && updateResults[0]) {
+			setImportSource(updateResults[0].results.importSource || '');
+		}
+	}, [updateResults]);
+
 	if (updateResults.error) {
 		// use empty command just to defer popView
 		props.actions.doCommand('', () => {
@@ -30,6 +39,50 @@ export function ModelView(props) {
 	const fields = [];
 	if (updateResults && updateResults.length) {
 		const results = updateResults[0].results;
+		if (results.importSource != null) {
+			fields.push(
+				e(
+					'div', {
+						id: 'model__import-source',
+						key: 'importSource'
+					},
+					e(
+						'div', {
+							id: 'model__import-label'
+						},
+						t('react:modelImportLabel')
+					),
+					e(
+						'button', {
+							id: 'model__import-makelocal',
+							onClick: () => {
+								props.actions.doCommand(`${results.path} makelocal`, () => {
+									props.actions.updateView(props.viewInfo.stackIndex);
+								})
+							},
+						},
+						t('react:modelMakeLocal')
+					),
+					e(
+						'input', {
+							id: 'model__import-input',
+							value: importSource,
+							onChange: (event) => {
+								setImportSource(event.target.value);
+							},
+							onKeyPress: (event) => {
+								// watches for Enter and sends command when it see it
+								if (event.key == 'Enter') {
+									props.actions.doCommand(`${results.path} import ${importSource}`, () => {
+										props.actions.updateView(props.viewInfo.stackIndex);
+									})
+								}
+							}
+						}
+					)
+				)
+			)
+		}
 		if (results.inputs.length) {
 			fields.push(
 				e(

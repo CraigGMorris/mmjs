@@ -1797,7 +1797,7 @@ class MMIfFunction extends MMFunctionOperator {
 
 	value() {
 		const condition = this.conditionArgument.value();
-		// if (condition instanceof MMNumberValue) {
+		if (condition) {
 			if (condition.valueCount === 1) {
 				if (condition.values[0]) {
 					return this.positiveArgument.value();
@@ -1820,6 +1820,7 @@ class MMIfFunction extends MMFunctionOperator {
 					return condition.ifStringThenElse(thenValue, elseValue);
 				}
 			}
+		}
 	}
 
 	/**

@@ -298,6 +298,11 @@ a:hover {
 	margin-right: 10px;
 }
 
+.diagram__import-warning {
+	fill: red;
+	stroke: red;
+}
+
 /* prevent diagram text being selected when moving icons on iOS */
 .diagram__text-components {
 	-webkit-touch-callout: none;
@@ -934,6 +939,31 @@ a:hover {
 	box-sizing: border-box;
 	overflow-y: auto;
 	height: calc(var(--info-height) - 33px);
+}
+
+#model__import-source {
+	display: grid;
+	grid-template-columns: 1fr 100px;
+	grid-template-rows: var(--input--height) var(--input--height);
+	grid-template-areas: "label makelocal"
+		"source source";
+	grid-gap: 5px;
+	padding: 5px 2px 5px 2px;
+	border-bottom: solid 2px;
+	border-top: solid 2px;
+	}
+
+#model__import-label {
+	grid-area: label;
+	padding-left: 5px;
+}
+
+#model__import-makelocal {
+	grid-area: makelocal;
+}
+
+#model__import-input {
+	grid-area: source
 }
 
 #model__inputs-title {
