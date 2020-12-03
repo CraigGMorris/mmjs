@@ -928,7 +928,10 @@ const MMMath = {
 			else
 				b += Math.abs( tol1 ) * (( xm < 0.0) ? -1.0 : 1.0 );
 			
-			fb = functionValue(b)
+			fb = functionValue(b);
+			if (fb == null) {
+				return;
+			}
 			const tNow = new Date().getTime();
 			if (tNow - tStart > 1000) {
 				setStatus('mmcmd:mathBrentIterating', {iter: iter, error: fb});
