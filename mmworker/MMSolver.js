@@ -439,7 +439,6 @@ class MMSolver extends MMTool {
 						const func = this.functions[0];
 						func.outputs[0] = x;
 						const fx = this.valueDescribedBy('f1');
-						console.log(`x ${x} fx ${fx}`);
 						if (fx instanceof MMNumberValue) {
 							return fx.values[0];
 						}
