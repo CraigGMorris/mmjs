@@ -2087,6 +2087,9 @@ class MMAppendFunction extends MMMultipleArgumentFunction {
 		let argCount = this.arguments.length;
 		while (argCount-- > 0) {
 			const obj = this.arguments[argCount].value();
+			if (!obj) {
+				return null;
+			}
 		
 			if (!first) {
 				first = obj;
