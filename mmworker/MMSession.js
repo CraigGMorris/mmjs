@@ -454,6 +454,9 @@ class MMSession extends MMCommandParent {
 		try {
 			await this.storage.copy(oldPath, newPath);
 			await this.storage.delete(oldPath);
+			if (this.storePath === oldPath) {
+				this.storePath = newPath;
+			}
 			return newPath;
 		}
 		catch(e) {
