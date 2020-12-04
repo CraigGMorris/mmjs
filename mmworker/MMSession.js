@@ -420,6 +420,10 @@ class MMSession extends MMCommandParent {
 	async deleteSession(path) {
 		try {
 			await this.storage.delete(path);
+			if (this.storePath === path) {
+				this.storePath = '(unnamed)';
+				await this.saveLastSessionPath()
+			}
 			return path;
 		}
 		catch(e) {
@@ -456,6 +460,7 @@ class MMSession extends MMCommandParent {
 			await this.storage.delete(oldPath);
 			if (this.storePath === oldPath) {
 				this.storePath = newPath;
+				await this.saveLastSessionPath();
 			}
 			return newPath;
 		}
