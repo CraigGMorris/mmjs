@@ -1884,6 +1884,9 @@ class MMOrFunction extends MMMultipleArgumentFunction {
 		const count = this.arguments.length;
 		const arg1 = this.arguments[count - 1];
 		const first = arg1.value();
+		if (first == null) {
+			return null;
+		}
 		const valueCount = first.valueCount;
 		
 		if (valueCount == 1) {
@@ -1975,6 +1978,9 @@ class MMAndFunction extends MMMultipleArgumentFunction {
 		const count = this.arguments.length;
 		const arg1 = this.arguments[count - 1];
 		const first = arg1.value();
+		if (first == null) {
+			return null;
+		}
 		const valueCount = first.valueCount;
 		
 		if (valueCount === 1) {
