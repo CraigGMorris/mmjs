@@ -104,8 +104,8 @@ export class SessionsView extends React.Component {
 		}
 
 		let renameSession = async (oldName) => {
-			let newName = prompt(t('react:sessionsRenamePrompt', {oldName: oldName}));
-			if (newName) {
+			let newName = prompt(t('react:sessionsRenamePrompt', {oldName: oldName}), oldName);
+			if (newName && newName !== oldName) {
 				if (sessionPaths.map(n => n.toLocaleLowerCase()).includes(newName.toLocaleLowerCase())) {
 					if (!confirm(t('react:sessionsRenameOverwrite', {oldName: oldName, newName: newName}))) {
 						return;
