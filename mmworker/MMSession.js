@@ -212,7 +212,7 @@ class MMSession extends MMCommandParent {
 		new MMUnitSystem(this);
 		this.storage = new MMSessionStorage();
 		this.savedLastPathId = '(lastPath)';
-		this.loadAutoSaved();
+		this.newSession();
 	}
 
 	/** @method newSession
@@ -482,6 +482,7 @@ class MMSession extends MMCommandParent {
 		verbs['save'] =  this.saveSessionCommand;
 		verbs['autosave'] = this.autoSaveCommand;
 		verbs['load'] = this.loadSessionCommand;
+		verbs['loadurl'] = this.loadUrlCommand;
 		verbs['copy'] = this.copySessionCommand;
 		verbs['delete'] = this.deleteSessionCommand;
 		verbs['rename'] = this.renameSessionCommand;
@@ -503,6 +504,7 @@ class MMSession extends MMCommandParent {
 			listsessions: 'mmcmd:?sessionList',
 			new: 'mmcmd:?sessionNew',
 			load: 'mmcmd:?sessionLoad',
+			loadurl: 'mmcmd:?sessionLoadUrl',
 			save: 'mmcmd:?sessionSave',
 			copy: 'mmcmd:?sessionCopy',
 			delete: 'mmcmd:?sessionDelete',
@@ -612,7 +614,12 @@ class MMSession extends MMCommandParent {
 			this.setError('mmcmd:noIndexedDB', {});
 			return;
 		}
-		await this.loadSession(command.args);
+		if (command.args) {
+			await this.loadSession(command.args);
+		}
+		else {
+			await this.loadAutoSaved();
+		}
 		command.results = this.storePath;
 	}
 
@@ -700,6 +707,40 @@ class MMSession extends MMCommandParent {
 		catch(e) {
 			const msg = (typeof e === 'string') ? e : e.message;
 			this.setError('mmcmd:jsonImportFailed', {error: msg});
+		}
+	}
+
+	/**
+	 * @method loadUrlCommand
+	 * verb
+	 * @param {MMCommand} command
+	 * command.args contains url of web file to construct session from
+	 */
+	async loadUrlCommand(command) {
+		if (command.args) {
+			try {
+				const response = await fetch(command.args);
+				if (response.ok) {
+					const json = await response.text();
+					try {
+						this.isLoadingCase = true;
+						new MMUnitSystem(this);  // clear any user units and sets
+						await this.initializeFromJson(json);
+						command.results = this.storePath;
+					}
+					finally {
+						this.isLoadingCase = false;
+						await this.saveLastSessionPath()
+					}
+						}
+				else {
+					this.setError('mmcmd:sessionLoadUrlFailed', {url: command.args, error: response.statusText});
+				}
+			}
+			catch(e) {
+				const msg = (typeof e === 'string') ? e : e.message;
+				this.setError('mmcmd:sessionLoadUrlFailed', {url: command.args, error: msg});
+			}	
 		}
 	}
 
