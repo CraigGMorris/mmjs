@@ -809,13 +809,15 @@ export class Diagram extends React.Component {
 		let textList = [];
 		if (this.state.path) {
 			const pathParts = this.state.path.split('.');
+			const nameHeaderX = (this.props.diagramBox.width - (this.props.isTwoPane ? 180 : 130))/2;
 			if (pathParts.length > 2) {
+				const maxCharacters = nameHeaderX / 12 - 3.;
 				textList.push(
 					e(ClickableDiagramText, {
 						key: 'parent',
 						x: 15,
 						y: 25,
-						text:`< ${pathParts[pathParts.length-2]}`,
+						text:`< ${pathParts[pathParts.length-2].substring(0, maxCharacters)}`,
 						textClick: () => {
 							this.props.actions.popModel();
 							this.setState({selectionBox: null});
