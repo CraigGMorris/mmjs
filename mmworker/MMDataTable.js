@@ -272,6 +272,11 @@ class MMDataTable extends MMTool {
 			while(this.childNamed(options.name)) {
 				options.name += '_1';
 			}
+		} else {
+			if (this.childNamed(options.name)) {
+				this.setError('mmcmd:tableDuplicateColumnName', {name: options.name, path: this.getPath()});
+				return;
+			}
 		}
 
 		let insertValue;
@@ -297,7 +302,7 @@ class MMDataTable extends MMTool {
 
 		if (this.rowCount) {
 			let v;
-			if (options.displayUnit === 'string') {
+			if (insertValue instanceof MMStringValue || options.displayUnit === 'string') {
 				v = new MMStringValue(this.rowCount, 1);
 				insertValue = insertValue ? insertValue.values[0] : ''
 				for (let i = 0; i < this.rowCount; i++ ) {
@@ -794,53 +799,67 @@ class MMDataTable extends MMTool {
 
 		const columns = this.columnArray;
 		const columnData = [];
-		const columnCount = columnNames.length;
-		if (columnCount === 0) {return;}
-		for (let i = 0; i < columnCount; i++) {
+		const csvColumnCount = columnNames.length;
+		const uniqueNames = new Set();
+		const includeColumn = [];
+		if (csvColumnCount === 0) {return;}
+		for (let i = 0; i < csvColumnCount; i++) {
 			let columnName = columnNames[i];
 			columnName = columnName.substring(1,columnName.length -1);  // strip off the quotes
 			let unitName = unitNames[i];
 			unitName = unitName.substring(1,unitName.length -1);  // strip off the quotes
-			const column = new MMDataTableColumn(this, columnName, unitName);
-			columns.push(column);
-			columnData.push([]);
+			if (!uniqueNames.has(columnName)) {
+				const column = new MMDataTableColumn(this, columnName, unitName);
+				columns.push(column);
+				columnData.push([]);
+				uniqueNames.add(columnName);
+				includeColumn.push(true);
+			}
+			else {
+				includeColumn.push(false);
+			}
 		}
+		const columnCount = uniqueNames.size;
 
 		re = new RegExp('".*?"|[^,"\\n]+','ms');
 		let match = csv.substring(i).match(re);
 		let columnNumber = 0;
+		let csvColumnNumber = 0;
 		while (match) {
-			const column = columns[columnNumber];
 			let token = match[0];
 			i += match.index + token.length;
+			if (includeColumn[csvColumnNumber]) {
+				const column = columns[columnNumber];
 
-			if (column.columnValue.isString) {
-				if (!token.startsWith('"')) {
-					this.setError('mmcmd:tableCsvExpectedString', {
-						path: this.getPath(),
-						token: token,
-						column: columnNumber+1,
-						row: columnData[columnNumber].length + 1
-					});
-					return;
+				if (column.columnValue.isString) {
+					if (!token.startsWith('"')) {
+						this.setError('mmcmd:tableCsvExpectedString', {
+							path: this.getPath(),
+							token: token,
+							column: columnNumber+1,
+							row: columnData[columnNumber].length + 1
+						});
+						return;
+					}
+					token = token.substring(1,token.length - 1); // strip quotes
+					columnData[columnNumber].push(token);
 				}
-				token = token.substring(1,token.length - 1); // strip quotes
-				columnData[columnNumber].push(token);
-			}
-			else {
-				if (token.startsWith('"')) {
-					this.setError('mmcmd:tableCsvUnexpectedString', {
-						path: this.getPath(),
-						token: token,
-						column: columnNumber+1,
-						row: columnData[columnNumber].length + 1
-					});
-					return;
+				else {
+					if (token.startsWith('"')) {
+						this.setError('mmcmd:tableCsvUnexpectedString', {
+							path: this.getPath(),
+							token: token,
+							column: columnNumber+1,
+							row: columnData[columnNumber].length + 1
+						});
+						return;
+					}
+					token = token.replace(decimalSeparator, '.');
+					columnData[columnNumber].push(token);
 				}
-				token = token.replace(decimalSeparator, '.');
-				columnData[columnNumber].push(token);
+				columnNumber = (columnNumber + 1) % columnCount;
 			}
-			columnNumber = (columnNumber + 1) % columnCount;
+			csvColumnNumber = (csvColumnNumber + 1) % csvColumnCount;
 			match = csv.substring(i).match(re);
 		}
 
