@@ -277,16 +277,6 @@ export function TableView(props) {
 		const x = column * cellWidth + columnOrigin*cellWidth + rowLabelWidth - offset.x + xPadding;
 		const offsetColumn = column + columnOrigin + 1;
 
-		if (currentCell && currentCell[0] === 0 && currentCell[1] === offsetColumn) {
-			colorClass = 'tableview__cell--selected';
-		}
-		else if (cellInputs && cellInputs[`0_${offsetColumn}`]) {
-			colorClass = 'tableview__cell--input';
-		}
-		else {
-			colorClass = 'tableview__cell--' + ((column + columnOrigin) % 2 ? 'color1' : 'color2');
-		}
-
 		for (let row = 0; row < nDisplayedRows; row++) {
 			const offsetRow = row + rowOrigin + 1;
 			const y = (row + 2) * cellHeight + rowOrigin*cellHeight - offset.y;
@@ -404,6 +394,16 @@ export function TableView(props) {
 				);
 				cells.push(rowLabel);
 			}
+		}
+
+		if (currentCell && currentCell[0] === 0 && currentCell[1] === offsetColumn) {
+			colorClass = 'tableview__cell--selected';
+		}
+		else if (cellInputs && cellInputs[`0_${offsetColumn}`]) {
+			colorClass = 'tableview__cell--input';
+		}
+		else {
+			colorClass = 'tableview__cell--' + ((column + columnOrigin) % 2 ? 'color1' : 'color2');
 		}
 
 		const columnLabelBox = e(
