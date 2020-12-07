@@ -611,13 +611,17 @@ class MMModel extends MMTool {
 				.replace('ODE Solver', 'Ode')
 				.replace('HTML Form', 'HtmlPage')
 				.replace(' ','')
-				.replace('Equation','');
+				.replace('Equation','')
+				.replace('ModelArray', 'Model');
 			const toolType = MMToolTypes[typeName];
 			if(!toolType) {
-				throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: tool.Type}));
+				const newTool = new MMExpression(name, this);
+				newTool.formula.formula = `'Invalid Tool ${typeName}\n\nJSON:\n${JSON.stringify(tool, null, ' ')}`;
 			}
-			let newTool = toolType.factory(name, this);
-			newTool.initFromSaved(tool);
+			else {
+				let newTool = toolType.factory(name, this);
+				newTool.initFromSaved(tool);
+			}
 		}
 		theMMSession.popModel();
 	}
