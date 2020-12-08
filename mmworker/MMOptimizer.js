@@ -133,7 +133,7 @@ class MMOptimizer extends MMTool {
 	}
 
 	resetOutputs() {
-		const n = this.numberOfOutputs;
+		const n = this._numberOfOutputs;
 		if (n) {
 			this.outputs = new Float64Array(n);
 			this.commonP1 = new Float64Array(n);
