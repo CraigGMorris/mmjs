@@ -1336,6 +1336,10 @@ a:hover {
 	height: var(--input--height);
 }
 
+.tableview__cell-text text{
+	white-space: pre;
+}
+
 .tableview__cell--selected {
 	fill: var(--tableview__selected-color);
 }
