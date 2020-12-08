@@ -107,7 +107,7 @@ const MMFormulaFactory = (token, formula) => {
 		'le': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a <= b ? 1 : 0;})},
 		'gt': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a > b ? 1 : 0;})},
 		'ge': (f) => {return new MMUnitlessComparisonFunction(f, (a, b) => {return a >= b ? 1 : 0;})},
-		'not': (f) => {return new MMGenericSingleFunction(f, (n) => { return n === 0 ? 1 : 0;})},
+		'not': (f) => {return new MMNotFunction(f)},
 		'and': (f) => {return new MMAndFunction(f)},
 		'or': (f) => {return new MMOrFunction(f)},
 
@@ -2060,6 +2060,30 @@ class MMAndFunction extends MMMultipleArgumentFunction {
 			}
 			return rv;
 		}
+	}
+}
+
+class MMNotFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.genericMonadic((n) => {
+				return n === 0 ? 1 : 0;
+			});
+		}
+	}
+
+	operationOnString(v) {
+		if (v) {
+			const rv = new MMNumberValue(v.rowCount, v.columnCount);
+			rv._values = v._values.map((n) => {
+				return n && n.length ? 0 : 1;
+			});
+			return rv;
+		}
+	}
+
+	operationOnTable(v) {
+		return v ? 1 : 0;
 	}
 }
 
