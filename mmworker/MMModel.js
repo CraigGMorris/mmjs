@@ -264,7 +264,8 @@ class MMModel extends MMTool {
 			.replace('ODE Solver','Ode')
 			.replace('HTML Form', 'HtmlPage')
 			.replace(' ','')
-			.replace('Equation','');
+			.replace('Equation','')
+			.replace('ModelArray', 'Model');
 		const toolType = MMToolTypes[typeName];
 		if(!toolType) {
 			throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: tool.Type}));
