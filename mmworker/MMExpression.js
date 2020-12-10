@@ -8,6 +8,7 @@
 	MMStringValue:readonly
 	MMToolValue:readonly
 	MMTableValue:readonly
+	MMTableValueColumn:readonly
 	MMPropertyType:readonly
 	MMUnitSystem:readonly
 */
@@ -205,8 +206,33 @@ class MMExpression extends MMTool {
 					}
 					break;
 				case 'table':
-					this.setError('mmcmd:unimplemented', {feature: 'expression table property'})
-					value = null;
+					if (!(value instanceof MMTableValue)) {
+						if (value instanceof MMToolValue) {
+							const tool = value._values[0];
+							value = tool.valueDescribedBy(description, requestor);
+						}
+						else {
+							const columnCount = value.columnCount;
+							const columns = [];
+							const rowIndex = MMNumberValue.scalarValue(0);
+							const columnIndex = MMNumberValue.scalarValue(0);
+							for (let i = 1; i <= columnCount; i++) {
+								columnIndex._values[0] = i;
+								const columnValue = value.valueForIndexRowColumn(rowIndex, columnIndex);
+								const displayUnit = (columnValue instanceof MMNumberValue)
+									? theMMSession.unitSystem.defaultUnitWithDimensions(columnValue.unitDimensions)
+									: null;
+								const columnName = `${i}`;
+								const column = new MMTableValueColumn({
+									name: columnName,
+									displayUnit: displayUnit ? displayUnit.name : null,
+									value: columnValue
+								});
+								columns.push(column);
+							}
+							value = new MMTableValue({columns: columns});
+						}
+					}
 					break;
 				default: {
 					if (value instanceof MMToolValue) {

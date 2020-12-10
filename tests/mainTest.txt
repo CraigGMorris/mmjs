@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "mainTest",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
+	"SelectedObject": "errorCount",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -19292,7 +19292,7 @@
 						"name": "Matrix",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": 195,
+						"DiagramY": 220,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -19602,7 +19602,7 @@
 						"name": "Solver",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": 220,
+						"DiagramY": 245,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -19834,7 +19834,7 @@
 						"DiagramNotes": "n",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "{sum {cc\n\tMatrix.errorCount,\n\tSolver.errorCount,\n\tOde.errorCount,\n\tIterator.errorCount,\n\tOptimizer.errorCount,\n\tGraph.errorCount,\n\tHtmlPage.errorCount\n}}"
+							"Formula": "{sum {cc\n\tExpression.errorCount,\n\tMatrix.errorCount,\n\tSolver.errorCount,\n\tOde.errorCount,\n\tIterator.errorCount,\n\tOptimizer.errorCount,\n\tGraph.errorCount,\n\tHtmlPage.errorCount\n}}"
 						},
 						"isOutput": "y"
 					},
@@ -19842,7 +19842,7 @@
 						"name": "Ode",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": 245,
+						"DiagramY": 270,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -24499,7 +24499,7 @@
 						"name": "Iterator",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": 270,
+						"DiagramY": 295,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -26039,7 +26039,7 @@
 						"name": "Optimizer",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": 295,
+						"DiagramY": 320,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -26434,7 +26434,7 @@
 						"name": "Graph",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": 320,
+						"DiagramY": 345,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -32067,7 +32067,7 @@
 						"name": "htmlPage",
 						"Notes": "Only expected html from page2 is checked as other pages' actions change values",
 						"DiagramX": 85,
-						"DiagramY": 345,
+						"DiagramY": 370,
 						"HideInfo": "n",
 						"DiagramNotes": "y",
 						"Type": "Model",
@@ -32611,6 +32611,115 @@
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "{ne expectedHtml, html}"
+								},
+								"isOutput": "y"
+							}
+						]
+					},
+					{
+						"name": "Expression",
+						"Notes": "",
+						"DiagramX": 85,
+						"DiagramY": 195,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "numbers",
+								"Notes": "",
+								"DiagramX": 85,
+								"DiagramY": 180,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{array 4, 3, 1:12} * 1 kg"
+								}
+							},
+							{
+								"name": "nTable",
+								"Notes": "",
+								"DiagramX": 165,
+								"DiagramY": 180,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "numbers.table"
+								}
+							},
+							{
+								"name": "strings",
+								"Notes": "",
+								"DiagramX": 85,
+								"DiagramY": 250,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "\"s\" + {array 3, 4, {fmt \n\t\".2f\", 1:12 *1.23 m\n}}"
+								}
+							},
+							{
+								"name": "sTable",
+								"Notes": "",
+								"DiagramX": 165,
+								"DiagramY": 250,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "strings.table"
+								}
+							},
+							{
+								"name": "stringsTable",
+								"Notes": "",
+								"DiagramX": 85,
+								"DiagramY": 280,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{table {cc \"1\", \"2\", \"3\"},\n\tstrings\n}"
+								}
+							},
+							{
+								"name": "nTableErrors",
+								"Notes": "",
+								"DiagramX": 165,
+								"DiagramY": 205,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {append\n\t{ne numbers[0,1],\n\t\tnTable.1},\n\t{ne numbers[0,2],\n\t\tnTable.2},\n\t{ne numbers[0,3],\n\t\tnTable.3}\n}}"
+								}
+							},
+							{
+								"name": "sTableErrors",
+								"Notes": "",
+								"DiagramX": 165,
+								"DiagramY": 280,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {append\n\t{ne stringsTable.1,\n\t\tsTable.1},\n\t{ne stringsTable.2,\n\t\tsTable.2},\n\t{ne stringsTable.3,\n\t\tsTable.3}\n}}"
+								}
+							},
+							{
+								"name": "errorCount",
+								"Notes": "",
+								"DiagramX": 165,
+								"DiagramY": 310,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "nTableErrors +\nsTableErrors"
 								},
 								"isOutput": "y"
 							}
