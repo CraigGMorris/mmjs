@@ -962,46 +962,60 @@ export class Diagram extends React.Component {
 							this.props.actions.updateView();
 						});
 					}
+
+					const toolsWithTable = new Set(['Expression','Matrix','DataTable','Graph','Iterate','Ode']);
+					const menuEntries = [
+						{
+							text: 'Delete',
+							info: this.state.showContext.info,
+							action: deleteTool,
+						},
+						{
+							text: 'Copy',
+							info: this.state.showContext.info,
+							action: (info) => {
+								this.props.actions.doCommand(`${this.state.path} copytool ${info.name}`, (results) => {
+									if (!results.error) {
+										writeClipboard(results[0].results);
+									}
+									this.setState({showContext: null});
+								});
+							}
+						},
+						{
+							text: 'Cut',
+							info: this.state.showContext.info,
+							action: (info) => {
+								this.props.actions.doCommand(`${this.state.path} copytool  ${info.name}`, (results) => {
+									if (!results.error) {
+										writeClipboard(results[0].results).then(() => {
+											deleteTool(info);
+										});
+									}
+								});
+							}
+						}
+					];
+					if (toolsWithTable.has(this.state.showContext.info.toolTypeName)) {
+						menuEntries.push({
+							text: 'Copy as Table',
+							info: this.state.showContext.info,
+							action: (info) => {
+								console.log(info.toolTypeName);
+							}
+						});
+					}
+					
 					contextMenu = e(
 						ContextMenu, {
 							key: 'context',
 							t: t,
-							menu: [
-								{
-									text: 'Delete',
-									info: this.state.showContext.info,
-									action: deleteTool,
-								},
-								{
-									text: 'Copy',
-									info: this.state.showContext.info,
-									action: (info) => {
-										this.props.actions.doCommand(`${this.state.path} copytool ${info.name}`, (results) => {
-											if (!results.error) {
-												writeClipboard(results[0].results);
-											}
-											this.setState({showContext: null});
-										});
-									}
-								},
-								{
-									text: 'Cut',
-									info: this.state.showContext.info,
-									action: (info) => {
-										this.props.actions.doCommand(`${this.state.path} copytool  ${info.name}`, (results) => {
-											if (!results.error) {
-												writeClipboard(results[0].results).then(() => {
-													deleteTool(info);
-												});
-											}
-										});
-									}
-								}
-							]
+							menu: menuEntries
 						}
 					)
 				}
 					break;
+
 				case ContextMenuType.addTool: {
 					const addTool = (type) => {
 						const position = this.state.showContext.info;
