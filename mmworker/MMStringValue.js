@@ -576,7 +576,7 @@ class MMStringValue extends MMValue {
 	 * @param {MMStringValue} match
 	 * @param {MMStringValue} replace 
 	 */
-	replace(match, replace) {
+	replace(match, replace, options) {
 		const myValues = this._values;
 		const matchRowCount = match.rowCount;
 		const matchColumnCount = match.columnCount;
@@ -599,7 +599,7 @@ class MMStringValue extends MMValue {
 				const cMine = j % myColumnCount;
 				const cMatch = j % matchColumnCount;
 				const s = myValues[rMine * myColumnCount + cMine];
-				const sMatch = new RegExp(vMatch[rMatch * matchColumnCount + cMatch]);
+				const sMatch = new RegExp(vMatch[rMatch * matchColumnCount + cMatch], options);
 				const sReplace = vReplace[rMatch * matchColumnCount + cMatch];
 				rvValues[i * columnCount + j] = s.replace(sMatch, sReplace);
 			}

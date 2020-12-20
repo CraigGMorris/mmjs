@@ -3170,15 +3170,24 @@ class MMReplaceFunction extends MMMultipleArgumentFunction {
 	}
 
 	value() {
-		const s = this.arguments[0].value();
-		const replace = this.arguments[1].value();
-		const match = this.arguments[2].value();
+		const argCount = this.arguments.length;	
+		let argNo = 0;
+		let options = 'g';
+		if (argCount === 4) {
+			const optionValue = this.arguments[argNo++].value();
+			if (optionValue instanceof MMStringValue) {
+				options = optionValue[0];
+			}
+		}
+		const s = this.arguments[argNo++].value();
+		const replace = this.arguments[argNo++].value();
+		const match = this.arguments[argNo++].value();
 
 		if (s instanceof MMStringValue &&
 				replace instanceof MMStringValue &&
 				match instanceof MMStringValue
 			) {
-			return s.replace(match, replace);
+			return s.replace(match, replace, options);
 		}
 	}
 }
