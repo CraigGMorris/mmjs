@@ -2820,7 +2820,7 @@ class MMTableFunction extends MMMultipleArgumentFunction {
 			const v = arg.value();
 			if (v instanceof MMValue) {
 				for (let i = 0; i < v.columnCount && addColumnCount < nameCount; i++) {
-					const cValue = v.columnNumber(i + 1);
+					const cValue = v.valueForColumnNumber(i + 1);
 					if (!(cValue instanceof  MMNumberValue) && !(cValue instanceof MMStringValue)) {
 						return null;
 					}

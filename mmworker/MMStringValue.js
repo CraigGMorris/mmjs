@@ -177,12 +177,12 @@ class MMStringValue extends MMValue {
 	}
 
 	/**
-	 * @method columnNumber
+	 * @method valueForColumnNumber
 	 * @override
 	 * @param {Number} number 
 	 * @returns {MMValue}
 	 */
-	columnNumber(number) {
+	valueForColumnNumber(number) {
 		if (this.columnCount == 1 ) {
 			return this;
 		}

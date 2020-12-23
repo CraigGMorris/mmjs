@@ -293,7 +293,7 @@ class MMIterator extends MMTool {
 					for (let cNumber = 1; cNumber <= v.columnCount; cNumber++) {
 						const name = columnName + `_${cNumber}`;
 						const column = new MMTableValueColumn({
-							name: name, displayUnit: v.defaultUnit.name, value: v.columnNumber(cNumber)
+							name: name, displayUnit: v.defaultUnit.name, value: v.valueForColumnNumber(cNumber)
 						});
 						columns.push(column);
 					}

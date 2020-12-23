@@ -574,13 +574,13 @@ class MMTableValue extends MMValue {
 	}
 
 	/**
-	 * @method columnNumber
+	 * @method valueForColumnNumber
 	 * @override
 	 * @param {Number} number 
 	 * @returns {MMValue}
 	 */
-	columnNumber(number) {
-		if (number < this.columns.length) {
+	valueForColumnNumber(number) {
+		if (number <= this.columns.length) {
 			return  this.columns[number - 1].value;
 		}
 		return null;

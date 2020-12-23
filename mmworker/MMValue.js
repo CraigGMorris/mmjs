@@ -263,12 +263,12 @@ class MMValue {
 	}
 
 	/**
-	 * @method columnNumber
+	 * @method valueForColumnNumber
 	 * @param {Number} number 
 	 * @returns {MMValue}
 	 */
 	// eslint-disable-next-line no-unused-vars
-	columnNumber(number) {
+	valueForColumnNumber(number) {
 		return null;
 	}
 
