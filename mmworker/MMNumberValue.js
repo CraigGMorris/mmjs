@@ -257,6 +257,12 @@ class MMNumberValue extends MMValue {
 	stringForRowColumnUnit(row, column, outUnit) {
 		this.checkBounds(row, column);
 		let value = this._values[(row - 1)*this.columnCount + column - 1];
+		if (!outUnit) {
+			outUnit = value.displayUnit;
+		}
+		if (!outUnit) {
+			outUnit = value.defaultUnit;
+		}
 		return outUnit.stringForValue(value);
 	}
 
@@ -271,6 +277,13 @@ class MMNumberValue extends MMValue {
 	stringForRowColumnWithUnit(row, column, outUnit) {
 		this.checkBounds(row, column);
 		let value = this._values[(row - 1)*this.columnCount + column - 1];
+		if (!outUnit) {
+			outUnit = value.displayUnit;
+		}
+		if (!outUnit) {
+			outUnit = value.defaultUnit;
+		}
+
 		return outUnit.stringForValueWithUnit(value);
 	}
 
@@ -288,12 +301,12 @@ class MMNumberValue extends MMValue {
 	}
 
 	/**
-	 * @method columnNumber
+	 * @method valueForColumnNumber
 	 * @override
 	 * @param {Number} number 
 	 * @returns {MMValue}
 	 */
-	columnNumber(number) {
+	valueForColumnNumber(number) {
 		if (this.columnCount == 1 ) {
 			return this;
 		}
