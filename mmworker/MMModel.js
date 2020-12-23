@@ -5,6 +5,7 @@
 	MMToolTypes:readonly
 	MMExpression:readonly
 	theMMSession:readonly
+	MMReport:readonly
 	MMPoint:readonly
 */
 
@@ -72,6 +73,7 @@ class MMModel extends MMTool {
 		verbs['dgminfo'] = this.diagramInfoCommand;
 		verbs['setpositions'] = this.setPositions;
 		verbs['copytool'] = this.copyToolCommand;
+		verbs['copyastable'] = this.copyAsTableCommand;
 		verbs['paste'] = this.pasteCommand;
 		verbs['import'] = this.importCommand;
 		verbs['makelocal'] = this.makeLocalCommand;
@@ -93,6 +95,7 @@ class MMModel extends MMTool {
 			dgminfo: 'mmcmd:?modelDgmInfo',
 			setpositions: 'mmcmd:?modelSetPositions',
 			copytool: 'mmcmd:?modelCopyTool',
+			copyastable: 'mmcmd:?modelCopyAsTable',
 			paste: 'mmcmd:?modelPaste',
 			import: 'mmcmd:?modelImport',
 			makelocal: 'mmcmd:?modelMakeLocal',
@@ -308,6 +311,26 @@ class MMModel extends MMTool {
 		}
 		const json = `{"CopyObjects": ${JSON.stringify(savedTools, null, '\t')}}`;
 		command.results = json;
+	}
+
+	/** @method copyAsTableCommand
+	 * returns text representation of tools table value
+	 * @param {MMCommand} command
+	 * command.args should be the tool name
+	 * @returns {String} json
+	 */
+	copyAsTableCommand(command) {
+		if (!command.args.length) {
+			throw(this.t('mmcmd:modelMissingToolName'));
+		}
+		const toolName = command.args;
+		const tool = this.childNamed(toolName);
+		if (tool) {
+			const tableValue = tool.valueDescribedBy('table');
+			if (tableValue) {
+				command.results = MMReport.forToolValue(tool, tableValue, null, {isTableCopy: true});
+			}
+		}
 	}
 
 	/**

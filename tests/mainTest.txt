@@ -17925,7 +17925,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{replace m, r,  s2}"
+											"Formula": "{replace m, r,  s2, \"\"}"
 										}
 									},
 									{
@@ -26741,7 +26741,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{ne svg2d, expectedSvg2d}"
+											"Formula": "{ne\n\t{replace reduceRegx, \"$1\", svg2d}\n\t{replace\n\t\treduceRegx, \"$1\",\n\t\texpectedSvg2d\n\t}\n}"
 										}
 									},
 									{
@@ -26797,13 +26797,13 @@
 									{
 										"name": "svg3dError",
 										"Notes": "",
-										"DiagramX": 220,
-										"DiagramY": 195,
+										"DiagramX": 215,
+										"DiagramY": 190,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{ne svg3d, expectedSvg3d}"
+											"Formula": "{ne\n\t{replace reduceRegx, \"$1\", svg3d}\n\t{replace\n\t\treduceRegx, \"$1\",\n\t\texpectedSvg3d\n\t}\n}"
 										}
 									},
 									{
@@ -26828,7 +26828,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{ne surfaceSvg, expectedSurfaceSvg}"
+											"Formula": "{ne\n\t{replace reduceRegx, \"$1\",\n\t\tsurfaceSvg\n\t},\n\t{replace\n\t\treduceRegx, \"$1\",\n\t\texpectedSurfaceSvg\n\t}\n}"
 										}
 									},
 									{
@@ -26877,7 +26877,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{ne linesSvg, expectedLinesSvg}"
+											"Formula": "{ne\n\t{replace reduceRegx, \"$1\", linesSvg}\n\t{replace\n\t\treduceRegx, \"$1\",\n\t\texpectedLinesSvg\n\t}\n}"
 										}
 									},
 									{
@@ -32007,6 +32007,18 @@
 										"Type": "Expression",
 										"Formula": {
 											"Formula": "{gt\n\t{numeric\n\t\t{abs\n\t\t\ttable3D2 -\n\t\t\texpected3DTable2\n\t\t} /\n\t\t{table table3D,\n\t\t\t1,\n\t\t\t1,\n\t\t\t1 m\n\t\t}\n\t},\n\ttolerance\n}"
+										}
+									},
+									{
+										"name": "reduceRegx",
+										"Notes": "regular expression used to limit number of digits compared for error",
+										"DiagramX": 135,
+										"DiagramY": 115,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "\"(\\.\\d\\d\\d\\d\\d\\d)(\\d+)\""
 										}
 									}
 								]

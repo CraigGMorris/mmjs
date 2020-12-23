@@ -963,7 +963,7 @@ export class Diagram extends React.Component {
 						});
 					}
 
-					const toolsWithTable = new Set(['Expression','Matrix','DataTable','Graph','Iterate','Ode']);
+					const toolsWithTable = new Set(['Expression','Matrix','DataTable','Graph','Iterator','Ode']);
 					const menuEntries = [
 						{
 							text: 'Delete',
@@ -1001,7 +1001,12 @@ export class Diagram extends React.Component {
 							text: 'Copy as Table',
 							info: this.state.showContext.info,
 							action: (info) => {
-								console.log(info.toolTypeName);
+								this.props.actions.doCommand(`${this.state.path} copyastable ${info.name}`, (results) => {
+									if (!results.error) {
+										writeClipboard(results[0].results);
+									}
+									this.setState({showContext: null});
+								});
 							}
 						});
 					}

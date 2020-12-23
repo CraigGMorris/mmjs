@@ -806,7 +806,7 @@ class MMMatrix extends MMTool {
 				}
 				const tableColumn = new MMTableValueColumn({
 					name:`${column}`,
-					displayUnit: this.displayUnit,
+					displayUnit: this.displayUnitName,
 					value: columnValue
 				});
 				a.push(tableColumn);
