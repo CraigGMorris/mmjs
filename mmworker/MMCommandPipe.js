@@ -10,14 +10,6 @@ export class MMCommandPipe {
 	constructor() {
 		if (window.Worker) { // Check if Browser supports the Worker api.
 			this.cmdWorker = new Worker("./mmworker/MMCommandWorker.js");
-			const cmd = document.baseURI.split('?cmd=').splice(1);
-			console.log(`cmd = "${cmd}"`);
-			if (cmd.length) {
-				this.doCommand(unescape(cmd[0]));
-			}
-			else {
-				this.doCommand('/ load');  // should load autosaved session
-			}
 		}
 		else {
 			alert('No worker support');

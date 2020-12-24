@@ -143,6 +143,7 @@ export function MMApp(props) {
 	});
 	
 	// calc pane style
+	const [autoLoadComplete, setAutoLoadComplete] = useState(false);
 	const [docHeight, setDocHeight] = useState(document.documentElement.clientHeight - 16);
 	const [docWidth, setDocWidth] = useState(document.documentElement.clientWidth - 16);
 	const twoPane = docWidth >= 640;
@@ -581,6 +582,20 @@ const pushTool = useCallback((toolName, path, toolType) => {
 			});
 		}
 	}, [doCommand, updateDiagram]);
+
+	// make sure auto load (or url cmd parameter) is complete before rendering
+	if (!autoLoadComplete) {
+		let cmd = document.baseURI.split('?cmd=').splice(1);
+		// console.log(`cmd = "${cmd}"`);
+		if (!cmd.length) {
+			cmd = '/ load';
+		}
+		pipe.doCommand(cmd, () => {
+			setAutoLoadComplete(true);
+		});
+
+		return null;
+	}
 
 	// {method[]} actions - methods passed to components
 	let actions = {

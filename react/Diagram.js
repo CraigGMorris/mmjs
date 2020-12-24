@@ -86,10 +86,6 @@ export class Diagram extends React.Component {
 		this.onPointerUp = this.onPointerUp.bind(this);
 		this.onPointerMove = this.onPointerMove.bind(this);
 		this.onWheel = this.onWheel.bind(this);
-
-		this.getModelInfo(true);
-		// kludge to get a deferred call so a restored auto saved session is rescaled
-		this.doCommand('', () => { this.getModelInfo(true)});
 	}
 
 	/**
@@ -158,6 +154,7 @@ export class Diagram extends React.Component {
 
 	componentDidMount() {
 		this.node.addEventListener('wheel', this.onWheel, {passive: false});
+		this.getModelInfo(true);
 	}
 
 	componentWillUnmount() {
@@ -1644,7 +1641,6 @@ class SelectionBox extends React.Component {
 				console.log(`sb long press  ${this.panSum}`);
 			}
 			else {
-				console.log(`sb click panSum ${this.panSum}`);
 				this.props.showContext({
 					type: ContextMenuType.selection,
 					info: this.props.info,
@@ -1792,7 +1788,6 @@ class Divider extends React.Component {
 		e.stopPropagation();
 		e.preventDefault();					
 		this.dividerPointer = e.clientX;
-		console.log(`div capture ${e.pointerId}`);
 		e.target.setPointerCapture(e.pointerId);
 	}
 
@@ -1812,7 +1807,6 @@ class Divider extends React.Component {
 	onPointerUp(e) {
 		e.stopPropagation();
 		e.preventDefault();					
-		console.log(`div release ${e.pointerId}`);
 		e.target.releasePointerCapture(e.pointerId);
 		this.dividerPointer = null;
 	}
