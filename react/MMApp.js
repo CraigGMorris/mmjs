@@ -587,7 +587,10 @@ const pushTool = useCallback((toolName, path, toolType) => {
 	if (!autoLoadComplete) {
 		let cmd = document.baseURI.split('?cmd=').splice(1);
 		// console.log(`cmd = "${cmd}"`);
-		if (!cmd.length) {
+		if (cmd.length) {
+			cmd = decodeURI(cmd);
+		}
+		else {
 			cmd = '/ load';
 		}
 		pipe.doCommand(cmd, () => {
