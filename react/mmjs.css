@@ -1211,9 +1211,9 @@ a:hover {
 	grid-template-areas: "title"
 		"rename"
 		"delete"
-		"copy"
 		"clip"
 		"export"
+		"copy"
 		"cancel";
 		width: 150px;
 		margin: 0 auto;

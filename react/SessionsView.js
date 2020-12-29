@@ -58,7 +58,7 @@ export class SessionsView extends React.Component {
 				let r = new FileReader();
 				r.onload = (e) => { 
 					let contents = e.target.result;
-					contents = '__blob__/ import__blob__' + contents;
+					contents = `__blob__/ import__blob__${this.props.viewInfo.rootFolder}:` + contents;
 					this.props.actions.doCommand(contents, () => {
 						this.props.actions.resetInfoStack('root');
 						this.props.updateDiagram(true);
@@ -70,12 +70,26 @@ export class SessionsView extends React.Component {
 			}
 		}
 
-		let copySession = async (oldName) => {
+		let copyPath = async (oldName) => {
 			let newName = prompt(t('react:sessionsDuplicatePrompt', {oldName: oldName}));
 			if (newName) {
-				if (sessionPaths.map(n => n.toLocaleLowerCase()).includes(newName.toLocaleLowerCase())) {
-					if (!confirm(t('react:sessionsDuplicateOverwrite', {oldName: oldName, newName: newName}))) {
-						return;
+				if (oldName.endsWith('/')) {
+					if (!newName.endsWith('/')) {
+						newName += '/';
+					}
+					const lcNewName = newName.toLocaleLowerCase();
+					for (let n of sessionPaths) {
+						if (n.toLocaleLowerCase().startsWith(lcNewName)) {
+							alert(t('react:sessionFolderDuplicateConflict', {newName: newName}));
+							return;	
+						}
+					}
+				}
+				else {
+					if (sessionPaths.map(n => n.toLocaleLowerCase()).includes(newName.toLocaleLowerCase())) {
+						if (!confirm(t('react:sessionsDuplicateOverwrite', {oldName: oldName, newName: newName}))) {
+							return;
+						}
 					}
 				}
 				await this.props.actions.doCommand(
@@ -88,8 +102,9 @@ export class SessionsView extends React.Component {
 			}
 		}
 	
-		let deleteSession = async path => {
-			if (confirm(t('react:sessionsDeleteConfirm', {path: path}))) {
+		let deletePath = async path => {
+			const confirmMsg = path.endsWith('/') ? 'react:sessionsFolderDelete' : 'react:sessionsDeleteConfirm';
+			if (confirm(t(confirmMsg, {path: path}))) {
 				await this.props.actions.doCommand(
 					`/ delete ${path}`,
 					() => {
@@ -103,12 +118,26 @@ export class SessionsView extends React.Component {
 			}							
 		}
 
-		let renameSession = async (oldName) => {
+		let renamePath = async (oldName) => {
 			let newName = prompt(t('react:sessionsRenamePrompt', {oldName: oldName}), oldName);
 			if (newName && newName !== oldName) {
-				if (sessionPaths.map(n => n.toLocaleLowerCase()).includes(newName.toLocaleLowerCase())) {
-					if (!confirm(t('react:sessionsRenameOverwrite', {oldName: oldName, newName: newName}))) {
-						return;
+				if (oldName.endsWith('/')) {
+					if (!newName.endsWith('/')) {
+						newName += '/';
+					}
+					const lcNewName = newName.toLocaleLowerCase();
+					for (let n of sessionPaths) {
+						if (n.toLocaleLowerCase().startsWith(lcNewName)) {
+							alert(t('react:sessionFolderRenameConflict', {newName: newName}));
+							return;	
+						}
+					}
+				}
+				else {
+					if (sessionPaths.map(n => n.toLocaleLowerCase()).includes(newName.toLocaleLowerCase())) {
+						if (!confirm(t('react:sessionsRenameOverwrite', {oldName: oldName, newName: newName}))) {
+							return;
+						}
 					}
 				}
 				await this.props.actions.doCommand(
@@ -126,21 +155,36 @@ export class SessionsView extends React.Component {
 			await this.props.actions.doCommand(
 				`/ getjson ${path}`,
 				(results) => {
-					writeClipboard(results[0].results);
+					let json;
+					if (path.endsWith('/')) {
+						json = JSON.stringify(results[0].results, null, '\t');
+					}
+					else {
+						json = results[0].results;
+					}
+					writeClipboard(json);
 					this.setState({menuPath: ''});
 				}
 			)
 		}
 
-		let exportSession = async path => {
+		let exportPath = async path => {
 			await this.props.actions.doCommand(
 				`/ getjson ${path}`,
 				(results) => {
 					if (results && results.length) {
-						const json = results[0].results;
+						const pathParts = path.split('/');
+						let json;
+						if (path.endsWith('/')) {
+							pathParts.pop(); // get rid of empty end element
+							json = JSON.stringify(results[0].results);
+						}
+						else {
+							json = results[0].results;
+						}
 						const blob = new Blob([json], {type : "text/plain"});
 						const link = document.createElement('a');
-						link.download = path.split('/').pop();
+						link.download = pathParts.pop();
 						link.href = URL.createObjectURL(blob);
 						link.click();
 						URL.revokeObjectURL(link.href);
@@ -151,7 +195,6 @@ export class SessionsView extends React.Component {
 
 		let sections = [];
 		if (this.state.menuPath) {
-			const isFolder = this.state.menuPath.endsWith('/');
 			sections.push(e(
 				'div', {
 					id: 'sessions__menu-title',
@@ -172,64 +215,64 @@ export class SessionsView extends React.Component {
 				t('react:cancel')
 			));
 
-			if (!isFolder) {
-				// folder actions aren't implemented yet
-				sections.push(e(
-					'button', {
-						id: 'sessions__menu-rename',
-						key: 'menu-rename',
-						className: 'sessions__menu-button',
-						onClick: () => {
-							renameSession(this.state.menuPath);
-						},
+			sections.push(e(
+				'button', {
+					id: 'sessions__menu-rename',
+					key: 'menu-rename',
+					className: 'sessions__menu-button',
+					onClick: () => {
+						renamePath(this.state.menuPath);
 					},
-					t('react:sessionsRenameButton')
-				));
-				sections.push(e(
-					'button', {
-						id: 'sessions__menu-delete',
-						key: 'menu-delete',
-						className: 'sessions__menu-button',
-						onClick: () => {
-							deleteSession(this.state.menuPath);
-						},
+				},
+				t('react:sessionsRenameButton')
+			));
+			sections.push(e(
+				'button', {
+					id: 'sessions__menu-delete',
+					key: 'menu-delete',
+					className: 'sessions__menu-button',
+					onClick: () => {
+						deletePath(this.state.menuPath);
+						this.setState({menuPath: ''});
 					},
-					t('react:sessionsDeleteButton')
-				));
-					sections.push(e(
-					'button', {
-						id: 'sessions__menu-copy',
-						key: 'menu-copy',
-						className: 'sessions__menu-button',
-						onClick: () => {
-							copySession(this.state.menuPath);
-						},
+				},
+				t('react:sessionsDeleteButton')
+			));
+			sections.push(e(
+				'button', {
+					id: 'sessions__menu-clip',
+					key: 'menu-clip',
+					className: 'sessions__menu-button',
+					onClick: () => {
+						clipSession(this.state.menuPath);
 					},
-					t('react:sessionsDuplicateButton')
-				));
-				sections.push(e(
-					'button', {
-						id: 'sessions__menu-clip',
-						key: 'menu-clip',
-						className: 'sessions__menu-button',
-						onClick: () => {
-							clipSession(this.state.menuPath);
-						},
+				},
+				t('react:sessionsClipButton')
+			));
+			sections.push(e(
+				'button', {
+					id: 'sessions__menu-export',
+					key: 'menu-export',
+					className: 'sessions__menu-button',
+					onClick: async () => {
+						exportPath(this.state.menuPath);			
+						this.setState({menuPath: ''});
 					},
-					t('react:sessionsClipButton')
-				));
-				sections.push(e(
-					'button', {
-						id: 'sessions__menu-export',
-						key: 'menu-export',
-						className: 'sessions__menu-button',
-						onClick: async () => {
-							exportSession(this.state.menuPath);			
-						},
+				},
+				t('react:sessionsExportButton'),
+			));
+
+			sections.push(e(
+				'button', {
+					id: 'sessions__menu-copy',
+					key: 'menu-copy',
+					className: 'sessions__menu-button',
+					onClick: () => {
+						copyPath(this.state.menuPath);
 					},
-					t('react:sessionsExportButton'),
-				));
-			}
+				},
+				t('react:sessionsDuplicateButton')
+			));	
 
 			return e(
 				'div', {
@@ -379,19 +422,17 @@ export class SessionsView extends React.Component {
 										},
 										path
 									),
-									// commented out menu button - haven't implemented the actions for a folder
-									// each indivual file can be changed though
-								// 	e(
-								// 		'div', {
-								// 			className: 'sessions__entry-menu',
-								// 			value: path,
-								// 			onClick: e => {
-								// 				let path = e.target.getAttribute('value');
-								// 				this.setState({menuPath: path});
-								// 			}
-								// 		},
-								// 		'\u2699'
-								// 	)
+									e(
+										'div', {
+											className: 'sessions__entry-menu',
+											value: path,
+											onClick: e => {
+												let path = e.target.getAttribute('value');
+												this.setState({menuPath: path});
+											}
+										},
+										'\u2699'
+									)
 								)
 								sessionList.push(cmp);
 							}

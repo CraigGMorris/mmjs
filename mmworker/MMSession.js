@@ -418,17 +418,33 @@ class MMSession extends MMCommandParent {
 	 * @param {String} path - the path to delete
 	 */
 	async deleteSession(path) {
-		try {
-			await this.storage.delete(path);
-			if (this.storePath === path) {
-				this.storePath = '(unnamed)';
-				await this.saveLastSessionPath()
+		if (path) {
+			if (path.endsWith('/')) {
+				const sessionPaths = await this.storage.listSessions();
+				for (const existingPath of sessionPaths) {
+					if (existingPath.startsWith(path)) {
+						await this.storage.delete(existingPath);
+						if (this.storePath === existingPath) {
+							this.storePath = '(unnamed)';
+							await this.saveLastSessionPath()
+						}
+					}
+				}
 			}
-			return path;
-		}
-		catch(e) {
-			const msg = (typeof e === 'string') ? e : e.message;
-			this.setError('mmcmd:sessionDeleteFailed', {path: path, error: msg});
+			else {
+				try {
+					await this.storage.delete(path);
+					if (this.storePath === path) {
+						this.storePath = '(unnamed)';
+						await this.saveLastSessionPath()
+					}
+					return path;
+				}
+				catch(e) {
+					const msg = (typeof e === 'string') ? e : e.message;
+					this.setError('mmcmd:sessionDeleteFailed', {path: path, error: msg});
+				}
+			}
 		}
 	}
 
@@ -438,13 +454,39 @@ class MMSession extends MMCommandParent {
 	 * @param {string} newPath - the path for the copy
 	 */
 	async copySession(oldPath, newPath) {
-		try {
-			await this.storage.copy(oldPath, newPath);
+		if (oldPath.endsWith('/')) {
+			if (!newPath.endsWith('/')) {
+				newPath += '/';
+			}
+			const sessionPaths = await this.storage.listSessions();
+			for (const existingPath of sessionPaths) {
+				if (existingPath.startsWith(oldPath)) {
+					const newSessionPath = newPath + existingPath.substring(oldPath.length);
+					try {
+						await this.storage.copy(existingPath, newSessionPath);
+					}
+					catch(e) {
+						const msg = (typeof e === 'string') ? e : e.message;
+						this.setError('mmcmd:sessionCopyfailed', {oldPath: oldPath, newPath: newPath, error: msg});
+						return;
+						}
+					}
+			}
+			if (this.storePath.startsWith(oldPath)) {
+				this.storePath = newPath + this.storePath.substring(oldPath.length);
+				await this.saveLastSessionPath();
+			}
 			return newPath;
 		}
-		catch(e) {
-			const msg = (typeof e === 'string') ? e : e.message;
-			this.setError('mmcmd:sessionCopyfailed', {oldPath: oldPath, newPath: newPath, error: msg});
+		else {
+			try {
+				await this.storage.copy(oldPath, newPath);
+				return newPath;
+			}
+			catch(e) {
+				const msg = (typeof e === 'string') ? e : e.message;
+				this.setError('mmcmd:sessionCopyfailed', {oldPath: oldPath, newPath: newPath, error: msg});
+			}
 		}
 	}
 
@@ -455,18 +497,46 @@ class MMSession extends MMCommandParent {
 	 * @param {string} newPath - the path for the copy
 	 */
 	async renameSession(oldPath, newPath) {
-		try {
-			await this.storage.copy(oldPath, newPath);
-			await this.storage.delete(oldPath);
-			if (this.storePath === oldPath) {
-				this.storePath = newPath;
+		if (oldPath.endsWith('/')) {
+			if (!newPath.endsWith('/')) {
+				newPath += '/';
+			}
+			const sessionPaths = await this.storage.listSessions();
+			for (const existingPath of sessionPaths) {
+				if (existingPath.startsWith(oldPath)) {
+					const newSessionPath = newPath + existingPath.substring(oldPath.length);
+					try {
+						await this.storage.copy(existingPath, newSessionPath);
+						await this.storage.delete(existingPath);
+					}
+					catch(e) {
+						const msg = (typeof e === 'string') ? e : e.message;
+						this.setError('mmcmd:sessionRenamefailed', {oldPath: oldPath, newPath: newPath, error: msg});
+						return;
+					}
+				}
+			}
+			if (this.storePath.startsWith(oldPath)) {
+				this.storePath = newPath + this.storePath.substring(oldPath.length);
 				await this.saveLastSessionPath();
 			}
 			return newPath;
 		}
-		catch(e) {
-			const msg = (typeof e === 'string') ? e : e.message;
-			this.setError('mmcmd:sessionRenamefailed', {oldPath: oldPath, newPath: newPath, error: msg});
+		else {
+			try {
+				await this.storage.copy(oldPath, newPath);
+				await this.storage.delete(oldPath);
+				if (this.storePath === oldPath) {
+					this.storePath = newPath;
+					await this.saveLastSessionPath();
+				}
+				return newPath;
+			}
+			catch(e) {
+				const msg = (typeof e === 'string') ? e : e.message;
+				this.setError('mmcmd:sessionRenamefailed', {oldPath: oldPath, newPath: newPath, error: msg});
+				return;
+			}
 		}
 	}
 
@@ -677,14 +747,32 @@ class MMSession extends MMCommandParent {
 	 * command.args optional contains the path of a stored session to get json for
 	 */
 	async getJsonCommand(command) {
-		if (command.args) {
-			try {
-				let result = await this.storage.load(command.args);
-				command.results = result;
+		const args = command.args;
+		if (args) {
+			if (args.endsWith('/')) {
+				const sessionPaths = await this.storage.listSessions();
+				const pathParts = args.split('/');
+				pathParts.pop();
+				const folderName = pathParts.pop();
+				console.log(folderName);
+				const archive = {}
+				for (const path of sessionPaths) {
+					if (path.startsWith(args)) {
+						const sessionJson = await this.storage.load(path);
+						archive[path.substring(args.length-1)] = sessionJson;
+					}
+				}
+				command.results = {folderName: folderName, sessions: archive}
 			}
-			catch(e) {
-				const msg = (typeof e === 'string') ? e : e.message;
-				this.setError('mmcmd:sessionLoadFailed', {path: command.args, error: msg});
+			else {
+				try {
+					let result = await this.storage.load(args);
+					command.results = result;
+				}
+				catch(e) {
+					const msg = (typeof e === 'string') ? e : e.message;
+					this.setError('mmcmd:sessionLoadFailed', {path: command.args, error: msg});
+				}
 			}
 		}
 		else {
@@ -699,14 +787,55 @@ class MMSession extends MMCommandParent {
 	 * command.args contains json to construct session from
 	 */
 	async importCommand(command) {
-		try {
-			new MMUnitSystem(this);  // clear any user units and sets
-			await this.initializeFromJson(command.args);
-			command.results = this.storePath;
+		const rootPathLength = command.args.indexOf(':');
+		const rootPath = command.args.substring(0, rootPathLength);
+		const existingPaths = await this.storage.listSessions();
+		const pathAlreadyUsed = (newPath) => {
+			for (const path of existingPaths) {
+				if (path.startsWith(newPath)) {
+					return true;
+				}
+			}
+			return false;
 		}
-		catch(e) {
-			const msg = (typeof e === 'string') ? e : e.message;
-			this.setError('mmcmd:jsonImportFailed', {error: msg});
+		const json = command.args.substring(rootPathLength+1);
+		if (json.startsWith('{"folderName":')) {
+			// importing a folder archive
+			const archive = JSON.parse(json);
+			const sessions = archive.sessions;
+
+			let n = 2;
+			let newFolderPath = rootPath + archive.folderName;
+			while (pathAlreadyUsed(newFolderPath)) {
+				newFolderPath = archive.folderName + `-${n++}`;
+			}
+
+			for (const path of Object.keys(sessions)) {
+				const fullPath = newFolderPath + path;
+				await this.storage.save(fullPath, sessions[path]);
+			}
+
+		}
+		else if (json.substring(0,21).replace(/\s*/g,'').startsWith('{"Program":"Rtm"')) {
+			// session import
+			try {
+				new MMUnitSystem(this);  // clear any user units and sets
+				await this.initializeFromJson(json);
+				let storePath = rootPath + this.storePath;
+				let n = 2;
+				while (pathAlreadyUsed(storePath)) {
+					storePath = rootPath + this.storePath + `-${n++}`;
+				}
+				await this.saveSession(storePath);
+				command.results = this.storePath;
+			}
+			catch(e) {
+				const msg = (typeof e === 'string') ? e : e.message;
+				this.setError('mmcmd:jsonImportFailed', {error: msg});
+			}
+		}
+		else {
+			this.setError('mmcmd:sessionInvalidImport');
 		}
 	}
 
