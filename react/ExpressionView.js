@@ -298,7 +298,7 @@ export function ExpressionView(props) {
 							}
 						}
 					},
-					unitType ? `${unitType}: ${valueUnit}` : ''
+					unitType && valueUnit ? `${unitType}: ${valueUnit}` : ''
 				),
 				e(
 					TableView, {
