@@ -1189,6 +1189,7 @@ export class Diagram extends React.Component {
 			'div', {
 				id: 'diagram__wrapper',
 				ref: node => this.node = node,
+				onContextMenu: event => event.preventDefault(),
 				style: {
 					height: dgmBox.height,
 					width: dgmBox.width,
