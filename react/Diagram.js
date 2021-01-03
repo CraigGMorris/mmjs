@@ -906,7 +906,7 @@ export class Diagram extends React.Component {
 				case ContextMenuType.background: {
 					const menu = [
 						{
-							text: 'Add Tool to Model',
+							text: this.props.t('react:dgmButtonAddTool'),
 							action: () => {
 								this.setState({
 									showContext: {
@@ -917,7 +917,7 @@ export class Diagram extends React.Component {
 							}
 						},
 						{
-							text: 'Paste to Model',
+							text: this.props.t('react:dgmButtonPaste'),
 							action: () => {
 								readClipboard().then(clipText => {
 									const position = this.state.showContext.info;
@@ -928,11 +928,17 @@ export class Diagram extends React.Component {
 								});
 							}
 						},
+						{
+							text: this.props.t('react:dgmButtonHelp'),
+							action: () => {
+								window.open(`/help/diagram.html`,'MM Help');
+							}
+						}
 					];
 
 					if (!hasSystemClipboard()) {
 						menu.push({
-							text: 'Show Clipboard',
+							text: this.props.t('react:dgmButtonClipboard'),
 							action: () => {
 								// this.props.actions.pushView('clipboard', 'react:clipboardTitle');
 								this.setState({showContext: null, showClipboard: true});
@@ -963,12 +969,12 @@ export class Diagram extends React.Component {
 					const toolsWithTable = new Set(['Expression','Matrix','DataTable','Graph','Iterator','Ode']);
 					const menuEntries = [
 						{
-							text: 'Delete',
+							text: this.props.t('react:dgmButtonDelete'),
 							info: this.state.showContext.info,
 							action: deleteTool,
 						},
 						{
-							text: 'Copy',
+							text: this.props.t('react:dgmButtonCopy'),
 							info: this.state.showContext.info,
 							action: (info) => {
 								this.props.actions.doCommand(`${this.state.path} copytool ${info.name}`, (results) => {
@@ -980,7 +986,7 @@ export class Diagram extends React.Component {
 							}
 						},
 						{
-							text: 'Cut',
+							text: this.props.t('react:dgmButtonCut'),
 							info: this.state.showContext.info,
 							action: (info) => {
 								this.props.actions.doCommand(`${this.state.path} copytool  ${info.name}`, (results) => {
@@ -995,7 +1001,7 @@ export class Diagram extends React.Component {
 					];
 					if (toolsWithTable.has(this.state.showContext.info.toolTypeName)) {
 						menuEntries.push({
-							text: 'Copy as Table',
+							text: this.props.t('react:dgmButtonCopyTable'),
 							info: this.state.showContext.info,
 							action: (info) => {
 								this.props.actions.doCommand(`${this.state.path} copyastable ${info.name}`, (results) => {
@@ -1159,15 +1165,15 @@ export class Diagram extends React.Component {
 							t: t,
 							menu: [
 								{
-									text: 'Delete',
+									text: this.props.t('react:dgmButtonDelete'),
 									action: deleteTools
 								},
 								{
-									text: 'Copy',
+									text: this.props.t('react:dgmButtonCopy'),
 									action: copyTools
 								},
 								{
-									text: 'Cut',
+									text: this.props.t('react:dgmButtonCut'),
 									action: () => {
 										copyTools(true);
 									}

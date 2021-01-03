@@ -401,6 +401,11 @@ class MMSession extends MMCommandParent {
 				}
 				return result;
 			}
+			let result = await this.loadUrl('../help/Getting%20Started.txt');
+			if (result && result.length) {
+				await this.saveSession(result);
+			}
+			return result;
 		}
 		catch(e) {
 			this.newSession();
@@ -691,11 +696,17 @@ class MMSession extends MMCommandParent {
 		}
 		if (command.args) {
 			await this.loadSession(command.args);
+			command.results = this.storePath;
 		}
 		else {
-			await this.loadAutoSaved();
+			let result = await this.loadAutoSaved();
+			if (result && result.length) {
+				command.results = this.storePath;
+			}
+			else {
+				command.results = '';
+			}
 		}
-		command.results = this.storePath;
 	}
 
 	/**
@@ -843,22 +854,23 @@ class MMSession extends MMCommandParent {
 	}
 
 	/**
-	 * @method loadUrlCommand
-	 * verb
-	 * @param {MMCommand} command
-	 * command.args contains url of web file to construct session from
+	 * @method loadUrl
+	 * @param {String} url
+	 * @return {String} the storePath of the new session
+	 * load a web file from url to construct a session from
 	 */
-	async loadUrlCommand(command) {
-		if (command.args) {
+	async loadUrl(url) {
+		let returnValue = '';
+		if (url) {
 			try {
-				const response = await fetch(command.args);
+				const response = await fetch(url);
 				if (response.ok) {
 					const json = await response.text();
 					try {
 						this.isLoadingCase = true;
 						new MMUnitSystem(this);  // clear any user units and sets
 						await this.initializeFromJson(json);
-						command.results = this.storePath;
+						returnValue = this.storePath;
 					}
 					finally {
 						this.isLoadingCase = false;
@@ -866,14 +878,25 @@ class MMSession extends MMCommandParent {
 					}
 						}
 				else {
-					this.setError('mmcmd:sessionLoadUrlFailed', {url: command.args, error: response.statusText});
+					this.setError('mmcmd:sessionLoadUrlFailed', {url: url, error: response.statusText});
 				}
 			}
 			catch(e) {
 				const msg = (typeof e === 'string') ? e : e.message;
-				this.setError('mmcmd:sessionLoadUrlFailed', {url: command.args, error: msg});
+				this.setError('mmcmd:sessionLoadUrlFailed', {url: url, error: msg});
 			}	
 		}
+		return returnValue;	
+	}
+
+	/**
+	 * @method loadUrlCommand
+	 * verb
+	 * @param {MMCommand} command
+	 * command.args contains url of web file to construct session from
+	 */
+	async loadUrlCommand(command) {
+		command.results = this.loadUrl(command.args);
 	}
 
 	/**

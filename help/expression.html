@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Expression',{
+					inputs: 'Inputs',
+					parameters: 'Formula Parameters'
+				});
+			};			
+		</script>	
+		<title>Expression</title>
+	</head>
+	<body>
+		<div class="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<p>
+					An expression has a single <a href="formula.html">formula</a> representing an equation
+					or constant in your calculation.
+				</p>
+				<p>
+					It's name can be used in other formulas to represent the value it calculates.  Thus if
+					an expression named "speed" has a formula that is just:
+				</p>
+				<p class="formula">
+					100 kph
+				</p>
+				<p>
+					and a second expression "distance" has a formula:
+				</p>
+				<p>
+					speed * 2 h
+				</p>
+				<p>
+					The value of distance will be 200 km.
+				</p>
+			</div>
+			<div id="inputs" class="section">
+				<h3>Inputs</h3>
+				<div class="subsection">
+					In addition to the name field and notes button, an expression has:
+				</div>
+				<div class="subsection">
+					<h3>Input Checkbox</h3>
+					<p>
+						When on, this designates that the expression is considered to be an input for the
+						model that contains it.
+					</p>
+					<p>
+						This means it will appear in the input section of the
+						<a href="model.html">information view</a> of the model that owns it.
+					</p>
+					<p>
+						Also any values it references will be from the parent model, rather than the model
+						that contains it (unless there is no parent model, because the expression is in
+						the root model).
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Output Checkbox</h3>
+					<p>
+						When on, the value calculated by this expression will appear in the output section
+						of the <a href="model.html">information view</a> of the model that owns it.
+					</p>
+					<p>
+						Also this expression will be available as a parameter of the owning model that can be
+						accessed in <a href="formula.html">formulas</a>.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Formula Field</h3>
+					<p>
+						The <a href="formula.html">formula</a> that defines the value of the expression. Tap on it to open an
+						<a href="formulaeditor.html">editor</a> where you enter or edit the expression
+						formula.
+					</p>
+					<p>
+						When an expression has been calculated, the equals sign that appears between the name field and the formula field will change to blue.  Tapping this will cause the expression to be reevaluated.  This is normally only pertinent for formulas using the {now} or {wget url} functions, to force them to replace their cached values.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Unit</h3>
+					<p>
+						Below the formula, the unit type (e.g. length) of the value calculated by the formula
+						is displayed, along with the <a href="units.html">conversion unit</a>
+						(e.g. m, ft etc.) to be used for displaying the value.
+					</p>
+					<p>
+						If you wish to display the value with a different unit, tap on the unit to open a 
+						<a href="unitpicker.html">unit browser</a> where you can select a different one.
+					</p>
+					<p>
+						Note that setting the display unit does not change the formula or the value it
+						calculates, but merely how it is displayed. However the display unit must match
+						the type of the value calculated by the formula.
+					</p>
+					<p>
+						If the result of evaluating the formula is a
+						<a href="minionvalue.html">table value</a>, then the unit field will normally
+						be blank and the unit browser will be disabled, since different columns might have
+						different units.
+					</p>
+					<p>
+						However if you tap on the column name cell in the calculated value grid (see below),
+						will display the <a href="unitpicker.html">unit browser</a> and let you select a
+						display unit for that column.
+					</p>
+					<p>
+						Note that the default unit for a table value is defined by the original table
+						definition.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Calculated Value</h3>
+					<p>
+						The lower part of the view displays the result of the calculation as a matrix or
+						table.  If the display won't fit in the window, you can scroll it both horizontally
+						and vertically by dragging it. Dragging on the row or column headers with scroll
+						rapidly.
+					</p>
+					<p>
+						If the calculated value is a <a href="minionvalue.html">string type</a>, selecting a
+						cell will display the complete string in a <a href="stringview.html">string view</a>.
+					</p>
+				</div>
+			</div>
+			<div id="parameters" class="section">
+				<h3>Formula Parameters</h3>
+				<p class="reminder">
+					Parameters that can be accessed in the form a.b where a is the object and b is the
+					parameter.
+				</p>
+				<p>
+					If the expression is a reference to another object, then that object's parameters will
+					be available.
+				</p>
+				<p>
+					Similarly if the result of the expression is a table value, then the table value
+					column names will all be parameters.
+				<p>
+					Other parameters:
+				</p>
+				<ul>
+					<li><b>table</b> - regardless of the result type, it will be returned as a table value.</li>
+					<li><b>hasValue</b> - returns 1 if a value can be calculated for the expression
+						formula or 0 if not.</li>
+					<li><b>myFormula</b> - returns the expression formula as a string value</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>

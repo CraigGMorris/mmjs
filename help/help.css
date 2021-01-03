@@ -1,0 +1,175 @@
+/* Headings
+ * --------------------------------------------------------------------- */
+
+	/* h1,h2,h3,h4,h5,h6 { color: #111; } */
+	.section h3 {
+		/* color: #3889CA !important; */
+		color: #26863d !important;
+		background-color: rgb(233, 233, 233);
+		padding-left: 5px;
+	}
+
+	.subsection h3 {
+		color: #26863d !important;
+		background-color: rgb(233, 233, 233);
+		padding-left: 5px;
+	}
+
+/* Text Elements
+ * --------------------------------------------------------------------- */
+
+	blockquote        { color: #666; }
+	
+	pre {
+		background: #eee;
+		border:     1px solid #ddd;
+		font-size: 10px;
+	}
+	
+	hr {
+		background: #B2CCFF;
+		color:      #B2CCFF;
+	}
+
+	li { padding: 0.2em; }
+
+/* Tables
+ * --------------------------------------------------------------------- */
+
+	table {
+		border-top:     1px solid #ddd;
+		border-left:    1px solid #ddd;
+	}
+	th,td {
+		border-bottom:  1px solid #ddd;
+		border-right:   1px solid #ddd;
+		vertical-align: top;
+	}
+	table.no_border, table.no_border td, table.no_border th {
+		border:     0px solid #ddd;
+	}
+
+/* Default Classes
+ * --------------------------------------------------------------------- */
+
+	p.quiet { color: #666; }
+	.alt    { color: #666; }
+	
+	p.title, a.title, div.title {
+		color: #040;
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		font-size: 1.0em;
+		margin-top: 0px;
+		margin-bottom: 0.5em;
+	}
+	
+	p.subtitle {
+		color: #040;
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		font-size: 1.0em;
+		margin-bottom: 0.2em;
+	}
+	
+	p.reminder {
+		color: #004400;
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		font-size: 0.8em;
+		font-style: italic;
+	}		
+	
+	p img       { float: none; }
+	img.no_padding {padding:0;margin:0}
+	
+	.img-right {
+		float: right;
+		margin: 0 0 .5em .5em;
+	}
+	em { font-weight:bold; }
+	.img-left {
+		float: left;
+		margin: 0 .5em .5em 0;
+	}
+
+	#heading {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 1ft 1fr 1fr;
+		grid-template-areas: "title title"
+			"sectiontoggle contents"
+			"sectionmenu contentsmenu";
+		grid-gap: 5px;
+	}
+
+	#title {
+		grid-area: title;
+		font-size: larger;
+		padding-bottom: 5px;
+		color: #040;
+		border-bottom: solid 1px black;
+	}
+
+	#contentstoggle {
+		grid-area: contents;
+		text-align: left;
+		color: blue;
+		border-bottom: solid 1px black;
+		padding-bottom: 5px;
+	}
+
+	#sectiontoggle {
+		grid-area: sectiontoggle;
+		padding-left: 5px;
+		padding-bottom: 5px;
+		color: blue;
+		border-bottom: solid 1px black;
+	}
+
+	#sectionmenu {
+		grid-area: sectionmenu;
+	}
+
+	#contentsmenu {
+		grid-area: contentsmenu;
+	}
+
+	.sectionlink {
+		padding-left: 10px;
+		color: blue;
+	}
+
+	.contentlink {
+		padding-left: 10px;
+		color: blue;
+	}
+
+	.section {
+		margin-left: 5px;
+	}
+
+	.subsection {
+		margin-left: 20px;
+	}
+	
+	.centeredimage {
+		max-width: 50%;
+		margin-left: 25%;
+	}
+	
+	.titlelink {
+		position: absolute;
+		left: 110px;
+		right: 110px;
+		top: 0px;
+		font-size: 16px;
+		text-align: center;
+	}
+	
+	.indent {
+		margin-left: 20px;
+	}
+
+	.formula {
+		color: navy;
+		font-weight: bold;
+	}
+

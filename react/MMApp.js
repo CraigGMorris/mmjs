@@ -526,7 +526,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 	const showHelp = useCallback(() => {
 		let stackLength = infoStack.length;
 		let viewKey = stackLength ? infoStack[stackLength - 1].viewKey : 'none';
-		console.log(`show help ${viewKey}`);
+		window.open(`/help/${viewKey.toLowerCase()}.html`,'MM Help');
 	}, []);
 
 	/**
@@ -593,7 +593,10 @@ const pushTool = useCallback((toolName, path, toolType) => {
 		else {
 			cmd = '/ load';
 		}
-		pipe.doCommand(cmd, () => {
+		pipe.doCommand(cmd, (results) => {
+			if (results[0].error) {
+				console.log(results[0].error);
+			}
 			setAutoLoadComplete(true);
 		});
 
