@@ -896,7 +896,7 @@ class MMSession extends MMCommandParent {
 	 * command.args contains url of web file to construct session from
 	 */
 	async loadUrlCommand(command) {
-		command.results = this.loadUrl(command.args);
+		command.results = await this.loadUrl(command.args);
 	}
 
 	/**
