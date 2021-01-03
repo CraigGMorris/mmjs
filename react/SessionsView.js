@@ -185,6 +185,9 @@ export class SessionsView extends React.Component {
 						const blob = new Blob([json], {type : "text/plain"});
 						const link = document.createElement('a');
 						link.download = pathParts.pop();
+						if (link.download.length === 0) {
+							link.download = 'root';
+						}
 						link.href = URL.createObjectURL(blob);
 						link.click();
 						URL.revokeObjectURL(link.href);
@@ -194,7 +197,7 @@ export class SessionsView extends React.Component {
 		}
 
 		let sections = [];
-		if (this.state.menuPath) {
+		if (this.state.menuPath) {	// item menu is being shown
 			sections.push(e(
 				'div', {
 					id: 'sessions__menu-title',
@@ -281,8 +284,8 @@ export class SessionsView extends React.Component {
 				sections
 			);	
 		}
-		else {
-			let header = e(
+		else {	// list of sessions is being shown
+			let header = e(	// buttons at top of list
 				'div', {
 					id: 'sessions__header',
 					key: 'header',
@@ -347,22 +350,23 @@ export class SessionsView extends React.Component {
 					'button', {
 						id: 'sessions__export-button',
 						onClick: async () => {
-							let cmd = '/ getjson';
-							await this.props.actions.doCommand(
-								cmd,
-								(results) => {
-									if (results && results.length) {
-										const json = results[0].results;
-										const blob = new Blob([json], {type : "text/plain"});
-										const link = document.createElement('a');
-										link.download = currentPath.split('/').pop();
-										link.href = URL.createObjectURL(blob);
-										link.click();
-										URL.revokeObjectURL(link.href);
-									}
-									// this.props.actions.popView();
-								}
-							);			
+							exportPath(rootFolder.length ? rootFolder : '/');
+							// let cmd = '/ getjson';
+							// await this.props.actions.doCommand(
+							// 	cmd,
+							// 	(results) => {
+							// 		if (results && results.length) {
+							// 			const json = results[0].results;
+							// 			const blob = new Blob([json], {type : "text/plain"});
+							// 			const link = document.createElement('a');
+							// 			link.download = currentPath.split('/').pop();
+							// 			link.href = URL.createObjectURL(blob);
+							// 			link.click();
+							// 			URL.revokeObjectURL(link.href);
+							// 		}
+							// 		// this.props.actions.popView();
+							// 	}
+							// );			
 						},
 					},
 					t('react:sessionsExportButton'),
