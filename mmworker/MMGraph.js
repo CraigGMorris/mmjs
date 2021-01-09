@@ -1631,8 +1631,6 @@ class MMGraph extends MMTool {
 			}
 
 			lines.push('</g>')	// svg_lines
-
-			console.log('3d');
 		}
 		else { // 2d
 			// determine color to start with

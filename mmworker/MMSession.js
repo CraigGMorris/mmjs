@@ -274,6 +274,11 @@ class MMSession extends MMCommandParent {
 			this.storePath = saveObject.CaseName;
 		}
 		this.processor.defaultObject = rootModel;
+		return {
+			storePath: this.storePath,
+			modelPath: saveObject.ModelPath,
+			selected: saveObject.SelectedObject
+		};
 	}
 
 	/** @method sessionAsJson
@@ -370,9 +375,9 @@ class MMSession extends MMCommandParent {
 			this.isLoadingCase = true;
 			let result = await this.storage.load(path);
 			new MMUnitSystem(this);  // clear any user units and sets
-			await this.initializeFromJson(result, path);
+			const returnValue =await this.initializeFromJson(result, path);
 			this.storePath = path;
-			return result;
+			return returnValue;
 		}
 		catch(e) {
 			const msg = (typeof e === 'string') ? e : e.message;
@@ -393,17 +398,18 @@ class MMSession extends MMCommandParent {
 			this.newSession();
 			const lastPath = await this.storage.load(this.savedLastPathId);
 			if (lastPath) {
+				let returnValue;
 				let result = await this.storage.load(lastPath);
 				if (result) {
 					new MMUnitSystem(this);  // clear any user units and sets
-					await this.initializeFromJson(result, lastPath);
+					returnValue = await this.initializeFromJson(result, lastPath);
 					this.storePath = lastPath;
 				}
-				return result;
+				return returnValue;
 			}
 			let result = await this.loadUrl('../help/Getting%20Started.txt');
-			if (result && result.length) {
-				await this.saveSession(result);
+			if (result && result.storePath && result.storePath.length) {
+				await this.saveSession(result.storePath);
 			}
 			return result;
 		}
@@ -695,17 +701,10 @@ class MMSession extends MMCommandParent {
 			return;
 		}
 		if (command.args) {
-			await this.loadSession(command.args);
-			command.results = this.storePath;
+			command.results = await this.loadSession(command.args);
 		}
 		else {
-			let result = await this.loadAutoSaved();
-			if (result && result.length) {
-				command.results = this.storePath;
-			}
-			else {
-				command.results = '';
-			}
+			command.results = await this.loadAutoSaved();
 		}
 	}
 
@@ -837,14 +836,15 @@ class MMSession extends MMCommandParent {
 			// assume session import
 			try {
 				new MMUnitSystem(this);  // clear any user units and sets
-				await this.initializeFromJson(json);
+				const returnValue = await this.initializeFromJson(json);
 				let storePath = rootPath + this.storePath;
 				let n = 2;
 				while (pathAlreadyUsed(storePath)) {
 					storePath = rootPath + this.storePath + `-${n++}`;
 				}
 				await this.saveSession(storePath);
-				command.results = this.storePath;
+				returnValue.storePath = this.storePath;
+				command.results = returnValue;
 			}
 			catch(e) {
 				const msg = (typeof e === 'string') ? e : e.message;
@@ -869,8 +869,7 @@ class MMSession extends MMCommandParent {
 					try {
 						this.isLoadingCase = true;
 						new MMUnitSystem(this);  // clear any user units and sets
-						await this.initializeFromJson(json);
-						returnValue = this.storePath;
+						returnValue = await this.initializeFromJson(json);
 					}
 					finally {
 						this.isLoadingCase = false;
@@ -920,7 +919,8 @@ class MMSession extends MMCommandParent {
 	pushModelCommand(command) {
 		const model = this.currentModel.childNamed(command.args);
 		if (model instanceof MMModel) {
-			this.pushModel(model);	
+			this.pushModel(model);
+			this.autoSaveSession();
 		}
 
 		command.results = this.currentModel.getPath();
@@ -929,7 +929,7 @@ class MMSession extends MMCommandParent {
 	/**
 	 * @method popModelCommand
 	 * verb
-	 * @param {MMCommand} command
+	 * @param {MMCommand} command - args can be count of how many to pop - default 1
 	 * command.results contains name new current model
 	 */
 	popModelCommand(command) {
@@ -938,7 +938,8 @@ class MMSession extends MMCommandParent {
 		}
 		else {
 			this.popModel();
-		}	
+		}
+		this.autoSaveSession();
 		command.results = this.currentModel.getPath();
 	}
 
@@ -1097,8 +1098,13 @@ class MMTool extends MMCommandParent {
 	 * should be overridden by derived classes
 	 */
 	toolViewInfo(command) {
+		// console.log(`toolviewinfo ${this.getPath()} ${this.session.selectedObject}`);
 		let parent = this;
+		const oldSelected = this.session.selectedObject;
 		this.session.selectedObject = this.name;
+		if (oldSelected !== this.name) {
+			this.session.autoSaveSession();
+		}
 		while (parent.typeName !== 'Model') {
 			parent = parent.parent;
 		}

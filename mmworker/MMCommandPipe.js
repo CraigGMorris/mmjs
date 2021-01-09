@@ -20,7 +20,7 @@ export class MMCommandPipe {
 	 * @param {function} callBack
 	 */
 	doCommand(command, callBack) {
-		// console.log(`${command.cmdString}`);
+		// console.log(`pipe ${command.cmdString}`);
 		this.cmdWorker.postMessage(command); // Sending message as an array to the worker
 
 		this.cmdWorker.onmessage = function(e) {
