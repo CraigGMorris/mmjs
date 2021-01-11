@@ -154,8 +154,7 @@ export class Diagram extends React.Component {
 
 	componentDidMount() {
 		this.node.addEventListener('wheel', this.onWheel, {passive: false});
-		console.log('diagram mounted');
-		// this.getModelInfo(true);
+		this.getModelInfo(true);
 	}
 
 	componentWillUnmount() {

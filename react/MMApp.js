@@ -178,8 +178,37 @@ export function MMApp(props) {
 	}, [viewType]);
 
 	useEffect(() => {
-		console.log('mmapp loaded');
-	}, []);
+		if (!autoLoadComplete) {
+			let cmd = document.baseURI.split('?cmd=').splice(1);
+			// console.log(`cmd = "${cmd}"`);
+			if (cmd.length) {
+				cmd = decodeURI(cmd);
+			}
+			else {
+				cmd = '/ load';
+			}
+			// pipe.doCommand(cmd, (results) => {
+			doCommand(cmd, (results) => {
+					if (results[0].error) {
+					console.log(results[0].error);
+				}
+				else {
+					const resetInfo = results[0].results;
+					if (resetInfo) {
+						resetInfoStack('root', resetInfo);
+						if (
+							viewType === ViewType.diagram &&
+							resetInfo.selected &&
+							resetInfo.selected.type !== 'Model')
+						{
+							setViewType(ViewType.info);
+						}
+					}
+				}
+				setAutoLoadComplete(true);
+			});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		}	}, []);
 
 
 	/** setStateViewType
@@ -268,7 +297,7 @@ export function MMApp(props) {
 	 * @param {function} callBack - (cmds[]) => {}
 	 */
 	const doCommand = useCallback((cmd, callBack) => {
-		console.log(`doCommand ${cmd}`);
+		// console.log(`doCommand ${cmd}`);
 		/**
 		 * errorAlert
 		 * @param {String} msg
@@ -632,29 +661,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 		}
 	}, [doCommand, updateDiagram]);
 
-	// make sure auto load (or url cmd parameter) is complete before rendering
 	if (!autoLoadComplete) {
-		let cmd = document.baseURI.split('?cmd=').splice(1);
-		// console.log(`cmd = "${cmd}"`);
-		if (cmd.length) {
-			cmd = decodeURI(cmd);
-		}
-		else {
-			cmd = '/ load';
-		}
-		pipe.doCommand(cmd, (results) => {
-		// doCommand(cmd, (results) => {
-				if (results[0].error) {
-				console.log(results[0].error);
-			}
-			else {
-				if (results[0].results) {
-					resetInfoStack('root', results[0].results);
-				}
-			}
-			setAutoLoadComplete(true);
-		});
-
 		return null;
 	}
 
