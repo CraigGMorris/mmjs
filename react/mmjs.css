@@ -599,7 +599,7 @@ a:hover {
 }
 
 #htmlpage__iframe {
-	height: 99%;
+	height: calc(var(--info-height) - 70px);
 	width: 100%;
 }
 
