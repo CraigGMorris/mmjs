@@ -1492,7 +1492,7 @@ class ToolIcon extends React.Component {
 						wrappedLine
 					);
 					notesLineComponents.push(lineComponent);
-					if (lineNumber > 20) {
+					if (lineNumber > 31) {
 						notesLineComponents.push(
 							e(
 								'tspan', {
