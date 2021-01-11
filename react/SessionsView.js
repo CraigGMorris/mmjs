@@ -43,8 +43,8 @@ export class SessionsView extends React.Component {
 		let loadSession = async e => {
 			await this.props.actions.doCommand(
 				`/ load ${e.target.getAttribute('value')}`,
-				() => {
-					this.props.actions.resetInfoStack('root');
+				(results) => {
+					this.props.actions.resetInfoStack('root', results[0].results);
 					this.props.updateDiagram(true);
 				}
 			);

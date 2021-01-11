@@ -274,11 +274,44 @@ class MMSession extends MMCommandParent {
 			this.storePath = saveObject.CaseName;
 		}
 		this.processor.defaultObject = rootModel;
-		return {
+
+		const returnValue = {
 			storePath: this.storePath,
-			modelPath: saveObject.ModelPath,
-			selected: saveObject.SelectedObject
 		};
+
+		if (saveObject.ModelPath) {
+				const modelStack = [];
+			const pathModels = saveObject.ModelPath.split('.');
+			if (pathModels.length > 2) {
+				for (let i = 2; i < pathModels.length; i++) {
+					const childModel = this.currentModel.childNamed(pathModels[i]);
+					if (!childModel) { break; }
+					this.pushModel(childModel);
+					modelStack.push(childModel.name);
+				}
+				returnValue.modelStack = modelStack
+			}
+		}
+
+		if (saveObject.SelectedObject) {
+			const toolName = saveObject.SelectedObject;
+			const tool = this.currentModel.childNamed(toolName);
+			if (tool) {
+				const toolType = tool.className.substring(2);
+				if (toolType !== 'Model') {
+					const fakeCommand = {results: {}};
+					tool.toolViewInfo(fakeCommand);
+					returnValue.selected = {
+						name: toolName,
+						type: toolType,
+						info: fakeCommand
+					}
+				}
+			}
+		}
+
+
+		return returnValue;
 	}
 
 	/** @method sessionAsJson

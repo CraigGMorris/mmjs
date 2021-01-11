@@ -177,6 +177,11 @@ export function MMApp(props) {
 		}
 	}, [viewType]);
 
+	useEffect(() => {
+		console.log('mmapp loaded');
+	}, []);
+
+
 	/** setStateViewType
 	 * sets the actual viewType, but with some additional processing
 	 * @param {ViewType} newType
@@ -201,19 +206,60 @@ export function MMApp(props) {
 
 	/** resetInfoStack
 	 * @param {string} rootName
-	 * clears all views - called when new case loaded
+	 * @param {string} resetInfo - optional object containing modelStack,
+	 * an array of model names to be pushed to the info stack and
+	 * an optional selectedTool containing information
+	 * for a tool in the top most model to be viewed immediately
+	 * clears all views and optionally fills infoStack with new view state
+	 * - called when new case loaded
 	 */
-	const resetInfoStack = useCallback((rootName) => {
-		const infoState = {
+	const resetInfoStack = useCallback((rootName, resetInfo) => {
+		let path = `/.${rootName}`;
+		let infoState = {
 			title: rootName,
-			path: `/.${rootName}`,
+			path: path,
 			stackIndex: 0,
 			updateCommands: '',
 			updateResults: [],
 			viewKey: 'Model',
 		};
 		infoStack = [infoState];
+		let stackIndex = 1;
+		if (resetInfo) {
+			if (resetInfo.modelStack) {
+				const modelStack = resetInfo.modelStack;
+				for (let modelName of modelStack) {
+					path += '.' + modelName;
+					infoState = {
+						title: modelName,
+						path: path,
+						stackIndex: stackIndex++,
+						updateCommands: '',
+						updateResults: [],
+						viewKey: 'Model',
+					};
+					infoStack.push(infoState);
+				}
+			}
+			if (resetInfo.selected) {
+				const modelPath = path;
+				const toolName = resetInfo.selected.name;
+				path += '.' + toolName;
+				const updateCommand = `${path} toolViewInfo`;
+				infoState = {
+					title: toolName,
+					path: path,
+					modelPath: modelPath,
+					stackIndex: stackIndex++,
+					updateCommands: updateCommand,			// commands used to update the view state
+					updateResults: [resetInfo.selected.info],		// result of doCommand on the updateCommands
+					viewKey: resetInfo.selected.type,
+				};
+				infoStack.push(infoState);		
+			}
+		}
 		setViewInfo(infoState);
+		while(dgmStateStack.pop());
 	},[]);
 
 	/**
@@ -222,7 +268,7 @@ export function MMApp(props) {
 	 * @param {function} callBack - (cmds[]) => {}
 	 */
 	const doCommand = useCallback((cmd, callBack) => {
-		// console.log(`doCommand ${cmd}`);
+		console.log(`doCommand ${cmd}`);
 		/**
 		 * errorAlert
 		 * @param {String} msg
@@ -401,8 +447,11 @@ export function MMApp(props) {
 							if (dgmState && diagramRef.current) {
 								diagramRef.current.setState(dgmState);
 							}
+							updateView(infoStack.length-1, false);
 						}
-						updateView(infoStack.length-1, false);
+						else {
+							updateView(infoStack.length-1, true);
+						}
 					});
 					break;
 
@@ -594,8 +643,14 @@ const pushTool = useCallback((toolName, path, toolType) => {
 			cmd = '/ load';
 		}
 		pipe.doCommand(cmd, (results) => {
-			if (results[0].error) {
+		// doCommand(cmd, (results) => {
+				if (results[0].error) {
 				console.log(results[0].error);
+			}
+			else {
+				if (results[0].results) {
+					resetInfoStack('root', results[0].results);
+				}
 			}
 			setAutoLoadComplete(true);
 		});

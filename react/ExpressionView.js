@@ -62,7 +62,7 @@ export function ExpressionView(props) {
 	const results = updateResults.length ? updateResults[0].results : {};
 	const path = results.path;
 	const value = results.value;
-	const isTable = value.t === 't';
+	const isTable = (value && value.t) === 't';
 	let unitType;
 	let valueUnit;
 	if (isTable) {
