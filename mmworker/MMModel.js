@@ -774,15 +774,9 @@ class MMModel extends MMTool {
 		if (description.length === 0) {
 			return MMToolValue.scalarValue(this);
 		}
-		let toolName = description.split('.', 1);
-		let restOfPath;
-		if (toolName.length === 2) {
-			[toolName, restOfPath] = toolName;
-		}
-		else {
-			toolName = toolName[0];
-		}
-		toolName = toolName.toLowerCase();
+		const toolNameParts = description.split('.');
+		const toolName = toolNameParts.shift().toLowerCase();
+		const restOfPath = toolNameParts.join('.');
 		const tool = this.children[toolName];
 		if (tool) {
 			value = tool.valueDescribedBy(restOfPath, requestor);
