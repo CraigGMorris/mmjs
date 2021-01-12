@@ -737,7 +737,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				'div', {
 					id: 'info-nav__help',
 					onClick: showHelp
-				}, '?'
+				}, t('react:infoButtonHelp')
 			)			
 		);
 	}
