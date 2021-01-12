@@ -1535,6 +1535,7 @@ class ToolIcon extends React.Component {
 
 		return e(
 			'g', {
+				className: 'diagram__toolicon',
 				style: {
 					stroke: textColor,
 					fill: fillColor
@@ -1767,6 +1768,7 @@ class ClickableDiagramText extends React.Component {
 			className: 'diagram__clickable-text',
 			style: {
 				pointerEvents: 'auto',
+				cursor: 'pointer',
 				fill: 'blue',
 				font: `${this.size}px sans-serif`,
 			},

@@ -328,6 +328,10 @@ a:hover {
 	fill: var(--link--color-hover);
 } */
 
+.diagram__toolicon {
+	cursor: pointer;
+}
+
 #diagram__wrapper {
 	/* touch-action: none needed to prevent pinch from zooming entire window on ios */
 	touch-action: none;
@@ -1331,6 +1335,10 @@ a:hover {
 	width: 100%;
 	font-size: 12pt;
 	stroke: var(--tableview__value--stroke-color);
+}
+
+#tableview__value-svg rect {
+	cursor: pointer;
 }
 
 #tableview__origin-box {
