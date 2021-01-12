@@ -351,25 +351,9 @@ export class SessionsView extends React.Component {
 						id: 'sessions__export-button',
 						onClick: async () => {
 							exportPath(rootFolder.length ? rootFolder : '/');
-							// let cmd = '/ getjson';
-							// await this.props.actions.doCommand(
-							// 	cmd,
-							// 	(results) => {
-							// 		if (results && results.length) {
-							// 			const json = results[0].results;
-							// 			const blob = new Blob([json], {type : "text/plain"});
-							// 			const link = document.createElement('a');
-							// 			link.download = currentPath.split('/').pop();
-							// 			link.href = URL.createObjectURL(blob);
-							// 			link.click();
-							// 			URL.revokeObjectURL(link.href);
-							// 		}
-							// 		// this.props.actions.popView();
-							// 	}
-							// );			
 						},
 					},
-					t('react:sessionsExportButton'),
+					t('react:sessionsExportAllButton'),
 				),
 			);
 
