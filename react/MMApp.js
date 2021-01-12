@@ -761,12 +761,12 @@ const pushTool = useCallback((toolName, path, toolType) => {
 		});
 	}
 
-	let expandText = t('react:dgmButtonExpand');
+	let expandText = t('react:infoButtonExpand');
 	if (viewType === ViewType.info) {
-		expandText = t('react:dgmButtonDiagram');
+		expandText = t('react:infoButtonDiagram');
 	}
 	else if (viewType === ViewType.diagram) {
-		expandText = t('react:dgmButtonInfo');
+		expandText = t('react:infoButtonInfo');
 	}
 
 	let viewKeys = new Set(infoStack.map(v => v.viewKey));
@@ -828,7 +828,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					}	
 				}
 				},
-				t('react:dgmButtonUndo')
+				t('react:infoButtonUndo')
 			),
 			e(
 					'button', {
@@ -851,7 +851,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 						}
 					}
 				},
-				t('react:dgmButtonRedo')
+				t('react:infoButtonRedo')
 			),
 			e(
 				'button', {
@@ -862,7 +862,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 						pushView('units', 'react:unitsTitle');
 					}
 				},
-				t('react:dgmButtonUnits')
+				t('react:infoButtonUnits')
 			),
 			e(
 				'button', {
@@ -873,7 +873,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 						pushConsole();
 					}
 				},
-				t('react:dgmButtonConsole')
+				t('react:infoButtonConsole')
 			),
 			e(
 					'button', {
@@ -884,7 +884,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 						pushView('sessions', 'react:sessionsTitle', {rootFolder: ''});
 					}
 				},
-				t('react:dgmButtonSessions')
+				t('react:infoButtonSessions')
 			),
 		);
 	}
