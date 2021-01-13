@@ -205,6 +205,7 @@ export function MMApp(props) {
 				cmd = '/ load';
 			}
 			// pipe.doCommand(cmd, (results) => {
+			console.log(`load command=${cmd}`);
 			doCommand(cmd, (results) => {
 					if (results[0].error) {
 					console.log(results[0].error);

@@ -90,7 +90,7 @@ export function OptimizerView(props) {
 	else {
 		const outputComponents = [];
 		const outputs = results.outputs;
-		const outputCount = outputs.length;
+		const outputCount = outputs ? outputs.length : 0;
 		for (let i = 0; i < outputCount; i++) {
 			outputComponents.push(e(
 				'div', {
