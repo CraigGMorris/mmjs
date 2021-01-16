@@ -1184,15 +1184,15 @@ export class Diagram extends React.Component {
 							t: t,
 							menu: [
 								{
-									text: this.props.t('react:dgmButtonDelete'),
+									text: this.props.t('react:dgmButtonDeleteSel'),
 									action: deleteTools
 								},
 								{
-									text: this.props.t('react:dgmButtonCopy'),
+									text: this.props.t('react:dgmButtonCopySel'),
 									action: copyTools
 								},
 								{
-									text: this.props.t('react:dgmButtonCut'),
+									text: this.props.t('react:dgmButtonCutSel'),
 									action: () => {
 										copyTools(true);
 									}
