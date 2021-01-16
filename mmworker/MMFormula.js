@@ -996,8 +996,8 @@ class MMRangeOperator extends MMDyadicOperator {
 					});
 					return null;
 				}
-				const start = v1.valueAtRowColumn(1, 1);
-				const end = v2.valueAtRowColumn(1, 1);
+				const start = Math.round(v1.valueAtRowColumn(1, 1));
+				const end = Math.round(v2.valueAtRowColumn(1, 1));
 				if (start < end) {
 					const nRows = end - start + 1;
 					const nColumns = 1;
