@@ -329,6 +329,24 @@ class MMStringValue extends MMValue {
 	}
 
 	/**
+	 * @method multiply
+	 * returns the repetiion of this value times
+	 * @param {MMNumberValue} value
+	 * @returns {MMStringValue}
+	 */
+	multiply(value) {
+		const rv = this.processStringDyadic(value, (a, b) => {
+			let s = a;
+			for (let i = 1; i < b; i++) {
+				s += a
+			}
+			return s;
+		});
+		return rv;
+	}
+
+
+	/**
 	 * @method numberValue
 	 * @override
 	 * @returns MMNumberValue

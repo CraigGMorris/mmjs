@@ -436,7 +436,7 @@ class MMDyadicOperator extends MMFormulaOperator {
 		if (v1 instanceof MMNumberValue && v2 instanceof MMNumberValue) {
 			return this.operationOn(v1, v2);
 		}
-		else if (v1 instanceof MMStringValue && v2 instanceof MMStringValue) {
+		else if (v1 instanceof MMStringValue && (v2 instanceof MMStringValue || v2 instanceof MMNumberValue)) {
 			return this.operationOn(v1, v2);
 		}
 		else if (v1 instanceof MMTableValue) {
