@@ -131,6 +131,7 @@ function EditColumnView(props) {
 					id: 'datatable__column-formula-editor',
 					t: t,
 					viewInfo: props.viewInfo,
+					actions: props.actions,
 					formula: defaultValue,
 					formulaOffset: formulaOffset,
 					cancelAction: () => {

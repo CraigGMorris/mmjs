@@ -114,6 +114,7 @@ export function GraphView(props) {
 				key: 'editor',
 				t: t,
 				viewInfo: props.viewInfo,
+				actions: props.actions,
 				formula: editFormula,
 				formulaOffset: formulaOffset,
 				cancelAction: () => {

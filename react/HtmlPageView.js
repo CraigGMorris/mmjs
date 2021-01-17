@@ -129,6 +129,7 @@ export function HtmlPageView(props) {
 				key: 'editor',
 				t: t,
 				viewInfo: props.viewInfo,
+				actions: props.actions,
 				formula: results.formula,
 				formulaOffset: formulaOffset,
 				cancelAction: () => {
