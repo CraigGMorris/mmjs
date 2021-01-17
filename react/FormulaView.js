@@ -588,7 +588,9 @@ export function FormulaEditor(props) {
 		const selectionStart = inputRef.current.selectionStart;
 		const selectionEnd = inputRef.current.selectionEnd;
 		if (display === FormulaDisplay.units) {
-			value = `"${value}"`;
+			if (value.includes('-') || value.includes('/') || value.includes('^')) {
+				value = `"${value}"`;
+			}
 		}
 		const newFormula = `${current.substring(0, selectionStart)}${value}${current.substring(selectionEnd)}`;
 		setFormula(newFormula);

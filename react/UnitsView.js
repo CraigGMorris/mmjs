@@ -656,6 +656,9 @@ export function UnitPicker(props) {
 				className: 'unit-picker__unit-name',
 				key: unitName,
 				onClick: () => {
+					if (selectedUnit.endsWith('/') || selectedUnit.endsWith('-')) {
+						unitName = selectedUnit + unitName;
+					}
 					setSelectedUnit(unitName);
 				}
 			},
