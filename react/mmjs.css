@@ -1179,6 +1179,7 @@ a:hover {
 	grid-template-columns: 1fr 1fr 1fr 1fr;
 	grid-template-areas: "new save import download";
 	grid-column-gap: 10px;
+	padding-top: 5px;
 }
 
 #sessions__new-button {
@@ -1207,6 +1208,8 @@ a:hover {
 
 #sessions__list {
 	grid-area: menu-start / list-start / list-end / list-end;
+	height: calc(var(--info-height) - 50px);
+	overflow: auto;
 	z-index: 1;
 }
 
