@@ -1027,6 +1027,9 @@ class MMGraph extends MMTool {
 			}
 			return rv;
 		}
+		else {
+			return super.valueDescribedBy(description, requestor);
+		}
 	}
 
 	/**
