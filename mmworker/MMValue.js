@@ -166,15 +166,15 @@ class MMValue {
 	 */
 	iSort() {
 		const values = [];
-		const indicies = [];
+		const indices = [];
 		const columnCount = this.columnCount;
 		const myValues = this._values;
 		const rowCount = this.rowCount;
 		for (let i = 0; i < rowCount; i++) {
-			indicies.push(i);
+			indices.push(i);
 			values.push(myValues[i*columnCount]);  // first column
 		}
-		indicies.sort((a,b) => {
+		indices.sort((a,b) => {
 			const va = values[a];
 			const vb = values[b];
 			if (va < vb) {
@@ -188,7 +188,7 @@ class MMValue {
 		const rv = new MMNumberValue(rowCount, 1);
 		const rvValues = rv._values;
 		for (let i = 0; i < rowCount; i++) {
-			rvValues[i] = indicies[i] + 1;
+			rvValues[i] = indices[i] + 1;
 		}
 		return rv;
 	}

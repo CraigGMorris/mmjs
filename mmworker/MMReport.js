@@ -121,10 +121,10 @@ var MMReport = {
 					}
 					lines.push(fields.join(sep));    
 				}
-				const includeIndicies = !options.isTableCopy && (value.valueCount !== 1);
+				const includeindices = !options.isTableCopy && (value.valueCount !== 1);
 				for (let i = 0; i <= value.rowCount; i++) {
 					const fields = [];
-					if (includeIndicies) {
+					if (includeindices) {
 						if (i !== 0) {
 							fields.push(MMReport.string(i.toFixed(0).padStart(5)), options);
 						}

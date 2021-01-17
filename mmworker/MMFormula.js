@@ -3715,18 +3715,18 @@ class MMISortFunction extends MMSingleValueFunction {
 class MMSortFunction extends MMSingleValueFunction {
 	operationOn(v) {
 		if (v) {
-			const indicies = v.iSort();
-			if (indicies) {
-				return v.valueForIndexRowColumn(indicies)
+			const indices = v.iSort();
+			if (indices) {
+				return v.valueForIndexRowColumn(indices)
 			}
 		}
 	}
 
 	operationOnString(v) {
 		if (v) {
-			const indicies = v.iSort();
-			if (indicies) {
-				return v.valueForIndexRowColumn(indicies)
+			const indices = v.iSort();
+			if (indices) {
+				return v.valueForIndexRowColumn(indices)
 			}
 		}
 	}
@@ -3734,9 +3734,9 @@ class MMSortFunction extends MMSingleValueFunction {
 	operationOnTable(v) {
 		if (v && v.columnCount) {
 			const column = v.columns[0];
-			const indicies = column.value.iSort();
-			if (indicies) {
-				return v.valueForIndexRowColumn(indicies)
+			const indices = column.value.iSort();
+			if (indices) {
+				return v.valueForIndexRowColumn(indices)
 			}
 		}
 	}
