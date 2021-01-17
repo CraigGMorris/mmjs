@@ -953,10 +953,10 @@ class MMDataTable extends MMTool {
 		if (description) {
 			const lcDescription = description.toLowerCase();
 			switch (lcDescription) {
-				case 'nrow':
+				case 'nrows':
 					value = MMNumberValue.scalarValue(this.rowCount);
 					break;
-				case 'ncol':
+				case 'ncols':
 					value = MMNumberValue.scalarValue(this.columnCount);
 					break;
 				case 'table':
