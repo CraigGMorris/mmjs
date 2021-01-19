@@ -1593,7 +1593,7 @@ a:hover {
 }
 
 #unit-sets {
-	--input-section-height: 60px;
+	--input-section-height: 40px;
 	display: grid;
 	grid-template-columns: 1fr;
 	grid-template-rows: var(--input-section-height) 1fr;
@@ -1606,9 +1606,8 @@ a:hover {
 	grid-area: inputsection;
 	display: grid;
 	grid-template-columns: 1fr 5fr 1fr;
-	grid-template-rows: 30px;
 	grid-template-areas: "label input clone";
-	grid-row-gap: 10px;
+	grid-gap: 10px;
 }
 
 #unitsets__name-label {
@@ -1628,6 +1627,7 @@ a:hover {
 
 #unit-sets__clone-button {
 	grid-area: clone;
+	align-self: center;
 }
 
 #unit-sets__list {
