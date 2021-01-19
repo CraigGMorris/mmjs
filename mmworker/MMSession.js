@@ -276,6 +276,9 @@ class MMSession extends MMCommandParent {
 		if (saveObject.UserUnits) {
 			this.unitSystem.units.loadFromJsonObject(saveObject.UserUnits);
 		}
+		if (saveObject.DefaultUnitSet) {
+			this.unitSystem.sets.defaultSet = this.unitSystem.sets.childNamed(saveObject.DefaultUnitSet);
+		}
 
 		let rootModel = MMToolTypes['Model'].factory('root', this);
 		if (storePath) {

@@ -1556,7 +1556,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 		if (set && !set.isMaster) {
 			this.removeChildNamedCommand(command);
 			if (set === this.defaultSet) {
-				this.defaultSet = this.childNamed['SI'];
+				this.defaultSet = this.childNamed('SI');
 			}
 		}
 	}
