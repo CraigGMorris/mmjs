@@ -1348,8 +1348,10 @@ a:hover {
 	height: var(--input--height);
 }
 
-.tableview__cell-text text{
+.tableview__cell-text {
 	white-space: pre;
+	font-family: monospace;
+	font-size: 9.5pt;
 }
 
 .tableview__cell--selected {
@@ -1729,6 +1731,7 @@ a:hover {
 	align-self: center;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+	padding-top: 5px;
 }
 
 #unit-set__buttons button {

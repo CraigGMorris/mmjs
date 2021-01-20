@@ -85,7 +85,7 @@ class MMDataTableColumn extends MMCommandObject {
 	}
 
 	get format() {
-		return this._format;
+		return this._format || '';
 	}
 
 	set format(newValue) {
@@ -410,9 +410,9 @@ class MMDataTable extends MMTool {
 			column.defaultValue = options.defaultValue;
 		}
 
-		if (options.format && options.format !== column.formant) {
+		if (options.format !== column.format) {
 			undoOptions.format = column.format || '';
-			column.format = options.format;
+			column.format = options.format || '';
 		}
 
 		if (options.columnNumber) {
@@ -915,9 +915,7 @@ class MMDataTable extends MMTool {
 			else if (column.columnValue.displayUnit) {
 				v.unitType = theMMSession.unitSystem.typeNameForUnitNamed(column.columnValue.displayUnit.name);
 			}
-			if (column.format) {
-				v.format = column.format;
-			}
+			v.format = column.format;
 		}
 		results['value'] = value;
 	}
