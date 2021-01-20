@@ -1378,7 +1378,7 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addUnit("impgal","1 3 0 0 0 0 0 0 4.54609e-03",true);
 		this.addUnit("bbl","1 3 0 0 0 0 0 0 1.589873e-01",true);
 	
-		this.addUnit("kph","1 1 0 -1 0 0 0 0 0.277778",true);
+		this.addUnit("kph","1 1 0 -1 0 0 0 0 0.2777777777777778",true);
 		this.addUnit("mph","1 1 0 -1 0 0 0 0 0.44704",true);
 		this.addUnit("knot","1 1 0 -1 0 0 0 0 0.514444",true);
 		this.addUnit("lightC","1 1 0 -1 0 0 0 0 299792458.0",true);
