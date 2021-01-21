@@ -35,7 +35,8 @@ const DataTableDisplay = Object.freeze({
 	table: 0,
 	editColumn: 1,
 	unitPicker: 2,
-	formulaEditor: 3
+	formulaEditor: 3,
+	cellEditor: 4,
 });
 
 /** EditColumnComponent
@@ -396,35 +397,9 @@ export function DataTableView(props) {
 					else {
 						row = column = 0;
 					}
-			
-					let formulaString = '';
-					if (column > 0 && row > 0) {
-						const tableColumn = value.v[column - 1];
-						const v = tableColumn.v.v[row - 1];
-						if (typeof v === 'string') {
-							formulaString = v;
-						}
-						else if (typeof v === 'number') {
-							formulaString = `${v.toPrecision(8)} ${tableColumn.dUnit}`;
-						}
-					}
-
 					setSelectedCell([row,column]);
 					setSelectedRows();
-					const pathParts = path.split('.');
-					const tableName = pathParts[pathParts.length - 1];
-					const columnName = results.value.v[column - 1].name;
-					const formulaTitle = `${tableName}[${row}, "${columnName}"]`;
-					props.actions.pushView('formulaEditor', formulaTitle, {
-						t: t,
-						formula: formulaString || '',
-						formulaOffset: 0,
-						modelPath: props.viewInfo.modelPath,
-						applyChanges: (formula, callBack) => {
-							const path = props.viewInfo.path;
-							props.actions.doCommand(`__blob__${path} setcell ${row} ${column}__blob__${formula}`, callBack);
-						},
-					});
+					setDisplay(DataTableDisplay.cellEditor)
 				}
 			}
 
@@ -517,6 +492,7 @@ export function DataTableView(props) {
 						viewInfo: props.viewInfo,
 						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 2*nInputHeight - 14],
 						selectedRows: selectedRows,
+						currentCell: selectedCell,
 						cellClick: cellClick,
 						longPress: longPress,
 					}
@@ -565,6 +541,42 @@ export function DataTableView(props) {
 			)
 		}
 			break;
+		case DataTableDisplay.cellEditor: {
+			const [row, column] = selectedCell;
+			let formulaString = '';
+			if (column > 0 && row > 0) {
+				const tableColumn = value.v[column - 1];
+				const v = tableColumn.v.v[row - 1];
+				if (typeof v === 'string') {
+					formulaString = v;
+				}
+				else if (typeof v === 'number') {
+					formulaString = `${v.toPrecision(8).replace(/0+$/,'')} ${tableColumn.dUnit}`;
+				}
+			}
+
+			return e(
+				FormulaEditor, {
+					id: 'datatable__column-cell-editor',
+					t: t,
+					viewInfo: props.viewInfo,
+					actions: props.actions,
+					formula: formulaString || '',
+					formulaOffset: 0,
+					cancelAction: () => {
+						setDisplay(DataTableDisplay.table);
+					},
+					applyChanges: (formula) => {
+						const path = props.viewInfo.path;
+						props.actions.doCommand(`__blob__${path} setcell ${row} ${column}__blob__${formula}`,() => {
+							setDisplay(DataTableDisplay.table);
+							props.actions.updateView(props.viewInfo.stackIndex);
+						})
+					},
+
+				}
+			);
+		}
 	}
 	return e(
 		ToolView, {
