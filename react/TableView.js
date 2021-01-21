@@ -69,16 +69,23 @@ export function TableView(props) {
 	const longPress = props.longPress;
 	const viewBox = props.viewBox;
 	const maxDisplayedRows = Math.floor(viewBox[3] / cellHeight) + 1;
+	const maxDisplayedCols = Math.floor((viewBox[2] - rowLabelWidth)/cellWidth);
 
 	useEffect(() => {
-		if (value.t === 't' && nRows > lastRow && nRows > maxDisplayedRows - 2) {
-			const y = currentCell ? (currentCell[0] + 2 - maxDisplayedRows) * cellHeight : 0;
-			const newOffset = {x: 0, y: y};
+		if (currentCell) {
+			const newOffset = {x: 0, y: 0};
+			const [cellRow, cellCol] = currentCell;
+			if (cellCol > maxDisplayedCols) {
+				newOffset.x = (cellCol - maxDisplayedCols) * cellWidth;
+			}
+			if (cellRow > maxDisplayedRows) {
+				newOffset.y = (cellRow + 2 - maxDisplayedRows) * cellHeight;
+			}
 			setTableViewOffset(newOffset)
 			setInitialOffset(newOffset);
 			setLastRow(nRows);
 		}
-	}, [value.t, currentCell, nRows, lastRow, maxDisplayedRows]);
+	}, [value.t, currentCell, nRows, lastRow, maxDisplayedRows, maxDisplayedCols]);
 
 	const xTextPad = 5;
 

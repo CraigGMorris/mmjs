@@ -325,7 +325,7 @@ class MMTableValueColumn {
 		if (this._value && rowNumber <= this._value.rowCount) {
 			if (this.isString) {
 				if (withValue) {
-					this._value.setValue(withValue.stringForRowColumnUnit(rowNumber, 1), rowNumber, 1);
+					this._value.setValue(withValue.stringForRowColumnUnit(1, 1), rowNumber, 1);
 				}
 				else {
 					this._value.setValue('""', rowNumber, 1);

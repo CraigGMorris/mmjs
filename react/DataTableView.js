@@ -457,6 +457,7 @@ export function DataTableView(props) {
 				addRowButton = e(
 					'button', {
 						id: 'data__add-row-button',
+						disabled: value.nc ? false : true,
 						onClick: () => {
 							if (value && value.nc > 0) {
 								props.actions.doCommand(`${path} addrow`, () => {
