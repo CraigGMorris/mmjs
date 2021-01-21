@@ -185,11 +185,29 @@ class MMNumberValue extends MMValue {
 	 * set value at row and column
 	 * @param {Number} value
 	 * @param {Number} row
-	 * @param {Numbber} column
+	 * @param {Number} column
 	 */
 	setValue(value, row, column) {
 		this.checkBounds(row, column);
 		this._values[(row - 1) * this.columnCount + column - 1] = value;
+	}
+
+	/**
+	 * @method setValueAtCount
+	 * @param {Number} value
+	 * @param {Number} count
+	 */
+	setValueAtCount(value, count) {
+		this._values[count] = value || 0;
+	}
+
+	/**
+	 * @method valueAtCount
+	 * @param {Number} count 
+	 * @returns {Number}
+	 */
+	valueAtCount(count) {
+		return (count < this.valueCount) ? this._values[count] : 0;
 	}
 
 	/**
