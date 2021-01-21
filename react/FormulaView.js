@@ -41,25 +41,22 @@ const FormulaDisplay = Object.freeze({
  * common field for displaying and entering formulas
  */
 export function FormulaField(props) {
-	let t = props.t;
-
 	/**
 	 * @function applyChanges
 	 * @param {String} formula
-	 * @param {function} callBack
 	 * call back is called when update command is complete - has cmds parameter
 	 */
-	const applyChanges = (formula, callBack) => {
-		if (props.applyChanges) {
-			// if supplied this is called instead of updating formula at path
-			// not normally definted, but is used by MatrixView
-			props.applyChanges(formula, callBack);
-		}
-		else {
-			const path = props.path;
-			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, callBack);
-		}
-	}
+	// const applyChanges = (formula, callBack) => {
+	// 	if (props.applyChanges) {
+	// 		// if supplied this is called instead of updating formula at path
+	// 		// not normally definted, but is used by MatrixView
+	// 		props.applyChanges(formula, callBack);
+	// 	}
+	// 	else {
+	// 		const path = props.path;
+	// 		props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, callBack);
+	// 	}
+	// }
 
 	return e(
 		'div', {
@@ -70,17 +67,6 @@ export function FormulaField(props) {
 				offset = Math.max(0, offset);
 				if (props.clickAction) {
 					props.clickAction(offset);
-				}
-				else {
-					const pathParts = props.path.split('.');
-					const title = pathParts[pathParts.length - 1]
-					props.actions.pushView('formulaEditor', title, {
-						t: t,
-						formula: props.formula,
-						formulaOffset: offset,
-						modelPath: props.viewInfo.modelPath,
-						applyChanges: applyChanges,
-					});
 				}
 			}
 		},

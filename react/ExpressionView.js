@@ -18,7 +18,7 @@
 'use strict';
 
 import {ToolView} from './ToolView.js';
-import {FormulaField} from './FormulaView.js';
+import {FormulaField, FormulaEditor} from './FormulaView.js';
 import {TableView} from './TableView.js';
 import {UnitPicker} from './UnitsView.js';
 
@@ -35,6 +35,7 @@ const ExpressionDisplay = Object.freeze({
 	expression: 0,
 	unitPicker: 1,
 	stringValue: 2,
+	formulaEditor: 3,
 });
 
 /**
@@ -45,6 +46,7 @@ export function ExpressionView(props) {
 	const [display, setDisplay] = useState(ExpressionDisplay.expression);
 	const [stringDisplay, setStringDisplay] = useState();
 	const [selectedCell, setSelectedCell] = useState([0,0]);
+	const [formulaOffset, setFormulaOffset] = useState(0);
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -115,6 +117,29 @@ export function ExpressionView(props) {
 
 	let displayComponent;
 	switch (display) {
+		case ExpressionDisplay.formulaEditor: {
+			displayComponent = e(
+				FormulaEditor, {
+					id: 'datatable__column-formula-editor',
+					key: 'edit',
+					t: t,
+					viewInfo: props.viewInfo,
+					actions: props.actions,
+					formula: results.formula || '',
+					formulaOffset: formulaOffset,
+					cancelAction: () => {
+						setDisplay(ExpressionDisplay.expression);
+					},
+					applyChanges: (formula) => {
+						props.actions.doCommand(`__blob__${path}.${formulaName} set formula__blob__${formula}`, () => {
+							props.actions.updateView(props.viewInfo.stackIndex);
+							setDisplay(ExpressionDisplay.expression);
+						});
+					}
+				}
+			);
+		}
+			break;
 		case ExpressionDisplay.unitPicker:
 			displayComponent = e(
 				UnitPicker, {
@@ -248,6 +273,11 @@ export function ExpressionView(props) {
 							formula: results.formula || '',
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
+							clickAction: (offset) => {
+								setFormulaOffset(offset);
+								setDisplay(ExpressionDisplay.formulaEditor);
+							}
+	
 						}
 					)
 				),
