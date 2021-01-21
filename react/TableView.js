@@ -128,7 +128,7 @@ export function TableView(props) {
 			column = 0;
 		}
 		else {
-			column = Math.floor((x + tableViewOffset.x + rowLabelWidth) / cellWidth);
+			column = 1 + Math.floor((x + tableViewOffset.x - rowLabelWidth) / cellWidth);
 		}
 		return [row, column];
 	},[tableViewOffset]);
