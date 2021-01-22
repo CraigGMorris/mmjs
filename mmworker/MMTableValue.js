@@ -66,7 +66,7 @@ class MMTableValueColumn {
 						this.displayUnit = theMMSession.unitSystem.unitNamed(context.displayUnit);
 					}
 					else {
-						this.displayUnit = theMMSession.unitSystem.baseUnitWithDimensions(this._value.unitDimensions);
+						this.displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(this._value.unitDimensions);
 					}
 				}
 			}
