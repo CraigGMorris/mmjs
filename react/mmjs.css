@@ -266,12 +266,12 @@ a:hover {
 	border-top: solid 1px var(--border--color);
 }
 
-#datatable__column-unit {
+#datatable__column-unit-line {
 	color: var(--link--color);
 	cursor: pointer;
 }
 
-#datatable__column-unit:hover {
+#datatable__column-unit-line:hover {
 	color: var(--link--color-hover);
 }
 

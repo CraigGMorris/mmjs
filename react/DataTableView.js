@@ -493,7 +493,7 @@ export function DataTableView(props) {
 						viewInfo: props.viewInfo,
 						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 2*nInputHeight - 14],
 						selectedRows: selectedRows,
-						currentCell: selectedCell,
+						currentCell: selectedCell[0] === 0 && selectedCell[1] === 0 ? null : selectedCell,
 						cellClick: cellClick,
 						longPress: longPress,
 					}

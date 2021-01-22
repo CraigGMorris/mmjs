@@ -84,24 +84,7 @@ export function ExpressionView(props) {
 	const isTable = (value && value.t) === 't';
 	let unitType;
 	let valueUnit;
-	if (isTable) {/*
-		This file is part of Math Minion, a javascript based calculation program
-		Copyright 2021, Craig Morris
-	
-		Math Minion is free software: you can redistribute it and/or modify
-		it under the terms of the GNU General Public License as published by
-		the Free Software Foundation, either version 3 of the License, or
-		(at your option) any later version.
-	
-		Math Minion is distributed in the hope that it will be useful,
-		but WITHOUT ANY WARRANTY; without even the implied warranty of
-		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-		GNU General Public License for more details.
-	
-		You should have received a copy of the GNU General Public License
-		along with Math Minion.  If not, see <https://www.gnu.org/licenses/>.
-	*/
-	
+	if (isTable) {	
 		if (selectedCell[0] === 0 && selectedCell[1] > 0) {
 			const v = value.v[selectedCell[1] - 1].v;
 			unitType = v.unitType;
@@ -204,6 +187,10 @@ export function ExpressionView(props) {
 			break;
 		case ExpressionDisplay.expression: {
 			const cellClick = (row, column) => {
+				if (row === 0 && column === 0) {
+					setSelectedCell([0,0]);
+					return;
+				}
 				const value = results.value;
 				if (!value || row < 0 || row > value.nr || column < 1 || column > value.nc) {
 					return;
@@ -371,6 +358,7 @@ export function ExpressionView(props) {
 						actions: props.actions,
 						viewInfo: props.viewInfo,
 						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 4*nInputHeight - 14],
+						currentCell: selectedCell[0] === 0 && selectedCell[1] === 0 ? null : selectedCell,
 						cellClick: cellClick,
 					}
 				)

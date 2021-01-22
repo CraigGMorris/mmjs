@@ -2848,7 +2848,7 @@ class MMTableFunction extends MMMultipleArgumentFunction {
 
 					if (templateColumns && !column.isString) {
 						const templateColumn = templateColumns[addColumnCount];
-						if (MMUnitSystem.areDimensionsEqual(templateColumn.displayUnit, cValue.unitDimensions)) {
+						if (MMUnitSystem.areDimensionsEqual(templateColumn.displayUnit.dimensions, cValue.unitDimensions)) {
 							column.displayUnit = templateColumn.displayUnit;
 							column.format = templateColumn.format;
 						}
@@ -2967,7 +2967,7 @@ class MMGroupTableFunction extends MMMultipleArgumentFunction {
 			keyValue = new MMStringValue(sumsCount, 1);
 		}
 		else {
-			keyValue = new MMNumberValue(sumsCount, keyValues.unitDimensions);
+			keyValue = new MMNumberValue(sumsCount, 1, keyValues.unitDimensions);
 		}
 
 		let row = 0;
