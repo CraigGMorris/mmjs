@@ -241,6 +241,14 @@ export function ExpressionView(props) {
 				setDisplay(ExpressionDisplay.stringValue);
 			}
 
+			let displayedUnit = '';
+			if (unitType && valueUnit) {
+				displayedUnit = `${unitType}: ${valueUnit}`;
+			}
+			else if (value.t === 's') {
+				displayedUnit = 'String';
+			}
+
 			displayComponent = e(
 				'div', {
 					// main vertical sections
@@ -349,7 +357,7 @@ export function ExpressionView(props) {
 							}
 						}
 					},
-					unitType && valueUnit ? `${unitType}: ${valueUnit}` : ''
+					displayedUnit
 				),
 				e(
 					TableView, {
