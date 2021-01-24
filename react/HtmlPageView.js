@@ -36,7 +36,15 @@ const HtmlPageDisplay = Object.freeze({
 
 /**
  * HtmlPageView
- * info view for equation solver
+ * info view for html page
+ * 
+ * The html that results from evaluating the formula is displayed in
+ * an iframe that is sandboxed with the only communication being by
+ * postMessage and a message event listener.
+ * 
+ * The actual work of generating the processed html and responding to mm_post calls
+ * is done by the webworker MMHtmlPage.  Communication with it is also by message
+ * passing using the MMApp doCommand in props.actions
  */
 export function HtmlPageView(props) {
 	const [display, setDisplay] = useState(HtmlPageDisplay.input);

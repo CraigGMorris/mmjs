@@ -40,6 +40,17 @@ class MMHtmlPage extends MMTool {
 	constructor(name, parentModel) {
 		super(name, parentModel, 'HtmlPage');
 		this.formula = new MMFormula('Formula', this);
+		this.formula.formula = `'
+<html>
+	<head>
+		<style>
+			body {background-color: #EEFFEE; color: black;}
+		</style>
+	</head>
+	<body>
+		<p>Replace the HTML source formula with something appropriate.</p>
+	</body>
+</html>`
 		this.tagFormulas = [];
 		this.inputs = null;
 		this.rawHtml = null;
@@ -184,6 +195,7 @@ class MMHtmlPage extends MMTool {
 			}
 		}
 		else if (this.inputs) {
+			// return values posted as inputs from the html view
 			const inputValue = this.inputs[lcDescription];
 			if (inputValue) {
 				const valueType = typeof inputValue;
@@ -240,10 +252,24 @@ class MMHtmlPage extends MMTool {
 	}
 
 	/**
+	 * @method parameters
+	 * i.e. things that can be appended to a formula value
+	 */
+	parameters() {
+		let p = super.parameters();
+		if (this.inputs) {
+			p = p.concat(Object.keys(this.inputs));
+		}
+		return p;
+	}
+
+	/**
 	 * @method action
 	 * @param {String} jsonMessage 
 	 * @returns {String}
-	 * performs action indicated in jsonMessage
+	 * Makes any inputs in the message available as parameters and
+	 * returns and returns and requested values in the response return
+	 * also performs action indicated in the requests with the mm_ keywords
 	 */
 	action(jsonMessage) {
 		const response = {}
@@ -276,10 +302,12 @@ class MMHtmlPage extends MMTool {
 				const requestResults = {};
 				for (let name of Object.keys(message.requests)) {
 					if (name.startsWith('mm_')) {
+						// save actions for below
 						actions[name.toLowerCase()] = message.requests[name];
 						console.log(`action ${name}`)
 					}
 					else {
+						// evaluate the request formulas for inclusion in response.results
 						const formula = new MMFormula(`r_${name}`, this);
 						formula.formula = message.requests[name];
 						const mmResult = formula.value();
@@ -320,9 +348,11 @@ class MMHtmlPage extends MMTool {
 				response.update = true;
 			}
 
+			// now do any action requests
 			for (let action of Object.keys(actions)) {
 				switch (action) {
 					case 'mm_view': {
+						// pass back instruction to view to switch to different tool
 						const name = actions[action].toLowerCase();
 						const target = this.parent.children[name];
 						if (target) {
@@ -331,6 +361,7 @@ class MMHtmlPage extends MMTool {
 					}
 						break;
 					case 'mm_push': {
+						// pass back instruction to view to push another tool view over the html page view
 						const name = actions[action].toLowerCase();
 						const target = this.parent.children[name];
 						if (target) {
@@ -339,6 +370,7 @@ class MMHtmlPage extends MMTool {
 					}
 						break;
 					case 'mm_addrow': {
+						// add a row to a specified data table
 						const name = actions[action].toLowerCase();
 						const target = this.parent.children[name];
 						if (target && target instanceof MMDataTable) {
@@ -347,6 +379,7 @@ class MMHtmlPage extends MMTool {
 					}
 						break;
 					case 'mm_deleterows': {
+						// delete specified rows from a data table
 						const actionValue = actions[action];
 						const rows = actionValue.rows;
 						const name = actionValue.table;
@@ -359,6 +392,7 @@ class MMHtmlPage extends MMTool {
 					}
 						break;
 					case 'mm_refresh': {
+						// recalculate the values for a specified tool
 						const name = actions[action].toLowerCase();
 						const target = this.parent.children[name];
 						if (target) {
@@ -367,10 +401,12 @@ class MMHtmlPage extends MMTool {
 					}
 						break;
 					case 'mm_update': {
+						// instruct the view to refresh the html page view
 						response.update = true;
 					}
 						break;
 					case 'mm_clear': {
+						// forget all previously defined parameters derived from page inputs
 						if (actions[action]) {
 							this.inputs = null;
 							this.forgetCalculated();
@@ -378,6 +414,7 @@ class MMHtmlPage extends MMTool {
 					}
 						break;
 					case 'mm_load': {
+						// load a different session
 						const path = actions[action].toLowerCase();
 						if (path) {
 							theMMSession.loadSession(path);
@@ -413,6 +450,7 @@ class MMHtmlPage extends MMTool {
 	 * @returns {String} 
 	 */
 	htmlForRequestor(requestor) {
+		// code inserted into the page to implement the mmpost function
 		const messageCode = `
 <script>
 window.onerror = function (e) {
