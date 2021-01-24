@@ -220,7 +220,7 @@ class MMIterator extends MMTool {
 	 * @param {Boolean} commentOnly - if present and true, null will be return if no comment on formula
 	 * @returns {String} - the name for recorded value rNumber
 	 */
-	columnNameForRecorded(rNumber, commentOnly) {
+	columnNameForRecorded(rNumber, commentOnly=false) {
 		if (rNumber > 0 && rNumber <= this.recordedValues.length) {
 			const formula = this.recordedValueFormulas[rNumber - 1];
 			const parts = formula.formula.split("'");
@@ -357,7 +357,7 @@ class MMIterator extends MMTool {
 					// see if it matches any recorded value comment
 					const count = this.recordedValueFormulas.length;
 					for (let rNumber = 1; rNumber <= count; rNumber++) {
-						const columnName = this.columnNameForRecorded(rNumber, true);
+						const columnName = this.columnNameForRecorded(rNumber);
 						if (columnName && lcDescription == columnName.toLowerCase()) {
 							return returnValue(this.valueForRecorded(rNumber));
 						}
