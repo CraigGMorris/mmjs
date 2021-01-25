@@ -113,7 +113,7 @@ export function IteratorView(props) {
 						t('react:iterInput-recorded', {n: localCount})
 					),
 					e(
-						'button', {
+						'div', {
 							className: 'iter__recorded-delete',
 							onClick: () => {
 								props.actions.doCommand(`${props.viewInfo.path} removerecorded ${localCount}`, () => {
@@ -231,7 +231,7 @@ export function IteratorView(props) {
 					'div', {
 						id: 'iter__x-value'
 					},
-					`i = ${results.x}  ${results.xunit}`
+					`x = ${results.x}`
 				),
 			),
 			e(
