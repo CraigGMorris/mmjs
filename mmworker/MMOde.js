@@ -293,6 +293,7 @@ class MMOde extends MMTool {
 		verbs['reset'] = this.resetCommand;
 		verbs['addrecorded'] = this.addRecordedCommand;
 		verbs['removerecorded'] = this.removeRecordedCommand;
+		verbs['restorerecorded'] = this.restoreRecordedCommand;
 		return verbs;
 	}
 
@@ -307,6 +308,7 @@ class MMOde extends MMTool {
 			reset: 'mmcmd:?odeReset',
 			addrecorded: 'mmcmd:?odeAddRecorded',
 			removerecorded: 'mmcmd:?odeRemoveRecorded',
+			restorerecorded: 'mmcmd:?odeRestoreRecorded',
 		}[command];
 		if (key) {
 			return key;
@@ -375,8 +377,32 @@ class MMOde extends MMTool {
 	 * @param {MMCommand} command
 	 */
 	removeRecordedCommand(command) {
-		this.removeRecordedValue(parseInt(command.args));
-		command.results = 'removed recorded';
+		const recNumber = parseInt(command.args);
+		if (recNumber >= 1 && recNumber <= this.recordedValueFormulas.length) {
+			const saveForUndo = {n: recNumber, f: this.recordedValueFormulas[recNumber - 1].formula};
+			this.removeRecordedValue(recNumber);
+			const undoString = JSON.stringify(saveForUndo);
+			command.undo = `__blob__${this.getPath()} restorerecorded__blob__${undoString}`;
+			command.results = 'removed recorded';
+		}
+		else {
+			command.results = `No recorded value ${recNumber}`;
+		}
+	}
+
+	/**
+	 * @method restoreRecordedCommand
+	 * @param {MMCommand} command
+	 */
+	restoreRecordedCommand(command) {
+		const rec = JSON.parse(command.args);
+		const nRec = rec.n;
+		const formula = new MMFormula(`r${nRec}`, this);
+		formula.formula = rec.f;
+		this.recordedValueFormulas.splice(nRec - 1, 0, formula);
+		this.recordedValues.splice(nRec - 1, 0, []);
+		this.reset();
+		command.results = `${name} restored`;
 	}
 
 	/**
