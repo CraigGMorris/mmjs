@@ -600,10 +600,15 @@ a:hover {
 		"display";
 	box-sizing: border-box;
 	grid-gap: 2px;
+	padding-right: 5px;
+}
+
+#htmlpage__formula {
+	padding-top: 5px;
 }
 
 #htmlpage__iframe {
-	height: calc(var(--info-height) - 70px);
+	height: calc(var(--info-height) - 75px);
 	width: 100%;
 }
 
@@ -844,7 +849,16 @@ a:hover {
 
 .iter__record-desc-line {
 	display: grid;
-	grid-template-columns: 1fr 100px;
+	grid-template-columns: 1fr 20px;
+}
+
+.iter__recorded-delete {
+	color: red;
+}
+
+.iter__input .formula-field {
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
 #matrix {
@@ -1083,7 +1097,7 @@ a:hover {
 	width: 100%;
 	display: grid;
 	grid-template-rows: var(--input--height);
-	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-columns: 1fr 1fr;
 	margin-top: 10px;
 	column-gap: 10px;
 }
@@ -1106,7 +1120,7 @@ a:hover {
 	overflow: auto;
 	height: calc(var(--info-height) - 155px);
 	border: solid 1px;
-	margin-top: 20px;
+	margin-top: 5px;
 }
 
 #ode__is-stiff {
@@ -1121,13 +1135,35 @@ a:hover {
 	margin-left: 20px;
 }
 
+#ode__t-and-addrecord {
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: var(--input--height);
+	padding-top: 5px;
+	column-gap: 10px;
+}
+
+#ode__addrecord-button {
+	margin-right: 5px;
+}
+
 #ode__run-button {
 	margin-right: 5px;
 }
 
 .ode__record-desc-line {
 	display: grid;
-	grid-template-columns: 1fr 100px;
+	grid-template-columns: 1fr 20px;
+}
+
+.ode__recorded-delete {
+	color: red;
+}
+
+.ode__input .formula-field {
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
 #opt__button-fields {

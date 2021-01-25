@@ -113,7 +113,7 @@ export function OdeView(props) {
 						t('react:odeInput-recorded', {n: localCount})
 					),
 					e(
-						'button', {
+						'div', {
 							className: 'ode__recorded-delete',
 							onClick: () => {
 								props.actions.doCommand(`${props.viewInfo.path} removerecorded ${localCount}`, () => {
@@ -235,14 +235,14 @@ export function OdeView(props) {
 			),
 			e(
 				'div', {
-					id: 'ode__current-t',
+					id: 'ode__t-and-addrecord'
 				},
-				`T = ${results.t} ${results.tunit}`
-			),
-			e(
-				'div', {
-					id: 'ode__button-fields'
-				},
+				e(
+					'div', {
+						id: 'ode__current-t',
+					},
+					`T = ${results.t} ${results.tunit}`
+				),
 				e(
 					'button', {
 						id: 'ode__addrecord-button',
@@ -253,7 +253,12 @@ export function OdeView(props) {
 						}
 					},
 					t('react:odeAddRecordButton')
-				),
+				),	
+			),
+			e(
+				'div', {
+					id: 'ode__button-fields'
+				},
 				e(
 					'button', {
 						id: 'ode__reset-button',
