@@ -3431,6 +3431,10 @@ class MMEvalFunction extends MMSingleValueFunction {
 			return this.evalFormula.value();
 		}
 	}
+
+	operationOn(n) {
+		return n;
+	}
 }
 
 class MMEvalJSFunction extends MMMultipleArgumentFunction {
