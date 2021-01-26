@@ -275,7 +275,7 @@ class MMHtmlPage extends MMTool {
 		const response = {}
 		try {
 			const message = JSON.parse(jsonMessage);
-			if (message.callBackNumber !== null) {
+			if (message.callBackNumber) {
 				response.callBackNumber = message.callBackNumber;
 			}
 			if (message.inputs) {
@@ -470,6 +470,7 @@ const handleMessage = (e) => {
 }
 window.addEventListener('message', handleMessage);
 const mmpost = (inputs, requests, callBack) => {
+	console.log('inputs');
 	if (Array.isArray(inputs)) {
 		inputs = mminputs(inputs);
 	}
