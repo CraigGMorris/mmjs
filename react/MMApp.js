@@ -590,7 +590,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 	const viewTool = useCallback((toolName, toolType) => {
 		let top = infoStack[infoStack.length - 1];
 		while (infoStack.length > 1 && top.viewKey !== 'Model') {
-			if (top.title === toolName && top.viewKey === toolType) {
+			if (top.title.toLowerCase() === toolName.toLowerCase() && top.viewKey === toolType) {
 				infoStack.pop();
 				updateView(infoStack.length-1);
 				return;
