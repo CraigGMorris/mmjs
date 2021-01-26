@@ -242,9 +242,9 @@
 						{eval bmi.weight}
 					</p>
 					<p>
-						so the entered weight will be used in the the new row.  Note that HTML page input
-						parameters are always strings, so the eval function is
-						used to evaluate them as formulas.
+						so the entered weight will be used in the the new row. In this case the weight
+						parameter will be a string since it includes the unit, so the eval function is
+						used to evaluate it as formulas.
 					</p>
 				</div>
 				<div id="deleterows" class="subsection">
@@ -322,8 +322,8 @@
 					</p>
 					<p>
 					Any input values posted to the object can be retrieved using their input names.
-					They will be string values and have to be converted as appropriate, usually using
-					the <b>eval</b> function.
+					Unless a value is just a number, it will be string value and have to be converted
+					as appropriate, usually using the <b>eval</b> function.
 					</p>
 					<p>
 					The parameter <b>html</b> will return the final HTML code after any mm tag replacements.
