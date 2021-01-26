@@ -1,3 +1,19 @@
+:root {
+	--body--bgcolor: #1c1c1c;
+	--body--color: #fff;
+}
+@media (prefers-color-scheme: light) {
+	:root {
+		--body--bgcolor: #fafafa;
+		--body--color: #000;
+	}
+}
+
+body {
+	background-color: var(--body--bgcolor) !important;
+	box-sizing: border-box;
+}
+
 /* Headings
  * --------------------------------------------------------------------- */
 
@@ -5,13 +21,13 @@
 	.section h3 {
 		/* color: #3889CA !important; */
 		color: #26863d !important;
-		background-color: rgb(233, 233, 233);
+		background-color:rgb(225, 224, 249);
 		padding-left: 5px;
 	}
 
 	.subsection h3 {
 		color: #26863d !important;
-		background-color: rgb(233, 233, 233);
+		background-color:  rgb(233, 233, 233);
 		padding-left: 5px;
 	}
 
@@ -88,6 +104,13 @@
 	.img-left {
 		float: left;
 		margin: 0 .5em .5em 0;
+	}
+
+	#page {
+		max-width: 600px;
+		margin: auto;
+		padding: 5px;
+		background-color:  #eeffee;
 	}
 
 	#heading {

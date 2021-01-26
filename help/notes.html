@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Notes',{
+					overview: 'Overview',
+					parameters: 'Formula Parameters',
+				});
+			};			
+		</script>	
+		<title>Notes</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					Every <a href="tools.html">Math Minion tool</a> can have notes associated with it.
+					Beside the name field at the top of every tool
+					<a href="infoview.html">information view</a> there is a button
+					labeled <b>Add Notes</b> or <b>Show Notes</b> if notes have already been added.
+					Tapping that will open the notes view.
+				</p>
+				<img src="notesview.png" alt="Notes View">
+				<p>
+					You can enter any text you want into the large text area of the notes view.  Tapping on
+					the <b>Hide Notes</b> button beside the name field will return to the normal
+					<a href="infoview.html">information view</a>.
+				</p>
+			</div>
+			<div class="section">
+				<h3>Diagram Notes</h3>
+				<p>
+					If you wish to have your notes appear on the diagram, tap on the button labeled
+					<b>Show on Diagram</b>. The notes will appear on the diagram below the tool icon
+					and the button will change to <b>Hide on Diagram</b> as in the image above.
+				</p>
+				<p>
+					Note that if the note is very long, it might be truncated on the diagram.
+				</p>
+				<p>If a tool has notes and they are not shown on the diagram, there will still
+					be the word <b>Notes</b> below the icon to indicate the tool has hidden notes.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

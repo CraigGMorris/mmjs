@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Diagram',{
+					overview: 'Overview',
+					topbuttons: 'Top Buttons',
+					toolbar: 'Bottom Toolbar',
+					icons: 'Icons',
+					connections: 'Connections',
+					panning: 'Panning',
+					zooming: 'Zooming',
+					rescale: 'Rescale',
+					moveicons: 'Moving Icons',
+					bgmenu: "Background Menu",
+					toolmenu: "Tool Icon Menu",
+					selmenu: "Selection Box Menu",
+				});
+			};			
+		</script>	
+		<title>Diagram</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					The diagram view represents the <a href="tools.html">tools</a> and the connections
+					between them for the currently selected <a href="model.html">model</a>.
+				</p>
+
+			</div>
+			<div id="topbuttons" class="section">
+				<h3>Top Buttons</h3>
+				<p>
+					At the top of the diagram there is a row of buttons looking something like:
+				</p>
+				<img src="dgmtop.png" alt="Tapable text at top of diagram"/>
+				<p>
+					Okay, they don't look like buttons, but in Math Minion if text is blue, you can likely
+					tap on it to make something happen.  In this case:
+				</p>
+				<ul>
+					<li><b>&lt; root</b> - will take you back to the parent model.  If the diagram is already
+						displaying root, this button won't appear.</li>
+					<li><b>A_Simple_Calc &#x2302;</b> - rescales and recenters diagram</li>
+					<li><b>+</b> - zoom in on the diagram</li>
+					<li><b>1</b> - zoom out on the diagram</li>
+					<li><b>&#x21d4;</b> - you can drag this symbol to adjust the width of the information view
+						if it is present. However you can not make it narrower than the default.
+					</li>
+				</ul>
+			</div>
+			<div id="toolbar" class="section">
+				<h3>Bottom Toolbar</h3>
+				<p>
+					If the display is narrow, such as on a phone, the
+					<a href="infoview.html">information view</a> does not appear to
+					right of the diagram and the bottom toolbar as described on the
+					<a href="infoview.html">information view</a> help page, will also appear on the diagram.
+				</p>
+				<p>
+					However in this case, the leftmost button will be labeled <b>Info</b> and tapping it
+					switch to the <a href="infoview.html">information view</a>,
+					which in turn will have a button to get back to the diagram.
+				</p>
+			</div>
+			<div id="icons" class="section">
+				<h3>Icons</h3>
+				<p>
+					Math Minion expressions and other tools are represented by rectangular icons. 
+					With the exception of the icon for expressions, the icon contains two text lines.
+					The first, in dark green, is the type name of the tool it represents, while the
+					second is the user specified name of that instance.  An expression icon has three
+					text lines:
+				</p>
+				<ol>
+					<li>The user supplied name of the expression</li>
+					<li>The expression formula, often truncated to fit</li>
+					<li>
+						The calculated result of the formula.  Only a red question mark will appear here
+						until the expression has been evaluated.  If the result isn't a scalar, only the
+						first value will be shown, along with the array dimensions.
+					</li>
+				</ol>
+				<p>
+					Different tool types also have different icon colors:
+				</p>
+				<img src="toolicons.png" alt="Image showing icon colors by type"/>
+				<p>
+					A single tap on an icon will select it and present an
+					<a href="infoview.html">information view</a> for that tool.
+					If the tool is a model, the diagram will immediately switch to viewing that model.
+				</p>
+				<p>
+					When a tool is selected on a sufficiently wide display, the
+					<a href="infoview.html">information view</a> is
+					presented to the right of the diagram and the icons of other tools and their
+					connections will be dimmed to highlight the current selection.
+				</p>
+				<p>
+					Tapping the selected icon will deselect it, as will tapping the back button
+					at the upper left of the <a href="infoview.html">information view</a>.
+				</p>
+			</div>
+			<div id="connections" class="section">
+				<h3>Connections</h3>
+				<p>
+					Connection lines are drawn from the corners of icons to the middle of a vertical side
+					of each icon that references it.
+				</p>
+				<p>
+					The connections for the selected object are highlighted and will be shown in green
+					for inputs and blue for outputs.
+				</p>
+				<p>
+					In the screenshot below, the weight and height expressions are both referenced by
+					the BMI expression, so connections are drawn from the corners of each to the middle
+					of a vertical side of the BMI icon.
+				</p>
+				<img src="connections.png" alt="Image showing icon connections"/>
+				<p>
+					Note that BMI is selected, so the other icons are dimmed and the connections highlighted.
+				</p>
+			</div>
+			<div id="panning" class="section">
+				<h3>Panning</h3>
+				<p>
+					Drag the diagram background to move the entire diagram to a different position.
+				</p>
+			</div>
+			<div id="zooming" class="section">
+				<h3>Zooming</h3>
+				<p>
+					Zoom the diagram with a pinch gesture or with the scroll control if you are using
+					a mouse. You may be able to use trackpad scrolling (two finger) as well.  Tapping on
+					the <b>+</b> or <b>-</b> buttons at the top left of the diagram will also zoom in or
+					out.
+				</p>
+			</div>
+			<div id="rescale" class="section">
+				<h3>Rescale</h3>
+				<p>Tap on the name at the top center of the diagram to rescale and recenter it</p>
+			</div>
+			<div id="moveicons" class="section">
+				<h3>Moving Icons</h3>
+				<p>
+					To move an icon, just drag it around.
+				</p>
+				<p>
+					To move multiple icons, tap and hold on the background for a second or so and then
+					release. A selection box will appear and you can drag its upper left and lower right
+					corners until the objects you wish to move are all highlighted with blue text.
+				</p>
+				<p>
+					Now drag on the interior of the selection rectangle to move the selected icons.
+				</p>
+				<p>
+					Tap anywhere outside of the box to make it disappear.
+				</p>
+				<p>
+					Move operations can be undone with the Undo button.
+				</p>
+			</div>
+			<div id="bgmenu" class="section">
+				<h3>Background Menu</h3>
+				<p>
+					Tapping once on the background will produce a pop up menu with the following options:
+				</p>
+				<div class="subsection">
+					<h3>Add Tool to Model</h3>
+					<p>
+						A menu of <a href="tools.html">tool types</a> will appear.
+					</p>
+					<p>
+						Select one to add a tool of that type to the diagram at the point where the
+						original tap was made.
+					</p>
+					<p>
+						The new tool will be selected and its <a href="infoview.html">information view</a>
+						presented.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Paste to Model</h3>
+					<p>
+						Paste the contents of a previous copy operation on to the diagram.
+					</p>
+					<p>
+						If the previous copy was of a Math Minion tool or group of tools, it/they will be added
+						to the diagram at the point of the original tap.
+					</p>
+					<p>
+						If the clipboard contains an entire session, a new model will be placed on the diagram
+						with its contents being the contents of that session's root model.
+					</p>
+					<p>
+						If you paste text beginning with a number or a minus sign, Math Minion will attempt
+						to create a <a href="matrix.html">matrix</a> containing the numbers.  These should
+						be comma separated and one row per line.
+					</p>
+					<p>
+						See the <a href="datatable.html">data table</a> documentation for information on
+						pasting Comma Separated Value (CSV) information to produce data tables.
+					</p>
+					<p>
+						If Math Minion can't otherwise interpret the pasteboard contents, it will create an
+						expression, with a formula consisting of a single quote, followed by the text from
+						the pasteboard.  This will result in a <a href="minionvalue.html">string value</a>.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Help</h3>
+					<p>Display the <a href="getstarted.html">getting started</a> help page in a new tab or window
+					(depends on your browser settings).</p>
+				</div>
+				<div id="showclip" class="subsection">
+					<h3>Show Clipboard</h3>
+					<p>This will only appear on browsers that don't allow access to the system clipboard.</p>
+					<p>To get around this, this menu option will display a view of the internal clipboard Math
+						Minion uses instead.  This is an editable text area, so you can select everything and copy
+						it to the actual clipboard or conversely paste the actual clipboard contents in here for use
+						by the Math Minion paste command.
+					</p>
+					<p>It's clunky, but works.  At least on the Mac desktop, either Chrome or MS Edge will allow
+						actual access to the clipboard.
+					</p>
+				</div>
+			</div>
+			<div id="toolmenu" class="section">
+				<h3>Tool Icon Menu</h3>
+				<p>
+					Tapping and holding for a second or so on a tool icon and then releasing will produce a
+					a menu with the following options pertaining to that tool:
+				</p>
+				<div class="subsection">
+					<h3>Delete</h3>
+					<p>
+						Deletes the tool.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Copy</h3>
+					<p>
+						Copy the tool to the clipboard.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Cut</h3>
+					<p>
+						Copy the tool to the clipboard and then delete it.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Copy as Table</h3>
+					<p>
+						Some tools, including expressions, matrices, graphs, iterators, ode solvers and
+						of course data tables, have this command in their pop up menus.
+					</p>
+					<p>
+						When selected, it will copy a table value representing the tools results to the
+						clipboard in a comma separated value format, with three definition lines prepended.
+					</p>
+					<p>
+						This can then be pasted back into a model to create a new data table, or exported to
+						some other application.
+					</p>
+				</div>
+			</div>
+			<div id="selmenu" class="section">
+				<h3>Selection Rectangle Menu</h3>
+				<p>
+					A single tap inside a selection rectangle produces a menu with the following options:
+				</p>
+				<div class="subsection">
+					<h3>Delete Selection</h3>
+					<p>
+						All the tools in the rectangle will be deleted.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Copy Selection</h3>
+					<p>
+						All the tools in the rectangle will be copied to the clipboard.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Cut Selection</h3>
+					<p>
+						All the tools in the rectangle will be copied to the clipboard and then deleted.
+					</p>
+				</div>
+				<p>
+					Tapping on the background outside of the selection box will dismiss the selection box.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

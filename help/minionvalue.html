@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Minion Values',{
+					overview: 'Overview',
+					numeric: 'Numeric',
+					string: 'String',
+					table: 'Table',
+					tool: 'Tool Reference',
+					empty: 'Empty'
+				});
+			};			
+		</script>	
+		<title>Minion Values</title>
+	</head>
+	
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					A Math Minion <a href="formula.html">formula</a> always evaluates to what I call a
+					"minion value".   This critter can be any of the types below.
+				</p>
+			</div>
+			<div id="numeric" class="section">
+				<h3>Numeric</h3>
+				<p>
+					A numeric value consists of one or more floating point numbers, with an associated
+					<a href="units.html">conversion unit</a> type such as length, time, temperature,
+					dimensionless etc.  The numbers are always represented as a matrix, with a scalar
+					just being a 1 by 1 matrix, a column array having 1 column and multiple rows and a
+					row array having 1 row and multiple columns.
+				</p>
+				<p>
+					Elements can be accessed using the array indexing operator [ ] (See
+					<a href="formula.html#indices">formula indices</a>).
+				</p>
+				<p>
+					Operations on numeric values also calculate the result's conversion unit type.
+					For instance the formula:
+				</p>
+				<p class="formula">
+					450 km / 4 h
+				</p>
+				<p>
+					would return a velocity value.
+				</p>
+			</div>
+			<div id="string" class="section">
+				<h3>String</h3>
+				<p>
+					A string values consists of one or more text values.  Like numerics, these values
+					are always in a matrix, with a single string just being a 1 by 1 matrix, a column array
+					having 1 column and multiple rows and a row array having 1 row and multiple columns.
+				</p>
+				<p>
+					Each element in a string matrix can be string of any length and any number of lines.
+				</p>
+			</div>
+			<div id="table" class="section">
+				<h3>Table Value</h3>
+				<p>
+					A table value is the result returned by operations on a
+					<a href="datatable.html">data table</a> tool, but it also can be returned by
+					parameters of other tools or can result from various
+					<a href="formula.html#functions">function</a> calls.
+				</p>
+				<p>
+					It consists of one or more columns (fields), each with its own name and
+					<a href="units.html">conversion unit</a> type.
+				</p>
+				<p>
+					Each row in the table can be thought of as similar to a record in a database.
+				</p>
+				<p>
+					Elements can be accessed using the
+					<a href="formula.html#indices">indexing operator</a> [ ].
+					Column names or arrays of names can also be used for the column index.
+				</p>
+			</div>
+			<div id="tool" class="section">
+				<h3>Tool Reference</h3>
+				<p>
+					When the name of an expression tool is referenced in a formula, it will evaluate to
+					the minion value calculated by the expression's formula.  A matrix reference will be
+					replaced by a numeric value and a data table reference with a table value.
+				</p>
+				<p>
+					However other tools don't have values intrinsically associated with their names and
+					a reference to them will become an tool reference.
+				</p>
+				<p>
+					For instance if a model has an ordinary differential equation solver calling <b>integ</b>
+					and an expression <b>x</b> with a formula that is just:
+				</p>
+				<p class="formula">
+					integ
+				</p>
+				<p>
+					then a formulas:
+				</p>
+				<p class="formula">
+					integ.dy
+				</p>
+				<p>
+					and
+				</p>
+				<p class="formula">
+					x.dy
+				</p>
+				<p>
+					will both return the derivative values of the <b>integ</b> solver.
+				</p>
+				<p>
+					Where this becomes useful is when the expression with the tool reference is designated
+					as an output expression.  This allows formulas in the parent model access to the
+					parameters of the tool that it is referencing.
+				</p>
+				<p>
+					A tool reference can be made to any tool using the <b>self</b> parameter.  For example
+					a reference to a data table named <b>dtable</b> would look like:
+				</p>
+				<p class="formula">
+					dtable.self
+				</p>
+				<p>
+					This could allow the data table itself to be returned in an output expression, rather
+					than its table value.
+				</p>
+			</div>
+			<div id="empty" class="section">
+				<h3>Empty</h3>
+				<p>
+					If there is not enough information to evaluate a formula, or if there is an error,
+					then the value will be empty.  All formulas that reference an empty value will also
+					evaluate to empty.
+				</p>
+			</div>
+		</div>
+</body>
+</html>

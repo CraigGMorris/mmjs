@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Console',{
+					overview: 'Overview',
+					structure: 'Program Structure',
+					view: 'Console View',
+				});
+			};			
+		</script>	
+		<title>Console</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					The console is mainly used for development and debugging and so can probably be
+					ignored otherwise.  For those still reading I will provide a brief overview, starting
+					with a few words about Math Minion's internal structure.
+				</p>
+			</div>
+			<div id="structure" class="section">
+				<h3>Program Structure</h3>
+				<p>
+					When Math Minion runs, all the calculations take place in a separate process called a
+					web worker and all the user interaction and display occurs in the main program. The
+					main program communicates with the calculation engine by passing it text commands.  When
+					the engine completes the command, it sends a message back to the main program containing
+					text in the form of JSON.  The interface uses these replys to construct what you see.
+				</p>
+			</div>
+			<div id="view" class="section">
+				<h3>Console View</h3>
+				<p>
+					The console allows you to directly type commands and have them sent to calculation
+					process and display the corresponding results.
+				</p>
+				<p>
+					It only has three fields:
+					<ul>
+						<li>A large, uneditable text area where the results are displayed.</li>
+						<li>An input field where you type a command.</li>
+						<li>A <b>Read Command File</b> button, which will let you select a file of
+						commands to be executed.</li>
+					</ul>
+				</p>
+			</div>
+			<div id="commands" class="section">
+				<h3>Commands</h3>
+				<p>
+					Commands take the form of a subject path, followed by an action, possibly followed by an
+					object or other action parameter.  If the subject path is omitted, the default
+					subject is used.
+				</p>
+				<p>
+					The top of the subject tree is the session, which has the path "<b>/</b>".  Children are
+					separated by dots, so "<b>/.root</b>" is the root model and "<b>/.root.x</b>" is the tool
+					named <b>x</b> in root.
+				</p>
+				<p>
+					At start up, the default subject is root and if a path does not start with "<b>/</b>", it
+					will be relative to the default subject.  Thus "<b>.x</b>" would also refer to the tool named
+					<b>x</b> in the root model, unless the default subject has been changed.
+				</p>
+				<p>
+					The command <b>help</b> will list the commands the subject understands.  If the help
+					command is followed by one of those commands, a very brief usage message will be
+					displayed.
+				</p>
+			</div>
+			<div class="section">
+				<p>Okay, that's it. You can probably safely forget about it now.</p>
+			</div>
+		</div>
+	</body>
+</html>

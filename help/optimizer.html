@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Optimizer',{
+					overview: 'Overview',
+					info: 'Information View',
+					fx: 'f(X) Formula',
+					fxv: 'f(X) Value',
+					nx: 'Number of X Values',
+					optcb: 'Optimize Check Box',
+					reset: 'Reset',
+					xvalue: 'X Values',
+					parameters: 'Formula Parameters',
+				});
+			};			
+		</script>	
+		<title>Optimizer</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					The optimizer manipulates one or more output values to try and obtain the smallest
+					possible scalar value for a single function that depends, either directly or
+					indirectly, on those outputs.  The algorithm used is the Powell method.
+				</p>
+				<p>
+					You must designate how many outputs the optimizer should produce.  These will initially
+					have values of 0 and their conversion unit type will be dimenionless.
+				</p>
+				<p>
+					These values will be available as parameters 1, 2 etc. and must be used to calculate
+					the value determined by the formula in the f(x) field.
+				</p>
+				<p>
+					While the entire calculation could be contained in a single formula, more typically
+					that formula references the values calculated by other tools that in turn eventually
+					depend on the optimizer output values.
+				</p>
+			</div>
+			<div id="info" class="section">
+				<h3>Information View</h3>
+				<p>
+					Below is an image of the information view of an optimizer for the
+					classic Rosenbrock problem.
+				</p>
+				<img src="optimizer.png" alt="Optimizer Information View">
+				<p>
+					The fields are:
+				</p>
+				<div id="fx" class="subsection">
+					<h3>f(X) Formula</h3>
+					<p>
+						This <a href="formulaeditor.html#fields">formula field</a> should contain a formula
+						which calculates the scalar value to be minimized.
+					</p>
+				</div>
+				<div id="fxv" class="subsection">
+					<h3>f(X) Value</h3>
+					<p>
+						The value currently calculated by the function is displayed immediately below its
+						<a href="formulaeditor.html#fields">formula field</a>.
+					</p>
+				</div>
+				<div id="nx" class="subsection">
+					<h3>Number of X Values</h3>
+					<p>
+						This <a href="formulaeditor.html#fields">formula field</a> should contain or calculate
+						the number of variables to be optimized.
+					</p>
+					<p>
+						The optimizer will provide output parameters named from "1" to this number and will
+						adjust these parameters in an attempt to minimize the f(x) value.
+					</p>
+					<p>
+						Use these parameter values in formulas to calculate the actual values you
+						wish adjusted.
+					</p>
+				</div>
+				<div id="optcb" class="subsection">
+					<h3>Optimize Check Box</h3>
+					<p>
+						Turn this on to have the optimizer run.
+					</p>
+					<p>
+						While checked, the optimizer will automatically rerun if one of its outputs is
+						requested after one of its inputs has changed.
+					</p>
+				</div>
+				<div id="reset" class="subsection">
+					<h3>Reset Button</h3>
+					<p>
+						This resets the output values to zero and also unchecks the optimize box.
+					</p>
+				</div>
+				<div id="xvalue" class="subsection">
+					<h3>X Values</h3>
+					<p>
+						This table contains the current output values.
+					</p>
+				</div>
+			</div>
+			<div id="parameters" class="section">
+				<h3>Formula Parameters</h3>
+				<p class="reminder">Parameters that can be accessed in the form a.b where a is the tool name and b is the parameter name.</p>
+				<ul>
+					<li><b>x</b> - the current output array</li>
+					<li><b>n</b> - output value n, where n is a number index into the output array (e.g. 2)</li>
+					<li><b>solved</b> - 1 if the optimization has completed successfully, otherwise empty</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>

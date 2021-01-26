@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('ODE Solver',{
+					overview: 'Overview',
+					info: 'Information View',
+					stiff: 'Stiff',
+					autorun: 'Auto Run',
+					tvalue: 'T Value',
+					addrec: 'Add Recording',
+					reset: 'Reset',
+					run: 'Run',
+					y0: 'Y0 - Initial Values',
+					dydt: 'dY/dT',
+					endt: 'EndT',
+					nextt: 'NextT - Next Recorded Time',
+					reltol: 'Relative Tolerance',
+					abstol: 'Absolute Tolerance',
+					parameters: 'Formula Parameters',
+				});
+			};			
+		</script>	
+		<title>ODE Solver</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+						<h3>Overview</h3>
+						<p>
+							The ODE solver is used to integrate a set of one or more ordinary differential
+							equations (ODE). An ODE is function with a single independent variable and a
+							derivative with respect to that variable.
+						</p>
+						<p>			
+							Essentially it determines y with respect to t from t=0 to some end point,
+							where dy/dt is some function of y and y and dy/dt are arrays or tables of
+							the same size.
+						</p>
+						<p>	
+							Math Minion uses code derived from the Sundials suite of solvers developed at
+							the Lawerence Livermore National Library in the US. It uses a variant of the
+							Adam Moulton method for non-stiff problems and Backwards Difference Formulas (BDF)
+							when the problem is designated as stiff.
+						</p>
+						<p>
+							As the integration proceeds, the solver makes available an array or table of
+							y values, which are initially, at t = 0, equal to the supplied Y0 value.
+						</p>
+						<p>
+							These y values must be used to calculate a dy/dt array or table, which is
+							used by the solver to calculate the next set of y values.
+						</p>
+					</div>
+					<div id="info" class="section">
+						<h3>Information View</h3>
+						<p>
+							Part of the information view for the ODE solver of the pendulum example
+							in the Getting Started session is shown below.
+						</p>
+						<img src="ode.png" alt="ODE Solver Information View">
+						<p>The inputs are:</p>
+						<div id="stiff" class="subsection">
+							<h3>Stiff</h3>
+							<p>
+								When checked, the solver will use a backward difference formula method for
+								the integration.
+							</p>
+							<p>
+								This is preferred when the time constants, or equivalent if time is not
+								the independent variable, of the derivatives vary greatly in magnitude.
+								That is, when some elements change very quickly compared to others.
+							</p>
+							<p>
+								When this is unchecked, an Adam Moulton method is used.
+							</p>
+						</div>
+						<div id="autorun" class="subsection">
+							<h3>Auto Run</h3>
+							<p>
+								When this is checked, the solver will run automatically when required to by
+								changes to its inputs etc.
+							</p>
+							<p>
+								<b>Note:</b> When unchecked, changing the inputs to the calculation will not
+								cause a reset to T=0. By extending the stop time the run can be resumed from
+								where it stopped.
+							</p>
+							<p>
+								However, recorded values will be erased and a new recording started from the
+								resume point.
+							</p>
+						</div>
+						<div id="tvalue" class="subsection">
+							<h3>T Value</h3>
+							<p>
+								The current value of T will be displayed just below the stiff check box.
+							<p>
+						</div>
+						<div id="addrec" class="subsection">
+							<h3>Add Recording Button</h3>
+							<p>
+								This adds a <b>Recorded Value</b>> row to the bottom of the input table.
+							</p>
+							<p>
+								The formula entered into this row will be evaluated at each NextT value of T
+								and the results stored.
+							</p>
+							<p>
+								They can be accessed as a parameter when the solution is complete.
+							</p>
+							<p>
+								These parameters are named R1, R2 etc. and will return an array with values
+								for each record interval.
+							</p>
+							<p>
+								If the recorded values at each step are themselves arrays or matrices,
+								then when accessed, a matrix will be returned with each row being the
+								recorded step array or unwound matrix.
+							</p>
+							<p>
+								If you supply a name as a comment to the recorded value formula (that is
+								have a single quote followed by a name at the end of the formula), then
+								you can use that name as a reference to the recorded value array, rather
+								than the more cryptic R1, R2 etc.  Also if the formula is just a tool name,
+								that can also be used as a parameter.
+							</p>
+							<p>
+								The rest of the information view from above looks like:
+							</p>
+							<img src="ode2.png" alt="bottom of information view">
+							<p>
+								The first recorded value has a comment <b>Time</b>, so the recorded values
+								could be accessed from ode.time.
+							</p>
+							<p>
+								The second recorded value has a formula that is just <b>Theta</b> and its value
+								could be accessed by ode.theta.
+							</p>
+							<p>
+								Along with the <a href="formulaeditor.html#fields">formula field</a> the last value
+								for the recorded value is also displayed on the row.
+							</p>
+							<p>
+								Tapping on the red <b>X</b> will remove that recording.
+							</p>
+						</div>
+						<div id="reset" class="subsection">
+							<h3>Reset</h3>
+							<p>
+								Sets the T value back to zero, the Y outputs to Y0 and forgets any recorded values.
+								If auto run is checked, the solver will rerun immediately.
+							</p>
+						</div>
+						<div id="run" class="subsection">
+							<h3>Run</h3>
+							<p>
+								Runs the solver (happens automatically if auto run is checked).
+							</p>
+							<p>
+								Note that if T is not zero and EndT is greater than T, presumably
+								because it was modified, the solution will continue from the current T.
+							</p>
+						</div>
+						<div id="y0" class="subsection">
+							<h3>Y0 - Initial Values</h3>
+							<p>
+								The initial values for when T = 0. The size and type of this value will
+								determine the size and type of the output Y values.
+							</p>
+							<p>
+								At T = 0, the output Y values will have this value.  If Y0 is an <b>array</b>,
+								then the output array will be an array the same unit type (all calculations
+								are actually done in SI).
+							</p>
+							<p>
+								If Y0 is a <b>table value</b>, then Y will be a table with the same number
+								of columns and rows and the columns will have the same unit types as the
+								corresponding columns in Y0.  That is the case in the example above.
+							</p>
+						</div>
+						<div id="dydt" class="subsection">
+						<h3>dY/dT</h3>
+							<p>
+								The calculated derivatives as a function of the output Y and T values.
+							</p>
+							<p>
+								They must be the same type (array or table) and size as the Y0 value and
+								their unit types should be compatible with those of Y0 / T, where the T
+								unit type is the same as that for EndT.
+							</p>
+						</div>
+						<div id="endt" class="subsection">
+							<h3>EndT</h3>
+							<p>
+								The T value to stop at.
+							</p>
+							<p>
+								The integration is always carried on from T = 0 to T = EndT, although you
+								could perform transformations in your calculation of dY/dT to offset this
+								if appropriate.
+							</p>
+							<p>
+								The output T parameter will have the same unit type as this value.
+							</p>
+						</div>
+						<div id="nextt" class="subsection">
+							<h3>NextT - Next Recorded Time</h3>
+							<p>
+								This is the T value at which the next set of values for the formulas
+								designated in the "Recorded Values" section should be recorded.
+							</p>
+							<p>
+								It is first evaluated at T = 0 and then at each successive record time.
+								It is done as a formula in terms of T so that non-linear record intervals
+								can be specified.
+							</p>
+							<p>
+								This value must have the same unit type as EndT.
+							</p>
+							<p>
+								Note that this does not dictate the time step for the actual integration,
+								which is determined by the need to keep accumulated errors in check.
+							</p>
+						</div>
+						<div id="reltol" class="subsection">
+							<h3>Relative Tolerance</h3>
+							<p>
+								This is a measure of the allowed relative errors. Thus the default
+								 value of 1e-5 means the errors are controlled to 0.001%.
+							</p>
+						</div>
+						<div id="abstol" class="subsection">
+							<h3>Absolute Tolerance</h3>
+							<p>
+								This is used to control errors when a y value might become so small that
+								relative error becomes meaningless.
+							</p>
+							<p>
+								It should be set to some small value below which errors are unimportant.
+							</p>
+							<p>
+								If Y0 is an array, this value can either be a scalar, in which case it is
+								used for all values, or an array of the same size as Y0 if different
+								tolerances are desired for the different elements.
+							</p>
+							<p>
+								If Y0 is a table value, then this should be a table value with the same
+								number of columns, but only a single row containing the tolerances to be
+								used for the corresponding Y columns.
+							</p>
+							<p>
+								It must have the same unit type(s) as Y0.  The default value is
+							</p>
+							<p class="formula">
+								1.0e-10*{baseunit $.y}
+							</p>
+							<p>
+								which ensures to correct unit is used.
+							</p>
+						</div>
+					</div>
+					<div id="parameters" class="section">
+						<h3>Formula Parameters</h3>
+						<p class="reminder">Parameters that can be accessed in the form a.b where a is the tool name and b is the parameter name.</p>
+						<ul>
+							<li><b>t</b> - the current value of the independent variable</li>
+							<li><b>y</b> - the current array or table of dependent variables</li>
+							<li><b>y0</b> - array or table holding the initial (t=0) values for the dependent variable</li>
+							<li><b>dy</b> - the current array or table of derivatives</li>
+							<li><b>endt</b> - the stopping point for the independent variable</li>
+							<li><b>nextt</b> - the currently calculated next record point</li>
+							<li><b>reltol</b> - the allowed relative tolerance</li>
+							<li><b>abstol</b> - the allowed absolute tolerance</li>
+							<li><b>i</b> - the current counter for the number of recorded values (i.e. t points)</li>
+							<li><b>Rn</b> - the array, or matrix, of recorded values corresponding to the recorded value formula number n.  If the formula for a recorded value is followed by a single quote and a name, that name can also be used as a parameter to access the recorded value array.</li>
+							<li><b>solved</b> - 1 if the solution is complete, otherwise empty</li>
+							<li><b>table</b> - returns a table value where each recorded value array is in a column of the table.
+								<p>If comments are used on the recorded value formulas, they will be used as the column names, otherwise the formula itself will be.</p>
+								<p>If a recorded value has multiple columns, these will be included with "_n" appended to the recorded value name, where n is the column number.</p>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

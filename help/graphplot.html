@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<meta name="viewport" content="initial-scale=1.0">
+		<title>Graph Plot</title>
+		<script type="text/javascript" src="jquery.js"></script>
+		<script  type="text/javascript">$( function() {
+			$(".funcdesc").hide();
+			$(".sectionrow").hide();
+			$(".headercell").click(
+				function(event) {
+					var desc = $(event.target);
+					$(".sectionrow").hide();
+					if ( desc.parent().hasClass('open') ) {
+						desc.parent().removeClass('open');
+					}
+					else {
+						desc.parent().addClass('open');
+						desc.parent().siblings('.sectionrow').show();
+					}
+				}
+			);
+		});
+	</script>
+	<style type="text/css">
+		.selected { background-color: #DDFFAA; }
+		.functemplate {
+			color: #070;
+			font-size: 1.2em;
+			font-weight: bold;
+		}
+		#header {
+			font-size: 1.3em;
+			padding-bottom: .3em;
+		}
+		.contenttable {
+			width: 100%;
+			border:  1px solid #ddd;
+			background-color: #F4F4F4;
+		}
+		.contenttable td {
+			border: 0;
+		}
+		.contentsection {
+			margin-left: 10px;
+			border: 0;
+		}
+		
+		.contentsection tr {  width: 100%; }
+		.sectionrow {
+			background-color: #FFF;
+		}
+		.headercell {
+			color: #009;
+			font-size: 1.1em;
+			font-weight: bold;
+		}
+		.fixedwidth {
+			font-family: courier;
+		}
+
+	</style>
+	</head>
+	<body>
+		<p class="title">Graph Plot</p>
+		<p>
+			When you tap the <b>Plot</b> button on the <a href="graph.html">graph object view</a>, the data is graphically presented in this view.  Tap the back arrow to return to the graph definition view.
+		</p>
+		<p>
+			If a <b>Z</b> value was defined in the graph, a three dimensional (3D) plot will appear, otherwise it will be a standard two dimensional (2D) x-y plot.
+		</p>
+		<table class="contenttable">
+			<tr class="headerrow"><td class="headercell">Plot Axes</td></tr>
+			<tr class="sectionrow">
+				<td class="sectioncell">
+					<div class="contentsection">
+						<p>
+							Both 2D and 3D plots can have multiple <b>X</b> value arrays, with associated <b>Y</b> and, for 3D, <b>Z</b> value arrays.  A 2D plot can have more than one set of <b>Y</b> values associated with each <b>X</b> array, while a 3D plot only has one set of <b>Y</b> and one set of <b>Z</b> values for each <b>X</b> array.
+						</p>
+						<p>
+							When a plot has more than one set of <b>X</b> or </b>Y</b> values, the axis labels will only represent one at a time.  If there is more than one set of <b>X</b> values, a single tap on the X axis label will switch to the next set or cycle back to the first if the last one is currently displayed.  The <b>X</b> and <b>Y</b>, and <b>Z</b> for 3D, axis labels will change to reflect the new set.
+						</p>
+						<p>	
+							When the current <b>X</b> axis for a 2D plot has more than one <b>Y</b> value, tapping on any Y axis label will switch the <b>Y</b> axis labels to the values of the next Y line.
+						</p>
+						<p>
+							For a 2D plot, the colour of the <b>Y</b> axis labels will always match the plotted values (lines or dots) that they represent and the <b>X</b> axis label will be blue if there is more than one set of <b>X</b> values.
+						</p>
+						<p>
+							On a 3D plot, all the axis labels will be the same colour as the plotted data they represent and the presence of more than one colour of plotted data indicates multiple <b>X</b> value sets.
+						</p>
+					<//div>
+				</td>
+			</tr>
+		</table>
+		<table class="contenttable">
+			<tr class="headerrow"><td class="headercell">Zooming</td></tr>
+			<tr class="sectionrow">
+				<td class="sectioncell">
+					<div class="contentsection">
+						<p>
+							To zoom in and out on the graph, use the standard pinch gesture where you move your thumb and a finger together to zoom in and apart to zoom out.  The axis labels will adjust their values appropriately. If you are on the iPad, you may want to switch to full screen mode (button with outward pointing arrows).
+						</p>
+					<//div>
+				</td>
+			</tr>
+		</table>
+		<table class="contenttable">
+			<tr class="headerrow"><td class="headercell">2D Panning</td></tr>
+			<tr class="sectionrow">
+				<td class="sectioncell">
+					<div class="contentsection">
+						<p>
+							Simply drag the graph around with one finger to pan it back and forth and up and down.  The axis labels will adjust their values appropriately.
+						</p>
+					<//div>
+				</td>
+			</tr>
+		</table>
+		<table class="contenttable">
+			<tr class="headerrow"><td class="headercell">3D Panning</td></tr>
+			<tr class="sectionrow">
+				<td class="sectioncell">
+					<div class="contentsection">
+						<p>
+							Dragging horizontally at the lower right of the view will move the plotted data back and forth along the <b>X</b> axis, while dragging horizontally at the lower left will move the image along the <b>Y</b> axis.  Dragging vertically along the left edge of the view, starting about mid height of the view, will move the image vertically along the <b>Z</b> axis.
+						</p>
+						<p>
+							In all cases, the axis labels will adjust their values appropriately.
+						</p>
+					<//div>
+				</td>
+			</tr>
+		</table>
+		<table class="contenttable">
+			<tr class="headerrow"><td class="headercell">3D Rotation</td></tr>
+			<tr class="sectionrow">
+				<td class="sectioncell">
+					<div class="contentsection">
+						<p>
+							The image, including the axis frame, can be rotated around the <b>Z</b> axis by dragging horizontally along the top of the view, starting from about mid width.
+						</p>
+					<//div>
+				</td>
+			</tr>
+		</table>
+		<table class="contenttable">
+			<tr class="headerrow"><td class="headercell">Rescale &amp; Center</td></tr>
+			<tr class="sectionrow">
+				<td class="sectioncell">
+					<div class="contentsection">
+						<p>
+							Double tap on the plot to have it return to its original scaling and position.
+						</p>
+					<//div>
+				</td>
+			</tr>
+		</table>
+		<table class="contenttable">
+			<tr class="headerrow"><td class="headercell">Export Image</td></tr>
+			<tr class="sectionrow">
+				<td class="sectioncell">
+					<div class="contentsection">
+						<p>
+							Tap on the gear icon on the top tool bar to export the graph image by printing, emailing or opening it in another app as a pdf file or to place the image in your camera roll.  The latter can be used to place the image in a document or spreadsheet.
+						</p>
+					<//div>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

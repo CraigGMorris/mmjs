@@ -27,36 +27,39 @@ function rtSetupHeading(title, sections) {
 	lines.push(`
 	<div class="contentlink"><a href="getstarted.html">Getting Started</a></div>
 	<div class="contentlink"><a href="http://www.redtree.com/contact.html">Contact Me</a></div>
-	<div class="contentlink"><a href="revisions.html">Revisions</a></div>
+	<div class="contentlink"><a href="freeprivate.html">License</a></div>
+	<div class="contentlink"><a href="http://www.redtree.com/articles/">News</a></div>
 	<div>&nbsp;</div>
-	<div class="contentlink"><a href="sessions.html">Sessions</a></div>
 	<div class="contentlink"><a href="diagram.html">Diagram</a></div>
-	<div class="contentlink"><a href="formula.html">Formulas</a></div>
-	<div class="contentlink"><a href="formulafield.html">Formula Field</a></div>
+	<div class="contentlink"><a href="infoview.html">Information View</a></div>
+	<div class="contentlink"><a href="sessions.html">Sessions</a></div>
 	<div class="contentlink"><a href="units.html">Conversion Units</a></div>
-	<div class="contentlink"><a href="functionpicker.html">Function Browser</a></div>
+	<div class="contentlink"><a href="console.html">Console</a></div>
+	<div>&nbsp;</div>
+	<div class="contentlink"><a href="formula.html">Formulas</a></div>
 	<div class="contentlink"><a href="minionvalue.html">Minion Values</a></div>
-	<div class="contentlink"><a href="unitpicker.html">Unit Browser</a></div>
-	<div class="contentlink"><a href="objectpicker.html">Value Browser</a></div>
-	<div class="contentlink"><a href="notes.html">Notes</a></div>
-	<div class="contentlink"><a href="report.html">Reports</a></div>
+	<div class="contentlink"><a href="formulaeditor.html">Formula Editor</a></div>
+	<div class="contentlink subsection"><a href="formulaeditor.html#vbrowser">Value Browser</a></div>
+	<div class="contentlink subsection"><a href="formulaeditor.html#ubrowser">Unit Browser</a></div>
+	<div class="contentlink subsection"><a href="formulaeditor.html#fbrowser">Function Browser</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink"><a href="tools.html">Calculation Tools</a></div>
-	<div class="contentlink"><a href="datatable.html">Data Table</a></div>
-	<div class="contentlink"><a href="expression.html">Expression</a></div>
-	<div class="contentlink"><a href="solver.html">Equation Solver</a></div>
-	<div class="contentlink"><a href="graph.html">Graph</a></div>
-	<div class="contentlink"><a href="htmlform.html">HTML Page</a></div>
-	<div class="contentlink"><a href="iterator.html">Iterator</a></div>
-	<div class="contentlink"><a href="matrix.html">Matrix</a></div>
-	<div class="contentlink"><a href="model.html">Model</a></div>
-	<div class="contentlink"><a href="modelarray.html">Model Array</a></div>
-	<div class="contentlink"><a href="ode.html">Ordinary Differential Equations</a></div>
-	<div class="contentlink"><a href="optimize.html">Optimizer</a></div>
+	<div class="contentlink subsection"><a href="datatable.html">Data Table</a></div>
+	<div class="contentlink subsection"><a href="expression.html">Expression</a></div>
+	<div class="contentlink subsection"><a href="solver.html">Function Solver</a></div>
+	<div class="contentlink subsection"><a href="iterator.html">Iterator</a></div>
+	<div class="contentlink subsection"><a href="matrix.html">Matrix</a></div>
+	<div class="contentlink subsection"><a href="model.html">Model</a></div>
+	<div class="contentlink subsection"><a href="ode.html">Ordinary Differential Equations</a></div>
+	<div class="contentlink subsection"><a href="optimizer.html">Optimizer</a></div>
+	<div class="contentlink subsection"><a href="graph.html">Graph</a></div>
+	<div class="contentlink subsection"><a href="htmlpage.html">HTML Page</a></div>
+	<div class="contentlink subsection"><a href="importedmodel.html">Imported Model</a></div>
+	<div class="contentlink subsection"><a href="notes.html">Tool Notes</a></div>
 	<div>&nbsp;</div>
-	<div class="contentlink"><a href="http://www.redtree.com/mm">MM Home Page</a></div>
-	<div class="contentlink"><a href="http://www.redtree.com/mmexamples">Examples</a></div>
 	<div class="contentlink"><a href="http://www.redtree.com//mm/tutorialv3.html">Tutorial</a></div>
+	<div class="contentlink"><a href="http://www.redtree.com/mmexamples">Examples</a></div>
+	<div class="contentlink"><a href="http://www.redtree.com/mm">MM Home Page</a></div>
 	`);
 	lines.push('</div>');
 	heading.innerHTML = lines.join('\n');

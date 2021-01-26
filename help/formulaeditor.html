@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Formula Editor',{
+					fields: 'Formula Fields',
+					editor: 'Formula Editor',
+					vbrowser: 'Value Browser',
+					ubrowser: 'Unit Browser',
+					fbrowser: 'Function Browser',
+					indent: 'Indenting',
+				});
+			};			
+		</script>	
+		<title>Formula Editor</title>
+	</head>
+	
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="fields" class="section">
+				<h3>Formula Fields</h3>
+				<p>
+					All information views for <a href="tools.html">tools</a> have one or more
+					<a href="formula.html">formula</a> fields, like this:
+				</p>
+				<img src="formulafield.png" alt="a formula field"/>
+				<p>
+					Tapping on one of these will switch the
+					information view to a <a href="#editor">formula editor</a> where you can enter or
+					modify the formula.
+				</p>
+				<p>
+					These fields can be identified by the equal sign in front of them. Tapping on the equal
+					sign will cause the value calculated by the formula to be forgotten and recalculated.  This
+					normally isn't necessary as Math Minion will forget and recalculate tools whenever one of
+					their inputs is modified.
+				</p>
+			</div>
+			<div id="editor" class="section">
+				<h3>Formula Editor</h3>
+				<p>
+					The formula editor consists of five buttons and a large text area where the formula is
+					entered or modified.
+				</p>
+				<img src="formulaedit.png" alt="formula editor"/>
+				<p>
+					The lower two are a <b>cancel</b> button and an <b>apply</b> button. The latter assigns
+					the changes to the formula.  The keyboard shortcut <b>Shift-Enter</b> can also be used
+					to invoke the apply button.
+				</p>
+				<p>
+					The top three buttons open helper views where you can select elements to be inserted into
+					the formula:
+				</p>
+				<div id="vbrowser" class="subsection">
+					<h3>&lt;v&gt; - Value Browser</h3>
+					<p>	
+						Shows the available tools and parameters that you can insert into the formula. When
+						first invoked, the available parameters will be the tools in the current model or in the
+						case of the formula belonging to an input expression, the parent
+						<a href="model.html">model</a>.
+					</p>
+					<p>
+						If you select a <a href="model.html">model</a>, then its name will appear below the
+						buttons and the available parameters will be its tools.  When you select another type
+						of tool, the available parameters for that tool will appear.  For instance
+						the <a href="matrix.html">matrix tool</a> has parameters for the number of columns or rows it
+						has.
+					</p>
+					<p>
+						In the example below, the first selection was the <a href="model.html">model</a> named
+						"circle", which contains a <a href="model.html">model</a> named "area".  When area was
+						in turn selected, it was added to the expression below the buttons.  Tapping on
+						<b>Insert</b> at this point would insert "circle.area" into the formula.
+					</p>
+					<img src="valuebrowser.png" alt="value browser"/>
+				</div>
+				<div id="ubrowser" class="subsection">
+					<h3>"u" - Unit Browser</h3>
+					<p>	
+						Presents a view where you can select from the available <a href="units.html">units</a>.
+						The left pane contains the defined types and selecting one of those will fill the right
+						pane with the units that are defined for that type.
+					</p>
+					<p>
+						In the image below, the type <b>Area</b> has been selected and then <b>hectare</b> was
+						selected from the right pane.  This places the selected unit in the input field.
+					</p>
+					<img src="unitbrowser.png" alt="value browser"/>
+					<p>
+						Tapping the <b>Apply</b> button will insert the unit into the formula, enclosed in double
+						quotes if it contains <b></b>, <b>/</b> or <b>^</b>.
+					</p>
+					<p>
+						You aren't limited to the units listed and can create your own by combining existing
+						units in the input field, either by typing them in directly, or by selecting
+						them from the lists.  If you add a <b>-</b> or <b>/</b> operator to the end of the input
+						field, selecting another unit will result in it being appended, rather than replacing the
+						existing selection.
+					</p>
+					<p>
+						If you need to define a completely new base unit, see custom units on the
+						<a href="units.html">units</a> help page.
+					</p>
+					<p>
+						This browser is also used for selecting display units for
+						<a href="expression.html">expressions</a>,
+						<a href="matrix.html">matrices</a>,
+						<a href="datatable.html">data tables</a> and
+						<a href="graph.html">graphs</a>.						
+					</p>
+				</div>
+				<div id="fbrowser" class="subsection">
+					<h3>{f} - Function Browser</h3>
+					<p>	
+						Presents a view where you can browse the available built in Math Minion functions.
+						As you can see in the image below, it has what are hopefully pretty clear
+						instructions on how to use it.
+					</p>
+					<p>
+						In this case the section for trigometric functions has been selected and then the
+						sine function within it.
+					</p>
+					<img src="funcbrowser.png" alt="value browser"/>
+				</div>
+			</div>
+			<div id="indent" class="section">
+				<h3>Indenting</h3>
+				<p>
+					In more complex formulas and with some functions, it is common to space the formula out
+					over multiple lines and use tabs to improve the readability. There are a couple of features
+					to assist with this.
+				</p>
+				<p>
+					When you add a new line to an already indented line, the editor will automatically match
+					the indentation.
+				</p>
+				<p>
+					You can increase or decrease the indentation of by selecting multiple lines and then typing
+					<b>tab</b> or <b>shift-tab</b> respectively.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

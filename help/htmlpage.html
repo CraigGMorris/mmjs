@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Html Page',{
+					overview: 'Overview',
+					formula: 'Formula Field',
+					render: 'Rendered Page',
+					mm: 'The <b>&lt;mm&gt;</b> Tag',
+					mmpost: 'mmpost Function',
+					inputs: 'Inputs Argument',
+					requests: 'Requests &amp; Callback',
+					actions: 'Actions',
+					view: '&nbsp;&nbsp;View',
+					push: '&nbsp;&nbsp;Push',
+					addrow: '&nbsp;&nbsp;Adding Rows',
+					deleterows: '&nbsp;&nbsp;Delete Rows',
+					refresh: '&nbsp;&nbsp;Forcing a Recalculation',
+					clear: '&nbsp;&nbsp;Clear',
+					update: '&nbsp;&nbsp;Update',
+					load: '&nbsp;&nbsp;Loading a Different Session',
+					parameters: 'Formula Parameters',
+				});
+			};			
+		</script>	
+		<title>Html Page</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					Math Minion HTML pages provide a way to present customized input and result views.
+				</p>
+				<p>
+					As the name implies, HTML is used to format the view and javascript to manipulate
+					the inputs and results, so to make use of this tool some familiarity with HTML
+					and javascript is necessary. However if you aren't familiar with them, you can
+					pretty safely ignore HTML pages as they mainly just provide pretty interfaces to
+					existing calculations.
+				</p>
+				<p>
+					Input consists of a single formula that should return a string value containing
+					the HTML to be displayed. This formula can be any valid Math Minion formula,
+					but often simply consists of a single quote, followed by the desired HTML.
+				</p>
+				<p>
+					A <b>&lt;mm&gt;</b> HTML extension, as well as a supplied javascript function,
+					<b>mmpost</b>, permit the page to interact with other Math Minion tools.
+				</p>
+			</div>
+			<div id="formula" class="section">
+				<h3>Formula Field</h3>
+				<p>
+					At the top of the information view is
+					<a href="formulaeditor.html#fields">formula field</a> that defines the HTML.
+				</p>
+				<p>
+					The <a href="formula.html">formula</a> it contains must return a string value
+					comprised of the HTML code to display.
+				</p>
+			</div>
+			<div id="render" class="section">
+				<h3>Rendered Page</h3>
+				<p>
+					The rendered HTML is displayed in a sandboxed <b>iframe</b> immediately below the
+					<a href="formulaeditor.html#fields">formula field</a>.
+					Rendering in this way prevents malicious code in the tool from interacting directly
+					with the main program code.
+				</p>
+			</div>
+			<div id="mm" class="section">
+				<h3>The <b>&lt;mm&gt;</b> Tag</h3>
+				<p>
+				Special <b>&lt;mm&gt;</b> tags containing Math Minion formulas can be embedded
+				within the HTML and these tags will be replaced with the results of evaluating the
+				formulas before the HTML is rendered.  For instance the code:
+				</p>
+				<p class="formula">
+					&lt;mm&gt;person[1,"weight"]&lt;/mm&gt;
+				</p>
+				<p>
+					would be replaced with the string representing value of the first row of
+					the "weight" column of the tool named <b>person</b>.
+				</p>
+			</div>
+			<div id="mmpost" class="section">
+				<h3>mmpost Function</h3>
+				<p>
+					A function named <b>mmpost</b> is automatically inserted into the HTML to be rendered.
+					Javascript on the page can call this function to make input values on the page available
+					as string parameters of the HTML page tool.  These can then be accessed by other tools
+					in the <a href="model.html">model</a> to perform calculations.
+				</p>
+				<p>
+					The <b>mmpost</b> can also request values from the model, which will be returned in
+					a call back function passed to <b>mmpost</b>.  Special requests can also be used to
+					trigger specific actions discussed below.
+				</p>
+				<p>
+					The <b>mmpost</b> function is defined with three arguments:
+				</p>
+				<p class="formula">
+					mmpost(inputs, requests, callBack)
+				</p>
+				<div id="inputs" class="subsection">
+					<h3>Inputs Argument</h3>
+					<p>
+						This argument should be an array of strings, where each string is the <b>id</b>
+						of some sort of HTML input element that has a value. The string value of each of
+						those elements will become a parameter of the HTML page tool, with the id as
+						the name.
+					</p>
+					<p>
+						For example the <b>onClick</b> handler for the <b>Calculate</b> button of the
+						BMI page looks like:
+					</p>
+					<p class="formula">
+						onClick="mmpost(['weight', 'height']);"
+					</p>
+					<p>
+						where <b>weight</b> and <b>height</b> are the ids of the text input fields where
+						values are entered. For instance the input element for weight is:
+					</p>
+					<p class="formula">
+						&lt.input type="text" id="weight" value="&lt;mm&gt;$.weight&lt;/mm&gt;" class="input"&gt;
+					</p>
+					<p>
+						Note that the value for the field uses a <a href="#mm">&lt;mm&gt; tag</a> to get the
+						previous value for weight. The dollar sign is the
+						<a href="formula.html">formula</a> shorthand reference to the tool owning
+						the formula, i.e. the HTML page itself. Any previous input of weight would have
+						created a weight parameter for the tool because of the call to mmpost and that
+						value will automatically be filled in when this tool is viewed again. 
+					</p>
+					<p>
+						The height and weight are also used by the <b>BMI</b>
+						<a href="expression.html">expression</a> in the BMICalc
+						<a href="model.html">model</a> to calculate the BMI. This is obviously a
+						ludicrously complex way to calculate such a simple thing, but useful for
+						illustration.  The result is displayed on the HTML page with another
+						<a href="#mm">&lt;mm&gt; tag</a>: 
+					</p>
+					<p class="formula">
+						&lt;mm&gt;BMICalc.BMI&lt;/mm&gt;
+					</p>
+					<p>
+						So when a new weight is entered in the weight field and the <b>Calculate</b>
+						button is pressed, <b>mmpost</b> reads the weight and height values and replaces
+						the current weight and height parameters of the html page tool.  This will cause
+						all the tools that reference the HTML page to forget their results.  The page will
+						be rerendered, which will request the <b>BMICalc.BMI</b> value, which will in turn
+						get the new weight and height and return a new BMI to be displayed.
+					</p>
+					<p>
+						These input parameters are retained by the MM HTML forms when sessions are saved,
+						so the tool will always have the last inputs posted to it.  If an empty array is
+						passed to <b>mmpost</b>, then the previous inputs will be retained.
+					</p>
+				</div>
+				<div id="requests" class="subsection">
+					<h3>Requests &amp; Callback</h3>
+					<p>
+						The <b>mmpost</b> function can also be used to directly request one or more
+						formulas be evaluated.  This is done by providing an object containing formulas
+						as the request argument.  These formulas will be evaluated and the function passed
+						as the callback argument will be called with an argument consisting of a results
+						object having the same keys as the request object with the associated values being
+						the result of evaluating the corresponding formula.
+					</p>
+					<p>
+						In the code below, the second column of matrix is requested with the key <b>mat</b>.
+						The callback function retrieves the result from result.mat and uses it to format
+						lines that are used as the value of a textarea element.
+					</p>
+					<pre class="formula">
+&lt;textarea id="results"&gt;
+  placeholder
+&lt;/textarea&gt;
+&lt;script&gt;
+  const target = document.getElementById('results');
+  mmpost([], {mat: 'nMatrix[0,2]'}, (result) =&gt; {
+    const value = result.mat;
+    const lines = [];
+    let i = 1;
+    for (const v of value) {
+      lines.push(`row ${i++} = ${v}`);
+    }
+    target.value = lines.join('\n');
+  });
+&lt;/script&gt;
+					</pre>
+				</div>
+			</div>
+			<div id="actions" class="section">
+				<h3>Actions</h3>
+				<p>
+					A number of actions can be requested by passing specific action keys in the
+					<b>mmpost</b> request object.
+				</p>
+				<div id="view" class="subsection">
+					<h3>View - mm_view</h3>
+					<p>
+						A request with the key <b>mm_view</b> having a the name of another tool as a value
+						will result in the information view and diagram selection switching to that tool.
+					</p>
+				</div>
+				<div id="push" class="subsection">
+					<h3>Push - mm_push</h3>
+					<p>
+						A request with the key <b>mm_push</b> having a the name of another tool as a value
+						will result in the information view for that tool being pushed over top the current
+						one.  Tapping the back button at the top left of the information view will switch
+						back to HTML page information view.				
+					</p>
+				</div>
+				<div id="addrow" class="subsection">
+					<h3>Adding Rows - mm_addrow</h3>
+					<p>
+						A request with the key <b>mm_addrow</b> having the name of a
+						<a href="datatable.html">data table</a> tool as a value will cause the data table to
+						add a row to the table.
+					</p>
+						This is done after the HTML page has been updated with any inputs passed to
+						<b>mmpost</b>.  If the data table that is having the row added references these
+						inputs either directly or indirectly in its initial value formulas, then the
+						values of the new row can result from the inputs of the HTML page.
+					</p>
+					<p>
+						If you look at the HTML page named <b>BMI</b> in the Getting Started session,
+						when the Record button on the page is tapped, the weight is passed in the
+						input argument of <b>mmpost</b> and <b>{mm_addrow: 'weight'}</b> is passed as the 
+						request argument.  No call back is supplied. The <b>Initial Value</b> formula
+						for the <b>Weight</b> column of the table is:
+					</p>
+					<p class="formula">
+						{eval bmi.weight}
+					</p>
+					<p>
+						so the entered weight will be used in the the new row.  Note that HTML page input
+						parameters are always strings, so the eval function is
+						used to evaluate them as formulas.
+					</p>
+				</div>
+				<div id="deleterows" class="subsection">
+					<h3>Delete Rows - mm_deleterows</h3>
+					<p>
+						A request with a key <b>mm_deleterows</b> can be used to remove specified rows
+						from a data table. The value associated with the key must itself be an object
+						containing:
+					</p>
+					<ul>
+						<li>table: name of the data table</li>
+						<li>rows: an array of row numbers to delete</li>
+					</ul>
+					<p>
+						For instance to delete the last row of a table named <b>weight</b>, the following
+						could be used:
+					</p>
+					<p class="formula">
+						{mm_deleterows: {table:'weight', rows: &lt;mm&gt;weight.nrow&lt;/mm&gt;]},
+					</p>
+				</div>
+				<div id="refresh" class="subsection">
+					<h3>Refresh - mm_refresh</h3>
+					<p>
+						When a Math Minion object calculates new values, it normally remembers those
+						until one of its inputs changes or a new session is loaded.
+					</p>
+					<p>
+						However in some circumstances, such as an expression using the current date and
+						time using the {now} function, you may want an object to forget its retained
+						value and recalculate it.  A <b>mmpost</b> request with a key <b>mm_refresh</b>
+						having a tool name as its value will cause that tool to recalculate.  For
+						example:
+					</p>
+					<p class="formula">
+						mmpost({},{mm_refresh: 'todaysDate'})
+					</p>
+				</div>
+				<div id="clear" class="subsection">
+					<h3>Clear - mm_clear</h3>
+					<p>
+						The inputs included in an <b>mmpost</b> call remain as tool parameters until they are
+						changed, but in some cases you may wish to remove all of these as start fresh.
+						Calling <b>mmpost</b> with a request object containing a key <b>mm_clear</b> will
+						do this.  The value of the key is unimportant, but typically just <b>true</b>.
+					</p>
+				</div>
+				<div id="update" class="subsection">
+					<h3>Update - mm_update</h3>
+					<p>
+						Calling <b>mmpost</b> with a request containing a key <b>mm_update</b> simply causes
+						the HTML page to be redisplayed.  This isn't often necessary, but might be combined
+						with a <b>mm_clear</b> to redisplay the cleared page.  It might look like:
+					</p>
+					<p class="formula">
+						mmpost({},{mm_clear: true, mm_update: true})
+					</p>
+				</div>
+				<div id="load" class="subsection">
+					<h3>Load Session - mm_load</h3>
+					<p>
+						You may want to break some activities up into different sessions,
+						but still be able to access them directly from the HTML page.
+					</p>
+					<p>
+						If a call to <b>mmpost</b> has a request with a key <b>mm_load</b>, an a session name
+						as its value, then Math Minion will attempt to load a session with that name.
+					</p>
+				</div>
+				<div id="parameters" class="section">
+					<h3>Formula Parameters</h3>
+					<p class="reminder">
+					Parameters that can be accessed in the form a.b where a is the tool name and b
+					is the parameter.
+					</p>
+					<p>
+					Any input values posted to the object can be retrieved using their input names.
+					They will be string values and have to be converted as appropriate, usually using
+					the <b>eval</b> function.
+					</p>
+					<p>
+					The parameter <b>html</b> will return the final HTML code after any mm tag replacements.
+					<p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

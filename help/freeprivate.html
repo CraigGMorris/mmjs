@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Free &amp; Private',{
+					free: 'Free',
+					private: 'Private',
+				});
+			};			
+		</script>	
+		<title>Free and Private</title>
+	</head>
+	
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			Math Minion is:
+			<div id="free" class="section">
+				<h3>Free</h3>
+				<p>
+					Math Minion is free software: you can redistribute it and/or modify
+					it under the terms of the <a href="/COPYING.txt">GNU General Public License</a>
+						as published by the Free Software Foundation, either version 3 of the License, or
+					(at your option) any later version.
+				</p>
+				<p>Source code is available on
+					<a href="https://github.com/CraigGMorris/mmjs">GitHub</a>
+				</p>
+				<p>
+					Math Minion is distributed in the hope that it will be useful,
+					but WITHOUT ANY WARRANTY; without even the implied warranty of
+					MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+					GNU General Public License for more details.
+				</p>
+			</div>
+			<div id="private" class="section">
+				<h3>Private</h3>
+				<p>
+					Math Minion is written in javascript as runs completely inside your web
+					browser.  No calculations are performed on the server and no information sent to it
+					beyond what the browser needs to send to load a static web page.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>
+
+			

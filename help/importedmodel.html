@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Model',{
+					overview: 'Overview',
+					importing: 'Importing',
+					parameters: 'Formula Parameters',
+				});
+			};			
+		</script>	
+		<title>Model</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					It can occur that a problem requires the same calculation to be used in a number
+					of places with differing inputs.  This is easily accomplished by creating a
+					<a href="model.html">model</a> containing
+					<a href="expression.html">input expressions</a> for the calculation
+					and then copying and pasting it as appropriate with different input formulas.
+				</p>
+				<p>
+					In most cases this is sufficient and has the advantage of being straightforward
+					and transparent.  However if after copying a <a href="model.html">model</a>
+					numerous times into varying sessions, you discover that you want to modify the
+					model and want to have those changes reflected in all the copies, they must
+					all be modified.
+				</p>
+				<p>
+					An alternative for these more complicated situations is to have the
+					<a href="model.html">model</a> import its structure from another session.
+				</p>
+					Every time a session containing such models is loaded, the contents of the models
+					are read from the root <a href="model.html">model</a> of the imported sessions and
+					thus any changes to those sessions will be reflected in all the models that import them.
+				</p>
+					The <a href="formula.html">formulas</a> for the input
+					<a href="expression.html">expressions</a> are retained by the importing
+					<a href="model.html">model</a> so they aren't overwritten by the default
+					imported values.
+				</p>
+			</div>
+			<div id="importing" class="section">
+				<h3>Importing Models</h3>
+				<p>
+					To add an imported model, choose the <b>Imported Model</b> option from the
+					<b>Add Tool to Model</b> menu of the
+					<a href="diagram.html#bgmenu">diagram background menu</a>.
+				</p>
+				<p>
+					This will produce a normal <a href="model.html#info">model information view</a>
+					except it will now have an additional <b>Source Session</b> section at the top.
+				</p>
+				<img src="imported.png" alt="Source Session Section">
+				<p>
+					The name of the session whose root model is the template should be entered into
+					the input field (PSCalc in the example).
+				</p>
+				<p>
+					The <b>Make Local</b> button changes the imported model to a normal
+					<a href="model.html">model</a> that is no longer updated if changes are
+					made to the template session.  Note this isn't reversable other than by
+					removing the model and adding the imported model again.
+				</p>
+				<p>
+					Other than this section and the <a href="diagram.html">diagram</a> icon being
+					labeled <b>Imported</b> rather then <b>Model</b> an imported model behaves like
+					a normal model.  You can even make changes to it, but any changes other than to
+					its input <a href="expression.html">expressions</a> will be lost when the session
+					is reloaded.
+				</p>
+			</div>
+			<div class="section">
+				<h3>Formula Parameters</h3>		
+				<p>
+					See the <a href="model.html#parameters">model parameters</a> help.
+				</p>						
+			</div>
+		</div>
+	</body>
+</html>

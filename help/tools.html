@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Calculation Tools',{
+					overview: 'The Tools',
+					addtool: 'Adding a Tool',
+					icons: 'Tool Icons',
+				});
+			};			
+		</script>	
+		<title>Calculation Tools</title>
+	</head>
+	
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>The Tools</h3>
+				<p>
+					The built in calculation tools are listed below. 
+					To see the help page for a tool, just tap on its name.
+				</p>
+				<ul>
+					<li>
+						<b><a href="expression.html">Expression</a></b>
+						- contains a single formula or constant.  For instance if an expression
+						named <b>distance</b> has the formula:
+						<p class="formula">
+							5 km
+						</p>
+						<p>
+							and an expression named <b>speed</b> has the formula:
+						</p>
+						<p class="formula">
+							distance / 180 s
+						</p>
+						<p>
+							then <b>speed's</b> value will be 27.78 m/s or 100 kph.
+						</p>
+					</li>
+					<li>
+						<b><a href="datatable.html">Data Table</a></b>
+							- a data base like table with named fields (columns) of different types.
+					</li>
+					<li>
+						<b><a href="solver.html">Function Solver</a></b>
+							- attempts to solve functions of the form
+						</p>
+						<p class="formula">
+							f(x) = 0
+						</p>
+						<p>
+							for one or more values of <b>x</b>.  That is it attempts to come up with a set
+							of x values such that all the function values are 0.
+						</p>
+					</li>
+					<li>
+						<b><a href="iterator.html">Iterator</a></b>
+						- Math Minion's ability to work with arrays and matrices means traditional
+						programming loops are usually not necessary, but if the need arises, this tool
+						provides a <b>for loop</b> type capability.
+					</li>
+					<li>
+						<b><a href="matrix.html">Matrix</a></b>
+						- while all Math Minion numerical values are in fact matrices, this tool allows
+						you to construct more complex entities, including cell formulas that refer to the
+						values of other cells.
+					</li>
+					<li>
+						<b><a href="model.html">Model</a></b>
+						- a model is simply a container for other tools and is what is represented by the
+						diagram view.
+						<p>
+							All Math Minion sessions have at least one root model, but models can contain other
+							models, so a hierarchy of different models can be constructed.
+						</p>
+					</li>
+					<li>
+						<b><a href="ode.html">ODE Solver (Integrator)</a></b>
+						- the Ordinary Differential Equation solver is used integrate problems where:
+						</p>
+						<p class="formula">
+							dy/dt = f(y, t)
+						</p>
+						<p>
+							given an initial value for y, which can be a scalar, array or matrix.
+						</p>
+					</li>
+					<li>
+						<b><a href="optimize.html">Optimizer</a></b>
+						-	given some function:
+						</p>
+						<p class="formula">y = f(x)</p>
+						<p>
+							where y is a scalar and x can be a scalar or an array, the optimizer attempts
+							to come up with the set of x values that produces the smallest value of y.
+						</p>
+					</li>
+					<li>
+						<b><a href="graph.html">Graph</a></b>
+						- displays a 2D or 3D plot.
+					</li>
+					<li>
+						<b><a href="htmlpage.html">HTML Page</a></b>
+						- used to create customized input and result views using HTML and javascript.
+					</li>
+					<li>
+						<b><a href="importedmodel.html">Imported Model</a></b>
+						- a <a href="model.html">model</a> that is imported from a different session.
+					</li>
+				</ul>
+			</div>
+			<div id="addtool" class="section">
+				<h3>Adding a Tool to the Model</h3>
+				<p>
+					To add a tool to the model, tap on the <a href="diagram.html">diagram</a>
+					background where you wish the upper left hand of the tool's icon to be placed. 
+				</p>
+				<p>
+					Select <b>Add Tool to Model</b> from the resulting <a href="diagram.html#bgmenu">menu</a>
+					and then select the type of tool you wish from the list presented.
+				</p>
+			</div>
+			<div id="icons" class="section">
+				<h3>Icons</h3>
+				<p>
+					Tools are all represented on the diagram as rectangular icons, with connections being
+					made from the corners of an icon to the middle of a vertical side of all the tools that
+					reference it.
+				</p>
+				<p>
+					Each type of tool icon has a unique color and all except the expression icon have
+					labels for the tool type and the tool's name.  The expression icon, has labels for
+					the tool's name, formula (truncated as necessary) and calculated value.  Note the
+					value won't be calculated until the tool is selected or a tool that depends on its
+					value is selected.
+				</p>
+				<img src="toolicons.png">
+			</div>
+		</div>
+	</body>
+</html>

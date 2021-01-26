@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Graph',{
+					overview: 'Overview',
+					types: '2D vs 3D Plots',
+					values2d: '&nbsp;&nbsp;2D Values',
+					values3d: '&nbsp;&nbsp;3D Values',
+					info: 'Information View',
+					buttons: 'Add &amp; Plot Buttons',
+					axistable: 'Axis Table',
+					axisformula: 'Axis Formula',
+					unit: 'Display Unit',
+					minmax: 'Minimum &amp; Maximum',
+					linetype: 'Line Types',
+					delete: 'Deleting an Axis',
+					plotview: 'Plot View',
+					plot2d: '2D Plot',
+					axes2d: '&nbsp;&nbsp;2D Axes',
+					zoom2d: '&nbsp;&nbsp;2D Zooming',
+					pan2d: '&nbsp;&nbsp;2D Panning',
+					rescale2d: '&nbsp;&nbsp;2D Rescale &amp; Center',
+					plot3d: '3D Plot',
+					axes3d: '&nbsp;&nbsp;3D Axes',
+					zoom3d: '&nbsp;&nbsp;3D Zooming',
+					pan3d: '&nbsp;&nbsp;3D Panning',
+					rotate: '&nbsp;&nbsp;3D Rotation',
+					rescale3d: '&nbsp;&nbsp;3D Rescale &amp; Center',
+					svg: 'SVG',
+					parameters: 'Formula Parameters',
+				});
+			};			
+		</script>	
+		<title>Graph</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					This object displays the relationship between arrays of numbers.  It can either
+					be a two dimensional X,Y graph or three dimensional X, Y, Z graph.
+				</p>
+				<p>
+					The values to be plotted are defined by providing a formula for each axis.
+					The formula should represent an array of values for points to be plotted against
+					that axis.
+				</p>
+				<p>
+					Thus in the simplest case, if the formula for the <b>X</b> axis has 100 values,
+					the formula for the corresponding <b>Y</b> axis should also have 100 values and
+					together they would represent the 100 coordinate pairs of the points to be plotted.
+				</p>
+				<p>
+					When a new graph is created or a graph icon on the diagram is tapped, the information
+					view described below will be presented.  However if the graph inputs are already
+					defined, the plot will be immediately displayed.  Tap the edit button at the upper
+					right if you wish to modify the inputs.
+				</p>
+			</div>
+			<div id="types" class="section">
+				<h3>2D vs 3D Plots</h3>
+				<p>
+					Graphs that don't have a <b>Z</b> axis will be represented as a standard
+					flat x-y plot. <b>X</b> sections of 2D points can have more than one <b>Y</b>
+					axis, with each set of <b>Y</b> values being plotted against the common <b>X</b>
+					values as a separate line.							
+				</p>
+				<p>
+					Adding a <b>Z</b> axis will change the representation so that the points are
+					displayed inside a rotatable cube with the <b>X</b> and <b>Y</b> axes on the
+					floor of the cube and the <b>Z</b> axis on the vertical.
+				</p>
+				<p>
+					You cannot mix <b>X</b> sections that are 2D and 3D and each section of a
+					3D plot will have exactly one <b>X</b>, <b>Y</b> and <b>Z</b> value.
+				</p>
+				<p>
+					Once a <b>Z</b> axis has been added, you will not be able to add additional
+					<b>Y</b> axes and adding another <b>X</b> will automatically include a <b>Z</b> axis.
+				</p>
+				<p>
+					Similarly, if there is more than one <b>Y</b> row, the <b>Add Z</b> button
+					will be disabled.
+				</p>
+			</div>
+			<div id="values2d" class="subsection">
+				<h3>2D Values</h3>
+				<p>
+					The <b>X</b> and <b>Y</b> arrays of a 2D plot should contain the same
+					number of elements.  If there is more than one <b>Y</b> axis, then each
+					axis will be plotted in a different colour and can have different axis ranges
+					and units.
+				</p>
+				<p>
+					If you have more than one <b>X</b> section, the number of elements in the
+					different sections can be different.
+				</p>
+				<p>
+					The <b>X</b> and <b>Y</b> arrays should normally be column arrays, but you
+					can have matrices, in which case each matching column will be plotted as a
+					separate line.  The X and Y matrices should have the same size.
+				</p>
+			</div>
+			<div id="values3d" class="subsection">
+				<h3>3D Values</h3>
+				<p>
+					The <b>X</b>, <b>Y</b> and <b>Z</b> arrays of a 3D plot should contain the
+					same number of elements for a line plot.  
+				</p>
+				<p>
+					However a surface plot will be presented if <b>Z</b> is a matrix with a
+					number of rows equal to number of values in <b>X</b> and a number of columns
+					equal to the number of values in <b>Y</b>.  In this case <b>X</b> and <b>Y</b>
+					do not have to have the same number of elements.  The resulting plot will be
+					a mesh where the <b>Z</b> values for each <b>X</b>, <b>Y</b> combination are plotted.
+				</p>
+				<p>
+					If you have more than one <b>X</b> section, the number of elements in the
+					different sections can be different and mesh and line plots can be plotted together.
+				</p>
+				<p>
+					Finally, if <b>X</b>, <b>Y</b> and <b>Z</b> are all matrices with the same
+					number of columns, each column is now plotted as a separate line
+				</p>
+			</div>
+
+			<div id="info" class="section">
+				<h3>Information View</h3>
+				<p>
+					The information view will appear when you first create a new graph tool.
+					It allows you to define the data which will be plotted, in the form of
+					arrays for the <b>X</b>, <b>Y</b> and, if applicable, <b>Z</b> values.
+				</p>
+				<p>
+					If you tap on an icon for a graph and the graph has sufficient information
+					to render a plot, then the plot will appear instead of the information view.
+				</p>
+				<p>
+					Tap on the <b>Edit</b> button in the upper right of the plot to see to the
+					information view.
+				</p>
+				<p>
+					The image below is the information view for a 2D plot where two different
+					<b>Y</b> lines are plotted against the same <b>X</b> values (defined in
+					the expression <b>angles</b> as <b>0:72 * 10 degree</b>). The y lines are
+					just the sine and cosine of those X values.
+				</p>
+				<img src="graph2dinfo.png" alt="2D graph info view"/>
+			</div>
+			<div id="buttons" class="section">
+				<h3>Add &amp; Plot Buttons</h3>
+				<p>
+					The top of the information view has buttons for adding <b>X</b>, <b>Y</b> and
+					<b>Z</b> axes and a <b>Plot</b> button for viewing the plot.  The <b>Add Y</b>
+					and <b>Add Z</b> buttons may be disabled as described in the
+					<a href="#overview">overview</a>.
+				</p>
+			</div>
+			<div id="axistable" class="section">
+				<h3>Axis Table</h3>
+				<p>
+					Below the buttons is a table of axis definitions.  This will have at least one
+					<b>X</b> and one <b>Y</b> definition.
+				</p>
+				<p>
+					Each definition has a <a href="formulaeditor#fields">formula fields</a> for the
+					axis formula and for the minimum and maximum values to use for that axis on a plot,
+					and tappable fields for the display unit, deleting the axis and in some cases for
+					the line type.  
+				</p>
+				<div id="axisformula" class="subsection">
+					<h3>Axis Formula</h3>
+					<p>
+						This formula should resolve to the array of values for the axis.
+					</p>
+					<p>
+						On the plot, an axis will normally be labeled with the full formula that generates
+						it, but if the formula ends with a comment (i.e. a <b>'</b> character followed by
+						some text), then the label will only consist of the text following the comment
+						character.
+					</p>
+				</div>
+				<div id="unit" class="subsection">
+					<h3>Display Unit</h3>
+					<p>	
+						The unit that will be used to display the axis on the plot will be shown to the right
+						of the axis formula. Tap on it to choose an alternative.
+					</p>
+				</div>
+				<div id="minmax" class="subsection">
+					<h3>Minimum and Maximum</h3>
+					<p>
+						These <a href="formula.html">formulas</a> should return a value whose unit
+						dimensions are compatible with the associated X, Y or Z values.
+					</p>
+					<p>
+						For 2D graphs with multiple Y lines, each Y line has its own axis values.
+					</p>
+					<p>
+						For <b>X</b> sections that have undefined minimums or maximums, the values
+						from the first previous section that has the same unit types will be used.
+						If none is found, the smallest and largest calculated values are used.
+					</p>
+					<p>
+						<b>Y</b> axes that have undefined minimums and maximums, will use the values
+						from the first previous Y axis in their X section, which has the same unit type.
+						If none is found, the first Y axis for each previous X section will be searched
+						and if none of those match the unit type, the smallest and largest calculated
+						values will be used.
+					</p>
+				</div>
+				<div id="linetype" class="subsection">
+					<h3>Line Types</h3>
+					<p>
+						On 2D plots, <b>Y</b> axis definitions will also have options for how the line is drawn.
+						On 3D plots it will be the <b>Z</b> axis that has these. The options are:
+					</p>
+					<ul>
+						<li><b>Line</b> - the points are connected by straight lines</li>
+						<li><b>Scatter</b> - just the points are plotted</li>
+						<li><b>Bar</b> - a vertical line is drawn from 0 to the y value</li>
+						<li><b>Bar+Dot</b> - same as bar with a point also drawn</li>
+					</ul>
+				</div>
+				<div id="delete" class="subsection">
+					<h3>Deleting an Axis</h3>
+					<p>
+						Tap on the red <b>X</b> to delete an axis
+					</p>
+					<p>
+						Deleting an <b>X</b> axis deletes its entire section.
+					</p>	
+					<p>
+						Note that you cannot delete a section if it is the only one, nor can you
+						delete the only <b>Y</b> value in a section.  You also cannot delete a <b>Z</b>
+						row if there is more than one <b>X</b> section.
+					</p>
+					<p>
+						If there is only one <b>X</b> section, you can delete the <b>Z</b> value to
+						transform the graph back to 2D.
+					</p>
+				</div>
+			</div>
+			<div id="plotview" class="section">
+				<h3>Plot View</h3>
+				<p>
+					When you tap the <b>Plot</b> button on the information view, the data will be
+					presented in a plot view.
+					Tap the <b>Edit</b> button to return to the information view.
+				</p>
+				<p>
+					This view will also automatically be displayed when a graph icon on the diagram
+					is tapped and the graph inputs have been set.
+				</p>
+				<p>
+					If a <b>Z</b> value was defined in the graph, a three dimensional (3D) plot
+					will appear, otherwise it will be a standard two dimensional (2D) x-y plot.
+				</p>
+				<div id="plot2d" class="subsection">
+					<h3>2D Plot</h3>
+					<p>
+						Tapping the <b>Plot</b> button on the graph represented by the
+						<a href="#info">information view shown above</a> results in the plot below.
+					</p>
+					<img src="plot2d.png" alt="2D plot view"/>
+					<div id="axes2d" class="subsection">
+						<h3>2D Axes</h3>
+						<p>
+							When a plot has more than one set of <b>X</b> or </b>Y</b> values, the axis labels
+							will only represent one at a time.  If there is more than one set of <b>X</b> values,
+							a tap on the X axis label will switch to the next set or cycle back to the first if
+							the last one is currently displayed.  The <b>X</b> and <b>Y</b> axis labels will
+							change to reflect the new set.
+						</p>
+						<p>	
+							When the current <b>X</b> axis has more than one <b>Y</b> value, tapping on any Y
+							axis label will switch the <b>Y</b> axis labels to the values of the next Y line.
+						</p>
+						<p>
+							The colour of the <b>Y</b> axis labels will always match the colour of the plotted
+							values that they represent.
+						</p>
+					</div>
+					<div id="zoom2d" class="subsection">
+						<h3>2D Zooming</h3>
+						<p>
+							You can zoom in and out on the graph using a pinch gesture on a trackpad or screen as
+							appropriate.  If you are using a mouse, then the centre scroll ball/wheel/gesture
+							will zoom in and out. Two finger scrolling on a trackpad should work too.
+						</p>
+						<p>
+							The axis labels will adjust their values appropriately.
+						</p>
+					</div>
+					<div id="pan2d" class="subsection">
+						<h3>2D Panning</h3>
+						<p>
+							Simply drag the graph around to pan it back and forth and up and down.
+						</p>
+						<p>
+							The axis labels will adjust their values appropriately.
+						</p>
+					</div>
+					<div id="rescale2d" class="subsection">
+						<h3>2D Rescale &amp; Center</h3>
+						<p>
+							Tap and hold on the plot for a second and then release to have it return to
+							its original scaling and position.
+						</p>
+					</div>
+				</div>
+				<div class="subsection">
+					<h3>3D Plot</h3>
+					<p>
+						Below is an image of a 3D plot. In this case it has a surface plot as
+						described in the <a href="#values3d">3D Values</a> description, as well
+						as a small line plot (the green circle near the top).
+					</p>
+					<img src="surface3d.png" alt="3D surface plot"/>
+					<div id="axes3d" class="subsection">
+						<h3>3D Axes</h3>
+						<p>
+							When a plot has more than one set of <b>X</b> values the axis labels will only
+							represent one at a time.  A single tap on the X axis label will switch to the
+							next set or cycle back to the first if the last one is currently displayed.
+							The <b>X</b> and <b>Y</b>, and <b>Z</b> axis labels will change to reflect
+							the new set.
+						</p>
+						<p>
+							The colour of the axis labels will always match the colour of plotted values
+							that they represent. The presence of more than one colour of plotted data
+							indicates multiple <b>X</b> value sets.
+						</p>
+					</div>
+					<div id="zoom3d" class="subsection">
+						<h3>Zooming</h3>
+						<p>
+							As with a 2D graph, you can zoom in and out on the graph using a pinch gesture
+							on a trackpad or screen as appropriate.  If you are using a mouse, then the
+							centre scroll ball/wheel/gesture will zoom in and out. Two finger scrolling on
+							a trackpad should work too.
+						</p>
+						<p>
+							The axis labels will adjust their values appropriately.
+						</p>
+					</div>
+					<div id="pan3d" class="subsection">
+						<h3>Panning</h3>
+						<p>
+							Dragging the graph in the direction of one of the initial grid lines will
+							pan the graph in that direction.  Thus vertically will move it in the <b>Z</b>
+							direction, while from the upper left to lower right will pan in the <b>Y</b>
+							direction and from the lower left to upper right in the <b>X</b> direction.
+						</p>
+						<p>
+							Note these directions don't change with rotation, so it is best to pan before
+							rotating.
+						</p>
+						<p>
+							In all cases, the axis labels will adjust their values appropriately.
+						</p>
+					</div>
+					<div id="rotate" class="subsection">
+						<h3>Rotation</h3>
+						<p>
+							The image, including the axis frame, can be rotated around the <b>Z</b> axis
+							by dragging horizontally along the top of the view.
+						</p>
+					</div>
+					<div id="rescale3d" class="subsection">
+						<h3>3D Rescale &amp; Center</h3>
+						<p>
+							As with the 2D graph, tap and hold on the plot for a second and then release
+							to have it return to its original scaling and position.
+						</p>
+					</div>
+				</div>
+			</div>
+			<div id="svg" class="section">
+				<h3>SVG</h3>
+				<p>
+					The graph tool has a parameter for retrieving a Scalable Vector Graphics (SVG)
+					representation of itself.  This parameter is unsurprisingly named svg (see below)
+					and can be accessed by any formula.
+				</p>
+				<p>
+					Thus if you had a graph named "myplot", you could add an expression with the
+					formula <b>myplot.svg</b> to get a string value containing the SVG code.
+				</p>
+				<p>
+					This kind of looks like HTML code and indeed modern browsers can render it on
+					a web page.  Many graphics programs can also read and edit SVG files.
+				</p>
+				<p>
+					Inside Math Minion, you can just use the parameter expression where needed.
+					To take it to another app, just tap on the string display of an expression
+					that retrieves the SVG from a graph.  This will present an expanded view
+					of the string from which you select the whole string and copy and paste it
+					where desired.
+				</p>
+			</div>
+			<div id="parameters" class="section">
+				<h3>Formula Parameters</h3>
+				<p class="reminder">
+					Parameters that can be accessed in the form a.b where a is the object and
+					b is the parameter.
+				</p>
+				<p>
+					All of the parameters below can have a digit appended to them to designate a
+					particular value should there be multiple curves.  For instance y2.
+					If the digit is omitted, the first curve is used.  Thus y is equivalent to y1.
+				</p>
+				<p>
+					To designate the 3rd y curve used with the 2nd X axis, you would use y2_3.
+				</p>
+				<ul>
+					<li><b>x</b> - a X array</li>
+					<li><b>minx</b> - a X axis lower bound</li>
+					<li><b>maxx</b> - a X axis upper bound</li>
+					<li><b>y</b> - a Y array</li>
+					<li><b>miny</b> - the Y axis lower bound</li>
+					<li><b>maxy</b> - the Y axis upper bound<l/i>
+					<li><b>svg</b> - a string value containing a Scalable Vector Graphics representation
+						of the plot.  Note that almost every element has a class name assigned, making
+						it easy to use CSS in HTML to change colors, line thickness, fonts etc.</li>
+					<li><b>table</b> - a table value corresponding to the designated X axis</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>

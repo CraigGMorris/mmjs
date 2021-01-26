@@ -7,7 +7,13 @@
 		<script type="text/javascript">
 			window.onload = () => {
 				rtSetupHeading('Expression',{
+					overview: 'Overview',
 					inputs: 'Inputs',
+					incheck: 'In Checkbox',
+					outcheck: 'Out Checkbox',
+					formula: 'Formula Field',
+					unit: 'Display Unit',
+					calculated: 'Calculated Value',
 					parameters: 'Formula Parameters'
 				});
 			};			
@@ -15,9 +21,10 @@
 		<title>Expression</title>
 	</head>
 	<body>
-		<div class="page">
+		<div id="page">
 			<div id="heading"></div>
 			<div id="overview" class="section">
+				<h3>Overview</h3>
 				<p>
 					An expression has a single <a href="formula.html">formula</a> representing an equation
 					or constant in your calculation.
@@ -38,21 +45,32 @@
 				<p>
 					The value of distance will be 200 km.
 				</p>
+				<p>If instead of a scalar, speed was a 2x2 matrix of <b>kph</b> values:
+				<table class="formula">
+					<tr><td>25</td><td>50</td></tr>
+					<tr><td>75</td><td>100</td></tr>
+				</table>
+				</p>
+				<p>
+					then the <a href="infoview.html">information view</a> for the distance expression
+					would look like:
+				</p>
+				<img src="expression.png" alt="Expression info view"/>
 			</div>
 			<div id="inputs" class="section">
 				<h3>Inputs</h3>
 				<div class="subsection">
 					In addition to the name field and notes button, an expression has:
 				</div>
-				<div class="subsection">
-					<h3>Input Checkbox</h3>
+				<div id="incheck" class="subsection">
+					<h3>In Checkbox</h3>
 					<p>
-						When on, this designates that the expression is considered to be an input for the
-						model that contains it.
+						When checked, this designates that the expression is considered to be an input for the
+						<a href="model.html">model</a> that contains it.
 					</p>
 					<p>
 						This means it will appear in the input section of the
-						<a href="model.html">information view</a> of the model that owns it.
+						<a href="model.html">information view</a> of the model's parent model.
 					</p>
 					<p>
 						Also any values it references will be from the parent model, rather than the model
@@ -60,8 +78,8 @@
 						the root model).
 					</p>
 				</div>
-				<div class="subsection">
-					<h3>Output Checkbox</h3>
+				<div id="outcheck" class="subsection">
+					<h3>Out Checkbox</h3>
 					<p>
 						When on, the value calculated by this expression will appear in the output section
 						of the <a href="model.html">information view</a> of the model that owns it.
@@ -71,19 +89,22 @@
 						accessed in <a href="formula.html">formulas</a>.
 					</p>
 				</div>
-				<div class="subsection">
+				<div id="formula" class="subsection">
 					<h3>Formula Field</h3>
 					<p>
-						The <a href="formula.html">formula</a> that defines the value of the expression. Tap on it to open an
-						<a href="formulaeditor.html">editor</a> where you enter or edit the expression
-						formula.
+						This has the <a href="formula.html">formula</a> that defines the value of the expression.
+						Tap on it to open an
+						<a href="formulaeditor.html">editor</a> where you enter or edit the expression formula.
 					</p>
 					<p>
-						When an expression has been calculated, the equals sign that appears between the name field and the formula field will change to blue.  Tapping this will cause the expression to be reevaluated.  This is normally only pertinent for formulas using the {now} or {wget url} functions, to force them to replace their cached values.
+						Tapping on the equal sign to the left of the formula field will cause the expression
+						to be reevaluated.  This is normally only pertinent for formulas using something like
+						the {now} function, to force them to replace their cached values. It can also be used to
+						regenerate error and warning dialogs resulting from the calculation.
 					</p>
 				</div>
-				<div class="subsection">
-					<h3>Unit</h3>
+				<div id="unit" class="subsection">
+					<h3>Display Unit</h3>
 					<p>
 						Below the formula, the unit type (e.g. length) of the value calculated by the formula
 						is displayed, along with the <a href="units.html">conversion unit</a>
@@ -91,7 +112,9 @@
 					</p>
 					<p>
 						If you wish to display the value with a different unit, tap on the unit to open a 
-						<a href="unitpicker.html">unit browser</a> where you can select a different one.
+						<a href="formulaeditor.html#ubrowser">unit browser</a> where you can select a different one.
+						In the image above this has been done to display the results in <b>km</b>>, rather than the default
+						<b>m/s</b> of the <b>SI</b> <a href="units.html#sets">unit set</a> used by this session.
 					</p>
 					<p>
 						Note that setting the display unit does not change the formula or the value it
@@ -100,31 +123,36 @@
 					</p>
 					<p>
 						If the result of evaluating the formula is a
-						<a href="minionvalue.html">table value</a>, then the unit field will normally
+						<a href="minionvalue.html#table">table value</a>, then the unit field will normally
 						be blank and the unit browser will be disabled, since different columns might have
 						different units.
 					</p>
+					<img src="tablevalue.png" alt="Expression table value"/>
 					<p>
-						However if you tap on the column name cell in the calculated value grid (see below),
-						will display the <a href="unitpicker.html">unit browser</a> and let you select a
-						display unit for that column.
+						However if you tap on the column name header in the calculated value grid,
+						the <a href="formulaeditor.html#ubrowser">unit browser</a> will be displayed to
+						let you select a display unit for that column.
 					</p>
 					<p>
 						Note that the default unit for a table value is defined by the original table
 						definition.
 					</p>
 				</div>
-				<div class="subsection">
+				<div id="calculated" class="section">
 					<h3>Calculated Value</h3>
 					<p>
 						The lower part of the view displays the result of the calculation as a matrix or
 						table.  If the display won't fit in the window, you can scroll it both horizontally
-						and vertically by dragging it. Dragging on the row or column headers with scroll
+						and vertically by dragging it. Dragging on the row or column headers will scroll
 						rapidly.
 					</p>
 					<p>
-						If the calculated value is a <a href="minionvalue.html">string type</a>, selecting a
-						cell will display the complete string in a <a href="stringview.html">string view</a>.
+						Tapping on a cell will show the contents of the cell in a large text area in a new
+						view. For a number value, this allows you to see greater precision as well as copy
+						the value to the clipboard.  For string values, which might be far larger than can
+						be displayed in a cell, it allows you to see the whole string in a scrollable view
+						as well as copying all or part of it to the clipboard.  Tapping the <b>Done</b>
+						button on this view will return to the main view.
 					</p>
 				</div>
 			</div>

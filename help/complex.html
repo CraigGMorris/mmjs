@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Complex Numbers',{
+					overview: 'Overview',
+					examples: 'Examples',
+				});
+			};			
+		</script>	
+		<title>Complex Numbers</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Complex Numbers</h3>
+				<p>
+					Complex numbers in Math Minion are represented by either a matrix or table value
+					with two columns, the first column being the real component and the second the
+					imaginary one.  All complex value functions return table values with the first
+					column labeled <b>r</b> and the second labeled <b>i</b>.
+				</p>
+				<p>
+					Math Minion has a number of <a href="formula.html#functions">functions</a> that
+					deal with complex numbers. All of these functions share a number of characteristics:
+				</p>
+				<ul>
+					<li>Complex value arguments can either be table values or matrices.</li>
+					<li>If the imaginary column is missing, it will be assumed to be zero.</li>
+					<li>Functions that expect a single complex argument (cabs, cexp, csin etc), will
+						also accept two arguments, with the first being the real component and the
+						second the imaginary one.
+					</li>
+					<li>If the real and imaginary columns do not have the same number of values,
+						the result will be the longer of the two, with the shorter columns values
+						being reused in order as necessary.
+					</li>
+					<li>All complex functions operate on the cartesian complex form ( x + y * i),
+						but the <b>polar</b> function can be used to convert them to the polar form.
+						Similarly the <b>cart</b> function can be used to convert polar values to
+						cartesian values.
+					</li>
+				</ul>
+				<p>
+					Most complex functions names are formed by prepending a <b>c</b> character to
+					their real functions equivalents.  These include <b>cabs</b>, <b>cexp</b>,
+					<b>cln</b> and all the trigonometric functions like <b>csin</b>.
+					See the <b>Complex Number Functions</b> section of the
+					<a href="formulaeditor.html#fbrowser">function browser</a> for a complete list.
+				</p>
+				<p>
+					The mathematical operations of multiplication, division and exponentiation are
+					handled by the <b>cmult</b>, <b>cdiv</b> and <b>cpow</b> functions respectively. 
+					Each of these functions takes two complex arguments of the form discussed above
+					and returns its result as a complex table value.  The normal <b>+</b> and <b>-</b>
+					add and subtract operators work correctly with complex values.
+				</p>
+			</div>
+			<div id="examples" class="section">
+				<h3>Examples</h3>
+				<p class="formula">
+					{complex 3, -2}
+				</p>
+				<p>
+					returns a single row table value with the <b>r</b> column containing 3 and
+					the <b>i</b> column containing -2.  This would represent a complex number of
+					the form 3 - 2i.
+				</p>
+				<p class="formula">
+					{complex 0:9, 2}
+				</p>
+				<p>
+					returns a 10 row table value with real values 0 through 9 and all the imaginary
+					values being 2.
+				</p>
+				<p class="formula">
+					{cmult {complex 2, 3}, {complex 4, 5}}
+				</p>
+				<p>
+					returns a single row table value with the <b>r</b> column containing -7 and
+					the <b>i</b> column containing 22.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

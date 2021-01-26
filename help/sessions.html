@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Sessions',{
+					overview: 'Overview',
+					new: 'New Session',
+					save: 'Save Session',
+					import: 'Import',
+					exportall: 'Export All',
+					open: 'Open',
+					folder: 'Folders',
+					utility: 'Utility Menu',
+				});
+			};			
+		</script>	
+		<title>Sessions</title>
+	</head>
+	
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					Math Minion continually saves whatever you are working on in a session
+					(which is Minion speak for a document).  Tapping the <b>Sessions</b> button on the
+					bottom toolbar will open a view listing all of your saved sessions in case sensitive
+					alphabetical order.
+				</p>
+				<img src="sessions.png" alt="Sessions view"/>
+				<p>
+					Math Minion never sends any session information to the web server it was loaded from,
+					but rather stores the sessions locally in the browser indexeddb facility. This means
+					that you will have a different set of storage for each browser and server you use.
+				</p>
+				<p>
+					For security reasons, web browsers require that any interaction with a device's file
+					system involve actions by the user, thus Math Minion can't interact with your file system
+					by itself.  However it does have facilities that let you export or import sessions or even
+					your whole library of sessions to the file system when you request it. If you export and
+					import to a cloud based drive like iCloud, OneDrive, Google Drive etc., then it is easy
+					to share your session between different devices.
+				</p>
+			</div>
+			<div id="new" class="section">
+				<h3>New</h3>
+				<p>
+					Tapping the <b>New</b> button will result in the current session being replaced with a
+					completely empty unnamed one. As you add tools and make changes, these changes will be
+					saved and will be restored when the page is loaded again, <b>BUT</b>
+					if you load another session or hit <b>New</b> again, the new session will be lost unless
+					it has been saved with the <b>Save</b> button and given a name.  Once given an name and
+					saved, then changes will automatically be
+					saved to that session.
+				</p>
+			</div>
+			<div id="save" class="section">
+				<h3>Save</h3>
+				<p>
+					If you are working on a new session that has not yet been saved, tapping on the <b>Save</b>
+					button will pop up a dialog asking for the name to use to save the session.  Once this has
+					been done, further changes to the session will automatically be saved to that name.
+				</p>
+				<p>
+					Tapping on the <b>Save</b> button for a named session will immediately save the session,
+					but this usually isn't necessary due to the automatic saving feature.
+				</p>
+			</div>
+			<div id="import" class="section">
+				<h3>Import</h3>
+				<p>
+					Tapping the <b>Import</b> button will open a system file browser, which will allow you
+					to select a file that has been exported from Math Minion. If the file is for a single
+					session, it will be read in, saved in the browser storage and become the current session.
+				</p>
+				<p>
+					If the file is the result of an export of the entire list or a folder of saved sessions,
+					then a <a href="#folder">folder</a> will be created containing all of the sessions.
+				</p>
+				<p>
+					Note that exported files are simply text files in JSON format.
+				</p>
+			</div>
+			<div id="exportall" class="section">
+				<h3>Export All</h3>
+				<p>
+					The <b>Export All</b> button will open a system file browser asking for the name
+					(default is root.txt) and location in which to create a file containing all the sessions
+					stored in the browser.
+				</p>
+				<p>
+					This is handy both for transferring your whole library of sessions to a different device
+					or browser, but also for creating backups.  While the browser storage is persistant, having
+					a tangible backup file is a good idea.
+				</p>
+			</div>
+			<div id="open" class="section">
+				<h3>Open</h3>
+				<p>
+					Simply tap on any session name to replace the current session with that session.
+				</p>
+			</div>
+			<div id="folder" class="section">
+				<h3>Folders</h3>
+					<p>
+					If you have a lot of sessions, you can organize your session list to emulate folders.
+					This is done simply by giving a session a name that has two or more parts separated by
+					a slash characters.
+				</p>
+				<p>
+					Thus if you name a session <b>examples/orbits</b>, only <b>examples/</b> will appear
+					in the session list, as in the image  in the
+					<a href="#overview">overview</a> above.  Tapping on <b>examples/</b> will then switch
+					the list to only show sessions whose name begins with "examples/" as in the image below.
+				</p>
+				<img src="subsession.png" alt="Folder view"/>
+				<p>
+					Note that I have included the top header in this image and its title is the folder name,
+					while the back button takes you back to the previous sessions view.
+				</p>
+				<p>
+					To remove a session or folder from a folder, simply rename it to something that does not
+					contain a slash character.  To move it to another folder, just rename it appropriately.
+				</p>
+			</div>
+			<div id="utility" class="section">
+				<h3>Utility Menu</h3>
+				<p>
+					If you tap on the gear icon to the right of a session name in the list, a menu will
+					appear with a number of options, which are hopefully self explanatory.  Note these
+					will work with folders as well as individual sessions.
+				</p>
+				<img src="sessionmenu.png" alt="Session Menu"/>
+				<p>
+					Also note that some browsers don't allow apps to directly use the system clipboard,
+					in which case Math Minion uses an internal clipboard for the copy operation.  See the
+					diagram background menu <a href="diagram.html#showclip">show clipboard</a> help for a
+					workaround.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

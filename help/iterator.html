@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Iterator',{
+					overview: 'Overview',
+					loop: 'Loop Variables',
+					recorded: 'Recorded Values',
+					info: 'Information View',
+					enabled: '&nbsp;&nbsp;Enabled',
+					addrec: '&nbsp;&nbsp;Add Recorded Value',
+					current: '&nbsp;&nbsp;Current Values',
+					while: '&nbsp;&nbsp;While',
+					initialx: '&nbsp;&nbsp;Initial X',
+					nextx: '&nbsp;&nbsp;Next X',
+					recordedv: '&nbsp;&nbsp;Recorded Value',
+					parameters: 'Formula Parameters',
+				});
+			};			
+		</script>	
+		<title>Iterator</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					In most programing languages, loops, like the standard C "for" loop:
+				</p>
+				<p>
+					<b>for (int i = 0; i < last; i++)</b>
+				</p>
+				<p>
+					are commonly used in array and matrix computations, as well as for iterative solutions.
+				</p>
+				<p>
+					Math Minion's array and matrix handling, along with its solvers, remove almost all
+					need for such iterative devices.  However there are some circumstances where being
+					able to loop through a series of calculations is still useful.
+				</p>
+				<p>
+					Various forms of case studies are probably the most common, but there could be
+					iterative problem solutions that can't be completely handled by the built in solvers.
+				</p>	
+				<p>
+					Like the C loop mentioned above, the Math Minion iterator allows you to initialize
+					a value, check if the loop should continue and perform some operation before the
+					next check.
+				</p>
+			</div>
+			<div id="loop" class="section">
+				<h3>Loop Variables</h3>
+				<p>
+					There are actually two loop variables in Math Minion's iterator:
+				</p>
+				<ul>
+					<li><b>X</b> - This value can be initialized in the <b>Initial X</b> field of
+						the iterator view and can be modified at the end of each loop by the formula
+						in the <b>Next X</b> field.
+					</li>
+					<li><b>i</b> - this is a simple loop counter, which starts at 1 and increments
+						on each loop.
+					</li>
+				</ul>
+			</div>
+			<div id="recorded" class="section">
+				<h3>Recorded Values</h3>
+				<p>
+					You can also add recorded values, whose formulas are evaluated on each loop.
+					The resulting values added to the end of an array.
+				</p>
+				<p>
+					These arrays can be accessed as parameters <b>r1</b>, <b>r2</b>, etc.
+					The parameters <b>1</b>, <b>2</b>, etc. will return the last value of the
+					recorded array.  That is the value calculated on the previous loop. A scalar
+					0 would be returned if it is the first loop.
+				</p>
+				<p>
+					If you supply a name as a comment to the recorded value formula (that is have a
+					single quote followed by a name at the end of the formula), then you can use that
+					name as a reference to the recorded value array, rather than the more cryptic R1, R2 etc.
+				</p>
+			</div>
+			<div id="info" class="section">
+				<h3>Information View</h3>
+				<p>
+					Below is an image of the <a href="infoview.html">information view</a> for
+					a rather silly iterator example from the <b>Getting Started</b> session.
+				</p>
+				<img src="iterinfo.png" alt="Iterator Information View">
+				<p>
+					Notes on the fields:
+				</p>
+				<div id="enabled" class="subsection">
+					<h3>Enabled</h3>
+					<p>
+						Turning this on causes the iterator to perform its iterations.
+					</p>
+					<p>
+						Once the iteration is complete, any changes to values that the formulas
+						below use will cause the iterator to set <b>X</b> to the <b>Initial X</b>
+						value, set <b>i</b> to 1 and start the iteration over.
+					</p>
+					<p>
+						When this is turned off, the loop is set to its initial conditions, but does
+						not iterate.
+					</p>
+					<p>
+						If an error of any kind is encountered, this will automatically be turned off.
+					</p>
+				</div>
+				<div id="addrec" class="subsection">
+					<h3>Add Recorded Value</h3>
+					<p>
+						Tapping this adds a row to the bottom of the Recorded Values section of
+						the table below.
+					</p>
+					<p>
+						The formula entered into this row will be evaluated on each step and the
+						results stored.
+					</p>
+					<p>
+						These results can be accessed as a iterator parameter. These arrays are named
+						R1, R2 etc.
+					</p>
+					<p>
+						If the recorded value formula has a name appended as a comment string
+						(i.e. a single quote and a name), then that name can also be used as a
+						parameter name to access the results.
+					</p>
+					<p>
+						If the recorded values at each step are themselves arrays or matrices,
+						then when accessed, a matrix will be returned with each row being the
+						recorded step array or unwound matrix.
+					</p>
+				</div>
+				<div id="current" class="subsection">
+					<h3>Current Values</h3>
+						The current values of <b>i</b> and <b>x</b> are shown.
+					</p>
+				</div>
+				<div id="while" class="subsection">
+					<h3>While</h3>
+					<p>
+						The loop will continue as long as this formula evaluates to a known value,
+						whose first element (i.e. row = 1, column = 1) is non-zero.
+					</p>
+					<p>
+						If this condition is satisfied, the <b>i</b> value will be incremented and
+						the <b>Next X</b> formula will be evaluated.
+					</p>
+					<p>
+						This formula can access the <b>i</b> parameter (i.e. $.i) and, assuming
+						there are formulas for <b>Initial X</b> and <b>Next X</b>, the <b>X</b>
+						parameter (i.e. $.x).
+					</p>
+					<p>
+						In the example image above, the condition:
+					</p>
+					<p class="formula">
+						{le $.i, n}
+					</p>
+					<p>
+						is true while <b>i</b> is less than the value of the
+						<a href="expression.html">expression</a> tool <b>n</b>, which happens to have
+						a value of 6. Note that the current value of <b>i</b> when the iteration is complete
+						is 7 and hence the while condition is false.
+					</p>
+				</div>
+				<div id="initialx" class="subsection">
+					<h3>Initial X</h3>
+					<p>
+						The initial value for loop variable <b>X</b>.  This formula is optional and can
+						be blank. The value does not have to be a scalar and in the example its formula
+						will yield an array of the integers from 1 to 6, with a unit of metres.
+					</p>
+				</div>
+				<div id="nextx" class="subsection">
+					<h3>Next X</h3>
+					<p>
+						Following each successful evaluation of the <b>While</b> formula, this formula
+						is evaluated and the result assigned to <b>X</b>.  In the example 1 is added to
+						every value of the preceding <b>X</b> array.
+					</p>
+				</div>
+				<div id="recordedv" class="subsection">
+					<h3>Recorded Value</h3>
+					<p>
+						There is a row for each recorded value formula that has been added (see the
+						<a href="addrec">Add Recorded</a> button above).
+					</p>
+					<p>
+						These formulas will be evaluated on each iteration and the newly calculated
+						value will be added as a row to the corresponding parameter.
+					</p>
+					<p>
+						Tap on the red <b>X</b> on the right to delete a recorded value.
+					</p>
+				</div>
+			</div>
+			<div id="parameters" class="section">
+				<h3>Formula Parameters</h3>
+				<p class="reminder">Parameters that can be accessed in the form a.b where a is the tool and b is the parameter</p>
+				<ul>
+					<li><b>i</b> - the current value of the loop counter</li>
+					<li><b>x</b> - the current value of the loop variable</li>
+					<li><b>initX</b> - the result of evaluating the <b>Initial X</b> formula</li>
+					<li><b>while</b> - the current value of the while condition</li>
+					<li><b>nextX</b> - the result of evaluating the <b>Next X</b> formula</li>
+					<li><b>solved</b> - 1 if the loop has successfully completed, 0 otherwise.</li>
+					<li><b>Rn</b> - the array, or matrix, of recorded values corresponding to the recorded value formula number n.  If the formula for a recorded value is followed by a single quote and a name, that name can also be used as a parameter to access the recorded value array.</li>
+					<li><b>n</b> - where n is a digit corresponding to a recorded value formula number.  Returns the last value of recorded value array.  Essentially this is the previously recorded value for that formula.  If <b>i</b> is 1, then a scalar value of 0 is returned. </li>
+					<li><b>table</b> - returns a table value where each recorded value array is in a column of the table.  If comments are used on the recorded value formulas, they will be used as the column names, otherwise the formula itself will be.</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>

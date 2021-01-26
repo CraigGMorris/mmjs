@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Information View',{
+					overview: 'Overview',
+					topbar: 'Top Toolbar',
+					bottombar: 'Bottom Toolbar',
+				});
+			};			
+		</script>	
+		<title>Information View</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					The information view is where you define the inputs for <a href="tools.html">tools</a>
+					as well display their calculated results.  It is also used for the saving and loading
+					of sessions and defining conversion units and their sets, among other things.
+				</p>
+				<p>
+					If the display is wide enough, it is displayed to the right of the
+					<a href="diagram.html">diagram</a>, otherwise you switch between the diagram and the
+					information view using buttons on the toolbar at the bottom of the display.
+				</p>
+				<p>
+					Regardless of what information it is displaying, the view always has the same toolbars
+					at the top and bottom of the display
+				</p>
+			</div>
+			<div id="topbar" class="section">
+				<h3>Top Toolbar</h3>
+				<img src="infotop.png" alt="Top of an information view"/>
+				<p>The image above is the top of an information view for an
+					<a href="expression.html">expression</a> named "radius", which is a member of a
+					<a href="model.html">model</a> named "circle".
+				</p>
+				<p>
+					The name of whatever is being displayed always appears in the center of the toolbar
+					and tapping on it has no effect.
+				</p>
+				<div class="subsection">
+					<h3>Back</h3>
+					<p>
+						At the left is a back button with the name of whatever you will go back to if you
+						tap it.  In this case, as with all information views pertaining to Math Minion tools,
+						it is the name of the <a href="model.html">model</a> the tool lives in and tapping it
+						will switch the view to showing information for that <a href="model.html">model</a>.
+					</p>
+					<p>
+						If you are already viewing the information for a <a href="model.html">model</a>, the
+						<a href="diagram.html">diagram</a> will also switch to displaying the parent
+						<a href="model.html">model</a>. The back button does not appear for the root model
+						information since it doesn't have a parent.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Help</h3>
+					<p>
+						The help button at the right of the toolbar will open the help page for whatever is
+						currently being viewed.  In this case it would be the
+						<a href="expression.html">expression help page</a>.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Tool Information</h3>
+					<p>
+						When viewing the information for a tool, an editable field for the tool name always
+						appears immediately below the toolbar, along with a button that will open a
+						<a href="notes.html">notes view</a> where you can define notes for the tool.
+					</p>
+				</div>
+			</div>
+			<div id="bottombar" class="section">
+				<h3>Bottom Toolbar</h3>
+				<p>
+					The bottom tool bar has six buttons.  From right to left they are:
+				</p>
+				<div class="subsection">
+					<h3>Expand/Diagram/Info</h3>
+					<p>
+						When the information view is shown along with the <a href="diagram.html">diagram</a>
+						the right most button will say <b>Expand</b>.  Tapping it will cause the information
+						view to expand to the full size of the display, hiding the
+						<a href="diagram.html">diagram</a>. This button will then change to <b>Diagram</b>
+						and tapping it will return to the two pane view.
+					</p>
+					<P>
+						If only the information view is shown because the display is too narrow for two
+						panes, then this button will be labeled <b>Diagram</b> and tapping it will switch
+						to the <a href="diagram.html">diagram</a>.  In this case the toolbar will continue
+						to be displayed at the bottom of the diagram and the button will now be labelled
+						<b>Info</b>. Tapping it will switch back to the information view.
+					</P>
+				</div>
+				<div class="subsection">
+					<h3>Sessions</h3>
+					<p>
+						This button will produce a view of the currently saved sessions and tools for
+						saving, creating, deleting, importing and exporting them. The
+						<a href="sessions.html">sessions help page</a> is a must read.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Console</h3>
+					<p>
+						This shows the <a href="console.html">console view</a>, which allows text commands
+						to be sent directly to the underlying calculation engine. It is mainly of use when
+						developing or debugging Math Minion code and can probably be ignored otherwise.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Undo and Redo</h3>
+					<p>
+						These two buttons can be used to, surprise, undo and redo actions.  They will be
+						grayed out if they have no available action.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Units</h3>
+					<p>
+						Math Minion has a pretty sophisticated conversion unit system which also provides
+						dimensional analysis to numeric calculations.  This button opens a
+						<a href="units.html">units</a> view where the default unit set can be selected
+						and custom units or unit sets defined.
+					</p>
+				</div>
+		</div>
+	</body>
+</html>
+	

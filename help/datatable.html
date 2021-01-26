@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Data Table',{
+					overview: 'Overview',
+					columns: 'Columns (Fields)',
+					infoview: 'Information View',
+					addrow: 'Add Row',
+					addcol: 'Add Column',
+					tablecells: 'Value Table Cells',
+					tableheaders: 'Value Table Headers',
+					coleditor: 'Column Definition Editor',
+					import: 'Importing, Copying and Pasting',
+				});
+			};			
+		</script>	
+		<title>Data Table</title>
+	</head>	
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					Data tables are used to store <b>static</b> numeric or textual data in a
+					tabular form.
+				</p>
+				<p>
+					By "static", I mean that once entered, the data in a cell is not dependent on any
+					other values.  A formula can be used to enter a cell's value, but it will be
+					evaluated immediately upon entry and only the resultant value, not the formula
+					itself, will be stored.  This is different from other Math Minion tools, such as
+					expressions and matrices, whose formulas are reevaluated whenever any of their
+					inputs change.
+				</p>
+				<p>
+					This makes data tables ideal for storing the kind of information that is often
+					stored in spreadsheet or database tables.  The analogy is stronger with the latter
+					as spreadsheets mix their data and calculations in the same cells, whereas
+					databases and Math Minion store static data in their tables and use external, and
+					hence visible, operations to slice and dice this data into other table value
+					representations, without altering the source data.
+				</p>
+			</div>
+			<div id="columns" class="section">
+				<h3>Columns (Fields)</h3>
+				<p>
+					Unlike the <a href="matrix.html">matrix</a> tool, each column of a data table
+					has a name and columns can have a different unit types or can even contain textual
+					information.  In this way columns behave much like the fields of a database table,
+					with the rows being the records.
+				</p>
+				<p>
+					Each column also has a default formula, which is evaluated whenever a new row is
+					added to the table.  The result of this evaluation is used as the initial value
+					for that column's cell in the new row.
+				</p>
+			</div>
+			<div id="infoview" class="section">
+				<h3>Information View</h3>
+				<p>
+					In addition to displaying the rows and columns of data, the information view for a
+					data table allows you to modify cell contents, add rows and columns or edit the
+					properties of existing columns.
+				</p>
+				<img src="datatable.png" alt="Expression info view"/>
+			</div>
+			<div id="addrow" class="section">
+				<h3>Add Row</h3>
+				<p>
+					The <b>Add Row</b> button will add a new row to the bottom of the the table, with default
+					values set as defined by the column definition.  This button is disabled if there isn't at
+					least one column defined.
+				</p>
+			</div>
+			<div id="addcol" class="section">
+				<h3>Add Column</h3>
+				<p>
+					The <b>Add Column</b> will display the <a href="#coleditor">column definition editor</a> with
+					some default values.  Change these as appropriate and tap the <b>Add Column</b> button in that
+					view to create a new column.
+				</p>
+				<p>
+					If the table already has one or more rows when a column is added, the initial
+					value formula (see the <a href="#coleditor">column definition editor</a>) will be
+					evaluated for each existing row and the resulting value used for that row in the
+					new column.
+				</p>
+			</div>
+			<div id="tablecells" class="section">
+				<h3>Value Table Cells</h3>
+				<p>
+					The lower part of the information view shows the table data. You can scroll this
+					table both horizontally and vertically by dragging on a cell. Dragging on the row
+					or column headers will scroll rapidly.
+				</p>
+				<p>
+					Tapping on a cell that isn't a row or column header will open a
+					<a href="formulaeditor.html">formula editor</a> with the existing
+					cell value and unit filled in. You can change this to any valid formula and
+					when you tap the <b>Apply</b> button, it will be immediately evaluated and the
+					result placed in the cell.  The formula itself is not retained though.
+				</p>
+				<p>
+					Note the value you enter must match the unit type for the column, which usually
+					means having a unit. such as:
+				</p>
+				<p class="formula">
+					30 km
+				</p>
+				<p>
+					If you are entering a value into a string column, the normal quote marks can be
+					omitted.  If you wish to enter an actual formula into a string column, begin the
+					formula with an equals sign to tell Math Minion to evaluate it, rather than just
+					taking it as a string.
+				</p>
+			</div>
+			<div id="tableheaders" class="section">
+				<h3>Value Table Headers</h3>
+				<p>
+					Tapping on a <b>column header</b> cell (i.e. label in top row) will open the
+					<a href="#coleditor">column definition editor</a> for that column.
+				</p>
+				<p>
+					Tapping on a <b>row header</b> cell (i.e. row number) will select that row and the
+					<b>Add Row</b> and <b>Add Column</b> buttons will be replaced by a
+					<b>Delete Rows</b> button.
+				</p>
+				<p>
+					Tapping on additional row headers will select those rows as well.  Tapping
+					and holding on a row for a second will select all the rows between it and the
+					previously selected row.
+				</p>
+				<img src="datatabledel.png" alt="Selected Rows"/>
+				<p>
+					Tapping the <b>Delete 5 Rows</b> button in this view would remove rows 2, 4, 5, 6, 7.
+				</p>
+			</div>
+			<div id="coleditor" class="section">
+				<h3>Column Definition Editor</h3>
+				<p>
+					Tapping on the <b>Add Column</b> button or on the column header for an existing column
+					will bring up an editor where you can define the column properties.  Tapping on the cell
+					at the top of the first column, labeled <b>Date</b> yields the following editor
+				</p>
+				<img src="datatableedit.png" alt="Column Definition Editor"/>
+				<p>
+					The <b>Cancel</b> button dismisses the editor, abandoning any changes made, while
+					the <b>Update</b> applies the changes to the column before dismissing the editor.
+				</p>
+				<div class="subsection">
+					<h3>Column Name</h3>
+					<p>
+						A new column will be given a generic name, but you will almost always want to
+						use this field to modify it to something meaningful.  The columns of a given
+						data table must have unique names.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Column Number</h3>
+					<p>
+						This be a number representing the position of the column in the table from 1 for
+						to the number of columns starting with the leftmost.  Changing it will move the
+						column to the new position.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Initial Value</h3>
+					<p>
+						The formula you enter into this field will be evaluated whenever a new row is
+						added to the table.  The result will become the initial value for the column
+						cell of the new row.
+					</p>
+					<p>
+						The initial value formula in the image above is:
+					</p>
+					<p class="formula">
+						{mktime {int {date {now}}}}
+					</p>
+					<p>
+						which calls a series of <a href="formula.html#functions">functions</a> to produce
+						today's date without any time of day information.
+					</p>
+					<p>
+						In addition, when you first add a column, the default value formula has a special
+						significance in that its value determines if the column will be a string or a
+						numeric column and if numeric, what its unit type will be.
+					</p>
+					<p>
+						<b>Note</b> that once you have quit from the definition editor after adding a column,
+						the type of column cannot be changed without removing the column and adding it again.
+						You can however modify the formula as long as it returns the same type of value.
+					</p>
+					<p>
+						The formula can reference other fields to the left of it in the table.
+						This reference will return the value for the same row.  This is particularly useful
+						when adding a column to a table with existing data.
+					</p>
+					<p>
+						For instance if you wanted to add a column named <b>Next</b> where every
+						value was was one day greater than the <b>Date</b> column, the initial value
+						formula could be:
+					</p>
+					<p class="formula">
+						$.date + 1 d
+					</p>
+					<p>
+						If desired, the original column could then be deleted and the new one renamed
+						and repositioned to replace the first. 
+						You would also want to change the initial value formula to something like it originally
+						was.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Display Unit</h3>
+					<p>
+						If a display unit is not selected, then the default
+						<a href="units.html">conversion unit</a> for the column type will be used when
+						displaying the table.  Tap the unit or label to open the
+						<a href="formulaeditor.html#ubrowser">unit browser</a> to select a unit to be used instead.
+						It must be of the same type as determined by the initial value formula when the
+						column was first created.
+					</p>
+					<p>
+						In the image above, the time unit <b>Date</b> has been selected as a more human readable
+						time value than the underlying seconds since the beginning of 1970.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Format</h3>
+					<p>
+						You can use this field to format numeric columns. The format string is styled on
+						C format string and typically is of the form:
+					</p>
+					<p class="formula">
+						%12.4f
+					</p>
+					<p>
+						which says the field should be 12 characters wide with 4 characters after the
+						decimal point in normal floating point format.  An <b>e</b> can be used instead
+						of the <b>f</b> for exponential format and you can even show numbers with an arbitrary
+						base between 2 and 36.  For instance a value could be represented in hex with
+						<b>%14.16x</b>.  Note it is also permissable to omit the size number, i.e.
+						<b>%.2f</b> would be fine and the number would just be right justified.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Delete Column</h3>
+					<p>
+						Click this button to delete the column and all of its data.
+					</p>
+				</div>
+			</div>
+			<div id="import" class="section">
+				<h3>Importing, Copying and Pasting</h3>
+				<p>
+					Many applications, such as spreadsheets, can export data as comma separated
+					value (CSV) text files.  These represent tabular data, with each row of data
+					being on one line, with the column fields separated by commas or optionally
+					another character.
+				</p>
+				<p>
+					By adding 3 simple header lines to the top of a csv file and copying it to the
+					clipboard, you can simply paste the result directly onto a Math Minion diagram
+					to create a data table.
+				</p>
+				<p>
+					You can also create these csv files, complete with the headers, for many Math Minion
+					tools by using the <b>Copy As Table</b> selection from the
+					<a href="diagram.html#toolmenu">tool icon menu</a> on the diagram.
+				</p>
+				<p>
+					This makes it easy to create a data table representation of other calculations
+					as well as export Math Minion data to other applications.
+				</p>
+				<p>
+					Using expressions to create new representations of a table and then copying it
+					and pasting it is an easy way to transform table values into a new static table.
+				</p>
+				<div class="subsection">
+					<h3>CSV Format</h3>
+					<p>
+						To create a data table by pasting csv data, it must have three lines added to the top.
+					</p>
+					<div  data-role="collapsibleset">
+						<div class="subsection">
+							<h3>First Header Line</h3>
+							<p>
+								The first must be of the form:
+							</p>
+							<p class="formula">
+								table,en
+							</p>
+							<p>
+								The word "table" is just a flag telling Math Minion you want to create a table.
+							</p>
+							<p>
+								It is followed by a separator character.  This is most commonly a comma, but tabs and semicolons are also common, particularly in regions where commas are used instead of decimal points.
+							</p>
+							<p>
+								The "en" is a locale indicator, in this case for English regions.  This determines how the numbers in data below should be interpreted, in particular the handling of the fraction separator (decimal point in English).
+							</p>
+							<p>
+								For example the headers for a German CSV file might look like:
+							</p>
+							<p class="formula">
+								table;de
+							</p>
+						</div>
+						<div class="subsection">
+							<h3>Second Header Line</h3>
+							<p>
+								The second line contains the names to be used for the columns.  These must be double quoted and separated by the separator character.  For instance:
+							</p
+							<p class="formula">
+								"Date","User","Weight","Volume"
+							</p>
+						</div>
+						<div class="subsection">
+							<h3>Third Header Line</h3>
+							<p>
+								The third line contains the conversion units that match the values of the data columns below.  These must also be double quoted and separated with the separator character.  If the data for a column is a string, then the unit should be "string".  For example:
+							</p>
+							<p class="formula">
+								"date","string","g","cm^3"
+							</p>
+						</div>
+						<div class="subsection">
+							<h3>Data</h3>
+							<p>
+								The rest of the "file" simply consists of the data, with each line representing one row with the column data separated by the separator character.  String values should be in double quotes.
+							</p>
+							<p>
+								Putting it all together a simple CSV representation of a table would look like:
+							</p>
+							<pre>
+table,en
+"Date","User","Weight","Volume"
+"date","string","g","cm^3"
+20120801.0000000000,"Craig",20.0000000000,23.0000000000
+20120802.0000000000,"Craig",24.0000000000,28.0000000000
+20120803.0000000000,"Craig",19.0000000000,20.0000000000
+20120804.0000000000,"Craig",21.0000000000,23.0000000000
+							</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="section">
+				<h3>Formula Parameters</h3>
+				<p class="reminder">
+					Parameters that can be accessed in the form a.b where a is the tool and b is the parameter.
+				</p>
+				<p>
+					If the parameter is omitted a table value is returned.  If the parameter is a column name, then the column value is returned as a column array.
+				</p>
+				<p>
+					Other parameters are:
+				</p>
+				<ul>
+					<li><b>table</b> - also returns a table value.</li>
+					<li><b>nrow</b> - number of rows in the table.</li>
+					<li><b>ncol</b> - number of columns in the table.</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>

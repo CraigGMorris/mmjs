@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Conversion Units',{
+					overview: 'Overview',
+					dimanal: 'Dimensional Analysis',
+					types: 'Unit Types',
+					sets: 'Unit Sets',
+					unitsview: 'Units View',
+					customunits: 'Custom Units',
+					customsets: 'Custom Sets',
+					seteditor: 'Set Editor',
+					session: 'Session Based',
+				});
+			};			
+		</script>	
+		<title>Conversion Units</title>
+	</head>
+	
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					While Math Minion does all its calculations internally with SI values, conversion units
+					allow inputs and outputs in the units of your choice.
+				</p>
+				<p>
+					But beyond simple conversions, Math Minion employs a technique known as
+					dimensional analysis in all its numeric calculations.
+				</p>
+				<p>
+					This is a very powerful technique for preventing calculation errors.  Understanding
+					how Math Minion uses it and other unit features is worth a few minutes of reading.
+				</p>
+			</div>
+			<div id="dimanal" class="section">
+				<h3>Dimensional Analysis</h3>
+				<p>
+					Despite the scary name, dimensional analysis is pretty simple and highly effective
+					at preventing screw ups in your calculations.
+				</p>
+				<p>
+					Essentially it relates every value back to its fundamental SI properties and tracks
+					those through calculations to determine the properties of the result.
+				</p>
+				<p>
+					The seven fundamental properties and their SI units are:
+				</p>
+				<ul>
+					<li>Length (m)</li>
+					<li>Mass (kg)</li>
+					<li>Time (s)</li>
+					<li>Electric current (a)</li>
+					<li>Temperature (K)</li>
+					<li>Luminosity (cd)</li>
+					<li>Amount of substance (mol)</li>
+				</ul>
+				<p>
+					For example a velocity value is a length divided by a time value.  Thus
+				</p>
+				<p class="formula">
+					60 mile/h
+				</p>
+				<p>
+					has a length power, or dimension, of 1 and a time power of -1.
+				</p>
+				<p>
+					If we divide that by 10 s, then the result has a length power of 1 and a time
+					power of -2 and represents an acceleration value.
+				</p>
+				<p>
+					Trying to add another value to it that had a different set of powers, say another
+					velocity, would produce an invalid result.
+				</p>
+				<p>
+					Math Minion tracks these powers through all its calculations and will warn you if
+					you attempt an illegal operation.
+				</p>
+				<p>
+					It will also show you the type of your calculation results and if they aren't what
+					you are expecting. you know you have a problem.
+				</p>
+				<p>
+					Let's say you input the following formula:
+				</p>
+				<p class="formula">
+					6 mile + 2 km
+				</p>
+				<p>
+					While this would appear to be an illegal mixing of units, it is perfectly correct
+					in Math Minion.
+				</p>
+				<p>
+					The calculation would proceed as follows:
+				</p>
+				<ul>
+					<li>
+						The mile unit is associated with a length, so the first term would have a +1
+						length power and all other powers 0.
+					</li>
+					<li>
+						The conversion factor for miles to metres would be applied, resulting in 9656.064 m.
+					</li>
+					<li>
+						The 2 km term would also be recognized as a length and the conversion factor for
+						km applied to yield 2000 m.
+					</li>
+					<li>
+						The plus operator would check that all the fundamental type powers are the same
+						and since they are would perform the additional, resulting in 11656.064 m.
+					</li>
+					<li>
+						Let's say the display unit for this result was set to miles, then the display
+						system would check that the calculated result was indeed a length value and then
+						display 7.24274 miles.
+					</li>
+				</ul>
+				<p>
+					What if we changed the formula to:
+				</p>
+				<p class="formula">
+					6 miles / 2 min
+				</p>
+				<p>
+					The process would be similar to before in that 6 mile would become a length value
+					of 9656.064 m and 2 min would become 120 s.  However the divide operator would not
+					require the fundamental type powers to be the same.
+				</p>
+				<p>
+					Rather it would subtract all the denominator powers from the numerator powers, which
+					would result in a length power of 1 and a time power of -1.
+				</p>
+				<p>
+					This would be associated with the result i.e. 80.4672 m/s.
+				</p>
+				<p>
+					If our display unit were still miles, the display system would issue a warning
+					about a unit type mismatch, since the result type powers no longer match that of
+					the unit mile.
+				</p>
+				<p>
+					Changing the display unit to mph, would result in 180 mph being displayed.
+				</p>
+			</div>
+			<div id="types" class="section">
+				<h3>Unit Types</h3>
+				</p>
+					A <b>unit type</b> associates a name with a specific set of powers of the fundamental
+					SI units.
+				</p>
+				<p>
+					Some examples might be:
+				</p>
+				<ul>
+					<li>Acceleration - length 1, time -2</li>
+					<li>Area - length 2</li>
+					<li>Density - mass 1, length -3</li>
+				</ul>
+				<p>
+					The type names don't affect the calculations, but are used for display the type of a
+					calculation result and also for associating a display unit with a type when defining
+					unit display sets.
+				</p>
+				<p>
+					Not every unit combination will have a named type and unit types that don't have named
+					definitions will be reported as an "Unknown Type" and the display unit will always be
+					comprised of the appropriate combination of fundamental SI units.
+				</p>
+			</div>
+			<div id="sets" class="section">
+				<h3>Unit Display Sets</h3>
+				<p>
+					A unit display set defines what unit should be used to display a variable of a given
+					unit type.  For example the US velocity unit is ft/s.
+				</p>
+				<p>
+					Three sets are hard wired into Math Minion and can't be altered or deleted:
+				</p>
+				<ul>
+					<li><b>PureSI</b> - all units are combinations of the fundamental SI units.</li>
+					<li><b>SI</b> - derivative units like Watts and Newtons are used where appropriate.</li>
+					<li><b>US</b> - common units used in the United States</li>
+				</ul>
+			<p>
+					See below for how to define your own sets.
+				</p>
+			</div>
+			<div id="unitsview" class="section">
+				<h3>Units View</h3>
+				<p>
+					Tapping the <b>Units</b> button at the bottom of the display will present a view where
+					you can select the default unit set as well as define your own custom units and unit sets.
+				</p>
+				<img src="units.png" alt="Units view"/>
+				<p>
+					Here the <b>SI</b> set is the default.  Tapping on one of the other names will make that
+					set the default.  Note that a custom set that has been named <b>myField</b> has been
+					added.
+				</p>
+			</div>
+			<div id="customunits" class="section">
+				<h3>Custom Units</h3>
+				<p>
+					Tap on the <b>Custom Units</b> button to bring up the custom unit editor.
+				</p>
+				<img src="customunits.png" alt="Custom Units view"/>
+				<p>
+					To enter a new unit, simply type the definition into the field at the top of the
+					view and tap the return key on the keyboard.  The definition must be of the form:
+				</p>
+				<p class="formula">
+					newUnitName = number existingUnit
+				</p>
+				<p>
+					where number is what the existing unit would be multiplied by and existing unit is
+					a current single or compound unit. See the <a href="unitpicker.html">unit browser</a>
+					for information on the form of a compound unit.
+				</p>
+				<p>
+					An example might be:
+				</p>
+				<p class="formula">
+					workday = 8 h
+				</p>
+				<p>
+					After defining this unit a formula "1 workday", would resolve to 28800 seconds, or 8 hours.
+				</p>
+				<p>
+					The existing unit can be a compound unit, so it should be possible to define any unit in
+					terms of the fundemental SI or other units.  In the image above, two nonsensical units
+					have been defined in terms of compound units.
+				</p>
+				<p>
+					To change an existing custom unit, simply redefine it and tap the return key. Tapping on
+					the definition will prefill the input field with the existing definition.
+				</p>
+				<p>
+					To delete a unit, just click on its <b>Delete</b> button.
+				</p>
+				<p>
+					To return to the <a href="#unitsview">units view</a> tap on the back button at the upper
+					left.
+				</p>
+			</div>
+			<div id="customsets" class="section">
+				<h3>Custom Sets</h3>
+				<p>
+					On the <a href="#unitsview">units view</a> tap on the <b>Unit Sets</b> button to bring
+					up the custom set list.
+				</p>
+				<img src="unitsets.png" alt="Custom Sets view"/>
+				<p>
+					To create a new unit set, select an existing set by tapping its row and then
+					tap the <b>Clone</b> button to make a copy of it.  You can edit the set name
+					in the <b>Name</b> field.
+				</p>
+				<p>
+					In the above image, the US set was cloned and renamed <b>myField</b>.
+				</p>				
+				<p>
+					User sets have an info button on the right and tapping it will open an editor
+					where you can modify or delete the set.  Note that you cannot rename or edit the
+					unit sets that come preinstalled in Math Minion.
+				</p>
+				<p>
+					To return to the <a href="#unitsview">units view</a> tap the back button at the
+					upper left.
+				</p>
+			</div>
+			<div id="seteditor" class="section">
+				<h3>Set Editor</h3>
+				<p>
+					From the <a href="#customsets">Unit Sets</a> view, tap on the info button on the
+					right of a user set to produce its set editor.
+				</p>
+				<img src="seteditor.png" alt="Unit Set Editor"/>
+				<p>
+					To change the name of a unit type or the unit associated with it, tap on its row
+					then edit the name and unit fields as appropriate. In the image above, the <b>Area</b>
+					type has been selected, which has automatically filled in the <b>Name</b> and
+					<b>Unit</b> field with the existing values.
+				</p>
+				<p>
+					To create a new type, clear any selection with the  <b>Clear Selection</b> button and
+					enter the name and unit in the appropriate fields.
+				</p>
+				<p>
+					<b>Note</b> that if the unit type defined by the given unit is the same as another
+					unit type, an error box will appear and no change will be made.  There can only be
+					one defined unit type name for a given set of unit powers.
+				</p>
+				<p>
+					To delete a type just tap its delete button.
+				</p>
+				<p>
+					To delete a type a <b>Mac</b> just click on the delete button on its row.
+				</p>
+			</div>
+			<div id="session" class="section">
+				<h3>Session Based</h3>
+				<p>
+					Custom units and sets are stored with individual sessions and are not universal.
+				</p>
+				<p>
+					If you wish to use your custom units and sets in whenever you create a new session,
+					you could create an otherwise empty template session with  those units and sets and
+					duplicate it from the <a href="sessions.html#utility">utility menu</a> of the
+					<a href="sessions.html">sessions view</a> when you want a new sessions.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

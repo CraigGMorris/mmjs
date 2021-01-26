@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Formulas',{
+					overview: 'Overview',
+					numbers: 'Numbers',
+					units: 'Conversion Units',
+					operators: 'Operators',
+					arrayops: 'Array Operations',
+					toolrefs: 'Tool References',
+					indices: 'Indices',
+					functions: 'Functions',
+					comments: 'Comments',
+					strings: 'Strings',
+					tablev: 'Table Values',
+				});
+			};			
+		</script>	
+		<title>Formulas</title>
+	</head>
+	
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					All Math Minion calculations are defined by formulas.  These can be as simple as a
+					scalar constant or can be a complex multiline expressions involving matrices and functions.
+				</p>
+				<p>
+					Every formula evaluates to a <a href="minionvalue.html">minion value</a>.
+			</div>
+			<div id="numbers" class="section">
+				<h3>Numbers</h3>
+				<p>
+					Numbers can be entered in either normal or scientific notation.  For example:
+				</p>
+				<ul>
+					<li>123.45</li>
+					<li>1.2345e2</li>
+					<li>-0.00012345</li>
+					<li>-1.2345e-4</li>
+				</ul>
+				<p>
+					Complex numbers can be created and manipulated using the techniques described
+					on the <a href="complex.html">complex number page</a>.
+				</p>
+			</div>
+			<div id="units" class="section">
+				<h3>Conversion Units</h3>
+										<p>
+					A number can be followed by a <a href="units.html">conversion unit</a>:
+				</p>
+				<p class="formula">
+					123.45 km
+				</p>
+				<p>
+					If the formula consists of more than just number and a unit and the unit contains a
+					<b>-</b> or <b>/</b> symbol, then the unit must be in double quotes.
+				</p>
+				<div class="subsection" data-collapsed="false">
+					<h3>Not Okay</h3>
+					<div class="formula">
+						123.45 km/h * 12 min
+					</div>
+				</div>
+				<div class="subsection" data-collapsed="false">
+					<h3>Okay</h3>
+					<div class="formula">
+						123.45 "km/h" * 12 min<br>
+						123.45 km / 12 min<br>
+						123.45 km/h
+					</div>
+				</div>
+				<p>
+					When you are editing a formula, you can request a unit browser to help you select
+					a conversion unit.  See the <a href="formulaeditor.html">formula editor</a> page
+					for details and see the <a href="units.html">units</a> page for more information
+					on using units.
+				</p>
+			</div>
+			<div id="operators" class="section">
+				<h3>Operators</h3>
+				<p>
+					The binary operators are:
+				</p>
+				<ul>
+					<li><b>+</b> Add</li>
+					<li><b>-</b> Minus</li>
+					<li><b>*</b> Multiply</li>
+					<li><b>/</b> Divide</li>
+					<li><b>^</b> Power</li>
+					<li><b>%</b> Modulus</li>
+					<li><b>:</b> Range (see the <b>Indices</b> section below)
+				</ul>
+				<p>
+					The precedence is (from higher to lower):
+				<p>
+				<ol>
+					<li><b>unary minus</b> (i.e. -3)</li>
+					<li><b>:</b></li>
+					<li><b>^</b></li>
+					<li><b>* / %</b></li>
+					<li><b>+ -</b></li>
+				</ol>
+				<p>
+					Parenthesis can be used as required to specify the calculation order:
+				</p>
+				<p class="formula">
+					(2 + 3) * 4
+				</p>
+			</div>
+			<div id="arrayops" class="section">
+				<h3>Array Operations</h3>
+				<p>
+					When operators are used with arrays or matrices, the result will be a matrix with
+					a number of columns equal to the larger of the number of columns of the operands
+					and the number of rows equal to the larger of the number of rows of the operands.
+					Thus adding a 2x8 matrix to a 4x3 matrix will result that is 4x8.
+				</p>
+				<p>
+					Each result cell is calculated by performing the arithmetic operation on the cells
+					of the operands with indices corresponding to that of the result cell. If either of
+					these indices would be too large for the operand, the modulus of its value with
+					respect to the maximum size is used.
+				</p>
+				<p>
+					In effect this means the smaller operand's values are reused in order as needed.
+				</p>
+			</div>
+			<div id="toolrefs" class="section">
+				<h3>Tool references</h3>
+				<p>
+					The names of other tools in the same model can be used in a formula to reference
+					their calculated values.  In the simplest case, if a model had an
+					<a href="expression.html">expression</a> named <b>first</b> and another named
+					<b>second</b> then the formula:
+				</p>
+				<p class="formula">
+					first + second
+				</p>
+				<p>
+					would add their calculated values.
+				</p>
+				<p>
+					Tools other than expressions, matrices and data tables don't have single calculated
+					results, but rather a number of parameters that can be accessed by separating the
+					parameter name from the tool name with a dot:
+				</p>
+				<p class="formula">
+					graph.maxx
+				</p>
+				<p>
+					In addition to checking the help pages for the specific type of tool when you are
+					editing a formula, you can see what parameters are available for a tool by using
+					the value browser.   See the <a href="formulaeditor.html">formula editor</a> page
+					for details.
+				</p>
+				<p>
+					The symbol <b>$</b> can be used as a proxy for the name of the tool containing the
+					formula.  Thus a minimum X formula in a graph could be:
+				</p>
+				<p class="formula">
+					$.maxx - 100
+				</p>	
+				<p>
+					If the formula for an expression consists solely of the name of a tool and it isn't
+					an expression, matrix or data table, then that expression becomes a reference for the
+					named tool and the expression can be used in formulas as if it were the referenced tool.
+				</p>
+				<p>
+					This is mainly used in input and output <a href="expression.html">expressions</a> to
+					pass entire tools into or out of <a href="model.html">models</a>.
+				</p>
+			</div>
+			<div id="indices" class="section">
+				<h3>Indices</h3>
+				<p>
+					Specific elements or subranges of Math Minion values can be accessed with the
+					square bracket index operator.  For example:
+				</p>
+				<p class="formula">
+					a[2,3]
+				</p>
+				<p>
+					would result in the value in the second row and third column of the "a" value.
+					(Recall that all Math Minion numeric and string values are matrices and scalars are
+					just 1x1 matrices).
+				</p>
+				<p>
+					If only a single index is supplied, then the entire row corresponding to that index
+					is returned.
+				</p>
+				<p>
+					If an array of values is supplied as one of the indices, then the result will be an
+					array of values that are chosen from the indexed object according to the values in
+					the index array.  Either or both indices can be arrays.
+				</p>
+				<p>
+					The range operator <b>:</b> can be used to generate an array of integers that starts
+					with the first operand and increments by one up to the second operand.  Thus:
+				</p>
+				<p class="formula">
+					2:4
+				</p>
+				<p>
+					would produce an array with the elements 2, 3 and 4. The range operator can also work
+					backwards, such that:
+				</p>
+				<p class="formula">
+					5:2
+				</p>
+				<p>
+					would produce an array with elements 5,4,3,2.
+				</p>
+				<p>
+						Range operators are handy to use for producing subsets of a matrix:
+				</p>
+				<p class="formula">
+					a[ 2:4, 3:9 ]
+				</p>
+				<p>
+					would produce a 3x7 matrix with the elements of a's rows 2 through 4 and columns 3 through 9.  A more complicated example:
+				</p>
+				<p>
+					Finally a row index of 0 can be used to select all rows, if also used with a column index.
+					Thus:
+				</p>
+				<p class="formula">
+					x[0, 2]
+				</p>
+				<p>
+					would produce a column array equivalent to column 2 of x.
+				</p>
+			</div>
+			<div id="functions" class="section">
+				<h3>Functions</h3>
+				<p>
+					Math Minion has a number of mathematical and utility
+					<a href="functionpicker.html">functions</a> available.  Functions are always enclosed
+					in curly braces, with the function name immediately following the opening brace and
+					any parameters following as a comma separated list.  Some examples might be:
+				</p>
+				<p class="formula">{sin a}</p>
+				<p class="formula">{max a, b}</p>
+				<p class="formula">{if test, a, b}</p>
+				<p>
+					When you are editing a formula, you can request a
+					<a href="functionpicker.html">function</a> browser to help you select
+					a function.  See the <a href="formulaeditor.html">formula editor</a> page for details.
+				</p>
+			</div>
+			<div id="comments" class="section">
+				<h3>Comments</h3>
+				<p>
+					Anything in a formula following a single quote character is considered a comment:
+				</p>
+				<p class="formula">a + b ' this is just a comment</p>
+				<p>
+					If the formula has new line characters in it, the comment must still be at the end
+					of the formula.  In other words you cannot have a comment on each line of a single
+					formula.  The comment itself can have multiple lines though.
+				</p>
+			</div>
+			<div id="strings" class="section">
+				<h3>Strings</h3>
+				<p>
+					A string scalar is simply some text enclosed in double quote marks:
+				</p>
+				<p class="formula">"This is a string"</p>
+				<p>
+					The string can also contain newline characters.
+				</p>
+				<p>
+					Like numbers, string variables are always matrices and can have an arbitrary number
+					of rows and columns. You cannot mix numbers and strings in a single variable, although
+					table values (see below) can have both numeric and string columns.
+				</p>
+				<p>
+					If the entire formula is a comment, that is it starts with a single quote,
+					then everything after that quote will be considered a single string value.
+				</p>
+				<p>
+					Strings can be added using the plus sign, which will concatenate the elements.
+					You can also multiply a string by a number, which will cause the string to be repeated
+					that number of times in the result.
+				</p>
+				<p>
+					See the string functions in the <a href="functionpicker.html">function browser</a> for
+					operations that can be performed on strings.
+				</p>
+			</div>
+			<div id='tablev' class="section">
+				<h3>Table Values</h3>
+				<p>
+					The <a href="datatable.html">data table</a> tool, as well as some functions and parameters
+					of other tools, return table values. These can be thought of as a collection of column
+					arrays, all with the same number of rows, but with possibly differing column value types.
+				</p>
+				<p>
+					The index operator will work on table values in the same manner as with matrices and
+					can also accept a string scalar or array of column names as the column index.
+				</p>
+					The arithmetic operators also work with table values, as long as there are no unit
+					conflicts.  The result will itself be a table value.  Most numeric functions
+					(things like log, sin etc) will not work with table values, but there are a number
+					of <a href="functionpicker.html">functions</a> that allow for creating, selecting and
+					manipulating table data.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

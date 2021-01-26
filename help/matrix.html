@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Matrix',{
+					overview: 'Overview',
+					info: 'Information View',
+					rowcols: '# Rows &amp; Columns',
+					formula: 'Formula Field',
+					current: 'Current Selection Indices',
+					unit: 'Conversion Unit',
+					scrolling: 'Scrolling',
+					parameters: 'Formula Parameters',
+				});
+			};			
+		</script>	
+		<title>Matrix</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					While all Math Minion numerical calculations work with matrices, even if it is
+					just a 1x1 matrix, there is also this specific matrix tool.
+				</p>
+				<p>
+					It allows for a detailed specification of a matrix.  Here independent formulas
+					can be supplied for each row, column or cell and these formulas are allowed to
+					reference other cells in the matrix.
+				</p>
+				<p>
+					Formulas can be entered into cells, row and column headers and the origin
+					header at the upper left.
+				</p>
+				<p>
+					The value for a cell is determined by first checking to see if it has a formula
+					itself and if not then its corresponding row header, column header and finally
+					the star header in that order.
+				</p>
+				<p>
+					Note that the <b>row</b>, <b>col</b> and <b>cell</b>
+					<a href="formula.html#functions">functions</a> are useful for referencing other cells in
+					the matrix and can only be used in formulas inside matrix cells.
+				</p>
+			</div>
+			<div id="info" class="section">
+				<h3>Information View</h3>
+				<p>
+					Below is an image of the information view for a small matrix.
+				</p>
+				<img src="matrix.png" alt="Matrix Information View">
+				<p>
+					The cells with a gold background have formulas defining them, while a
+					green background is used for the currently selected cell whose
+					<a href="formula.html">formula</a> appears in the
+					<a href="formulaeditor#field">formula field</a>. In this case it is the origin cell
+					at the top left and its <a href="formula.html">formula</a> is:
+				</p>
+				<p class="formula">
+					{row} * {col}
+				</p>
+				<p>
+					which means any cell which doesn't have any other formula will have a value
+					equal to its row number times its column number. In this case that would only
+					be cells 1,1 and 4,1.
+				</p>
+				<p>
+					The header cell for row 2 has a formula:
+				</p>
+				<p class="formula">
+					{col} *10
+				</p>
+				<p>
+					which sets the values of 2,1 and 2,2 to ten times the column number.
+				</p>
+				<p>
+					The header cell for column 2 has the formula:
+				</p>
+				<p class="formula">
+					{row} * 100
+				</p>
+				<p>
+					which sets the values for cells 1,2 and 4,2.  Row header formulas
+					have precedence over column headers, so 2,2 is set by the row 2 header
+					formula. Cell 3,2 has a constant 10000 as a formula and cell formulas always
+					have priority.
+				</p>
+				<p>
+					Finally the formula for cell 3,1 is
+				</p>
+				<p class="formula">
+					{cell -1, 1} * 5
+				</p>
+				<p>
+					which says take the value from the cell one above me and one to the right. In
+					other wordes 3,1 + -1,1 = 2,2. Cell 2,2 has a value of 20 which is multiplied
+					by 5 to yield 100.
+				</p>
+				<div id="rowcols" class="subsection">
+					<h3># Rows &amp; Columns</h3>
+					<p>
+						These <a href="formulaeditor.html#fields">formula fields</a> designate the number of rows
+						and columns in the matrix.  While normally just a constants, they can be any
+						legitimate Math Minion formula.
+					</p>
+				</div>
+				<div id="formula" class="subsection">
+					<h3>Formula Field</h3>
+					<p>
+						This is a <a href="formulaeditor.html#fields">formula field</a>, shows the formula
+						associated with the currently selected cell. Tapping on and cell will open a
+						<a href="formulaeditor.html#editor">formula editor</a> for that cell and when it is
+						closed that cell will be selected and its <a href="formula.html">formula</a>
+						 will appear in the
+						<a href="formulaeditor.html#fields">formula field</a>
+					</p>
+				</div>
+				<div id="current" class="subsection">
+					<h3>Current Selection Indices</h3>
+					<p>
+						A pair of numbers in square brackets is displayed at the left of the view,
+						below the #<a href="formulaeditor.html#fields">formula field</a>.  This indicates
+						the row and column numbers of the currently selected matrix cell.  Row and column
+						headers have a zero index.
+					</p>
+				</div>
+				<div id="unit" class="subsection">
+					<h3>Conversion Unit</h3>
+					<p>
+						The default unit and unit type for the matrix are displayed to the right of the
+						conversion selection indices.
+					</p>
+					<p>
+						This should be set before any formulas are entered into the matrix, as all values
+						in a matrix must be of the same unit type.
+					</p>
+					<p>
+						If the unit needed doesn't exist in the unit browser, for instance something
+						like <b>"s^0.3"</b>, then be sure to first assign a formula to the default cell
+						0,0 which will have the correct unit dimension. For example, perhaps
+						<b>0 s^0.3</b> in this case.
+					</p>
+				</div>
+				<div id="scrolling" class="subsection">
+					<h3>Scrolling</h3>
+					As with other tools, the cell matrix can be scrolled by dragging and dragging
+					the header row or column will scroll rapidly. 
+				</div>
+			<div id="parameters" class="section">
+				<h3>Formula Parameters</h3>
+				<p class="reminder">Parameters that can be accessed in the form a.b where a is the tool name and b is the parameter name.</p>
+				<p>
+					<b>Note</b> - use these parameters (for example $.nrow) in self referencing cell formulas, rather than the nrows or ncols functions or the [] operator.
+				</p>
+				<ul>
+					<li><b>nrow</b> - number of rows in the matrix.</li>
+					<li><b>ncol</b> - number of columns in the matrix.</li>
+					<li><b>r_c</b> - the value of the element at row number r and column number c,
+						where r and c are numbers.  e.g. 3_4</li>
+					<li><b>solved</b> - 1 if the matrix has successfully been calculated, 0 otherwise.</li>
+					<li><b>table</b> - returns the matrix contents as a table value.  The column names
+						will just be the column numbers.</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>
