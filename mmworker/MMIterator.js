@@ -579,8 +579,8 @@ class MMIterator extends MMTool {
 		formulas.push(fReturn(this.whileFormula));
 		formulas.push(fReturn(this.initialXFormula));
 		formulas.push(fReturn(this.nextXFormula));
-		for (let rv of this.recordedValueFormulas) {
-			formulas.push(fReturn(rv));
+		for (let f of this.recordedValueFormulas) {
+			formulas.push([f.name, f.formula, '']);
 		}
 		results.i = this.i.values[0];
 		results.x = this.x ? this.x.stringWithUnit() : '';
