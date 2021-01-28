@@ -137,7 +137,7 @@ export class Diagram extends React.Component {
 						}
 						if ( maxX != -1.e6 ) { // no objects, don't change
 							maxX += 1.5 *objectWidth;
-							maxY += 5 * objectHeight;
+							maxY += 2 * objectHeight;
 							
 							const box = this.props.diagramBox;
 							const widthScale = (box.width -30) / ( maxX - minX );
