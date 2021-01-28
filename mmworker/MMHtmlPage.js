@@ -271,7 +271,7 @@ class MMHtmlPage extends MMTool {
 	 * returns and returns and requested values in the response return
 	 * also performs action indicated in the requests with the mm_ keywords
 	 */
-	action(jsonMessage) {
+	async action(jsonMessage) {
 		const response = {}
 		try {
 			const message = JSON.parse(jsonMessage);
@@ -415,10 +415,10 @@ class MMHtmlPage extends MMTool {
 						break;
 					case 'mm_load': {
 						// load a different session
-						const path = actions[action].toLowerCase();
+						const path = actions[action];
 						if (path) {
-							theMMSession.loadSession(path);
-							response.popView = true;
+							response.resetInfo = await theMMSession.loadSession(path);
+							response.didLoad = true;
 						}
 					}
 						break;
@@ -440,8 +440,8 @@ class MMHtmlPage extends MMTool {
 	 * @method actionCommand
 	 * @param {MMCommand} command
 	 */
-	actionCommand(command) {
-		command.results = this.action(command.args);
+	async actionCommand(command) {
+		command.results = await this.action(command.args);
 	}
 
 	/**
