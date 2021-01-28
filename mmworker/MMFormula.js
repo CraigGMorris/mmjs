@@ -4054,7 +4054,7 @@ class MMFormula extends MMCommandObject {
 
 		// helper functions
 		let filterFloat = (value) => {
-			const parts = value.split('e');
+			const parts = value.toLowerCase().split('e');
 			if (/^(-|\+)?([0-9]*(\.[0-9]*)?|Infinity)$/.test(parts[0])) {
 				if (parts.length === 1) {
 					return Number(value);
