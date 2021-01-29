@@ -88,6 +88,7 @@
 	"sessionsImportButton": "Import",
 	"sessionsNewButton": "New",
 	"sessionsClipButton": "Copy to Clipboard",
+	"sessionConfirmUnsaved": "This unnamed session isn't saved\n\nDo you wish to proceed?",
 	"sessionsDuplicateButton": "Duplicate",
 	"sessionFolderDuplicateConflict": "A folder named {{newName}} already exists",
 	"sessionsDuplicateOverwrite": "A session named {{newName}} already exists\nDo you wish to overwrite it with {{oldName}}",

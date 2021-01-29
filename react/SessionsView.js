@@ -59,32 +59,46 @@ export class SessionsView extends React.Component {
 		let sessionList = [];
 		let key = 0;
 		let loadSession = async e => {
-			await this.props.actions.doCommand(
-				`/ load ${e.target.getAttribute('value')}`,
-				(results) => {
-					this.props.actions.resetInfoStack('root', results[0].results);
-					this.props.updateDiagram(true);
-				}
-			);
+			let shouldLoad = true;
+			if (currentPath === '(unnamed)') {
+				shouldLoad = confirm(t('react:sessionConfirmUnsaved'));
+			}
+			if (shouldLoad) {
+				await this.props.actions.doCommand(
+					`/ load ${e.target.getAttribute('value')}`,
+					(results) => {
+						this.props.actions.resetInfoStack('root', results[0].results);
+						this.props.updateDiagram(true);
+					}
+				);
+			}
 		}
 
 		let importFile = (event) => {
-			//Retrieve the first (and only!) File from the FileList object
-			var f = event.target.files[0]; 
-	
-			if (f) {
-				let r = new FileReader();
-				r.onload = (e) => { 
-					let contents = e.target.result;
-					contents = `__blob__/ import__blob__${this.props.viewInfo.rootFolder}:` + contents;
-					this.props.actions.doCommand(contents, () => {
-						this.props.actions.resetInfoStack('root');
-						this.props.updateDiagram(true);
-					});
-				};
-				r.readAsText(f);
-			} else { 
-				alert("Failed to load file");
+			let shouldLoad = true;
+			if (currentPath === '(unnamed)') {
+				shouldLoad = confirm(t('react:sessionConfirmUnsaved'));
+			}
+			if (shouldLoad) {
+				//Retrieve the first (and only!) File from the FileList object
+				var f = event.target.files[0]; 
+		
+				if (f) {
+					let r = new FileReader();
+					r.onload = (e) => { 
+						let contents = e.target.result;
+						contents = `__blob__/ import__blob__${this.props.viewInfo.rootFolder}:` + contents;
+						this.props.actions.doCommand(contents, () => {
+							this.props.actions.resetInfoStack('root');
+							this.props.updateDiagram(true);
+						});
+					};
+					r.readAsText(f);
+				} else { 
+					alert("Failed to load file");
+				}
+			} else {
+				this.props.actions.popView();
 			}
 		}
 
@@ -312,13 +326,19 @@ export class SessionsView extends React.Component {
 					'button', {
 						id: 'sessions__new-button',
 						onClick: async () => {
-							await this.props.actions.doCommand(
-								`/ new`,
-								() => {
-									this.props.actions.resetInfoStack('root');
-									this.props.updateDiagram(true);
-								}
-							);			
+							let shouldLoad = true;
+							if (currentPath === '(unnamed)') {
+								shouldLoad = confirm(t('react:sessionConfirmUnsaved'));
+							}
+							if (shouldLoad) {			
+								await this.props.actions.doCommand(
+									`/ new`,
+									() => {
+										this.props.actions.resetInfoStack('root');
+										this.props.updateDiagram(true);
+									}
+								);
+							}	
 						},
 					},
 					t('react:sessionsNewButton')
