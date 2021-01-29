@@ -766,22 +766,33 @@
 				functions: [
 					{
 						f: "{fmt f, x, u}",
-						desc: `Formats a number <b>x</b>, using the format string <b>f</b>, optionally using a display unit <b>u</b>.
+						desc: `<p>
+							Formats a number <b>x</b>, using the format string <b>f</b>, optionally using a
+							display unit.
+							</p>	
+							<p>
+							The <b>x</b> value can be a numeric scalar, array or matrix.
+							</p>
+							<p>
+							The <b>f</b> parameteris a  format string is styled on
+							C format string and typically is of the form:
+							</p>
+							<p><b>%12.4f</b></p>
+							<p>
+							which says the field should be 12 characters wide with 4 characters after the
+							decimal point in normal floating point format.  An <b>e</b> can be used instead
+							of the <b>f</b> for exponential format and you can even show numbers with an arbitrary
+							base between 2 and 36.  For instance a value could be represented in hex with
+							<b>%14.16x</b>.  Note it is also permissable to omit the size number, i.e.
+							<b>%.2f</b> would be fine and the number would just be right justified.
+							</p>
+							<p>
+							If the third parameter, u, is used, it must be the name of a unit compatible
+							with the unit type of x.
 							<br><br>
-							The <b>x</b> value can be a numeric scalar, array or matrix and the <b>f</b> parameter must be a C style
-							format string.  This will typically be something like <b>"%12.2f"</b>, which would produce a number field 12
-							characters wide, with two decimal places.  Although the format string must only have one number format, it is
-							permissible to have other characters.  For example: <b>"(%15.5e)"</b>
-							would return a number in exponential format, surrounded by parenthesis.
-							<br><br>
-							If the third parameter, u, is used, it must be the name of a unit compatible with the unit type of x.
-							<br><br>
-							Thus function {fmt "(%12.2f)", 12.1234}would return<br>
-							<span class="fixedwidth">
-							(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12.12)</span>,<br>
-							while {fmt "(%12.2f)", 12.1234, "%"} would return<br>
-							<span class="fixedwidth">
-							(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1212.34)</span>.
+							Thus function <br><b>{fmt "%12.2f", 12.1234}</b><br>would return
+							<br><b>12.12</b><br>,
+							while <br><b>{fmt "%12.2f", 12.1234, "%"}</b><br> would return<br><b>1212.34)</b>.
 						</p>`,
 					},
 					{
@@ -927,7 +938,8 @@
 						three scaling factors of the parameter array.`,
 					},
 					{
-						fdesc: `Creates a 4x4 transformation matrix for rotations of angle radians around the z axis.`,
+						f: "{roll angle}",
+						desc: `Creates a 4x4 transformation matrix for rotations of angle radians around the z axis.`,
 					},
 					{
 						f: "{pitch angle}",
@@ -975,7 +987,10 @@
 					},
 					{
 						f: "{evaljs c, a}",
-						desc: `Executes the first argument <b>c</b>, which must be a string value, as Javascript code.  If
+						desc: `<p>This function is <b>disabled</b> by default for security reasons.  It can be enabled
+							in code on a private server.
+							</p>
+							<p>Executes the first argument <b>c</b>, which must be a string value, as Javascript code.  If
 								<b>c</b> has more than one element, only the first is evaluated.  Additional arguments are optional
 								and are converted to Javascript objects that the code can access.
 							<p>
@@ -1039,66 +1054,22 @@
 							result would be x sorted on its first column.`,
 					},
 					{
-						f: "{pedometer s, f}",
-						desc: `On devices which support it, this function returns a table of historical fitness data from the
-								start time, <b>s</b> to the finish time <b>f</b>.  The columns of the table are <b>steps</b>, <b>distance</b>,
-								<b>upflights</b> and <b>downflights</b>. The device only keeps records for a limited number of days and requests
-								outside that range will return 0.  Also zero values are returned on devices that don't support the data for the column.
-							<p>
-								If the start and finish times are arrays, then one row will be produced in the array for each value.
-							</p`,
-					},
-					{
-						f: "{steps s, f}",
-						desc: `With the introduction of the pedometer function in version 3, this function is deprecated.
-							Internally it simply returns the steps column from the table returned by the pedometer function`,
-					},
-					{
-						f: "{wget url}",
+						f: "{wfetch method, url, headers}",
 						desc: `<p>
-								Attempts to read the contents of the url, usually a web address, and returns them as a string.
+							This uses XMLHttpRequest to perform net requests, but note that Cross Origin Resource Sharing
+							(CORS) policies will probably prevent its use with servers you don't control.
 							</p>
 							<p>
-								If url is an array, then each address in the array will be retrieved and returned in the corresponding
-								cell of an array.
-							</p>`,
-					},
-					{
-						f: "{wget2 url, headers}",
-						desc: `<p>
-								This is a more elaborate version of the wget command that operates on a single url, usually a web
-								address.  The headers parameter should be a string matrix with the first column containing any header
-								names and the second header values.  If headers is a single empty string, then no headers are passed.
-							</p>
-							<p class="funcdesc">
-								A string matrix is returned with the first row containing the string "data" in the first column and the returned data in the second column.  Additional rows contain any returned headers with the name in the first column and the values in the second column.
+								The method and url arguments are what is passed to the request's open method.
+								The headers argument, if supplied, should be a string matrix with the first column
+								containing any header names and the second header values. A string array will also
+								work with names and values alternating.  This is passed to the request's
+								setRequestHeader method.
 							</p>
 							<p>
-								If url is an array only the first address in the array will be retrieved.
+								The return value is the request responseText.
 							</p>`,
 					},
-					{
-						f: "{wpost url, headers, data}",
-						desc: `Posts data to a url (similar to a web form).  The headers parameter should be a string matrix with
-								the first column containing any header names and the second header values.  The data parameter should be
-								a string containing the data to be sent, typically in JSON form.
-							<p>
-								A string matrix is returned with the first row containing the string "data" in the first column and the
-								returned data in the second column.  Additional rows contain any returned headers with the name in the
-								first column and the values in the second column.
-							</p>`,
-					},
-					{
-						f: "{wputt url, headers, data}",
-						desc: `Puts" data to a url using the PUT method.  The headers parameter should be a string matrix with
-								the first column containing any header names and the second header values.  The data parameter should
-								be a string containing the data to be sent, typically in JSON form.
-							<p>
-								A string matrix is returned with the first row containing the string "data" in the first column and
-								the returned data in the second column.  Additional rows contain any returned headers with the name
-								in the first column and the values in the second column.
-							</p>`,
-					}
 				]
 			}
 		]

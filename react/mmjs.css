@@ -530,7 +530,7 @@ a:hover {
 #f-picker__scroll-area {
 	grid-area: scrollarea;
 	overflow: auto;
-	height: calc(var(--info-height) - 1.5em);
+	height: calc(var(--info-height) - 70px);
 }
 
 #f-picker__title {
