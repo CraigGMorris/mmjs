@@ -1276,7 +1276,9 @@ class MMUnitsContainer extends MMCommandParent {
 	 */
 	loadFromJsonObject(object) {
 		for (let definition of object) {
-			this.addUserDefinition(definition);
+			if (definition) {
+				this.addUserDefinition(definition);
+			}
 		}
 	}
 

@@ -237,6 +237,7 @@ class MMSession extends MMCommandParent {
 		if (!storePath) {
 			storePath = '(unnamed)';
 		}
+		new MMUnitSystem(this);  // clear any user units and sets
 		this.nextToolLocation = this.unknownPosition;
 		this.rootModel = MMToolTypes['Model'].factory('root', this);
 		this.currentModel = this.rootModel;
