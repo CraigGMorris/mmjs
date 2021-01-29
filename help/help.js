@@ -42,6 +42,7 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink subsection"><a href="formulaeditor.html#vbrowser">Value Browser</a></div>
 	<div class="contentlink subsection"><a href="formulaeditor.html#ubrowser">Unit Browser</a></div>
 	<div class="contentlink subsection"><a href="formulaeditor.html#fbrowser">Function Browser</a></div>
+	<div class="contentlink"><a href="complex.html">Complex Numbers</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink"><a href="tools.html">Calculation Tools</a></div>
 	<div class="contentlink subsection"><a href="datatable.html">Data Table</a></div>
