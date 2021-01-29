@@ -501,6 +501,21 @@ class MMGraphX extends MMGraphAxis {
 		}
 	}
 
+	/**
+	 * @method addInputSourcesToSet
+	 * @param {Set} sources - contains tools referenced by axis formulas
+	 */
+	addInputSourcesToSet(sources) {
+		super.addInputSourcesToSet(sources);
+		for (let yValue of this.yValues) {
+			yValue.addInputSourcesToSet(sources);
+		}
+		if (this.zValue) {
+			this.zValue.addInputSourcesToSet(sources);
+		}
+	}
+
+
 	get numberOfYValues() {
 		return this.yValues.length;
 	}
