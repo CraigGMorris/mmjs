@@ -4386,6 +4386,9 @@ class MMFormula extends MMCommandObject {
 							else if (unitToken && !/[A-Za-z]/.test(unitToken.charAt(0))) {
 								unitToken = null;
 							}
+							else if (unitToken && k + 1 < nTokens && tokens[k+1] === '^') {
+								unitToken = null;  // unit has power in complex formula
+							}
 							if (unitToken) {
 								let unit = theMMSession.unitSystem.unitNamed(unitToken);
 								if (!unit) {
