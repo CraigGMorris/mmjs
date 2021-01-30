@@ -204,23 +204,16 @@ export function MMApp(props) {
 			else {
 				cmd = '/ load';
 			}
-			// pipe.doCommand(cmd, (results) => {
-			// console.log(`load command=${cmd}`);
 			doCommand(cmd, (results) => {
-					if (results[0].error) {
-					console.log(results[0].error);
-				}
-				else {
-					const resetInfo = results[0].results;
-					if (resetInfo) {
-						resetInfoStack('root', resetInfo);
-						if (
-							viewType === ViewType.diagram &&
-							resetInfo.selected &&
-							resetInfo.selected.type !== 'Model')
-						{
-							setViewType(ViewType.info);
-						}
+				const resetInfo = results[0].results;
+				if (resetInfo) {
+					resetInfoStack('root', resetInfo);
+					if (
+						viewType === ViewType.diagram &&
+						resetInfo.selected &&
+						resetInfo.selected.type !== 'Model')
+					{
+						setViewType(ViewType.info);
 					}
 				}
 				setAutoLoadComplete(true);
