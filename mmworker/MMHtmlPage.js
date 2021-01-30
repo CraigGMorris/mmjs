@@ -470,7 +470,6 @@ const handleMessage = (e) => {
 }
 window.addEventListener('message', handleMessage);
 const mmpost = (inputs, requests, callBack) => {
-	console.log('inputs');
 	if (Array.isArray(inputs)) {
 		inputs = mminputs(inputs);
 	}
