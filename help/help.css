@@ -49,6 +49,10 @@ body {
 
 	li { padding: 0.2em; }
 
+	a {
+		font-weight: bold;
+	}
+
 /* Tables
  * --------------------------------------------------------------------- */
 
@@ -110,7 +114,8 @@ body {
 		max-width: 600px;
 		margin: auto;
 		padding: 5px;
-		background-color:  #eeffee;
+		background-color: rgb(255, 253, 225);
+		/* background-color:  #eeffee; */
 	}
 
 	#heading {

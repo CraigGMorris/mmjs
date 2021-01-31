@@ -58,7 +58,7 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink subsection"><a href="importedmodel.html">Imported Model</a></div>
 	<div class="contentlink subsection"><a href="notes.html">Tool Notes</a></div>
 	<div>&nbsp;</div>
-	<div class="contentlink"><a href="http://www.redtree.com//mm/tutorialv3.html">Tutorial</a></div>
+	<div class="contentlink"><a href="tutorial.html">Tutorial</a></div>
 	<div class="contentlink"><a href="http://www.redtree.com/mmexamples">Examples</a></div>
 	<div class="contentlink"><a href="http://www.redtree.com/mm">MM Home Page</a></div>
 	`);
