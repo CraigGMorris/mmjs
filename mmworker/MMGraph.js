@@ -112,12 +112,13 @@ class MMGraphAxis {
 		if (this.values && this._minValue &&
 			!MMUnitSystem.areDimensionsEqual(this._values.unitDimensions, this._minValue.unitDimensions))
 		{
-			this._values.exceptionWith('mmcmd:graphUnitError', {
-				path: this.getPath(),
+			this.graph.setError('mmcmd:graphUnitError', {
+				path: this.graph.getPath(),
 				type: 'min',
 				v: this.formula.formula,
 				vmin: this.minFormula.formula
 			});
+			return null;
 		}
 		return this._minValue;
 	}
@@ -129,12 +130,13 @@ class MMGraphAxis {
 		if (this.values && this._maxValue &&
 			!MMUnitSystem.areDimensionsEqual(this._values.unitDimensions, this._maxValue.unitDimensions))
 		{
-			this._values.exceptionWith('mmcmd:graphUnitError', {
-				path: this.getPath(),
+			this.graph.setError('mmcmd:graphUnitError', {
+				path: this.graph.getPath(),
 				type: 'max',
 				v: this.formula.formula,
 				vtype: this.maxFormula.formula
 			});
+			return null;
 		}
 		return this._maxValue;
 	}
