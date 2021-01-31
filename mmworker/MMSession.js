@@ -436,6 +436,7 @@ class MMSession extends MMCommandParent {
 		catch(e) {
 			const msg = (typeof e === 'string') ? e : e.message;
 			this.setError('mmcmd:sessionLoadFailed', {path: path, error: msg});
+			this.newSession();
 		}
 		finally {
 			this.isLoadingCase = false;
@@ -468,6 +469,8 @@ class MMSession extends MMCommandParent {
 			return result;
 		}
 		catch(e) {
+			const msg = (typeof e === 'string') ? e : e.message;
+			this.setError('mmcmd:sessionAutoLoadFailed', {error: msg});
 			this.newSession();
 		}
 		finally {

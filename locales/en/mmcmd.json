@@ -135,6 +135,7 @@
 	"parseSessionError": "Could not parse the session information\n{{error}}",
 	"recordLengthError": "Not all recorded rows are the same size in {{path}}",
 	"recordValueError": "Could not calculate recorded value {{number}}\n\nfor {{path}}",
+	"sessionAutoLoadFailed": "There was an error attempting to load the auto saved session\n{{error}}",
 	"sessionCopyFailed": "There was an error attempting to copy the session\n{{oldPath}} to\n{{newPath}}\n{{error}}",
 	"sessionDeleteFailed": "There was an error attempting to delete the session\n{{path}}\n{{error}}",
 	"sessionInvalidImport": "The imported content isn't recognized as a session or folder archive",
