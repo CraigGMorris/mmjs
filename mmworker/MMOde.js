@@ -173,7 +173,7 @@ class MMOde extends MMTool {
 					})
 				}
 				else {
-					o['ytunits'] = MMUnit.stringFromDimensions(this.cachedY.unitDimensions);
+					o['yunits'] = MMUnit.stringFromDimensions(this.cachedY.unitDimensions);
 				}
 				if (this.isSolved) {
 					o['solved'] = 'y';
@@ -284,6 +284,9 @@ class MMOde extends MMTool {
 
 	set shouldAutoRun(newValue) {
 		this._shouldAutoRun = (newValue) ? true : false;
+		// if (newValue) {
+		// 	this.run();
+		// }
 	}
 
 	/** @override */
