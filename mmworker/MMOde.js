@@ -284,9 +284,9 @@ class MMOde extends MMTool {
 
 	set shouldAutoRun(newValue) {
 		this._shouldAutoRun = (newValue) ? true : false;
-		// if (newValue) {
-		// 	this.run();
-		// }
+		if (newValue) {
+			this.run();
+		}
 	}
 
 	/** @override */
