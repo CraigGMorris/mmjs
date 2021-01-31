@@ -321,11 +321,16 @@ class MMSession extends MMCommandParent {
 				const toolType = tool.className.substring(2);
 				if (toolType !== 'Model') {
 					const fakeCommand = {results: {}};
-					tool.toolViewInfo(fakeCommand);
-					returnValue.selected = {
-						name: toolName,
-						type: toolType,
-						info: fakeCommand
+					try {
+						tool.toolViewInfo(fakeCommand);
+						returnValue.selected = {
+							name: toolName,
+							type: toolType,
+							info: fakeCommand
+						}
+					}
+					catch(e) {
+						this.setError()
 					}
 				}
 			}
