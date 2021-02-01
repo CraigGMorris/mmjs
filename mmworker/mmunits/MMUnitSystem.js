@@ -451,7 +451,7 @@ class MMUnit extends MMCommandObject {
 		if (isBC) {
 			year = -year;
 		}
-		let date = new Date(year, month - 1, day, hour, minute, seconds);
+		let date = new Date(Date.UTC(year, month - 1, day, hour, minute, seconds));
 		
 		return Math.floor(date/1000);
 	}
@@ -477,7 +477,7 @@ class MMUnit extends MMCommandObject {
 			case MMUnitDateType.YYYYMMDD:
 				result = year * 10000. + month * 100.0 + day;
 				break;
-			case MMUnitDateType.DDMMYYY:
+			case MMUnitDateType.DDMMYYYY:
 				result = day * 1000000. + month * 10000.0 + year;
 				break;
 			case MMUnitDateType.MMDDYYYY:
