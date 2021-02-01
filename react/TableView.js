@@ -367,34 +367,15 @@ export function TableView(props) {
 					}
 				}
 				let cmp;
-				// use sub svg to clip long strings - only doing for string values at this point
 				if (typeof v === 'string') {
-					cmp = e(
-						'svg', {
-							className: 'tableview__cell-text',
-							x: x,
-							y: y - cellHeight,
-							width: cellWidth,
-							height: cellHeight,
-							key: `${row}-${column}`,
-						},
-						e(
-							'text', {
-								x: xTextPad,
-								y: cellHeight * 0.8,
-							},
-							displayedV.substring(0,30)
-						)
-					);	
+					displayedV = displayedV.substring(0,14);
 				}
-				else {
-					cmp = e('text', {
-						className: 'tableview__cell-text',
-						x: x + xTextPad,
-						y: y - cellHeight * 0.2,
-						key: `${row}-${column}`,
-					}, displayedV);
-				}
+				cmp = e('text', {
+					className: 'tableview__cell-text',
+					x: x + xTextPad,
+					y: y - cellHeight * 0.2,
+					key: `${row}-${column}`,
+				}, displayedV);
 
 				cells.push(cmp);
 			}
