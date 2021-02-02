@@ -615,7 +615,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 	const showHelp = useCallback(() => {
 		let stackLength = infoStack.length;
 		let viewKey = stackLength ? infoStack[stackLength - 1].viewKey : 'none';
-		window.open(`/help/${viewKey.toLowerCase()}.html`,'MM Help');
+		window.open(`help/${viewKey.toLowerCase()}.html`,'MM Help');
 	}, []);
 
 	/**
