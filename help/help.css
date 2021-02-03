@@ -1,5 +1,5 @@
 :root {
-	--body--bgcolor: #1c1c1c;
+	--body--bgcolor: #212121;
 	--body--color: #fff;
 }
 @media (prefers-color-scheme: light) {
@@ -10,8 +10,10 @@
 }
 
 body {
-	background-color: var(--body--bgcolor) !important;
 	box-sizing: border-box;
+	background-color: var(--body--bgcolor) !important;
+	/* background-color: rgb(255, 253, 225); */
+	color: black;
 }
 
 /* Headings
@@ -112,9 +114,11 @@ body {
 
 	#page {
 		max-width: 600px;
+		min-height: 600px;
 		margin: auto;
 		padding: 5px;
 		background-color: rgb(255, 253, 225);
+		border: solid 1px black;
 		/* background-color:  #eeffee; */
 	}
 
@@ -126,6 +130,9 @@ body {
 			"sectiontoggle contents"
 			"sectionmenu contentsmenu";
 		grid-gap: 5px;
+		border-bottom: solid 1px black;
+		padding-bottom: 5px;
+		margin-bottom: 10px;
 	}
 
 	#title {
@@ -140,16 +147,12 @@ body {
 		grid-area: contents;
 		text-align: left;
 		color: blue;
-		border-bottom: solid 1px black;
-		padding-bottom: 5px;
 	}
 
 	#sectiontoggle {
 		grid-area: sectiontoggle;
 		padding-left: 5px;
-		padding-bottom: 5px;
 		color: blue;
-		border-bottom: solid 1px black;
 	}
 
 	#sectionmenu {

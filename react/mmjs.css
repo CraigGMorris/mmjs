@@ -1239,7 +1239,7 @@ a:hover {
 
 #sessions__export-button {
 	grid-area: download;
-	font-size: 9pt;
+	font-size: 8pt;
 }
 
 #sessions__list {

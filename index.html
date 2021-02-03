@@ -5,17 +5,53 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Math Minion</title>
+	<link rel="stylesheet" href="./help/help.css">
+	<style>
+		#menu {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 1fr;
+		grid-gap: 5px;
+		border-bottom: solid 1px black;
+		padding-bottom: 5px;
+		margin-bottom: 10px;
+	}
+	#menu div {
+		padding-left: 20px;
+	}
+
+	.center {
+		text-align: center;
+	}
+	</style>
 </head>	
 
 <body>
-	<div id="root">Loading...</div>
-		<!-- <div id="like_button_container"></div> -->
-	<script src="https://unpkg.com/i18next/i18next.js"></script>
-	<script src="https://unpkg.com/i18next-xhr-backend/i18nextXHRBackend.js"></script>
-	<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
-	<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
-	<link rel="stylesheet" href="./react/mmjs.css">
-	<script type="module" src="./index.js"></script>
+	<div id="page">
+		<div id="title">Math Minion</div>
+		<div id="menu">
+			<div id="run"><a href="run.html">Run</a></a></div>
+			<div id="help"><a href="help/getstarted.html">Help</a></div>
+		</div>
+		<p>
+			Math Minion is a general purpose calculation tool that runs completely in the
+			browser and is completely
+			<a href="help/freeprivate.html">free and private</a>.
+		</p>
+		<div class="center"><img src="screenshot.png" alt="Screen shot"></div>
+		<p>	
+			It combines a <a href="help/diagram.html">mind map</a> style diagram of the
+			relationships between a range of <a href="help/tools.html">calculation tools</a>,
+			with a <a href="help/formula.html">formula system</a> that operates transparently
+			on scalars, arrays and matrices. It also includes a
+			<a href="help/units.html">comprehensive conversion unit system</a> 
+			that performs dimensional analysis on all calculations.
+		</p>	
+		<p>
+			Best of all, if you have a reasonably recent browser and can wait a few seconds for
+			it to load, you can try it right now by tapping on <a href="run.html">Run</a>.
+		</p>
+	</div>
  </body>
 
 </html>
