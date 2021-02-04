@@ -14537,7 +14537,7 @@
 			},
 			{
 				"name": "Welcome",
-				"Notes": "Welcome to the Math Minion's \"Getting Started\" session, which contains numerous small illustrations of howMath Minion works.\n\nHowever before diving in, I fear you really should, gasp, read a bit of the help.\n\nPlease put your natural horror aside and tap on the background of the diagram, not on one of the icons, and select help from the resulting menu.\n\nThis should open the introductory help for Math Minion in a new browser window or tab.",
+				"Notes": "Welcome to the Math Minion's \"Getting Started\" session, which contains numerous small illustrations of how Math Minion works.\n\nHowever before diving in, I fear you really should, gasp, read a bit of the help.\n\nPlease put your natural horror aside and tap on the background of the diagram, not on one of the icons, and select help from the resulting menu.\n\nThis should open the introductory help for Math Minion in a new browser window or tab.",
 				"DiagramX": 70,
 				"DiagramY": -40,
 				"HideInfo": "y",
