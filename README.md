@@ -22,4 +22,4 @@ Other features include:
 * 2 and 3 dimension graphs
 * HTML page
 
-For more information see the [website](http://mathminon.org).
+For more information see the [website](http://mathminion.org).
