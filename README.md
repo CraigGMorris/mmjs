@@ -1,6 +1,9 @@
 Math Minion
 ==========
 
+(NOTE: this software is at the testing stage.  There will be bugs and
+the reporting of them will be appreciated)
+
 Math Minion is a general purpose calculation tool running completely in the browser
 and is completely [free and private](http://mathminion.org/help/freeprivate.html)
 
