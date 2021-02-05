@@ -1374,6 +1374,12 @@ a:hover {
 	width: 100%;
 	font-size: 12pt;
 	stroke: var(--tableview__value--stroke-color);
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 #tableview__value-svg rect {
