@@ -388,6 +388,7 @@ export function FormulaEditor(props) {
 	// }, [formula]);
 
 	const applyChanges = (formula) => {
+		formula = formula.replace(/[“”]/g,'"');	// defeat smart quotes
 		const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
 		f(formula, () => {
 			props.actions.popView();
@@ -536,6 +537,7 @@ export function FormulaEditor(props) {
 						e.preventDefault();
 						return;
 					}
+					console.log(`key=${e.key}`);
 				},
 			}
 		),
