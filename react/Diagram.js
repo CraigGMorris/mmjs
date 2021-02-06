@@ -452,7 +452,8 @@ export class Diagram extends React.Component {
 
 	onPointerDown(e) {
     e.stopPropagation();
-    e.preventDefault();
+		e.preventDefault();
+		// console.log(`down ${this.eventCache.length}`);
 		this.pointerStartTime = new Date().getTime();
 		this.eventCache.push({
 			x: e.clientX,
@@ -476,11 +477,13 @@ export class Diagram extends React.Component {
 		if ( this.eventCache.length) {
 			this.node.addEventListener('pointermove', this.onPointerMove);
 			this.node.addEventListener('pointerup', this.onPointerUp);
+			// console.log('add listener');
 			e.target.setPointerCapture(e.pointerId);
 		}
   }
 
 	onPointerUp(e) {
+		// console.log(`up ${this.eventCache.length}`);
 		e.stopPropagation();
 		e.preventDefault();
 		let eCache = this.eventCache;
@@ -534,6 +537,7 @@ export class Diagram extends React.Component {
 			this.pinch = 0;
 			e.target.releasePointerCapture(e.pointerId);
 			this.node.removeEventListener('pointermove', this.onPointerMove);
+			// console.log('remove listener');
 			this.node.removeEventListener('pointerup', this.onPointerUp);	
 		}
 	}
@@ -848,18 +852,28 @@ export class Diagram extends React.Component {
 					textClick: () => {this.getModelInfo(true);}
 				})
 			);
+			const boxWidth = this.props.diagramBox.width;
+			const boxHeight = this.props.diagramBox.height;
 			textList.push(
 				e(ClickableDiagramText, {
 					key: 'zoomin',
-					x: this.props.diagramBox.width - (this.props.isTwoPane ? 130 : 80),
+					x: boxWidth - (this.props.isTwoPane ? 130 : 80),
 					y: 30,
 					text: '+',
 					size: 30,
 					textClick: () => {
 						this.setState((state) => {
 							const newScale = Math.max(0.1, state.scale * 1.2);
+							const clientX = boxWidth/2;
+							const clientY = boxHeight/2;
+							const newTranslate = {
+								x: clientX/newScale - clientX/state.scale + state.translate.x,
+								y: clientY/newScale - clientY/state.scale + state.translate.y
+							}
+						
 							return {
 								scale: newScale,
+								translate: newTranslate,
 							}
 						})
 					}
@@ -868,15 +882,22 @@ export class Diagram extends React.Component {
 			textList.push(
 				e(ClickableDiagramText, {
 					key: 'zoomout',
-					x: this.props.diagramBox.width - (this.props.isTwoPane ? 80 : 30),
+					x: boxWidth - (this.props.isTwoPane ? 80 : 30),
 					y: 35,
 					text: '-',
 					size: 50,
 					textClick: () => {
 						this.setState((state) => {
 							const newScale = Math.max(0.1, state.scale / 1.2);
+							const clientX = boxWidth/2;
+							const clientY = boxHeight/2;
+							const newTranslate = {
+								x: clientX/newScale - clientX/state.scale + state.translate.x,
+								y: clientY/newScale - clientY/state.scale + state.translate.y
+							}
 							return {
 								scale: newScale,
+								translate: newTranslate
 							}
 						})
 					}
@@ -886,7 +907,7 @@ export class Diagram extends React.Component {
 				textList.push(
 					e(Divider, {
 						key: 'divider',
-						x: this.props.diagramBox.width - 30,
+						x: boxWidth - 30,
 						y: 30,
 						setRightPaneWidth: this.props.setRightPaneWidth,
 						rightPaneWidth: this.props.rightPaneWidth,
@@ -1665,16 +1686,10 @@ class SelectionBox extends React.Component {
     e.stopPropagation();
 		e.preventDefault();
 		if (this.panSum < 5) {
-			const t = new Date().getTime();
-			if (t - this.pointerStartTime > 500) {
-				console.log(`sb long press  ${this.panSum}`);
-			}
-			else {
-				this.props.showContext({
-					type: ContextMenuType.selection,
-					info: this.props.info,
-				});
-			}	
+			this.props.showContext({
+				type: ContextMenuType.selection,
+				info: this.props.info,
+			});
 		}
 		else {
 			this.setState({ dragging: false });
