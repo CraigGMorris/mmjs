@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "mainTest",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "errorCount",
+	"SelectedObject": "root",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -16347,7 +16347,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{table t,\n\tt.name,\n\tt.area / 1 ft^2\",\n\tt.volume / 1 l\n}"
+											"Formula": "{table t,\n\tt.name,\n\tt.area / 1 \"ft^2\",\n\tt.volume / 1 l\n}"
 										}
 									},
 									{
@@ -19807,7 +19807,7 @@
 								"DiagramNotes": "n",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{gt\n\t{abs area - f},\n\ttolerance * 100 m^2\n}"
+									"Formula": "{gt\n\t{abs area - f},\n\ttolerance * 100 \"m^2\"\n}"
 								}
 							},
 							{
@@ -32414,8 +32414,7 @@
 													1358035200,
 													1358121600,
 													1358208000,
-													1358294400,
-													1606003200
+													1358294400
 												],
 												"unitDimensions": "0 0 1 0 0 0 0",
 												"defaultValue": "{mktime {int {date {now}}}}"
@@ -32470,8 +32469,7 @@
 													86.2,
 													86.40000000000003,
 													86.40000000000003,
-													85.59999999999997,
-													78
+													85.59999999999997
 												],
 												"unitDimensions": "0 1 0 0 0 0 0",
 												"defaultValue": "{eval bmi.weight}"
