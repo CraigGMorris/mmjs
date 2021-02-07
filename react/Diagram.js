@@ -451,7 +451,7 @@ export class Diagram extends React.Component {
 	}
 
 	onPointerDown(e) {
-    e.stopPropagation();
+		e.stopPropagation();
 		e.preventDefault();
 		// console.log(`down ${this.eventCache.length}`);
 		this.pointerStartTime = new Date().getTime();
@@ -477,8 +477,8 @@ export class Diagram extends React.Component {
 		if ( this.eventCache.length) {
 			this.node.addEventListener('pointermove', this.onPointerMove);
 			this.node.addEventListener('pointerup', this.onPointerUp);
-			// console.log('add listener');
 			e.target.setPointerCapture(e.pointerId);
+			// console.log(`capture ${e.pointerId}`);
 		}
   }
 
@@ -536,8 +536,8 @@ export class Diagram extends React.Component {
 			this.panSum = 0;
 			this.pinch = 0;
 			e.target.releasePointerCapture(e.pointerId);
+			// console.log(`release ${e.pointerId}`);
 			this.node.removeEventListener('pointermove', this.onPointerMove);
-			// console.log('remove listener');
 			this.node.removeEventListener('pointerup', this.onPointerUp);	
 		}
 	}
@@ -1239,8 +1239,6 @@ export class Diagram extends React.Component {
 				style: {
 					height: dgmBox.height,
 					width: dgmBox.width,
-					// height: '100%',
-					// width: '100%',
 				},
 			},
 			e(
@@ -1252,6 +1250,11 @@ export class Diagram extends React.Component {
 					},
 					viewBox: viewBox,
 					onPointerDown: this.onPointerDown,
+					// tried below to try and prevent touch move disabling pointer events on iPad - no joy
+					// onTouchStart: e => {
+					// 	e.preventDefault();
+					// 	e.stopPropagation();
+					// },
 				},
 				toolList,
 				connectList,
@@ -1587,18 +1590,6 @@ class ToolIcon extends React.Component {
 			e(
 				'rect', {
 					onPointerDown: this.onPointerDown,
-					// onTouchMove: e => {
-					// 	e.preventDefault();
-					// 	e.stopPropagation();
-					// },
-					// onTouchEnd: e => {
-					// 	e.preventDefault();
-					// 	e.stopPropagation();
-					// },		
-					// onTouchCancel: e => {
-					// 	e.preventDefault();
-					// 	e.stopPropagation();
-					// },	
 					x: (x + translate.x)*scale,
 					y: (y + translate.y)*scale,
 					width: objectWidth*scale,
