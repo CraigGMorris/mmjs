@@ -349,7 +349,8 @@ export function TableView(props) {
 			cells.push(cellBox);
 
 			// if dragging and there are lots of cells, skip filling them in to make things smoother
-			if (nDisplayedTotal <= 60 || dragType === TableViewDragType.none) {
+			const fillAll = true; // fills all cells when dragging. Set to false is dragging big tables is problem
+			if (fillAll || column === 0 || nDisplayedTotal <= 60 || dragType === TableViewDragType.none) {
 				let  displayedV = '';
 				let v;
 				if (value.t === 't') {
