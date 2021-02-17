@@ -90,29 +90,29 @@ class MMUnitSystem extends MMCommandParent {
 			return true;
 		}
 	
-	if ( !dim1 && dim2) {  // nil should equate to all dimensions being 0
-		for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
-			if ( dim2[i] != 0.0 )
-				return false;
+		if ( !dim1 && dim2) {  // nil should equate to all dimensions being 0
+			for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
+				if ( dim2[i] != 0.0 )
+					return false;
+			}
+			return true;
 		}
-		return true;
-	}
-		
-	if ( !dim2 && dim1 ) {
-		for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
-			if (dim1[i] != 0.0 )
-				return false;
+			
+		if ( !dim2 && dim1 ) {
+			for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
+				if (dim1[i] != 0.0 )
+					return false;
+			}
+			return true;
 		}
-		return true;
-	}
 
-	// both dimensions have values
-	for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
-		if ( dim1[i] != dim2[i] )
-			return false;
-	}
-	
-	return true;
+		// both dimensions have values
+		for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
+			if ( dim1[i] != dim2[i] )
+				return false;
+		}
+		
+		return true;
 	}
 
 	/**
