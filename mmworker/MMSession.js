@@ -102,8 +102,6 @@ class MMSessionStorage  {
 			let store = tx.objectStore('sessions');
 			// add the json with the path as the key
 			let request = store.put({id: path, session: json});
-//			tx.oncomplete = resolve;
-//			tx.onerror = (event) => {
 			request.onsuccess = () => {
 				resolve(path);
 			}
