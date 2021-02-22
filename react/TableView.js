@@ -92,7 +92,7 @@ export function TableView(props) {
 	const offset = tableViewOffset;
 	const nRowCells = Math.min(maxDisplayedRows, nRows);
 	const rowOrigin = Math.max(0, Math.floor(Math.min(offset.y / cellHeight), nRows - nRowCells));
-	const nColumnCells = Math.min(Math.floor((viewBox[2]- rowLabelWidth) / cellWidth) + 1, nColumns);
+	const nColumnCells = Math.min(Math.floor((viewBox[2]- rowLabelWidth) / cellWidth) + 2, nColumns);
 	const columnOrigin = Math.max(0, Math.floor(Math.min(offset.x / cellWidth), nColumns - nColumnCells));
 	const yPadding = 0; // pixel gap at top
 	const xPadding = 0; // pixel gap at left
