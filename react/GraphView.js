@@ -639,7 +639,8 @@ class Plot2D extends React.Component {
 		e.stopPropagation();
 		const deltaY = e.deltaY;
 		this.setState((state) => {
-			const newScale = Math.max(0.1, state.scale + deltaY/100);
+			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 10*state.scale);
+			const newScale = Math.max(0.1, state.scale + rate / 100);
 			const newTranslate = {
 				x: state.translate.x + (this.width/2 - state.translate.x) * (1 - newScale/state.scale),
 				y: state.translate.y + (this.height/2 - state.translate.y) * (1 - newScale/state.scale)
@@ -1217,7 +1218,8 @@ class Plot3D extends React.Component {
 		e.stopPropagation();
 		const deltaY = e.deltaY;
 		this.setState((state) => {
-			const newScale = Math.max(0.1, state.pinchScale + deltaY/100);
+			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 10*state.pinchScale);
+			const newScale = Math.max(0.1, state.pinchScale + rate/100);
 			return {
 				pinchScale: newScale,
 			};

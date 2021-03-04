@@ -601,7 +601,8 @@ export class Diagram extends React.Component {
 		const pageX = e.pageX;
 		const pageY = e.pageY;
 		this.setState((state) => {
-			const newScale = Math.max(0.1, state.scale - deltaY/100);
+			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 10*state.scale);
+			const newScale = Math.max(0.1, state.scale - rate / 100);
 			const newTranslate = {
 				x: pageX/newScale - pageX/state.scale + state.translate.x,
 				y: pageY/newScale - pageY/state.scale + state.translate.y
