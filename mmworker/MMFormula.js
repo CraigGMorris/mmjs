@@ -4227,7 +4227,7 @@ class MMFormula extends MMCommandObject {
 				if (!isNaN(value)) {
 					let unitName = tokens[1];
 					if (unitName.startsWith('"') && unitName.length > 1) {
-						unitName = unitName.substring(1,unitName.length - 2);  // strip quotes
+						unitName = unitName.substring(1,unitName.length - 1);  // strip quotes
 					}
 					let unit;
 					unit = theMMSession.unitSystem.unitNamed(unitName);
