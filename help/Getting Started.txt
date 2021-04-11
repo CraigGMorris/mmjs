@@ -12544,13 +12544,13 @@
 					{
 						"name": "Formulas",
 						"Notes": "At the heart of Math Minion calculations are the formulas that express the relationships between various objects.\n\nThey can be as simple as a scalar constant, or 2 + 2, but if the need arises, they can be complicated expressions involving functions and conditions.",
-						"DiagramX": -75,
+						"DiagramX": -80,
 						"DiagramY": -70,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "' Just a not holder"
+							"Formula": "' Just a note holder"
 						}
 					},
 					{
@@ -12895,7 +12895,7 @@
 									},
 									{
 										"name": "indices",
-										"Notes": "Elements of an value can be accessed by using indices inside square brackets.\n\nThe indices can be arrays themselves.  \n\nIn this case I have used ranges to create a subset of the “Matrix” expression value.\n\n",
+										"Notes": "Elements of a value can be accessed by using indices inside square brackets.\n\nThe indices can be arrays themselves.  \n\nIn this case I have used ranges to create a subset of the “Matrix” expression value.",
 										"DiagramX": 115,
 										"DiagramY": 5,
 										"HideInfo": "y",
@@ -14084,7 +14084,7 @@
 											},
 											{
 												"name": "split",
-												"Notes": "The split function separates a string into parts.  If there are just two arguments, the first is the string to split and the second is the character or phrase to split upon.\n\nIf the string has more than one column and more than one row, the result will one row per value of s, with each value split into columns.\n\nAlso an optional third parameter can be supplied, in which case the second parameter is used to separate the columns and the third parameter is used to separate the rows, resulting in a string matrix. In this case, only the first value of the string is used (i.e. element 1,1).",
+												"Notes": "The split function separates a string into parts.  If there are just two arguments, the first is the string to split and the second is the character or phrase to split upon.\n\nIf the string has more than one column and more than one row, the result will be one row per value of s, with each value split into columns.\n\nAlso an optional third parameter can be supplied, in which case the second parameter is used to separate the columns and the third parameter is used to separate the rows, resulting in a string matrix. In this case, only the first value of the string is used (i.e. element 1,1).",
 												"DiagramX": 110,
 												"DiagramY": 55,
 												"HideInfo": "y",
