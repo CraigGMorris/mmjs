@@ -552,7 +552,7 @@ export function DataTableView(props) {
 					formulaString = v;
 				}
 				else if (typeof v === 'number') {
-					formulaString = `${v.toPrecision(8).replace(/0+$/,'')} ${tableColumn.dUnit}`;
+					formulaString = `${v.toString().replace(/(\..*)(0+$)/,'$1')} ${tableColumn.dUnit}`;
 				}
 			}
 
