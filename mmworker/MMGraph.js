@@ -570,7 +570,7 @@ class MMGraphX extends MMGraphAxis {
 		if (index >= 0 && this.yValues.length > 1) {
 			this.yValues[index - 1].removeChildren();
 			this.yValues.splice(index - 1,1);
-			for (let i = index; i < this.yValues.length; i++) {
+			for (let i = index - 1; i < this.yValues.length; i++) {
 				this.yValues[i].renameTo(`y${this.number}_${i + 1}`);
 			}
 			this.graph.forgetCalculated();
