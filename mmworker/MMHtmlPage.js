@@ -304,7 +304,7 @@ class MMHtmlPage extends MMTool {
 					if (name.startsWith('mm_')) {
 						// save actions for below
 						actions[name.toLowerCase()] = message.requests[name];
-						console.log(`action ${name}`)
+						// console.log(`action ${name}`)
 					}
 					else {
 						// evaluate the request formulas for inclusion in response.results
