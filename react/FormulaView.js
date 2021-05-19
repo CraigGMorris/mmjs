@@ -537,7 +537,7 @@ export function FormulaEditor(props) {
 						e.preventDefault();
 						return;
 					}
-					console.log(`key=${e.key}`);
+					// console.log(`key=${e.key}`);
 				},
 			}
 		),
