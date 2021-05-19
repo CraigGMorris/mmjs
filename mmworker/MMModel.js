@@ -659,6 +659,7 @@ class MMModel extends MMTool {
 			if(!toolType) {
 				const newTool = new MMExpression(name, this);
 				newTool.formula.formula = `'Invalid Tool ${typeName}\n\nJSON:\n${JSON.stringify(tool, null, ' ')}`;
+				newTool.savedInvalid = true;
 			}
 			else {
 				let newTool = toolType.factory(name, this);

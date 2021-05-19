@@ -358,6 +358,20 @@ class MMExpression extends MMTool {
 	 * @returns {Object} object that can be converted to json for save file
 	 */
 	saveObject() {
+		if (this.savedInvalid) {
+			// expression created to hold an unknown tool when session was imported
+			// retrieve the json from the formula
+			const savedFormula = this.formula.formula.split('\n');
+			// remove first three lines
+			savedFormula.shift(); savedFormula.shift(); savedFormula.shift();
+			try {
+				return JSON.parse(savedFormula.join('\n'));
+			}
+			catch(e) {
+				console.log(`could not parse invalid tool ${this.getPath()}`);
+				// fall through and just save expression as normal
+			}
+		}
 		let o=   super.saveObject();
 		o['Type'] = 'Expression';
 		o['Formula'] = {'Formula': this.formula.formula};
