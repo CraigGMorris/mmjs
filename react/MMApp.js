@@ -34,6 +34,7 @@ import {IteratorView} from './IteratorView.js';
 import {GraphView} from './GraphView.js';
 import {FormulaEditor} from './FormulaView.js';
 import { HtmlPageView } from './HtmlPageView.js';
+import {FlashView} from './FlashView.js';
 
 const e = React.createElement;
 const useState = React.useState;
@@ -147,6 +148,7 @@ export function MMApp(props) {
 		'Optimizer': OptimizerView,
 		'Graph': GraphView,
 		'HtmlPage': HtmlPageView,
+		'Flash': FlashView,
 	}
 
 	// information need to generate a console view component

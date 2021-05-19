@@ -50,8 +50,14 @@ importScripts(
   "MMIterator.js",
   "MMOptimizer.js",
   "MMGraph.js",
-  "MMHtmlPage.js"
+  "MMHtmlPage.js",
+  "MMFlash.js",
+  "coolprop.js",
 );
+
+/* global
+	Module:readonly
+*/
 
 class MMCommandWorker {
   constructor() {
@@ -64,14 +70,30 @@ class MMCommandWorker {
         results: message
       }
       postMessage([msg]);
-    });  
+    }); 
   }
 }
 
-var worker = new MMCommandWorker();
+// var worker = new MMCommandWorker();
+
+// for coolprop we need to wait for the wasm to be initialized and ready to run
+var worker
+async function createWorker() {
+  return new Promise((resolve) => {
+    Module.onRuntimeInitialized = () => {
+      console.log('readytorun');
+      worker = new MMCommandWorker();
+      resolve();
+    }
+  });
+}
+
 
 onmessage = async function(e) {
   // console.log('Worker: Message received from main script');
+  if (!worker) {
+    await createWorker();
+  }
   let result = await worker.processor.processCommandString(e.data);
   if (result) {
     // console.log('Worker: Posting message back to main script');

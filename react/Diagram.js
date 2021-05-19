@@ -1150,6 +1150,12 @@ export class Diagram extends React.Component {
 									}
 								},
 								{
+									text: this.props.t('mmcool:flashDisplayName'),
+									action: () => {
+										addTool('Flash');
+									}
+								},
+								{
 									text: this.props.t('mmcmd:modelImportDisplayName'),
 									action: () => {
 										addTool('Import');
@@ -1398,6 +1404,7 @@ class ToolIcon extends React.Component {
 			Optimizer: 'rgba(237,212,217,.8)',
 			Graph: 'rgba(224,247,247,.8)',
 			HtmlPage: 'rgba(217,204,230,.8)',
+			Flash: 'rgba(252,167,175,.8)',
 		}
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;

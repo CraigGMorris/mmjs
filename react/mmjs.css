@@ -423,6 +423,13 @@ a:hover {
 	color: var(--link--color-hover);
 }
 
+#flash__formulas {
+	display: grid;
+	grid-template-columns: 80px 1fr;
+	grid-row-gap: 5px;
+	padding-top: 5px;
+}
+
 .formula-field {
 	display: grid;
 	grid-template-columns: 20px 1fr;

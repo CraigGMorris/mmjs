@@ -1,0 +1,13 @@
+{
+	"flashDisplayName": "Flash",
+	"flashDuplicatePropTypes": "First and second property types can't be the same\nin {{path}}",
+	"flashFailed": "Flash failed in\n{{path}}",
+	"flashFirstPropNotTorP": "First property for flash must be T or P\nin {{path}}",
+	"flashInvalidSecondPropType": "Second property type is invalid for\n {{path}}",
+	"flashThermoDefnError": "There was an error in the thermo definition for\n{{path}}",
+	"flashThermoLabel": "Thermo",
+	"flashTorPLabel": "T or P",
+	"flash2ndPropLabel": "2nd Prop",
+	"flashMoleFracPropLabel": "Mole Fracs",
+	"flashMassFracPropLabel": "Mass Fracs"
+}
