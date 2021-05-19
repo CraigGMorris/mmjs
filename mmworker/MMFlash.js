@@ -301,11 +301,11 @@ class MMFlash extends MMTool {
 				);
 				bulk.s = MMNumberValue.scalarValue(
 					absState.keyed_output(Module.parameters.iSmolar),
-					[2, 2, -2, 0, -1, -1, 0]
+					[2, 1, -2, 0, -1, -1, 0]
 				);
 				bulk.cp = MMNumberValue.scalarValue(
 					absState.keyed_output(Module.parameters.iCpmolar),
-					[2, 2, -2, 0, -1, -1, 0]
+					[2, 1, -2, 0, -1, -1, 0]
 				);
 				bulk.rho = MMNumberValue.scalarValue(
 					absState.keyed_output(Module.parameters.iDmolar),
