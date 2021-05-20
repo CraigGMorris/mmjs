@@ -294,10 +294,10 @@ class MMNumberValue extends MMValue {
 		this.checkBounds(row, column);
 		let value = this._values[(row - 1)*this.columnCount + column - 1];
 		if (!outUnit) {
-			outUnit = value.displayUnit;
+			outUnit = this.displayUnit;
 		}
 		if (!outUnit) {
-			outUnit = value.defaultUnit;
+			outUnit = this.defaultUnit;
 		}
 		return outUnit.stringForValue(value);
 	}
@@ -314,10 +314,10 @@ class MMNumberValue extends MMValue {
 		this.checkBounds(row, column);
 		let value = this._values[(row - 1)*this.columnCount + column - 1];
 		if (!outUnit) {
-			outUnit = value.displayUnit;
+			outUnit = this.displayUnit;
 		}
 		if (!outUnit) {
-			outUnit = value.defaultUnit;
+			outUnit = this.defaultUnit;
 		}
 
 		return outUnit.stringForValueWithUnit(value);
