@@ -6,8 +6,10 @@
 	"flashInvalidSecondPropType": "Second property type is invalid for\n {{path}}",
 	"flashThermoDefnError": "There was an error in the thermo definition for\n{{path}}",
 	"flashThermoLabel": "Thermo",
+	"flashWrongCmpCount": "Composition does not match the number of components in thermo definition",
 	"flashTorPLabel": "T or P",
 	"flash2ndPropLabel": "2nd Prop",
+	"flashFlowLabel": "Flow",
 	"flashMoleFracPropLabel": "Mole Fracs",
 	"flashMassFracPropLabel": "Mass Fracs"
 }

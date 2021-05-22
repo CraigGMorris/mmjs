@@ -72,7 +72,22 @@ export function FlashView(props) {
 		}
 	}
 
+	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
+	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
+
 	let displayComponent;
+	let displayTable = null;
+	if (results.displayTable) {
+		displayTable = e(
+			TableView, {
+				id: 'flash__display-table',
+				value: results.displayTable,
+				actions: props.actions,
+				viewInfo: props.viewInfo,
+				viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 6*nInputHeight - 6],
+			}
+		);
+	}
 
 	switch (display) {
 		case FlashDisplay.formulaEditor:
@@ -172,6 +187,28 @@ export function FlashView(props) {
 					),
 					e(
 						'div', {
+							id: 'flash__flow-label',
+						},
+						t('mmcool:flowLabel')
+					),
+					e(
+						FormulaField, {
+							id: 'flash__flow-formula',
+							t: t,
+							actions: props.actions,
+							path: `${results.path}.flowFormula`,
+							formula: results.flowFormula,
+							viewInfo: props.viewInfo,
+							infoWidth: props.infoWidth,
+							clickAction: (offset) => {
+								setFormulaOffset(offset);
+								setFormulaName('flowFormula');
+								setDisplay(FlashDisplay.formulaEditor);
+							}
+						}
+					),
+					e(
+						'div', {
 							id: 'flash__molefrac-label',
 						},
 						t('mmcool:flashMoleFracPropLabel')
@@ -215,18 +252,7 @@ export function FlashView(props) {
 						}
 					),
 				),
-			// 	e(
-			// 		TableView, {
-			// 			id: 'matrix__value',
-			// 			value: results.value,
-			// 			actions: props.actions,
-			// 			viewInfo: props.viewInfo,
-			// 			viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 4*nInputHeight - 14],
-			// 			cellClick: cellClick,
-			// 			cellInputs: cellInputs,
-			// 			currentCell: currentCell,
-			// 		}
-			// 	),
+				displayTable
 			)
 		}
 	}
