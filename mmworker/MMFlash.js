@@ -42,6 +42,7 @@ class MMFlash extends MMTool {
 
 	static createPropertyDefinitions() {
 		MMFlashPropertyDefinitions = {
+			q: {param: Module.parameters.iT, dim: [0, 0, 0, 0, 0, 0, 0]},
 			t: {param: Module.parameters.iT, dim: [0, 0, 0, 0, 1, 0, 0]},
 			p: {param: Module.parameters.iP, dim: [-1, 1, -2, 0, 0, 0, 0 ]},
 			h: {param: Module.parameters.iHmolar, dim: [2, 1, -2, 0, 0, -1, 0]},
@@ -51,6 +52,21 @@ class MMFlash extends MMTool {
 			mwt: {param: Module.parameters.imolar_mass, dim: [0, 1, 0, 0, 0, -1, 0]},
 		};
 	}
+
+	/**
+	 * isPropertyType returns true if property dimensions matches type
+	 * @param {MMNumberValue} property 
+	 * @param {String} type - index into property definitions
+	 * @returns {boolean}
+	 */
+	static isPropertyType(property, type) {
+		const def = MMFlashPropertyDefinitions[type];
+		if (property && def) {
+			return MMUnitSystem.areDimensionsEqual(property.unitDimensions, def.dim);
+		}
+		return false
+}
+
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
@@ -174,6 +190,10 @@ class MMFlash extends MMTool {
 		if (!description) {
 			return super.valueDescribedBy(description, requestor);
 		}
+		if (!MMFlashPropertyDefinitions) {
+			MMFlash.createPropertyDefinitions();
+		}
+
 		const lcDescription = description.toLowerCase();
 		if (lcDescription === 'thermo') {
 			const thermo = this.thermoFormula.value();
@@ -259,10 +279,10 @@ class MMFlash extends MMTool {
 			this.firstProperty = this.firstPropertyFormula.value();
 		}
 		if (this.firstProperty) {
-			if (MMUnitSystem.areDimensionsEqual(this.firstProperty.unitDimensions, [0, 0, 0, 0, 1, 0, 0])) {
+			if (MMFlash.isPropertyType(this.firstProperty,'t')) {
 				this.firstPropertyType = 'T';
 			}
-			else if (MMUnitSystem.areDimensionsEqual(this.firstProperty.unitDimensions, [-1, 1, -2, 0, 0, 0, 0])) {
+			else if (MMFlash.isPropertyType(this.firstProperty,'p')) {
 				this.firstPropertyType = 'P';
 			}
 			else {
@@ -275,14 +295,20 @@ class MMFlash extends MMTool {
 		}
 
 		if (this.secondProperty) {
-			if (MMUnitSystem.areDimensionsEqual(this.secondProperty.unitDimensions, [0, 0, 0, 0, 1, 0, 0])) {
+			if (MMFlash.isPropertyType(this.secondProperty,'t')) {
 				this.secondPropertyType = 'T';
 			}
-			else if (MMUnitSystem.areDimensionsEqual(this.secondProperty.unitDimensions, [-1, 1, -2, 0, 0, 0, 0])) {
+			else if (MMFlash.isPropertyType(this.secondProperty,'p')) {
 				this.secondPropertyType = 'P';
 			}
-			else if (MMUnitSystem.areDimensionsEqual(this.secondProperty.unitDimensions, [0, 0, 0, 0, 0, 0, 0])) {
+			else if (MMFlash.isPropertyType(this.secondProperty,'q')) {
 				this.secondPropertyType = 'Q';
+			}
+			else if (MMFlash.isPropertyType(this.secondProperty,'h')) {
+				this.secondPropertyType = 'H';
+			}
+			else if (MMFlash.isPropertyType(this.secondProperty,'s')) {
+				this.secondPropertyType = 'S';
 			}
 			else {
 				this.setError('mmcool:flashInvalidSecondPropType', {path: this.getPath()});
@@ -333,9 +359,29 @@ class MMFlash extends MMTool {
 				secondValue = this.firstProperty.values[0];
 			}
 			else if (this.secondPropertyType === 'Q') {
-				flashType = Module.input.QT_INPUTS;
+				flashType = Module.input_pairs.QT_INPUTS;
 				firstValue = this.secondProperty.values[0];
 				secondValue = this.firstProperty.values[0];
+			}
+			else if (this.secondPropertyType === 'H') {
+				if (this.nComponents === 1) {
+					flashType = Module.input_pairs.HmolarT_INPUTS;
+					firstValue = this.secondProperty.values[0];
+					secondValue = this.firstProperty.values[0];
+				}
+				else {
+					return;
+				}
+			}
+			else if (this.secondPropertyType === 'S') {
+				if (this.nComponents === 1) {
+					flashType = Module.input_pairs.SmolarT_INPUTS;
+					firstValue = this.secondProperty.values[0];
+					secondValue = this.firstProperty.values[0];
+				}
+				else {
+					return;
+				}
 			}
 			else {
 				return;
@@ -350,6 +396,26 @@ class MMFlash extends MMTool {
 				flashType = Module.input_pairs.PQ_INPUTS;
 				firstValue = this.firstProperty.values[0];
 				secondValue = this.secondProperty.values[0];
+			}
+			else if (this.secondPropertyType === 'H') {
+				if (this.nComponents === 1) {
+					flashType = Module.input_pairs.HmolarP_INPUTS;
+					firstValue = this.secondProperty.values[0];
+					secondValue = this.firstProperty.values[0];
+				}
+				else {
+					return;
+				}
+			}
+			else if (this.secondPropertyType === 'S') {
+				if (this.nComponents === 1) {
+					flashType = Module.input_pairs.PSmolar_INPUTS;
+					firstValue = this.firstProperty.values[0];
+					secondValue = this.secondProperty.values[0];
+				}
+				else {
+					return;
+				}
 			}
 			else {
 				return;
