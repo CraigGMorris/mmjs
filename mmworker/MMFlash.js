@@ -42,7 +42,7 @@ class MMFlash extends MMTool {
 
 	static createPropertyDefinitions() {
 		MMFlashPropertyDefinitions = {
-			q: {param: Module.parameters.iT, dim: [0, 0, 0, 0, 0, 0, 0]},
+			q: {param: Module.parameters.iQ, dim: [0, 0, 0, 0, 0, 0, 0]},
 			t: {param: Module.parameters.iT, dim: [0, 0, 0, 0, 1, 0, 0]},
 			p: {param: Module.parameters.iP, dim: [-1, 1, -2, 0, 0, 0, 0 ]},
 			h: {param: Module.parameters.iHmolar, dim: [2, 1, -2, 0, 0, -1, 0]},
@@ -202,20 +202,117 @@ class MMFlash extends MMTool {
 			}
 			return thermo;
 		}
-		const descParts = lcDescription.split('.');
-		const phase = descParts.shift();
-		const property = descParts.shift();
 
+		if (!this.moleX) { this.moleX = this.moleFracFormula.value(); }
+		if (!this.massX) { this.massX = this.massFracFormula.value(); }
+
+		if (!this.moleX && !this.massX) {
+			if (!this.flow) { this.flow = this.flowFormula.value(); }
+			if (this.flow && this.flow.valueCount > 1) {
+				if (MMUnitSystem.areDimensionsEqual(this.flow.unitDimensions, [0, 0, -1, 0, 0, 1, 0])) {
+					// mole flow
+					this.moleX = this.flow.divideBy(this.flow.sum());
+				}
+				else if (MMUnitSystem.areDimensionsEqual(this.flow.unitDimensions, [0, 1, -1, 0, 0, 0, 0])) {
+					// mass flow
+					this.massX = this.flow.divideBy(this.flow.sum());
+				}
+				this.flow = this.flow.sum()
+			}
+		}
+		const descParts = lcDescription.split('.');
+		let phase = descParts.shift();
+		let property = descParts.shift();
+
+		if (!property) {
+			if (phase !== 'b' && phase !== 'v' && phase !== 'l') {
+				// phase wasn't given - check for formula product else
+				// assume bulk phase
+				property = phase;
+				phase = 'b';
+				let returnValue;
+				switch(property) {
+					case 'x':
+						returnValue = this.moleX;
+						break;
+					case 'massx':
+						returnValue = this.massX;
+						break;
+					case 'f': {
+						if (!this.flow) { this.flow = this.flowFormula.value(); }
+						returnValue = this.flow;
+					}
+						break;
+					default: {
+						if (!this.firstProperty) {
+							this.firstProperty = this.firstPropertyFormula.value();
+						}
+						if (MMFlash.isPropertyType(this.firstProperty, property)) {
+							returnValue = this.firstProperty;
+						}
+						else {
+							if (!this.secondProperty) {
+								this.secondProperty = this.secondPropertyFormula.value();
+							}
+							if (MMFlash.isPropertyType(this.secondProperty, property)) {
+								returnValue = this.secondProperty;
+							}	
+						}	
+					}
+					if (returnValue) {
+						this.addRequestor(requestor);
+						return returnValue;
+					}
+				}
+			}
+		}
 		if (!this.flashResults) {
 			this.flash();
 		}
 		if (this.flashResults) {
 			const resultPhase = this.flashResults[phase];
 			if (resultPhase) {
-				const prop = resultPhase[property];
+				let prop = resultPhase[property];
+				if (!prop && (property === 'f' || property === 'massf')) {
+					this.calculateFlows();
+					prop = resultPhase[property];
+				}
 				if (prop) {
 					this.addRequestor(requestor);
 					return prop;
+				}
+			}
+		}
+	}
+
+	calculateFlows() {
+		if (!this.flow) {
+			this.flow = this.flowFormula.value();
+		}
+		if (!this.flow) {
+			return;
+		}
+		const f = this.flow;
+		const results = this.flashResults;
+		if (results) {
+			if (MMUnitSystem.areDimensionsEqual(f.unitDimensions, [0, 0, -1, 0, 0, 1, 0])) {
+				results.b.f = f;
+				results.b.massf = f.multiply(results.b.mwt);
+				if (results.v) {
+					results.v.f = f.multiply(results.b.q);
+					results.l.f = f.multiply(MMNumberValue.scalarValue(1).subtract(results.b.q));
+					results.v.massf = results.v.f.multiply(results.v.mwt);
+					results.l.massf = results.l.f.multiply(results.l.mwt);
+				}
+			}
+			else {
+				results.b.massf = f;
+				results.b.f = f.divideBy(results.b.mwt);
+				if (results.v) {
+					results.v.f = results.b.f.multiply(results.b.q);
+					results.l.f = results.b.f.multiply(MMNumberValue.scalarValue(1).subtract(results.b.q));
+					results.v.massf = results.v.f.multiply(results.v.mwt);
+					results.l.massf = results.l.f.multiply(results.l.mwt);
 				}
 			}
 		}
@@ -255,6 +352,9 @@ class MMFlash extends MMTool {
 	flash() {
 		// Module.set_debug_level(31);
 		let result;
+		if (!MMFlashPropertyDefinitions) {
+			MMFlash.createPropertyDefinitions();
+		}
 
 		if (!this.thermoPkg || !this.componentString) {
 			const thermoDesc = this.thermoFormula.value()
@@ -323,27 +423,6 @@ class MMFlash extends MMTool {
 			this.secondPropertyType = null;
 		}
 
-		if (!this.flow) { this.flow = this.flowFormula.value(); }
-		let flowIsMoles = true;
-		if (this.flow && this.flow.valueCount > 1) {
-			if (MMUnitSystem.areDimensionsEqual(this.flow.unitDimensions, [0, 0, -1, 0, 0, 1, 0])) {
-				// mole flow
-				this.moleX = this.flow.divideBy(this.flow.sum());
-
-			}
-			else if (MMUnitSystem.areDimensionsEqual(this.flow.unitDimensions, [0, 1, -1, 0, 0, 0, 0])) {
-				// mass flow
-				this.massX = this.flow.divideBy(this.flow.sum());
-				flowIsMoles = false;
-			}
-			this.flow = this.flow.sum()
-		}
-		if (!this.moleX) { this.moleX = this.moleFracFormula.value(); }
-		if (!this.massX) { this.massX = this.massFracFormula.value(); }
-
-		if (!MMFlashPropertyDefinitions) {
-			MMFlash.createPropertyDefinitions();
-		}
 		if (
 			!this.firstProperty ||
 			!this.secondProperty ||
@@ -462,7 +541,7 @@ class MMFlash extends MMTool {
 				const bulk = {};
 				bulk.q = MMNumberValue.scalarValue(q);
 				// const baseProperties = ['t', 'p', 'h', 's', 'cp', 'rho', 'mwt'];
-				this.propList = ['q', 't', 'p', 'f', 'h', 's', 'x'].concat(this.additionalProperties);
+				this.propList = ['q', 't', 'p', 'f', 'h', 's', 'mwt', 'x'].concat(this.additionalProperties);
 				for (const prop of this.propList) {
 					const propDef = MMFlashPropertyDefinitions[prop];
 					if (propDef) {
@@ -473,39 +552,6 @@ class MMFlash extends MMTool {
 					}
 					else {
 						switch(prop) {
-							case 'f': {
-								if (flowIsMoles) {
-									bulk.f = this.flow;
-								}
-								else {
-									const mwtDef = MMFlashPropertyDefinitions['mwt'];
-									const mwt = MMNumberValue.scalarValue(
-										absState.keyed_output(mwtDef.param),
-										mwtDef.dim
-									);
-									bulk.f = this.flow.divideBy(mwt);
-								}
-							}
-							break;
-							case 'massf': {
-								if (this.flow) {
-									if (flowIsMoles) {
-										const mwtDef = MMFlashPropertyDefinitions['mwt'];
-										const mwt = MMNumberValue.scalarValue(
-											absState.keyed_output(mwtDef.param),
-											mwtDef.dim
-										);
-										bulk.massf = this.flow.multiply(mwt);
-									}
-									else {
-										bulk.massf = this.flow;
-									}
-								}
-								else {
-									bulk.massf = null;
-								}
-							}
-							break;
 							case 'x': {
 								bulk.x = new MMNumberValue(this.nComponents, 1);
 								const xValues = bulk.x.values;
@@ -548,6 +594,9 @@ class MMFlash extends MMTool {
 					const liquid = {q: MMNumberValue.scalarValue(0)};
 					const vapor = {q: MMNumberValue.scalarValue(1)};
 					for (const prop of this.propList) {
+						if (prop === 'q') {
+							continue;
+						}
 						const propDef = MMFlashPropertyDefinitions[prop];
 						if (propDef) {
 							liquid[prop] = MMNumberValue.scalarValue(
@@ -561,29 +610,6 @@ class MMFlash extends MMTool {
 						}
 						else {
 							switch(prop) {
-								case 'f': {
-									if (bulk.f) {
-										vapor.f = bulk.f.multiply(MMNumberValue.scalarValue(q));
-										liquid.f = bulk.f.multiply(MMNumberValue.scalarValue(1-q));
-									}
-								}
-								break;
-								case 'massf': {
-									if (bulk.f) {
-										const mwtDef = MMFlashPropertyDefinitions['mwt'];
-										const mwtv = MMNumberValue.scalarValue(
-											absState.saturated_vapor_keyed_output(mwtDef.param),
-											mwtDef.dim
-										);
-										vapor.massf = vapor.f.multiply(mwtv);
-										const mwtl = MMNumberValue.scalarValue(
-											absState.saturated_liquid_keyed_output(mwtDef.param),
-											mwtDef.dim
-										);
-										liquid.massf = liquid.f.multiply(mwtl);
-									}
-								}
-								break;
 								case 'x': {
 									const x = absState.mole_fractions_liquid();
 									liquid.x = new MMNumberValue(this.nComponents, 1);
@@ -639,16 +665,6 @@ class MMFlash extends MMTool {
 				else {
 					console.log('single phase');
 				}
-
-				// const t = absState.keyed_output(Module.parameters.iT);
-				// console.log(`t ${t}`);
-
-				// const h = absState.keyed_output(Module.parameters.iHmolar);
-				// console.log(`h ${h}`);
-
-				// for (let i = 0; i < this.nComponents; i++) {
-				// 	console.log(`${this.componentNames[i]} ${this.mwts[i]}`);
-				// }
 			}
 			catch(e) {
 				this.setError('mmcool:flashFailed',{path: this.getPath()});
@@ -684,9 +700,13 @@ class MMFlash extends MMTool {
 		results['flowFormula'] = this.flowFormula.formula;
 
 		if (!this.flashResults) {
-			this.flash();
+			// trigger flash
+			this.valueDescribedBy('b.flash');
 		}
 		if (this.flashResults) {
+			if (!this.flow) {
+				this.calculateFlows();
+			}
 			const makePhaseColumn = (phase) => {
 				const strings = []
 				for (const propName of this.propList) {
