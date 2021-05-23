@@ -84,7 +84,7 @@ export function FlashView(props) {
 				value: results.displayTable,
 				actions: props.actions,
 				viewInfo: props.viewInfo,
-				viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 6*nInputHeight - 6],
+				viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 6*nInputHeight - 10],
 			}
 		);
 	}
@@ -189,7 +189,7 @@ export function FlashView(props) {
 						'div', {
 							id: 'flash__flow-label',
 						},
-						t('mmcool:flowLabel')
+						t('mmcool:flashFlowLabel')
 					),
 					e(
 						FormulaField, {

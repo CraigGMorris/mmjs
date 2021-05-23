@@ -203,8 +203,18 @@ class MMFlash extends MMTool {
 			return thermo;
 		}
 
-		if (!this.moleX) { this.moleX = this.moleFracFormula.value(); }
-		if (!this.massX) { this.massX = this.massFracFormula.value(); }
+		if (!this.moleX) {
+			this.moleX = this.moleFracFormula.value();
+			if (this.moleX) {
+				this.moleX = this.moleX.divideBy(this.moleX.sum());
+			}
+		}
+		if (!this.massX) {
+			this.massX = this.massFracFormula.value();
+			if (this.massX) {
+				this.massX = this.massX.divideBy(this.massX.sum());
+			}
+		}
 
 		if (!this.moleX && !this.massX) {
 			if (!this.flow) { this.flow = this.flowFormula.value(); }
@@ -667,7 +677,11 @@ class MMFlash extends MMTool {
 				}
 			}
 			catch(e) {
-				this.setError('mmcool:flashFailed',{path: this.getPath()});
+				const msg = e.message || ''
+				this.setError('mmcool:flashFailed',{
+					path: this.getPath(),
+					msg: msg
+				});
 				return;
 			}
 			finally {
