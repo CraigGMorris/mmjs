@@ -81,7 +81,7 @@ var worker
 async function createWorker() {
   return new Promise((resolve) => {
     Module.onRuntimeInitialized = () => {
-      console.log('readytorun');
+      // console.log('readytorun');
       worker = new MMCommandWorker();
       resolve();
     }

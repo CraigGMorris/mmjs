@@ -42,14 +42,31 @@ class MMFlash extends MMTool {
 
 	static createPropertyDefinitions() {
 		MMFlashPropertyDefinitions = {
-			q: {param: Module.parameters.iQ, dim: [0, 0, 0, 0, 0, 0, 0]},
-			t: {param: Module.parameters.iT, dim: [0, 0, 0, 0, 1, 0, 0]},
-			p: {param: Module.parameters.iP, dim: [-1, 1, -2, 0, 0, 0, 0 ]},
-			h: {param: Module.parameters.iHmolar, dim: [2, 1, -2, 0, 0, -1, 0]},
-			s: {param: Module.parameters.iSmolar, dim: [2, 1, -2, 0, -1, -1, 0]},
-			cp: {param: Module.parameters.iCpmolar, dim: [2, 1, -2, 0, -1, -1, 0]},
-			rho: {param: Module.parameters.iDmolar, dim: [0, 1, 0, 0, 0, -3, 0]},
-			mwt: {param: Module.parameters.imolar_mass, dim: [0, 1, 0, 0, 0, -1, 0]},
+			q: {param: Module.parameters.iQ, dim: [0, 0, 0, 0, 0, 0, 0]},										// vapour fraction
+			t: {param: Module.parameters.iT, dim: [0, 0, 0, 0, 1, 0, 0]},										// temperature
+			p: {param: Module.parameters.iP, dim: [-1, 1, -2, 0, 0, 0, 0 ]},								// pressure
+			h: {param: Module.parameters.iHmolar, dim: [2, 1, -2, 0, 0, -1, 0]},						// Mole-based enthalpy
+			s: {param: Module.parameters.iSmolar, dim: [2, 1, -2, 0, -1, -1, 0]},						// Mole-based entropy
+			mwt: {param: Module.parameters.imolar_mass, dim: [0, 1, 0, 0, 0, -1, 0]},				// molecular weight
+			cpmolar: {param: Module.parameters.iCpmolar, dim: [2, 1, -2, 0, -1, -1, 0]},		// Mole-based constant-pressure specific heat
+			cp0molar: {param: Module.parameters.iCp0molar, dim: [2, 1, -2, 0, -1, -1, 0]},	// Mole-based ideal-gas constant-pressure specific heat
+			cvmolar: {param: Module.parameters.iCvmolar, dim: [2, 1, -2, 0, -1, -1, 0]},		// Mole-based constant-volume specific heat
+			dmolar: {param: Module.parameters.iDmolar, dim: [-3, 0, 0, 0, 0, 1, 0]},				// Mole-based density
+			umolar: {param: Module.parameters.iUmolar, dim: [2, 1, -2, 0, 0, -1, 0]},				// Mole-based internal energy
+			gmolar: {param: Module.parameters.iGmolar, dim: [2, 1, -2, 0, 0, -1, 0]},				// Mole-based Gibbs energy
+			cpmass: {param: Module.parameters.iCpmass, dim: [2, 0, -2, 0, -1, 0, 0]},				// Mass-based constant-pressure specific heat
+			cp0mass: {param: Module.parameters.iCp0mass, dim: [2, 0, -2, 0, -1, 0, 0]},			// Mass-based ideal-gas constant-pressure specific heat
+			cvmass: {param: Module.parameters.iCvmass, dim: [2, 0, -2, 0, -1, 0, 0]},				// Mass-based constant-volume specific heat
+			dmass: {param: Module.parameters.iDmass, dim: [-3, 1, 0, 0, 0, 0, 0]},					// Mass-based density
+			umass: {param: Module.parameters.iUmass, dim: [2, 0, -2, 0, 0, 0, 0]},					// Mass-based internal energy
+			gmass: {param: Module.parameters.iGmass, dim: [2, 0, -2, 0, 0, 0, 0]},					// Mass-based Gibbs energy
+			tmin: {param: Module.parameters.iT_min, dim: [0, 0, 0, 0, 1, 0, 0]},						// Minimum temperature
+			tmax: {param: Module.parameters.iT_max, dim: [0, 0, 0, 0, 1, 0, 0]},						// Maximum temperature
+			pmin: {param: Module.parameters.iP_min, dim: [-1, 1, -2, 0, 0, 0, 0 ]},					// Minimum pressure
+			viscosity: {param: Module.parameters.iviscosity, dim: [-1, 1, -1, 0, 0, 0, 0 ]},	// viscosity
+			conductivity: {param: Module.parameters.iconductivity, dim: [1, 1, -3, 0, -1, 0, 0 ]},	// Thermal conductivity
+			surfacetension: {param: Module.parameters.isurface_tension, dim: [0, 1, -2, 0, 0, 0, 0 ]},	// surface tension
+			prandtl: {param: Module.parameters.iPrandtl, dim: [0, 0, 0, 0, 0, 0, 0 ]},	// surface tension
 		};
 	}
 
@@ -60,7 +77,7 @@ class MMFlash extends MMTool {
 	 * @returns {boolean}
 	 */
 	static isPropertyType(property, type) {
-		const def = MMFlashPropertyDefinitions[type];
+		const def = MMFlashPropertyDefinitions[type.toLowerCase()];
 		if (property && def) {
 			return MMUnitSystem.areDimensionsEqual(property.unitDimensions, def.dim);
 		}
@@ -565,7 +582,7 @@ class MMFlash extends MMTool {
 				// const baseProperties = ['t', 'p', 'h', 's', 'cp', 'rho', 'mwt'];
 				this.propList = ['q', 't', 'p', 'f', 'h', 's', 'mwt', 'x'].concat(this.additionalProperties);
 				for (const prop of this.propList) {
-					const propDef = MMFlashPropertyDefinitions[prop];
+					const propDef = MMFlashPropertyDefinitions[prop.toLowerCase()];
 					if (propDef) {
 						bulk[prop] = MMNumberValue.scalarValue(
 							absState.keyed_output(propDef.param),
@@ -616,10 +633,10 @@ class MMFlash extends MMTool {
 					const liquid = {q: MMNumberValue.scalarValue(0)};
 					const vapor = {q: MMNumberValue.scalarValue(1)};
 					for (const prop of this.propList) {
-						if (prop === 'q') {
+						if (prop === 'q' || prop === 'surfacetension') {
 							continue;
 						}
-						const propDef = MMFlashPropertyDefinitions[prop];
+						const propDef = MMFlashPropertyDefinitions[prop.toLowerCase()];
 						if (propDef) {
 							liquid[prop] = MMNumberValue.scalarValue(
 								absState.saturated_liquid_keyed_output(propDef.param),
@@ -803,92 +820,101 @@ class MMFlash extends MMTool {
 		results['massFracFormula'] = this.massFracFormula.formula;
 		results['flowFormula'] = this.flowFormula.formula;
 
-		if (!this.flashResults) {
-			// trigger flash
-			this.valueDescribedBy('b.flash');
-		}
-		if (this.flashResults) {
-			if (!this.flow) {
-				this.calculateFlows();
+		try {
+			if (!this.flashResults) {
+				// trigger flash
+				this.valueDescribedBy('b.flash');
 			}
-			const makePhaseColumn = (phase) => {
-				const strings = []
+			if (this.flashResults) {
+				if (!this.flow) {
+					this.calculateFlows();
+				}
+				const makePhaseColumn = (phase) => {
+					const strings = []
+					for (const propName of this.propList) {
+						const propValue = phase[propName];
+						if (propValue) {
+							const propCount = propValue.valueCount;
+							for (let i = 1; i <= propCount; i++) {
+								strings.push(propValue.stringForRowColumnUnit(i,1));
+							}
+						}
+						else {
+							strings.push('');
+						}
+					}
+					return MMStringValue.stringArrayValue(strings);
+				}
+
+				const labelStrings = [];
+				const unitStrings = [];
+				const bulkProps = this.flashResults.b;
 				for (const propName of this.propList) {
-					const propValue = phase[propName];
+					const propValue = bulkProps[propName];
 					if (propValue) {
 						const propCount = propValue.valueCount;
-						for (let i = 1; i <= propCount; i++) {
-							strings.push(propValue.stringForRowColumnUnit(i,1));
-						}
-					}
-					else {
-						strings.push('');
-					}
-				}
-				return MMStringValue.stringArrayValue(strings);
-			}
-
-			const labelStrings = [];
-			const unitStrings = [];
-			const bulkProps = this.flashResults.b;
-			for (const propName of this.propList) {
-				const propValue = bulkProps[propName];
-				if (propValue) {
-					const propCount = propValue.valueCount;
-					const unitName = propValue.defaultUnit.name;
-					if (propCount === 1) {
-						labelStrings.push(propName);
-						unitStrings.push(unitName);
-					}
-					else {
-						for (let i = 0; i < propCount; i++) {
-							unitStrings.push(this.componentNames[i]);
+						const unitName = propValue.defaultUnit.name;
+						if (propCount === 1) {
 							labelStrings.push(propName);
+							unitStrings.push(unitName);
+						}
+						else {
+							for (let i = 0; i < propCount; i++) {
+								unitStrings.push(this.componentNames[i]);
+								labelStrings.push(propName);
+							}
 						}
 					}
+					else {
+						labelStrings.push(propName);
+						unitStrings.push('');
+					}
 				}
-				else {
-					labelStrings.push(propName);
-					unitStrings.push('');
+
+				const columns = []
+				columns.push(new MMTableValueColumn({
+					name: 'Label',
+					displayUnit:'string',
+					value: MMStringValue.stringArrayValue(labelStrings)
+				}));
+				columns.push(new MMTableValueColumn({
+					name: 'Unit',
+					displayUnit:'string',
+					value: MMStringValue.stringArrayValue(unitStrings)
+				}));
+
+				columns.push(new MMTableValueColumn({
+					name: 'B',
+					displayUnit:'string',
+					value: makePhaseColumn(bulkProps)
+				}));
+
+				if (this.flashResults.v) {
+					columns.push(new MMTableValueColumn({
+						name: 'V',
+						displayUnit:'string',
+						value: makePhaseColumn(this.flashResults.v)
+					}));
 				}
+
+				if (this.flashResults.l) {
+					columns.push(new MMTableValueColumn({
+						name: 'L',
+						displayUnit:'string',
+						value: makePhaseColumn(this.flashResults.l)
+					}));
+				}
+
+				const table = new MMTableValue({columns: columns});
+				results.displayTable = table.jsonValue();
 			}
-
-			const columns = []
-			columns.push(new MMTableValueColumn({
-				name: 'Label',
-				displayUnit:'string',
-				value: MMStringValue.stringArrayValue(labelStrings)
-			}));
-			columns.push(new MMTableValueColumn({
-				name: 'Unit',
-				displayUnit:'string',
-				value: MMStringValue.stringArrayValue(unitStrings)
-			}));
-
-			columns.push(new MMTableValueColumn({
-				name: 'B',
-				displayUnit:'string',
-				value: makePhaseColumn(bulkProps)
-			}));
-
-			if (this.flashResults.v) {
-				columns.push(new MMTableValueColumn({
-					name: 'V',
-					displayUnit:'string',
-					value: makePhaseColumn(this.flashResults.v)
-				}));
-			}
-
-			if (this.flashResults.l) {
-				columns.push(new MMTableValueColumn({
-					name: 'L',
-					displayUnit:'string',
-					value: makePhaseColumn(this.flashResults.l)
-				}));
-			}
-
-			const table = new MMTableValue({columns: columns});
-			results.displayTable = table.jsonValue();
+		}
+		catch(e) {
+			const msg = e.message || ''
+			this.setError('mmcool:flashFailed',{
+				path: this.getPath(),
+				msg: msg
+			});
 		}
 	}
 }
