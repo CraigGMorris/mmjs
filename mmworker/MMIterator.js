@@ -404,7 +404,7 @@ class MMIterator extends MMTool {
 				if (now - lastStatusTime > 1000) {
 					setStatus();
 					lastStatusTime = now;
-					console.log(`iter i ${this.i.values[0]} test ${test.values[0]}`);
+					// console.log(`iter i ${this.i.values[0]} test ${test.values[0]}`);
 				}
 			}
 		}
