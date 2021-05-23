@@ -142,6 +142,7 @@ class MMFlash extends MMTool {
 				}
 				this.valueRequestors.clear();
 				super.forgetCalculated();
+				this.thermoDefn = null;
 				this.thermoPkg = null;
 				this.componentString = null;
 				this.nComponents = null;
@@ -194,13 +195,31 @@ class MMFlash extends MMTool {
 			MMFlash.createPropertyDefinitions();
 		}
 
+		if (!this.thermoDefn) {
+			this.thermoDefn = this.thermoFormula.value();
+		}
+
+		if (!this.thermoPkg || !this.componentString) {
+			const thermoDefn = this.thermoFormula.value()
+			if (thermoDefn && thermoDefn instanceof MMStringValue && thermoDefn.valueCount > 0) {
+				this.thermoDefn = thermoDefn;
+				const desc = thermoDefn.values[0].replace(/[\s\n]+/g, '').split('::');
+				this.thermoPkg = desc.shift();
+				this.componentString = desc.shift();
+				if (desc.length) {
+					this.additionalProperties = desc[0].split('&');
+				}
+				this.componentNames = this.componentString.split('&');
+				this.nComponents = this.componentNames.length;
+			}
+		}
+
 		const lcDescription = description.toLowerCase();
 		if (lcDescription === 'thermo') {
-			const thermo = this.thermoFormula.value();
-			if (thermo) {
+			if (this.thermoDefn) {
 				this.addRequestor(requestor);
 			}
-			return thermo;
+			return this.thermoDefn;
 		}
 
 		if (!this.moleX) {
@@ -230,6 +249,15 @@ class MMFlash extends MMTool {
 				this.flow = this.flow.sum()
 			}
 		}
+
+		if (lcDescription === 'envelope') {
+			const envelope = this.envelope();
+			if (envelope) {
+				this.addRequestor(requestor);
+			}
+			return envelope;
+		}
+
 		const descParts = lcDescription.split('.');
 		let phase = descParts.shift();
 		let property = descParts.shift();
@@ -367,23 +395,7 @@ class MMFlash extends MMTool {
 		}
 
 		if (!this.thermoPkg || !this.componentString) {
-			const thermoDesc = this.thermoFormula.value()
-			if (thermoDesc && thermoDesc instanceof MMStringValue && thermoDesc.valueCount > 0) {
-				const desc = thermoDesc.values[0].replace(/[\s\n]+/g, '').split('::');
-				this.thermoPkg = desc.shift();
-				this.componentString = desc.shift();
-				if (!this.thermoPkg || !this.componentString) {
-					return;
-				}
-				this.componentNames = this.componentString.split('&');
-				this.nComponents = this.componentNames.length;
-				if (desc.length) {
-					this.additionalProperties = desc[0].split('&');
-				} 
-			}
-			else {
-				return;
-			}
+			return;
 		}
 		if (!this.firstProperty) {
 			this.firstProperty = this.firstPropertyFormula.value();
@@ -697,12 +709,90 @@ class MMFlash extends MMTool {
 		this.flashResults = result;
 	}
 
-/**
- * @method toolViewInfo
- * @override
- * @param {MMCommand} command
- * command.results contains the info for tool info view
- */
+	envelope() {
+		try {
+			if (!this.thermoPkg || !this.componentString) {
+				return;
+			}
+			const absState = Module.factory(this.thermoPkg, this.componentString);
+			const z = new Module.VectorDouble();
+			try {
+				if (!this.mwts) {
+					const mwts = [];
+					for (let i = 0; i < this.nComponents; i++) {
+						mwts.push(absState.get_fluid_constant(i, Module.parameters.imolar_mass) * 1000);
+					}
+					this.mwts = mwts;
+				}
+				if (this.moleX && this.moleX instanceof MMNumberValue && this.moleX.valueCount > 0) {
+					if (this.moleX.valueCount !== this.nComponents) {
+						this.setError('mmcool:flashWrongCmpCount', {path: this.getPath()});
+						return null;
+					}
+					for (let x of this.moleX.values) {
+						z.push_back(x);
+					}
+					absState.set_mole_fractions(z);
+				}
+				else if (this.massX && this.massX instanceof MMNumberValue && this.massX.valueCount > 0) {
+					if (this.massX.valueCount !== this.nComponents) {
+						this.setError('mmcool:flashWrongCmpCount', {path: this.getPath()});
+						return null;
+					}
+					for (let x of this.massX.values) {
+						z.push_back(x);
+					}
+					absState.set_mass_fractions(z);
+				}
+				absState.build_phase_envelope("");
+        const d = absState.get_phase_envelope_data();
+        const nPoints = d.T.size();
+				const tColumn = new MMNumberValue(nPoints, 1, [0, 0, 0, 0, 1, 0, 0]);
+				const pColumn = new MMNumberValue(nPoints, 1, [-1, 1, -2, 0, 0, 0, 0 ]);
+				const tValues = tColumn.values;
+				const pValues = pColumn.values;
+        for(let i = 0; i < nPoints; i++) {
+            tValues[i] = d.T.get(i);
+            pValues[i] = d.p.get(i);
+        }
+				const columns = [
+					new MMTableValueColumn({
+						name: 't',
+						value: tColumn
+					}),
+					new MMTableValueColumn({
+						name: 'p',
+						value: pColumn
+					}),
+				];
+				return new MMTableValue({columns: columns});
+			}
+			catch(e) {
+				const msg = e.message || ''
+				this.setError('mmcool:envelopeFailed',{
+					path: this.getPath(),
+					msg: msg
+				});
+				return;
+			}
+			finally {
+				absState.delete()
+				z.delete();
+			}
+		}
+		catch(e) {
+			console.log(e);
+			this.setError('mmcool:flashThermoDefnError', {path: this.getPath()});
+			return;
+		}
+	}
+
+	/**
+	 * @method toolViewInfo
+	 * @override
+	 * @param {MMCommand} command
+	 * command.results contains the info for tool info view
+	 */
 	toolViewInfo(command) {
 		super.toolViewInfo(command);
 		let results = command.results;
