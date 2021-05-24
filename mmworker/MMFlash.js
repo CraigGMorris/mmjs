@@ -406,7 +406,6 @@ class MMFlash extends MMTool {
 	 */
 	flash() {
 		// Module.set_debug_level(31);
-		let result;
 		if (!MMFlashPropertyDefinitions) {
 			MMFlash.createPropertyDefinitions();
 		}
@@ -522,6 +521,9 @@ class MMFlash extends MMTool {
 					secondValue = this.firstProperty.values[0];
 				}
 				else {
+					firstValue = this.firstProperty.values[0];
+					secondValue = this.secondProperty.values[0];
+					this.phFlash(firstValue, secondValue);
 					return;
 				}
 			}
@@ -544,166 +546,10 @@ class MMFlash extends MMTool {
 
 		try {
 			const absState = Module.factory(this.thermoPkg, this.componentString);
-			const z = new Module.VectorDouble();
-			let usingMoleFracs = true;
 			try {
-				if (!this.mwts) {
-					const mwts = [];
-					for (let i = 0; i < this.nComponents; i++) {
-						mwts.push(absState.get_fluid_constant(i, Module.parameters.imolar_mass) * 1000);
-					}
-					this.mwts = mwts;
-				}
-				if (this.moleX && this.moleX instanceof MMNumberValue && this.moleX.valueCount > 0) {
-					if (this.moleX.valueCount !== this.nComponents) {
-						this.setError('mmcool:flashWrongCmpCount', {path: this.getPath()});
-						return null;
-					}
-					for (let x of this.moleX.values) {
-						z.push_back(x);
-					}
-					absState.set_mole_fractions(z);
-				}
-				else if (this.massX && this.massX instanceof MMNumberValue && this.massX.valueCount > 0) {
-					if (this.massX.valueCount !== this.nComponents) {
-						this.setError('mmcool:flashWrongCmpCount', {path: this.getPath()});
-						return null;
-					}
-					for (let x of this.massX.values) {
-						z.push_back(x);
-					}
-					absState.set_mass_fractions(z);
-					usingMoleFracs = false;
-				}
+				const usingMoleFracs = this.assignComposition(absState);
 				absState.update(flashType, firstValue, secondValue);
-				const q = absState.keyed_output(Module.parameters.iQ);
-				const bulk = {};
-				bulk.q = MMNumberValue.scalarValue(q);
-				// const baseProperties = ['t', 'p', 'h', 's', 'cp', 'rho', 'mwt'];
-				this.propList = ['q', 't', 'p', 'f', 'h', 's', 'mwt', 'x'].concat(this.additionalProperties);
-				for (const prop of this.propList) {
-					const propDef = MMFlashPropertyDefinitions[prop.toLowerCase()];
-					if (propDef) {
-						bulk[prop] = MMNumberValue.scalarValue(
-							absState.keyed_output(propDef.param),
-							propDef.dim
-						);
-					}
-					else {
-						switch(prop) {
-							case 'x': {
-								bulk.x = new MMNumberValue(this.nComponents, 1);
-								const xValues = bulk.x.values;
-								if (usingMoleFracs) {
-									for (let i = 0; i < this.nComponents; i++) {
-										xValues[i] = this.moleX.values[i];
-									}
-								}
-								else {
-									const moleFracs = this.convertMassFracToMole(this.massX.values);
-									for (let i = 0; i < this.nComponents; i++) {
-										xValues[i] = moleFracs[i];
-									}
-								}
-							}
-							break;
-							case 'massx': {
-								bulk.massx = new MMNumberValue(this.nComponents, 1);
-								const xValues = bulk.massx.values;
-								if (!usingMoleFracs) {
-									for (let i = 0; i < this.nComponents; i++) {
-										xValues[i] = this.massX.values[i];
-									}
-								}
-								else {
-									const massFracs = this.convertMoleFracToMass(this.moleX.values);
-									for (let i = 0; i < this.nComponents; i++) {
-										xValues[i] = massFracs[i];
-									}
-								}
-							}
-							break;
-						}
-					}
-				}
-				result = {b: bulk};
-				
-				if (q !== -1) {
-					// two phase
-					const liquid = {q: MMNumberValue.scalarValue(0)};
-					const vapor = {q: MMNumberValue.scalarValue(1)};
-					for (const prop of this.propList) {
-						if (prop === 'q' || prop === 'surfacetension') {
-							continue;
-						}
-						const propDef = MMFlashPropertyDefinitions[prop.toLowerCase()];
-						if (propDef) {
-							liquid[prop] = MMNumberValue.scalarValue(
-								absState.saturated_liquid_keyed_output(propDef.param),
-								propDef.dim
-							);
-							vapor[prop] = MMNumberValue.scalarValue(
-								absState.saturated_vapor_keyed_output(propDef.param),
-								propDef.dim
-							);
-						}
-						else {
-							switch(prop) {
-								case 'x': {
-									const x = absState.mole_fractions_liquid();
-									liquid.x = new MMNumberValue(this.nComponents, 1);
-									const xValues = liquid.x.values;
-									for (let i = 0; i < this.nComponents; i++) {
-										xValues[i] = x.get(i);
-									}
-									x.delete();
-				
-									const y = absState.mole_fractions_vapor();
-									vapor.x = new MMNumberValue(this.nComponents, 1);
-									const yValues = vapor.x.values;
-									for (let i = 0; i < this.nComponents; i++) {
-										yValues[i] = y.get(i);
-									}
-									y.delete();
-								}
-								break;
-								case'massx': {
-									const x = absState.mole_fractions_liquid();
-									liquid.massx = new MMNumberValue(this.nComponents, 1);
-									const xValues = liquid.massx.values;
-									const xMoleFracs = [];
-									for (let i = 0; i < this.nComponents; i++) {
-										xMoleFracs.push(x.get(i));
-									}
-									const xMassFracs = this.convertMoleFracToMass(xMoleFracs);
-									for (let i = 0; i < this.nComponents; i++) {
-										xValues[i] = xMassFracs[i];
-									}
-									x.delete();
-				
-									const y = absState.mole_fractions_vapor();
-									vapor.massx = new MMNumberValue(this.nComponents, 1);
-									const yValues = vapor.massx.values;
-									const yMoleFracs = [];
-									for (let i = 0; i < this.nComponents; i++) {
-										yMoleFracs.push(y.get(i));
-									}
-									const yMassFracs = this.convertMoleFracToMass(yMoleFracs);
-									for (let i = 0; i < this.nComponents; i++) {
-										yValues[i] = yMassFracs[i];
-									}
-									y.delete();
-								}
-								break;
-							}
-						}
-					}
-					result.l = liquid;
-					result.v = vapor;
-				}
-				else {
-					console.log('single phase');
-				}
+				this.flashResults = this.getFlashResults(absState, usingMoleFracs);
 			}
 			catch(e) {
 				const msg = e.message || ''
@@ -715,7 +561,6 @@ class MMFlash extends MMTool {
 			}
 			finally {
 				absState.delete()
-				z.delete();
 			}
 		}
 		catch(e) {
@@ -723,44 +568,282 @@ class MMFlash extends MMTool {
 			this.setError('mmcool:flashThermoDefnError', {path: this.getPath()});
 			return;
 		}
-		this.flashResults = result;
 	}
 
+	/**
+	 * @method assignComposition - determines mole or mass fractions
+	 * and sets them in asbstract state
+	 * @param {Object} absState - the CoolProp abstract state
+	 */
+	assignComposition(absState) {
+		const z = new Module.VectorDouble();
+		let usingMoleFracs = true;
+		try {
+			if (!this.mwts) {
+				const mwts = [];
+				for (let i = 0; i < this.nComponents; i++) {
+					mwts.push(absState.get_fluid_constant(i, Module.parameters.imolar_mass) * 1000);
+				}
+				this.mwts = mwts;
+			}
+			if (this.moleX && this.moleX instanceof MMNumberValue && this.moleX.valueCount > 0) {
+				if (this.moleX.valueCount !== this.nComponents) {
+					this.setError('mmcool:flashWrongCmpCount', {path: this.getPath()});
+					return null;
+				}
+				for (let x of this.moleX.values) {
+					z.push_back(x);
+				}
+				absState.set_mole_fractions(z);
+			}
+			else if (this.massX && this.massX instanceof MMNumberValue && this.massX.valueCount > 0) {
+				if (this.massX.valueCount !== this.nComponents) {
+					this.setError('mmcool:flashWrongCmpCount', {path: this.getPath()});
+					return null;
+				}
+				for (let x of this.massX.values) {
+					z.push_back(x);
+				}
+				absState.set_mass_fractions(z);
+				usingMoleFracs = false;
+			}
+			return usingMoleFracs;
+		}
+		finally {
+			z.delete();
+		}		
+	}
+
+	getFlashResults(absState, usingMoleFracs) {
+		const q = absState.keyed_output(Module.parameters.iQ);
+		const bulk = {};
+		bulk.q = MMNumberValue.scalarValue(q);
+		// const baseProperties = ['t', 'p', 'h', 's', 'cp', 'rho', 'mwt'];
+		this.propList = ['q', 't', 'p', 'f', 'h', 's', 'mwt', 'x'].concat(this.additionalProperties);
+		for (const prop of this.propList) {
+			const propDef = MMFlashPropertyDefinitions[prop.toLowerCase()];
+			if (propDef) {
+				bulk[prop] = MMNumberValue.scalarValue(
+					absState.keyed_output(propDef.param),
+					propDef.dim
+				);
+			}
+			else {
+				switch(prop) {
+					case 'x': {
+						bulk.x = new MMNumberValue(this.nComponents, 1);
+						const xValues = bulk.x.values;
+						if (usingMoleFracs) {
+							for (let i = 0; i < this.nComponents; i++) {
+								xValues[i] = this.moleX.values[i];
+							}
+						}
+						else {
+							const moleFracs = this.convertMassFracToMole(this.massX.values);
+							for (let i = 0; i < this.nComponents; i++) {
+								xValues[i] = moleFracs[i];
+							}
+						}
+					}
+					break;
+					case 'massx': {
+						bulk.massx = new MMNumberValue(this.nComponents, 1);
+						const xValues = bulk.massx.values;
+						if (!usingMoleFracs) {
+							for (let i = 0; i < this.nComponents; i++) {
+								xValues[i] = this.massX.values[i];
+							}
+						}
+						else {
+							const massFracs = this.convertMoleFracToMass(this.moleX.values);
+							for (let i = 0; i < this.nComponents; i++) {
+								xValues[i] = massFracs[i];
+							}
+						}
+					}
+					break;
+				}
+			}
+		}
+		const result = {b: bulk};
+		
+		if (q !== -1) {
+			// two phase
+			const liquid = {q: MMNumberValue.scalarValue(0)};
+			const vapor = {q: MMNumberValue.scalarValue(1)};
+			for (const prop of this.propList) {
+				if (prop === 'q' || prop === 'surfacetension') {
+					continue;
+				}
+				const propDef = MMFlashPropertyDefinitions[prop.toLowerCase()];
+				if (propDef) {
+					liquid[prop] = MMNumberValue.scalarValue(
+						absState.saturated_liquid_keyed_output(propDef.param),
+						propDef.dim
+					);
+					vapor[prop] = MMNumberValue.scalarValue(
+						absState.saturated_vapor_keyed_output(propDef.param),
+						propDef.dim
+					);
+				}
+				else {
+					switch(prop) {
+						case 'x': {
+							const x = absState.mole_fractions_liquid();
+							liquid.x = new MMNumberValue(this.nComponents, 1);
+							const xValues = liquid.x.values;
+							for (let i = 0; i < this.nComponents; i++) {
+								xValues[i] = x.get(i);
+							}
+							x.delete();
+		
+							const y = absState.mole_fractions_vapor();
+							vapor.x = new MMNumberValue(this.nComponents, 1);
+							const yValues = vapor.x.values;
+							for (let i = 0; i < this.nComponents; i++) {
+								yValues[i] = y.get(i);
+							}
+							y.delete();
+						}
+						break;
+						case'massx': {
+							const x = absState.mole_fractions_liquid();
+							liquid.massx = new MMNumberValue(this.nComponents, 1);
+							const xValues = liquid.massx.values;
+							const xMoleFracs = [];
+							for (let i = 0; i < this.nComponents; i++) {
+								xMoleFracs.push(x.get(i));
+							}
+							const xMassFracs = this.convertMoleFracToMass(xMoleFracs);
+							for (let i = 0; i < this.nComponents; i++) {
+								xValues[i] = xMassFracs[i];
+							}
+							x.delete();
+		
+							const y = absState.mole_fractions_vapor();
+							vapor.massx = new MMNumberValue(this.nComponents, 1);
+							const yValues = vapor.massx.values;
+							const yMoleFracs = [];
+							for (let i = 0; i < this.nComponents; i++) {
+								yMoleFracs.push(y.get(i));
+							}
+							const yMassFracs = this.convertMoleFracToMass(yMoleFracs);
+							for (let i = 0; i < this.nComponents; i++) {
+								yValues[i] = yMassFracs[i];
+							}
+							y.delete();
+						}
+						break;
+					}
+				}
+			}
+			result.l = liquid;
+			result.v = vapor;
+		}
+		else {
+			console.log('single phase');
+		}
+		return result;
+	}
+
+	/**
+	 * phFlash - attempts basic iteration to find T match H at P
+	 * pretty crude and slow, but fairly reliable
+	 * someone less lazy could greatly improve this
+	 * @returns 
+	 */
+	phFlash(p, targetH) {
+		try {
+			const absState = Module.factory(this.thermoPkg, this.componentString);
+			try {
+				const usingMoleFracs = this.assignComposition(absState);
+				const tMin = absState.keyed_output(Module.parameters.iT_min);
+				const tMax = absState.keyed_output(Module.parameters.iT_max);
+				let tUpper = tMax;
+				let tLower = tMin;
+				let t;
+				let h, hUpper, hLower;
+				const flashType = Module.input_pairs.PT_INPUTS;
+				let count = 0;
+				const maxIter = 100;
+				let lastSuccessfullT;
+				let lastFailedT = -1;
+				const tTolerance = 0.001
+				while (tUpper - tLower > tTolerance && count < maxIter) {
+					count++;
+					t = (tUpper + tLower) / 2;
+					try {
+						absState.update(flashType, p, t);
+						h = absState.keyed_output(Module.parameters.iHmolar);
+						lastSuccessfullT = t;
+						if (h > targetH) {
+							tUpper = t;
+							hUpper = h;
+						}
+						else {
+							tLower = t;
+							hLower = h;
+						}
+					}
+					catch(e) {
+						if (e.message) {
+							this.setError('mmcool:flashFailed',{
+								path: this.getPath(),
+								msg: e.message
+							});
+							return;									
+						}
+						else {
+							if (t > lastSuccessfullT) {
+								tUpper = t;
+							}
+							else {
+								tLower = t;
+							}
+							lastFailedT = t;
+						}
+					}
+				}
+				console.log(`iter ${count} tu ${tUpper} tl ${tLower} hl ${hLower} hu ${hUpper}`);
+				if (tMax - t < tTolerance || t - tMin < tTolerance) {
+					this.setError('mmcool:flashPHHitBound', {path: this.getPath()});
+				}
+				if (Math.abs(t - lastFailedT) < tTolerance) {
+					this.setError('mmcool:flashPHBadBound', {path: this.getPath()});
+				}
+				this.flashResults = this.getFlashResults(absState, usingMoleFracs);
+			}
+			catch(e) {
+				const msg = e.message || '';
+				this.setError('mmcool:flashFailed',{
+					path: this.getPath(),
+					msg: msg
+				});
+				return;
+			}
+			finally {
+				absState.delete()
+			}
+		}
+		catch(e) {
+			console.log(e);
+			this.setError('mmcool:flashThermoDefnError', {path: this.getPath()});
+			return;
+		}
+	}
+
+	/**
+	 * envelope - calculates Ts and Ps representing phase envelope
+	 * @returns MMNumberValue if successful
+	 */
 	envelope() {
 		try {
 			if (!this.thermoPkg || !this.componentString) {
 				return;
 			}
 			const absState = Module.factory(this.thermoPkg, this.componentString);
-			const z = new Module.VectorDouble();
 			try {
-				if (!this.mwts) {
-					const mwts = [];
-					for (let i = 0; i < this.nComponents; i++) {
-						mwts.push(absState.get_fluid_constant(i, Module.parameters.imolar_mass) * 1000);
-					}
-					this.mwts = mwts;
-				}
-				if (this.moleX && this.moleX instanceof MMNumberValue && this.moleX.valueCount > 0) {
-					if (this.moleX.valueCount !== this.nComponents) {
-						this.setError('mmcool:flashWrongCmpCount', {path: this.getPath()});
-						return null;
-					}
-					for (let x of this.moleX.values) {
-						z.push_back(x);
-					}
-					absState.set_mole_fractions(z);
-				}
-				else if (this.massX && this.massX instanceof MMNumberValue && this.massX.valueCount > 0) {
-					if (this.massX.valueCount !== this.nComponents) {
-						this.setError('mmcool:flashWrongCmpCount', {path: this.getPath()});
-						return null;
-					}
-					for (let x of this.massX.values) {
-						z.push_back(x);
-					}
-					absState.set_mass_fractions(z);
-				}
+				this.assignComposition(absState);
 				absState.build_phase_envelope("");
         const d = absState.get_phase_envelope_data();
         const nPoints = d.T.size();
@@ -794,7 +877,6 @@ class MMFlash extends MMTool {
 			}
 			finally {
 				absState.delete()
-				z.delete();
 			}
 		}
 		catch(e) {
