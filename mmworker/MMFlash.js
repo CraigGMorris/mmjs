@@ -523,7 +523,7 @@ class MMFlash extends MMTool {
 				else {
 					firstValue = this.firstProperty.values[0];
 					secondValue = this.secondProperty.values[0];
-					this.phFlash(firstValue, secondValue);
+					this.searchFlash('h', firstValue, secondValue);
 					return;
 				}
 			}
@@ -534,6 +534,9 @@ class MMFlash extends MMTool {
 					secondValue = this.secondProperty.values[0];
 				}
 				else {
+					firstValue = this.firstProperty.values[0];
+					secondValue = this.secondProperty.values[0];
+					this.searchFlash('s', firstValue, secondValue);
 					return;
 				}
 			}
@@ -747,12 +750,15 @@ class MMFlash extends MMTool {
 	}
 
 	/**
-	 * phFlash - attempts basic iteration to find T match H at P
+	 * seaarchFlash - attempts basic iteration to find T match at P and H or S
 	 * pretty crude and slow, but fairly reliable
 	 * someone less lazy could greatly improve this
-	 * @returns 
 	 */
-	phFlash(p, targetH) {
+	searchFlash(targetType, p, target) {
+		const targetDef = MMFlashPropertyDefinitions[targetType];
+		if (!targetDef) { return; }
+		const targetParam = targetDef.param;
+
 		try {
 			const absState = Module.factory(this.thermoPkg, this.componentString);
 			try {
@@ -762,7 +768,7 @@ class MMFlash extends MMTool {
 				let tUpper = tMax;
 				let tLower = tMin;
 				let t;
-				let h, hUpper, hLower;
+				let h;
 				const flashType = Module.input_pairs.PT_INPUTS;
 				let count = 0;
 				const maxIter = 100;
@@ -774,15 +780,13 @@ class MMFlash extends MMTool {
 					t = (tUpper + tLower) / 2;
 					try {
 						absState.update(flashType, p, t);
-						h = absState.keyed_output(Module.parameters.iHmolar);
+						h = absState.keyed_output(targetParam);
 						lastSuccessfullT = t;
-						if (h > targetH) {
+						if (h > target) {
 							tUpper = t;
-							hUpper = h;
 						}
 						else {
 							tLower = t;
-							hLower = h;
 						}
 					}
 					catch(e) {
@@ -804,12 +808,14 @@ class MMFlash extends MMTool {
 						}
 					}
 				}
-				console.log(`iter ${count} tu ${tUpper} tl ${tLower} hl ${hLower} hu ${hUpper}`);
+				if (count >= maxIter) {
+					this.setError('mmcool:flashPHMaxIter', {type: targetType.toUpperCase(), path: this.getPath(), count: count});
+				}
 				if (tMax - t < tTolerance || t - tMin < tTolerance) {
-					this.setError('mmcool:flashPHHitBound', {path: this.getPath()});
+					this.setError('mmcool:flashPHHitBound', {type: targetType.toUpperCase(), path: this.getPath()});
 				}
 				if (Math.abs(t - lastFailedT) < tTolerance) {
-					this.setError('mmcool:flashPHBadBound', {path: this.getPath()});
+					this.setError('mmcool:flashPHBadBound', {type: targetType.toUpperCase(), path: this.getPath()});
 				}
 				this.flashResults = this.getFlashResults(absState, usingMoleFracs);
 			}
