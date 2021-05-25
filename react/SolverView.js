@@ -59,6 +59,15 @@ export function SolverView(props) {
 		return null;
 	}
 	const results = updateResults.length ? updateResults[0].results : {};
+	if (!results.fv) {
+		return e(
+			ToolView, {
+				id: 'tool-view',
+				displayComponent: null,
+				...props,
+			},
+		);
+	}
 
 	const applyChanges = (name) => {
 		const path = `${results.path}.${name}`;

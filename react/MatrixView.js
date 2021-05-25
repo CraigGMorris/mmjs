@@ -94,6 +94,16 @@ export function MatrixView(props) {
 		return null;
 	}
 
+	if (!value) {
+		return e(
+			ToolView, {
+				id: 'tool-view',
+				displayComponent: null,
+				...props,
+			},
+		);
+	}
+
 	const valueUnit = (value && value.unit) ? value.unit : '';
 	const unitType = (value && value.unitType) ? value.unitType : '';
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));

@@ -88,6 +88,16 @@ export function GraphView(props) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	if (!results.xValues) {
+		return e(
+			ToolView, {
+				id: 'tool-view',
+				displayComponent: null,
+				...props,
+			},
+		);
+	}
+
 	const t = props.t;
 	if (updateResults.error) {
 		// use empty command just to defer popView

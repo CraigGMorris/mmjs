@@ -351,6 +351,16 @@ export function DataTableView(props) {
 	}
 
 	const results = updateResults.length ? updateResults[0].results : {};
+	if (!results.value) {
+		return e(
+			ToolView, {
+				id: 'tool-view',
+				displayComponent: null,
+				...props,
+			},
+		);
+	}
+
 	const path = results.path;
 	const value = results.value;
 	const columnNumber = selectedCell[1];
@@ -457,7 +467,7 @@ export function DataTableView(props) {
 				addRowButton = e(
 					'button', {
 						id: 'data__add-row-button',
-						disabled: value.nc ? false : true,
+						disabled: (value && value.nc) ? false : true,
 						onClick: () => {
 							if (value && value.nc > 0) {
 								props.actions.doCommand(`${path} addrow`, () => {
