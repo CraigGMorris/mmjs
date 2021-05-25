@@ -622,7 +622,7 @@ class MMFlash extends MMTool {
 		const bulk = {};
 		bulk.q = MMNumberValue.scalarValue(q);
 		// const baseProperties = ['t', 'p', 'h', 's', 'cp', 'rho', 'mwt'];
-		this.propList = ['q', 't', 'p', 'f', 'h', 's', 'mwt', 'x'].concat(this.additionalProperties);
+		this.propList = ['q', 't', 'p', 'f', 'h', 's', 'dmolar', 'mwt', 'x'].concat(this.additionalProperties);
 		for (const prop of this.propList) {
 			const propDef = MMFlashPropertyDefinitions[prop.toLowerCase()];
 			if (propDef) {
