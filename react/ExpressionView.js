@@ -81,6 +81,15 @@ export function ExpressionView(props) {
 	const results = updateResults.length ? updateResults[0].results : {};
 	const path = results.path;
 	const value = results.value;
+	if (!value) {
+		return e(
+			ToolView, {
+				id: 'tool-view',
+				displayComponent: null,
+				...props,
+			},
+		);
+	}
 	const isTable = (value && value.t) === 't';
 	let unitType;
 	let valueUnit;

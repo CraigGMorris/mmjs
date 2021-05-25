@@ -59,6 +59,15 @@ export function OptimizerView(props) {
 		return null;
 	}
 	const results = updateResults.length ? updateResults[0].results : {};
+	if (!results.formulas) {
+		return e(
+			ToolView, {
+				id: 'tool-view',
+				displayComponent: null,
+				...props,
+			},
+		);
+	}
 
 	const applyChanges = (name) => {
 		const path = `${results.path}.${name}`;
