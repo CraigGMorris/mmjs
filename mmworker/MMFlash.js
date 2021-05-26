@@ -276,67 +276,87 @@ class MMFlash extends MMTool {
 		}
 
 		const descParts = lcDescription.split('.');
-		let phase = descParts.shift();
 		let property = descParts.shift();
+		let phase = descParts.shift();
 
-		if (!property) {
-			if (phase !== 'b' && phase !== 'v' && phase !== 'l') {
-				// phase wasn't given - check for formula product else
-				// assume bulk phase
-				property = phase;
-				phase = 'b';
-				let returnValue;
-				switch(property) {
-					case 'x':
-						returnValue = this.moleX;
-						break;
-					case 'massx':
-						returnValue = this.massX;
-						break;
-					case 'f': {
-						if (!this.flow) { this.flow = this.flowFormula.value(); }
-						returnValue = this.flow;
-					}
-						break;
-					default: {
-						if (!this.firstProperty) {
-							this.firstProperty = this.firstPropertyFormula.value();
-						}
-						if (MMFlash.isPropertyType(this.firstProperty, property)) {
-							returnValue = this.firstProperty;
-						}
-						else {
-							if (!this.secondProperty) {
-								this.secondProperty = this.secondPropertyFormula.value();
-							}
-							if (MMFlash.isPropertyType(this.secondProperty, property)) {
-								returnValue = this.secondProperty;
-							}	
-						}	
-					}
-					if (returnValue) {
-						this.addRequestor(requestor);
-						return returnValue;
-					}
-				}
-			}
-		}
 		if (!this.flashResults) {
 			this.flash();
 		}
 		if (this.flashResults) {
-			const resultPhase = this.flashResults[phase];
-			if (resultPhase) {
-				let prop = resultPhase[property];
-				if (!prop && (property === 'f' || property === 'massf')) {
-					this.calculateFlows();
-					prop = resultPhase[property];
-				}
-				if (prop) {
+			if (phase) {
+				const resultPhase = this.flashResults[phase];
+				if (resultPhase) {
+					let prop = resultPhase[property];
+					if (!prop && (property === 'f' || property === 'massf')) {
+						this.calculateFlows();
+						prop = resultPhase[property];
+					}
 					this.addRequestor(requestor);
 					return prop;
+				}				
+			}
+			else {
+				// make table of all phases
+				const columns = [];
+				const bulkPhase = this.flashResults['b'];
+				if (bulkPhase[property] && bulkPhase[property].valueCount > 1) {
+					const namesValue = MMStringValue.stringArrayValue(this.componentNames);
+					columns.push(new MMTableValueColumn({name: 'Name', value: namesValue}));
+				}
+
+				for (const phaseName of ['b', 'v', 'l']) {
+					const resultPhase = this.flashResults[phaseName];
+					if (resultPhase) {
+						let prop = resultPhase[property];
+						if (!prop && (property === 'f' || property === 'massf')) {
+							this.calculateFlows();
+							prop = resultPhase[property];
+						}
+						if (prop) {
+							columns.push(new MMTableValueColumn({name: phaseName, value: prop}));
+						}
+					}
+				}
+				this.addRequestor(requestor);
+				return new MMTableValue({columns: columns});
+			}
+		}
+		else if (!phase || phase === 'b') {
+			// get any input information
+			let returnValue;
+			switch(property) {
+				case 'x':
+					returnValue = this.moleX;
+					break;
+				case 'massx':
+					returnValue = this.massX;
+					break;
+				case 'f': {
+					if (!this.flow) { this.flow = this.flowFormula.value(); }
+					returnValue = this.flow;
+				}
+					break;
+				default: {
+					if (!this.firstProperty) {
+						this.firstProperty = this.firstPropertyFormula.value();
+					}
+					if (MMFlash.isPropertyType(this.firstProperty, property)) {
+						returnValue = this.firstProperty;
+					}
+					else {
+						if (!this.secondProperty) {
+							this.secondProperty = this.secondPropertyFormula.value();
+						}
+						if (MMFlash.isPropertyType(this.secondProperty, property)) {
+							returnValue = this.secondProperty;
+						}	
+					}	
 				}
 			}
+			if (returnValue) {
+				this.addRequestor(requestor);
+				return returnValue;
+			}		
 		}
 	}
 
@@ -911,7 +931,7 @@ class MMFlash extends MMTool {
 		try {
 			if (!this.flashResults) {
 				// trigger flash
-				this.valueDescribedBy('b.flash');
+				this.valueDescribedBy('flash.b');
 			}
 			if (this.flashResults) {
 				if (!this.flow) {
