@@ -30,6 +30,7 @@
 	"dgmButtonClipboard": "Show Clipboard",
 	"dgmImportWarning1": "Imported from session '{{source}}'",
 	"dgmImportWarning2": "Changes other than input values are not saved",
+	"dgmShowNotes": "Show Notes",
 	"dgmToolHasNote": "Notes",
 	"exprIsInput": "In",
 	"exprIsOutput": "Out",
