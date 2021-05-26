@@ -1038,7 +1038,7 @@ export class Diagram extends React.Component {
 									}
 								});
 							}
-						}
+						},
 					];
 					if (toolsWithTable.has(this.state.showContext.info.toolTypeName)) {
 						menuEntries.push({
@@ -1053,6 +1053,16 @@ export class Diagram extends React.Component {
 								});
 							}
 						});
+					}
+					if (this.state.showContext.info.notes) {
+						menuEntries.push({
+							text: this.props.t('react:dgmShowNotes'),
+							info: this.state.showContext.info,
+							action: (info) => {
+								this.setState({showContext: null});
+								alert(info.notes);
+							}
+						})
 					}
 					
 					contextMenu = e(
