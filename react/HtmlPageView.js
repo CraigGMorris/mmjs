@@ -82,9 +82,10 @@ export function HtmlPageView(props) {
 							props.actions.updateDiagram();
 						}
 						else if (received.didLoad) {
-							if (received.resetInfo)
-							props.actions.resetInfoStack('root', received.resetInfo);
-							props.actions.updateDiagram(true);
+							if (received.resetInfo) {
+								props.actions.resetInfoStack('root', received.resetInfo);
+								props.actions.updateDiagram(true);
+							}
 						}
 						else if (received.update) {
 							console.log('updating');
