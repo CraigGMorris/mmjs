@@ -91,6 +91,7 @@ class MMFlash extends MMTool {
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Flash');
 		this.thermoFormula = new MMFormula('thermoFormula', this)
+		this.thermoPkg = 'HEOS';
 		this.firstPropertyFormula = new MMFormula('firstPropFormula', this);
 		this.secondPropertyFormula = new MMFormula('secondPropFormula', this);
 		this.moleFracFormula = new MMFormula('moleFracFormula', this);
@@ -160,7 +161,7 @@ class MMFlash extends MMTool {
 				this.valueRequestors.clear();
 				super.forgetCalculated();
 				this.thermoDefn = null;
-				this.thermoPkg = null;
+				this.thermoPkg = 'HEOS';
 				this.componentString = null;
 				this.nComponents = null;
 				this.componentNames = null;
@@ -220,8 +221,8 @@ class MMFlash extends MMTool {
 			const thermoDefn = this.thermoFormula.value()
 			if (thermoDefn && thermoDefn instanceof MMStringValue && thermoDefn.valueCount > 0) {
 				this.thermoDefn = thermoDefn;
-				const desc = thermoDefn.values[0].replace(/[\s\n]+/g, '').split('::');
-				this.thermoPkg = desc.shift();
+				const desc = thermoDefn.values[0].replace(/[\s\n]+/g, '').replace(',','&').split('::');
+
 				this.componentString = desc.shift();
 				if (desc.length) {
 					this.additionalProperties = desc[0].split('&');
@@ -425,7 +426,7 @@ class MMFlash extends MMTool {
 	 * flash - does flash and if successful puts results if this.flashResults
 	 */
 	flash() {
-		// Module.set_debug_level(31);
+		// Module.set_debug_level(301);
 		if (!MMFlashPropertyDefinitions) {
 			MMFlash.createPropertyDefinitions();
 		}
