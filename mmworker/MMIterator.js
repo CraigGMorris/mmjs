@@ -353,6 +353,16 @@ class MMIterator extends MMTool {
 					const rNumber = parseInt(lcDescription.substring(1));
 					return returnValue(this.valueForRecorded(rNumber));
 				}
+				else if (lcDescription.match(/^\d+$/)) {
+					const rNumber = parseInt(lcDescription);
+					const rValue = returnValue(this.valueForRecorded(rNumber));
+					if (rValue && rValue.valueCount > 0) {
+						return MMNumberValue.scalarValue(rValue.values[rValue.valueCount-1], rValue.unitDimensions);
+					}
+					else {
+						return MMNumberValue.scalarValue(0);
+					}
+				}
 				else {
 					// see if it matches any recorded value comment
 					const count = this.recordedValueFormulas.length;
