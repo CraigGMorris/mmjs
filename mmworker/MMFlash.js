@@ -227,7 +227,7 @@ class MMFlash extends MMTool {
 			const thermoDefn = this.thermoFormula.value()
 			if (thermoDefn && thermoDefn instanceof MMStringValue && thermoDefn.valueCount > 0) {
 				this.thermoDefn = thermoDefn;
-				const desc = thermoDefn.values[0].replace(/[\s\n]+/g, '').replace(',','&').split('::');
+				const desc = thermoDefn.values[0].replace(/[\s\n]+/g, '').replace(/,/g,'&').split('::');
 
 				this.componentString = desc.shift();
 				if (desc.length) {
