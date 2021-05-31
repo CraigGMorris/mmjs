@@ -1,4 +1,5 @@
 {
+	"flashBadFlowUnit": "Bad flow unit in flash {{path}}",
 	"flashDisplayName": "Flash",
 	"flashDuplicatePropTypes": "First and second property types can't be the same\nin {{path}}",
 	"flashFailed": "Flash failed in\n{{path}}\n\n{{msg}}",
