@@ -998,11 +998,10 @@ class MMFlash extends MMTool {
 			}
 
 			if (this.flashResults) {
-				if (!this.flow) {
+				const bulkProps = this.flashResults.b;
+				if (!bulkProps.f) {
 					this.calculateFlows();
 				}
-
-				const bulkProps = this.flashResults.b;
 				const [labelStrings, unitStrings] = labelsAndUnits(bulkProps);
 
 				const columns = []
