@@ -145,6 +145,12 @@ class MMFlash extends MMTool {
 	 */
 	parameters() {
 		let p = super.parameters();
+		if (!MMFlashPropertyDefinitions) {
+			MMFlash.createPropertyDefinitions();
+		}
+		for (const propName of Object.keys(MMFlashPropertyDefinitions)) {
+			p.push(propName);
+		}
 		return p;
 	}
 
