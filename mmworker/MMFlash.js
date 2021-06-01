@@ -148,6 +148,14 @@ class MMFlash extends MMTool {
 		if (!MMFlashPropertyDefinitions) {
 			MMFlash.createPropertyDefinitions();
 		}
+		p.push('thermo');
+		p.push('f');
+		p.push('massf');
+		p.push('x');
+		p.push('massx');
+		p.push('fugacities');
+		p.push('envelope');
+		p.push('fluids');
 		for (const propName of Object.keys(MMFlashPropertyDefinitions)) {
 			p.push(propName);
 		}
@@ -290,7 +298,6 @@ class MMFlash extends MMTool {
 			}
 			return envelope;
 		}
-
 		const descParts = lcDescription.split('.');
 		let property = descParts.shift();
 		let phase = descParts.shift();
@@ -612,7 +619,7 @@ class MMFlash extends MMTool {
 				return;
 			}
 			finally {
-				absState.delete()
+				absState.delete();
 			}
 		}
 		catch(e) {
@@ -697,7 +704,7 @@ class MMFlash extends MMTool {
 							}
 						}
 					}
-					break;
+						break;
 					case 'massx': {
 						bulk.massx = new MMNumberValue(this.nComponents, 1);
 						const xValues = bulk.massx.values;
@@ -713,7 +720,18 @@ class MMFlash extends MMTool {
 							}
 						}
 					}
-					break;
+						break;
+					case 'fugacities': {
+						// if (q === -1) {
+							// Don't calculate for a mixed phase
+							const fugs = [];
+							for (let i = 0; i < this.nComponents; i++) {
+								fugs.push(absState.fugacity(i));
+							}
+							bulk.fugacities = MMNumberValue.numberArrayValue(fugs, [-1, 1, -2, 0, 0, 0, 0]);
+						// }
+					}
+						break;
 				}
 			}
 		}
@@ -757,7 +775,7 @@ class MMFlash extends MMTool {
 							}
 							y.delete();
 						}
-						break;
+							break;
 						case'massx': {
 							const x = absState.mole_fractions_liquid();
 							liquid.massx = new MMNumberValue(this.nComponents, 1);
@@ -785,7 +803,38 @@ class MMFlash extends MMTool {
 							}
 							y.delete();
 						}
-						break;
+							break;
+						case 'fugacities': {
+							if (q === 0 || q === 1) {
+								// bulk will be at equilibrium, so just reuse
+								vapor.fugacities = bulk.fugacities;
+								liquid.fugacities = bulk.fugacities;
+							}
+						// commented out below for now due to memory problems with more than one
+						// AbstractState
+						// 	else {
+						// 		const vapState = Module.factory(this.thermoPkg, this.componentString);
+						// 		const y = new Module.VectorDouble();
+						// 		try {
+						// 			for (let i = 0; i < this.nComponents; i++) {
+						// 				y.push_back(vapor.x.values[i]);
+						// 			}
+						// 			vapState.set_mole_fractions(y);
+
+						// 			const fugs = [];
+						// 			for (let i = 0; i < this.nComponents; i++) {
+						// 				fugs.push(vapState.fugacity(i));
+						// 			}
+						// 			vapor.fugacities = MMNumberValue.numberArrayValue(fugs, [-1, 1, -2, 0, 0, 0, 0]);
+						// 			liquid.fugacities = vapor.fugacities;
+						// 		}
+						// 		finally {
+						// 			vapState.delete();
+						// 			y.delete();
+						// 		}
+						// 	}
+						}
+							break;	
 					}
 				}
 			}
