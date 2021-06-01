@@ -17,7 +17,7 @@
 */
 'use strict';
 
-import { writeClipboard, readClipboard, hasSystemClipboard, ClipboardView } from "./Clipboard.js";
+import { writeClipboard, readClipboard, hasSystemClipboard, ClipboardView } from "./ClipBoard.js";
 
 // this works better as a class component as one can then have a ref to it
 // and call getModelInfo with the appropriate scaling argument to update it

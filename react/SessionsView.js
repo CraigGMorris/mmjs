@@ -17,7 +17,7 @@
 */
 'use strict';
 
-import { writeClipboard } from "./Clipboard.js";
+import { writeClipboard } from "./ClipBoard.js";
 
 const e = React.createElement;
 
