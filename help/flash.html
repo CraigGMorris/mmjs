@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Flash',{
+					overview: 'Overview',
+					thermo: "Thermo Input",
+					torp: "T or P input",
+					secondprop: "2nd Property Input",
+					flow: "Flow Input",
+					fracs: "Composition Input",
+					parameters: 'Formula Parameters',
+				});
+			};			
+		</script>	
+		<title>Flash</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					This version of Math Minion has incorporated some of the abilities of the
+					<a href="http://coolprop.org">CoolProp property package</a> to enable this tool
+					to perform flash and property calculations using CoolProp's HEOS backend.  Hence I
+					call the version CoolMM.
+				</p>
+			</div>
+			<div id="info" class="section">
+				<h3>Information View</h3>
+				<p>
+					Below is an image of the <a href="infoview.html">information view</a> for
+					a dew point flash of a mixture of ethanol and water. There are six input fields,
+					which are explained in the sections below, and a table showing the calculated properties
+					of the bulk fluid and the vapour and liquid phases if it is two phase. The table can
+					be dragged around like other tables.
+				</p>
+				<img src="flashinfo2.png" alt="Flash Information View">
+				<p>
+					As it would appear if the info view weren't expanded:
+				</p>
+				<img src="flashinfo.png" alt="Flash Information View">
+			</div>
+			<div id="thermo" class="section">
+				<h3>Thermo Input</h3>
+				<p>
+					The thermo field formula should resolve to a string which is a comma or ampersand separated
+					list of the fluids (i.e. compounds) that are included in the flash. At this time,
+					Math Minion always uses the CoolProp HEOS backend for calculation.
+				</p>
+				<p>
+					The following properties are always calculated and reported in the info view table:
+				</p>
+				<ul>
+					<li><b>q</b> -  vapour fraction</li>
+					<li><b>t</b> -  temperature</li>
+					<li><b>p</b> -  pressure</li>
+					<li><b>f</b> - molar flow rate</li>
+					<li><b>h</b> -  Mole-based enthalpy</li>
+					<li><b>s</b> -  Mole-based entropy</li>
+					<li><b>dmolar</b> -  Mole-based density</li>
+					<li><b>mwt</b> -  molecular weight</li>
+					<li><b>x</b> -  Mole fractions</li>
+				</ul>
+				<p>
+					Additional properties (see the list in the
+					<a href="#parameters">formula parameters section</a>)
+					can be requested by
+					appending '::' to the end of the thermo string, followed by a comma or ampersand list
+					of the properties. For example in the flash above the thermo is defined by the formula:
+				</p>
+				<p class="formula">
+					'Ethanol,Water::massx
+				</p>
+				<p>
+					The thermo definition ignores all white space, so you can use spaces, tabs and newlines
+					if you wish.
+				</p>
+				<p>
+					Note that the thermo definition for a flash is available as a parameter of the flash, so
+					other flashes making use of its results can easily reuse the same definition.
+				</p>
+			</div>
+			<div id="torp" class="section">
+				<h3>T or P Input</h3>
+				<p>
+					A flash requires two intensive properties in order to perform its calculation and Math Minion
+					requires that one of those be temperature or pressure. Thus this formula must resolve to one
+					of those, based on its conversion unit type.
+				</p>
+			</div>
+			<div id="secondprop" class=section>
+				<h3>Second Property Input</h3>
+				<p>
+					The second property can be one of the following:
+				</p>
+				<ul>
+					<li>vapour fraction</li>
+					<li>temperature</li>
+					<li>pressure</li>
+					<li>Mole-based enthalpy</li>
+					<li>Mole-based entropy</li>
+				</ul>
+				<p>
+					except it of course can't be the same as the T or P Input property. As with the T or P
+					formula, the type of property is determined by its conversion unit type.
+				</p>
+			</div>
+			<div id="flow" class=section>
+				<h3>Flow Input</h3>
+				<p>
+					A flow value isn't needed to perform a flash, but if it is provided, the flows for
+					the vapour and liquid phases will be calculated if the result is two phase.
+				</p>
+				<p>
+					The flow formula can resolve to either a molar flow or a mass flow, based on the unit
+					conversion type.
+				</p>
+				<p>
+					You can also supply an array with the same number of flows as there are components. 
+					In this case the flows will be normalized into either mole or mass fractions and used
+					as the bulk composition.  The sum of the flows will become the bulk flow value, again
+					in either mole or mass terms depending on the unit conversion type.
+				</p>
+			</div>
+			<div id="fracs" class=section>
+				<h3>Composition Input</h3>
+				<p>
+					The composition can be specified in either mole or mass fractions.  Because both have
+					the unit conversion type of <b>Fraction</b>, they have seperate input formulas.  The
+					composition should resolve to an array of the same length as the number of components
+					defined in the thermo definition.
+				</p>
+			</div>
+			<div id="parameters" class="section">
+				<h3>Formula Parameters</h3>
+				<p class="reminder">Parameters that can be accessed in the form a.b where a is the tool and b is the parameter</p>
+				<ul>
+					<li><b>thermo</b> - the thermo definition for the flash (i.e. components and extra properties
+					to be calculated.</li>
+					<li><b>envelope</b> - returns a table with temperature a pressure columns representing the phase
+					envelope for the fluid.</li>
+				</ul>
+				<p><b>Note:</b> all of the following parameters can be followed by a dot and a phase character, where</p>
+				<ul>
+					<li><b>b</b> = the bulk phase</li>
+					<li><b>v</b> = the vapour phase</li>
+					<li><b>l</b> = the liquod phase</li>
+				</ul>
+				<p>If the phase qualifier is not added, the return value will be a table with one column for
+					each existing phase.  If the fluid is single phase, only the bulk column will exist.
+				</p>
+				<p>
+					Note that only properties that have been included in the thermo definition are
+					calculated.
+				</p>
+				<ul>
+					<li><b>q</b> -  vapour fraction</li>
+					<li><b>t</b> -  temperature</li>
+					<li><b>p</b> -  pressure</li>
+					<li><b>f</b> - molar flow rate</li>
+					<li><b>massf</b> - mass flow rate</li>
+					<li><b>h</b> -  Mole-based enthalpy</li>
+					<li><b>s</b> -  Mole-based entropy</li>
+					<li><b>dmolar</b> -  Mole-based density</li>
+					<li><b>mwt</b> -  molecular weight</li>
+					<li><b>x</b> -  Mole fractions</li>
+					<li><b>massx</b> -  Mass fractions</li>
+					<li><b>cpmolar</b> -  Mole-based constant-pressure specific heat</li>
+					<li><b>cp0molar</b> -  Mole-based ideal-gas constant-pressure specific heat</li>
+					<li><b>cvmolar</b> -  Mole-based constant-volume specific heat</li>
+					<li><b>umolar</b> -  Mole-based internal energy</li>
+					<li><b>gmolar</b> -  Mole-based Gibbs energy</li>
+					<li><b>cpmass</b> -  Mass-based constant-pressure specific heat</li>
+					<li><b>cp0mass</b> -  Mass-based ideal-gas constant-pressure specific heat</li>
+					<li><b>cvmass</b> -  Mass-based constant-volume specific heat</li>
+					<li><b>dmass</b> -  Mass-based density</li>
+					<li><b>umass</b> -  Mass-based internal energy</li>
+					<li><b>gmass</b> -  Mass-based Gibbs energy</li>
+					<li><b>tmin</b> -  Minimum temperature</li>
+					<li><b>tmax</b> -  Maximum temperature</li>
+					<li><b>pmin</b> -  Minimum pressure</li>
+					<li><b>viscosity</b> -  viscosity</li>
+					<li><b>conductivity</b> -  Thermal conductivity</li>
+					<li><b>surfacetension</b> -  surface tension</li>
+					<li><b>prandtl</b> -  surface tension</li>
+		
+
+
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>

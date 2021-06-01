@@ -56,6 +56,7 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink subsection"><a href="graph.html">Graph</a></div>
 	<div class="contentlink subsection"><a href="htmlpage.html">HTML Page</a></div>
 	<div class="contentlink subsection"><a href="importedmodel.html">Imported Model</a></div>
+	<div class="contentlink subsection"><a href="flash.html">Flash</a></div>
 	<div class="contentlink subsection"><a href="notes.html">Tool Notes</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink"><a href="tutorial.html">Tutorial</a></div>

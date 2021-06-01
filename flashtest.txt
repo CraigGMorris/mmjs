@@ -1,0 +1,7 @@
+cd /.root
+. addtool Flash f
+.f.thermo set formula "HEOS::Propane&Decane"
+.f.molefrac set formula {cc .5, .5}
+.f.firstprop set formula t
+.f.secondprop set formula p
+
