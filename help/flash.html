@@ -51,8 +51,14 @@
 				<p>
 					The thermo field formula should resolve to a string which is a comma or ampersand separated
 					list of the fluids (i.e. compounds) that are included in the flash. At this time,
-					Math Minion always uses the CoolProp HEOS backend for calculation.
+					Math Minion always uses the CoolProp HEOS backend for calculation. A list of the available
+					fluids can be obtained from the fluids parameter of any flash, even if it has no inputs.
+					For example if you create a flash named feed, then an expression with the formula:
 				</p>
+				<p class="formula">
+					feed.fluids
+				</p>
+				<p>will have a column array of fluid names as its value.</p>
 				<p>
 					The following properties are always calculated and reported in the info view table:
 				</p>
@@ -143,6 +149,7 @@
 				<ul>
 					<li><b>thermo</b> - the thermo definition for the flash (i.e. components and extra properties
 					to be calculated.</li>
+					<li><b>fluids</b> - returns a column array of the fluids available in CoolProp</li>
 					<li><b>envelope</b> - returns a table with temperature a pressure columns representing the phase
 					envelope for the fluid.</li>
 				</ul>

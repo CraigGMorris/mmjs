@@ -219,6 +219,16 @@ class MMFlash extends MMTool {
 			MMFlash.createPropertyDefinitions();
 		}
 
+		const lcDescription = description.toLowerCase();
+		if (lcDescription === 'fluids') {
+			const fluidsString = Module.get_global_param_string('fluids_list');
+			const fluidsList = MMStringValue.stringArrayValue(fluidsString.split(','));
+			this.addRequestor(requestor);
+			return fluidsList;
+			
+
+		}
+
 		if (!this.thermoDefn) {
 			this.thermoDefn = this.thermoFormula.value();
 		}
@@ -238,7 +248,6 @@ class MMFlash extends MMTool {
 			}
 		}
 
-		const lcDescription = description.toLowerCase();
 		if (lcDescription === 'thermo') {
 			if (this.thermoDefn) {
 				this.addRequestor(requestor);
