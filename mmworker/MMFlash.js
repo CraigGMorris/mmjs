@@ -387,7 +387,14 @@ class MMFlash extends MMTool {
 			}
 			if (returnValue) {
 				this.addRequestor(requestor);
-				return returnValue;
+				if (phase === 'b') {
+					return returnValue;
+				}
+				else {
+					const columns = [];
+					columns.push(new MMTableValueColumn({name: 'b', value: returnValue}));
+					return new MMTableValue({columns: columns});
+				}
 			}		
 		}
 	}
