@@ -1905,13 +1905,14 @@ class ContextMenu extends React.Component {
     e.stopPropagation();
     e.preventDefault();
 		e.target.addEventListener('pointerup', this.onPointerUp);
+		this.lineNumberDown = Math.floor((e.clientY - this.config.offset.y) / this.config.itemHeight);
 	}
 
 	onPointerUp(e) {
 		e.stopPropagation();
 		e.preventDefault();
 		e.target.removeEventListener('pointerup', this.onPointerUp);
-		const lineNumber = Math.floor((e.clientY - this.config.offset.y) / this.config.itemHeight);
+		const lineNumber = this.lineNumberDown;
 		if (lineNumber >= 0 && lineNumber < this.props.menu.length) {
 			const menuItem = this.props.menu[lineNumber];
 			menuItem.action(menuItem.info);
