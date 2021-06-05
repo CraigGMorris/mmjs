@@ -422,7 +422,16 @@ class MMHtmlPage extends MMTool {
 						}
 					}
 						break;
-					default:
+						case 'mm_loadurl': {
+							// load a different session from a url
+							const path = actions[action];
+							if (path) {
+								response.resetInfo = await theMMSession.loadUrl(path);
+								response.didLoad = true;
+							}
+						}
+							break;
+						default:
 						this.setError('mmcmd:htmlBadAction', {action: action, path: this.getPath()});
 						break;
 				}
