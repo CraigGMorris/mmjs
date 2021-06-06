@@ -982,7 +982,15 @@ class MMSession extends MMCommandParent {
 			this.autoSaveSession();
 		}
 
-		command.results = this.currentModel.getPath();
+		command.results = {path: this.currentModel.getPath()};
+		const indexToolName = this.currentModel.indexTool;
+		if (indexToolName) {
+			const indexTool = this.currentModel.childNamed(indexToolName);
+			if (indexTool) {
+				command.results.indexTool = indexToolName;
+				command.results.indexToolType = indexTool.typeName;
+			}
+		}
 	}
 
 	/**

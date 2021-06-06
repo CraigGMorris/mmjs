@@ -25,6 +25,7 @@
 	theMMSession:readonly
 	MMReport:readonly
 	MMPoint:readonly
+	MMPropertyType:readonly
 */
 
 /**
@@ -98,6 +99,22 @@ class MMModel extends MMTool {
 		verbs['restoreimport'] = this.restoreImportCommand;
 
 		return verbs;
+	}
+
+	/** @override */
+	get properties() {
+		let d = super.properties;
+		// to designate a tool to be viewed when a model is pushed
+		d['indexTool'] = {type: MMPropertyType.string, readOnly: false};
+		return d;
+	}
+
+	get indexTool() {
+		return this._indexTool;
+	}
+
+	set indexTool(newValue) {
+		this._indexTool = newValue;
 	}
 
 	/** @method getVerbUsageKey
@@ -591,6 +608,9 @@ class MMModel extends MMTool {
 		const o = super.saveObject();
 		o.Type = 'Model';
 		o.diagramScale = 1;	// need to fix this - get from interface?
+		if (this.indexTool) {
+			o.indexTool = this.indexTool;
+		}
 
 		if (this.importInfo) {
 			this.determineImportInputFormulas();
@@ -638,6 +658,9 @@ class MMModel extends MMTool {
 					await this.setImportInfo(importInfo);
 				}
 			}
+		}
+		if (saved.indexTool) {
+			this.indexTool = saved.indexTool;
 		}
 	}
 
