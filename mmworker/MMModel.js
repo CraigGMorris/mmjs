@@ -677,7 +677,8 @@ class MMModel extends MMTool {
 				.replace('HTML Form', 'HtmlPage')
 				.replace(' ','')
 				.replace('Equation','')
-				.replace('ModelArray', 'Model');
+				.replace('ModelArray', 'Model')
+				.replace('Graph/Table', 'Graph');
 			const toolType = MMToolTypes[typeName];
 			if(!toolType) {
 				const newTool = new MMExpression(name, this);
