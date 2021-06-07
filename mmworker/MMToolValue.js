@@ -46,6 +46,10 @@ class MMToolValue extends MMValue {
 		return newValue;
 	}
 
+	get values() {
+		return this._values;
+	}
+
 	/** @static scalarValue
 	 * creates a MMToolValue with a single value
 	 * @param {MMTool} value
