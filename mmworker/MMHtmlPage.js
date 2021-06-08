@@ -197,7 +197,7 @@ class MMHtmlPage extends MMTool {
 		else if (this.inputs) {
 			// return values posted as inputs from the html view
 			const inputValue = this.inputs[lcDescription];
-			if (inputValue) {
+			if (inputValue != null) {
 				const valueType = typeof inputValue;
 				if (valueType === 'string') {
 					value = MMStringValue.scalarValue(inputValue);
