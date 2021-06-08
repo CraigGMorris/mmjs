@@ -19006,7 +19006,7 @@
 								"name": "sort",
 								"Notes": "",
 								"DiagramX": -135,
-								"DiagramY": 165,
+								"DiagramY": 190,
 								"HideInfo": "n",
 								"DiagramNotes": "n",
 								"Type": "Model",
@@ -19181,7 +19181,7 @@
 								"name": "sortError",
 								"Notes": "",
 								"DiagramX": -50,
-								"DiagramY": 165,
+								"DiagramY": 190,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
@@ -19193,14 +19193,38 @@
 								"name": "errorCount",
 								"Notes": "",
 								"DiagramX": -50,
-								"DiagramY": 190,
+								"DiagramY": 215,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{sum {cc\n\tabsError,\n\tdefUnitError,\n\tbaseUnitError,\n\tevalError,\n\tintError,\n\tsignError,\n\tsortError\n}}"
+									"Formula": "{sum {cc\n\tabsError,\n\tdefUnitError,\n\tbaseUnitError,\n\tevalError,\n\tintError,\n\tsignError,\n\tnumericError,\n\tsortError\n}}"
 								},
 								"isOutput": "y"
+							},
+							{
+								"name": "numeric",
+								"Notes": "",
+								"DiagramX": -135,
+								"DiagramY": 165,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{numeric \"2.3\"}"
+								}
+							},
+							{
+								"name": "numericError",
+								"Notes": "",
+								"DiagramX": -50,
+								"DiagramY": 165,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{ne numeric, 2.3}"
+								}
 							}
 						]
 					},
