@@ -1,0 +1,184 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [],
+	"CaseName": "TimeParts",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "",
+	"ModelPath": "/.root",
+	"RootModel": {
+		"name": "root",
+		"DiagramX": -12321,
+		"DiagramY": -12321,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "TimeParts",
+				"Notes": "This model accepts a time value, in seconds since the beginning of 1970, and calculates integer values for the different date and time parts as well as formatted date and time strings.",
+				"DiagramX": 35,
+				"DiagramY": 40,
+				"HideInfo": "n",
+				"DiagramNotes": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "time",
+						"Notes": "Time to process",
+						"DiagramX": 90,
+						"DiagramY": 10,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{now}"
+						},
+						"isInput": "y"
+					},
+					{
+						"name": "Year",
+						"Notes": "",
+						"DiagramX": 180,
+						"DiagramY": 10,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{int date / 10000}"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "Month",
+						"DiagramX": 180,
+						"DiagramY": 40,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{int date /100 - year*100}"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "date",
+						"Notes": "Convert the time (in seconds since 1970) into a structured date and time.",
+						"DiagramX": 90,
+						"DiagramY": 40,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{date time}"
+						}
+					},
+					{
+						"name": "Day",
+						"DiagramX": 180,
+						"DiagramY": 65,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{int date - year * 10000 - month * 100}"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "Hour",
+						"DiagramX": 180,
+						"DiagramY": 90,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{int hhmmss / 10000}"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "hhmmss",
+						"Notes": "Extract time",
+						"DiagramX": 180,
+						"DiagramY": 170,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{int (date - {int date}) * 1000000 + 0.5}"
+						}
+					},
+					{
+						"name": "Minute",
+						"DiagramX": 180,
+						"DiagramY": 115,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{int (hhmmss - hour * 10000) / 100}"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "Second",
+						"DiagramX": 180,
+						"DiagramY": 145,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "hhmmss - hour * 10000 - minute * 100"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "MonthName",
+						"Notes": "Array of month abbreviations",
+						"DiagramX": 265,
+						"DiagramY": 80,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{cc \"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"jun\", \"Jul\", \"Aug\", \"Sep\", \"Oct\", \"Nov\", \"Dec\"}[ month]"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "DateStr",
+						"Notes": "Formatted date",
+						"DiagramX": 265,
+						"DiagramY": 10,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "MonthName + {fmt \" %2.0f\", day} + {fmt \", %4.0f\", year}"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "TimeStr",
+						"Notes": "Formatted time",
+						"DiagramX": 265,
+						"DiagramY": 45,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{fmt \"%2.0f\", hour} + \":\" +\n\t{fmt \"%02.0f\", minute} + \":\" +\n\t{fmt \"%02.0f\", second}"
+						},
+						"isOutput": "y"
+					}
+				]
+			}
+		]
+	}
+}

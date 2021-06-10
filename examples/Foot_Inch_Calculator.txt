@@ -1,0 +1,626 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [],
+	"CaseName": "Foot Inch Calculator",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "Form",
+	"ModelPath": "/.root",
+	"RootModel": {
+		"name": "root",
+		"DiagramX": -12321,
+		"DiagramY": -12321,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "display",
+				"Notes": "Formats the numeric inch stack into feet (if requested) inch, fraction form.",
+				"DiagramX": 365,
+				"DiagramY": 165,
+				"HideInfo": "n",
+				"DiagramNotes": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "number",
+						"Notes": "Stack of numbers to format",
+						"DiagramX": 50,
+						"DiagramY": 20,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "calc"
+						},
+						"isInput": "y"
+					},
+					{
+						"name": "divisors",
+						"Notes": "Array of devisors for each 32nd",
+						"DiagramX": 70,
+						"DiagramY": 160,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{cc 1,\n1, 2, 1, 4, 1, 2, 1, 8,\n1, 2, 1, 4, 1, 2, 1, 16,\n1, 2, 1, 4, 1, 2, 1, 8,\n1, 2, 1, 4, 1, 2, 1, 32}"
+						}
+					},
+					{
+						"name": "whole",
+						"Notes": "Number of whole inches",
+						"DiagramX": 145,
+						"DiagramY": 25,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{int {abs number}}"
+						}
+					},
+					{
+						"name": "fraction",
+						"Notes": "Fraction of an inch after removing whole inches",
+						"DiagramX": 145,
+						"DiagramY": 90,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{abs number} - whole"
+						}
+					},
+					{
+						"name": "divIndex",
+						"Notes": "nearest 32nd of an inch",
+						"DiagramX": 150,
+						"DiagramY": 145,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{int (fraction + 1/64) * 32}"
+						}
+					},
+					{
+						"name": "divisor",
+						"Notes": "Fraction common divisor",
+						"DiagramX": 150,
+						"DiagramY": 190,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "divisors[divIndex+1]"
+						}
+					},
+					{
+						"name": "numerator",
+						"Notes": "Numerator of fraction",
+						"DiagramX": 240,
+						"DiagramY": 145,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if fraction, divindex/divisor, 0}"
+						}
+					},
+					{
+						"name": "denominator",
+						"Notes": "Denominator of fraction",
+						"DiagramX": 240,
+						"DiagramY": 190,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "32/divisor"
+						}
+					},
+					{
+						"name": "feet",
+						"Notes": "Number of whole feet",
+						"DiagramX": 240,
+						"DiagramY": 55,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if displayFeet,\n\t{int whole / 12},\n\t0\n}\n\t"
+						}
+					},
+					{
+						"name": "wholeIn",
+						"Notes": "Number of whole inches remaining after whole feet removed",
+						"DiagramX": 245,
+						"DiagramY": 95,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{abs whole - feet * 12}"
+						}
+					},
+					{
+						"name": "ftString",
+						"Notes": "         Feet string",
+						"DiagramX": 320,
+						"DiagramY": 55,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if {ne feet, 0}\n\t{fmt \"%.0f\", feet} + \"' \",\n\t\"\"\n}"
+						}
+					},
+					{
+						"name": "inString",
+						"Notes": "        Whole inch string",
+						"DiagramX": 320,
+						"DiagramY": 95,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if {ne wholeIn, 0}\n\t{fmt \"%-.0f\", wholeIn},\n\t\"\"\n}"
+						}
+					},
+					{
+						"name": "fracString",
+						"Notes": "        Fraction string",
+						"DiagramX": 320,
+						"DiagramY": 145,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if {ne numerator, 0}\n\t\"_\" +\n\t{fmt \"%.0f\", numerator} +\n\t\"/\" +\n\t{fmt \"%.0f\", denominator},\n\t\"\"\n}"
+						}
+					},
+					{
+						"name": "stringSum",
+						"Notes": "Append the various pieces together",
+						"DiagramX": 405,
+						"DiagramY": 40,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "signString+ftString+inString+fracString"
+						}
+					},
+					{
+						"name": "out",
+						"Notes": "The final output, with any blank strings replaced with \"0\"",
+						"DiagramX": 405,
+						"DiagramY": 115,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if stringSum, stringSum, \"0\"}"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "signString",
+						"Notes": "          Sign string to prepend",
+						"DiagramX": 320,
+						"DiagramY": 20,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if {lt number, 0}, \"-\", \"\"}"
+						}
+					},
+					{
+						"name": "displayFeet",
+						"Notes": "1 if feet are to be included\n0 if just inches",
+						"DiagramX": 50,
+						"DiagramY": 55,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "displayFeet"
+						},
+						"isInput": "y"
+					}
+				]
+			},
+			{
+				"name": "css",
+				"Notes": "Common cascading style\nsheets for the forms.",
+				"DiagramX": 240,
+				"DiagramY": -25,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "'\nbody {\n\tbackground-color: #EEFFEE;\n}\n\n\n/* Tables\n * --------------------------------------------------------------------- */\n\n\ttable {\n\t\tborder: 0px solid #ddd;\n\t\tmargin-top: 0px;\n\t\tmargin-bottom: 0.8em;\n\t\twidth:300px;\n\t\tfont-size: x-large;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t}\n\tth,td {\n\t\tborder-bottom:  0px solid #ddd;\n\t\tborder-right:   0px solid #ddd;\n\t\tvertical-align: top;\n\t}\n\ttable.no_border, table.no_border td, table.no_border th {\n\t\tborder:     0px solid #ddd;\n\t}\n\n/* Default Classes\n * --------------------------------------------------------------------- */\n\n\tp.title, a.title, div.title {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 1.4em;\n\t\ttext-align: center;\n\t}\n\n\t.center {\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\twidth=320px;\n\t\ttext-align: center;\n\t}\n\t\n\t.inputsection {\n\t\tmargin-top: 0em;\n\t}\n\n\t.stacktbl {\n\t\tbackground-color: white;\n\t\tborder: 1px solid #bbb;\n\t\tfont-size: 1.0em;\n\t}\n\t.stackrowx td {\n\t\tborder-top: 1px solid #bbb;\n\t\theight: 1.5em;\n\t}\n\t\n\t.stacklbl {\n\t\twidth: 20px;\n\t}\n\n\t.stackval {\n\t\twidth: 280px;\n\t}\n\t\n\t.buttontbl {\n\t\tmargin-left: 10px;\n\t}\n\t\n\t.button {\n\t\twidth: 50px;\n\t\theight: 30px;\n\t\tfont-size: 0.8em;\n\t\tmargin-bottom: 10px;\n\t}\n\n\t.button2 {\n\t\tfont-size: 0.5em;\n\t\tmargin-bottom: 10px;\n\t\twidth: 50px;\n\t\theight: 30px;\n\t}\n\n\t#notes {\n\t\tfont-size: 1.2em;\n\t\tmargin-top: -1em;\n\t\tmargin-bottom: 2em;\n\t}\n\t#notes .title {\n\t\tfont-size: 1.3em;\n\t}\n\t#noteswitch {\n\t\tfont-size: 0.9em;\n\t\tpadding-left: 1em;\n\t}\n\t\n\t#notes table {\n\t\tfont-size: 0.8em;\n\t}\n"
+				}
+			},
+			{
+				"name": "inches",
+				"Notes": "The stack in inches",
+				"DiagramX": 365,
+				"DiagramY": 15,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc parse.inches, form.numbers[2:4]}"
+				}
+			},
+			{
+				"name": "parse",
+				"Notes": "Parses X input into numeric inches",
+				"DiagramX": 365,
+				"DiagramY": -25,
+				"HideInfo": "n",
+				"DiagramNotes": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "input",
+						"Notes": "A string in foot, inch, fraction format.\n\ne.g. 1'2_3/4 for one foot, two and three quarter inches.",
+						"DiagramX": 55,
+						"DiagramY": 100,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "x"
+						},
+						"isInput": "y"
+					},
+					{
+						"name": "splitFt",
+						"Notes": "      Splits expression into feet\n      and inches parts",
+						"DiagramX": 85,
+						"DiagramY": 20,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{split input, \"'\"}"
+						}
+					},
+					{
+						"name": "feet",
+						"Notes": "Number of feet.",
+						"DiagramX": 180,
+						"DiagramY": 20,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if {gt {nrows splitft}, 1},\n\t{numeric splitft[1]},\n\t0\n}"
+						}
+					},
+					{
+						"name": "inString",
+						"Notes": "The inches string",
+						"DiagramX": 175,
+						"DiagramY": 55,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{replace \"\\s+\", \" \", \n\t{replace \"^\\s+\", \"\",\n\t\tsplitft[{nrows splitft}]\n\t}\n}"
+						}
+					},
+					{
+						"name": "splitIn",
+						"Notes": "Split the inches string into whole number and fraction parts",
+						"DiagramX": 135,
+						"DiagramY": 100,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{split inString, \"_\"}"
+						}
+					},
+					{
+						"name": "inches",
+						"Notes": "          numeric inches",
+						"DiagramX": 315,
+						"DiagramY": 70,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "sign * (\n\t{abs feet} * 12 +\n\twholeIn +\n\tfracIn\n)"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "sign",
+						"Notes": "Sign (positive or negative)",
+						"DiagramX": 285,
+						"DiagramY": 20,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if {lt feet, 0}, -1, 1}"
+						}
+					},
+					{
+						"name": "splitFrac",
+						"Notes": "Splits fractions into numerator and denominator",
+						"DiagramX": 220,
+						"DiagramY": 135,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{numeric\n\t{if {gt {nrows splitIn}, 1},\n\t\t{split splitIn[2], \"/\"},\n\t\t{if {match \"/\", splitIn[1]},\n\t\t\t{split splitIn[1], \"/\"},\n\t\t\t0\n\t\t}\n\t}\n}"
+						}
+					},
+					{
+						"name": "fracIn",
+						"Notes": "Fractional inches as number",
+						"DiagramX": 290,
+						"DiagramY": 135,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if {ne splitFrac[1], 0},\n\tsplitFrac[1]/splitFrac[2],\n\t0\n}"
+						}
+					},
+					{
+						"name": "wholeIn",
+						"Notes": "Number of whole inches",
+						"DiagramX": 240,
+						"DiagramY": 100,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{numeric\n\t{if {match \"/\", splitIn[1]},\n\t\t0,\n\t\tsplitIn[1]\n\t}\n}"
+						}
+					},
+					{
+						"name": "x1",
+						"Notes": "",
+						"DiagramX": 200,
+						"DiagramY": 200,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if {strlen input}, 1, 0}"
+						}
+					}
+				]
+			},
+			{
+				"name": "op",
+				"Notes": "Gets the requested operation name from the form.",
+				"DiagramX": 240,
+				"DiagramY": 100,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "form.op"
+				}
+			},
+			{
+				"name": "plus",
+				"DiagramX": 485,
+				"DiagramY": -25,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc inches[1]+inches[2], inches[3:4], 0}"
+				}
+			},
+			{
+				"name": "minus",
+				"DiagramX": 485,
+				"DiagramY": -5,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc inches[2]-inches[1], inches[3:4], 0}"
+				}
+			},
+			{
+				"name": "times",
+				"DiagramX": 485,
+				"DiagramY": 15,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc inches[1]*inches[2], inches[3:4], 0}"
+				}
+			},
+			{
+				"name": "divide",
+				"DiagramX": 485,
+				"DiagramY": 35,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc inches[2]/inches[1], inches[3:4], 0}"
+				}
+			},
+			{
+				"name": "push",
+				"DiagramX": 485,
+				"DiagramY": 60,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc {numeric firstChar}, inches[1:3]}"
+				}
+			},
+			{
+				"name": "rollup",
+				"DiagramX": 485,
+				"DiagramY": 80,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc inches[4], inches[1:3]}"
+				}
+			},
+			{
+				"name": "rolldown",
+				"DiagramX": 485,
+				"DiagramY": 100,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc inches[2:4], inches[1]}"
+				}
+			},
+			{
+				"name": "swap",
+				"DiagramX": 485,
+				"DiagramY": 120,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc inches[2], inches[1], inches[3:4]}"
+				}
+			},
+			{
+				"name": "firstChar",
+				"Notes": "First character of new input.",
+				"DiagramX": 365,
+				"DiagramY": 45,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "form.firstchar"
+				}
+			},
+			{
+				"name": "calc",
+				"Notes": "Gets the value of the requested operation.\n\nBecause it uses the eval function, there is no connection shown on the diagram between those operation expressions and this expression.",
+				"DiagramX": 240,
+				"DiagramY": 135,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{eval op}"
+				}
+			},
+			{
+				"name": "Form",
+				"Notes": "The calculator interface",
+				"DiagramX": 240,
+				"DiagramY": 65,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "HTML Form",
+				"Formula": {
+					"Formula": "'<html lang=\"en\">\n\t<head>\n\t\t<title>Foot Inch Fraction Calculator</title>\n\t\t<meta name=\"viewport\" content=\"initial-scale=1.0\">\t\t\n\t\t<script type=\"text/javascript\">\n\t\t\t// initialize various variables - the assigned values were only used on the very first run or if mmclear is called\n\t\t\tvar firstChar = \"\";\n\t\t\tvar numberStack = [ 0.0, 0.0, 0.0, 0.0 ];  \n\t\t\tvar displayStack = [ '0', '0', '0', '0' ];\n\t\t\tvar displayFeet = 1;\n\t\t\tvar lastx = 0;\n\t\t\twindow.onload = function() {\n\t\t\t\tdocument.getElementById('notes').hidden = true;   // hide the help - note if there is a js syntax error this won't happen, which is nice and obvious\n\t\t\t\t// mmpost({}, {mm_clear: true}, function() {   // uncomment this and the matching close and load the form to clear all remembered values\n\t\t\t\tmmpost(   // get the initial display from math minion.  Don't assign anything as we are getting old values on start up\n\t\t\t\t\t{},\n\t\t\t\t\t{ 'numbers':'$.numbers',\n\t\t\t\t\t\t'display':'$.display',\n\t\t\t\t\t\t'displayFeet':'$.displayFeet'\n\t\t\t\t\t},\n\t\t\t\t\tfunction(results) {\n\t\t\t\t\t\t// assign the results to the appropriate variables\n\t\t\t\t\t\t// if the saved values have been cleared, use the inital values\n\t\t\t\t\t\tif ( results.numbers != '' ) {\n\t\t\t\t\t\t\tnumberStack = results.numbers;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif ( results.display != '' ) {\t\t\t\t\t\t\tdisplayStack = results.display;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif ( results.displayFeet == '' ) {\n\t\t\t\t\t\t\tdisplayFeet = 0;\n\t\t\t\t\t\t}\n\t\t\t\t\t\telse {\n\t\t\t\t\t\t\tdisplayFeet = results.displayFeet;\n\t\t\t\t\t\t}\n\t\t\t\t\t\t// fill in the spans displaying the stack with the formatted display strings\n\t\t\t\t\t\tdocument.getElementById('x').innerHTML = displayStack[0];\n\t\t\t\t\t\tdocument.getElementById('y').innerHTML = displayStack[1];\n\t\t\t\t\t\tdocument.getElementById('z').innerHTML = displayStack[2];\n\t\t\t\t\t\tdocument.getElementById('t').innerHTML = displayStack[3];\n\t\t\t\t\t\t// set the label on the show feet toggle button\n\t\t\t\t\t\tupdateShowFeetButton();\n\t\t\t\t\t}\n\t\t\t\t);\n\t\t\t\t// });  // mmclear close\n\t\t\t};\n\t\t\tfunction toggleNotes() {\n\t\t\t\t// show or hide the help\n\t\t\t\tdocument.getElementById('notes').hidden = !document.getElementById('notes').hidden;\n\t\t\t}\n\t\t\tfunction pressed(c) {\n\t\t\t\t// process a pressed character key\n\t\t\t\tvar newValue;\n\t\t\t\tif( document.getElementById('x').innerHTML === '0' ) {\n\t\t\t\t\t// if the x field is just 0, replace it with the character\n\t\t\t\t\tdocument.getElementById('x').innerHTML = c;\n\t\t\t\t}\n\t\t\t\telse if ( firstChar == '^' ) {\n\t\t\t\t\t// a firstChar of ^ indicates the first character in a new value.  Push the stack and start a new x\n\t\t\t\t\tfirstChar = c;   // this will be retrieved after the push and entered into x\n\t\t\t\t\tdoCalc( 'Push' );  // call the function with a push operator\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\t// just append the character to the X input\n\t\t\t\t\tnewValue = document.getElementById('x').innerHTML + c;\n\t\t\t\t\tdocument.getElementById('x').innerHTML = newValue;\n\t\t\t\t}\n\t\t\t}\n\t\t\tfunction pressedQuote() {\n\t\t\t\t// just to avoid confusing quoting\n\t\t\t\tpressed(\"'\");\n\t\t\t}\n\t\t\tfunction doCalc(op) {\n\t\t\t\t// performs an operation by calling mmcalc\n\t\t\t\t// create the assignments and requests dictionaries\n\t\t\t\tvar assignments = {\n\t\t\t\t\t'op': op,\n\t\t\t\t\t'numbers': numberStack,\n\t\t\t\t\t'display': displayStack,\n\t\t\t\t\t'displayFeet': displayFeet,\n\t\t\t\t\t'x': 'x' + document.getElementById('x').innerHTML, // x prepended to ensure it remains a string\n\t\t\t\t\t'firstchar': firstChar,\n\t\t\t\t\t'lastx': lastx\n\t\t\t\t}\n\t\t\t\tvar requests = {\n\t\t\t\t\t'numbers': 'calc',\n\t\t\t\t\t'display': 'display.out',\n\t\t\t\t\t'lastx':'inches[1]'\n\t\t\t\t}\n\t\t\t\t// call mmpost with a call back function\n\t\t\t\tmmpost( assignments, requests, function(results) {\n\t\t\t\t\t// this code will be executed when Math Minion has finished calculating the result for the operation\n\t\t\t\t\tnumberStack = results.numbers;\n\t\t\t\t\tdisplayStack = results.display;\n\t\t\t\t\tlastx = results.lastx;\n\t\t\t\t\t\n\t\t\t\t\tdocument.getElementById('x').innerHTML = displayStack[0];\n\t\t\t\t\tdocument.getElementById('y').innerHTML = displayStack[1];\n\t\t\t\t\tdocument.getElementById('z').innerHTML = displayStack[2];\n\t\t\t\t\tdocument.getElementById('t').innerHTML = displayStack[3];\n\t\t\t\t\t\n\t\t\t\t\t// call mmcalc again with the new values so they will be remembered if the calculator\n\t\t\t\t\t// is exited and then returned to later.  Neither results or a call back is needed, just the assignments\n\t\t\t\t\t// mmpost({ 'numbers':numberStack, 'display':displayStack, 'lastx':lastx }, {}, null );\n\t\t\t\t});\n\t\t\t}\n\t\t\tfunction pressedOp(op) {\n\t\t\t\t// an operation key has been pressed\n\t\t\t\t// set firstChar to show that input on X is done and then call doCalc\n\t\t\t\tfirstChar = '^';\n\t\t\t\tdoCalc(op);\n\t\t\t}\n\t\t\tfunction pressedPush() {\n\t\t\t\t// set the firstChar to 0 and do the Push operation\n\t\t\t\tfirstChar = '0';\n\t\t\t\tdoCalc( 'Push' );\n\t\t\t}\n\t\t\tfunction clearx() {\n\t\t\t\t// clear the X field\n\t\t\t\tfirstChar = '';\n\t\t\t\tdocument.getElementById('x').innerHTML = '';\n\t\t\t}\n\t\t\tfunction backSpace () {\n\t\t\t\t// remove the last character from the x field\n\t\t\t\tvar x = document.getElementById('x').innerHTML;\n\t\t\t\tif ( x.length ) {\n\t\t\t\t\tdocument.getElementById('x').innerHTML = x.substr(0, x.length-1);\n\t\t\t\t}\n\t\t\t}\n\t\t\tfunction toggleShowFeet() {\n\t\t\t\t// toggle the show feet status\n\t\t\t\tif ( displayFeet ) {\n\t\t\t\t\tdisplayFeet = 0;\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\tdisplayFeet = 1;\n\t\t\t\t}\n\t\t\t\t// the nop operation doesn't change values, but updates the display to the new format\n\t\t\t\tpressedOp('nop');\n\t\t\t\tupdateShowFeetButton();\n\t\t\t}\n\t\t\tfunction updateShowFeetButton() {\n\t\t\t\t// show the appropriate label on the toggle show feet button\n\t\t\t\tif ( displayFeet ) {\n\t\t\t\t\tdocument.getElementById('showft').setAttribute('value', 'In' );\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\tdocument.getElementById('showft').setAttribute('value', 'Ft In' );\n\t\t\t\t}\n\t\t\t}\n\t\t</script>\n\n\t\t<!-- the styles are kept in a separate expression to simplify this code.  It is included here with the mm tag\n\t\t\tPerhaps this should have been done for the scripts too, but it is personal preference.\n\t\t-->\n\t\t<style>\n\t\t\t<mm>css</mm>\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<!-- the help is kept in a div tag that is initially hidden and reveal with the help button.  Tapping anywhere in the\n\t\t\tdiv will toggle it back to hidden\n\t\t-->\n\t\t<div id=\"notes\" onclick=\"toggleNotes();\">\n\t\t\t<p>\n\t\t\t\t(<i>Tap anywhere on this help to hide it</i>)\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThis form implements a Reverse Polish Notation (RPN) style calculator (what can I say, I was an HP fan) for calculations with feet, inches and fractions.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThere is a four element stack, but operations always take place between the bottom two elements (X & Y).  Thus to subtract 3 from 5, you would tap the 5 key, then the <b>Push</b> key to move the value to <b>Y</b>, then 3 and then the <b>-</b> to subtract.  The result would appear in <b>X</b>.  The <b>Swap</b> key will exchange <b>X</b> and <b>Y</b> and the <b>Up</b> and <b>Down</b> keys will roll the entire stack in the indicated direction.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tValues are entered in the form <b>2'3_1/4</b>, which would designate two foot, three and one quarter inches.  The various parts can be omitted.  All of the following would be valid:\n\t\t\t</p>\n\t\t\t<table>\n\t\t\t\t<tr><th>2'</th><td>2 ft</td></tr>\n\t\t\t\t<tr><th>56</th><td>56 in</td></tr>\n\t\t\t\t<tr><th>13/32</th><td>13/32 in</td></tr>\n\t\t\t\t<tr><th>5_1/8</th><td>5 and 1/8 in</td></tr>\n\t\t\t</table>\n\t\t\t<p>\n\t\t\t\tCalculated values are displayed in a similar format and are calculated to the nearest 32nd of an inch and reduced to an odd numerator (i..e 24/32 would be shown as 3/4)\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe <b>In</b> button can be used to display the values as inches, without the feet (i.e. 1' 2 would become 14).  The button label would switch to ft in and tapping again will change the display back.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe <b>Dup</b> button pushes <b>Y</b> and <b>Z</b> up and duplicates <b>X</b> into <b>Y</b>.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tFinally, the <b>LastX</b> button will push the <b>X</b> value used in the last calculation onto the stack, with everything moving up.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<i>Tap anywhere above to hide the help</i>\n\t\t\t</p>\n\t\t</div>\n\t\t<!-- end of notes (help) section -->\n\t\t<div class=\"inputsection\">\n\t\t\t\t<!-- the stack and the buttons are all laid out in the following html -->\n\t\t\t\t<div class=\"center\">\n\t\t\t\t\t<table class=\"stacktbl\">\n\t\t\t\t\t\t<tr class=\"stackrow\">\n\t\t\t\t\t\t\t<td class=\"stacklbl\">T</td>\n\t\t\t\t\t\t\t<td class=\"stackval\">\n\t\t\t\t\t\t\t\t<span id=\"t\">0</span>\n\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t<tr class=\"stackrowx\">\n\t\t\t\t\t\t\t<td class=\"stacklbl\">Z</td>\n\t\t\t\t\t\t\t<td class=\"stackval\">\n\t\t\t\t\t\t\t\t<span id=\"z\">0</span>\n\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t<tr class=\"stackrowx\">\n\t\t\t\t\t\t\t<td class=\"stacklbl\">Y</td>\n\t\t\t\t\t\t\t<td class=\"stackval\">\n\t\t\t\t\t\t\t\t<span id=\"y\">0</span>\n\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t<tr class=\"stackrowx\">\n\t\t\t\t\t\t\t<td class=\"stacklbl\">X</td>\n\t\t\t\t\t\t\t<td class=\"stackval\">\n\t\t\t\t\t\t\t\t<span id=\"x\">0</span>\n\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t</table>\n\t\t\t\t\t\n\t\t\t\t\t<!-- The web browser has about a 300 ms delay before an onclick call is made.  This isn't apparent on a\n\t\t\t\t\t\tnormal web page, but makes input sluggish and prone to missing keys on a web app.  For that reason\n\t\t\t\t\t\tmost actions are triggered by onPointerDown instead.  This has no delay.\n\t\t\t\t\t-->\n\t\t\t\t\t<table class=\"buttontbl\">\n\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressed('1');\" value=\"1\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressed('2');\" value=\"2\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressed('3');\" value=\"3\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressedOp('plus');\" value=\"+\"></td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressed('4');\" value=\"4\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressed('5');\" value=\"5\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressed('6');\" value=\"6\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressedOp('minus');\" value=\"-\"></td>\n\t\t\t\t\t\t</tr>\n\n\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressed('7');\" value=\"7\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressed('8');\" value=\"8\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressed('9');\" value=\"9\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressedOp('times');\" value=\"*\"></td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button2\" onPointerDown=\"backSpace();\" value=\"Back\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressed('0');\" value=\"0\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button2\" onPointerDown=\"clearx();\" value=\"Clr\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressedOp('divide');\" value=\"÷\"></td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressedQuote();\" value=\"'\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressed('_');\" value=\"_\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button\" onPointerDown=\"pressed('/');\" value=\"/\"></td>\n\t\t\t\t\t\t\t<td> </td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button2\" onPointerDown=\"pressedPush();\" value=\"Push\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button2\" onPointerDown=\"pressedOp('Swap');\" value=\"Swap\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button2\" onPointerDown=\"pressedOp('RollUp');\" value=\"Up\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button2\" onPointerDown=\"pressedOp('RollDown');\" value=\"Down\"></td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t<td><input type=\"button\" id=\"showft\" class=\"button2\" onPointerDown=\"toggleShowFeet();\" value=\"Ft In\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button2\" onPointerDown=\"pressedOp('dup');\" value=\"Dup\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button2\" onPointerDown=\"pressedOp('lastx');\" value=\"LastX\"></td>\n\t\t\t\t\t\t\t<td><input type=\"button\" class=\"button2\" onclick=\"toggleNotes();\" value=\"Help\"></td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t</table>\n\t\t\t\t</div>\n\t\t</div>\n\t</body>\n</html>"
+				},
+				"inputs": {
+					"x": "x1'3_1/4",
+					"display": [
+						"1' 3",
+						"0",
+						"0",
+						"0"
+					],
+					"lastx": 0,
+					"firstchar": 0,
+					"displayfeet": 1,
+					"numbers": [
+						15,
+						0,
+						0,
+						0
+					],
+					"op": "Push"
+				},
+				"f0": "css"
+			},
+			{
+				"name": "displayFeet",
+				"Notes": "Flag indicating whether or not\nto include feet in the display.",
+				"DiagramX": 365,
+				"DiagramY": 80,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "Form.displayFeet"
+				}
+			},
+			{
+				"name": "nop",
+				"DiagramX": 485,
+				"DiagramY": 160,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "inches"
+				}
+			},
+			{
+				"name": "lastx",
+				"Notes": "Each of the above expressions represents a possible operation request and returns a new inches stack reflecting that operation.\n\nThe calc expression uses the eval function to get the value of one of these corresponding to the key pressed.",
+				"DiagramX": 485,
+				"DiagramY": 180,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc form.lastx, inches[1:3]}"
+				}
+			},
+			{
+				"name": "dup",
+				"DiagramX": 485,
+				"DiagramY": 140,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc inches[1], inches[1:3]}"
+				}
+			},
+			{
+				"name": "x",
+				"Notes": "Strip the first character off of x. It was added to ensure this remained a string.",
+				"DiagramX": 240,
+				"DiagramY": 15,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{substr form.x, 2}"
+				}
+			}
+		]
+	}
+}

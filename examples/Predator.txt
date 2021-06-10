@@ -1,0 +1,739 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [],
+	"CaseName": "Predator",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "root",
+	"ModelPath": "/.root",
+	"RootModel": {
+		"name": "root",
+		"Notes": "This example illustrates the use of the ODE solver simulate the classic predator/prey relationship as characterized by the Lotka-Volterra model.\n\nSee http://wikipedia.org/wiki/Lotka-Volterra_equation.\n\nThe calculation is contained in the Population model, with the results illustrated in the two Plot objects.\n\nMathworks has a published demonstration of this problem (look for \"Numerical Integration of Differential Equations\" in the demos section of the mathworks.com website).  The Math Minion solution to this problem is reproduced in the MatlabExample model.",
+		"DiagramX": -12321,
+		"DiagramY": -12321,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "MatlabExample",
+				"Notes": "This model solves the Mathworks demonstration problem named \"Numerical Integration of Differential Equations\" in the demos section of the mathworks.com website.",
+				"DiagramX": 20,
+				"DiagramY": 100,
+				"HideInfo": "n",
+				"DiagramNotes": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"indexTool": "overview",
+				"Objects": [
+					{
+						"name": "ode",
+						"DiagramX": 115,
+						"DiagramY": 70,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "ODE Solver",
+						"y0Formula": {
+							"Formula": "y0"
+						},
+						"dyFormula": {
+							"Formula": "dy"
+						},
+						"nextTFormula": {
+							"Formula": "$.t + 0.1"
+						},
+						"endTFormula": {
+							"Formula": "15"
+						},
+						"relTolFormula": {
+							"Formula": "1.0e-5"
+						},
+						"absTolFormula": {
+							"Formula": "1.0e-10"
+						},
+						"recFormulas": [
+							{
+								"Formula": "$.t"
+							},
+							{
+								"Formula": "$.y[1]"
+							},
+							{
+								"Formula": "$.y[2]"
+							}
+						],
+						"AutoRun": "y"
+					},
+					{
+						"name": "y0",
+						"DiagramX": 10,
+						"DiagramY": 105,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{concat 20,20}"
+						}
+					},
+					{
+						"name": "dy",
+						"DiagramX": 115,
+						"DiagramY": 110,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Matrix",
+						"CellInputs": {
+							"0_0": "0",
+							"2_1": "(-1 + beta*ode.y[1])*ode.y[2]",
+							"1_1": "(1 - alpha * ode.y[2])*ode.y[1]"
+						},
+						"rowCount": "2",
+						"columnCount": "1"
+					},
+					{
+						"name": "alpha",
+						"DiagramX": 10,
+						"DiagramY": 130,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "0.01"
+						}
+					},
+					{
+						"name": "beta",
+						"DiagramX": 10,
+						"DiagramY": 155,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "0.02"
+						}
+					},
+					{
+						"name": "plot",
+						"DiagramX": 200,
+						"DiagramY": 70,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Graph",
+						"X1": {
+							"v": "ode.r1'time",
+							"vmin": "",
+							"vmax": "",
+							"Y1": {
+								"v": "ode.r2'prey",
+								"vmin": "0",
+								"vmax": "350",
+								"lineType": 0
+							},
+							"Y2": {
+								"v": "ode.r3'predator",
+								"vmin": "0",
+								"vmax": "350",
+								"lineType": 0
+							}
+						}
+					},
+					{
+						"name": "plot2",
+						"DiagramX": 200,
+						"DiagramY": 95,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Graph",
+						"X1": {
+							"v": "ode.r2'prey",
+							"vmin": "0",
+							"vmax": "200",
+							"Y1": {
+								"v": "ode.r3'predator",
+								"vmin": "0",
+								"vmax": "350",
+								"lineType": 0
+							}
+						}
+					},
+					{
+						"name": "plotCopy",
+						"Notes": "Plots the prey and predator populations versus time.\n\nYou may want to adjust the two y axis maximums if you adjust the Population object input values such that the current ranges aren't appropriate.",
+						"DiagramX": 200,
+						"DiagramY": 125,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Graph",
+						"X1": {
+							"v": "Population.Time",
+							"vmin": "",
+							"vmax": "",
+							"Y1": {
+								"v": "Population.PreyPop'Prey",
+								"vmin": "0",
+								"vmax": "350",
+								"lineType": 0
+							},
+							"Y2": {
+								"v": "Population.PredPop'Predator",
+								"vmin": "0",
+								"vmax": "350",
+								"lineType": 0
+							}
+						}
+					},
+					{
+						"name": "plot2Copy",
+						"Notes": "Plots the prey verus predator populations.\n\nYou may want to adjust the axis maximums if you adjust the Population object input values such that the current ranges aren't appropriate.",
+						"DiagramX": 200,
+						"DiagramY": 155,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "Graph",
+						"X1": {
+							"v": "Population.PreyPop'Prey",
+							"vmin": "0",
+							"vmax": "200",
+							"Y1": {
+								"v": "Population.PredPop'Predator",
+								"vmin": "0",
+								"vmax": "350",
+								"lineType": 0
+							}
+						}
+					},
+					{
+						"name": "Population",
+						"Notes": "A copy of the parent Population model, with parameters equivalent to the Mathworks example.",
+						"DiagramX": 115,
+						"DiagramY": 135,
+						"HideInfo": "n",
+						"DiagramNotes": "y",
+						"Type": "Model",
+						"diagramScale": 1,
+						"indexTool": "overview",
+						"Objects": [
+							{
+								"name": "PreyGrowth",
+								"Notes": "Prey growth in absence of predators",
+								"DiagramX": 35,
+								"DiagramY": 115,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "1"
+								},
+								"isInput": "y"
+							},
+							{
+								"name": "PreyDeath",
+								"Notes": "Death rate of prey per encounter with predator",
+								"DiagramX": 35,
+								"DiagramY": 150,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "0.01"
+								},
+								"isInput": "y"
+							},
+							{
+								"name": "PredDeath",
+								"Notes": "Death rate of predator in a absence of food",
+								"DiagramX": 35,
+								"DiagramY": 185,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "1"
+								},
+								"isInput": "y"
+							},
+							{
+								"name": "Efficiency",
+								"Notes": "Efficiency of turning prey into predators.",
+								"DiagramX": 35,
+								"DiagramY": 220,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "2"
+								},
+								"isInput": "y"
+							},
+							{
+								"name": "integrate",
+								"Notes": "",
+								"DiagramX": 130,
+								"DiagramY": 25,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "ODE Solver",
+								"y0Formula": {
+									"Formula": "{concat InitialPrey,InitialPred}"
+								},
+								"dyFormula": {
+									"Formula": "dp"
+								},
+								"nextTFormula": {
+									"Formula": "$.t + Duration/500"
+								},
+								"endTFormula": {
+									"Formula": "Duration"
+								},
+								"relTolFormula": {
+									"Formula": "1.0e-5"
+								},
+								"absTolFormula": {
+									"Formula": "1.0e-10"
+								},
+								"recFormulas": [
+									{
+										"Formula": "$.t"
+									},
+									{
+										"Formula": "p[1]"
+									},
+									{
+										"Formula": "p[2]"
+									}
+								],
+								"AutoRun": "y"
+							},
+							{
+								"name": "dp",
+								"Notes": "This two cell matrix has the formula for the derivative of prey population wrt time in the row one cell and for the predator derivative in the row two cell.\n\nThus this is the derivative array for the integrator.\n ",
+								"DiagramX": 125,
+								"DiagramY": 170,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Matrix",
+								"CellInputs": {
+									"0_0": "0",
+									"2_1": "Efficiency*PreyDeath*p[1]*p[2] - PredDeath*p[2]",
+									"1_1": "PreyGrowth*p[1] - PreyDeath*p[1]*p[2]"
+								},
+								"rowCount": "2",
+								"columnCount": "1"
+							},
+							{
+								"name": "p",
+								"Notes": "This is the calculated prey and predator populations, with the values being in rows one and two respectively.",
+								"DiagramX": 125,
+								"DiagramY": 115,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "integrate.y"
+								}
+							},
+							{
+								"name": "PreyPop",
+								"Notes": "Population of prey at each recorded time.",
+								"DiagramX": 215,
+								"DiagramY": 50,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "integrate.r2"
+								},
+								"isOutput": "y"
+							},
+							{
+								"name": "PredPop",
+								"Notes": "Population of predators at each recorded time.",
+								"DiagramX": 215,
+								"DiagramY": 85,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "integrate.r3"
+								},
+								"isOutput": "y"
+							},
+							{
+								"name": "Time",
+								"Notes": "The recorded integration times.",
+								"DiagramX": 215,
+								"DiagramY": 20,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "integrate.r1"
+								},
+								"isOutput": "y"
+							},
+							{
+								"name": "InitialPrey",
+								"Notes": "Initial number of prey",
+								"DiagramX": 35,
+								"DiagramY": 25,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "20"
+								},
+								"isInput": "y"
+							},
+							{
+								"name": "InitialPred",
+								"Notes": "Initial number of predators",
+								"DiagramX": 35,
+								"DiagramY": 55,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "20"
+								},
+								"isInput": "y"
+							},
+							{
+								"name": "Duration",
+								"Notes": "Length of time to calculate",
+								"DiagramX": 35,
+								"DiagramY": 85,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "15"
+								},
+								"isInput": "y"
+							},
+							{
+								"name": "Overview",
+								"Notes": "Example Overview",
+								"DiagramX": 35,
+								"DiagramY": -10,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tSimulates the classic predator/prey relationship as characterized by the Lotka-Volterra model.\n\t\t</p>\n\t\t<p>\n\t\t\tSee http://wikipedia.org/wiki/Lotka-Volterra_equation.\n\t\t</p>\n\t\t<p>\n\t\t\tFor our purposes this can be stated as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tdR/dt = a*R - b*R*F<br>\n\t\t\tdF/dt = e*b*R*F - cF\n\t\t</p>\n\t\t<p>\t\t\n\t\t\twhere:\n\t\t</p>\n\t\t<ul>\t\t\t\n\t\t\t<li>t = time</li>\n\t\t\t<li>R = prey population (R for rabbit)</li>\n\t\t\t<li>F = predator population (F for fox)</li>\n\t\t\t<li>a = the growth rate of prey in the absence of predators.</li>\n\t\t\t<li>b = the death rate of prey per predator encounter.</li>\n\t\t\t<li>c = death rate of predators with no prey.</li>\n\t\t\t<li>e = efficiency of turning prey into predators.</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThese variables are all represented as input expressions with more descriptive names and the resulting time versus population arrays are available as output expressions.\n\t\t</p>\n\t\t<p>\n\t\t\tBe sure and check out the ODE Explanation by tapping on its icon or <button onClick=\n\t\t\t\"mmpost([], {mm_view: 'ODE_Explanation'});\">\n\t\t\ttapping here</button>.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								}
+							},
+							{
+								"name": "ODE_Explanation",
+								"Notes": "",
+								"DiagramX": 130,
+								"DiagramY": -10,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>ODE Explanation</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThe <b>InitialPrey</b> and <b>InitialPred</b> values are concatenated into a two value array for the <b>Y0</b> initial values.  This determines that the solver will be integrating two equations simultaneously and that its <b>Y</b> output parameter will also be an array of length two.\n\t\t</p>\n\t\t<p>\n\t\t\tThe derivative values are the array, also length two, calculated in the <b>dp</b> object.\n\t\t</p>\n\t\t<p>\n\t\t\tThe stop time is taken from the <b>Duration</b> input expression.\n\t\t</p>\n\t\t<p>\t\t\t\n\t\t\tThe <b>Next T</b> formula calculates the time that the next set of values should be recorded and saved for viewing once the integration is complete.  In this case the formula:\n\t\t</p>\n\t\t<p class=\"formula\">\t\t\t\n\t\t\t$.t + Duration/500\n\t\t</p>\n\t\t<p>\n\t\t\tis used.  The <b>$</b> always refers to the object owning a formula, so in this case the integrate object itself. The <b>t</b> parameter of an ODE solver is always the current time as the solver proceeds through the calculation.\n\t\t</p>\n\t\t<p>\n\t\t\tAll the requested recorded values are evaluated at time <b>t = 0</b> and then the formula above is evaluated to determine the next time to record things.  When that occurs, it is again evaluated with the new time to determine the next record time and so forth.\n\t\t</p>\n\t\t<p>\n\t\t\tIn this case we are using fixed steps equal to 1/500th of the total specified duration.  Note that this does not determine the integration step size, which is independently determined to meet the required error tolerances, other than it might be shortened to match a record time when necessary.\n\t\t</p>\n\t\t<p>\n\t\t\tFor most problems, the tolerances can be left at the default values, as the are here.\n\t\t</p>\n\t\t<p>\n\t\t\tThree recorded values are defined:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>$.t</b> - the time of the recording</li>\n\t\t\t<li><b>p[1]</b> - the prey population at that time</li>\n\t\t\t<li><b>P[2]</b> - the predator population at that time</li>\n\t\t</ul>\n\t\t</div>\n\t</body>\n</html>"
+								}
+							}
+						]
+					},
+					{
+						"name": "Overview",
+						"Notes": "Example Overview",
+						"DiagramX": 10,
+						"DiagramY": 70,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model solves the Mathworks demonstration problem named \"Numerical Integration of Differential Equations\" in the demos section of the mathworks.com website.\n\t\t</p>\n\t\t<p>\n\t\t\tThey formulate the problem as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\ty1' = (1 - alpha)*y2)*y1<br>\n\t\t\ty2' = (-1+ beta*y1)*y2\n\t\t</p>\n\t\t<p>\n\t\t\t<b>alpha = 0.01</b> and <b>beta = 0.02</b> and the initial values <b>y1 = y2 = 20</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThis problem is solved as stated by the ode object.\n\t\t</p>\n\t\t<p>\n\t\t\tA little algebra can transform these equations into the form used by our population model,with:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tPreyGrowth = 1<br>\n\t\t\tPreyDeath = 0.01<br>\n\t\t\tPredDeath = 1<br>\n\t\t\tEfficiency = 2<br>\n\t\t</p>\n\t\t<p>\n\t\t\tPlugging these values into a copy of our   Population  model along with the appropriate initial values and duration, results in an equivalent solution.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+						}
+					}
+				]
+			},
+			{
+				"name": "Population",
+				"Notes": "Simulates the classic predator/prey relationship as characterized by the Lotka-Volterra model.",
+				"DiagramX": 20,
+				"DiagramY": 50,
+				"HideInfo": "n",
+				"DiagramNotes": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"indexTool": "overview",
+				"Objects": [
+					{
+						"name": "PreyGrowth",
+						"Notes": "Prey growth in absence of predators",
+						"DiagramX": 35,
+						"DiagramY": 115,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "1"
+						},
+						"isInput": "y"
+					},
+					{
+						"name": "PreyDeath",
+						"Notes": "Death rate of prey per encounter with predator",
+						"DiagramX": 35,
+						"DiagramY": 150,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "0.003"
+						},
+						"isInput": "y"
+					},
+					{
+						"name": "PredDeath",
+						"Notes": "Death rate of predator in a absence of food",
+						"DiagramX": 35,
+						"DiagramY": 185,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "2"
+						},
+						"isInput": "y"
+					},
+					{
+						"name": "Efficiency",
+						"Notes": "Efficiency of turning prey into predators.",
+						"DiagramX": 35,
+						"DiagramY": 220,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "1"
+						},
+						"isInput": "y"
+					},
+					{
+						"name": "integrate",
+						"Notes": "",
+						"DiagramX": 130,
+						"DiagramY": 25,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "ODE Solver",
+						"y0Formula": {
+							"Formula": "{concat InitialPrey,InitialPred}"
+						},
+						"dyFormula": {
+							"Formula": "dp"
+						},
+						"nextTFormula": {
+							"Formula": "$.t + Duration/500"
+						},
+						"endTFormula": {
+							"Formula": "Duration"
+						},
+						"relTolFormula": {
+							"Formula": "1.0e-5"
+						},
+						"absTolFormula": {
+							"Formula": "1.0e-10"
+						},
+						"recFormulas": [
+							{
+								"Formula": "$.t"
+							},
+							{
+								"Formula": "p[1]"
+							},
+							{
+								"Formula": "p[2]"
+							}
+						],
+						"AutoRun": "y"
+					},
+					{
+						"name": "dp",
+						"Notes": "This two cell matrix has the formula for the derivative of prey population wrt time in the row one cell and for the predator derivative in the row two cell.\n\nThus this is the derivative array for the integrator.\n ",
+						"DiagramX": 125,
+						"DiagramY": 170,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Matrix",
+						"CellInputs": {
+							"0_0": "0",
+							"2_1": "Efficiency*PreyDeath*p[1]*p[2] - PredDeath*p[2]",
+							"1_1": "PreyGrowth*p[1] - PreyDeath*p[1]*p[2]"
+						},
+						"rowCount": "2",
+						"columnCount": "1"
+					},
+					{
+						"name": "p",
+						"Notes": "This is the calculated prey and predator populations, with the values being in rows one and two respectively.",
+						"DiagramX": 125,
+						"DiagramY": 115,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "integrate.y"
+						}
+					},
+					{
+						"name": "PreyPop",
+						"Notes": "Population of prey at each recorded time.",
+						"DiagramX": 215,
+						"DiagramY": 50,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "integrate.r2"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "PredPop",
+						"Notes": "Population of predators at each recorded time.",
+						"DiagramX": 215,
+						"DiagramY": 85,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "integrate.r3"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "Time",
+						"Notes": "The recorded integration times.",
+						"DiagramX": 215,
+						"DiagramY": 20,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "integrate.r1"
+						},
+						"isOutput": "y"
+					},
+					{
+						"name": "InitialPrey",
+						"Notes": "Initial number of prey",
+						"DiagramX": 35,
+						"DiagramY": 25,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "200"
+						},
+						"isInput": "y"
+					},
+					{
+						"name": "InitialPred",
+						"Notes": "Initial number of predators",
+						"DiagramX": 35,
+						"DiagramY": 55,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "200"
+						},
+						"isInput": "y"
+					},
+					{
+						"name": "Duration",
+						"Notes": "Length of time to calculate",
+						"DiagramX": 35,
+						"DiagramY": 85,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "10"
+						},
+						"isInput": "y"
+					},
+					{
+						"name": "Overview",
+						"Notes": "Example Overview",
+						"DiagramX": 35,
+						"DiagramY": -10,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tSimulates the classic predator/prey relationship as characterized by the Lotka-Volterra model.\n\t\t</p>\n\t\t<p>\n\t\t\tSee http://wikipedia.org/wiki/Lotka-Volterra_equation.\n\t\t</p>\n\t\t<p>\n\t\t\tFor our purposes this can be stated as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tdR/dt = a*R - b*R*F<br>\n\t\t\tdF/dt = e*b*R*F - cF\n\t\t</p>\n\t\t<p>\t\t\n\t\t\twhere:\n\t\t</p>\n\t\t<ul>\t\t\t\n\t\t\t<li>t = time</li>\n\t\t\t<li>R = prey population (R for rabbit)</li>\n\t\t\t<li>F = predator population (F for fox)</li>\n\t\t\t<li>a = the growth rate of prey in the absence of predators.</li>\n\t\t\t<li>b = the death rate of prey per predator encounter.</li>\n\t\t\t<li>c = death rate of predators with no prey.</li>\n\t\t\t<li>e = efficiency of turning prey into predators.</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThese variables are all represented as input expressions with more descriptive names and the resulting time versus population arrays are available as output expressions.\n\t\t</p>\n\t\t<p>\n\t\t\tBe sure and check out the ODE Explanation by tapping on its icon or <button onClick=\n\t\t\t\"mmpost([], {mm_view: 'ODE_Explanation'});\">\n\t\t\ttapping here</button>.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+						}
+					},
+					{
+						"name": "ODE_Explanation",
+						"Notes": "",
+						"DiagramX": 130,
+						"DiagramY": -10,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>ODE Explanation</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThe <b>InitialPrey</b> and <b>InitialPred</b> values are concatenated into a two value array for the <b>Y0</b> initial values.  This determines that the solver will be integrating two equations simultaneously and that its <b>Y</b> output parameter will also be an array of length two.\n\t\t</p>\n\t\t<p>\n\t\t\tThe derivative values are the array, also length two, calculated in the <b>dp</b> object.\n\t\t</p>\n\t\t<p>\n\t\t\tThe stop time is taken from the <b>Duration</b> input expression.\n\t\t</p>\n\t\t<p>\t\t\t\n\t\t\tThe <b>Next T</b> formula calculates the time that the next set of values should be recorded and saved for viewing once the integration is complete.  In this case the formula:\n\t\t</p>\n\t\t<p class=\"formula\">\t\t\t\n\t\t\t$.t + Duration/500\n\t\t</p>\n\t\t<p>\n\t\t\tis used.  The <b>$</b> always refers to the object owning a formula, so in this case the integrate object itself. The <b>t</b> parameter of an ODE solver is always the current time as the solver proceeds through the calculation.\n\t\t</p>\n\t\t<p>\n\t\t\tAll the requested recorded values are evaluated at time <b>t = 0</b> and then the formula above is evaluated to determine the next time to record things.  When that occurs, it is again evaluated with the new time to determine the next record time and so forth.\n\t\t</p>\n\t\t<p>\n\t\t\tIn this case we are using fixed steps equal to 1/500th of the total specified duration.  Note that this does not determine the integration step size, which is independently determined to meet the required error tolerances, other than it might be shortened to match a record time when necessary.\n\t\t</p>\n\t\t<p>\n\t\t\tFor most problems, the tolerances can be left at the default values, as the are here.\n\t\t</p>\n\t\t<p>\n\t\t\tThree recorded values are defined:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>$.t</b> - the time of the recording</li>\n\t\t\t<li><b>p[1]</b> - the prey population at that time</li>\n\t\t\t<li><b>P[2]</b> - the predator population at that time</li>\n\t\t</ul>\n\t\t</div>\n\t</body>\n</html>"
+						}
+					}
+				]
+			},
+			{
+				"name": "plot",
+				"Notes": "Plots the prey and predator populations versus time.\n\nYou may want to adjust the two y axis maximums if you adjust the Population object input values such that the current ranges aren't appropriate.",
+				"DiagramX": 115,
+				"DiagramY": 50,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Graph",
+				"X1": {
+					"v": "Population.Time",
+					"vmin": "",
+					"vmax": "",
+					"Y1": {
+						"v": "Population.PreyPop'Prey",
+						"vmin": "0",
+						"vmax": "2000",
+						"lineType": 0
+					},
+					"Y2": {
+						"v": "Population.PredPop'Predator",
+						"vmin": "0",
+						"vmax": "2000",
+						"lineType": 0
+					}
+				}
+			},
+			{
+				"name": "plot2",
+				"Notes": "Plots the prey verus predator populations.\n\nYou may want to adjust the axis maximums if you adjust the Population object input values such that the current ranges aren't appropriate.",
+				"DiagramX": 115,
+				"DiagramY": 130,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Graph",
+				"X1": {
+					"v": "Population.PreyPop'Prey",
+					"vmin": "0",
+					"vmax": "2000",
+					"Y1": {
+						"v": "Population.PredPop'Predator",
+						"vmin": "0",
+						"vmax": "2000",
+						"lineType": 0
+					}
+				}
+			}
+		]
+	}
+}

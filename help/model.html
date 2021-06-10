@@ -11,6 +11,7 @@
 					namespace: 'Name Space',
 					ioexpr: 'Input and Output Expressions',
 					info: 'Information View',
+					indextool: 'Index Tool',
 					parameters: 'Formula Parameters',
 				});
 			};			
@@ -112,6 +113,22 @@
 					The order that tools are displayed within each section is determined
 					by their horizontal position on the model diagram, with ties being determined
 					by the vertical position.
+				</p>
+			</div>
+			<div id="indextool" class="section">
+				<h3>Index Tool</h3>
+				<p>
+					It is possible to set a specific tool in the model to always be displayed in
+					the information view when the model is first opened. To do this you must enter
+					a command of the following form in the console view:
+				</p>
+				<p class="formula">
+					pathToModel set indexTool toolName
+				</p>
+				<p>
+					where "pathToModel" is the path to the model (e.g. /.root.myModel) and toolName is
+					the name of the tool to display. Omit toolName to remove a previous designation. This
+					cannot be set for the root model.
 				</p>
 			</div>
 			<div id="parameters" class="section">

@@ -10,7 +10,7 @@
 	],
 	"CaseName": "Getting Started",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
+	"SelectedObject": "Welcome",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -24,13 +24,14 @@
 		"Objects": [
 			{
 				"name": "Models",
-				"Notes": "The icons above and below this note are models, which have their own tools\nand diagram. Tap on the one above to open it.",
+				"Notes": "The icons on this diagram that are labeled 'Model\" have their own tools and diagram. Tap on the one above to open it.",
 				"DiagramX": 145,
 				"DiagramY": -40,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
 				"Type": "Model",
 				"diagramScale": 1,
+				"indexTool": "Models",
 				"Objects": [
 					{
 						"name": "square",
@@ -58,9 +59,9 @@
 					},
 					{
 						"name": "Speed",
-						"Notes": "You are now in a model contained within the root model. It has its own diagram and tools and these tools can have the same names as other tools in other models. In this case all the tools are just expressions.\n\nTo return to the parent model, click on\n\n< root\n\nat the upper left of the diagram.\n\nTapping on a tool icon will result in a view containing information about the tool being presented.\n\nIf the window is wide enough, this will be in the panel on the right, otherwise it will replace the diagram, in which case use the diagram button at the lower right to return to the diagram.",
+						"Notes": "A stand alone, unconnected expression.",
 						"DiagramX": 40,
-						"DiagramY": 5,
+						"DiagramY": 40,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"Type": "Expression",
@@ -68,17 +69,30 @@
 							"Formula": "100 m / 3 s 'comment:\njust a dummy expression for note.  Everything after the ' is just a comment\n"
 						},
 						"displayUnit": "mph"
+					},
+					{
+						"name": "Models",
+						"Notes": "Overview",
+						"DiagramX": 40,
+						"DiagramY": 5,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Models</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tYou are now in a model contained within the root model. It has its own diagram and tools and these tools can have the same names as other tools in other models. In this case all the tools are just expressions.\n\t\t</p>\n\t\t<p>\n\t\t\tTo return to the parent model, click on\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t< root\n\t\t</p>\n\t\t<p>\n\t\t\tat the upper left of the diagram.\n\t\t</p>\n\t\t<p>\n\t\t\tTapping on a tool icon will result in a view containing information about the tool being presented.\n\t\t</p>\n\t\t<p>\n\t\t\tIf the window is wide enough, this will be in the panel on the right, otherwise it will replace the diagram, in which case use the <b>diagram</b> button at the lower right to return to the diagram.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+						}
 					}
 				]
 			},
 			{
 				"name": "Tools",
 				"DiagramX": 145,
-				"DiagramY": 75,
+				"DiagramY": 50,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"Type": "Model",
 				"diagramScale": 1,
+				"indexTool": "Tools",
 				"Objects": [
 					{
 						"name": "Graph",
@@ -282,320 +296,6 @@
 						]
 					},
 					{
-						"name": "Solver",
-						"Notes": "",
-						"DiagramX": 120,
-						"DiagramY": 40,
-						"HideInfo": "n",
-						"DiagramNotes": "n",
-						"Type": "Model",
-						"diagramScale": 1,
-						"Objects": [
-							{
-								"name": "Broyden",
-								"Notes": "This is the classic Broyden 3 function test system, which has the equations:\n\n3*x-cos(y*z)-0.5 = 0\n\nx^2 -81*(y+0.1)^2 + sin(z) +1.06 = 0\n\nExp(-x*y) +20*z+ (10*pi -3)/3 = 0\n\nThe solution should be:\n\n0.500000\n0\n-0.523599\n\nIn this case the entire problem is defined right in the solver object, making use of $.1, $.2 and $.3 as the solver outputs.\n\nRecall that the $ symbols in a formula is a short cut for the object that owns the formula.",
-								"DiagramX": 25,
-								"DiagramY": 145,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Equation Solver",
-								"f0": "3 * $.1 - {cos $.2 * $.3} - 0.5",
-								"c0": "1",
-								"f1": "$.1*$.1 - 81*($.2 + 0.1)^2 + {sin $.3} + 1.06",
-								"c1": "1",
-								"f2": "{exp $.1*$.2} + 20*$.3 + (10*{pi} - 3.) / 3.0",
-								"c2": "1",
-								"maxIter": 200,
-								"maxJacobians": 5,
-								"Enabled": "y"
-							},
-							{
-								"name": "Recycle",
-								"Notes": "This model represents a highly stylized recycle operation of the sort that might occur in a chemical plant.\n\nAn input material, in the \"feed\" array, is mixed with material recycled from farther along in the plant.  The mixed material is then split by some process (here just an arbitrary formula) which results in the recycle flow and a product flow.\n\nSince, in this nonsensical example, everything that goes in must end up in the product, it serves no real point other than exercising the solver, which combines an array function with a scalar function.",
-								"DiagramX": 100,
-								"DiagramY": 145,
-								"HideInfo": "n",
-								"DiagramNotes": "y",
-								"Type": "Model",
-								"diagramScale": 1,
-								"Objects": [
-									{
-										"name": "Solver",
-										"Notes": "This solver has two functions defined, with the first being the differences between the calculated and estimated recycle values.  The second is a scalar function of the difference between the calculated and estimates energy recycle values.\n\nAs there are three \"components\" in the first function, the solver is actually solving for 4 simultaneous equations.\n\nYou must tell the solver how many outputs to generate for each function, so for the first function this is designated as {nrows feed}.",
-										"DiagramX": 140,
-										"DiagramY": 110,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Equation Solver",
-										"f0": "splits - recycle",
-										"c0": "{nrows feed}",
-										"f1": "(qsplit - qcycle)/100",
-										"c1": "1",
-										"maxIter": 200,
-										"maxJacobians": 5,
-										"Enabled": "y"
-									},
-									{
-										"name": "recycle",
-										"Notes": "The output of the solver variable 1 is an array and is used directly as the recycle.",
-										"DiagramX": 60,
-										"DiagramY": 125,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "solver.1"
-										}
-									},
-									{
-										"name": "sum",
-										"Notes": "        The feed and recycle\n        materials are mixed.",
-										"DiagramX": 140,
-										"DiagramY": 75,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feed + recycle"
-										}
-									},
-									{
-										"name": "splits",
-										"Notes": "An arbitrary function with no physical significance is used to split the combined material into a calculated recycle material.\n\nThese values  should be equal to the estimated values in the recycle object when solved.",
-										"DiagramX": 225,
-										"DiagramY": 75,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "(sum*1:3*.3)^.9"
-										}
-									},
-									{
-										"name": "q",
-										"Notes": "The amount of energy contained in the feed material.",
-										"DiagramX": 60,
-										"DiagramY": 250,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "100"
-										}
-									},
-									{
-										"name": "qcycle",
-										"Notes": "The energy recycle, scaled\nfrom the solver variable 2.",
-										"DiagramX": 60,
-										"DiagramY": 175,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "Solver.2 * 10"
-										}
-									},
-									{
-										"name": "qsum",
-										"Notes": "As with the material, the feed energy is added to the recycled energy.",
-										"DiagramX": 140,
-										"DiagramY": 250,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "q + qcycle"
-										}
-									},
-									{
-										"name": "qsplit",
-										"Notes": "Another arbitrary split producing a calculated recycle energy.",
-										"DiagramX": 225,
-										"DiagramY": 205,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": ".1*qsum"
-										}
-									},
-									{
-										"name": "Product",
-										"Notes": "What isn't recycled is the product, which should be equal to the feed when solved.",
-										"DiagramX": 225,
-										"DiagramY": 155,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "sum - splits"
-										}
-									},
-									{
-										"name": "QProduct",
-										"Notes": "The product energy flow, which should be the same as the feed energy flow when the problem is solved.",
-										"DiagramX": 225,
-										"DiagramY": 250,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "qsum - qsplit"
-										}
-									},
-									{
-										"name": "feed",
-										"Notes": "An arbitrary \"feed\" material.",
-										"DiagramX": 60,
-										"DiagramY": 75,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "1:3"
-										}
-									}
-								]
-							},
-							{
-								"name": "Single",
-								"Notes": "This model determines the intersection between two curves, specifically a parabola and a line.  Obviously this could easily be solved algebraically or even graphically, but that very simplicity makes it a useful example.\n\nThe top set of connected tools provides a visual representation of the problem, by graphing a range of x values versus the y values calculated by the parabola and line expressions.\n\nA glance at the plot shows that the line will cross the parabola in two places and indeed it is easy to determine their coordinates by zooming in and dragging the crossing points to a grid line.\n\nThe lower set of connected blocks uses the solver tool to find a value of x where the y values calculated by the two expressions are equal and hence at the intersection.",
-								"DiagramX": -55,
-								"DiagramY": 145,
-								"HideInfo": "n",
-								"DiagramNotes": "y",
-								"Type": "Model",
-								"diagramScale": 1,
-								"Objects": [
-									{
-										"name": "parabolaCopy",
-										"Notes": "A copy of the \"parabola\" expression, with the x value replaced with \"solverX\".",
-										"DiagramX": -325,
-										"DiagramY": -105,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "(SolverX+5)^2 +7"
-										}
-									},
-									{
-										"name": "lineCopy",
-										"Notes": "A copy of the \"line\" expression, with the x value replaced with \"solverX\".",
-										"DiagramX": -325,
-										"DiagramY": -60,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "2000 - 20*SolverX"
-										}
-									},
-									{
-										"name": "Plot",
-										"Notes": "A plot of the line and parabola.  Note that the line crosses the parabola twice, yielding two places where the\n\nparabola - line\n\nvalue will be zero.\n\nStrictly speaking, the Brent solver is likely to fail if the slope of the function changes sign, but an appropriate choice of starting point and range can be used to overcome that.",
-										"DiagramX": -220,
-										"DiagramY": -240,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Graph",
-										"X1": {
-											"v": "x",
-											"vmin": "",
-											"vmax": "",
-											"Y1": {
-												"v": "parabola",
-												"vmin": "0",
-												"vmax": "3500",
-												"lineType": 0
-											},
-											"Y2": {
-												"v": "line",
-												"vmin": "0",
-												"vmax": "3500",
-												"lineType": 0
-											}
-										}
-									},
-									{
-										"name": "SolverX",
-										"Notes": "The output of the solver is constrained to between -1 and 1 for a single value problem.  The starting value will be 0.\n\nIn this case, I multiply the solver output by 50 and add 50 so that the starting value is 50 and the solution must be between 0 and 100.  This will constrain the solution to be on the right side of the parabola as shown in the plot.\n\nTry adding a minus sign to the first 50, so the formula becomes:\n\n-50 + Solver.1*50\n\nNow the function value is initialized and largely constrained to the left side of the parabola and the solution on that side is the one found.",
-										"DiagramX": -225,
-										"DiagramY": -70,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "50 + Solver.1*50"
-										}
-									},
-									{
-										"name": "parabola",
-										"Notes": "An expression which calculates the y value of a parabola, give an x value(s).",
-										"DiagramX": -325,
-										"DiagramY": -200,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "(x+5)^2 +7"
-										}
-									},
-									{
-										"name": "line",
-										"Notes": "An expression which calculates a y value for the given x value(s).",
-										"DiagramX": -325,
-										"DiagramY": -155,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "2000 - 20*x"
-										}
-									},
-									{
-										"name": "x",
-										"Notes": "A range of values used to plot the parabola and line.",
-										"DiagramX": -325,
-										"DiagramY": -240,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "-75:50"
-										}
-									},
-									{
-										"name": "Solver",
-										"Notes": "The solver will alter its output variable (referenced as Solver.1 for the first, and in this case only, output) until the function defined as f(1) has a value of 0.\n\nThe number of outputs for a function must match the length of the array calculated by the function - in this case just 1.\n\nThe reset will set all function outputs to 0 and uncheck the Enabled box.  Check that box when you want the solver to attempt to find a solution.\n\nNote that if the solver should fail to converge, it will turn off its solve switch and will no longer attempt to resolve when its function inputs change.\n\nYou will have to return to the solver and turn on the switch when you have fixed the convergence problem.",
-										"DiagramX": -225,
-										"DiagramY": -105,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Equation Solver",
-										"f0": "parabolaCopy - lineCopy",
-										"c0": "1",
-										"maxIter": 200,
-										"maxJacobians": 5,
-										"Enabled": "y"
-									}
-								]
-							},
-							{
-								"name": "Solver",
-								"Notes": "The equation solver tool modifies one or more output values until the function values calculated from those outputs are zero.  If there is a single scalar output, then the Brent method is used, with the output value limited to the range -1 to 1 (the function calculation can of course scale that to anything).\n\nIf it is a multi value problem, then the Broyden method is used and while in that case the output values can exceed the -1 to 1 range, it is still good practice  to scale the problem so all values are relatively normalized.\n\nThis model contains three different solver examples.",
-								"DiagramX": -135,
-								"DiagramY": 145,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "\"Overview\""
-								}
-							}
-						]
-					},
-					{
 						"name": "Iterator",
 						"Notes": "",
 						"DiagramX": 120,
@@ -604,6 +304,7 @@
 						"DiagramNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
+						"indexTool": "overview",
 						"Objects": [
 							{
 								"name": "Dice",
@@ -821,15 +522,15 @@
 								]
 							},
 							{
-								"name": "Iterator",
-								"Notes": "Math Minion's array and matrix tools, including the range operator and it's solvers, make conventional loops largely unnecessary.  However they can still be occasionally useful, particularly for case study type problems.\n\nThe iterator tool provides this capability.  It has a loop variable (parameter X) and a loop counter (parameter i) and also allows values to be recorded for each iteration.\n\nThere are two simple examples presented here.  The Dice model calculates the likelihood of a given outcome of rolling two dice.  This is done in a brute force manner to illustrate iterator use.\n\nThe XArray model doesn't really do anything, other than illustrate that the loop variable does not have to be a scalar.",
-								"DiagramX": 125,
-								"DiagramY": -50,
+								"name": "Overview",
+								"Notes": "",
+								"DiagramX": 245,
+								"DiagramY": -80,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
-								"Type": "Expression",
+								"Type": "HTML Form",
 								"Formula": {
-									"Formula": "\"Overview\""
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tMath Minion's array and matrix tools, including the range operator and it's solvers, make conventional loops largely unnecessary.  However they can still be occasionally useful, particularly for case study type problems.\n\t\t</p>\n\t\t<p>\n\t\t\tThe iterator tool provides this capability.  It has a loop variable (parameter X) and a loop counter (parameter i) and also allows values to be recorded for each iteration.\n\t\t</p>\n\t\t<p>\t\t\t\n\t\t\tThere are two simple examples presented here.  The Dice model calculates the likelihood of a given outcome of rolling two dice.  This is done in a brute force manner to illustrate iterator use.\n\t\t</p>\n\t\t<p>\t\t\t\n\t\t\tThe XArray model doesn't really do anything, other than illustrate that the loop variable does not have to be a scalar.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
 								}
 							}
 						]
@@ -843,24 +544,13 @@
 						"DiagramNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
+						"indexTool": "introduction",
 						"Objects": [
-							{
-								"name": "Introduction",
-								"Notes": "An expression is the simplest Math Minion object - just a formula and the display of a result.  But like equations in a math problem, they are the work horse of any problem.\n\nYou will probably use expressions more than any other Math Minion tool.  This model has more examples and information about using them.\n",
-								"DiagramX": 15,
-								"DiagramY": 10,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "(2 kg + 2 lb) / 2 litre"
-								}
-							},
 							{
 								"name": "ScalarNumber",
 								"Notes": "Expressions are often used to represent scalar values or constants, such as the density in this expression.",
-								"DiagramX": 15,
-								"DiagramY": 115,
+								"DiagramX": 20,
+								"DiagramY": 40,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
@@ -910,7 +600,7 @@
 								"name": "StringArray",
 								"Notes": "Arrays can have string values as well",
 								"DiagramX": 95,
-								"DiagramY": 235,
+								"DiagramY": 190,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
@@ -933,8 +623,8 @@
 							{
 								"name": "Complex",
 								"Notes": "Any two column array can be used as a complex number, with the first column representing the real component and the second the imaginary one.\n\nAll the complex value functions use table values to represent their results, with column 1 being labeled \"r\" and column 2 \"i\".",
-								"DiagramX": 15,
-								"DiagramY": 170,
+								"DiagramX": 20,
+								"DiagramY": 95,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
@@ -945,8 +635,8 @@
 							{
 								"name": "Strings",
 								"Notes": "Expressions can also contain strings",
-								"DiagramX": 95,
-								"DiagramY": 195,
+								"DiagramX": 15,
+								"DiagramY": 190,
 								"HideInfo": "n",
 								"DiagramNotes": "y",
 								"Type": "Model",
@@ -989,6 +679,18 @@
 										}
 									}
 								]
+							},
+							{
+								"name": "Introduction",
+								"Notes": "",
+								"DiagramX": 20,
+								"DiagramY": 10,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Introduction</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tAn expression is the simplest Math Minion object - just a formula and the display of a result.  But like equations in a math problem, they are the work horse of any problem.\n\t\t</p>\n\t\t<p>\n\t\t\tYou will probably use expressions more than any other Math Minion tool.  This model has more examples and information about using them.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								}
 							}
 						]
 					},
@@ -1001,19 +703,8 @@
 						"DiagramNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
+						"indexTool": "DataTables",
 						"Objects": [
-							{
-								"name": "DataTables",
-								"Notes": "Data tables are unlike other Math Minion tools in that they contain static data as compared to the dynamic formulas that other tools use.\n\nWhile formulas can be used to input values, the formulas are immediately evaluated and discarded, with only the result being retained.\n\nThis makes data tables ideal for storing the kind of information that is often stored in spreadsheet or database tables.\n\nThe analogy is stronger with the latter as spreadsheets mix their data and calculations in the same cells, whereas databases and Math Minion store static data in their tables and use external, and hence visible, operations to slice and dice this data into other table value representations, without altering the source data.",
-								"DiagramX": -140,
-								"DiagramY": -70,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "\"Just a note holder\""
-								}
-							},
 							{
 								"name": "Records",
 								"Notes": "This is a data table with columns recording the minimum and maximum temperature and rainfall amounts from my deck weather station over a few years, back when we lived in Fernie BC.\n\nAs values might not have been available for some rows, I have arbitrarily assigned the value -12321 to mean not available and this is used in  the default value formulas for the temperature columns, as well as a number of the expressions that manipulate this data.\n\nThe default value for the date is the current date, while the default value for the rainfall column simply replicates the value of the previous last row, as this often does not change.\n\nNote that even though the default value formulas reference the EmptyT expression, there is no line drawn on the model diagram from that expression to this data table.  That is because the connection is not dynamic.\n\nThe formula is only evaluated when a new row is added and changing the value of EmptyT afterwards would not change any of the current table values.",
@@ -8713,7 +8404,7 @@
 								"name": "EmptyT",
 								"Notes": "An arbitrary value that would never occur naturally in the data set and is used to designate no data is available for that cell.\n\nThe result of this expression is used in temperature fields, so it is defined with a unit.\n",
 								"DiagramX": -50,
-								"DiagramY": -70,
+								"DiagramY": -30,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
@@ -8725,7 +8416,7 @@
 								"name": "BothTYM",
 								"Notes": "Convert the time into a date value and divide by 100 and take the integer to get just the year and month numbers.",
 								"DiagramX": -55,
-								"DiagramY": 55,
+								"DiagramY": 95,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
@@ -8750,7 +8441,7 @@
 								"name": "BothTMonth",
 								"Notes": "Use the divide, int, multiply trick to strip off the months and then subtract that from the original to end up with just the month number.\n",
 								"DiagramX": -55,
-								"DiagramY": 85,
+								"DiagramY": 125,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
@@ -8812,7 +8503,7 @@
 								"name": "BothT",
 								"Notes": "Again similar to the MinT expression, but in this case we are only selecting rows where both the minimum and maximum temperatures are known and we are creating a table with both of those values, plus the date.",
 								"DiagramX": -55,
-								"DiagramY": 20,
+								"DiagramY": 60,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
@@ -8901,7 +8592,7 @@
 								"name": "MonthRecords",
 								"Notes": "This formula:\n\n{append\n\t{table BothT,\n\t\tBothTMonth,\n\t\tbotht[ 0, 2:{ncols botht}]\n\t},\n\t{table \"count\", 1:{nrows botht} * 0 + 1}\n}\n\nfirst creates a new table value from BothT, where the Date values are replaced with the month numbers from BothTMonth.\n\nThis is done so we can sum the totals by month using the groupsum function in the MonthTotals expression.\n\nIn addition, a column with all 1 values is appended to allow us to count the number of entries in each group.\n",
 								"DiagramX": -55,
-								"DiagramY": 115,
+								"DiagramY": 155,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
@@ -8920,6 +8611,18 @@
 								"Formula": {
 									"Formula": "{table {cc \"Months\", \"MinT\", \"MaxT\"},\n\t {cc \"January\", \"February\", \"March\", \"April\",\n\t\t\"May\",  \"June\", \"July\", \"August\",\n\t\t\"September\", \"October\",\n\t\t\"November\", \"December\"\n\t},\n\tSortedMonths[0,2:3] / SortedMonths[0,4]\n}"
 								}
+							},
+							{
+								"name": "DataTables",
+								"Notes": "DataTables overview",
+								"DiagramX": -50,
+								"DiagramY": -70,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Data Tables</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tData tables are unlike other Math Minion tools in that they contain static data as compared to the dynamic formulas that other tools use.\n\t\t</p>\n\t\t<p>\n\t\t\tWhile formulas can be used to input values, the formulas are immediately evaluated and discarded, with only the result being retained.\n\t\t</p>\n\t\t<p>\n\t\t\tThis makes data tables ideal for storing the kind of information that is often stored in spreadsheet or database tables.\n\t\t</p>\n\t\t<p>\n\t\t\tThe analogy is stronger with the latter as spreadsheets mix their data and calculations in the same cells, whereas databases and Math Minion store static data in their tables and use external, and hence visible, operations to slice and dice this data into other table value representations, without altering the source data.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								}
 							}
 						]
 					},
@@ -8932,6 +8635,7 @@
 						"DiagramNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
+						"indexTool": "overview",
 						"Objects": [
 							{
 								"name": "Rosenbrock",
@@ -8953,18 +8657,6 @@
 								],
 								"Enabled": true,
 								"Optimized": true
-							},
-							{
-								"name": "Optimizer",
-								"Notes": "Like the solver tool, the optimizer manipulates one or more output values to achieve a desired result.  \n\nFor the optimizer this is to obtain the smallest value possible for a single function that incorporates the solver outputs.\n\nThe Powell method is used.\n\nThis model contains two examples:\n\n- Rosenbrock - a classic optimization example.\n\n- LeastSqr - uses the optimizer to fit a curve to a set of data points.",
-								"DiagramX": -220,
-								"DiagramY": -145,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "\"Overview\""
-								}
 							},
 							{
 								"name": "LeastSqr",
@@ -9150,6 +8842,18 @@
 										}
 									}
 								]
+							},
+							{
+								"name": "Overview",
+								"Notes": "",
+								"DiagramX": -100,
+								"DiagramY": -170,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tLike the solver tool, the optimizer manipulates one or more output values to achieve a desired result.  \n\t\t</p>\n\t\t<p>\n\t\t\tFor the optimizer this is to obtain the smallest value possible for a single function that incorporates the solver outputs.\n\t\t</p>\n\t\t<p>\n\t\t\tThe Powell method is used.\n\t\t</p>\n\t\t<p>\n\t\t\tThis model contains two examples:\n\t\t</p>\n\t\t<ul>\t\n\t\t\t<li>Rosenbrock - a classic optimization example.</li>\t\t\t\n\t\t\t<li>LeastSqr - uses the optimizer to fit a curve to a set of data points.</li>\n\t\t</ul>\n\t\t</div>\n\t</body>\n</html>"
+								}
 							}
 						]
 					},
@@ -9353,12 +9057,13 @@
 								"DiagramNotes": "y",
 								"Type": "Model",
 								"diagramScale": 1,
+								"indexTool": "overview",
 								"Objects": [
 									{
 										"name": "interest",
 										"Notes": "A constant for the Savings calculation.",
-										"DiagramX": 15,
-										"DiagramY": 100,
+										"DiagramX": 20,
+										"DiagramY": 50,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
@@ -9369,8 +9074,8 @@
 									{
 										"name": "initial",
 										"Notes": "The initial amount of savings\n",
-										"DiagramX": 15,
-										"DiagramY": 140,
+										"DiagramX": 20,
+										"DiagramY": 90,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
@@ -9381,8 +9086,8 @@
 									{
 										"name": "futureV",
 										"Notes": "One can accomplish the same thing with a single formula, if you aren't trying to demonstrate matrix behaviour. :-)",
-										"DiagramX": 15,
-										"DiagramY": 180,
+										"DiagramX": 20,
+										"DiagramY": 130,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
@@ -9420,14 +9125,14 @@
 									},
 									{
 										"name": "Overview",
-										"Notes": "The cell function was discussed in the notes for the Matrix tool, but how it might be useful may not have been obvious in that contrived example. It actually comes up quite frequently so here is another contrived and very simple example of its use.",
-										"DiagramX": 15,
+										"Notes": "",
+										"DiagramX": 20,
 										"DiagramY": 20,
-										"HideInfo": "n",
+										"HideInfo": "y",
 										"DiagramNotes": "y",
-										"Type": "Expression",
+										"Type": "HTML Form",
 										"Formula": {
-											"Formula": ""
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThe cell function was discussed in the notes for the Matrix tool, but how it might be useful may not have been obvious in that contrived example.\n\t\t</p>\n\t\t<p>\n\t\t\tIt actually comes up quite frequently so here is another contrived and very simple example of its use.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
 										}
 									}
 								]
@@ -9782,12 +9487,13 @@
 						"DiagramNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
+						"indexTool": "overview",
 						"Objects": [
 							{
 								"name": "Interest",
 								"Notes": "In the \"Matrices\" model, there was an example where the growth of an investment was calculated assuming interest that was compounded monthly.\n\nThis example uses the ODE solver to see what would happen if the interest were continuously compounded.",
 								"DiagramX": 5,
-								"DiagramY": -70,
+								"DiagramY": -10,
 								"HideInfo": "n",
 								"DiagramNotes": "y",
 								"Type": "Model",
@@ -9923,18 +9629,6 @@
 										}
 									}
 								]
-							},
-							{
-								"name": "ODEs",
-								"Notes": "The ODE solver is used to integrate a set of 1 or more ordinary differential equations (ODE).\n\nAn ODE is a function with a single independent variable and a derivative with respect to that variable.\n\nEssentially it determines y with respect to t from t=0 to some end point, where dy/dt is some function of y.\n\nArrays or tables y and dy/dt must be the same size and with compatible units (i.e units y must equal units dy times units t).\n\nMath Minion uses code inspired by the Sundials suite of solvers developed at the Lawerence Livermore National Library in the US.\n\nIt uses a variant of the Adam Moulton method for non-stiff problems and Backwards Difference Formulas (BDF) when the problem is designated as stiff.",
-								"DiagramX": -70,
-								"DiagramY": -70,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "\"Overview\""
-								}
 							},
 							{
 								"name": "Pendulum",
@@ -10598,6 +10292,18 @@
 										}
 									}
 								]
+							},
+							{
+								"name": "Overview",
+								"Notes": "",
+								"DiagramX": 10,
+								"DiagramY": -70,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThe ODE solver is used to integrate a set of 1 or more ordinary differential equations (ODE).\n\t\t</p>\n\t\t<p>\n\t\t\tAn ODE is a function with a single independent variable and a derivative with respect to that variable.\n\t\t</p>\n\t\t<p>\n\t\t\tEssentially it determines <b>y</b> with respect to <b>t</b> from <b>t=0</b> to some end point, where <b>dy/dt</b> is some function of <b>y</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tArrays or tables <b>y</b> and <b>dy/dt</b> must be the same size and with compatible units (i.e units <b>y</b> must equal units <b>dy</b> times units <b>t</b>).\n\t\t</p>\n\t\t<p>\n\t\t\tMath Minion uses code inspired by the Sundials suite of solvers developed at the Lawerence Livermore National Library in the US.\n\t\t</p>\n\t\t<p>\n\t\t\tIt uses a variant of the Adam Moulton method for non-stiff problems and Backwards Difference Formulas (BDF) when the problem is designated as stiff.\n\t\t</p>\n\t\t<p>\n\t\t\tThis model contains some models illustrating the use of the ODE tool. \n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								}
 							}
 						]
 					},
@@ -10610,6 +10316,7 @@
 						"DiagramNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
+						"indexTool": "introduction",
 						"Objects": [
 							{
 								"name": "Area",
@@ -10627,24 +10334,12 @@
 								"name": "d",
 								"Notes": "A diameter",
 								"DiagramX": 20,
-								"DiagramY": 135,
+								"DiagramY": 30,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "2 m"
-								}
-							},
-							{
-								"name": "Model",
-								"Notes": "An expression in a model can communicate with the parent model by having its input switch/checkbox turned on.\n\nIts formula will then be evaluated in terms of the parent tools, but the calculated value will be available to its model.\n\nSimilarly, an expression designated as output, will be available to the parent model.\n\nIn this case circle.area retrieves the value of the “area” expression in the circle model.\n",
-								"DiagramX": 20,
-								"DiagramY": 0,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "\"Just a note holder\""
 								}
 							},
 							{
@@ -10660,20 +10355,33 @@
 								}
 							},
 							{
+								"name": "Introduction",
+								"Notes": "",
+								"DiagramX": 20,
+								"DiagramY": 0,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Introduction</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tAn expression in a model can communicate with the parent model by having its input switch/checkbox turned on.\n\t\t</p>\n\t\t<p>\n\t\t\tIts formula will then be evaluated in terms of the parent tools, but the calculated value will be available to its model.\n\t\t</p>\n\t\t<p>\n\t\t\tSimilarly, an expression designated as output, will be available to the parent model.\n\t\t</p>\n\t\t<p>\n\t\t\tIn this case circle.area retrieves the value of the \"area\" expression in the circle model.\n\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								}
+							},
+							{
 								"name": "circle",
-								"Notes": "A model which calculates the circumference and area of a circle, given the radius.\n\nIts expressions have the input and output switches set so they are exposed to the parent model.",
-								"DiagramX": 105,
+								"Notes": "A model which calculates the circumference and area of a circle, given the radius.\n\nIts expressions have the input and output switches set so they are exposed to the parent model.\n\nTap the icon above to view the model diagram.",
+								"DiagramX": 100,
 								"DiagramY": 0,
 								"HideInfo": "n",
 								"DiagramNotes": "y",
 								"Type": "Model",
 								"diagramScale": 1,
+								"indexTool": "Circle_Overview",
 								"Objects": [
 									{
 										"name": "radius",
-										"Notes": "By turning on the input switch, the variables used in\nthe expression formula refer\nto those of the parent.",
+										"Notes": "By turning on the input switch in this expression’s info view, the variables used in\nthe expression formula refer\nto those of the parent.",
 										"DiagramX": 20,
-										"DiagramY": 45,
+										"DiagramY": 80,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
@@ -10685,8 +10393,8 @@
 									{
 										"name": "circumference",
 										"Notes": "",
-										"DiagramX": 110,
-										"DiagramY": 120,
+										"DiagramX": 105,
+										"DiagramY": 110,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -10698,7 +10406,7 @@
 									{
 										"name": "area",
 										"Notes": "Turning on the output switch allows the parent to access the result of this expression using normal dot notation as in:\n\ncircle.area",
-										"DiagramX": 110,
+										"DiagramX": 105,
 										"DiagramY": 45,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
@@ -10711,17 +10419,17 @@
 									{
 										"name": "xyplot",
 										"Notes": "Plot the circle from cart as well as one half the size.",
-										"DiagramX": 110,
-										"DiagramY": 150,
+										"DiagramX": 105,
+										"DiagramY": 180,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Graph",
 										"X1": {
-											"v": "cart.x 'X1",
+											"v": "coordinates.x 'X1",
 											"vmin": "",
 											"vmax": "",
 											"Y1": {
-												"v": "cart.y 'Y1",
+												"v": "coordinates.y 'Y1",
 												"vmin": "",
 												"vmax": "",
 												"lineType": 0
@@ -10740,10 +10448,22 @@
 										}
 									},
 									{
-										"name": "cart",
-										"Notes": "Calculate the x-y coordinates for a circle with a radius equal to radius[1,1].\n\nIn this case the radius is a scalar anyway, but it could have been defined as an array or matrix, in which case the [1,1] would ensure just the first element was used.",
-										"DiagramX": 15,
-										"DiagramY": 185,
+										"name": "Circle_Overview",
+										"Notes": "Overview",
+										"DiagramX": 20,
+										"DiagramY": 45,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Circle Overview</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tExpressions have input and output switched\\s that are normally off, but can be turned on to indicate that the expression can interact with parent of the model that contains it.\n\t\t</p>\n\t\t<p>\n\t\t\tIf the input switch is on, then any tool names used in the expression will refer to tools in the parent model, rather than the model containing the expression. In this case, the expression <b>radius</b> has its input switch turned on and so its formula:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tdiameter / 2\n\t\t</p\n\t\t<p>\n\t\t\tlooks for a value called diameter in the A_Simple_Calc model, not the circle model.\n\t\t</p>\n\t\t<p>\n\t\t\tBoth the <b>area</b> and <b>circumference</b> expressions have their output switches turned on and so can be reference from the parent model, A_Simple_Calc, by a formula like:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tcircle.area\n\t\t</p>\n\t\t<p>\n\t\t\tThey can also be used with in the circle model itself like normal expressions.\n\t\t</p>\n\t\t<p>\n\t\t\tTake a look at the radius, area and circumference expressions and then have a look at the <b>Coordinates_Calc</b> tool.\n\t\t</p> \n\t\t\t\n\t\t<p>\n\t\t\tWhen you are done. return to the parent model by tapping on the <b>&gt; A_Simple_Calc</b> button at the upper right of the diagram.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+										}
+									},
+									{
+										"name": "coordinates",
+										"Notes": "Calculate the x-y coordinates for a circle with a radius equal to radius.",
+										"DiagramX": 105,
+										"DiagramY": 135,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
@@ -10752,14 +10472,16 @@
 										}
 									},
 									{
-										"name": "Order",
-										"Notes": "The order that the inputs, outputs and internal tools appear in the model info view is determined by their icons' positions on the diagram.\n\nThose farthest left are first, with ties being broken by the ones closer to the top being first.",
-										"DiagramX": 25,
-										"DiagramY": 95,
+										"name": "Coordinates_Calc",
+										"Notes": "Explanation of the calculation of the coordinates expression",
+										"DiagramX": 20,
+										"DiagramY": 135,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {}
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Calculation of Cart</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThe formula in the <b>coordinates</b> expression:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t{cart radius[1,1], 1:60 / 30  * {pi}}\n\t\t</p>\n\t\t<p>\n\t\t\tis a bit more complicated. Library functions are called by enclosing them in curly braces, with the name of the function immediately after the opening brace. The parameters, if any, follow in a comma separated list.\n\t\t</p>\n\t\t<p>\n\t\t\tThus in the formula above there are two functions, <b>cart</b> and <b>pi</b>. The pi function doesn't take any parameters and just returns the value of pi.\n\t\t</p>\n\t\t<p>\n\t\t\tThe cart function calculates the cartesian coordinates from a radius and an angle. Specifically for:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t{cart r, a}\n\t\t</p>\n\t\t<p>\n\t\t\tcart returns a table value with the first column being the <b>x</b> value and the second being the <b>y</b> of the radius <b>r</b> and angle <b>a</b> converted to cartesian coordinates.\n\t\t</p>\n\t\t<p>\n\t\t\tTable value columns can be referenced using dot notation, so <b>coordinates.x</b> would return an array corresponding to the rows of the <b>x</b> column.  These are used in the <b>xyplot</b> tool to graph the circle.\n\t\t</P>\n\t\t<p>\n\t\t\tThe first parameter to the cart function is <b>radius[1,1]</b>. The <b>[1,1]</b> index operator specifies we just want the value in the first row and column so it is guaranteed to be a scalar.\n\t\t</p>\n\t\t<p>\n\t\t\tThe second parameter, <b>1:60 / 30 * {pi}</b> creates an array of integers from 1 to 60 using the <b>:</b> operator. This is then divided by 30 giving 60 values evenly spaced up to 2. This array is then multiplied by pi to give an array of angles up to 2pi, which is of course the number of radians in a circle.\n\t\t</p> \n\t\t</div>\n\t</body>\n</html>"
+										}
 									}
 								]
 							}
@@ -10774,6 +10496,7 @@
 						"DiagramNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
+						"indexTool": "explanation",
 						"Objects": [
 							{
 								"name": "WeightPlot",
@@ -10861,7 +10584,7 @@
 							},
 							{
 								"name": "Explanation",
-								"Notes": "Tap this icon to start",
+								"Notes": "",
 								"DiagramX": 50,
 								"DiagramY": 75,
 								"HideInfo": "y",
@@ -11908,14 +11631,341 @@
 								]
 							}
 						]
+					},
+					{
+						"name": "Tools",
+						"Notes": "",
+						"DiagramX": 85,
+						"DiagramY": -35,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Tools</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tMath Minion has a number of tools ranging from simple expressions to solvers, optimizer and html pages like this one.\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>\n\t\t\t\t<b>Expression</b>\n\t\t\t\t- contains a single formula or constant.  For instance if an expression\n\t\t\t\tnamed <b>distance</b> has the formula:\n\t\t\t\t<p class=\"formula\">\n\t\t\t\t\t5 km\n\t\t\t\t</p>\n\t\t\t\t<p>\n\t\t\t\t\tand an expression named <b>speed</b> has the formula:\n\t\t\t\t</p>\n\t\t\t\t<p class=\"formula\">\n\t\t\t\t\tdistance / 180 s\n\t\t\t\t</p>\n\t\t\t\t<p>\n\t\t\t\t\tthen <b>speed's</b> value will be 27.78 m/s or 100 kph.\n\t\t\t\t</p>\n\t\t\t</li>\n\t\t\t<li>\n\t\t\t\t<b>Data Table</b>\n\t\t\t\t\t- a data base like table with named fields (columns) of different types.\n\t\t\t</li>\n\t\t\t<li>\n\t\t\t\t<b>Function Solver</b>\n\t\t\t\t\t- attempts to solve functions of the form\n\t\t\t\t</p>\n\t\t\t\t<p class=\"formula\">\n\t\t\t\t\tf(x) = 0\n\t\t\t\t</p>\n\t\t\t\t<p>\n\t\t\t\t\tfor one or more values of <b>x</b>.  That is it attempts to come up with a set\n\t\t\t\t\tof x values such that all the function values are 0.\n\t\t\t\t</p>\n\t\t\t</li>\n\t\t\t<li>\n\t\t\t\t<b>Iterator</b>\n\t\t\t\t- Math Minion's ability to work with arrays and matrices means traditional\n\t\t\t\tprogramming loops are usually not necessary, but if the need arises, this tool\n\t\t\t\tprovides a <b>for loop</b> type capability.\n\t\t\t</li>\n\t\t\t<li>\n\t\t\t\t<b>Matrix</b>\n\t\t\t\t- while all Math Minion numerical values are in fact matrices, this tool allows\n\t\t\t\tyou to construct more complex entities, including cell formulas that refer to the\n\t\t\t\tvalues of other cells.\n\t\t\t</li>\n\t\t\t<li>\n\t\t\t\t<b>Model</b>\n\t\t\t\t- a model is simply a container for other tools and is what is represented by the\n\t\t\t\tdiagram view.\n\t\t\t\t<p>\n\t\t\t\t\tAll Math Minion sessions have at least one root model, but models can contain other\n\t\t\t\t\tmodels, so a hierarchy of different models can be constructed.\n\t\t\t\t</p>\n\t\t\t</li>\n\t\t\t<li>\n\t\t\t\t<b>ODE Solver (Integrator)</b>\n\t\t\t\t- the Ordinary Differential Equation solver is used integrate problems where:\n\t\t\t\t</p>\n\t\t\t\t<p class=\"formula\">\n\t\t\t\t\tdy/dt = f(y, t)\n\t\t\t\t</p>\n\t\t\t\t<p>\n\t\t\t\t\tgiven an initial value for y, which can be a scalar, array or matrix.\n\t\t\t\t</p>\n\t\t\t</li>\n\t\t\t<li>\n\t\t\t\t<b>Optimizer</b>\n\t\t\t\t-\tgiven some function:\n\t\t\t\t</p>\n\t\t\t\t<p class=\"formula\">y = f(x)</p>\n\t\t\t\t<p>\n\t\t\t\t\twhere y is a scalar and x can be a scalar or an array, the optimizer attempts\n\t\t\t\t\tto come up with the set of x values that produces the smallest value of y.\n\t\t\t\t</p>\n\t\t\t</li>\n\t\t\t<li>\n\t\t\t\t<b>Graph</b>\n\t\t\t\t- displays a 2D or 3D plot.\n\t\t\t</li>\n\t\t\t<li>\n\t\t\t\t<b>HTML Page</b>\n\t\t\t\t- used to create customized input and result views using HTML and javascript.\n\t\t\t</li>\n\t\t\t<li>\n\t\t\t\t<b>Imported Model</b>\n\t\t\t\t- a model that is imported from a different session.\n\t\t\t</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tTap on their respective model icons to investigate further.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+						}
+					},
+					{
+						"name": "Function_Solver",
+						"Notes": "",
+						"DiagramX": 120,
+						"DiagramY": 40,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"indexTool": "overview",
+						"Objects": [
+							{
+								"name": "Broyden",
+								"Notes": "This is the classic Broyden 3 function test system, which has the equations:\n\n3*x-cos(y*z)-0.5 = 0\n\nx^2 -81*(y+0.1)^2 + sin(z) +1.06 = 0\n\nExp(-x*y) +20*z+ (10*pi -3)/3 = 0\n\nThe solution should be:\n\n0.500000\n0\n-0.523599\n\nIn this case the entire problem is defined right in the solver object, making use of $.1, $.2 and $.3 as the solver outputs.\n\nRecall that the $ symbols in a formula is a short cut for the object that owns the formula.",
+								"DiagramX": 25,
+								"DiagramY": 145,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Equation Solver",
+								"f0": "3 * $.1 - {cos $.2 * $.3} - 0.5",
+								"c0": "1",
+								"f1": "$.1*$.1 - 81*($.2 + 0.1)^2 + {sin $.3} + 1.06",
+								"c1": "1",
+								"f2": "{exp $.1*$.2} + 20*$.3 + (10*{pi} - 3.) / 3.0",
+								"c2": "1",
+								"maxIter": 200,
+								"maxJacobians": 5,
+								"Enabled": "y"
+							},
+							{
+								"name": "Recycle",
+								"Notes": "This model represents a highly stylized recycle operation of the sort that might occur in a chemical plant.\n\nAn input material, in the \"feed\" array, is mixed with material recycled from farther along in the plant.  The mixed material is then split by some process (here just an arbitrary formula) which results in the recycle flow and a product flow.\n\nSince, in this nonsensical example, everything that goes in must end up in the product, it serves no real point other than exercising the solver, which combines an array function with a scalar function.",
+								"DiagramX": 100,
+								"DiagramY": 145,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "Solver",
+										"Notes": "This solver has two functions defined, with the first being the differences between the calculated and estimated recycle values.  The second is a scalar function of the difference between the calculated and estimates energy recycle values.\n\nAs there are three \"components\" in the first function, the solver is actually solving for 4 simultaneous equations.\n\nYou must tell the solver how many outputs to generate for each function, so for the first function this is designated as {nrows feed}.",
+										"DiagramX": 140,
+										"DiagramY": 110,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Equation Solver",
+										"f0": "splits - recycle",
+										"c0": "{nrows feed}",
+										"f1": "(qsplit - qcycle)/100",
+										"c1": "1",
+										"maxIter": 200,
+										"maxJacobians": 5,
+										"Enabled": "y"
+									},
+									{
+										"name": "recycle",
+										"Notes": "The output of the solver variable 1 is an array and is used directly as the recycle.",
+										"DiagramX": 60,
+										"DiagramY": 125,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "solver.1"
+										}
+									},
+									{
+										"name": "sum",
+										"Notes": "        The feed and recycle\n        materials are mixed.",
+										"DiagramX": 140,
+										"DiagramY": 75,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed + recycle"
+										}
+									},
+									{
+										"name": "splits",
+										"Notes": "An arbitrary function with no physical significance is used to split the combined material into a calculated recycle material.\n\nThese values  should be equal to the estimated values in the recycle object when solved.",
+										"DiagramX": 225,
+										"DiagramY": 75,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "(sum*1:3*.3)^.9"
+										}
+									},
+									{
+										"name": "q",
+										"Notes": "The amount of energy contained in the feed material.",
+										"DiagramX": 60,
+										"DiagramY": 250,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "100"
+										}
+									},
+									{
+										"name": "qcycle",
+										"Notes": "The energy recycle, scaled\nfrom the solver variable 2.",
+										"DiagramX": 60,
+										"DiagramY": 175,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "Solver.2 * 10"
+										}
+									},
+									{
+										"name": "qsum",
+										"Notes": "As with the material, the feed energy is added to the recycled energy.",
+										"DiagramX": 140,
+										"DiagramY": 250,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "q + qcycle"
+										}
+									},
+									{
+										"name": "qsplit",
+										"Notes": "Another arbitrary split producing a calculated recycle energy.",
+										"DiagramX": 225,
+										"DiagramY": 205,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ".1*qsum"
+										}
+									},
+									{
+										"name": "Product",
+										"Notes": "What isn't recycled is the product, which should be equal to the feed when solved.",
+										"DiagramX": 225,
+										"DiagramY": 155,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "sum - splits"
+										}
+									},
+									{
+										"name": "QProduct",
+										"Notes": "The product energy flow, which should be the same as the feed energy flow when the problem is solved.",
+										"DiagramX": 225,
+										"DiagramY": 250,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "qsum - qsplit"
+										}
+									},
+									{
+										"name": "feed",
+										"Notes": "An arbitrary \"feed\" material.",
+										"DiagramX": 60,
+										"DiagramY": 75,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "1:3"
+										}
+									}
+								]
+							},
+							{
+								"name": "Single",
+								"Notes": "This model determines the intersection between two curves, specifically a parabola and a line.  Obviously this could easily be solved algebraically or even graphically, but that very simplicity makes it a useful example.\n\nThe top set of connected tools provides a visual representation of the problem, by graphing a range of x values versus the y values calculated by the parabola and line expressions.\n\nA glance at the plot shows that the line will cross the parabola in two places and indeed it is easy to determine their coordinates by zooming in and dragging the crossing points to a grid line.\n\nThe lower set of connected blocks uses the solver tool to find a value of x where the y values calculated by the two expressions are equal and hence at the intersection.",
+								"DiagramX": -55,
+								"DiagramY": 145,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "parabolaCopy",
+										"Notes": "A copy of the \"parabola\" expression, with the x value replaced with \"solverX\".",
+										"DiagramX": -325,
+										"DiagramY": -105,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "(SolverX+5)^2 +7"
+										}
+									},
+									{
+										"name": "lineCopy",
+										"Notes": "A copy of the \"line\" expression, with the x value replaced with \"solverX\".",
+										"DiagramX": -325,
+										"DiagramY": -60,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "2000 - 20*SolverX"
+										}
+									},
+									{
+										"name": "Plot",
+										"Notes": "A plot of the line and parabola.  Note that the line crosses the parabola twice, yielding two places where the\n\nparabola - line\n\nvalue will be zero.\n\nStrictly speaking, the Brent solver is likely to fail if the slope of the function changes sign, but an appropriate choice of starting point and range can be used to overcome that.",
+										"DiagramX": -220,
+										"DiagramY": -240,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Graph",
+										"X1": {
+											"v": "x",
+											"vmin": "",
+											"vmax": "",
+											"Y1": {
+												"v": "parabola",
+												"vmin": "0",
+												"vmax": "3500",
+												"lineType": 0
+											},
+											"Y2": {
+												"v": "line",
+												"vmin": "0",
+												"vmax": "3500",
+												"lineType": 0
+											}
+										}
+									},
+									{
+										"name": "SolverX",
+										"Notes": "The output of the solver is constrained to between -1 and 1 for a single value problem.  The starting value will be 0.\n\nIn this case, I multiply the solver output by 50 and add 50 so that the starting value is 50 and the solution must be between 0 and 100.  This will constrain the solution to be on the right side of the parabola as shown in the plot.\n\nTry adding a minus sign to the first 50, so the formula becomes:\n\n-50 + Solver.1*50\n\nNow the function value is initialized and largely constrained to the left side of the parabola and the solution on that side is the one found.",
+										"DiagramX": -225,
+										"DiagramY": -70,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "50 + Solver.1*50"
+										}
+									},
+									{
+										"name": "parabola",
+										"Notes": "An expression which calculates the y value of a parabola, give an x value(s).",
+										"DiagramX": -325,
+										"DiagramY": -200,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "(x+5)^2 +7"
+										}
+									},
+									{
+										"name": "line",
+										"Notes": "An expression which calculates a y value for the given x value(s).",
+										"DiagramX": -325,
+										"DiagramY": -155,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "2000 - 20*x"
+										}
+									},
+									{
+										"name": "x",
+										"Notes": "A range of values used to plot the parabola and line.",
+										"DiagramX": -325,
+										"DiagramY": -240,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "-75:50"
+										}
+									},
+									{
+										"name": "Solver",
+										"Notes": "The solver will alter its output variable (referenced as Solver.1 for the first, and in this case only, output) until the function defined as f(1) has a value of 0.\n\nThe number of outputs for a function must match the length of the array calculated by the function - in this case just 1.\n\nThe reset will set all function outputs to 0 and uncheck the Enabled box.  Check that box when you want the solver to attempt to find a solution.\n\nNote that if the solver should fail to converge, it will turn off its solve switch and will no longer attempt to resolve when its function inputs change.\n\nYou will have to return to the solver and turn on the switch when you have fixed the convergence problem.",
+										"DiagramX": -225,
+										"DiagramY": -105,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Equation Solver",
+										"f0": "parabolaCopy - lineCopy",
+										"c0": "1",
+										"maxIter": 200,
+										"maxJacobians": 5,
+										"Enabled": "y"
+									}
+								]
+							},
+							{
+								"name": "Overview",
+								"Notes": "",
+								"DiagramX": -55,
+								"DiagramY": 115,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThe equation solver tool modifies one or more output values until the function values calculated from those outputs are zero.  If there is a single scalar output, then the Brent method is used, with the output value limited to the range -1 to 1 (the function calculation can of course scale that to anything).\n\t\t</p>\n\t\t<p>\n\t\t\tIf it is a multi value problem, then the Broyden method is used and while in that case the output values can exceed the -1 to 1 range, it is still good practice  to scale the problem so all values are relatively normalized.\n\t\t</p>\n\t\t<p>\n\t\t\tHave a look at solver examples in this model.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								}
+							}
+						]
 					}
 				]
 			},
 			{
 				"name": "Units",
 				"Notes": "",
-				"DiagramX": 145,
-				"DiagramY": 55,
+				"DiagramX": 70,
+				"DiagramY": 50,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"Type": "Model",
@@ -12039,8 +12089,8 @@
 			{
 				"name": "tidbits",
 				"Notes": "",
-				"DiagramX": 145,
-				"DiagramY": 95,
+				"DiagramX": 70,
+				"DiagramY": 75,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"Type": "Model",
@@ -12374,65 +12424,43 @@
 			{
 				"name": "A_Simple_Calc",
 				"Notes": "",
-				"DiagramX": 145,
-				"DiagramY": 15,
+				"DiagramX": 70,
+				"DiagramY": 25,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"Type": "Model",
 				"diagramScale": 1,
+				"indexTool": "Calc_Overview",
 				"Objects": [
 					{
-						"name": "a",
-						"Notes": "An expression containing a constant with a unit of\nlength.\n",
-						"DiagramX": 265,
-						"DiagramY": -65,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "3 m"
-						}
-					},
-					{
-						"name": "b",
-						"Notes": "Another length constant.",
-						"DiagramX": 265,
-						"DiagramY": -20,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "43 in"
-						}
-					},
-					{
 						"name": "circle",
-						"Notes": "A model which calculates the circumference and area of a circle, given the radius.\n\nIts expressions have the input and output switches set so they are exposed to the parent model.\n\nTap the icon above to view the model\ndiagram.",
-						"DiagramX": 345,
+						"Notes": "A model which calculates the circumference and area of a circle, given the radius.\n\nIts expressions have the input and output switches set so they are exposed to the parent model.\n\nTap the icon above to view the model diagram.",
+						"DiagramX": 350,
 						"DiagramY": -40,
 						"HideInfo": "n",
 						"DiagramNotes": "y",
 						"Type": "Model",
 						"diagramScale": 1,
+						"indexTool": "Circle_Overview",
 						"Objects": [
 							{
 								"name": "radius",
 								"Notes": "By turning on the input switch in this expression’s info view, the variables used in\nthe expression formula refer\nto those of the parent.",
 								"DiagramX": 20,
-								"DiagramY": 45,
+								"DiagramY": 80,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "diameters / 2"
+									"Formula": "diameter / 2"
 								},
 								"isInput": "y"
 							},
 							{
 								"name": "circumference",
 								"Notes": "",
-								"DiagramX": 110,
-								"DiagramY": 140,
+								"DiagramX": 105,
+								"DiagramY": 110,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
@@ -12444,8 +12472,8 @@
 							{
 								"name": "area",
 								"Notes": "Turning on the output switch allows the parent to access the result of this expression using normal dot notation as in:\n\ncircle.area",
-								"DiagramX": 20,
-								"DiagramY": 100,
+								"DiagramX": 105,
+								"DiagramY": 45,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
@@ -12456,18 +12484,18 @@
 							},
 							{
 								"name": "xyplot",
-								"Notes": "Plot the circle from cart as\nwell as one half the size.",
-								"DiagramX": 115,
-								"DiagramY": 95,
+								"Notes": "Plot the circle from cart as well as one half the size.",
+								"DiagramX": 105,
+								"DiagramY": 180,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Graph",
 								"X1": {
-									"v": "cart.x 'X1",
+									"v": "coordinates.x 'X1",
 									"vmin": "",
 									"vmax": "",
 									"Y1": {
-										"v": "cart.y 'Y1",
+										"v": "coordinates.y 'Y1",
 										"vmin": "",
 										"vmax": "",
 										"lineType": 0
@@ -12486,22 +12514,70 @@
 								}
 							},
 							{
-								"name": "cart",
-								"Notes": "Calculate the x-y coordinates for a circle with a radius equal to radius[1,1]",
-								"DiagramX": 115,
+								"name": "Circle_Overview",
+								"Notes": "Overview",
+								"DiagramX": 20,
 								"DiagramY": 45,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Circle Overview</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tExpressions have input and output switched\\s that are normally off, but can be turned on to indicate that the expression can interact with parent of the model that contains it.\n\t\t</p>\n\t\t<p>\n\t\t\tIf the input switch is on, then any tool names used in the expression will refer to tools in the parent model, rather than the model containing the expression. In this case, the expression <b>radius</b> has its input switch turned on and so its formula:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tdiameter / 2\n\t\t</p\n\t\t<p>\n\t\t\tlooks for a value called diameter in the A_Simple_Calc model, not the circle model.\n\t\t</p>\n\t\t<p>\n\t\t\tBoth the <b>area</b> and <b>circumference</b> expressions have their output switches turned on and so can be reference from the parent model, A_Simple_Calc, by a formula like:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tcircle.area\n\t\t</p>\n\t\t<p>\n\t\t\tThey can also be used with in the circle model itself like normal expressions.\n\t\t</p>\n\t\t<p>\n\t\t\tTake a look at the radius, area and circumference expressions and then have a look at the <b>Coordinates_Calc</b> tool.\n\t\t</p> \n\t\t\t\n\t\t<p>\n\t\t\tWhen you are done. return to the parent model by tapping on the <b>&gt; A_Simple_Calc</b> button at the upper right of the diagram.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								}
+							},
+							{
+								"name": "coordinates",
+								"Notes": "Calculate the x-y coordinates for a circle with a radius equal to radius.",
+								"DiagramX": 105,
+								"DiagramY": 135,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "{cart radius[1,1], 1:60 / 30  * {pi}}"
 								}
+							},
+							{
+								"name": "Coordinates_Calc",
+								"Notes": "Explanation of the calculation of the coordinates expression",
+								"DiagramX": 20,
+								"DiagramY": 135,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Calculation of Cart</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThe formula in the <b>coordinates</b> expression:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t{cart radius[1,1], 1:60 / 30  * {pi}}\n\t\t</p>\n\t\t<p>\n\t\t\tis a bit more complicated. Library functions are called by enclosing them in curly braces, with the name of the function immediately after the opening brace. The parameters, if any, follow in a comma separated list.\n\t\t</p>\n\t\t<p>\n\t\t\tThus in the formula above there are two functions, <b>cart</b> and <b>pi</b>. The pi function doesn't take any parameters and just returns the value of pi.\n\t\t</p>\n\t\t<p>\n\t\t\tThe cart function calculates the cartesian coordinates from a radius and an angle. Specifically for:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t{cart r, a}\n\t\t</p>\n\t\t<p>\n\t\t\tcart returns a table value with the first column being the <b>x</b> value and the second being the <b>y</b> of the radius <b>r</b> and angle <b>a</b> converted to cartesian coordinates.\n\t\t</p>\n\t\t<p>\n\t\t\tTable value columns can be referenced using dot notation, so <b>coordinates.x</b> would return an array corresponding to the rows of the <b>x</b> column.  These are used in the <b>xyplot</b> tool to graph the circle.\n\t\t</P>\n\t\t<p>\n\t\t\tThe first parameter to the cart function is <b>radius[1,1]</b>. The <b>[1,1]</b> index operator specifies we just want the value in the first row and column so it is guaranteed to be a scalar.\n\t\t</p>\n\t\t<p>\n\t\t\tThe second parameter, <b>1:60 / 30 * {pi}</b> creates an array of integers from 1 to 60 using the <b>:</b> operator. This is then divided by 30 giving 60 values evenly spaced up to 2. This array is then multiplied by pi to give an array of angles up to 2pi, which is of course the number of radians in a circle.\n\t\t</p> \n\t\t</div>\n\t</body>\n</html>"
+								}
 							}
 						]
 					},
 					{
-						"name": "area",
-						"Notes": "Retrieve the calculated outlet expression for area from the circle model.\n\nSince the input was a matrix, the result is also a matrix, with elements determined by applying the calculation to each element of the input matrix.",
+						"name": "diameter",
+						"Notes": "An expression containing a constant with a unit of\nlength.\n",
+						"DiagramX": 275,
+						"DiagramY": -40,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "3 m"
+						}
+					},
+					{
+						"name": "Calc_Overview",
+						"Notes": "Overview",
+						"DiagramX": 275,
+						"DiagramY": 5,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>A Simple Calculation</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tIn this model the expression called <b>diameter</b> is used\n\t\t\tas input to a child model called <b>circle</b> which calculates the area and circumference for that diameter.\n\t\t</p>\n\t\t<p>\n\t\t\tThe <b>circle</b> model designates an expression called <b>area</b> as an outlet, so it can be accessed in the parent model by the formula:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tarea.circle\n\t\t</p>\n\t\t<p>\n\t\t\twhich is what the <b>areaOfCircle</b> expression does.\n\t\t</p>\n\t\t<p>\n\t\t\tTap on the <b>Circle</b> model icon to see how it works and\n\t\t\twhen done, return here and tap on the <b>Bit_Less_Simple</b>\n\t\t\tmodel icon.\n\t\t</p>\n\t\t\n\t\t\t\n\t\t</div>\n\t</body>\n</html>"
+						}
+					},
+					{
+						"name": "areaOfCircle",
+						"Notes": "Retrieve a calculated outlet expression for area from the circle model.",
 						"DiagramX": 435,
 						"DiagramY": -40,
 						"HideInfo": "y",
@@ -12512,22 +12588,189 @@
 						}
 					},
 					{
-						"name": "diameters",
-						"Notes": "A 2x2 matrix with some values.\n\nTap on a cell or header to see its formula.\n\nThe value for a cell is determined by first checking to see if it has a formula itself and if not then its corresponding row header, column header and finally the origin header upper left in that order.",
-						"DiagramX": 265,
-						"DiagramY": 15,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Matrix",
-						"unit": "m",
-						"CellInputs": {
-							"0_0": "1 m",
-							"2_1": "b",
-							"0_2": "a+b",
-							"1_1": "a"
-						},
-						"rowCount": "2",
-						"columnCount": "2"
+						"name": "Bit_Less_Simple",
+						"Notes": "",
+						"DiagramX": 435,
+						"DiagramY": 10,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "a",
+								"Notes": "An expression containing a constant with a unit of\nlength.\n",
+								"DiagramX": 280,
+								"DiagramY": -45,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "3 m"
+								}
+							},
+							{
+								"name": "b",
+								"Notes": "Another length constant.",
+								"DiagramX": 280,
+								"DiagramY": 0,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "43 in"
+								}
+							},
+							{
+								"name": "area",
+								"Notes": "Retrieve the calculated outlet expression for area from the circle model.\n\nSince the input was a matrix, the result is also a matrix, with elements determined by applying the calculation to each element of the input matrix.",
+								"DiagramX": 450,
+								"DiagramY": -20,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "circle.area"
+								}
+							},
+							{
+								"name": "diameters",
+								"Notes": "A 2x2 matrix with some values.\n\nTap on a cell or header to see its formula.\n\nThe value for a cell is determined by first checking to see if it has a formula itself and if not then its corresponding row header, column header and finally the origin header upper left in that order.",
+								"DiagramX": 280,
+								"DiagramY": 35,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Matrix",
+								"unit": "m",
+								"CellInputs": {
+									"0_0": "1 m",
+									"2_1": "b",
+									"0_2": "a+b",
+									"1_1": "a"
+								},
+								"rowCount": "2",
+								"columnCount": "2"
+							},
+							{
+								"name": "circle",
+								"Notes": "A model which calculates the circumference and area of a circle, given the radius.\n\nIts expressions have the input and output switches set so they are exposed to the parent model.\n\nTap the icon above to view the model diagram.",
+								"DiagramX": 360,
+								"DiagramY": -15,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"indexTool": "Circle_Overview",
+								"Objects": [
+									{
+										"name": "radius",
+										"Notes": "By turning on the input switch in this expression’s info view, the variables used in\nthe expression formula refer\nto those of the parent.",
+										"DiagramX": 20,
+										"DiagramY": 80,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "diameters / 2"
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "circumference",
+										"Notes": "",
+										"DiagramX": 105,
+										"DiagramY": 110,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "2*radius*{pi}"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "area",
+										"Notes": "Turning on the output switch allows the parent to access the result of this expression using normal dot notation as in:\n\ncircle.area",
+										"DiagramX": 105,
+										"DiagramY": 45,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{pi}*radius^2"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "xyplot",
+										"Notes": "Plot the circle from cart as well as one half the size.",
+										"DiagramX": 105,
+										"DiagramY": 180,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Graph",
+										"X1": {
+											"v": "coordinates.x 'X1",
+											"vmin": "",
+											"vmax": "",
+											"Y1": {
+												"v": "coordinates.y 'Y1",
+												"vmin": "",
+												"vmax": "",
+												"lineType": 0
+											}
+										},
+										"X2": {
+											"v": "$.x1/2 'X2",
+											"vmin": "",
+											"vmax": "",
+											"Y1": {
+												"v": "$.y1/2 'Y2",
+												"vmin": "",
+												"vmax": "",
+												"lineType": 0
+											}
+										}
+									},
+									{
+										"name": "Circle_Overview",
+										"Notes": "Overview",
+										"DiagramX": 20,
+										"DiagramY": 45,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Circle Overview</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tExpressions have input and output switched\\s that are normally off, but can be turned on to indicate that the expression can interact with parent of the model that contains it.\n\t\t</p>\n\t\t<p>\n\t\t\tIf the input switch is on, then any tool names used in the expression will refer to tools in the parent model, rather than the model containing the expression. In this case, the expression <b>radius</b> has its input switch turned on and so its formula:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tdiameter / 2\n\t\t</p\n\t\t<p>\n\t\t\tlooks for a value called diameter in the A_Simple_Calc model, not the circle model.\n\t\t</p>\n\t\t<p>\n\t\t\tBoth the <b>area</b> and <b>circumference</b> expressions have their output switches turned on and so can be reference from the parent model, A_Simple_Calc, by a formula like:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tcircle.area\n\t\t</p>\n\t\t<p>\n\t\t\tThey can also be used with in the circle model itself like normal expressions.\n\t\t</p>\n\t\t<p>\n\t\t\tTake a look at the radius, area and circumference expressions and then have a look at the <b>Coordinates_Calc</b> tool.\n\t\t</p> \n\t\t\t\n\t\t<p>\n\t\t\tWhen you are done. return to the parent model by tapping on the <b>&gt; A_Simple_Calc</b> button at the upper right of the diagram.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+										}
+									},
+									{
+										"name": "coordinates",
+										"Notes": "Calculate the x-y coordinates for a circle with a radius equal to radius.",
+										"DiagramX": 105,
+										"DiagramY": 135,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cart radius[1,1], 1:60 / 30  * {pi}}"
+										}
+									},
+									{
+										"name": "Coordinates_Calc",
+										"Notes": "Explanation of the calculation of the coordinates expression",
+										"DiagramX": 20,
+										"DiagramY": 135,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Calculation of Cart</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThe formula in the <b>coordinates</b> expression:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t{cart radius[1,1], 1:60 / 30  * {pi}}\n\t\t</p>\n\t\t<p>\n\t\t\tis a bit more complicated. Library functions are called by enclosing them in curly braces, with the name of the function immediately after the opening brace. The parameters, if any, follow in a comma separated list.\n\t\t</p>\n\t\t<p>\n\t\t\tThus in the formula above there are two functions, <b>cart</b> and <b>pi</b>. The pi function doesn't take any parameters and just returns the value of pi.\n\t\t</p>\n\t\t<p>\n\t\t\tThe cart function calculates the cartesian coordinates from a radius and an angle. Specifically for:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t{cart r, a}\n\t\t</p>\n\t\t<p>\n\t\t\tcart returns a table value with the first column being the <b>x</b> value and the second being the <b>y</b> of the radius <b>r</b> and angle <b>a</b> converted to cartesian coordinates.\n\t\t</p>\n\t\t<p>\n\t\t\tTable value columns can be referenced using dot notation, so <b>coordinates.x</b> would return an array corresponding to the rows of the <b>x</b> column.  These are used in the <b>xyplot</b> tool to graph the circle.\n\t\t</P>\n\t\t<p>\n\t\t\tThe first parameter to the cart function is <b>radius[1,1]</b>. The <b>[1,1]</b> index operator specifies we just want the value in the first row and column so it is guaranteed to be a scalar.\n\t\t</p>\n\t\t<p>\n\t\t\tThe second parameter, <b>1:60 / 30 * {pi}</b> creates an array of integers from 1 to 60 using the <b>:</b> operator. This is then divided by 30 giving 60 values evenly spaced up to 2. This array is then multiplied by pi to give an array of angles up to 2pi, which is of course the number of radians in a circle.\n\t\t</p> \n\t\t</div>\n\t</body>\n</html>"
+										}
+									}
+								]
+							}
+						]
 					}
 				]
 			},
@@ -12535,24 +12778,13 @@
 				"name": "Formulas",
 				"Notes": "",
 				"DiagramX": 145,
-				"DiagramY": 35,
+				"DiagramY": 25,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"Type": "Model",
 				"diagramScale": 1,
+				"indexTool": "Formulas",
 				"Objects": [
-					{
-						"name": "Formulas",
-						"Notes": "At the heart of Math Minion calculations are the formulas that express the relationships between various objects.\n\nThey can be as simple as a scalar constant, or 2 + 2, but if the need arises, they can be complicated expressions involving functions and conditions.",
-						"DiagramX": -80,
-						"DiagramY": -70,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "' Just a note holder"
-						}
-					},
 					{
 						"name": "Operators",
 						"DiagramX": -5,
@@ -12608,11 +12840,12 @@
 						"DiagramNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
+						"indexTool": "functions",
 						"Objects": [
 							{
 								"name": "scalar",
 								"Notes": "A simple scalar constant, without units",
-								"DiagramX": 40,
+								"DiagramX": 115,
 								"DiagramY": 25,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
@@ -12622,10 +12855,22 @@
 								}
 							},
 							{
-								"name": "functions",
-								"Notes": "A function call in Math Minion consists of an opening curly brace \"{\" immediately followed by the function name, followed by a space and a comma separated list of parameters as appropriate and finally a closing curly brace \"}\".\n\nIn this case the natural logarithm of the value of the \"scalar\" object is calculated.\n\nWhen used with arrays and matrices, the function is applied to each element of the parameter(s) in turn, except for some matrix specific functions, like \"dot\", \"invert\", \"transpose\", etc.\n\nWhen entering a formula, use the \"{f}\" button in the function editor to see a list of available functions.",
-								"DiagramX": 115,
+								"name": "Functions",
+								"Notes": "Functions overview",
+								"DiagramX": 40,
 								"DiagramY": 25,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Functions</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tA function call in Math Minion consists of an opening curly brace \"{\" immediately followed by the function name, followed by a space and a comma separated list of parameters as appropriate and finally a closing curly brace \"}\".\n\t\t</p>\n\t\t<p>\n\t\t\tIn this case the <b>log</b> expression calculates the natural logarithm of the value of the \"scalar\" object.\n\t\t</p>\n\t\t<p>\n\t\t\tWhen used with arrays and matrices, the function is applied to each element of the parameter(s) in turn, except for some matrix specific functions, like \"dot\", \"invert\", \"transpose\", etc.\n\t\t</p>\n\t\t</p>\n\t\t\tWhen entering a formula, use the <b>{f}</b> button in the function editor to see a list of available functions.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								}
+							},
+							{
+								"name": "log",
+								"Notes": "Uses the ln function to calculate the natural logarithm of scalar.",
+								"DiagramX": 115,
+								"DiagramY": 65,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
@@ -12824,54 +13069,6 @@
 								]
 							},
 							{
-								"name": "RowXCol",
-								"Notes": "More general multiplication of arrays and matrices.",
-								"DiagramX": 20,
-								"DiagramY": 95,
-								"HideInfo": "n",
-								"DiagramNotes": "y",
-								"Type": "Model",
-								"diagramScale": 1,
-								"Objects": [
-									{
-										"name": "Column",
-										"Notes": "A column array from 1 to 20.",
-										"DiagramX": 20,
-										"DiagramY": 15,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "1:20"
-										}
-									},
-									{
-										"name": "Row",
-										"Notes": "A row array from 21 to 40",
-										"DiagramX": 20,
-										"DiagramY": 50,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{tr 21:40}"
-										}
-									},
-									{
-										"name": "RowXCol",
-										"Notes": "When any binary arithmetic operator is used between two matrices of different shapes, the result is a matrix with the number of rows and columns each equal to the larger of the respective values for the two operands.\n\nThus a 2x8 matrix added to a 4x2 matrix will yield a 4x8 result. The value at row i and column j will be the product of the values at the corresponding indices in the operands.\n\nWhen the index is greater than the number of rows or columns for the operand, the row and column values are repeated in order as necessary to fill in the result.\n\nIn this case a column array is multiplied by a row array to produce a matrix.\n\nNote that if a \"matrix product\", i.e. an inner product, is required, use the \"dot\" function.",
-										"DiagramX": 105,
-										"DiagramY": 15,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "column * row"
-										}
-									}
-								]
-							},
-							{
 								"name": "Indices",
 								"Notes": "Getting array and matrix elements.",
 								"DiagramX": 95,
@@ -12966,6 +13163,67 @@
 										}
 									}
 								]
+							},
+							{
+								"name": "ColXRow",
+								"Notes": "More general multiplication of arrays and matrices.",
+								"DiagramX": 20,
+								"DiagramY": 95,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"indexTool": "overview",
+								"Objects": [
+									{
+										"name": "Column",
+										"Notes": "A column array from 1 to 20.",
+										"DiagramX": 105,
+										"DiagramY": -20,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "1:20"
+										}
+									},
+									{
+										"name": "Row",
+										"Notes": "A row array from 21 to 40",
+										"DiagramX": 15,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{tr 21:40}"
+										}
+									},
+									{
+										"name": "Overview",
+										"Notes": "Overview of arithmetic operations between matrices of different shapes.",
+										"DiagramX": 15,
+										"DiagramY": -20,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tWhen any binary arithmetic operator is used between two matrices of different shapes, the result is a matrix with the number of rows and columns each equal to the larger of the respective values for the two operands.\n\t\t</p>\n\t\t<p>\n\t\t\tThus a 2x8 matrix added to a 4x2 matrix will yield a 4x8 result. The value at row i and column j will be the product of the values at the corresponding indices in the operands.\n\t\t</p>\n\t\t<p>\n\t\t\tWhen the index is greater than the number of rows or columns for the operand, the row and column values are repeated in order as necessary to fill in the result.\n\t\t</p>\n\t\t<p>\n\t\t\tIn this case a column array is multiplied by a row array to produce a matrix.\n\t\t</p>\n\t\t<p>\n\t\t\tNote that if a <b>matrix product</b>, i.e. an inner product, is required, use the <b>dot</b> function.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+										}
+									},
+									{
+										"name": "ColXRow",
+										"Notes": "Column times row",
+										"DiagramX": 105,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "column * row"
+										}
+									}
+								]
 							}
 						]
 					},
@@ -13050,19 +13308,8 @@
 						"DiagramNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
+						"indexTool": "other_values",
 						"Objects": [
-							{
-								"name": "Other_Values",
-								"Notes": "Most simple Math Minion calculations will just involve numbers, possibly with units and perhaps in arrays or matrices.\n\nHowever complex, string, table and reference values are all possible.\n",
-								"DiagramX": 10,
-								"DiagramY": 10,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "\"Pi = \" + {fmt \"%6.2f\", {pi}}"
-								}
-							},
 							{
 								"name": "Date_And_Time",
 								"Notes": "",
@@ -13072,26 +13319,15 @@
 								"DiagramNotes": "n",
 								"Type": "Model",
 								"diagramScale": 1,
+								"indexTool": "dateunit",
 								"Objects": [
 									{
-										"name": "Date_And_Time",
-										"Notes": "Date and time in Math Minion is simply a measure of the number of seconds since 00:00 January 1, 1970.  \n\nHowever since X billion seconds isn't all that comprehensible a date measurement, there is a special date unit for time, which will output a time value in the form:\n\nyyyymmdd.hhmmss\n\nIn other words the date in year, month day before the decimal point and the time in hours, minutes and seconds after the decimal point.\n\nThere are two additional time units available which can be used to input or display alternate date formats:\n\ndated - ddmmyyyy.hhmmss\ndatem - mmddyyyy.hhmmss\n",
-										"DiagramX": 390,
-										"DiagramY": 520,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{now}"
-										},
-										"displayUnit": "date"
-									},
-									{
 										"name": "Input_Output",
-										"DiagramX": 465,
+										"Notes": "Examples of different date units",
+										"DiagramX": 480,
 										"DiagramY": 520,
 										"HideInfo": "n",
-										"DiagramNotes": "n",
+										"DiagramNotes": "y",
 										"Type": "Model",
 										"diagramScale": 1,
 										"Objects": [
@@ -13164,10 +13400,11 @@
 									},
 									{
 										"name": "Functions",
-										"DiagramX": 465,
-										"DiagramY": 540,
+										"Notes": "Examples of functions that deal with date and time.",
+										"DiagramX": 480,
+										"DiagramY": 560,
 										"HideInfo": "n",
-										"DiagramNotes": "n",
+										"DiagramNotes": "y",
 										"Type": "Model",
 										"diagramScale": 1,
 										"Objects": [
@@ -13235,6 +13472,31 @@
 												"displayUnit": "date"
 											}
 										]
+									},
+									{
+										"name": "Now",
+										"Notes": "The current time, displayed with a date unit.",
+										"DiagramX": 395,
+										"DiagramY": 560,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{now}"
+										},
+										"displayUnit": "date"
+									},
+									{
+										"name": "DateUnit",
+										"Notes": "Date and time values",
+										"DiagramX": 395,
+										"DiagramY": 520,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Date Unit</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tDate and time in Math Minion is simply a measure of the number of seconds since 00:00 January 1, 1970.\n\t\t</p> \n\t\t<p>\n\t\t\tHowever since X billion seconds isn't all that comprehensible a date measurement, there is a special date unit for time, which will output a time value in the form:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tyyyymmdd.hhmmss\n\t\t</p>\n\t\t<p>\n\t\t\tIn other words the date in year, month day before the decimal point and the time in hours, minutes and seconds after the decimal point.\n\t\t</p>\n\t\t<p>\n\t\t\tThere are two additional time units available which can be used to input or display alternate date formats:\n\t\t</p>\n\t\t<p class=\"formula\">\ndated - ddmmyyyy.hhmmss<br>\ndatem - mmddyyyy.hhmmss\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+										}
 									}
 								]
 							},
@@ -13242,7 +13504,7 @@
 								"name": "TableValues",
 								"Notes": "",
 								"DiagramX": 95,
-								"DiagramY": 50,
+								"DiagramY": 60,
 								"HideInfo": "n",
 								"DiagramNotes": "n",
 								"Type": "Model",
@@ -13801,7 +14063,7 @@
 								"name": "Strings",
 								"Notes": "",
 								"DiagramX": 95,
-								"DiagramY": 30,
+								"DiagramY": 35,
 								"HideInfo": "n",
 								"DiagramNotes": "n",
 								"Type": "Model",
@@ -14342,7 +14604,7 @@
 								"name": "Complex",
 								"Notes": "",
 								"DiagramX": 95,
-								"DiagramY": 70,
+								"DiagramY": 85,
 								"HideInfo": "n",
 								"DiagramNotes": "n",
 								"Type": "Model",
@@ -14461,7 +14723,7 @@
 							{
 								"name": "References",
 								"DiagramX": 95,
-								"DiagramY": 90,
+								"DiagramY": 110,
 								"HideInfo": "n",
 								"DiagramNotes": "n",
 								"Type": "Model",
@@ -14530,23 +14792,58 @@
 										}
 									}
 								]
+							},
+							{
+								"name": "Other_Values",
+								"Notes": "Values other than simple numbers.",
+								"DiagramX": 10,
+								"DiagramY": 10,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Values other than Simple Numbers</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tMost simple Math Minion calculations will just involve numbers, possibly with units and perhaps in arrays or matrices.\n\t\t</p>\n\t\t<p>\n\t\t\tHowever complex, string, table and reference values are all possible.\n\t\t</p>\n\t\t<p>\n\t\t\tTap on the models in the diagram to explore the various types.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								}
 							}
 						]
+					},
+					{
+						"name": "Formulas",
+						"Notes": "Overview",
+						"DiagramX": -75,
+						"DiagramY": -70,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Formulas</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tAt the heart of Math Minion calculations are the formulas that express the relationships between various objects.\n\t\t</p>\n\t\t<p>\n\t\t\tThey can be as simple as a scalar constant, or <b>2 + 2</b>, but if the need arises, they can be complicated expressions involving functions and conditions.\n\t\t</p>\n\t\t<p>\n\t\t\tTap on the icons for the models on the right of the diagram to explore the different features of formulas.\n\t\t</p>\n\t\t<p>\n\t\t\tFormulas are display in blue text in fields preceded by and equals sign (<b>=</b>). Tapping on the field will open a formula editor.  See the help for more information on its features.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+						}
 					}
 				]
 			},
 			{
 				"name": "Welcome",
-				"Notes": "Welcome to the Math Minion's \"Getting Started\" session, which contains numerous small illustrations of how Math Minion works.\n\nHowever before diving in, I fear you really should, gasp, read a bit of the help.\n\nPlease put your natural horror aside and tap on the background of the diagram, not on one of the icons, and select help from the resulting menu.\n\nThis should open the introductory help for Math Minion in a new browser window or tab.",
+				"Notes": "Welcome to the Math Minion's \"Getting Started\" session.\n\nIf the Welcome contents aren't already visible, tap on the icon above to view them.",
 				"DiagramX": 70,
 				"DiagramY": -40,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
-				"Type": "Expression",
+				"Type": "HTML Form",
 				"Formula": {
-					"Formula": "2+3"
-				},
-				"isOutput": "y"
+					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tIt contains numerous small illustrations of how Math Minion works. However before diving in, I fear you really should, <b>gasp</b>, read a bit of the help.\n\t\t</p>\n\t\t<p>\n\t\t\tPlease put your natural horror aside and tap on the background of the diagram, not on one of the icons, and select help from the resulting menu. (<b>Note</b> If you are viewing this on a narrow display like a phone, you may have to tap the diagram button at the lower left to see the diagram)\n\t\t</p>\n\t\t<p>\n\t\t\tThis should open the introductory help for Math Minion in a new browser window or tab.\n\t\t</p>\n\t\t<p>\n\t\t\tIf nothing else following the links for the <b>diagram</b> and <b>information view</b> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the right and the examples you can import from the <b>Examples</b> HTMLPage.\n\t\t</p>\n\t\t<p>\n\t\t\tIf you have any questions, please use the <b>Contact Me</b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>Craig</p>\n\t\t</div>\n\t</body>\n</html>"
+				}
+			},
+			{
+				"name": "Examples",
+				"Notes": "",
+				"DiagramX": 145,
+				"DiagramY": 75,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "HTML Form",
+				"Formula": {
+					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.example {\n\t\t\tborder-bottom: 1px solid black;\n\t\t\tpadding-bottom: 10px;\n\t\t\tmargin-bottom: 2em;\n\t\t}\n\t\t.extitle {\n\t\t\tfont-size: 1em;\n\t\t\tfont-family: \"Verdana\";\n\t\t\tfont-style: italic;\n\t\t\tfont-weight: bold;\n\t\t}\n\n\t\t.exsubtitle {\n\t\t\tborder-bottom: 1px dashed black;\n\t\t\tmargin-bottom: 0.75em;\n\t\t\tpadding-bottom: 0.5em;\n\t\t}\n\t\t.hiddenalert {\n\t\t\tcolor: #F00;\n\t\t}\t\n\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>A Few Interesting<br> Uses of Math Minion</h3>\n\t\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<div id=\"examples\">\n\t\t\t<div id=\"indexof\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tUsing Indexof to Look Up Table Values\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tData Handling\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t\t<p>Illustrates using the indexof function to do table look ups.\n\t\t\t\t\t\t\tIn this case looking up names and share holdings in one table by\n\t\t\t\t\t\t\tusing the company symbols in a second table.\n\t\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/indexof.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"predator\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tODE Example - Predator/Prey\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tDynamic Modeling\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\tThis example illustrates the use of the ODE solver simulate the classic\n\t\t\t\t\t\t\tpredator/prey relationship as characterized by the Lotka-Volterra model.\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\tSee <a href=\"http://wikipedia.org/wiki/Lotka-Volterra_equation\">\n\t\t\t\t\t\t\t\twikipedia.org/wiki/Lotka-Volterra_equation</a>.\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\tThe calculation is contained in the Population model, with the results\n\t\t\t\t\t\t\tillustrated in the two Plot objects.\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\tMathworks has a published demonstration of this problem (look for\n\t\t\t\t\t\t\t\"Numerical Integration of Differential Equations\" in the demos section\n\t\t\t\t\t\t\tof the mathworks.com website).  The Math Minion solution to this problem\n\t\t\t\t\t\t\tis reproduced in the MatlabExample model.\n\t\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/Predator.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"orbits\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\tOrbits\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tDynamic Modeling\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis models the orbital motion of 2 or more planets around a sun.\n\t\t\t\t\t\tIt is a simplification of one of Marco M's wonderful models and as such,\n\t\t\t\t\t\tany mistakes are almost certainly once again mine.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tFor simplicity all of the planet masses are assumed to be equal,\n\t\t\t\t\t\talthough this could be relaxed at the expense of slightly more complicated equations.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\t\n\t\t\t\t\t\tAs set up, there are only two massive planets in close orbits.\n\t\t\t\t\t\tThe large mass 1000 ME (earth mass) was chosen in order to have visible\n\t\t\t\t\t\teffects very quickly and their initial positions and velocities result in\n\t\t\t\t\t\tthem orbiting around each other while orbiting the central sun.  Small changes\n\t\t\t\t\t\tto their orbital velocities will result in significant changes.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\t\n\t\t\t\t\t\tNote that two custom units ME (earth mass) and AU (astronomical unit) are used\n\t\t\t\t\t\tin this session.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\t\n\t\t\t\t\t\tTo run the simulation, Tap on the ode icon and tap the reset and then run buttons.\n\t\t\t\t\t\tAfter the calculations complete, have a look at the Plot_xy and Plot_local_xy graphs.\n\t\t\t\t\t\tTry zooming in on interesting features and viewing the graph full screen if you are\n\t\t\t\t\t\ton an iPad.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\t\n\t\t\t\t\t\tThen try changing the leading 1.0 in the  InitialVx expression to 1.1 and rerun the\n\t\t\t\t\t\tsimulation.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/orbits.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"friction\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tFriction Factor vs Reynolds\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tEngineering\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tFriction factors are determined by solving the Colebrook equation for a\n\t\t\t\t\t\trange of Reynolds numbers and roughness over diameter factors.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tTo calculate and view the plot, go to the Friction_Factor plot and tap the plot button.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tIf you want an operating point displayed, enter the appropriate values in\n\t\t\t\t\t\tOperatingF and OperatingRe.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThe friction factors are determined by solving the Colebrook equation for a\n\t\t\t\t\t\trange of Reynolds numbers and roughness over diameter factors.\n\t\t\t\t\t</p>\t\t\t\t\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/FrictionFactor.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"mccabe\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tMcCabe Thiele\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tEngineering\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis is a partial port of a McCabe Thiele Excel spreadsheet written by my\n\t\t\t\t\t\tgood friend, Marco Satyro, for teaching purposes.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThe spreadsheet made extensive use of the VBA programming language and my\n\t\t\t\t\t\tpurpose was to see if Math Minion could implement the key aspects of the\n\t\t\t\t\t\tcalculations just using its formulas.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThe math and science behind this are all Marco's and the errors and omissions\n\t\t\t\t\t\tI undoubtedly introduced are all mine.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/McCabe_Thiele.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"steamturbine\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tSteam Turbine\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tEngineering\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>Given:</p>\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li>inlet temperature</li>\n\t\t\t\t\t\t<li>inlet pressure</li>\n\t\t\t\t\t\t<li>outlet pressure</li>\n\t\t\t\t\t\t<li>mass flow</li>\n\t\t\t\t\t\t<li>isentropic efficiency</li>\n\t\t\t\t\t</ul> \n\t\t\t\t\t<p>\n\t\t\t\t\t\tthis model calculates the power, outlet temperature and polytropic\n\t\t\t\t\t\tefficiency of a steam turbine.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tIt uses  steam correlations taken from the\n\t\t\t\t\t\t<a href=\"http://www.iapws.org/relguide/IF97-Rev.pdf\">\n\t\t\t\t\t\t\t\"IAPWS Industrial Formulation 1997 for the Thermodynamic Properties of Water and Steam\" document</a>.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tOf course and as always, there are zero guarantees of correct implementation.\n\t\t\t\t\t</p>\n\t\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/Turbine.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"financialfunc\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tFinancial Functions\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tFinancial\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis session contains a number of financial functions implemented as MM models.\n\t\t\t\t\t\tThese are the types of things (present value, internal rate of return, depreciation etc.)\n\t\t\t\t\t\tthat are often found in spreadsheet function libraries, but I thought it might be more\n\t\t\t\t\t\tuseful and instructive to just construct them from Minion objects.  Your thoughts and\n\t\t\t\t\t\tsuggestions on this are of course welcome.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tSome also have HTML form objects to illustrate how to create user interface objects\n\t\t\t\t\t\tfor common calculations.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/Financial.txt'});\">Import</button>\n\t\t\t\t</div>\t\t\n\t\t\t</div>\t\n\n\t\t\t<div id=\"taylor\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tTaylor Series Expansion\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tMath\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tSeries expansion is a common mathematical tool for approximating functions\n\t\t\t\t\t\tthat cannot be directly calculated.  This example will show how Math Minion's\n\t\t\t\t\t\tmatrix object can be used to easily implement a series expansion, specifically\n\t\t\t\t\t\ta Taylor series to calculate e^x and sin(x).\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tSee the notes for each of the objects.\n\t\t\t\t\t</p>\t\t\t\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/Taylor_Series_Expansion.txt'});\">Import</button>\n\t\t\t\t</div>\t\t\n\t\t\t</div>\t\t\t\t\t\n\t\t\t<div id=\"triangulate\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\tTriangulate with Optimizer\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\tOptimizing\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis example uses the optimizer to calculate the best estimate of the\n\t\t\t\t\t\tlocation of a receiver, given approximate distances to a number of transmitters\n\t\t\t\t\t\tof known location.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tFor simplicity, everything is assumed to be on a single 2D surface.\n\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/Triangulate.txt'});\">Import</button>\n\t\t\t\t</div>\t\t\n\t\t\t</div>\n\n\t\t\t<div id=\"footinch\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\tFoot Inch Calculator\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\tString Handling\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tImplements a four function calculator for foot, inch fraction format.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis uses the javascript bridge feature introduce in 2.5.3 to allow a\n\t\t\t\t\t\tsmooth connection between the form and the underlying Math Minion calculations.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tBoth the Math Minion models and the form code are heavily commented.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tNote that is intended for use on iOS.  If you want to use it on a Mac,\n\t\t\t\t\t\tyou should change all the onTouchStart calls in the <b>Form</b> html code to onClick instead.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/Foot_Inch_Calculator.txt'});\">Import</button>\n\t\t\t\t</div>\t\t\n\t\t\t</div>\n\n\t\t\t<div id=\"formattime\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\tFormat Time\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\tString Handling\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis example contains a model that accepts a time value, in seconds since\n\t\t\t\t\t\tthe beginning of 1970, and calculates integer values for the different date\n\t\t\t\t\t\tand time parts as well as formatted date and time strings.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tYou can create sessions from models like these and keep them in a session\n\t\t\t\t\t\tfolder to copy and paste into models as needed.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/FormatTime.txt'});\">Import</button>\n\t\t\t\t</div>\t\t\n\t\t\t</div>\n\n\t\t\t<div id=\"commas\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\tNumbers with Commas\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\tString Handling\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tIllustrates a formula that formats numbers with comma separators for thousands.\n\t\t\t\t\t\tOnly for numbers less than one billion, but could be extended.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/number_commas.txt'});\">Import</button>\n\t\t\t\t</div>\t\t\n\t\t\t</div>\t\t\t\t\t\t\t\t\n\t\t</div>\n\t\t</div>\n\t</body>\n</html>"
+				}
 			}
 		]
 	}

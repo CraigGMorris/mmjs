@@ -523,8 +523,8 @@ export function MMApp(props) {
 			else {
 				dgmStateStack.push(null);
 			}
-			const path = cmds[0].results;
 			if (cmds.length) {
+				const path = cmds[0].results.path;
 				while (infoStack.length > 1 && infoStack[infoStack.length - 1].viewKey !== 'Model') {
 					infoStack.pop();
 				}
@@ -537,7 +537,23 @@ export function MMApp(props) {
 					viewKey: 'Model',
 				}
 				infoStack.push(modelInfoState);
-				setViewInfo(modelInfoState);
+				const indexTool = cmds[0].results.indexTool;
+				if (indexTool) {
+					const newInfoState = {
+						title: indexTool,
+						path: path + '.' + indexTool,
+						modelPath: path,
+						stackIndex: infoStack.length,
+						updateCommands: '',			// commands used to update the view state
+						updateResults: [],
+						viewKey: cmds[0].results.indexToolType,
+					};
+					infoStack.push(newInfoState);
+					setViewInfo(newInfoState);
+				}
+				else {
+					setViewInfo(modelInfoState);
+				}
 				updateDiagram(true);
 			}
 		});

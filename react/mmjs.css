@@ -312,12 +312,12 @@ a:hover {
 }
 
 #diagram__context-menu {
-	fill: var(--input--bgcolor);
+	fill: rgb(51, 51, 51);
 }
 
 .diagram__context-menu-text {
-	fill: var(--link--color);
-	stroke: var(--link--color);
+	fill: rgb(109, 203, 253);
+	stroke: rgb(109, 203, 253);
 }
 
 /* alas this did not work. Hover seems to be ignored for nested svg things

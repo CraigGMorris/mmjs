@@ -314,6 +314,18 @@
 						as its value, then Math Minion will attempt to load a session with that name.
 					</p>
 				</div>
+				<div id="loadurl" class="subsection">
+					<h3>Load Session URL - mm_loadurl</h3>
+					<p>
+						If a call to <b>mmpost</b> has a request with a key <b>mm_loadurl</b>, an a web address
+						as its value, then Math Minion will attempt to import a session from that address.
+					</p>
+					<p>
+						Web security protocols (specifically CORS) may prevent you from importing from
+						servers you don't control and thus can't set the appropriate permissions on. However
+						it should alway be possible to load from the server hosting Math Minion itself.
+					</p>
+				</div>
 				<div id="parameters" class="section">
 					<h3>Formula Parameters</h3>
 					<p class="reminder">

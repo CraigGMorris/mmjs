@@ -357,10 +357,10 @@ class MMStringValue extends MMValue {
 		for (let i = 0; i < count; i++) {
 			let x = parseFloat(this._values[i]);
 			if (x && isFinite(x)) {
-				this._values[i] = x;
+				rv._values[i] = x;
 			}
 			else {
-				this._values[i] = 0.0;
+				rv._values[i] = 0.0;
 			}
 		}
 		return rv;

@@ -1,0 +1,47 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [],
+	"CaseName": "number_commas",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "commas",
+	"ModelPath": "/.root",
+	"RootModel": {
+		"name": "root",
+		"DiagramX": -12321,
+		"DiagramY": -12321,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "n",
+				"Notes": "Random numbers of increasing magnitude",
+				"DiagramX": 45,
+				"DiagramY": 35,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "({rand 10,1} -0.5)*2*10^0:9"
+				}
+			},
+			{
+				"name": "commas",
+				"Notes": "Numbers formatted with comma separators for thousands.  Only for numbers less than one billion, but could be extended.",
+				"DiagramX": 125,
+				"DiagramY": 35,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{replace\n\t\"(\\d)(\\d\\d\\d,)\",\n\t\"$1,$2\",\n\t{replace\n\t\t\"(\\d)(\\d\\d\\d\\.)\",\n\t\t\"$1,$2\"\n\t\t{fmt \"%12.2f\", n}\n\t}\n}"
+				}
+			}
+		]
+	}
+}
