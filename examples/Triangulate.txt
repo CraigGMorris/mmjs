@@ -1,0 +1,249 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [],
+	"CaseName": "Triangulate Example",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "",
+	"ModelPath": "/.root",
+	"RootModel": {
+		"name": "root",
+		"Notes": "This example uses the optimizer to calculate the best estimate of the location of a receiver, given approximate distances to a number of transmitters of known location.\n\nFor simplicity, everything is assumed to be on a single 2D surface.",
+		"DiagramX": -12321,
+		"DiagramY": -12321,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "r",
+				"Notes": "The column of range values is extracted from the transmitters list and transposed into a row array.",
+				"DiagramX": 50,
+				"DiagramY": 135,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose transmitters.r}"
+				}
+			},
+			{
+				"name": "x",
+				"Notes": "These are the x coordinates of the circles representing the range from each transmitter.\n\nThey are calculated by multiplying the r row array by cosine of theta, which is a column array.  This produces a matrix with one column for each transmitter and one row for each angle in theta.\n\nThe row array x0 is then added to offset each transmitters location.\n\nThis expression is only used for plotting.",
+				"DiagramX": 160,
+				"DiagramY": 35,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "r*{cos theta}+x0"
+				}
+			},
+			{
+				"name": "theta",
+				"Notes": "Inorder to plot the range circles for each transmitter, this array of angles is created.",
+				"DiagramX": 50,
+				"DiagramY": 105,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "0:360*1\"degree\""
+				}
+			},
+			{
+				"name": "y",
+				"Notes": "These are the y coordinates of the circles representing the range from each transmitter.\n\nThey are calculated by multiplying the r row array by sine of theta, which is a column array.  This produces a matrix with one column for each transmitter and one row for each angle in theta.\n\nThe row array y0 is then added to offset each transmitters location.\n\nThis expression is only used for plotting.",
+				"DiagramX": 160,
+				"DiagramY": 70,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "r*{sin theta}+y0"
+				}
+			},
+			{
+				"name": "Position_Plot",
+				"Notes": "The circles representing the reported distances from each transmitter to the receiver are plotted in blue, while the optimized location is plotted as the green dot.",
+				"DiagramX": 250,
+				"DiagramY": 100,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Graph",
+				"X1": {
+					"v": "x",
+					"vmin": "-5 km",
+					"vmax": "15 km",
+					"unit": "km",
+					"Y1": {
+						"v": "y",
+						"vmin": "-5 km",
+						"vmax": "15 km",
+						"unit": "km",
+						"lineType": 0
+					}
+				},
+				"X2": {
+					"v": "optX",
+					"vmin": "-5 km",
+					"vmax": "15 km",
+					"unit": "km",
+					"Y1": {
+						"v": "optY",
+						"vmin": "-5 km",
+						"vmax": "15 km",
+						"unit": "km",
+						"lineType": 1
+					}
+				}
+			},
+			{
+				"name": "x0",
+				"Notes": "The column of x coordinates is extracted from the transmitters list and transposed into a row array.",
+				"DiagramX": 50,
+				"DiagramY": 170,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose transmitters.x}"
+				}
+			},
+			{
+				"name": "y0",
+				"Notes": "The column of y coordinates is extracted from the transmitters list and transposed into a row array.",
+				"DiagramX": 50,
+				"DiagramY": 200,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose transmitters.y}"
+				}
+			},
+			{
+				"name": "opt",
+				"Notes": "The optimizer has two outputs, corresponding to the x and y coordinates of the estimated receiver location.  These will be adjusted to minimize the sum of range errors.",
+				"DiagramX": 160,
+				"DiagramY": 100,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Optimizer",
+				"optFormula": {
+					"Formula": "{sum errors}"
+				},
+				"countFormula": {
+					"Formula": "2"
+				},
+				"outputs": [
+					5.48828393999406,
+					5.347915402664676
+				],
+				"Enabled": true,
+				"Optimized": true
+			},
+			{
+				"name": "errors",
+				"Notes": "The errors are calculated as the squares of the differences between the reported transmitter range and the calculated distance between the transmitter and the estimated location.",
+				"DiagramX": 160,
+				"DiagramY": 130,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "(r - optR)^2"
+				}
+			},
+			{
+				"name": "optR",
+				"Notes": "The Pythagorus relation\n\nr^2 = x^2 + y^2\n\nis used to calculate the distances between the transmitters and the location estimated by the optimizer.",
+				"DiagramX": 160,
+				"DiagramY": 220,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "((x0 - optX)^2 + (y0 - optY)^2)^0.5\n"
+				}
+			},
+			{
+				"name": "optX",
+				"Notes": "This converts the first optimizer output value into a x coordinate in kilometers.\n\nThe initial estimate from the optimizer of [0,0], isn't very good and in more complex instances it might be wise to add an offset corresponding to a better estimate.  This isn't necessary in this case though.",
+				"DiagramX": 160,
+				"DiagramY": 160,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "opt.1 *1\"km\""
+				},
+				"displayUnit": "km"
+			},
+			{
+				"name": "optY",
+				"Notes": "This converts the second optimizer output value into a y coordinate in kilometers.\n\nThe initial estimate from the optimizer of [0,0], isn't very good and in more complex instances it might be wise to add an offset corresponding to a better estimate.  This isn't necessary in this case though.",
+				"DiagramX": 160,
+				"DiagramY": 190,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "opt.2 *1\"km\""
+				},
+				"displayUnit": "km"
+			},
+			{
+				"name": "transmitters",
+				"Notes": "This is a data table, which serves as a list of transmitters.  The columns represent the coordinates and distance to the receiver.",
+				"DiagramX": 45,
+				"DiagramY": 35,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Data Table",
+				"Columns": [
+					{
+						"name": "x",
+						"displayUnit": "km",
+						"nValues": [
+							1500,
+							6600,
+							9000,
+							1000
+						],
+						"unitDimensions": "1 0 0 0 0 0 0",
+						"defaultValue": "0 km"
+					},
+					{
+						"name": "y",
+						"displayUnit": "km",
+						"nValues": [
+							4000,
+							8800,
+							2500,
+							9000
+						],
+						"unitDimensions": "1 0 0 0 0 0 0",
+						"defaultValue": "0 km"
+					},
+					{
+						"name": "r",
+						"displayUnit": "km",
+						"nValues": [
+							5000,
+							4000,
+							5000,
+							6000
+						],
+						"unitDimensions": "1 0 0 0 0 0 0",
+						"defaultValue": "0 km"
+					}
+				]
+			}
+		]
+	}
+}

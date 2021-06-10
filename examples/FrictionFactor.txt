@@ -1,0 +1,582 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [],
+	"CaseName": "Fanning Friction Factor",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "",
+	"ModelPath": "/.root",
+	"RootModel": {
+		"name": "root",
+		"Notes": "Friction factors are determined by solving the Colebrook equation for a range of Reynolds numbers and roughness over diameter factors.\n\nTo calculate and view the plot, go to the Friction_Factor plot and tap the plot button.\n\nIf you want an operating point displayed, enter the appropriate values in OperatingF and OperatingRe.\n",
+		"DiagramX": -12321,
+		"DiagramY": -12321,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "ed",
+				"Notes": "e/D the roughness over diameter factor.\n\nTo avoid possible index problems with edList after the loop has completed and the loop counter would be one more than the number of elements, a minimum function is used with the edcases.i parameter.",
+				"DiagramX": 190,
+				"DiagramY": 180,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "edList[{min edcases.i, {nrows edlist}}]"
+				}
+			},
+			{
+				"name": "rootf",
+				"Notes": "square root if the friction factor.",
+				"DiagramX": 310,
+				"DiagramY": 125,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "solver.1+1+1e-9"
+				}
+			},
+			{
+				"name": "rhs",
+				"Notes": "Right hand side of the Colebrook formula.",
+				"DiagramX": 190,
+				"DiagramY": 100,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "-4*{log ed/3.7 + 1.256/(re*rootf)}"
+				}
+			},
+			{
+				"name": "Re",
+				"Notes": "A range of Reynolds numbers to plot for each e/D.",
+				"DiagramX": 190,
+				"DiagramY": 140,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "10^(33:80/10)"
+				}
+			},
+			{
+				"name": "lhs",
+				"Notes": "Left hand side of the Colebrook formula",
+				"DiagramX": 190,
+				"DiagramY": 60,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "1/rootf"
+				}
+			},
+			{
+				"name": "solver",
+				"Notes": "Solves the Colebrook equation for the square root of f.",
+				"DiagramX": 190,
+				"DiagramY": 20,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Equation Solver",
+				"f0": "lhs-rhs",
+				"c0": "{nrows Re}",
+				"maxIter": 200,
+				"maxJacobians": 5,
+				"Enabled": "y"
+			},
+			{
+				"name": "edList",
+				"Notes": "A list of e/D lines to calculate.",
+				"DiagramX": 190,
+				"DiagramY": 270,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{concat \n.05,.04,.03,.02,.015,.01,.008,.006,\n.004,.002,.001,.0008,.0006,.0004,\n.0002,.0001,.00005,.00001,\n.000005,.000001}"
+				}
+			},
+			{
+				"name": "f",
+				"DiagramX": 310,
+				"DiagramY": 165,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "rootf^2"
+				}
+			},
+			{
+				"name": "f_05",
+				"DiagramX": 430,
+				"DiagramY": 35,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[1]}"
+				}
+			},
+			{
+				"name": "logRe",
+				"DiagramX": 430,
+				"DiagramY": 15,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{log Re}"
+				}
+			},
+			{
+				"name": "Friction_Factors",
+				"Notes": "Tap the Y axis labels to step through the e/D lines.  A Y label of f_001 would indicate that colour is for the e/D = 0.001 line.",
+				"DiagramX": 545,
+				"DiagramY": 215,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Graph",
+				"X1": {
+					"v": "logRe",
+					"vmin": "3",
+					"vmax": "8",
+					"Y1": {
+						"v": "f_05",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y2": {
+						"v": "f_04",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y3": {
+						"v": "f_03",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y4": {
+						"v": "f_02",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y5": {
+						"v": "f_015",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y6": {
+						"v": "f_01",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y7": {
+						"v": "f_008",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y8": {
+						"v": "f_006",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y9": {
+						"v": "f_004",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y10": {
+						"v": "f_002",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y11": {
+						"v": "f_001",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y12": {
+						"v": "f_0008",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y13": {
+						"v": "f_0006",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y14": {
+						"v": "f_0004",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y15": {
+						"v": "f_0002",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y16": {
+						"v": "f_0001",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y17": {
+						"v": "f_00005",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y18": {
+						"v": "f_00001",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y19": {
+						"v": "f_000005",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					},
+					"Y20": {
+						"v": "f_000001",
+						"vmin": "0",
+						"vmax": ".02",
+						"lineType": 0
+					}
+				},
+				"X2": {
+					"v": "ReLaminar",
+					"vmin": "3",
+					"vmax": "8",
+					"Y1": {
+						"v": "fLaminar",
+						"vmin": "0",
+						"vmax": "0.02",
+						"lineType": 0
+					}
+				},
+				"X3": {
+					"v": "OperatingRe",
+					"vmin": "3",
+					"vmax": "8",
+					"Y1": {
+						"v": "OperatingF",
+						"vmin": "0",
+						"vmax": "0.02",
+						"lineType": 1
+					}
+				}
+			},
+			{
+				"name": "f_000001",
+				"DiagramX": 430,
+				"DiagramY": 415,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[20]}"
+				}
+			},
+			{
+				"name": "f_04",
+				"DiagramX": 430,
+				"DiagramY": 55,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[2]}"
+				}
+			},
+			{
+				"name": "f_03",
+				"DiagramX": 430,
+				"DiagramY": 75,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[3]}"
+				}
+			},
+			{
+				"name": "f_02",
+				"DiagramX": 430,
+				"DiagramY": 95,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[4]}"
+				}
+			},
+			{
+				"name": "f_015",
+				"DiagramX": 430,
+				"DiagramY": 115,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[5]}"
+				}
+			},
+			{
+				"name": "f_01",
+				"DiagramX": 430,
+				"DiagramY": 135,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[6]}"
+				}
+			},
+			{
+				"name": "f_008",
+				"DiagramX": 430,
+				"DiagramY": 155,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[7]}"
+				}
+			},
+			{
+				"name": "f_006",
+				"DiagramX": 430,
+				"DiagramY": 175,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[8]}"
+				}
+			},
+			{
+				"name": "f_004",
+				"DiagramX": 430,
+				"DiagramY": 195,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[9]}"
+				}
+			},
+			{
+				"name": "f_002",
+				"DiagramX": 430,
+				"DiagramY": 215,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[10]}"
+				}
+			},
+			{
+				"name": "f_001",
+				"DiagramX": 430,
+				"DiagramY": 235,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[11]}"
+				}
+			},
+			{
+				"name": "f_0008",
+				"DiagramX": 430,
+				"DiagramY": 255,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[12]}"
+				}
+			},
+			{
+				"name": "f_0006",
+				"DiagramX": 430,
+				"DiagramY": 275,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[13]}"
+				}
+			},
+			{
+				"name": "f_0004",
+				"DiagramX": 430,
+				"DiagramY": 295,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[14]}"
+				}
+			},
+			{
+				"name": "f_0002",
+				"DiagramX": 430,
+				"DiagramY": 315,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[15]}"
+				}
+			},
+			{
+				"name": "f_0001",
+				"DiagramX": 430,
+				"DiagramY": 335,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[16]}"
+				}
+			},
+			{
+				"name": "f_00005",
+				"DiagramX": 430,
+				"DiagramY": 355,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[17]}"
+				}
+			},
+			{
+				"name": "f_00001",
+				"DiagramX": 430,
+				"DiagramY": 375,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[18]}"
+				}
+			},
+			{
+				"name": "f_000005",
+				"DiagramX": 430,
+				"DiagramY": 395,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{transpose edcases.r2[19]}"
+				}
+			},
+			{
+				"name": "ReLaminar",
+				"DiagramX": 545,
+				"DiagramY": 90,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{concat 3, {log 2100}}"
+				}
+			},
+			{
+				"name": "fLaminar",
+				"DiagramX": 545,
+				"DiagramY": 140,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{concat 0.016, 16/2100}"
+				}
+			},
+			{
+				"name": "OperatingF",
+				"DiagramX": 550,
+				"DiagramY": 275,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": ".007"
+				}
+			},
+			{
+				"name": "OperatingRe",
+				"DiagramX": 550,
+				"DiagramY": 310,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{log 50000}"
+				}
+			},
+			{
+				"name": "edcases",
+				"Notes": "Here an iterator is used as a case study tool, stepping through the list of e/D lines, which the solver calculates.\n\nThe while condition primarily checks that the loop counter, I, is less than or equal to the number of e/D values.\n\nHowever it also checks to see if the solver operation is solved.  This is to avoid the iterator being invoked on each trial of the solver.  Finally it checks to see if f is available and this is just a trigger to cause the solver to solve if it hasn't.",
+				"DiagramX": 310,
+				"DiagramY": 215,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Iterator",
+				"whileFormula": {
+					"Formula": "{and\n  {le $.i, {nrows edList}},\n  f,\n  solver.solved\n}"
+				},
+				"initXFormula": {
+					"Formula": "1"
+				},
+				"nextXFormula": {
+					"Formula": ""
+				},
+				"recFormulas": [
+					{
+						"Formula": "ed"
+					},
+					{
+						"Formula": "f"
+					},
+					{
+						"Formula": "Re"
+					}
+				],
+				"AutoRun": "y"
+			}
+		]
+	}
+}
