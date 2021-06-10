@@ -848,9 +848,6 @@ class MMFlash extends MMTool {
 			result.l = liquid;
 			result.v = vapor;
 		}
-		else {
-			console.log('single phase');
-		}
 		return result;
 	}
 
