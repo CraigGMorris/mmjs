@@ -181,7 +181,7 @@ export function HtmlPageView(props) {
 				'iframe', {
 					id: 'htmlpage__iframe',
 					srcDoc: results.html,
-					sandbox: 'allow-scripts allow-modals',
+					sandbox: 'allow-scripts allow-modals allow-popups',
 				},
 			)
 		)
