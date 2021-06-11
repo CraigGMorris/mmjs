@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			let currentPostName = '2021-06-10.html';
+			window.onload = () => {
+				rtSetupHeading('News',{
+					select: 'Select Posts',
+					newest: 'Newest Post',
+				});
+				displayPost(currentPostName);
+			};
+			const displayPost = (name) => {
+				fetch('articles/' + name)
+					.then(response => response.text())
+					.then(post => {
+						const newest = document.getElementById('newest');
+						newest.innerHTML = post;
+					});
+			}
+			selectArticle = () => {
+			var name = document.getElementById("articleselect").value;
+			displayPost(name);
+		}
+	
+		</script>	
+		<title>News</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="select" class="section">
+				Select Post: 
+				<select  id="articleselect" onchange="selectArticle()">
+					<option value="2021-06-10.html">2021-06-10 - Browser Version of MM Update</option>
+					<option value="2021-02-11.html">2021-02-11 - Web Browser Math Minion</option>
+				</select>
+			</div>
+			<div id="newest" class="section">
+				Loading
+			</div>
+		</div>
+	</body>
+</html>

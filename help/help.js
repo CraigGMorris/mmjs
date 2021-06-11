@@ -28,7 +28,7 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink"><a href="getstarted.html">Getting Started</a></div>
 	<div class="contentlink"><a href="http://www.redtree.com/contact.html">Contact Me</a></div>
 	<div class="contentlink"><a href="freeprivate.html">License</a></div>
-	<div class="contentlink"><a href="http://www.redtree.com/articles/">News</a></div>
+	<div class="contentlink"><a href="news.html">News</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink"><a href="diagram.html">Diagram</a></div>
 	<div class="contentlink"><a href="infoview.html">Information View</a></div>
