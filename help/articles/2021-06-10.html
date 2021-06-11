@@ -1,0 +1,61 @@
+<h3>Browser Version of MM Update</h3>
+<p>
+I really should post more often as I have made a lot of changes to the browser based version of Math Minion since the last post. There are too many changes to list here, but the whole messy business is logged on GitHub at:
+</p>
+<p>
+https://github.com/CraigGMorris/mmjs/commits/master
+</p>
+<p>
+Most are bug fixes or small improvements, but there are a couple of things worth mentioning.
+</p>
+<p>
+The first is an issue that arose with Apple's Safari browser after a recent update. The mathminion.org website is actually just a bunch of static files on Amazon's AWS S3 storage system with the bucket configured for web access. The real address for the program is
+</p>
+<p>
+https://s3.amazonaws.com/www.mathminion.org/run.html
+</p>
+<p>
+but I use the DNS CNAME feature to redirect the friendlier
+</p>
+<p>
+http://mathminion.org/run.html
+</p>
+<p>
+to the real one.
+</p>
+<p>
+Well it turns out that marketers can use this feature to try and get around anti tracking features in a browser, so Apple decided it was a good idea to simply erase any stored browser databases from such addresses whenever the browser was restarted. Apparently the idea that such databases should be used for non-nefarious uses didn't occur to them. The result was that restarting Safari would obliterate all the Math Minion saved sessions. Hopefully everyone was following the advice to back things up to disk frequently.  It is easy with Export All button on the Sessions page.
+</p>
+<p>
+Anyway I have now changed the default run link to the full amazonaws one. Since it is different address, you will have to export your sessions from the mathminion address and then import them on the new one.  Again the export all button makes this fairly easy.
+</p>
+<p>
+The other thing I think worth mentioning is that I have spruced up the Getting Started session a bit and included an HTML page with buttons to import most of the examples from the legacy Apple app. To use it you will need to get a new copy of Getting Started, either by downloading it from:
+</p>
+<p>
+http://mathminion.org/help/Getting%20Started.txt
+</p>
+<p>
+or the equivalent
+</p>
+<p>
+https://s3.amazonaws.com/www.mathminion.org/help/Getting%20Started.txt
+</p>
+<p>
+and then importing it, or you can enter the following command in the Math Minion console
+</p>
+<p>
+/ loadurl ../help/Getting Started.txt
+</p>
+<p>
+Note this will overwrite your current Getting Started session.
+</p>
+<p>
+You may have noticed I called the Apple app "legacy" and indeed I have decided I am unlikely to provide any more updates to it.  It will remain in the App Store for now, but eventually will go away.  Most sessions from it can be directly imported into the browser version from your iCloud directory, but there are some omissions and changes.  In particular I didn't include model arrays in the new version and HTMLPages probably will require significant modifications.  Also the pedometer functions are gone and wget etc. functions have been replaced with a general purpose wfetch function, but its utility will in most cases be limited to servers you control due to CORS restrictions in browsers.
+</p>
+<p>
+More to come, hopefully soon.
+</p>
+<p>
+Craig
+</p>
