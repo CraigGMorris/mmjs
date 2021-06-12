@@ -1734,7 +1734,7 @@ class MMGraph extends MMTool {
 					const centerY = i * step;
 					lines.push(gridFormat(0.0, width, centerY, centerY));
 					
-					let yString = yLabels[i];
+					let yString = yLabels[yLabelCount - i - 1];
 					if (i == 0 && yValue.formula.formula ) {
 						yString += ' '+ yValue.title;
 					}
