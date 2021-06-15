@@ -425,7 +425,8 @@ class MMSolver extends MMTool {
 		this.isRunning = true;
 		this.isConverged = false;
 		const maxIterations = this.maxIterFormula.value();
-		if (!maxIterations) {
+		const maxJacobians = this.maxJacobianFormula.value();
+		if (!maxIterations || !maxJacobians) {
 			return;
 		}
 		const functionCount = this.functions.length;
@@ -517,6 +518,7 @@ class MMSolver extends MMTool {
 								}
 								for (let j = 0; j < arraySize && eqnNo < fxCount; j++, eqnNo++) {
 									fx[eqnNo] = value.values[ j ];
+									// console.log(`fx${eqnNo} ${fx[eqnNo]}`);
 								}
 							}
 							else {
@@ -536,7 +538,8 @@ class MMSolver extends MMTool {
 					}
 				},
 				{
-
+					maxIterations: maxIterations.values[0],
+					maxJacobians: maxJacobians.values[0]
 				});
 				if (!this.isInError) {
 					this.isConverged = true;
@@ -675,8 +678,8 @@ class MMSolver extends MMTool {
 			const v = func.errorFormula.value();
 			const vX = this.valueDescribedBy(`${i+1}`);
 			fv.push({
-				x: vX ? vX.stringUsingUnit() : '---',
-				fx: v ? v.stringUsingUnit() : '---'
+				x: (vX instanceof MMNumberValue) ? vX.stringUsingUnit() : '---',
+				fx: (v instanceof MMNumberValue) ? v.stringUsingUnit() : '---'
 			});
 		}
 		results['formulas'] = formulas;
