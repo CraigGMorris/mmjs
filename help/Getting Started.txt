@@ -14844,6 +14844,732 @@
 				"Formula": {
 					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.example {\n\t\t\tborder-bottom: 1px solid black;\n\t\t\tpadding-bottom: 10px;\n\t\t\tmargin-bottom: 2em;\n\t\t}\n\t\t.extitle {\n\t\t\tfont-size: 1em;\n\t\t\tfont-family: \"Verdana\";\n\t\t\tfont-style: italic;\n\t\t\tfont-weight: bold;\n\t\t}\n\n\t\t.exsubtitle {\n\t\t\tborder-bottom: 1px dashed black;\n\t\t\tmargin-bottom: 0.75em;\n\t\t\tpadding-bottom: 0.5em;\n\t\t}\n\t\t.hiddenalert {\n\t\t\tcolor: #F00;\n\t\t}\t\n\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>A Few Interesting<br> Uses of Math Minion</h3>\n\t\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<div id=\"examples\">\n\t\t\t<div id=\"indexof\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tUsing Indexof to Look Up Table Values\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tData Handling\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t\t<p>Illustrates using the indexof function to do table look ups.\n\t\t\t\t\t\t\tIn this case looking up names and share holdings in one table by\n\t\t\t\t\t\t\tusing the company symbols in a second table.\n\t\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/indexof.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"predator\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tODE Example - Predator/Prey\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tDynamic Modeling\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\tThis example illustrates the use of the ODE solver simulate the classic\n\t\t\t\t\t\t\tpredator/prey relationship as characterized by the Lotka-Volterra model.\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\tSee <a href=\"http://wikipedia.org/wiki/Lotka-Volterra_equation\">\n\t\t\t\t\t\t\t\twikipedia.org/wiki/Lotka-Volterra_equation</a>.\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\tThe calculation is contained in the Population model, with the results\n\t\t\t\t\t\t\tillustrated in the two Plot objects.\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\tMathworks has a published demonstration of this problem (look for\n\t\t\t\t\t\t\t\"Numerical Integration of Differential Equations\" in the demos section\n\t\t\t\t\t\t\tof the mathworks.com website).  The Math Minion solution to this problem\n\t\t\t\t\t\t\tis reproduced in the MatlabExample model.\n\t\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/Predator.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"orbits\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\tOrbits\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tDynamic Modeling\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis models the orbital motion of 2 or more planets around a sun.\n\t\t\t\t\t\tIt is a simplification of one of Marco M's wonderful models and as such,\n\t\t\t\t\t\tany mistakes are almost certainly once again mine.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tFor simplicity all of the planet masses are assumed to be equal,\n\t\t\t\t\t\talthough this could be relaxed at the expense of slightly more complicated equations.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\t\n\t\t\t\t\t\tAs set up, there are only two massive planets in close orbits.\n\t\t\t\t\t\tThe large mass 1000 ME (earth mass) was chosen in order to have visible\n\t\t\t\t\t\teffects very quickly and their initial positions and velocities result in\n\t\t\t\t\t\tthem orbiting around each other while orbiting the central sun.  Small changes\n\t\t\t\t\t\tto their orbital velocities will result in significant changes.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\t\n\t\t\t\t\t\tNote that two custom units ME (earth mass) and AU (astronomical unit) are used\n\t\t\t\t\t\tin this session.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\t\n\t\t\t\t\t\tTo run the simulation, Tap on the ode icon and tap the reset and then run buttons.\n\t\t\t\t\t\tAfter the calculations complete, have a look at the Plot_xy and Plot_local_xy graphs.\n\t\t\t\t\t\tTry zooming in on interesting features and viewing the graph full screen if you are\n\t\t\t\t\t\ton an iPad.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\t\n\t\t\t\t\t\tThen try changing the leading 1.0 in the  InitialVx expression to 1.1 and rerun the\n\t\t\t\t\t\tsimulation.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/orbits.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"friction\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tFriction Factor vs Reynolds\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tEngineering\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tFriction factors are determined by solving the Colebrook equation for a\n\t\t\t\t\t\trange of Reynolds numbers and roughness over diameter factors.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tTo calculate and view the plot, go to the Friction_Factor plot and tap the plot button.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tIf you want an operating point displayed, enter the appropriate values in\n\t\t\t\t\t\tOperatingF and OperatingRe.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThe friction factors are determined by solving the Colebrook equation for a\n\t\t\t\t\t\trange of Reynolds numbers and roughness over diameter factors.\n\t\t\t\t\t</p>\t\t\t\t\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/FrictionFactor.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"mccabe\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tMcCabe Thiele\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tEngineering\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis is a partial port of a McCabe Thiele Excel spreadsheet written by my\n\t\t\t\t\t\tgood friend, Marco Satyro, for teaching purposes.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThe spreadsheet made extensive use of the VBA programming language and my\n\t\t\t\t\t\tpurpose was to see if Math Minion could implement the key aspects of the\n\t\t\t\t\t\tcalculations just using its formulas.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThe math and science behind this are all Marco's and the errors and omissions\n\t\t\t\t\t\tI undoubtedly introduced are all mine.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/McCabe_Thiele.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"steamturbine\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tSteam Turbine\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tEngineering\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>Given:</p>\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li>inlet temperature</li>\n\t\t\t\t\t\t<li>inlet pressure</li>\n\t\t\t\t\t\t<li>outlet pressure</li>\n\t\t\t\t\t\t<li>mass flow</li>\n\t\t\t\t\t\t<li>isentropic efficiency</li>\n\t\t\t\t\t</ul> \n\t\t\t\t\t<p>\n\t\t\t\t\t\tthis model calculates the power, outlet temperature and polytropic\n\t\t\t\t\t\tefficiency of a steam turbine.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tIt uses  steam correlations taken from the\n\t\t\t\t\t\t<a href=\"http://www.iapws.org/relguide/IF97-Rev.pdf\">\n\t\t\t\t\t\t\t\"IAPWS Industrial Formulation 1997 for the Thermodynamic Properties of Water and Steam\" document</a>.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tOf course and as always, there are zero guarantees of correct implementation.\n\t\t\t\t\t</p>\n\t\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/Turbine.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"financialfunc\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tFinancial Functions\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tFinancial\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis session contains a number of financial functions implemented as MM models.\n\t\t\t\t\t\tThese are the types of things (present value, internal rate of return, depreciation etc.)\n\t\t\t\t\t\tthat are often found in spreadsheet function libraries, but I thought it might be more\n\t\t\t\t\t\tuseful and instructive to just construct them from Minion objects.  Your thoughts and\n\t\t\t\t\t\tsuggestions on this are of course welcome.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tSome also have HTML form objects to illustrate how to create user interface objects\n\t\t\t\t\t\tfor common calculations.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/Financial.txt'});\">Import</button>\n\t\t\t\t</div>\t\t\n\t\t\t</div>\t\n\n\t\t\t<div id=\"taylor\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tTaylor Series Expansion\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\t\tMath\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tSeries expansion is a common mathematical tool for approximating functions\n\t\t\t\t\t\tthat cannot be directly calculated.  This example will show how Math Minion's\n\t\t\t\t\t\tmatrix object can be used to easily implement a series expansion, specifically\n\t\t\t\t\t\ta Taylor series to calculate e^x and sin(x).\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tSee the notes for each of the objects.\n\t\t\t\t\t</p>\t\t\t\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/Taylor_Series_Expansion.txt'});\">Import</button>\n\t\t\t\t</div>\t\t\n\t\t\t</div>\t\t\t\t\t\n\t\t\t<div id=\"triangulate\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\tTriangulate with Optimizer\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\tOptimizing\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis example uses the optimizer to calculate the best estimate of the\n\t\t\t\t\t\tlocation of a receiver, given approximate distances to a number of transmitters\n\t\t\t\t\t\tof known location.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tFor simplicity, everything is assumed to be on a single 2D surface.\n\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/Triangulate.txt'});\">Import</button>\n\t\t\t\t</div>\t\t\n\t\t\t</div>\n\n\t\t\t<div id=\"footinch\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\tFoot Inch Calculator\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\tString Handling\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tImplements a four function calculator for foot, inch fraction format.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis uses the javascript bridge feature introduce in 2.5.3 to allow a\n\t\t\t\t\t\tsmooth connection between the form and the underlying Math Minion calculations.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tBoth the Math Minion models and the form code are heavily commented.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tNote that is intended for use on iOS.  If you want to use it on a Mac,\n\t\t\t\t\t\tyou should change all the onTouchStart calls in the <b>Form</b> html code to onClick instead.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/Foot_Inch_Calculator.txt'});\">Import</button>\n\t\t\t\t</div>\t\t\n\t\t\t</div>\n\n\t\t\t<div id=\"formattime\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\tFormat Time\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\tString Handling\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis example contains a model that accepts a time value, in seconds since\n\t\t\t\t\t\tthe beginning of 1970, and calculates integer values for the different date\n\t\t\t\t\t\tand time parts as well as formatted date and time strings.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tYou can create sessions from models like these and keep them in a session\n\t\t\t\t\t\tfolder to copy and paste into models as needed.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/FormatTime.txt'});\">Import</button>\n\t\t\t\t</div>\t\t\n\t\t\t</div>\n\n\t\t\t<div id=\"commas\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\tNumbers with Commas\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exsubtitle\"><span class=\"excat\">\n\t\t\t\t\tString Handling\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tIllustrates a formula that formats numbers with comma separators for thousands.\n\t\t\t\t\t\tOnly for numbers less than one billion, but could be extended.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/number_commas.txt'});\">Import</button>\n\t\t\t\t</div>\t\t\n\t\t\t</div>\t\t\t\t\t\t\t\t\n\t\t</div>\n\t\t</div>\n\t</body>\n</html>"
 				}
+			},
+			{
+				"name": "CoolMM",
+				"Notes": "Tap the icon above for information on CoolProp in Math Minion",
+				"DiagramX": 70,
+				"DiagramY": 100,
+				"HideInfo": "n",
+				"DiagramNotes": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"indexTool": "overview",
+				"Objects": [
+					{
+						"name": "refrigeration",
+						"Notes": "A simple single state refrigeration calculation",
+						"DiagramX": 165,
+						"DiagramY": -25,
+						"HideInfo": "n",
+						"DiagramNotes": "y",
+						"Type": "Model",
+						"diagramScale": 1,
+						"indexTool": "refrigeration",
+						"Objects": [
+							{
+								"name": "InletQ",
+								"Notes": "the cooling duty",
+								"DiagramX": 195,
+								"DiagramY": 140,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "300 kw"
+								}
+							},
+							{
+								"name": "condT",
+								"Notes": "condensing temperature",
+								"DiagramX": 195,
+								"DiagramY": 170,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "40 degc"
+								}
+							},
+							{
+								"name": "ColdT",
+								"Notes": "required coolant temperature",
+								"DiagramX": 195,
+								"DiagramY": 110,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "-10 degC"
+								}
+							},
+							{
+								"name": "envelope",
+								"Notes": "",
+								"DiagramX": 275,
+								"DiagramY": 195,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "coolerOut.envelope"
+								}
+							},
+							{
+								"name": "envPlot",
+								"Notes": "Plot of the T - P phase envelope\nAll of the flashes will be on this line",
+								"DiagramX": 275,
+								"DiagramY": 225,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Graph",
+								"X1": {
+									"v": "envelope.t",
+									"vmin": "-150 degc",
+									"vmax": "100 degc",
+									"Y1": {
+										"v": "envelope.p",
+										"vmin": "0 kpa",
+										"vmax": "6000 kpa",
+										"lineType": 0
+									}
+								},
+								"X2": {
+									"v": "{cc coolerOut.t.b,\n\tcompressor.outfluid.t.b,\n\tcondenserOut.t.b,\n\tvalveOut.t.b\n}'Path T",
+									"vmin": "",
+									"vmax": "",
+									"Y1": {
+										"v": "{cc coolerOut.p.b,\n\tcompressor.outfluid.p.b,\n\tcondenserOut.p.b,\n\tvalveOut.p.b\n}'Path P",
+										"vmin": "",
+										"vmax": "",
+										"lineType": 0
+									}
+								}
+							},
+							{
+								"name": "compressor",
+								"Notes": "Basic compressor calculation.  The inputs are\n\n feed - a flash result or similar\n feedPhase - the phase of feed to use.\n             should be \"b\", \"v\" or \"l\"\n  outletP - the pressure to compress to.\n  efficiency - the difference between the feed \n               and ideal outlet enthalpies is\n               divided by the efficiency to\n               determine the outlet fluid\n               temperature.\n\nThe outlets are:\n\n  out - the outlet fluid flash\n  power - the power required for the compression\n  polyEff - the calculated polytropic efficiency",
+								"DiagramX": 275,
+								"DiagramY": 165,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "Feed",
+										"DiagramX": 120,
+										"DiagramY": 115,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "coolerOut"
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "e",
+										"DiagramX": 230,
+										"DiagramY": 135,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{if {gt efficiency, 1.0},\n\tefficiency/100,\n\tefficiency\n}"
+										}
+									},
+									{
+										"name": "OutletP",
+										"DiagramX": 120,
+										"DiagramY": 165,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "condenserout.p.b + condDp"
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "Efficiency",
+										"DiagramX": 120,
+										"DiagramY": 190,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ".75"
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "H",
+										"DiagramX": 345,
+										"DiagramY": 215,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feedH + \n(IdealOut.h.b - feedH) / e"
+										}
+									},
+									{
+										"name": "Power",
+										"DiagramX": 345,
+										"DiagramY": 165,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "(outfluid.h.b - feedH)*F"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "OutFluid",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 235,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "IdealOut.thermo"
+										},
+										"firstprop": {
+											"Formula": "OutletP"
+										},
+										"secondprop": {
+											"Formula": "h"
+										},
+										"molefrac": {
+											"Formula": "idealout.x.b"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "idealout.f.b"
+										}
+									},
+									{
+										"name": "IdealOut",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 210,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "feed.thermo"
+										},
+										"firstprop": {
+											"Formula": "OutletP"
+										},
+										"secondprop": {
+											"Formula": "feedS"
+										},
+										"molefrac": {
+											"Formula": "X"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "F"
+										}
+									},
+									{
+										"name": "polytropic",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 260,
+										"HideInfo": "n",
+										"DiagramNotes": "n",
+										"Type": "Model",
+										"diagramScale": 1,
+										"Objects": [
+											{
+												"name": "n",
+												"DiagramX": 280,
+												"DiagramY": 180,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "logpratio / {ln InletV / OutletV}"
+												}
+											},
+											{
+												"name": "logPRatio",
+												"DiagramX": 165,
+												"DiagramY": 220,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "{ln outlet.p.b / inletP}"
+												}
+											},
+											{
+												"name": "ns",
+												"DiagramX": 280,
+												"DiagramY": 160,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "logpratio / {ln InletV / IdealV}"
+												}
+											},
+											{
+												"name": "IdealV",
+												"DiagramX": 165,
+												"DiagramY": 180,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "1/Ideal.dmolar.b"
+												}
+											},
+											{
+												"name": "InletV",
+												"DiagramX": 165,
+												"DiagramY": 160,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "feedV"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "OutletV",
+												"DiagramX": 165,
+												"DiagramY": 200,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "1/Outlet.dmolar.b"
+												}
+											},
+											{
+												"name": "f",
+												"DiagramX": 280,
+												"DiagramY": 210,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "(Ideal.h.b - InletH) /\n( ns/(ns - 1) *\n\t(Outlet.p.b * idealV -\n\tInletP * inletV)\n)"
+												}
+											},
+											{
+												"name": "wp",
+												"DiagramX": 280,
+												"DiagramY": 240,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "f * (n/(n - 1)) *\n( outlet.p.b * outletV - inletP *inletV )"
+												}
+											},
+											{
+												"name": "polyEff",
+												"DiagramX": 280,
+												"DiagramY": 270,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "wp / ( outlet.h.b - inletH )"
+												},
+												"isOutput": "y"
+											},
+											{
+												"name": "Ideal",
+												"Notes": "",
+												"DiagramX": 165,
+												"DiagramY": 245,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "IdealOut"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "Outlet",
+												"Notes": "",
+												"DiagramX": 165,
+												"DiagramY": 270,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "OutFluid"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "inletP",
+												"Notes": "",
+												"DiagramX": 165,
+												"DiagramY": 295,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "Pin"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "InletH",
+												"Notes": "",
+												"DiagramX": 165,
+												"DiagramY": 320,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "feedH"
+												},
+												"isInput": "y"
+											}
+										]
+									},
+									{
+										"name": "Out",
+										"Notes": "",
+										"DiagramX": 345,
+										"DiagramY": 140,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "OutFluid"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "polyEff",
+										"Notes": "",
+										"DiagramX": 345,
+										"DiagramY": 190,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "polytropic.polyeff"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "feedPhase",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 140,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "'b"
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "feedH",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 110,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.h[0,feedPhase]"
+										}
+									},
+									{
+										"name": "feedS",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 240,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.s[0,feedPhase]"
+										}
+									},
+									{
+										"name": "F",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 160,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.f[0,feedPhase]"
+										}
+									},
+									{
+										"name": "X",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 185,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.x[0,feedPhase]"
+										}
+									},
+									{
+										"name": "Pin",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 215,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.p[0,feedPhase]"
+										}
+									},
+									{
+										"name": "feedV",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 265,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "1/feed.dmolar[0,feedPhase]"
+										}
+									}
+								]
+							},
+							{
+								"name": "condenserOut",
+								"Notes": "Similar to the cooler, we know the condenser outlet temperature (presumably from available cooling) and since it is condensed, it will be at the bubble point. We can designate this by setting the second property to 0.\n\nThis will determine the condensing pressure and other properties.",
+								"DiagramX": 275,
+								"DiagramY": 105,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "coolerOut.thermo"
+								},
+								"firstprop": {
+									"Formula": "condT"
+								},
+								"secondprop": {
+									"Formula": "0"
+								},
+								"molefrac": {
+									"Formula": "coolerOut.x.b"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "coolerOut.f.b"
+								}
+							},
+							{
+								"name": "CondInT",
+								"Notes": "Compressor outlet temperature\n=\nCondenser inlet temperature",
+								"DiagramX": 375,
+								"DiagramY": 135,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "compressor.out.t.b"
+								},
+								"isOutput": "y"
+							},
+							{
+								"name": "compPower",
+								"Notes": "Required compressor power",
+								"DiagramX": 375,
+								"DiagramY": 75,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "compressor.power"
+								},
+								"isOutput": "y"
+							},
+							{
+								"name": "CoolerDp",
+								"Notes": "",
+								"DiagramX": 195,
+								"DiagramY": 200,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "20 kpa"
+								}
+							},
+							{
+								"name": "CondDp",
+								"Notes": "",
+								"DiagramX": 195,
+								"DiagramY": 225,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "35 kpa"
+								},
+								"isInput": "y"
+							},
+							{
+								"name": "CondDuty",
+								"Notes": "Condenser Duty",
+								"DiagramX": 375,
+								"DiagramY": 105,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "(condenserOut.h.b - compressor.Out.h.b)*coolerOut.f.b"
+								},
+								"isOutput": "y"
+							},
+							{
+								"name": "coolerOut",
+								"Notes": "We know the required coolant temperature and we know that the coolant will be boiling. THus we can set the second property to 1, which will be taken as q, the vapour fraction.\n\nThis allows the pressure and other properties to be calculated.\n\nWe know the cooling load from InletQ and once the\nenthalpy of the entering fluid, namely valveOut\nis known, the flow can be calculated by dividing the duty by the enthalpy difference in and out.\n\nThe refrigerant can be changed in the thermo designation (R whatever, Propane, Ammonia, etc). If multiple components are used, the mole fraction spec will have to change accordingly.",
+								"DiagramX": 275,
+								"DiagramY": 75,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "'R32::massf"
+								},
+								"firstprop": {
+									"Formula": "ColdT"
+								},
+								"secondprop": {
+									"Formula": "1"
+								},
+								"molefrac": {
+									"Formula": "1"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "InletQ / ($.h.b - condenserOut.h.b)"
+								}
+							},
+							{
+								"name": "CoolerOutlet",
+								"Notes": "Cooler outlet fluid\n(same as compressor inlet)",
+								"DiagramX": 375,
+								"DiagramY": 180,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "CoolerOut"
+								},
+								"isOutput": "y"
+							},
+							{
+								"name": "CoolerInlet",
+								"Notes": "Cooler inlet fluid\n(same as valve outlet)",
+								"DiagramX": 375,
+								"DiagramY": 215,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "valveOut"
+								},
+								"isOutput": "y"
+							},
+							{
+								"name": "CompressorOutlet",
+								"Notes": "Compressor outlet fluid\n(same as condenser inlet)",
+								"DiagramX": 375,
+								"DiagramY": 250,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "compressor.out"
+								},
+								"isOutput": "y"
+							},
+							{
+								"name": "valveOut",
+								"Notes": "We know the pressure coming out of the valve will\nbe the cooler inlet pressure. I am ignoring pressure drops for simplicity, but they could be easily added.\n\nSince valves are isenthalpic, we also know the valve outlet enthalpy and can set it as the second property.\n\nThe resulting flash will have a significant amount of vapour.",
+								"DiagramX": 275,
+								"DiagramY": 135,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "condenserOut.thermo"
+								},
+								"firstprop": {
+									"Formula": "coolerOut.p.b + coolerDp"
+								},
+								"secondprop": {
+									"Formula": "condenserOut.h.b"
+								},
+								"molefrac": {
+									"Formula": "coolerOut.x.b"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "condenserOut.f.b"
+								}
+							},
+							{
+								"name": "Refrigeration",
+								"Notes": "Overview",
+								"DiagramX": 195,
+								"DiagramY": 75,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Simple Single Stage Refrigeration </h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model shows how the properties of a simple single stage refrigeration loop can be calculated using basic thermodynamics.\n\t\t</p>\n\t\t<p>\n\t\t\tThe refrigeration loop looks like this:\n\t\t</p>\n\t\t<svg width=\"100%\" height=\"100%\" viewBox=\"0 0 611 353\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xml:space=\"preserve\" xmlns:serif=\"http://www.serif.com/\" style=\"fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;\">\n\t\t\t<g transform=\"matrix(1,0,0,1,-249.489,-244.259)\">\n\t\t\t\t\t<g id=\"Cooler\" transform=\"matrix(1,0,0,1,-30.5113,85.8962)\">\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-3.30583,245.927)\">\n\t\t\t\t\t\t\t\t\t<circle cx=\"735.181\" cy=\"167.587\" r=\"69.251\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-86.3866,261.697)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M799.807,119.07L719.951,198.427\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-86.3866,261.697)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M838.062,180.07L799.807,119.07\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-86.3866,261.697)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M920.578,98.174L838.052,179.677\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(0.526867,0.526867,-0.769806,0.769806,411.139,-169.239)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.07px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1.11022e-16,-0.745103,1.08867,2.22045e-16,676.927,886.3)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.07px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1.11022e-16,-0.745103,1.08867,2.22045e-16,461.411,887.68)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.07px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,30.5113,-85.8962)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M671.848,300.131L521.605,300.131\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(5.55112e-17,0.745103,-1.08867,0,737.942,-258.69)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.07px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,30.5113,-85.8962)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M413.681,500.652L616.726,500.652\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(5.55112e-17,0.745103,-1.08867,0,408.774,-259.811)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.07px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,30.5113,-85.8962)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M305.077,299.515L249.989,299.078\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,30.5113,-85.8962)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M249.989,299.078L249.989,500.15\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,30.5113,-85.8962)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M249.989,500.15L287.042,500.15\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,33.5413,-68.7763)\">\n\t\t\t\t\t\t\t\t\t<text x=\"340.411px\" y=\"342.58px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">Condenser</text>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,8.26932,-65.7538)\">\n\t\t\t\t\t\t\t\t\t<text x=\"670.252px\" y=\"365.729px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">Compressor</text>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,38.7033,-74.8344)\">\n\t\t\t\t\t\t\t\t\t<text x=\"653.088px\" y=\"585.843px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">Cooler</text>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,12.2368,-68.8374)\">\n\t\t\t\t\t\t\t\t\t<text x=\"328.159px\" y=\"540.958px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">JT V<tspan x=\"377.518px 390.866px \" y=\"540.958px 540.958px \">al</tspan>ve</text>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t</g>\n\t\t\t\t\t<g id=\"air-cooler\" serif:id=\"air cooler\" transform=\"matrix(1,0,0,1,-395.102,-130.07)\">\n\t\t\t\t\t\t\t<rect x=\"699.629\" y=\"400.285\" width=\"201.945\" height=\"59.617\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t<g transform=\"matrix(0.886065,0,0,1,82.7748,-9.01823)\">\n\t\t\t\t\t\t\t\t\t<ellipse cx=\"760.291\" cy=\"437.768\" rx=\"49.85\" ry=\"8.668\" style=\"fill:none;stroke:black;stroke-width:1.06px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(-0.886065,-1.08512e-16,1.22465e-16,-1,1518.45,866.519)\">\n\t\t\t\t\t\t\t\t\t<ellipse cx=\"760.291\" cy=\"437.768\" rx=\"49.85\" ry=\"8.668\" style=\"fill:none;stroke:black;stroke-width:1.06px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t</g>\n\t\t\t\t\t<g id=\"Expander\" transform=\"matrix(0.524246,0,0,0.524246,463.577,141.935)\">\n\t\t\t\t\t\t\t<g transform=\"matrix(-1,-1.22465e-16,1.22465e-16,-1,796.417,597.629)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M303.232,196.136L303.232,401.492L398.208,340.215L398.208,259.875L303.232,196.136Z\" style=\"fill:none;stroke:black;stroke-width:1.91px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1.9075,0,0,1.9075,-884.273,-270.742)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M771.686,499.722L859.838,499.722L859.838,298.722\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1.9075,0,0,1.9075,-884.273,-270.742)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M859.42,298.722L723.199,298.722\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t</g>\n\t\t\t\t\t<g id=\"valve\" transform=\"matrix(1,0,0,1,11.6746,366.757)\">\n\t\t\t\t\t\t\t<g transform=\"matrix(6.15827e-17,1,-1,6.15827e-17,451.652,-186.087)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M318.772,105.125L347.185,160.635L290.359,160.635L318.772,105.125Z\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(6.0882e-17,-1,1,6.0882e-17,241.402,451.457)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M318.772,105.125L347.185,160.635L290.359,160.635L318.772,105.125Z\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t</g>\n\t\t\t</g>\n\t\t</svg>\n\t\t<p>\n\t\t\tThe heat removed in the cooler boiling the refrigerant and the resulting vapour is compressed to a higher pressure and hence temperature. It is then condensed by an available coolant, here assumed to be air.\n\t\t</p>\n\t\t<p>\n\t\t\tThe condensed high pressure liquid is then let down to a lower pressure through a valve.  The lower pressure causes some of the liquid to vapourize and the phase rule dictates that for a given pressure a two phase fluid's temperature is determined from its phase envelope.\n\t\t</p>\n\t\t<p>\n\t\t\tJumping ahead a bit, the graph below shows the phase envelope for the refrigerant we will use. It is just a line since we will use a pure component. The triangle represents the refrigerant conditions as it moves around the loop. The cooler conditions are at the lower left.  Compressing the vapour raise both the temperature and pressure to the upper right point, while condensing moves it horizontally to the valve inlet condition at the upper left. Passing through the valve\n\t\t\tdrops both temperature and pressure back to the cooler conditions.\n\t\t</p>\n\t\t<mm>envplot.svg</mm>\n\t\t<p>\n\t\t\tWhat we need to determine is:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>the pressures required for a required coolant temperature and available condensing temperature</li>\n\t\t\t<li>the flow rate of the refrigerant</li>\n\t\t\t<li>the duty of the condenser</li>\n\t\t\t<li>the power required for the compressor</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tWe will start with the refrigerant side of the cooler, represented by the <a href=\"../help/flash.html\" target=\"_blank\">flash tool</a> called <b>coolerOut</b>. In this case we will assume a single component refrigerant <a href=\"https://en.wikipedia.org/wiki/Difluoromethane\" target=\"blank\">difluormethane</a>, commonly called <b>R32</b> and so we will define the thermo parameter as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t'R32::massf\n\t\t</p>\n\t\t<p>\n\t\t\twhich is simply as string with the component name(s). Here we have followed it with a double colon and the name(s) of the properties we want included in addition to the default ones. In this case, just the mass flow. The mole fractions input can simply be set to 1 as there is only one component.\n\t\t</p>\n\t\t<p>\t\n\t\t\tWe know the required coolant temperature and will set the first property to that. We also know that the coolant will be boiling, so we can set the second property to 1, which because it has a \"Fraction\" conversion unit type, will be taken as q, the vapour fraction. This means the vapour\n\t\t\tleaving the cooler should be a its dew point.\n\t\t</p>\n\t\t<p>\n\t\t\tThis allows the pressure and other properties to be calculated, but the flow rate is still unknown. We will come back to that.\n\t\t</p>\n\t\t<p>\n\t\t\tSimilar to the cooler, we know the condenser outlet temperature (presumably from available cooling) and can thus set the first property of the <b>condenserOut</b> flash tool. Since it is condensed, we can assume it will be at the bubble point and designate the second property to be 0.\n\t\t</p>\n\t\t\t\tThis will determine the condensing pressure and other properties.\n\t\t</p>\n\t\t<p>\n\t\t\tSince a valve has no heat inputs or outputs, it is isenthalpic, so we know the enthalpy of the fluid leaving the value and going to the cooler is the same as the liquid leaving the condenser.\n\t\t</p>\n\t\t<p>\n\t\t\tBack at the coolerOut Flash, we know the cooling load from InletQ and now that we know the enthalpy of the entering fluid, namely that of <b>valveOut</b> which is the same as that of <b>condenserOut</b>, the flow can be calculated by dividing the duty by the enthalpy difference in and out.\n\t\t</p>\n\t\t<p>\n\t\t\tWith the flow rate known, we can calculate the condenser duty by multiplying the difference between its inlet and outlet enthalpy by the flow rate.\n\t\t</p>\n\t\t<p>\n\t\t\tAll that remains is to determine the required compressor power. For that we can copy and paste a previously made model representing a compressor from the toolbox example session and filling in the input expressions.\n\t\t</p>\n\t\t<p>\n\t\t\tThat's it.  All the values we wanted are now calculated.\n\t\t</p>\n\t\t<p>\n\t\t\tNote that the refrigerant can be changed in the thermo designation (R whatever, Propane, Ammonia, etc). If multiple components are used, the mole fraction spec will have to change accordingly.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								},
+								"f0": "envplot.svg"
+							}
+						]
+					},
+					{
+						"name": "Overview",
+						"Notes": "Math Minion + CoolProp",
+						"DiagramX": 90,
+						"DiagramY": -25,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Math Minion with CoolProp</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis version of Math Minion has incorporates some of the capabilities of the <a href=\"http://coolprop.org\" target=\"_blank\">CoolProp property package</a> in a <b><a href=\"../help/flash.html\" target=\"_blank\">flash tool</a></b> using CoolProp's HEOS backend. The flash tool also allows a range of properties to be evaluated.\n\t\t</p>\n\t\t<p>\n\t\t\tCoolProp is an open source property package that aims to emulate RefProp from NIST. While written in C++, it can be compiled into web assembly, which allows it to run directly in the browser and incorporated in Math Minion.\n\t\t</p>\n\t\t<p>\n\t\t\tThis version is otherwise identical to the normal version of Math Minion, but the CoolProp code does add to the initial download time.\n\t\t</p>\n\t\t<p>\n\t\t\tIf you are familiar with Math Minion, tap on the <b>refrigeration</b> model for an example of doing some simple calculations with the flash tool and check out the <b><a href=\"../help/flash.html\" target=\"_blank\">flash tool help</a></b>.\n\t\t</p>\n\t\t<p>\n\t\t\tOtherwise, reading at least a bit of the <b><a href=\"../help/getstarted.html\" target=\"_blank\">help</a></b> would probably be a good idea. The links for the <b><a href=\"../help/diagram.html\" target=\"_blank\">diagram</a></b> and <b><a href=\"../help/infoview.html\" target=\"_blank\">information view</a></b> will help with basic navigation.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+						}
+					}
+				]
 			}
 		]
 	}
