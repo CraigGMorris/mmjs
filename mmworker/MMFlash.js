@@ -220,6 +220,7 @@ class MMFlash extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
+		// console.log(`path ${this.getPath()} desc ${description} req ${requestor ? requestor.getPath() : ''}`);
 		if (!description) {
 			return super.valueDescribedBy(description, requestor);
 		}
@@ -233,8 +234,6 @@ class MMFlash extends MMTool {
 			const fluidsList = MMStringValue.stringArrayValue(fluidsString.split(','));
 			this.addRequestor(requestor);
 			return fluidsList;
-			
-
 		}
 
 		if (!this.thermoDefn) {
@@ -263,6 +262,10 @@ class MMFlash extends MMTool {
 			return this.thermoDefn;
 		}
 
+		const descParts = lcDescription.split('.');
+		let property = descParts.shift();
+		let phase = descParts.shift();
+
 		if (!this.moleX) {
 			this.moleX = this.moleFracFormula.value();
 			if (this.moleX) {
@@ -276,18 +279,23 @@ class MMFlash extends MMTool {
 			}
 		}
 
-		if (!this.moleX && !this.massX) {
-			if (!this.flow) { this.flow = this.flowFormula.value(); }
-			if (this.flow && this.flow.valueCount > 1) {
-				if (MMUnitSystem.areDimensionsEqual(this.flow.unitDimensions, [0, 0, -1, 0, 0, 1, 0])) {
-					// mole flow
-					this.moleX = this.flow.divideBy(this.flow.sum());
+		if (phase === 'b'){
+			if (property === 'x') {
+				if (!this.moleX && this.massX) {
+					return MMNumberValue.numberArrayValue(this.convertMassFracToMole(this.massX.values));
 				}
-				else if (MMUnitSystem.areDimensionsEqual(this.flow.unitDimensions, [0, 1, -1, 0, 0, 0, 0])) {
-					// mass flow
-					this.massX = this.flow.divideBy(this.flow.sum());
+				return this.moleX;
+			}
+			else if (property === 'massx') {
+				if (this.moleX && this.massX) {
+					return MMNumberValue.numberArrayValue(this.convertMoleFracToMass(this.moleX.values));
 				}
-				this.flow = this.flow.sum()
+				return this.massX;
+			}
+		}
+		else {
+			if (!this.moleX && !this.massX) {
+				return null;
 			}
 		}
 
@@ -298,10 +306,6 @@ class MMFlash extends MMTool {
 			}
 			return envelope;
 		}
-		const descParts = lcDescription.split('.');
-		let property = descParts.shift();
-		let phase = descParts.shift();
-
 		if (!this.flashResults) {
 			this.flash();
 		}
@@ -468,6 +472,7 @@ class MMFlash extends MMTool {
 	 * flash - does flash and if successful puts results if this.flashResults
 	 */
 	flash() {
+		// console.log(`flash ${this.getPath()}`);
 		// Module.set_debug_level(301);
 		if (!MMFlashPropertyDefinitions) {
 			MMFlash.createPropertyDefinitions();
@@ -611,6 +616,7 @@ class MMFlash extends MMTool {
 		}
 
 		try {
+			this.processor.showStatus(this.t(`flash ${this.getPath()}`));
 			const absState = Module.factory(this.thermoPkg, this.componentString);
 			try {
 				const usingMoleFracs = this.assignComposition(absState);
@@ -633,6 +639,9 @@ class MMFlash extends MMTool {
 			console.log(e);
 			this.setError('mmcool:flashThermoDefnError', {path: this.getPath()});
 			return;
+		}
+		finally {
+			this.processor.showStatus(this.t('mmcmd:calculating'));
 		}
 	}
 
@@ -860,8 +869,8 @@ class MMFlash extends MMTool {
 		const targetDef = MMFlashPropertyDefinitions[targetType];
 		if (!targetDef) { return; }
 		const targetParam = targetDef.param;
-
 		try {
+			this.processor.showStatus(this.t(`${targetType} flash ${this.getPath()}`));
 			const absState = Module.factory(this.thermoPkg, this.componentString);
 			try {
 				const usingMoleFracs = this.assignComposition(absState);
@@ -937,6 +946,9 @@ class MMFlash extends MMTool {
 			console.log(e);
 			this.setError('mmcool:flashThermoDefnError', {path: this.getPath()});
 			return;
+		}
+		finally {
+			this.processor.showStatus(this.t('mmcmd:calculating'));
 		}
 	}
 
