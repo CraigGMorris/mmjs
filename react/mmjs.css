@@ -990,6 +990,13 @@ a:hover {
 	grid-area: source
 }
 
+#model__indextool-fields {
+	display: grid;
+	grid-template-columns: 100px 1fr;
+	grid-gap: 10px;
+	margin-top: 5px;
+}
+
 #model__inputs-title {
 	border-bottom: solid 2px;
 	padding: 5px;

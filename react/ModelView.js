@@ -33,6 +33,8 @@ export function ModelView(props) {
 	const updateResults = props.viewInfo.updateResults;
 
 	const [importSource, setImportSource] = useState('');
+	const [indexToolName, setIndexToolName] = useState('');
+
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
@@ -42,6 +44,7 @@ export function ModelView(props) {
 	useEffect(() => {
 		if (updateResults && updateResults[0]) {
 			setImportSource(updateResults[0].results.importSource || '');
+			setIndexToolName(updateResults[0].results.indexTool || '');
 		}
 	}, [updateResults]);
 
@@ -220,7 +223,42 @@ export function ModelView(props) {
 			);
 			fields.push(cmp);
 		}
+		const indexToolInput = e(
+			'input', {
+				id: 'model__indextool-input',
+				value: indexToolName,
+				onChange: (event) => {
+					// keeps input field in sync
+					setIndexToolName(event.target.value);
+				},
+				onKeyPress: (event) => {
+					// watches for Enter and sends command when it see it
+					if (event.key == 'Enter') {
+						props.actions.doCommand(`${props.viewInfo.path} set indexTool ${indexToolName}`, () => {
+							event.target.blur();
+							props.actions.updateView(props.viewInfo.stackIndex);
+						});
+					}
+				}
+			}
+		)
+
+		const indexToolFields = e(
+			'div', {
+				id: 'model__indextool-fields',
+				title: t('react:modelIndexToolTitle'),
+			},
+			e(
+				'div', {
+					id: 'model__indextool-label',
+				},
+				t('react:modelIndexToolLabel')
+			),
+			indexToolInput
+		);
+		fields.push(indexToolFields);	
 	}
+
 
 	let displayComponent = e(
 		'div', {

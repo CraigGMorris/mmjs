@@ -776,6 +776,9 @@ class MMModel extends MMTool {
 		if (this.importInfo) {
 			results.importSource = this.importInfo.sessionName;
 		}
+		if (this.indexTool) {
+			results.indexTool = this.indexTool;
+		}
 	}
 
 	/**
