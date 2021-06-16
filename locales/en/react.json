@@ -66,6 +66,8 @@
 	"matrixRowCountLabel": "# Rows",
 	"matrixColumnCountLabel": "# Cols",
 	"modelImportLabel": "Source Session",
+	"modelIndexToolLabel": "Index Tool",
+	"modelIndexToolTitle": "Name of tool to be shown automatically when model is displayed",
 	"modelInputsTitle": "Input Expressions",
 	"modelMakeLocal": "Make Local",
 	"modelOutputsTitle": "Output Expressions",
