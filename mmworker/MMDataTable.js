@@ -839,45 +839,47 @@ class MMDataTable extends MMTool {
 		}
 		const columnCount = uniqueNames.size;
 
-		re = new RegExp('".*?"|[^,"\\n]+','ms');
+		re = new RegExp('".*?"|[^' + csvSeparator + '"\\n]*','ms');
 		let match = csv.substring(i).match(re);
 		let columnNumber = 0;
 		let csvColumnNumber = 0;
-		while (match) {
+		const csvLength = csv.length;
+		while (match && i <= csvLength) {
 			let token = match[0];
 			i += match.index + token.length;
 			if (includeColumn[csvColumnNumber]) {
 				const column = columns[columnNumber];
 
-				if (column.columnValue.isString) {
-					if (!token.startsWith('"')) {
-						this.setError('mmcmd:tableCsvExpectedString', {
-							path: this.getPath(),
-							token: token,
-							column: columnNumber+1,
-							row: columnData[columnNumber].length + 1
-						});
-						return;
-					}
+				if (token.startsWith('"')) {
 					token = token.substring(1,token.length - 1); // strip quotes
+				}					
+				if (column.columnValue.isString) {
 					columnData[columnNumber].push(token);
 				}
 				else {
-					if (token.startsWith('"')) {
-						this.setError('mmcmd:tableCsvUnexpectedString', {
-							path: this.getPath(),
-							token: token,
-							column: columnNumber+1,
-							row: columnData[columnNumber].length + 1
-						});
-						return;
+					if (token.length) {
+						if (decimalSeparator !== '.') {
+							token = token.replace(decimalSeparator, '.');
+						}
+						else {
+							token = token.replace(/,/g, '');
+						}
 					}
-					token = token.replace(decimalSeparator, '.');
+					else {
+						token = 0;
+					}
 					columnData[columnNumber].push(token);
 				}
 				columnNumber = (columnNumber + 1) % columnCount;
 			}
+			if (columnNumber >= 30) {
+				const rowCount = columnData[0].length;
+				if (rowCount >= 185) {
+					console.log('breakpoint');
+				}
+			}
 			csvColumnNumber = (csvColumnNumber + 1) % csvColumnCount;
+			i++;
 			match = csv.substring(i).match(re);
 		}
 
