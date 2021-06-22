@@ -225,6 +225,8 @@ class MMSession extends MMCommandParent {
 		new MMUnitSystem(this);
 		this.storage = new MMSessionStorage();
 		this.savedLastPathId = '(lastPath)';
+		this.savedLastNewsId = '(lastNews)';
+		this.lastNews = '20210621';
 		this.newSession();
 	}
 
@@ -454,22 +456,37 @@ class MMSession extends MMCommandParent {
 		try {
 			this.isLoadingCase = true;
 			this.newSession();
+			const lastNews = await this.storage.load(this.savedLastNewsId);
 			const lastPath = await this.storage.load(this.savedLastPathId);
-			if (lastPath) {
-				let returnValue;
-				let result = await this.storage.load(lastPath);
-				if (result) {
-					new MMUnitSystem(this);  // clear any user units and sets
-					returnValue = await this.initializeFromJson(result, lastPath);
-					this.storePath = lastPath;
-				}
+			const newsUrl = '../news/MM_News.txt';
+			if (
+				(lastNews && lastNews != this.lastNews) ||
+				(!lastNews && lastPath)
+			) {
+				const returnValue = await this.loadUrl(newsUrl);
+				await this.storage.save(this.savedLastNewsId, this.lastNews);
 				return returnValue;
 			}
-			let result = await this.loadUrl('../help/Getting%20Started.txt');
-			if (result && result.storePath && result.storePath.length) {
-				await this.saveSession(result.storePath);
+			else {
+				if (!lastNews) {
+					await this.storage.save(this.savedLastNewsId, this.lastNews);
+				}
+				if (lastPath) {
+					let returnValue;
+					let result = await this.storage.load(lastPath);
+					if (result) {
+						new MMUnitSystem(this);  // clear any user units and sets
+						returnValue = await this.initializeFromJson(result, lastPath);
+						this.storePath = lastPath;
+					}
+					return returnValue;
+				}
+				let result = await this.loadUrl('../help/Getting%20Started.txt');
+				if (result && result.storePath && result.storePath.length) {
+					await this.saveSession(result.storePath);
+				}
+				return result;
 			}
-			return result;
 		}
 		catch(e) {
 			const msg = (typeof e === 'string') ? e : e.message;
