@@ -1006,22 +1006,7 @@ class MMFlash extends MMTool {
 		}
 	}
 
-	/**
-	 * @method toolViewInfo
-	 * @override
-	 * @param {MMCommand} command
-	 * command.results contains the info for tool info view
-	 */
-	toolViewInfo(command) {
-		super.toolViewInfo(command);
-		let results = command.results;
-		results['thermoFormula'] = this.thermoFormula.formula;
-		results['firstPropFormula'] = this.firstPropertyFormula.formula;
-		results['secondPropFormula'] = this.secondPropertyFormula.formula;
-		results['moleFracFormula'] = this.moleFracFormula.formula;
-		results['massFracFormula'] = this.massFracFormula.formula;
-		results['flowFormula'] = this.flowFormula.formula;
-
+	displayTable() {
 		try {
 			if (!this.flashResults) {
 				// trigger flash
@@ -1113,7 +1098,7 @@ class MMFlash extends MMTool {
 				}
 
 				const table = new MMTableValue({columns: columns});
-				results.displayTable = table.jsonValue();
+				return table.jsonValue();
 			}
 			else {
 				// show the defined bulk properties
@@ -1155,8 +1140,7 @@ class MMFlash extends MMTool {
 					value: makePhaseColumn(bulk)
 				}));
 				const table = new MMTableValue({columns: columns});
-				results.displayTable = table.jsonValue();
-	
+				return table.jsonValue();
 			}
 		}
 		catch(e) {
@@ -1166,5 +1150,23 @@ class MMFlash extends MMTool {
 				msg: msg
 			});
 		}
+	}
+
+	/**
+	 * @method toolViewInfo
+	 * @override
+	 * @param {MMCommand} command
+	 * command.results contains the info for tool info view
+	 */
+	toolViewInfo(command) {
+		super.toolViewInfo(command);
+		let results = command.results;
+		results['thermoFormula'] = this.thermoFormula.formula;
+		results['firstPropFormula'] = this.firstPropertyFormula.formula;
+		results['secondPropFormula'] = this.secondPropertyFormula.formula;
+		results['moleFracFormula'] = this.moleFracFormula.formula;
+		results['massFracFormula'] = this.massFracFormula.formula;
+		results['flowFormula'] = this.flowFormula.formula;
+		results.displayTable = this.displayTable();
 	}
 }

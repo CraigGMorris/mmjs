@@ -29,6 +29,7 @@
 	MMTableValueColumn:readonly
 	MMPropertyType:readonly
 	MMUnitSystem:readonly
+	MMFlash:readonly
 */
 
 /**
@@ -306,11 +307,16 @@ class MMExpression extends MMTool {
 		let value = this.valueForRequestor();
 		let json = {}
 		if (value) {
-			let displayUnit = (value instanceof MMTableValue)  ? this.tableUnits : this.displayUnit;
-			if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, value.unitDimensions)) {
-				displayUnit = null;  // display unit is wrong type - ignore and use default
+			if (value._values[0] instanceof MMFlash) {
+				json = value.values[0].displayTable();
 			}
-			json = value.jsonValue(displayUnit);
+			else {
+				let displayUnit = (value instanceof MMTableValue)  ? this.tableUnits : this.displayUnit;
+				if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, value.unitDimensions)) {
+					displayUnit = null;  // display unit is wrong type - ignore and use default
+				}
+				json = value.jsonValue(displayUnit);
+			}
 		}
 		return json;
 	}
