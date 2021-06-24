@@ -909,7 +909,15 @@ class MMFlash extends MMTool {
 							return;									
 						}
 						else {
-							if (t > lastSuccessfullT) {
+							if (lastSuccessfullT ==  null) {
+								if (t > 300) {
+									tUpper = 600 - tLower; // so next t is 300
+								}
+								else {
+									tLower = 600 - tUpper;
+								}
+							}
+							else if (t > lastSuccessfullT) {
 								tUpper = t;
 							}
 							else {
