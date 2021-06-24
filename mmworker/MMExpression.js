@@ -307,7 +307,7 @@ class MMExpression extends MMTool {
 		let value = this.valueForRequestor();
 		let json = {}
 		if (value) {
-			if (value._values[0] instanceof MMFlash) {
+			if (value._values && value._values[0] instanceof MMFlash) {
 				json = value.values[0].displayTable();
 			}
 			else {
