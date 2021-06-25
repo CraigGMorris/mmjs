@@ -13,6 +13,8 @@
 					secondprop: "2nd Property Input",
 					flow: "Flow Input",
 					fracs: "Composition Input",
+					mixhs: "H & S Flashes",
+					imposedphase: "Flash Failures",
 					parameters: 'Formula Parameters',
 				});
 			};			
@@ -51,14 +53,19 @@
 				<p>
 					The thermo field formula should resolve to a string which is a comma or ampersand separated
 					list of the fluids (i.e. compounds) that are included in the flash. At this time,
-					Math Minion always uses the CoolProp HEOS backend for calculation. A list of the available
-					fluids can be obtained from the fluids parameter of any flash, even if it has no inputs.
-					For example if you create a flash named feed, then an expression with the formula:
+					Math Minion always uses the CoolProp HEOS backend for calculation.
+				</p>
+				<p>
+					A list of the available fluids can be obtained from the fluids parameter of any flash,
+					even if it has no inputs. For example if you create a flash named feed, then an
+					expression with the formula:
 				</p>
 				<p class="formula">
 					feed.fluids
 				</p>
-				<p>will have a column array of fluid names as its value.</p>
+				<p>
+					will have a column array of fluid names as its value.
+				</p>
 				<p>
 					The following properties are always calculated and reported in the info view table:
 				</p>
@@ -88,7 +95,11 @@
 					if you wish.
 				</p>
 				<p>
-					Note that the thermo definition for a flash is available as a parameter of the flash, so
+					<b>Note</b> an easy way to construct the thermo definition is to use the
+					<b>SelectThermo</b> model from the <b>ToolBox</b> in the <b>Getting Started</b> session.
+				</p>
+				<p>
+					Also the thermo definition for a flash is available as a parameter of the flash, so
 					other flashes making use of its results can easily reuse the same definition.
 				</p>
 			</div>
@@ -141,6 +152,53 @@
 					the unit conversion type of <b>Fraction</b>, they have seperate input formulas.  The
 					composition should resolve to an array of the same length as the number of components
 					defined in the thermo definition.
+				</p>
+			</div>
+			<div id="mixhs" class="section">
+				<h3>Mixture H and S Flashes</h3>
+				<p>
+					Unfortunately CoolProp does not do isenthalpic or isentropic flashes for mixtures,
+					so the Math Minion flash tool does a crude section search on temperature to match
+					the desired value. This is fairly robust, but can be slow and certainly could be
+					improved on.
+				</p>
+			</div>
+			<div id="imposedphase" class="section">
+				<h3>Flash Failure and Imposed Phase</h3>
+				<p>
+					While CoolProp's flash calculation is usually pretty robust, it isn't perfect or perhaps
+					as robust as those in the better commercial packages. For some flash failures, it can
+					help if you can tell CoolProp what phase the calculation will result in. This can be
+					accomplished by adding an at sign followed byone of the following terms to the end
+					of the thermo:
+				</p>
+				<ul>
+					<li><b>supercritical</b> p &gt; Pcrit & T &gt; Tcrit</li>
+					<li><b>supercritical_liquid</b> p &gt; Pcrit & T @lt; Tcrit</li>
+					<li><b>supercritical_gas</b> p &lt; Pcrit & T &gt; Tcrit</li>
+					<li><b>liquid</b> p &lt; Pcrit & T &lt; Tcrit; above saturation</li>
+					<li><b>gas</b> p &lt; Pcrit & T &lt; Tcrit; below saturation</li>
+					<li><b>twophase</b> p &lt; Pcrit & T &lt; mixed liquid/gas</li>
+				</ul>
+				<p>
+					For instance:
+				</p>
+				<p class="formula">
+					Nitrogen, Oxygen, Argon @ supercritical
+				</p>
+				<p>
+					<b>HOWEVER</b>, it is critical that the fluid will actually be in the designated
+					phase range at the conditions given. Invalid results can be produced if it isn't.
+				</p>
+				<p>
+					Be particularly wary about using this for multicomponent isentalpic or isentropic
+					flashes, for as described above these use a crude search algorithm since CoolProp
+					does not do them itself. At the very least do a seperate T and P flash at the
+					calculated conditions and ensure the conditions were met.					
+				</p>
+				<p>
+					Also be careful about referencing the thermo definition for a flash that has
+					an imposed phase in another flash that might not have the same phase conditions.
 				</p>
 			</div>
 			<div id="parameters" class="section">

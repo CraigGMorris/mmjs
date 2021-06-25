@@ -245,7 +245,20 @@ class MMFlash extends MMTool {
 			const thermoDefn = this.thermoFormula.value()
 			if (thermoDefn && thermoDefn instanceof MMStringValue && thermoDefn.valueCount > 0) {
 				this.thermoDefn = thermoDefn;
-				const desc = thermoDefn.values[0].replace(/[\s\n]+/g, '').replace(/,/g,'&').split('::');
+				this.imposedPhase = null;
+				const phaseSplit = thermoDefn.values[0].replace(/[\s\n]+/g, '').replace(/,/g,'&').split('@');
+				if (phaseSplit.length > 1) {
+					this.imposedPhase = {
+						supercritical: Module.phases.iphase_supercritical,
+						supercritical_gas: Module.phases.iphase_supercritical_gas,
+						supercritical_liquid: Module.phases.iphase_supercritical_liquid,
+						liquid: Module.phases.iphase_liquid,
+						gas: Module.phases.iphase_gas,
+						twophase: Module.phases.iphase_twophase
+					}[phaseSplit[1]];
+				}
+
+				const desc = phaseSplit[0].split('::');
 
 				this.componentString = desc.shift();
 				if (desc.length) {
@@ -621,6 +634,9 @@ class MMFlash extends MMTool {
 			const absState = Module.factory(this.thermoPkg, this.componentString);
 			try {
 				const usingMoleFracs = this.assignComposition(absState);
+				if (this.imposedPhase) {
+					absState.specify_phase(this.imposedPhase);
+				}
 				absState.update(flashType, firstValue, secondValue);
 				this.flashResults = this.getFlashResults(absState, usingMoleFracs);
 			}
@@ -891,6 +907,9 @@ class MMFlash extends MMTool {
 					count++;
 					t = (tUpper + tLower) / 2;
 					try {
+						if (this.imposedPhase) {
+							absState.specify_phase(this.imposedPhase);
+						}
 						absState.update(flashType, p, t);
 						h = absState.keyed_output(targetParam);
 						lastSuccessfullT = t;
