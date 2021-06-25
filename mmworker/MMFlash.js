@@ -63,6 +63,7 @@ class MMFlash extends MMTool {
 			tmin: {param: Module.parameters.iT_min, dim: [0, 0, 0, 0, 1, 0, 0]},						// Minimum temperature
 			tmax: {param: Module.parameters.iT_max, dim: [0, 0, 0, 0, 1, 0, 0]},						// Maximum temperature
 			pmin: {param: Module.parameters.iP_min, dim: [-1, 1, -2, 0, 0, 0, 0 ]},					// Minimum pressure
+			pmax: {param: Module.parameters.iP_max, dim: [-1, 1, -2, 0, 0, 0, 0 ]},					// Minimum pressure
 			viscosity: {param: Module.parameters.iviscosity, dim: [-1, 1, -1, 0, 0, 0, 0 ]},	// viscosity
 			conductivity: {param: Module.parameters.iconductivity, dim: [1, 1, -3, 0, -1, 0, 0 ]},	// Thermal conductivity
 			surfacetension: {param: Module.parameters.isurface_tension, dim: [0, 1, -2, 0, 0, 0, 0 ]},	// surface tension
