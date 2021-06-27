@@ -84,7 +84,7 @@
 					Additional properties (see the list in the
 					<a href="#parameters">formula parameters section</a>)
 					can be requested by
-					appending '::' to the end of the thermo string, followed by a comma or ampersand list
+					appending '::' to the end of the thermo string, followed by a comma or ampersand separated list
 					of the properties. For example in the flash above the thermo is defined by the formula:
 				</p>
 				<p class="formula">
@@ -204,6 +204,9 @@
 			<div id="parameters" class="section">
 				<h3>Formula Parameters</h3>
 				<p class="reminder">Parameters that can be accessed in the form a.b where a is the tool and b is the parameter</p>
+				<p>
+					Parameters that aren't dependent of the calculated phases are:
+				</p>
 				<ul>
 					<li><b>thermo</b> - the thermo definition for the flash (i.e. components and extra properties
 					to be calculated.</li>
@@ -211,30 +214,62 @@
 					<li><b>envelope</b> - returns a table with temperature a pressure columns representing the phase
 					envelope for the fluid.</li>
 				</ul>
-				<p><b>Note:</b> all of the following parameters can be followed by a dot and a phase character, where</p>
+				<p>
+					Other properties are accessed with <b>phase</b> and <b>property</b> parameters with the general
+					form being:
+				</p>
+				<p class="formula">
+					someFlash.phase.property
+				</p>
+				<p>
+					where either the phase or the property can be omitted.
+				</p>
+				<p>
+					If only the phase appears, then the result is value containing all the properties for that phase.
+					This is only useful in tool reference expressions, such as input or output expressions in a model.
+				</p>
+				<p>
+					If only the property is present, then the property for the bulk phase is returned.
+				</p>
+				<p>
+					For example, assuming we have a flash tool named "feed":
+				</p>
+				<ul>
+					<li><b>feed.p</b> = the feed pressure</li>
+					<li><b>feed.x</b> = the bulk fluid mole fractions</li>
+					<li><b>feed.v.x</b> = the vapour phase mole fractions</li>
+					<li><b>feed.l</b> = the liquid phase properties. If this were entered in an expression named "inlet",
+						then <b>inlet.f</b> would be the flow rate of the vapour phase of <b>feed</b>.
+					</li>
+				</ul>
+				<p>
+					The allowable phase values are:
+				</p>
 				<ul>
 					<li><b>b</b> = the bulk phase</li>
 					<li><b>v</b> = the vapour phase</li>
 					<li><b>l</b> = the liquod phase</li>
 				</ul>
-				<p>If the phase qualifier is not added, the return value will be a table with one column for
-					each existing phase.  If the fluid is single phase, only the bulk column will exist.
-				</p>
 				<p>
-					Note that only properties that have been included in the thermo definition are
-					calculated.
+					The following properties are always calculated and available as property parameters:
 				</p>
 				<ul>
 					<li><b>q</b> -  vapour fraction</li>
 					<li><b>t</b> -  temperature</li>
 					<li><b>p</b> -  pressure</li>
 					<li><b>f</b> - molar flow rate</li>
-					<li><b>massf</b> - mass flow rate</li>
 					<li><b>h</b> -  Mole-based enthalpy</li>
 					<li><b>s</b> -  Mole-based entropy</li>
 					<li><b>dmolar</b> -  Mole-based density</li>
 					<li><b>mwt</b> -  molecular weight</li>
 					<li><b>x</b> -  Mole fractions</li>
+				</ul>
+				<p>
+					The properties below are optional and are only calculated and available when
+					they have been included in the thermo definition as described above:
+				</p>
+				<ul>
+					<li><b>massf</b> - mass flow rate</li>
 					<li><b>massx</b> -  Mass fractions</li>
 					<li><b>cpmolar</b> -  Mole-based constant-pressure specific heat</li>
 					<li><b>cp0molar</b> -  Mole-based ideal-gas constant-pressure specific heat</li>

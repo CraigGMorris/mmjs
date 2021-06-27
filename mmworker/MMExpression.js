@@ -30,6 +30,7 @@
 	MMPropertyType:readonly
 	MMUnitSystem:readonly
 	MMFlash:readonly
+	MMFlashPhaseValue:readonly
 */
 
 /**
@@ -262,6 +263,9 @@ class MMExpression extends MMTool {
 						const column = value.columnNamed(description);
 						value = column ? column.value : null;
 					}
+					else if (value instanceof MMFlashPhaseValue) {
+						value = value.valueDescribedBy(description, requestor);
+					}
 					else {
 						value = super.valueDescribedBy(description, requestor);
 					}
@@ -309,6 +313,9 @@ class MMExpression extends MMTool {
 		if (value) {
 			if (value._values && value._values[0] instanceof MMFlash) {
 				json = value.values[0].displayTable();
+			}
+			else if (value instanceof MMFlashPhaseValue) {
+				json = value.displayTable();
 			}
 			else {
 				let displayUnit = (value instanceof MMTableValue)  ? this.tableUnits : this.displayUnit;

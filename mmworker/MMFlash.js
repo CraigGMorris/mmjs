@@ -27,10 +27,42 @@
 	MMNumberValue:readonly
 	MMTableValueColumn:readonly
 	MMTableValue:readonly
+	MMValue:readonly
 */
 
 // would like this to be static class variable, but eslint complains, so for now...
 var MMFlashPropertyDefinitions;
+
+/**
+ * @class MMFlashValue
+ * @extends MMValue
+ */
+// eslint-disable-next-line no-unused-vars
+class MMFlashPhaseValue extends MMValue {
+	/**
+	 * @constructor
+	 * @param {Object} flash - the flash object this value represents
+	 * @param {String} phase - one of 'b', 'l', 'v'
+	 * 
+	 */
+	constructor(flash, phase) {
+		super(0,0);
+		this.flash = flash;
+		this.phase = phase;
+	}
+
+	valueDescribedBy(description, requestor) {
+		const returnValue = this.flash.valueDescribedBy(this.phase + '.' + description);
+		if (returnValue && requestor) {
+			this.flash.addRequestor(requestor);
+		}
+		return returnValue;
+	}
+
+	displayTable() {
+		return this.flash.displayTable(this.phase);
+	}
+}
 
 /**
  * @class MMFlash
@@ -269,16 +301,26 @@ class MMFlash extends MMTool {
 			}
 		}
 
-		if (lcDescription === 'thermo') {
+		const descParts = lcDescription.split('.');
+		let phase = descParts.shift();
+		let property = descParts.shift();
+
+		if (phase === 'thermo' || property === 'thermo') {
 			if (this.thermoDefn) {
 				this.addRequestor(requestor);
 			}
 			return this.thermoDefn;
 		}
 
-		const descParts = lcDescription.split('.');
-		let property = descParts.shift();
-		let phase = descParts.shift();
+		if (!property) {
+			const phaseSet = new Set(['b', 'v', 'l']);
+			if (phaseSet.has(phase)) {
+				this.addRequestor(requestor);
+				return new MMFlashPhaseValue(this, phase);
+			}
+			property = phase;
+			phase = 'b';
+		}
 
 		if (!this.moleX) {
 			this.moleX = this.moleFracFormula.value();
@@ -1034,7 +1076,7 @@ class MMFlash extends MMTool {
 		}
 	}
 
-	displayTable() {
+	displayTable(justPhase) {
 		try {
 			if (!this.flashResults) {
 				// trigger flash
@@ -1108,32 +1150,46 @@ class MMFlash extends MMTool {
 					value: MMStringValue.stringArrayValue(unitStrings)
 				}));
 
-				columns.push(new MMTableValueColumn({
-					name: 'B',
-					displayUnit:'string',
-					value: makePhaseColumn(bulkProps)
-				}));
-
-				if (this.flashResults.v) {
-					columns.push(new MMTableValueColumn({
-						name: 'V',
-						displayUnit:'string',
-						value: makePhaseColumn(this.flashResults.v)
-					}));
+				if (justPhase) {
+					if (this.flashResults[justPhase]) {
+						columns.push(new MMTableValueColumn({
+							name: justPhase.toUpperCase(),
+							displayUnit:'string',
+							value: makePhaseColumn(this.flashResults[justPhase])
+						}));
+					}
+					else {
+						return null;
+					}
 				}
-
-				if (this.flashResults.l) {
+				else {
 					columns.push(new MMTableValueColumn({
-						name: 'L',
+						name: 'B',
 						displayUnit:'string',
-						value: makePhaseColumn(this.flashResults.l)
+						value: makePhaseColumn(bulkProps)
 					}));
+
+					if (this.flashResults.v) {
+						columns.push(new MMTableValueColumn({
+							name: 'V',
+							displayUnit:'string',
+							value: makePhaseColumn(this.flashResults.v)
+						}));
+					}
+
+					if (this.flashResults.l) {
+						columns.push(new MMTableValueColumn({
+							name: 'L',
+							displayUnit:'string',
+							value: makePhaseColumn(this.flashResults.l)
+						}));
+					}
 				}
 
 				const table = new MMTableValue({columns: columns});
 				return table.jsonValue();
 			}
-			else {
+			else if (!justPhase || justPhase === 'b') {
 				// show the defined bulk properties
 				if (!this.propList) {
 					this.propList = ['q', 't', 'p', 'f', 'h', 's', 'dmolar', 'mwt', 'x'].concat(this.additionalProperties);
