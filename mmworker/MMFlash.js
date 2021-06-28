@@ -124,7 +124,7 @@ class MMFlash extends MMTool {
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Flash');
 		this.thermoFormula = new MMFormula('thermoFormula', this)
-		this.thermoPkg = 'HEOS';
+		this.thermoPkg = null;
 		this.firstPropertyFormula = new MMFormula('firstPropFormula', this);
 		this.secondPropertyFormula = new MMFormula('secondPropFormula', this);
 		this.moleFracFormula = new MMFormula('moleFracFormula', this);
@@ -208,7 +208,7 @@ class MMFlash extends MMTool {
 				this.valueRequestors.clear();
 				super.forgetCalculated();
 				this.thermoDefn = null;
-				this.thermoPkg = 'HEOS';
+				this.thermoPkg = null;
 				this.componentString = null;
 				this.nComponents = null;
 				this.componentNames = null;
@@ -290,8 +290,14 @@ class MMFlash extends MMTool {
 					}[phaseSplit[1]];
 				}
 
-				const desc = phaseSplit[0].split('::');
-
+				const pkgSplit  = phaseSplit[0].split('::');
+				if (pkgSplit.length > 1) {
+					this.thermoPkg = pkgSplit.shift();
+				}
+				else {
+					this.thermoPkg = 'HEOS';
+				}
+				const desc = pkgSplit[0].split(';');
 				this.componentString = desc.shift();
 				if (desc.length) {
 					this.additionalProperties = desc[0].split('&');
