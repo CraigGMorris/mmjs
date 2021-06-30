@@ -95,12 +95,17 @@
 					if you wish.
 				</p>
 				<p>
-					<b>Note</b> an easy way to construct the thermo definition is to use the
+					An easy way to construct the thermo definition is to use the
 					<b>SelectThermo</b> model from the <b>ToolBox</b> in the <b>Getting Started</b> session.
 				</p>
 				<p>
 					Also the thermo definition for a flash is available as a parameter of the flash, so
 					other flashes making use of its results can easily reuse the same definition.
+				</p>
+				<p>
+					<b>Note:</b> not all the combinations of components have interaction parameters and
+					if you  include such a combination in the thermo definition, you will get an error
+					there is a problem with the definition.
 				</p>
 			</div>
 			<div id="torp" class="section">
@@ -271,6 +276,7 @@
 				<ul>
 					<li><b>massf</b> - mass flow rate</li>
 					<li><b>massx</b> -  Mass fractions</li>
+					<li><b>hflow</b> - Energy flow</li>
 					<li><b>cpmolar</b> -  Mole-based constant-pressure specific heat</li>
 					<li><b>cp0molar</b> -  Mole-based ideal-gas constant-pressure specific heat</li>
 					<li><b>cvmolar</b> -  Mole-based constant-volume specific heat</li>

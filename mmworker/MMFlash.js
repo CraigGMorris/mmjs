@@ -376,38 +376,15 @@ class MMFlash extends MMTool {
 				const resultPhase = this.flashResults[phase];
 				if (resultPhase) {
 					let prop = resultPhase[property];
-					if (!prop && (property === 'f' || property === 'massf')) {
+					if (!prop && (property === 'f' || property === 'massf' || property === 'hflow')) {
 						this.calculateFlows();
 						prop = resultPhase[property];
 					}
-					this.addRequestor(requestor);
+					if (prop) {
+						this.addRequestor(requestor);
+					}
 					return prop;
 				}				
-			}
-			else {
-				// make table of all phases
-				const columns = [];
-				const bulkPhase = this.flashResults['b'];
-				if (bulkPhase[property] && bulkPhase[property].valueCount > 1) {
-					const namesValue = MMStringValue.stringArrayValue(this.componentNames);
-					columns.push(new MMTableValueColumn({name: 'Name', value: namesValue}));
-				}
-
-				for (const phaseName of ['b', 'v', 'l']) {
-					const resultPhase = this.flashResults[phaseName];
-					if (resultPhase) {
-						let prop = resultPhase[property];
-						if (!prop && (property === 'f' || property === 'massf')) {
-							this.calculateFlows();
-							prop = resultPhase[property];
-						}
-						if (prop) {
-							columns.push(new MMTableValueColumn({name: phaseName, value: prop}));
-						}
-					}
-				}
-				this.addRequestor(requestor);
-				return new MMTableValue({columns: columns});
 			}
 		}
 		else if (!phase || phase === 'b') {
@@ -433,8 +410,8 @@ class MMFlash extends MMTool {
 							returnValue = this.flow;
 						}
 					}
-						break;
-					default: {
+					break;
+				default: {
 					if (!this.firstProperty) {
 						this.firstProperty = this.firstPropertyFormula.value();
 					}
@@ -478,21 +455,39 @@ class MMFlash extends MMTool {
 			if (MMUnitSystem.areDimensionsEqual(f.unitDimensions, [0, 0, -1, 0, 0, 1, 0])) {
 				results.b.f = f;
 				results.b.massf = f.multiply(results.b.mwt);
+				if (results.b.h) {
+					results.b.hflow = f.multiply(results.b.h);
+				}
 				if (results.v) {
 					results.v.f = f.multiply(results.b.q);
 					results.l.f = f.multiply(MMNumberValue.scalarValue(1).subtract(results.b.q));
 					results.v.massf = results.v.f.multiply(results.v.mwt);
 					results.l.massf = results.l.f.multiply(results.l.mwt);
+					if (results.v.h) {
+						results.v.hflow = results.v.h.multiply(results.v.f);
+					}
+					if (results.l.h) {
+						results.l.hflow = results.l.h.multiply(results.l.f);
+					}
 				}
 			}
 			else if (MMUnitSystem.areDimensionsEqual(f.unitDimensions, [0, 1, -1, 0, 0, 0, 0])) {
 				results.b.massf = f;
 				results.b.f = f.divideBy(results.b.mwt);
+				if (results.b.h) {
+					results.b.hflow = results.b.f.multiply(results.b.h);
+				}
 				if (results.v) {
 					results.v.f = results.b.f.multiply(results.b.q);
 					results.l.f = results.b.f.multiply(MMNumberValue.scalarValue(1).subtract(results.b.q));
 					results.v.massf = results.v.f.multiply(results.v.mwt);
 					results.l.massf = results.l.f.multiply(results.l.mwt);
+					if (results.v.h) {
+						results.v.hflow = results.v.h.multiply(results.v.f);
+					}
+					if (results.l.h) {
+						results.l.hflow =  results.l.h.multiply(results.l.f);
+					}
 				}
 			}
 			else {
