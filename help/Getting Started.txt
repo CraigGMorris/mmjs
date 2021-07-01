@@ -14830,7 +14830,7 @@
 				"DiagramNotes": "y",
 				"Type": "HTML Form",
 				"Formula": {
-					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.disclaimer {\n\t\t\t\tcolor: #004400;\n\t\t\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\t\t\tfont-size: 0.7em;\n\t\t\t\tfont-style: italic;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session<br>CoolMM Edition</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p class=\"disclaimer\">\n\t\t\tMath Minion is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the <a href=\"../LICENSE.txt\" target=\"_blank\">GNU General Public License</a> for more details.\n\t\t</p>\n\t\t<h4>CoolProp and MM</h4>\n\t\t<p>\n\t\t\tIf you are running this edition of Math Minion, you are probably interested in the <a href=\"./help/flash.html\" target=\"_blank\">flash tool</a> that uses the <a href=\"http://coolprop.org\" target=\"_blank\">CoolProp property package</a>. If you are familiar with navigating Math Minion, click on the <b>CoolMM</b> icon on the diagram to get started. Otherwise, you might want to read further.\n\t\t</p>\n\t\t<h4>Back to our Regular Program</h4>\n\t\t<p>\n\t\t\tThis session contains numerous explanations and small illustrations of how Math Minion works. However before diving in, I fear you really should, <b>gasp</b>, read a bit of the help.\n\t\t</p>\n\t\t<p>\n\t\t\tPlease put your natural horror aside and <b><a href=\"../help/getstarted.html\" target=\"_blank\">click here</a></b> to open the help in another browser window or tab.\n\t\t</p>\n\t\t<p>\n\t\t\tIf nothing else following the links for the <b><a href=\"../help/diagram.html\" target=\"_blank\">diagram</a></b> and <b><a href=\"../help/infoview.html\" target=\"_blank\">information view</a></b> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the right and the examples you can import from the page displayed by tapping on the <b>Examples</b> icon.\n\t\t</p>\n\t\t<p>\n\t\t\tIf you have any questions, you can always use the <b><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Contact Me</a></b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>Craig</p>\n\t\t</div>\n\t</body>\n</html>"
+					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.disclaimer {\n\t\t\t\tcolor: #004400;\n\t\t\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\t\t\tfont-size: 0.7em;\n\t\t\t\tfont-style: italic;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session<br>CoolMM Edition</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p class=\"disclaimer\">\n\t\t\tMath Minion is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the <a href=\"../LICENSE.txt\" target=\"_blank\">GNU General Public License</a> for more details.\n\t\t</p>\n\t\t<h4>CoolProp and MM</h4>\n\t\t<p>\n\t\t\tIf you are running this edition of Math Minion, you are probably interested in the <a href=\"./help/flash.html\" target=\"_blank\">flash tool</a> that uses the <a href=\"http://coolprop.org\" target=\"_blank\">CoolProp property package</a>. If you are familiar with navigating Math Minion, click on the <b>CoolMM</b> icon on the diagram to get started. Otherwise, you might want to read further.\n\t\t</p>\n\t\t<h4>Back to our Regular Program</h4>\n\t\t<p>\n\t\t\tThis session contains numerous explanations and small illustrations of how Math Minion works. However before diving in, I fear you really should, <b>gasp</b>, read a bit of the help.\n\t\t</p>\n\t\t<p>\n\t\t\tPlease put your natural horror aside and <b><a href=\"../help/getstarted.html\" target=\"_blank\">click here</a></b> to open the help in another browser window or tab.\n\t\t</p>\n\t\t<p>\n\t\t\tIf nothing else following the links for the <b><a href=\"../help/diagram.html\" target=\"_blank\">diagram</a></b> and <b><a href=\"../help/infoview.html\" target=\"_blank\">information view</a></b> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the right and the examples you can import from the page displayed by tapping on the <b>Examples</b> icon.\n\t\t</p>\n\t\t<p>\n\t\t\tIf you have any questions, you can always use the <b><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Contact Me</a></b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>\n\t\t\t<a href=\"http://redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
 				}
 			},
 			{
@@ -14870,1060 +14870,19 @@
 					},
 					{
 						"name": "ToolBox",
-						"Notes": "Some possibly useful models",
-						"DiagramX": 165,
+						"Notes": "",
+						"DiagramX": 170,
 						"DiagramY": -25,
 						"HideInfo": "n",
-						"DiagramNotes": "y",
+						"DiagramNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
 						"Objects": [
 							{
-								"name": "compressor",
-								"Notes": "Basic compressor calculation.",
-								"DiagramX": 150,
-								"DiagramY": 210,
-								"HideInfo": "n",
-								"DiagramNotes": "y",
-								"Type": "Model",
-								"diagramScale": 1,
-								"indexTool": "Compressor",
-								"Objects": [
-									{
-										"name": "Feed",
-										"DiagramX": 120,
-										"DiagramY": 140,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": ""
-										},
-										"isInput": "y"
-									},
-									{
-										"name": "e",
-										"Notes": "If efficiency is greater than one, assume it is a percentage",
-										"DiagramX": 230,
-										"DiagramY": 135,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{if {gt efficiency, 1.0},\n\tefficiency/100,\n\tefficiency\n}"
-										}
-									},
-									{
-										"name": "OutletP",
-										"DiagramX": 120,
-										"DiagramY": 190,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": ""
-										},
-										"isInput": "y"
-									},
-									{
-										"name": "Efficiency",
-										"DiagramX": 120,
-										"DiagramY": 215,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": ".75"
-										},
-										"isInput": "y"
-									},
-									{
-										"name": "H",
-										"Notes": "The outlet enthalpy is determined by dividing the difference between the inlet and ideal outlet enthalpies by the efficiency and adding the result to the feed enthalpy.",
-										"DiagramX": 345,
-										"DiagramY": 190,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feedH + \n(IdealOut.h.b - feedH) / e"
-										}
-									},
-									{
-										"name": "Power",
-										"DiagramX": 345,
-										"DiagramY": 165,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "(outfluid.h.b - feedH)*F"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "OutFluid",
-										"Notes": "",
-										"DiagramX": 230,
-										"DiagramY": 255,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Flash",
-										"thermo": {
-											"Formula": "IdealOut.thermo"
-										},
-										"firstprop": {
-											"Formula": "OutletP"
-										},
-										"secondprop": {
-											"Formula": "h"
-										},
-										"molefrac": {
-											"Formula": "idealout.x.b"
-										},
-										"massfrac": {
-											"Formula": ""
-										},
-										"flow": {
-											"Formula": "idealout.f.b"
-										}
-									},
-									{
-										"name": "IdealOut",
-										"Notes": "Ideal compression is isentropic",
-										"DiagramX": 230,
-										"DiagramY": 220,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Flash",
-										"thermo": {
-											"Formula": "feed.thermo"
-										},
-										"firstprop": {
-											"Formula": "OutletP"
-										},
-										"secondprop": {
-											"Formula": "feedS"
-										},
-										"molefrac": {
-											"Formula": "X"
-										},
-										"massfrac": {
-											"Formula": ""
-										},
-										"flow": {
-											"Formula": "F"
-										}
-									},
-									{
-										"name": "Out",
-										"Notes": "",
-										"DiagramX": 345,
-										"DiagramY": 140,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "OutFluid"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "polyEff",
-										"Notes": "",
-										"DiagramX": 345,
-										"DiagramY": 280,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "polytropic.polyeff"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "feedPhase",
-										"Notes": "",
-										"DiagramX": 120,
-										"DiagramY": 165,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "'b"
-										},
-										"isInput": "y"
-									},
-									{
-										"name": "feedH",
-										"Notes": "",
-										"DiagramX": 230,
-										"DiagramY": 110,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feed.h[0,feedPhase]"
-										}
-									},
-									{
-										"name": "feedS",
-										"Notes": "",
-										"DiagramX": 120,
-										"DiagramY": 265,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feed.s[0,feedPhase]"
-										}
-									},
-									{
-										"name": "F",
-										"Notes": "",
-										"DiagramX": 230,
-										"DiagramY": 170,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feed.f[0,feedPhase]"
-										}
-									},
-									{
-										"name": "X",
-										"Notes": "",
-										"DiagramX": 230,
-										"DiagramY": 195,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feed.x[0,feedPhase]"
-										}
-									},
-									{
-										"name": "Pin",
-										"Notes": "",
-										"DiagramX": 120,
-										"DiagramY": 240,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feed.p[0,feedPhase]"
-										}
-									},
-									{
-										"name": "feedV",
-										"Notes": "",
-										"DiagramX": 120,
-										"DiagramY": 290,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "1/feed.dmolar[0,feedPhase]"
-										}
-									},
-									{
-										"name": "Compressor",
-										"Notes": "Overview",
-										"DiagramX": 120,
-										"DiagramY": 110,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "HTML Form",
-										"Formula": {
-											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Compressor Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model represents a thermodynamic model of a <a href=\"https://en.wikipedia.org/wiki/Compressor\" target=\"_blank\">compressor</a>, although it can also stand in for a pump.\n\t\t</p>\n\t\t<p>\n\t\t\tThe input expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>feed</b> - a flash result or similar representing the inlet fluid</li>\n\t\t\t<li><b>feedPhase</b> - the phase of the feed to use. It should be one of the following strings;\n\t\t\t\t<ul>\n\t\t\t\t\t<li><b>\"b\"</b> - the bulk fluid</li>\n\t\t\t\t\t<li><b>\"v\"</b> - the vapour phase</li>\n\t\t\t\t\t<li><b>\t\"l\"</b> - the liquid phase</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t\t<li><b>outletP</b> - the outlet pressure to compress to.</li>\n\t\t\t<li><b>efficiency</b> - the ideal power needed divided by the actual power needed</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe outlet expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>out</b> - the outlet fluid flash</li>\n\t\t\t<li><b>power</b> - the power required for the compression</li>\n  \t\t<li><b>polyEff</b> - the calculated polytropic efficiency</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tAn ideal compressor is first modeled by performing an isentropic flash using the outlet pressure and the feed entropy in tool <b>IdealOut</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe efficiency, e, of an non-ideal compressor is taken to be:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\te = (hIout - hin) / (hAout - hin)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>hin is the enthalpy of the inlet fluid</li>\n\t\t\t<li>hIOut is the enthalpy of the outlet for the ideal (isentropic) process</li>\n\t\t\t<li>hAout is the enthalpy of the outlet for tne nonideal process</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe desired efficiency is supplied in the input expression <b>Efficiency</b> so by rearranging, the expression <b>H</b> can calculate the nonideal outlet enthalpy, which is used with the outlet pressure to perform an isenthalpic flash in <b>OutFluid</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe power required for the compressor can then be calculated in expression <b>Power</b> by multiplying the flow by the difference between the outlet fluid enthalpy and the inlet fluid enthalpy.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
-										}
-									},
-									{
-										"name": "polytropic",
-										"Notes": "",
-										"DiagramX": 230,
-										"DiagramY": 280,
-										"HideInfo": "n",
-										"DiagramNotes": "n",
-										"Type": "Model",
-										"diagramScale": 1,
-										"indexTool": "overview",
-										"Objects": [
-											{
-												"name": "n",
-												"Notes": "n - polytropic path exponent",
-												"DiagramX": 280,
-												"DiagramY": 255,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "logpratio / {ln InletV / OutletV}"
-												}
-											},
-											{
-												"name": "logPRatio",
-												"Notes": "Log pressure ratio",
-												"DiagramX": 280,
-												"DiagramY": 195,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{ln outlet.p.b / inletP}"
-												}
-											},
-											{
-												"name": "ns",
-												"Notes": "ns - isentropic path exponent",
-												"DiagramX": 280,
-												"DiagramY": 225,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "logpratio / {ln InletV / IdealV}"
-												}
-											},
-											{
-												"name": "IdealV",
-												"Notes": "vs - Isentropic outlet molar volume",
-												"DiagramX": 280,
-												"DiagramY": 130,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "1/Ideal.dmolar.b"
-												}
-											},
-											{
-												"name": "InletV",
-												"Notes": "v1 - Inlet molar volume",
-												"DiagramX": 180,
-												"DiagramY": 165,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "feedV"
-												},
-												"isInput": "y"
-											},
-											{
-												"name": "OutletV",
-												"Notes": "va - Actual outlet molar volume",
-												"DiagramX": 280,
-												"DiagramY": 165,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "1/Outlet.dmolar.b"
-												}
-											},
-											{
-												"name": "Ideal",
-												"Notes": "Isetropic outlet fluid",
-												"DiagramX": 180,
-												"DiagramY": 255,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "IdealOut"
-												},
-												"isInput": "y"
-											},
-											{
-												"name": "Outlet",
-												"Notes": "Actual outlet fluid",
-												"DiagramX": 180,
-												"DiagramY": 285,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "OutFluid"
-												},
-												"isInput": "y"
-											},
-											{
-												"name": "inletP",
-												"Notes": "p1 - Inlet Pressure",
-												"DiagramX": 180,
-												"DiagramY": 195,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "Pin"
-												},
-												"isInput": "y"
-											},
-											{
-												"name": "InletH",
-												"Notes": "hin - Inlet molar enthalpy",
-												"DiagramX": 180,
-												"DiagramY": 225,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "feedH"
-												},
-												"isInput": "y"
-											},
-											{
-												"name": "adEff",
-												"Notes": "Ea - Adiabatic efficiency",
-												"DiagramX": 280,
-												"DiagramY": 285,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "(ideal.h.b - inletH)/(outlet.h.b - inletH)"
-												}
-											},
-											{
-												"name": "polyEff",
-												"Notes": "Ep - Polytropic Efficiency",
-												"DiagramX": 280,
-												"DiagramY": 315,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "adEff *\n(\n\tn / (n - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p.b\n\t\t\t/\n\t\t\tinletP\n\t\t)^((n-1)/n)\n\t\t - 1\n\t)\n)\n/\n(\n\tns/ (ns - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p.b\n\t\t\t/\n\t\t\tinletP\n\t\t)^((ns-1)/ns)\n\t\t- 1\n\t)\n)"
-												},
-												"isOutput": "y"
-											},
-											{
-												"name": "Overview",
-												"Notes": "Polytropic efficiency overview",
-												"DiagramX": 180,
-												"DiagramY": 130,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "HTML Form",
-												"Formula": {
-													"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Polytropic Efficiency</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model calculates the polytropic efficiency for a <a href=\"https://en.wikipedia.org/wiki/Compressor\" target=\"_blank\">compressor</a>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe input expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>InletV</b> - the molar volume of the inlet fluid</li>\n\t\t\t<li><b>inletP</b> - the pressure of the inlet fluid</li>\n\t\t\t<li><b>inletH</b> - the molar enthalpy of the inlet fluid</li>\n\t\t\t<li><b>Ideal</b> - the flash results for the outlet fluid assuming isentropic compression.</li>\n\t\t\t<li><b>Outlet</b> - the flash results for the actual outlet fluid</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe outlet expression is <b>polyEff</b>, the polytropic efficiency.\n\t\t</p>\n\t\t<p>\n\t\t\tThe other expressions implement the calculation outlined below and where the expression calculates a variable mentioned here the the variable's symbol is listed in the expression notes.\n\t\t</p>\n\t\t<h4>Calculation overview</h4>\n\t\t<p>\n\t\t\tPolytropic efficiency can be defined as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEp = Wp / Wa\n\t\t</p>\n\t\t<p>where:</p>\n\t\t<ul>\n\t\t\t<li>Ep = polytropic efficiency</li>\n\t\t\t<li>Wp = polytropic work</li>\n\t\t\t<li>Wa = actual work</li>\n\t\t</ul>\n\t\t<p>\n\t\t\twhere the actual work <b>Wa</b> is:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tWa = Ws / Ea\n\t\t</p>\n\t\t<p>where:</p>\n\t\t<ul>\n\t\t\t<li>Ea = adiabatic efficiency</li>\n\t\t\t<li>Ws = isentropic work</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tand the adiabatic efficiency <b>Eq</b> can be calculated from:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEa = (hIout - hin) / (hAout - hin)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>hin is the enthalpy of the inlet fluid</li>\n\t\t\t<li>hIOut is the enthalpy of the outlet for the ideal (isentropic) process</li>\n\t\t\t<li>hAout is the enthalpy of the outlet for tne nonideal process</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tBack substituting Wa into the polytropic efficiency formula becomes:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEp = Ea * Wp / Ws\n\t\t</p>\n\t\t<p>\n\t\t\tThe formulas for <b>Wp</b> and <b>Ws</b> are of the same form and after eliminating common terms from the numerator and denominator, we get\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEp = Ea * (<br>\n\t\t\t&nbsp;&nbsp;&nbsp;n/(n-1) * ((p2/p1)^((n-1)/n) - 1)<br>\n\t\t\t/<br>\n\t\t\t&nbsp;&nbsp;&nbsp;ns/(ns-1) * ((p2/p1)^((ns-1)/ns) - 1)<br>\n\t\t\t)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul class=\"formula\">\n\t\t\t<li>n = ln(p2/p1) / ln(v1/vs)</li>\n\t\t\t<li>ns = ln(p2/p1) / ln(v1/va)</li>\n\t\t\t<li>p1 = inlet pressure, p2 = outlet pressure</li>\n\t\t\t<li>v1 = inlet molar volume</li>\n\t\t\t<li>vs = isentropic outlet molar volume</li>\n\t\t\t<li>va = actual outlet molar volume</li>\n\t\t</ul>\n\n\t\t</div>\n\t</body>\n</html>"
-												}
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "expander",
-								"Notes": "Basic expander calculation.",
-								"DiagramX": 230,
-								"DiagramY": 210,
-								"HideInfo": "n",
-								"DiagramNotes": "y",
-								"Type": "Model",
-								"diagramScale": 1,
-								"indexTool": "expander",
-								"Objects": [
-									{
-										"name": "Feed",
-										"DiagramX": 120,
-										"DiagramY": 140,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": ""
-										},
-										"isInput": "y"
-									},
-									{
-										"name": "e",
-										"Notes": "If efficiency is greater than one, assume it is a percentage",
-										"DiagramX": 230,
-										"DiagramY": 135,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{if {gt efficiency, 1.0},\n\tefficiency/100,\n\tefficiency\n}"
-										}
-									},
-									{
-										"name": "OutletP",
-										"DiagramX": 120,
-										"DiagramY": 190,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": ""
-										},
-										"isInput": "y"
-									},
-									{
-										"name": "Efficiency",
-										"DiagramX": 120,
-										"DiagramY": 215,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": ".75"
-										},
-										"isInput": "y"
-									},
-									{
-										"name": "H",
-										"Notes": "The outlet enthalpy is determined by dividing the difference between the inlet and ideal outlet enthalpies by the efficiency and adding the result to the feed enthalpy.",
-										"DiagramX": 345,
-										"DiagramY": 215,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feedH + \n(IdealOut.h.b - feedH) * e"
-										}
-									},
-									{
-										"name": "Power",
-										"DiagramX": 345,
-										"DiagramY": 165,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "(feedH - outfluid.h.b)*F"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "OutFluid",
-										"Notes": "",
-										"DiagramX": 230,
-										"DiagramY": 255,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Flash",
-										"thermo": {
-											"Formula": "IdealOut.thermo"
-										},
-										"firstprop": {
-											"Formula": "OutletP"
-										},
-										"secondprop": {
-											"Formula": "h"
-										},
-										"molefrac": {
-											"Formula": "idealout.x.b"
-										},
-										"massfrac": {
-											"Formula": ""
-										},
-										"flow": {
-											"Formula": "idealout.f.b"
-										}
-									},
-									{
-										"name": "IdealOut",
-										"Notes": "Ideal expansion is isentropic",
-										"DiagramX": 230,
-										"DiagramY": 225,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Flash",
-										"thermo": {
-											"Formula": "feed.thermo"
-										},
-										"firstprop": {
-											"Formula": "OutletP"
-										},
-										"secondprop": {
-											"Formula": "feedS"
-										},
-										"molefrac": {
-											"Formula": "X"
-										},
-										"massfrac": {
-											"Formula": ""
-										},
-										"flow": {
-											"Formula": "F"
-										}
-									},
-									{
-										"name": "Out",
-										"Notes": "",
-										"DiagramX": 345,
-										"DiagramY": 140,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "OutFluid"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "polyEff",
-										"Notes": "",
-										"DiagramX": 345,
-										"DiagramY": 190,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "polytropic.polyeff"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "feedPhase",
-										"Notes": "",
-										"DiagramX": 120,
-										"DiagramY": 165,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "'b"
-										},
-										"isInput": "y"
-									},
-									{
-										"name": "feedH",
-										"Notes": "",
-										"DiagramX": 230,
-										"DiagramY": 110,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feed.h[0,feedPhase]"
-										}
-									},
-									{
-										"name": "feedS",
-										"Notes": "",
-										"DiagramX": 120,
-										"DiagramY": 265,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feed.s[0,feedPhase]"
-										}
-									},
-									{
-										"name": "F",
-										"Notes": "",
-										"DiagramX": 230,
-										"DiagramY": 175,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feed.f[0,feedPhase]"
-										}
-									},
-									{
-										"name": "X",
-										"Notes": "",
-										"DiagramX": 230,
-										"DiagramY": 200,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feed.x[0,feedPhase]"
-										}
-									},
-									{
-										"name": "Pin",
-										"Notes": "",
-										"DiagramX": 120,
-										"DiagramY": 240,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feed.p[0,feedPhase]"
-										}
-									},
-									{
-										"name": "feedV",
-										"Notes": "",
-										"DiagramX": 120,
-										"DiagramY": 290,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "1/feed.dmolar[0,feedPhase]"
-										}
-									},
-									{
-										"name": "Expander",
-										"Notes": "Overview",
-										"DiagramX": 120,
-										"DiagramY": 110,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "HTML Form",
-										"Formula": {
-											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Expander Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model represents a thermodynamic model of an expander, which is a device that extracts work from the expansion of a fluid.  It is essentially a compressor in reverse.\n\t\t</p>\n\t\t<p>\n\t\t\tThe input expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>feed</b> - a flash result or similar representing the inlet fluid</li>\n\t\t\t<li><b>feedPhase</b> - the phase of feed to use. It should be one of the following strings;\n\t\t\t\t<ul>\n\t\t\t\t\t<li><b>\"b\"</b> - the bulk fluid</li>\n\t\t\t\t\t<li><b>\"v\"</b> - the vapour phase</li>\n\t\t\t\t\t<li><b>\t\"l\"</b> - the liquid phase</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t\t<li><b>outletP</b> - the outlet pressure that the fluid will be reduced to.</li>\n\t\t\t<li><b>efficiency</b> - the actual power produced divided by the ideal power produced</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe outlet expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>out</b> - the outlet fluid flash</li>\n\t\t\t<li><b>power</b> - the power produced by the expansion</li>\n  \t\t<li><b>polyEff</b> - the calculated polytropic efficiency</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tAn ideal expander is first modeled by performing an isentropic flash using the outlet pressure and the feed entropy in tool <b>IdealOut</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe efficiency, e, of an non-ideal expander is taken to be:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\te = (hAout - hin) / (hIout - hin)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>hin is the enthalpy of the inlet fluid</li>\n\t\t\t<li>hIOut is the enthalpy of the outlet for the ideal (isentropic) process</li>\n\t\t\t<li>hAout is the enthalpy of the outlet for tne nonideal process</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe desired efficiency is supplied in the input expression <b>Efficiency</b> so by rearranging, the expression <b>H</b> can calculate the nonideal outlet enthalpy, which is used with the outlet pressure to perform an isenthalpic flash in <b>OutFluid</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe power produced by the expander can then be calculated in expression <b>Power</b> by multiplying the flow by the difference between the inlet fluid enthalpy and the outlet fluid enthalpy.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
-										}
-									},
-									{
-										"name": "polytropic",
-										"Notes": "",
-										"DiagramX": 230,
-										"DiagramY": 280,
-										"HideInfo": "n",
-										"DiagramNotes": "n",
-										"Type": "Model",
-										"diagramScale": 1,
-										"indexTool": "overview",
-										"Objects": [
-											{
-												"name": "n",
-												"Notes": "n - polytropic path exponent",
-												"DiagramX": 280,
-												"DiagramY": 255,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "logpratio / {ln InletV / OutletV}"
-												}
-											},
-											{
-												"name": "logPRatio",
-												"Notes": "Log pressure ratio",
-												"DiagramX": 280,
-												"DiagramY": 195,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{ln outlet.p.b / inletP}"
-												}
-											},
-											{
-												"name": "ns",
-												"Notes": "ns - isentropic path exponent",
-												"DiagramX": 280,
-												"DiagramY": 225,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "logpratio / {ln InletV / IdealV}"
-												}
-											},
-											{
-												"name": "IdealV",
-												"Notes": "vs - Isentropic outlet molar volume",
-												"DiagramX": 280,
-												"DiagramY": 130,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "1/Ideal.dmolar.b"
-												}
-											},
-											{
-												"name": "InletV",
-												"Notes": "v1 - Inlet molar volume",
-												"DiagramX": 180,
-												"DiagramY": 165,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "feedV"
-												},
-												"isInput": "y"
-											},
-											{
-												"name": "OutletV",
-												"Notes": "va - Actual outlet molar volume",
-												"DiagramX": 280,
-												"DiagramY": 165,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "1/Outlet.dmolar.b"
-												}
-											},
-											{
-												"name": "Ideal",
-												"Notes": "Isetropic outlet fluid",
-												"DiagramX": 180,
-												"DiagramY": 255,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "IdealOut"
-												},
-												"isInput": "y"
-											},
-											{
-												"name": "Outlet",
-												"Notes": "Actual outlet fluid",
-												"DiagramX": 180,
-												"DiagramY": 285,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "OutFluid"
-												},
-												"isInput": "y"
-											},
-											{
-												"name": "inletP",
-												"Notes": "p1 - Inlet Pressure",
-												"DiagramX": 180,
-												"DiagramY": 195,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "Pin"
-												},
-												"isInput": "y"
-											},
-											{
-												"name": "InletH",
-												"Notes": "hin - Inlet molar enthalpy",
-												"DiagramX": 180,
-												"DiagramY": 225,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "feedH"
-												},
-												"isInput": "y"
-											},
-											{
-												"name": "adEff",
-												"Notes": "Ea - Adiabatic efficiency",
-												"DiagramX": 280,
-												"DiagramY": 285,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "(outlet.h.b - inletH)/(ideal.h.b - inletH)"
-												}
-											},
-											{
-												"name": "polyEff",
-												"Notes": "Ep - Polytropic Efficiency",
-												"DiagramX": 280,
-												"DiagramY": 315,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "adEff *\n(\n\tns/ (ns - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p.b\n\t\t\t/\n\t\t\tinletP\n\t\t)^((ns-1)/ns)\n\t\t- 1\n\t)\n)\n/\n(\n\tn / (n - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p.b\n\t\t\t/\n\t\t\tinletP\n\t\t)^((n-1)/n)\n\t\t - 1\n\t)\n)"
-												},
-												"isOutput": "y"
-											},
-											{
-												"name": "Overview",
-												"Notes": "Polytropic efficiency overview",
-												"DiagramX": 180,
-												"DiagramY": 130,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "HTML Form",
-												"Formula": {
-													"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Polytropic Efficiency</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model calculates the polytropic efficiency for an expander. The calculations are similar to that for a <a href=\"https://en.wikipedia.org/wiki/Compressor\" target=\"_blank\">compressor</a>, except the efficiency calculations are inverted.\n\t\t</p>\n\t\t<p>\n\t\t\tThe input expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>InletV</b> - the molar volume of the inlet fluid</li>\n\t\t\t<li><b>inletP</b> - the pressure of the inlet fluid</li>\n\t\t\t<li><b>inletH</b> - the molar enthalpy of the inlet fluid</li>\n\t\t\t<li><b>Ideal</b> - the flash results for the outlet fluid assuming isentropic expansion.</li>\n\t\t\t<li><b>Outlet</b> - the flash results for the actual outlet fluid</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe outlet expression is <b>polyEff</b>, the polytropic efficiency.\n\t\t</p>\n\t\t<p>\n\t\t\tThe other expressions implement the calculation outlined below and where the expression calculates a variable mentioned here the the variable's symbol is listed in the expression notes.\n\t\t</p>\n\t\t<h4>Calculation overview</h4>\n\t\t<p>\n\t\t\tPolytropic efficiency can be defined as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEp = Wa / Wp\n\t\t</p>\n\t\t<p>where:</p>\n\t\t<ul>\n\t\t\t<li>Ep = polytropic efficiency</li>\n\t\t\t<li>Wp = polytropic work</li>\n\t\t\t<li>Wa = actual work</li>\n\t\t</ul>\n\t\t<p>\n\t\t\twhere the actual work <b>Wa</b> is:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tWa = Ws / Ea\n\t\t</p>\n\t\t<p>where:</p>\n\t\t<ul>\n\t\t\t<li>Ea = adiabatic efficiency</li>\n\t\t\t<li>Ws = isentropic work</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tand the adiabatic efficiency <b>Eq</b> can be calculated from:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEa = (hAout - hin) / (hIout - hin)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>hin is the enthalpy of the inlet fluid</li>\n\t\t\t<li>hIOut is the enthalpy of the outlet for the ideal (isentropic) process</li>\n\t\t\t<li>hAout is the enthalpy of the outlet for tne nonideal process</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tBack substituting Wa into the polytropic efficiency formula becomes:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEp = Ea * Ws / Wp\n\t\t</p>\n\t\t<p>\n\t\t\tThe formulas for <b>Wp</b> and <b>Ws</b> are of the same form and after eliminating common terms from the numerator and denominator, we get\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEp = Ea * (<br>\n\t\t\t&nbsp;&nbsp;&nbsp;ns/(ns-1) * ((p2/p1)^((ns-1)/ns) - 1)<br>\n\t\t\t/<br>\n\t\t\t&nbsp;&nbsp;&nbsp;n/(n-1) * ((p2/p1)^((n-1)/n) - 1)<br>\n\t\t\t)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul class=\"formula\">\n\t\t\t<li>n = ln(p2/p1) / ln(v1/vs)</li>\n\t\t\t<li>ns = ln(p2/p1) / ln(v1/va)</li>\n\t\t\t<li>p1 = inlet pressure, p2 = outlet pressure</li>\n\t\t\t<li>v1 = inlet molar volume</li>\n\t\t\t<li>vs = isentropic outlet molar volume</li>\n\t\t\t<li>va = actual outlet molar volume</li>\n\t\t</ul>\n\t\t</div>\n\t</body>\n</html>"
-												}
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "getPhase",
-								"Notes": "Mimics a flash result with base properties for a designated phase from the feed, which must be a flash result.",
-								"DiagramX": 230,
-								"DiagramY": 240,
-								"HideInfo": "n",
-								"DiagramNotes": "y",
-								"Type": "Model",
-								"diagramScale": 1,
-								"indexTool": "overview",
-								"Objects": [
-									{
-										"name": "feed",
-										"Notes": "",
-										"DiagramX": 60,
-										"DiagramY": 100,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": ""
-										},
-										"isInput": "y"
-									},
-									{
-										"name": "F",
-										"Notes": "",
-										"DiagramX": 160,
-										"DiagramY": 125,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table \"b\" feed.f[0,phase]}"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "X",
-										"Notes": "",
-										"DiagramX": 160,
-										"DiagramY": 250,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table \"b\" feed.x[0,phase]}"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "Dmolar",
-										"Notes": "",
-										"DiagramX": 160,
-										"DiagramY": 200,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table \"b\" feed.dmolar[0,phase]}"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "phase",
-										"Notes": "",
-										"DiagramX": 60,
-										"DiagramY": 125,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "'l"
-										},
-										"isInput": "y"
-									},
-									{
-										"name": "T",
-										"Notes": "",
-										"DiagramX": 160,
-										"DiagramY": 75,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table \"b\" feed.t.b}"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "p",
-										"Notes": "",
-										"DiagramX": 160,
-										"DiagramY": 100,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table \"b\" feed.p.b}"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "h",
-										"Notes": "",
-										"DiagramX": 160,
-										"DiagramY": 150,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table \"b\" feed.h[0,phase]}"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "s",
-										"Notes": "",
-										"DiagramX": 160,
-										"DiagramY": 175,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table \"b\" feed.s[0,phase]}"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "thermo",
-										"Notes": "",
-										"DiagramX": 160,
-										"DiagramY": 50,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "feed.thermo"
-										}
-									},
-									{
-										"name": "mwt",
-										"Notes": "",
-										"DiagramX": 160,
-										"DiagramY": 225,
-										"HideInfo": "y",
-										"DiagramNotes": "n",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table \"b\" feed.mwt[0,phase]}"
-										},
-										"isOutput": "y"
-									},
-									{
-										"name": "Overview",
-										"Notes": "GetPhase Overview",
-										"DiagramX": 60,
-										"DiagramY": 70,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "HTML Form",
-										"Formula": {
-											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>GetPhase Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tGets the base properties for a designated phase from the feed, which must be a flash result.\n\t\t</p>\n\t\t<p>\n\t\t\tThis then appears like a flash result with just a bulk phase and can be used as input to things that expect a flash reault, without doing another flash just to get the phase.\n\t\t</p>\n\t\t<p>\n\t\t\tThe input expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>feed</b> - a flash result</li>\n\t\t\t<li><b>phase</b> - the phase of the feed to use. It should be one of the following strings;\n\t\t\t\t<ul>\n\t\t\t\t\t<li><b>\"b\"</b> - the bulk fluid</li>\n\t\t\t\t\t<li><b>\"v\"</b> - the vapour phase</li>\n\t\t\t\t\t<li><b>\t\"l\"</b> - the liquid phase</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tWith the exception of <b>thermo</b> all of the output expressions evaluate to a table with a single column <b>b</b>.  This allows the properties to be accessed in the same way as a flash result, e.g. for a flow:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tgetphase.f.b\n\t\t</p>\n\t\t<p>\n\t\t\tThe output expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>thermo</b> - thermo definition</li>\n\t\t\t<li><b>t</b> - temperature</li>\n\t\t\t<li><b>p</b> - pressure</li>\n  \t\t<li><b>f</b> - the phase molar flow</li>\n  \t\t<li><b>h</b> - the phase enthalpy</li>\n  \t\t<li><b>s</b> - the phase entropy</li>\n  \t\t<li><b>dMolar</b> - the phase molar density</li>\n  \t\t<li><b>mwt</b> - the phase molecular weight</li>\n  \t\t<li><b>x</b> - the phase mole fractions</li>\n\t\t</ul>\n\t\t</div>\n\t</body>\n</html>"
-										}
-									}
-								]
-							},
-							{
 								"name": "Mix2",
 								"Notes": "Takes two flash results and produces thermo, p, f, h and x values for the combined fluid.",
-								"DiagramX": 150,
-								"DiagramY": 240,
+								"DiagramX": 155,
+								"DiagramY": 250,
 								"HideInfo": "n",
 								"DiagramNotes": "y",
 								"Type": "Model",
@@ -15962,7 +14921,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{min feed1.p.b, feed2.p.b}"
+											"Formula": "{min feed1.p, feed2.p}"
 										},
 										"isOutput": "y"
 									},
@@ -15974,7 +14933,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "Feed1.f.b + feed2.f.b"
+											"Formula": "Feed1.f + feed2.f"
 										},
 										"isOutput": "y"
 									},
@@ -15986,7 +14945,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "(Feed1.h.b * feed1.f.b + Feed2.h.b * feed2.f.b)/F"
+											"Formula": "(Feed1.h * feed1.f + Feed2.h * feed2.f)/F"
 										},
 										"isOutput": "y"
 									},
@@ -15998,7 +14957,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "(feed1.x.b * feed1.f.b +\nfeed2.x.b * feed2.f.b) / f"
+											"Formula": "(feed1.x * feed1.f +\nfeed2.x * feed2.f) / f"
 										},
 										"isOutput": "y"
 									},
@@ -16032,8 +14991,8 @@
 							{
 								"name": "HeatExch",
 								"Notes": "Simple counter current heat exchanger",
-								"DiagramX": 230,
-								"DiagramY": 175,
+								"DiagramX": 235,
+								"DiagramY": 185,
 								"HideInfo": "n",
 								"DiagramNotes": "y",
 								"Type": "Model",
@@ -16129,7 +15088,7 @@
 										"DiagramNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "(side1flash.h.b - side1in.h.b) * side1In.f.b"
+											"Formula": "(side1flash.h - side1in.h) * side1In.f"
 										},
 										"isOutput": "y"
 									},
@@ -16159,19 +15118,19 @@
 											"Formula": "Side1In.thermo"
 										},
 										"firstprop": {
-											"Formula": "side1in.p.b - side1dp"
+											"Formula": "side1in.p - side1dp"
 										},
 										"secondprop": {
-											"Formula": "(side1in.h.b * side1in.f.b\n + side2in.h.b * side2in.f.b\n - side2flash.h.b * side2flash.f.b\n) / side1In.f.b"
+											"Formula": "(side1in.h * side1in.f\n + side2in.h * side2in.f\n - side2flash.h * side2flash.f\n) / side1In.f"
 										},
 										"molefrac": {
-											"Formula": "side1In.x.b"
+											"Formula": "side1In.x"
 										},
 										"massfrac": {
 											"Formula": ""
 										},
 										"flow": {
-											"Formula": "side1in.f.b"
+											"Formula": "side1in.f"
 										}
 									},
 									{
@@ -16186,19 +15145,19 @@
 											"Formula": "side2in.thermo"
 										},
 										"firstprop": {
-											"Formula": "{if t2out.hasvalue, t2out, side1in.t.b - dt}"
+											"Formula": "{if t2out.hasvalue, t2out, side1in.t - dt}"
 										},
 										"secondprop": {
-											"Formula": "side2in.p.b - side2dp"
+											"Formula": "side2in.p - side2dp"
 										},
 										"molefrac": {
-											"Formula": "side2in.x.b"
+											"Formula": "side2in.x"
 										},
 										"massfrac": {
 											"Formula": ""
 										},
 										"flow": {
-											"Formula": "side2in.f.b"
+											"Formula": "side2in.f"
 										}
 									},
 									{
@@ -16259,7 +15218,7 @@
 												"DiagramNotes": "n",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "side1in.t.b"
+													"Formula": "side1in.t"
 												},
 												"isInput": "y"
 											},
@@ -16272,7 +15231,7 @@
 												"DiagramNotes": "n",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "side1flash.t.b"
+													"Formula": "side1flash.t"
 												},
 												"isInput": "y"
 											},
@@ -16285,7 +15244,7 @@
 												"DiagramNotes": "n",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "side2in.t.b"
+													"Formula": "side2in.t"
 												},
 												"isInput": "y"
 											},
@@ -16298,7 +15257,7 @@
 												"DiagramNotes": "n",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "side2flash.t.b"
+													"Formula": "side2flash.t"
 												},
 												"isInput": "y"
 											},
@@ -16362,8 +15321,8 @@
 							{
 								"name": "McCabe_Thiele",
 								"Notes": "Constructs a McCabe Thiele diagram for the distilation of a binary mixture.",
-								"DiagramX": 230,
-								"DiagramY": 290,
+								"DiagramX": 235,
+								"DiagramY": 300,
 								"HideInfo": "n",
 								"DiagramNotes": "y",
 								"Type": "Model",
@@ -16430,10 +15389,10 @@
 														"Formula": "1- $.x'x2"
 													},
 													{
-														"Formula": "bubpt.t.b't"
+														"Formula": "bubpt.t't"
 													},
 													{
-														"Formula": "bubpt.x.v[1]'y1"
+														"Formula": "bubpt.v.x[1]'y1"
 													}
 												],
 												"AutoRun": "y"
@@ -16954,8 +15913,8 @@
 							{
 								"name": "FFFPressDrop",
 								"Notes": "Fanning Friction Factor pressure drop calculation.",
-								"DiagramX": 150,
-								"DiagramY": 335,
+								"DiagramX": 315,
+								"DiagramY": 250,
 								"HideInfo": "n",
 								"DiagramNotes": "y",
 								"Type": "Model",
@@ -16984,7 +15943,7 @@
 										"DiagramNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "average.f.b / average.dmolar.b"
+											"Formula": "average.f / average.dmolar"
 										},
 										"isOutput": "y"
 									},
@@ -17022,7 +15981,7 @@
 										"DiagramNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "average.dmass.b * Velocity * Diameter / average.viscosity.b"
+											"Formula": "average.dmass * Velocity * Diameter / average.viscosity"
 										},
 										"isOutput": "y"
 									},
@@ -17059,7 +16018,7 @@
 										"DiagramNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "h * average.dmass.b * 1 \"kgf\" / 1 \"kg\""
+											"Formula": "h * average.dmass * 1 \"kgf\" / 1 \"kg\""
 										},
 										"isOutput": "y"
 									},
@@ -17085,7 +16044,7 @@
 										"DiagramNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "inlet.p.b - dp"
+											"Formula": "inlet.p - dp"
 										},
 										"isOutput": "y"
 									},
@@ -17101,19 +16060,19 @@
 											"Formula": "inlet.thermo"
 										},
 										"firstprop": {
-											"Formula": "inlet.t.b"
+											"Formula": "inlet.t"
 										},
 										"secondprop": {
-											"Formula": "(inlet.p.b + estPOut) / 2"
+											"Formula": "(inlet.p + estPOut) / 2"
 										},
 										"molefrac": {
-											"Formula": "inlet.x.b"
+											"Formula": "inlet.x"
 										},
 										"massfrac": {
 											"Formula": ""
 										},
 										"flow": {
-											"Formula": "inlet.f.b"
+											"Formula": "inlet.f"
 										}
 									},
 									{
@@ -17141,7 +16100,7 @@
 										"DiagramNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "inlet.p.b * (1 + 0.3 * solver.1)"
+											"Formula": "inlet.p * (1 + 0.3 * solver.1)"
 										}
 									},
 									{
@@ -17236,8 +16195,8 @@
 							{
 								"name": "SelectThermo",
 								"Notes": "Use this model to easily create the component list and additional properties that comprise the thermo definition for flash tools.\n\nAfter clicking the apply button on this page, the definition will be available as parameter thermo for this model.\n\nThus in a flash tool in a model that also contains the model, you could define its thermo as just\n\nselectthermo.thermo",
-								"DiagramX": 150,
-								"DiagramY": 175,
+								"DiagramX": 155,
+								"DiagramY": 185,
 								"HideInfo": "n",
 								"DiagramNotes": "n",
 								"Type": "Model",
@@ -17253,7 +16212,7 @@
 										"DiagramNotes": "y",
 										"Type": "HTML Form",
 										"Formula": {
-											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t\t<script>\n\t\t\twindow.onload = () => {\n\t\t\t\tconst fluidList = document.getElementById('fluid-list');\n\t\t\t\tconst fluids = '<mm>{join listFlash.fluids, \",\"}</mm>'.split(',');\n\t\t\t\tconst fluidsHtml = fluids.map((name) => {\n\t\t\t\t\treturn `<option value=${name}>${name}</option>`;\n\t\t\t\t})\n\t\t\t\tfluidList.innerHTML = '<option value=\"\">Components</option>' + fluidsHtml.join('\\n');\n\t\t\t\tmmpost({}, {thermo: 'thermo'}, (result) => {\n\t\t\t\t\tconsole.log(`current ${result.thermo}`);\n\t\t\t\t\tif (result && result.thermo) {\n\t\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\t\ttextArea.value = result.thermo;\n\t\t\t\t\t}\n\t\t\t\t})\n\t\t\t}\n\t\t\tconst fluidSelected = (name) => {\n\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\tif (textArea.value.length) {\n\t\t\t\t\ttextArea.value += ',\\n'\n\t\t\t\t}\n\t\t\t\ttextArea.value += `${name}`;\n\t\t\t\ttextArea.scrollTop = 99999;\n\t\t\t}\n\t\t\tconst propSelected = (name) => {\n\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\tlet value = textArea.value;\n\t\t\t\tif (name && value.length) {\n\t\t\t\t\tif (!value.match(/::/)) {\n\t\t\t\t\t\tvalue += `\\n::\\n${name}`;\n\t\t\t\t\t}\n\t\t\t\t\telse\n\t\t\t\t\tvalue += `,\\n${name}`;\n\t\t\t\t\ttextArea.value = value;\n\t\t\t\t\ttextArea.scrollTop = 99999;\n\t\t\t\t}\n\t\t\t}\n\t\t\tconst apply = () => {\n\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\tmmpost({thermo: textArea.value}, {});\n\t\t\t}\n\t\t</script>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Thermo Selection</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<div>\n\t\t\t<textarea id=\"thermo-string\" rows=\"5\"></textarea>\n\t\t\t<p>\n\t\t\t\tFirst select the components you from the dropdown below. They will be added to the text box above.\n\t\t\t</p>\n\t\t\t<select id=\"fluid-list\" onChange=\"fluidSelected(this.value);\">\n\t\t\t</select>\n\t\t\t<p>\n\t\t\t\tIf you want additional properties besides the default (q, t, p, f, h, s, dmolar, mwt, x), select them from the drop down below to have them added to the thermo definition,\n\t\t\t</p>\n\t\t\t<select id=\"prop-list\" onChange=\"propSelected(this.value);\">\n\t\t\t\t<option value=\"\">Properties</option>\n\t\t\t\t<option value=\"massf\">massf</option>\n\t\t\t\t<option value=\"massx\">massx</option>\n\t\t\t\t<option value=\"cpmolar\">cpmolar</option>\n\t\t\t\t<option value=\"cp0molar\">cp0molar</option>\n\t\t\t\t<option value=\"cvmolar\">cvmolar</option>\n\t\t\t\t<option value=\"umolar\">umolar</option>\n\t\t\t\t<option value=\"gmolar\">gmolar</option>\n\t\t\t\t<option value=\"cpmass\">cpmass</option>\n\t\t\t\t<option value=\"cp0mass\">cp0mass</option>\n\t\t\t\t<option value=\"cvmass\">cvmass</option>\n\t\t\t\t<option value=\"dmass\">dmass</option>\n\t\t\t\t<option value=\"umass\">umass</option>\n\t\t\t\t<option value=\"gmass\">gmass</option>\n\t\t\t\t<option value=\"tmin\">tmin</option>\n\t\t\t\t<option value=\"tmax\">tmax</option>\n\t\t\t\t<option value=\"pmin\">pmin</option>\n\t\t\t\t<option value=\"viscosity\">viscosity</option>\n\t\t\t\t<option value=\"conductivity\">conductivity</option>\n\t\t\t\t<option value=\"surfacetension\">surfacetension</option>\n\t\t\t\t<option value=\"prandtl\">prandtl</option>\n\t\t\t</select>\n\t\t\t<p>\n\t\t\t\t<button onClick=\"apply()\">Apply</button>\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tWhen done, edit the text box if necessary and then click the <b>Apply</b> button above. This will make the list available as property <b>thermo</b> for both this html page and the enclosing model.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tYou can return to this page and edit the thermo definition and click <b>Apply</b> again when done.\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t\t<script>\n\t\t\twindow.onload = () => {\n\t\t\t\tconst fluidList = document.getElementById('fluid-list');\n\t\t\t\tconst fluids = '<mm>{join listFlash.fluids, \",\"}</mm>'.split(',');\n\t\t\t\tconst fluidsHtml = fluids.map((name) => {\n\t\t\t\t\treturn `<option value=${name}>${name}</option>`;\n\t\t\t\t})\n\t\t\t\tfluidList.innerHTML = '<option value=\"\">Components</option>' + fluidsHtml.join('\\n');\n\t\t\t\tmmpost({}, {thermo: 'thermo'}, (result) => {\n\t\t\t\t\tconsole.log(`current ${result.thermo}`);\n\t\t\t\t\tif (result && result.thermo) {\n\t\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\t\ttextArea.value = result.thermo;\n\t\t\t\t\t}\n\t\t\t\t})\n\t\t\t}\n\t\t\tconst fluidSelected = (name) => {\n\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\tif (textArea.value.length) {\n\t\t\t\t\ttextArea.value += ',\\n'\n\t\t\t\t}\n\t\t\t\ttextArea.value += `${name}`;\n\t\t\t\ttextArea.scrollTop = 99999;\n\t\t\t}\n\t\t\tconst propSelected = (name) => {\n\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\tlet value = textArea.value;\n\t\t\t\tif (name && value.length) {\n\t\t\t\t\tif (!value.match(/;/)) {\n\t\t\t\t\t\tvalue += `\\n;\\n${name}`;\n\t\t\t\t\t}\n\t\t\t\t\telse\n\t\t\t\t\tvalue += `,\\n${name}`;\n\t\t\t\t\ttextArea.value = value;\n\t\t\t\t\ttextArea.scrollTop = 99999;\n\t\t\t\t}\n\t\t\t}\n\t\t\tconst apply = () => {\n\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\tmmpost({thermo: textArea.value}, {});\n\t\t\t}\n\t\t</script>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Thermo Selection</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<div>\n\t\t\t<textarea id=\"thermo-string\" rows=\"5\"></textarea>\n\t\t\t<p>\n\t\t\t\tFirst select the components you from the dropdown below. They will be added to the text box above.\n\t\t\t</p>\n\t\t\t<select id=\"fluid-list\" onChange=\"fluidSelected(this.value);\">\n\t\t\t</select>\n\t\t\t<p>\n\t\t\t\tIf you want additional properties besides the default (q, t, p, f, h, s, dmolar, mwt, x), select them from the drop down below to have them added to the thermo definition,\n\t\t\t</p>\n\t\t\t<select id=\"prop-list\" onChange=\"propSelected(this.value);\">\n\t\t\t\t<option value=\"\">Properties</option>\n\t\t\t\t<option value=\"massf\">massf</option>\n\t\t\t\t<option value=\"massx\">massx</option>\n\t\t\t\t<option value=\"hflow\">hflow</option>\n\t\t\t\t<option value=\"cpmolar\">cpmolar</option>\n\t\t\t\t<option value=\"cp0molar\">cp0molar</option>\n\t\t\t\t<option value=\"cvmolar\">cvmolar</option>\n\t\t\t\t<option value=\"umolar\">umolar</option>\n\t\t\t\t<option value=\"gmolar\">gmolar</option>\n\t\t\t\t<option value=\"cpmass\">cpmass</option>\n\t\t\t\t<option value=\"cp0mass\">cp0mass</option>\n\t\t\t\t<option value=\"cvmass\">cvmass</option>\n\t\t\t\t<option value=\"dmass\">dmass</option>\n\t\t\t\t<option value=\"umass\">umass</option>\n\t\t\t\t<option value=\"gmass\">gmass</option>\n\t\t\t\t<option value=\"tmin\">tmin</option>\n\t\t\t\t<option value=\"tmax\">tmax</option>\n\t\t\t\t<option value=\"pmin\">pmin</option>\n\t\t\t\t<option value=\"viscosity\">viscosity</option>\n\t\t\t\t<option value=\"conductivity\">conductivity</option>\n\t\t\t\t<option value=\"surfacetension\">surfacetension</option>\n\t\t\t\t<option value=\"prandtl\">prandtl</option>\n\t\t\t</select>\n\t\t\t<p>\n\t\t\t\t<button onClick=\"apply()\">Apply</button>\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tWhen done, edit the text box if necessary and then click the <b>Apply</b> button above. This will make the list available as property <b>thermo</b> for both this html page and the enclosing model.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tYou can return to this page and edit the thermo definition and click <b>Apply</b> again when done.\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
 										},
 										"inputs": {
 											"thermo": ""
@@ -17306,8 +16265,8 @@
 							{
 								"name": "LMTD",
 								"Notes": "Log Mean Temperature Difference",
-								"DiagramX": 230,
-								"DiagramY": 335,
+								"DiagramX": 315,
+								"DiagramY": 220,
 								"HideInfo": "n",
 								"DiagramNotes": "y",
 								"Type": "Model",
@@ -17424,8 +16383,8 @@
 							{
 								"name": "refrigeration",
 								"Notes": "A simple single state refrigeration calculation",
-								"DiagramX": 150,
-								"DiagramY": 290,
+								"DiagramX": 155,
+								"DiagramY": 300,
 								"HideInfo": "n",
 								"DiagramNotes": "y",
 								"Type": "Model",
@@ -17503,7 +16462,7 @@
 											}
 										},
 										"X2": {
-											"v": "{cc coolerOut.t.b,\n\tcompressor.outfluid.t.b,\n\tcondenserOut.t.b,\n\tvalveOut.t.b\n}'Path T",
+											"v": "{cc coolerOut.t,\n\tcompressor.outfluid.t,\n\tcondenserOut.t,\n\tvalveOut.t\n}'Path T",
 											"vmin": "",
 											"vmax": "",
 											"Y1": {
@@ -17532,13 +16491,13 @@
 											"Formula": "0"
 										},
 										"molefrac": {
-											"Formula": "coolerOut.x.b"
+											"Formula": "coolerOut.x"
 										},
 										"massfrac": {
 											"Formula": ""
 										},
 										"flow": {
-											"Formula": "coolerOut.f.b"
+											"Formula": "coolerOut.f"
 										}
 									},
 									{
@@ -17550,7 +16509,7 @@
 										"DiagramNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "compressor.out.t.b"
+											"Formula": "compressor.out.t"
 										},
 										"isOutput": "y"
 									},
@@ -17602,7 +16561,7 @@
 										"DiagramNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "(condenserOut.h.b - compressor.Out.h.b)*coolerOut.f.b"
+											"Formula": "(condenserOut.h - compressor.Out.h)*coolerOut.f"
 										},
 										"isOutput": "y"
 									},
@@ -17615,7 +16574,7 @@
 										"DiagramNotes": "n",
 										"Type": "Flash",
 										"thermo": {
-											"Formula": "'R32::massf"
+											"Formula": "'R32;massf"
 										},
 										"firstprop": {
 											"Formula": "ColdT"
@@ -17630,7 +16589,7 @@
 											"Formula": ""
 										},
 										"flow": {
-											"Formula": "InletQ / ($.h.b - condenserOut.h.b)"
+											"Formula": "InletQ / ($.h - condenserOut.h)"
 										}
 									},
 									{
@@ -17684,28 +16643,41 @@
 											"Formula": "condenserOut.thermo"
 										},
 										"firstprop": {
-											"Formula": "coolerOut.p.b + coolerDp"
+											"Formula": "coolerOut.p + coolerDp"
 										},
 										"secondprop": {
-											"Formula": "condenserOut.h.b"
+											"Formula": "condenserOut.h"
 										},
 										"molefrac": {
-											"Formula": "coolerOut.x.b"
+											"Formula": "coolerOut.x"
 										},
 										"massfrac": {
 											"Formula": ""
 										},
 										"flow": {
-											"Formula": "condenserOut.f.b"
+											"Formula": "condenserOut.f"
 										}
 									},
 									{
+										"name": "Refrigeration",
+										"Notes": "Overview",
+										"DiagramX": 235,
+										"DiagramY": 280,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Simple Single Stage Refrigeration </h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model shows how the properties of a simple single stage refrigeration loop can be calculated using basic thermodynamics.\n\t\t</p>\n\t\t<p>\n\t\t\tThe refrigeration loop looks like this:\n\t\t</p>\n<svg width=\"100%\" height=\"100%\" viewBox=\"0 0 1024 650\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xml:space=\"preserve\" xmlns:serif=\"http://www.serif.com/\" style=\"fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;\">\n    <g id=\"Cooler\" transform=\"matrix(1,0,0,1,-30.5113,85.8962)\">\n        <g transform=\"matrix(1.36733,0,0,1.36733,-255.523,145.782)\">\n            <circle cx=\"735.181\" cy=\"167.587\" r=\"69.251\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-369.122,167.346)\">\n            <path d=\"M799.807,119.07L719.951,198.427\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-369.122,167.346)\">\n            <path d=\"M838.062,180.07L799.807,119.07\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-369.122,167.346)\">\n            <path d=\"M920.578,98.174L838.052,179.677\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(0.720399,0.720399,-1.05258,1.05258,311.159,-421.885)\">\n            <path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:0.78px;\"/>\n        </g>\n        <g transform=\"matrix(1.57389e-16,-1.05628,1.54333,3.14777e-16,671.041,981.596)\">\n            <path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:0.76px;\"/>\n        </g>\n        <g transform=\"matrix(1.51804e-16,-1.0188,1.48857,3.03608e-16,379.896,1023.27)\">\n            <path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:0.78px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-209.284,-307.928)\">\n            <path d=\"M671.848,300.131L521.605,300.131\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(7.59019e-17,1.0188,-1.48857,0,758.006,-544.194)\">\n            <path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:0.78px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-209.284,-307.928)\">\n            <path d=\"M413.681,500.652L616.726,500.652\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(7.59019e-17,1.0188,-1.48857,0,307.925,-545.726)\">\n            <path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:0.78px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-209.284,-307.928)\">\n            <path d=\"M305.077,299.515L249.989,299.078\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-209.284,-307.928)\">\n            <path d=\"M249.989,299.078L249.989,500.15\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-209.284,-307.928)\">\n            <path d=\"M249.989,500.15L287.042,500.15\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-205.141,-284.519)\">\n            <text x=\"340.411px\" y=\"342.58px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">Condenser</text>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-239.696,-280.387)\">\n            <text x=\"670.252px\" y=\"365.729px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">Compressor</text>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-198.083,-292.803)\">\n            <text x=\"653.088px\" y=\"585.843px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">Cooler</text>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-234.271,-284.603)\">\n            <text x=\"328.159px\" y=\"540.958px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">JT V<tspan x=\"377.518px 390.866px \" y=\"540.958px 540.958px \">al</tspan>ve</text>\n        </g>\n        <g transform=\"matrix(1,0,0,1,30.5113,-85.8962)\">\n            <path d=\"M935.658,185.82L935.658,112.288\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n        </g>\n        <g transform=\"matrix(1,0,0,1,-22.4075,-47.1565)\">\n            <text x=\"393.526px\" y=\"32.893px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:30px;\">Single Stage Refrigeration</text>\n        </g>\n    </g>\n    <g id=\"air-cooler\" serif:id=\"air cooler\" transform=\"matrix(1,0,0,1,-395.102,-130.07)\">\n        <g transform=\"matrix(1.36733,0,0,1.36733,-384.927,-269.81)\">\n            <rect x=\"699.629\" y=\"400.285\" width=\"201.945\" height=\"59.617\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.21154,0,0,1.36733,-271.746,-282.141)\">\n            <ellipse cx=\"760.291\" cy=\"437.768\" rx=\"49.85\" ry=\"8.668\" style=\"fill:none;stroke:black;stroke-width:0.77px;\"/>\n        </g>\n        <g transform=\"matrix(-1.21154,-1.48371e-16,1.67449e-16,-1.36733,1691.29,915.004)\">\n            <ellipse cx=\"760.291\" cy=\"437.768\" rx=\"49.85\" ry=\"8.668\" style=\"fill:none;stroke:black;stroke-width:0.77px;\"/>\n        </g>\n    </g>\n    <g id=\"Expander\" transform=\"matrix(0.524246,0,0,0.524246,463.577,141.935)\">\n        <g transform=\"matrix(-1.36733,-1.67449e-16,1.67449e-16,-1.36733,956.369,493.079)\">\n            <path d=\"M303.232,196.136L303.232,401.492L398.208,340.215L398.208,259.875L303.232,196.136Z\" style=\"fill:none;stroke:black;stroke-width:1.4px;\"/>\n        </g>\n        <g transform=\"matrix(2.60818,0,0,2.60818,-1341.68,-694.267)\">\n            <path d=\"M771.686,499.722L859.838,499.722L859.838,298.722\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(2.60818,0,0,2.60818,-1341.68,-834.638)\">\n            <path d=\"M859.42,298.722L723.199,298.722\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n    </g>\n    <g id=\"valve\" transform=\"matrix(1,0,0,1,11.6746,366.757)\">\n        <g transform=\"matrix(8.42037e-17,1.36733,-1.36733,8.42037e-17,382.049,-341.754)\">\n            <path d=\"M318.772,105.125L347.185,160.635L290.359,160.635L318.772,105.125Z\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(8.32456e-17,-1.36733,1.36733,8.32456e-17,94.5681,529.978)\">\n            <path d=\"M318.772,105.125L347.185,160.635L290.359,160.635L318.772,105.125Z\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n    </g>\n</svg>\n\t\t<p>\n\t\t\tThe heat removed in the cooler boiling the refrigerant and the resulting vapour is compressed to a higher pressure and hence temperature. It is then condensed by an available coolant, here assumed to be air.\n\t\t</p>\n\t\t<p>\n\t\t\tThe condensed high pressure liquid is then let down to a lower pressure through a valve.  The lower pressure causes some of the liquid to vapourize and the phase rule dictates that for a given pressure a two phase fluid's temperature is determined from its phase envelope.\n\t\t</p>\n\t\t<p>\n\t\t\tJumping ahead a bit, the graph below shows the phase envelope for the refrigerant we will use. It is just a line since we will use a pure component. The triangle represents the refrigerant conditions as it moves around the loop. The cooler conditions are at the lower left.  Compressing the vapour raise both the temperature and pressure to the upper right point, while condensing moves it horizontally to the valve inlet condition at the upper left. Passing through the valve\n\t\t\tdrops both temperature and pressure back to the cooler conditions.\n\t\t</p>\n\t\t<mm>envplot.svg</mm>\n\t\t<p>\n\t\t\tWhat we need to determine is:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>the pressures required for a required coolant temperature and available condensing temperature</li>\n\t\t\t<li>the flow rate of the refrigerant</li>\n\t\t\t<li>the duty of the condenser</li>\n\t\t\t<li>the power required for the compressor</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tWe will start with the refrigerant side of the cooler, represented by the <a href=\"../help/flash.html\" target=\"_blank\">flash tool</a> called <b>coolerOut</b>. In this case we will assume a single component refrigerant <a href=\"https://en.wikipedia.org/wiki/Difluoromethane\" target=\"blank\">difluormethane</a>, commonly called <b>R32</b> and so we will define the thermo parameter as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t'R32;massf\n\t\t</p>\n\t\t<p>\n\t\t\twhich is simply as string with the component name(s). Here we have followed it with a double colon and the name(s) of the properties we want included in addition to the default ones. In this case, just the mass flow. The mole fractions input can simply be set to 1 as there is only one component.\n\t\t</p>\n\t\t<p>\t\n\t\t\tWe know the required coolant temperature and will set the first property to that. We also know that the coolant will be boiling, so we can set the second property to 1, which because it has a \"Fraction\" conversion unit type, will be taken as q, the vapour fraction. This means the vapour\n\t\t\tleaving the cooler should be a its dew point.\n\t\t</p>\n\t\t<p>\n\t\t\tThis allows the pressure and other properties to be calculated, but the flow rate is still unknown. We will come back to that.\n\t\t</p>\n\t\t<p>\n\t\t\tSimilar to the cooler, we know the condenser outlet temperature (presumably from available cooling) and can thus set the first property of the <b>condenserOut</b> flash tool. Since it is condensed, we can assume it will be at the bubble point and designate the second property to be 0.\n\t\t</p>\n\t\t\t\tThis will determine the condensing pressure and other properties.\n\t\t</p>\n\t\t<p>\n\t\t\tSince a valve has no heat inputs or outputs, it is isenthalpic, so we know the enthalpy of the fluid leaving the value and going to the cooler is the same as the liquid leaving the condenser.\n\t\t</p>\n\t\t<p>\n\t\t\tBack at the coolerOut Flash, we know the cooling load from InletQ and now that we know the enthalpy of the entering fluid, namely that of <b>valveOut</b> which is the same as that of <b>condenserOut</b>, the flow can be calculated by dividing the duty by the enthalpy difference in and out.\n\t\t</p>\n\t\t<p>\n\t\t\tWith the flow rate known, we can calculate the condenser duty by multiplying the difference between its inlet and outlet enthalpy by the flow rate.\n\t\t</p>\n\t\t<p>\n\t\t\tAll that remains is to determine the required compressor power. For that we can copy and paste a previously made model representing a compressor from the toolbox example session and filling in the input expressions.\n\t\t</p>\n\t\t<p>\n\t\t\tThat's it.  All the values we wanted are now calculated.\n\t\t</p>\n\t\t<p>\n\t\t\tNote that the refrigerant can be changed in the thermo designation (R whatever, Propane, Ammonia, etc). If multiple components are used, the mole fraction spec will have to change accordingly.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+										},
+										"f0": "envplot.svg"
+									},
+									{
 										"name": "compressor",
-										"Notes": "Basic compressor calculation.  The inputs are\n\n feed - a flash result or similar\n feedPhase - the phase of feed to use.\n             should be \"b\", \"v\" or \"l\"\n  outletP - the pressure to compress to.\n  efficiency - the difference between the feed \n               and ideal outlet enthalpies is\n               divided by the efficiency to\n               determine the outlet fluid\n               temperature.\n\nThe outlets are:\n\n  out - the outlet fluid flash\n  power - the power required for the compression\n  polyEff - the calculated polytropic efficiency",
+										"Notes": "Basic compressor calculation.",
 										"DiagramX": 315,
 										"DiagramY": 370,
 										"HideInfo": "n",
-										"DiagramNotes": "n",
+										"DiagramNotes": "y",
 										"Type": "Model",
 										"diagramScale": 1,
 										"indexTool": "Compressor",
@@ -17737,19 +16709,19 @@
 											{
 												"name": "OutletP",
 												"DiagramX": 120,
-												"DiagramY": 190,
+												"DiagramY": 170,
 												"HideInfo": "y",
 												"DiagramNotes": "n",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "condenserout.p.b + condDp"
+													"Formula": "condenserout.p + condDp"
 												},
 												"isInput": "y"
 											},
 											{
 												"name": "Efficiency",
 												"DiagramX": 120,
-												"DiagramY": 215,
+												"DiagramY": 195,
 												"HideInfo": "y",
 												"DiagramNotes": "n",
 												"Type": "Expression",
@@ -17767,7 +16739,7 @@
 												"DiagramNotes": "y",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "feedH + \n(IdealOut.h.b - feedH) / e"
+													"Formula": "feedH + \n(IdealOut.h - feedH) / e"
 												}
 											},
 											{
@@ -17778,7 +16750,7 @@
 												"DiagramNotes": "n",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "(outfluid.h.b - feedH)*F"
+													"Formula": "(outfluid.h - feedH)*F"
 												},
 												"isOutput": "y"
 											},
@@ -17800,13 +16772,13 @@
 													"Formula": "h"
 												},
 												"molefrac": {
-													"Formula": "idealout.x.b"
+													"Formula": "idealout.x"
 												},
 												"massfrac": {
 													"Formula": ""
 												},
 												"flow": {
-													"Formula": "idealout.f.b"
+													"Formula": "idealout.f"
 												}
 											},
 											{
@@ -17863,19 +16835,6 @@
 												"isOutput": "y"
 											},
 											{
-												"name": "feedPhase",
-												"Notes": "",
-												"DiagramX": 120,
-												"DiagramY": 165,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "'b"
-												},
-												"isInput": "y"
-											},
-											{
 												"name": "feedH",
 												"Notes": "",
 												"DiagramX": 230,
@@ -17884,19 +16843,19 @@
 												"DiagramNotes": "n",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "feed.h[0,feedPhase]"
+													"Formula": "feed.h"
 												}
 											},
 											{
 												"name": "feedS",
 												"Notes": "",
 												"DiagramX": 120,
-												"DiagramY": 265,
+												"DiagramY": 245,
 												"HideInfo": "y",
 												"DiagramNotes": "n",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "feed.s[0,feedPhase]"
+													"Formula": "feed.s"
 												}
 											},
 											{
@@ -17908,7 +16867,7 @@
 												"DiagramNotes": "n",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "feed.f[0,feedPhase]"
+													"Formula": "feed.f"
 												}
 											},
 											{
@@ -17920,31 +16879,31 @@
 												"DiagramNotes": "n",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "feed.x[0,feedPhase]"
+													"Formula": "feed.x"
 												}
 											},
 											{
 												"name": "Pin",
 												"Notes": "",
 												"DiagramX": 120,
-												"DiagramY": 240,
+												"DiagramY": 220,
 												"HideInfo": "y",
 												"DiagramNotes": "n",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "feed.p[0,feedPhase]"
+													"Formula": "feed.p"
 												}
 											},
 											{
 												"name": "feedV",
 												"Notes": "",
 												"DiagramX": 120,
-												"DiagramY": 290,
+												"DiagramY": 270,
 												"HideInfo": "y",
 												"DiagramNotes": "n",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "1/feed.dmolar[0,feedPhase]"
+													"Formula": "1/feed.dmolar"
 												}
 											},
 											{
@@ -17956,7 +16915,7 @@
 												"DiagramNotes": "y",
 												"Type": "HTML Form",
 												"Formula": {
-													"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Compressor Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model represents a thermodynamic model of a <a href=\"https://en.wikipedia.org/wiki/Compressor\" target=\"_blank\">compressor</a>, although it can also stand in for a pump.\n\t\t</p>\n\t\t<p>\n\t\t\tThe input expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>feed</b> - a flash result or similar representing the inlet fluid</li>\n\t\t\t<li><b>feedPhase</b> - the phase of the feed to use. It should be one of the following strings;\n\t\t\t\t<ul>\n\t\t\t\t\t<li><b>\"b\"</b> - the bulk fluid</li>\n\t\t\t\t\t<li><b>\"v\"</b> - the vapour phase</li>\n\t\t\t\t\t<li><b>\t\"l\"</b> - the liquid phase</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t\t<li><b>outletP</b> - the outlet pressure to compress to.</li>\n\t\t\t<li><b>efficiency</b> - the ideal power needed divided by the actual power needed</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe outlet expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>out</b> - the outlet fluid flash</li>\n\t\t\t<li><b>power</b> - the power required for the compression</li>\n  \t\t<li><b>polyEff</b> - the calculated polytropic efficiency</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tAn ideal compressor is first modeled by performing an isentropic flash using the outlet pressure and the feed entropy in tool <b>IdealOut</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe efficiency, e, of an non-ideal compressor is taken to be:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\te = (hIout - hin) / (hAout - hin)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>hin is the enthalpy of the inlet fluid</li>\n\t\t\t<li>hIOut is the enthalpy of the outlet for the ideal (isentropic) process</li>\n\t\t\t<li>hAout is the enthalpy of the outlet for tne nonideal process</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe desired efficiency is supplied in the input expression <b>Efficiency</b> so by rearranging, the expression <b>H</b> can calculate the nonideal outlet enthalpy, which is used with the outlet pressure to perform an isenthalpic flash in <b>OutFluid</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe power required for the compressor can then be calculated in expression <b>Power</b> by multiplying the flow by the difference between the outlet fluid enthalpy and the inlet fluid enthalpy.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+													"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Compressor Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model represents a thermodynamic model of a <a href=\"https://en.wikipedia.org/wiki/Compressor\" target=\"_blank\">compressor</a>, although it can also stand in for a pump.\n\t\t</p>\n\t\t<p>\n\t\t\tThe input expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>feed</b> - a flash result or similar representing the inlet fluid</li>\n\t\t\t<li><b>outletP</b> - the outlet pressure to compress to.</li>\n\t\t\t<li><b>efficiency</b> - the ideal power needed divided by the actual power needed</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe outlet expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>out</b> - the outlet fluid flash</li>\n\t\t\t<li><b>power</b> - the power required for the compression</li>\n  \t\t<li><b>polyEff</b> - the calculated polytropic efficiency</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tAn ideal compressor is first modeled by performing an isentropic flash using the outlet pressure and the feed entropy in tool <b>IdealOut</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe efficiency, e, of an non-ideal compressor is taken to be:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\te = (hIout - hin) / (hAout - hin)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>hin is the enthalpy of the inlet fluid</li>\n\t\t\t<li>hIOut is the enthalpy of the outlet for the ideal (isentropic) process</li>\n\t\t\t<li>hAout is the enthalpy of the outlet for tne nonideal process</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe desired efficiency is supplied in the input expression <b>Efficiency</b> so by rearranging, the expression <b>H</b> can calculate the nonideal outlet enthalpy, which is used with the outlet pressure to perform an isenthalpic flash in <b>OutFluid</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe power required for the compressor can then be calculated in expression <b>Power</b> by multiplying the flow by the difference between the outlet fluid enthalpy and the inlet fluid enthalpy.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
 												}
 											},
 											{
@@ -17991,7 +16950,7 @@
 														"DiagramNotes": "y",
 														"Type": "Expression",
 														"Formula": {
-															"Formula": "{ln outlet.p.b / inletP}"
+															"Formula": "{ln outlet.p / inletP}"
 														}
 													},
 													{
@@ -18015,7 +16974,7 @@
 														"DiagramNotes": "y",
 														"Type": "Expression",
 														"Formula": {
-															"Formula": "1/Ideal.dmolar.b"
+															"Formula": "1/Ideal.dmolar"
 														}
 													},
 													{
@@ -18040,7 +16999,7 @@
 														"DiagramNotes": "y",
 														"Type": "Expression",
 														"Formula": {
-															"Formula": "1/Outlet.dmolar.b"
+															"Formula": "1/Outlet.dmolar"
 														}
 													},
 													{
@@ -18104,7 +17063,7 @@
 														"DiagramNotes": "y",
 														"Type": "Expression",
 														"Formula": {
-															"Formula": "(ideal.h.b - inletH)/(outlet.h.b - inletH)"
+															"Formula": "(ideal.h - inletH)/(outlet.h - inletH)"
 														}
 													},
 													{
@@ -18116,7 +17075,7 @@
 														"DiagramNotes": "y",
 														"Type": "Expression",
 														"Formula": {
-															"Formula": "adEff *\n(\n\tn / (n - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p.b\n\t\t\t/\n\t\t\tinletP\n\t\t)^((n-1)/n)\n\t\t - 1\n\t)\n)\n/\n(\n\tns/ (ns - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p.b\n\t\t\t/\n\t\t\tinletP\n\t\t)^((ns-1)/ns)\n\t\t- 1\n\t)\n)"
+															"Formula": "adEff *\n(\n\tn / (n - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p\n\t\t\t/\n\t\t\tinletP\n\t\t)^((n-1)/n)\n\t\t - 1\n\t)\n)\n/\n(\n\tns/ (ns - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p\n\t\t\t/\n\t\t\tinletP\n\t\t)^((ns-1)/ns)\n\t\t- 1\n\t)\n)"
 														},
 														"isOutput": "y"
 													},
@@ -18135,23 +17094,1070 @@
 												]
 											}
 										]
+									}
+								]
+							},
+							{
+								"name": "Splitter",
+								"Notes": "Component Splitter",
+								"DiagramX": 315,
+								"DiagramY": 185,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"indexTool": "overview",
+								"Objects": [
+									{
+										"name": "topFractions",
+										"Notes": "",
+										"DiagramX": 235,
+										"DiagramY": 190,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cc 1, 1, 1, .9, .8, .5, .4, .1, 0, 0,}"
+										},
+										"isInput": "y"
 									},
 									{
-										"name": "Refrigeration",
-										"Notes": "Overview",
+										"name": "Composition",
+										"Notes": "",
 										"DiagramX": 235,
-										"DiagramY": 280,
+										"DiagramY": 160,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cc 70, 20, 10, 9, 8, 7, 6, 7, 4, 3}"
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "top",
+										"Notes": "",
+										"DiagramX": 325,
+										"DiagramY": 160,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "composition * topFractions\n/\n{sum composition * topFractions}"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "btm",
+										"Notes": "",
+										"DiagramX": 325,
+										"DiagramY": 190,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "composition * (1 - topFractions)\n/\n{sum composition * (1 - topFractions)}"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "Overview",
+										"Notes": "Component Splitter Overview",
+										"DiagramX": 235,
+										"DiagramY": 130,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "HTML Form",
 										"Formula": {
-											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Simple Single Stage Refrigeration </h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model shows how the properties of a simple single stage refrigeration loop can be calculated using basic thermodynamics.\n\t\t</p>\n\t\t<p>\n\t\t\tThe refrigeration loop looks like this:\n\t\t</p>\n\t\t<svg width=\"100%\" height=\"100%\" viewBox=\"0 0 611 353\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xml:space=\"preserve\" xmlns:serif=\"http://www.serif.com/\" style=\"fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;\">\n\t\t\t<g transform=\"matrix(1,0,0,1,-249.489,-244.259)\">\n\t\t\t\t\t<g id=\"Cooler\" transform=\"matrix(1,0,0,1,-30.5113,85.8962)\">\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-3.30583,245.927)\">\n\t\t\t\t\t\t\t\t\t<circle cx=\"735.181\" cy=\"167.587\" r=\"69.251\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-86.3866,261.697)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M799.807,119.07L719.951,198.427\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-86.3866,261.697)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M838.062,180.07L799.807,119.07\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-86.3866,261.697)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M920.578,98.174L838.052,179.677\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(0.526867,0.526867,-0.769806,0.769806,411.139,-169.239)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.07px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1.11022e-16,-0.745103,1.08867,2.22045e-16,676.927,886.3)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.07px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1.11022e-16,-0.745103,1.08867,2.22045e-16,461.411,887.68)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.07px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,30.5113,-85.8962)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M671.848,300.131L521.605,300.131\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(5.55112e-17,0.745103,-1.08867,0,737.942,-258.69)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.07px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,30.5113,-85.8962)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M413.681,500.652L616.726,500.652\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(5.55112e-17,0.745103,-1.08867,0,408.774,-259.811)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.07px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,30.5113,-85.8962)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M305.077,299.515L249.989,299.078\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,30.5113,-85.8962)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M249.989,299.078L249.989,500.15\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,30.5113,-85.8962)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M249.989,500.15L287.042,500.15\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,33.5413,-68.7763)\">\n\t\t\t\t\t\t\t\t\t<text x=\"340.411px\" y=\"342.58px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">Condenser</text>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,8.26932,-65.7538)\">\n\t\t\t\t\t\t\t\t\t<text x=\"670.252px\" y=\"365.729px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">Compressor</text>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,38.7033,-74.8344)\">\n\t\t\t\t\t\t\t\t\t<text x=\"653.088px\" y=\"585.843px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">Cooler</text>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,12.2368,-68.8374)\">\n\t\t\t\t\t\t\t\t\t<text x=\"328.159px\" y=\"540.958px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">JT V<tspan x=\"377.518px 390.866px \" y=\"540.958px 540.958px \">al</tspan>ve</text>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t</g>\n\t\t\t\t\t<g id=\"air-cooler\" serif:id=\"air cooler\" transform=\"matrix(1,0,0,1,-395.102,-130.07)\">\n\t\t\t\t\t\t\t<rect x=\"699.629\" y=\"400.285\" width=\"201.945\" height=\"59.617\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t<g transform=\"matrix(0.886065,0,0,1,82.7748,-9.01823)\">\n\t\t\t\t\t\t\t\t\t<ellipse cx=\"760.291\" cy=\"437.768\" rx=\"49.85\" ry=\"8.668\" style=\"fill:none;stroke:black;stroke-width:1.06px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(-0.886065,-1.08512e-16,1.22465e-16,-1,1518.45,866.519)\">\n\t\t\t\t\t\t\t\t\t<ellipse cx=\"760.291\" cy=\"437.768\" rx=\"49.85\" ry=\"8.668\" style=\"fill:none;stroke:black;stroke-width:1.06px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t</g>\n\t\t\t\t\t<g id=\"Expander\" transform=\"matrix(0.524246,0,0,0.524246,463.577,141.935)\">\n\t\t\t\t\t\t\t<g transform=\"matrix(-1,-1.22465e-16,1.22465e-16,-1,796.417,597.629)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M303.232,196.136L303.232,401.492L398.208,340.215L398.208,259.875L303.232,196.136Z\" style=\"fill:none;stroke:black;stroke-width:1.91px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1.9075,0,0,1.9075,-884.273,-270.742)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M771.686,499.722L859.838,499.722L859.838,298.722\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(1.9075,0,0,1.9075,-884.273,-270.742)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M859.42,298.722L723.199,298.722\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t</g>\n\t\t\t\t\t<g id=\"valve\" transform=\"matrix(1,0,0,1,11.6746,366.757)\">\n\t\t\t\t\t\t\t<g transform=\"matrix(6.15827e-17,1,-1,6.15827e-17,451.652,-186.087)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M318.772,105.125L347.185,160.635L290.359,160.635L318.772,105.125Z\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t<g transform=\"matrix(6.0882e-17,-1,1,6.0882e-17,241.402,451.457)\">\n\t\t\t\t\t\t\t\t\t<path d=\"M318.772,105.125L347.185,160.635L290.359,160.635L318.772,105.125Z\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t\t</g>\n\t\t\t\t\t</g>\n\t\t\t</g>\n\t\t</svg>\n\t\t<p>\n\t\t\tThe heat removed in the cooler boiling the refrigerant and the resulting vapour is compressed to a higher pressure and hence temperature. It is then condensed by an available coolant, here assumed to be air.\n\t\t</p>\n\t\t<p>\n\t\t\tThe condensed high pressure liquid is then let down to a lower pressure through a valve.  The lower pressure causes some of the liquid to vapourize and the phase rule dictates that for a given pressure a two phase fluid's temperature is determined from its phase envelope.\n\t\t</p>\n\t\t<p>\n\t\t\tJumping ahead a bit, the graph below shows the phase envelope for the refrigerant we will use. It is just a line since we will use a pure component. The triangle represents the refrigerant conditions as it moves around the loop. The cooler conditions are at the lower left.  Compressing the vapour raises both the temperature and pressure to the upper right point, while condensing moves it horizontally to the valve inlet condition at the upper left. Passing through the valve\n\t\t\tdrops both temperature and pressure back to the cooler conditions.\n\t\t</p>\n\t\t<mm>envplot.svg</mm>\n\t\t<p>\n\t\t\tWhat we need to determine is:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>the pressures required for a required coolant temperature and available condensing temperature</li>\n\t\t\t<li>the flow rate of the refrigerant</li>\n\t\t\t<li>the duty of the condenser</li>\n\t\t\t<li>the power required for the compressor</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tWe will start with the refrigerant side of the cooler, represented by the <a href=\"../help/flash.html\" target=\"_blank\">flash tool</a> called <b>coolerOut</b>. In this case we will assume a single component refrigerant <a href=\"https://en.wikipedia.org/wiki/Difluoromethane\" target=\"blank\">difluormethane</a>, commonly called <b>R32</b> and so we will define the thermo parameter as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t'R32::massf\n\t\t</p>\n\t\t<p>\n\t\t\twhich is simply a string with the component name(s). Here we have followed it with a double colon and the name(s) of the properties we want included in addition to the default ones. In this case, just the mass flow. The mole fractions input can simply be set to 1 as there is only one component.\n\t\t</p>\n\t\t<p>\t\n\t\t\tWe know the required coolant temperature and will set the first property to that. We also know that the coolant will be boiling, so we can set the second property to 1, which because it has a \"Fraction\" conversion unit type, will be taken as q, the vapour fraction. This means the vapour\n\t\t\tleaving the cooler should be at its dew point.\n\t\t</p>\n\t\t<p>\n\t\t\tThis allows the pressure and other properties to be calculated, but the flow rate is still unknown. We will come back to that.\n\t\t</p>\n\t\t<p>\n\t\t\tSimilar to the cooler, we know the condenser outlet temperature (presumably from available cooling) and can thus set the first property of the <b>condenserOut</b> flash tool. Since it is condensed, we can assume it will be at the bubble point and designate the second property to be 0.\n\t\t</p>\n\t\t\t\tThis will determine the condensing pressure and other properties.\n\t\t</p>\n\t\t<p>\n\t\t\tSince a valve has no heat inputs or outputs, it is isenthalpic, so we know the enthalpy of the fluid leaving the value and going to the cooler is the same as the liquid leaving the condenser.\n\t\t</p>\n\t\t<p>\n\t\t\tBack at the coolerOut Flash, we know the cooling load from InletQ and now that we know the enthalpy of the entering fluid, namely that of <b>valveOut</b> which is the same as that of <b>condenserOut</b>, the flow can be calculated by dividing the duty by the enthalpy difference in and out.\n\t\t</p>\n\t\t<p>\n\t\t\tWith the flow rate known, we can calculate the condenser duty by multiplying the difference between its inlet and outlet enthalpy by the flow rate.\n\t\t</p>\n\t\t<p>\n\t\t\tAll that remains is to determine the required compressor power. For that we can copy and paste a previously made model representing a compressor from the <b>Toolbox</b> model that is in the <b>Getting Started</b> session.\n\t\t</p>\n\t\t<p>\n\t\t\tFill in the input expressions and all the values we wanted should now be calculated.\n\t\t</p>\n\t\t<p>\n\t\t\tNote that the refrigerant can be changed in the thermo designation (R whatever, Propane, Ammonia, etc). If multiple components are used, the mole fraction spec will have to change accordingly.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Component Splitter</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model simply apportions an array, presumably a <b>composition</b>, into a <b>top</b> and a <b>btm</b> array according to a supplied array of fractions <b>topFractions</b>.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+										}
+									}
+								]
+							},
+							{
+								"name": "Compressor",
+								"Notes": "Basic compressor calculation.",
+								"DiagramX": 155,
+								"DiagramY": 220,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"indexTool": "Compressor",
+								"Objects": [
+									{
+										"name": "Feed",
+										"DiagramX": 120,
+										"DiagramY": 140,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ""
 										},
-										"f0": "envplot.svg"
+										"isInput": "y"
+									},
+									{
+										"name": "e",
+										"Notes": "If efficiency is greater than one, assume it is a percentage",
+										"DiagramX": 230,
+										"DiagramY": 135,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{if {gt efficiency, 1.0},\n\tefficiency/100,\n\tefficiency\n}"
+										}
+									},
+									{
+										"name": "OutletP",
+										"DiagramX": 120,
+										"DiagramY": 170,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ""
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "Efficiency",
+										"DiagramX": 120,
+										"DiagramY": 195,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ".75"
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "H",
+										"Notes": "The outlet enthalpy is determined by dividing the difference between the inlet and ideal outlet enthalpies by the efficiency and adding the result to the feed enthalpy.",
+										"DiagramX": 345,
+										"DiagramY": 190,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feedH + \n(IdealOut.h - feedH) / e"
+										}
+									},
+									{
+										"name": "Power",
+										"DiagramX": 345,
+										"DiagramY": 165,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "(outfluid.h - feedH)*F"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "OutFluid",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 255,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "IdealOut.thermo"
+										},
+										"firstprop": {
+											"Formula": "OutletP"
+										},
+										"secondprop": {
+											"Formula": "h"
+										},
+										"molefrac": {
+											"Formula": "idealout.x"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "idealout.f"
+										}
+									},
+									{
+										"name": "IdealOut",
+										"Notes": "Ideal compression is isentropic",
+										"DiagramX": 230,
+										"DiagramY": 220,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "feed.thermo"
+										},
+										"firstprop": {
+											"Formula": "OutletP"
+										},
+										"secondprop": {
+											"Formula": "feedS"
+										},
+										"molefrac": {
+											"Formula": "X"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "F"
+										}
+									},
+									{
+										"name": "Out",
+										"Notes": "",
+										"DiagramX": 345,
+										"DiagramY": 140,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "OutFluid"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "polyEff",
+										"Notes": "",
+										"DiagramX": 345,
+										"DiagramY": 280,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "polytropic.polyeff"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "feedH",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 110,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.h"
+										}
+									},
+									{
+										"name": "feedS",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 245,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.s"
+										}
+									},
+									{
+										"name": "F",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 170,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.f"
+										}
+									},
+									{
+										"name": "X",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 195,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.x"
+										}
+									},
+									{
+										"name": "Pin",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 220,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.p"
+										}
+									},
+									{
+										"name": "feedV",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 270,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "1/feed.dmolar"
+										}
+									},
+									{
+										"name": "Compressor",
+										"Notes": "Overview",
+										"DiagramX": 120,
+										"DiagramY": 110,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Compressor Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model represents a thermodynamic model of a <a href=\"https://en.wikipedia.org/wiki/Compressor\" target=\"_blank\">compressor</a>, although it can also stand in for a pump.\n\t\t</p>\n\t\t<p>\n\t\t\tThe input expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>feed</b> - a flash result or similar representing the inlet fluid</li>\n\t\t\t<li><b>outletP</b> - the outlet pressure to compress to.</li>\n\t\t\t<li><b>efficiency</b> - the ideal power needed divided by the actual power needed</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe outlet expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>out</b> - the outlet fluid flash</li>\n\t\t\t<li><b>power</b> - the power required for the compression</li>\n  \t\t<li><b>polyEff</b> - the calculated polytropic efficiency</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tAn ideal compressor is first modeled by performing an isentropic flash using the outlet pressure and the feed entropy in tool <b>IdealOut</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe efficiency, e, of an non-ideal compressor is taken to be:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\te = (hIout - hin) / (hAout - hin)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>hin is the enthalpy of the inlet fluid</li>\n\t\t\t<li>hIOut is the enthalpy of the outlet for the ideal (isentropic) process</li>\n\t\t\t<li>hAout is the enthalpy of the outlet for tne nonideal process</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe desired efficiency is supplied in the input expression <b>Efficiency</b> so by rearranging, the expression <b>H</b> can calculate the nonideal outlet enthalpy, which is used with the outlet pressure to perform an isenthalpic flash in <b>OutFluid</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe power required for the compressor can then be calculated in expression <b>Power</b> by multiplying the flow by the difference between the outlet fluid enthalpy and the inlet fluid enthalpy.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+										}
+									},
+									{
+										"name": "polytropic",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 280,
+										"HideInfo": "n",
+										"DiagramNotes": "n",
+										"Type": "Model",
+										"diagramScale": 1,
+										"indexTool": "overview",
+										"Objects": [
+											{
+												"name": "n",
+												"Notes": "n - polytropic path exponent",
+												"DiagramX": 280,
+												"DiagramY": 255,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "logpratio / {ln InletV / OutletV}"
+												}
+											},
+											{
+												"name": "logPRatio",
+												"Notes": "Log pressure ratio",
+												"DiagramX": 280,
+												"DiagramY": 195,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "{ln outlet.p / inletP}"
+												}
+											},
+											{
+												"name": "ns",
+												"Notes": "ns - isentropic path exponent",
+												"DiagramX": 280,
+												"DiagramY": 225,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "logpratio / {ln InletV / IdealV}"
+												}
+											},
+											{
+												"name": "IdealV",
+												"Notes": "vs - Isentropic outlet molar volume",
+												"DiagramX": 280,
+												"DiagramY": 130,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "1/Ideal.dmolar"
+												}
+											},
+											{
+												"name": "InletV",
+												"Notes": "v1 - Inlet molar volume",
+												"DiagramX": 180,
+												"DiagramY": 165,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "feedV"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "OutletV",
+												"Notes": "va - Actual outlet molar volume",
+												"DiagramX": 280,
+												"DiagramY": 165,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "1/Outlet.dmolar"
+												}
+											},
+											{
+												"name": "Ideal",
+												"Notes": "Isetropic outlet fluid",
+												"DiagramX": 180,
+												"DiagramY": 255,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "IdealOut"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "Outlet",
+												"Notes": "Actual outlet fluid",
+												"DiagramX": 180,
+												"DiagramY": 285,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "OutFluid"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "inletP",
+												"Notes": "p1 - Inlet Pressure",
+												"DiagramX": 180,
+												"DiagramY": 195,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "Pin"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "InletH",
+												"Notes": "hin - Inlet molar enthalpy",
+												"DiagramX": 180,
+												"DiagramY": 225,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "feedH"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "adEff",
+												"Notes": "Ea - Adiabatic efficiency",
+												"DiagramX": 280,
+												"DiagramY": 285,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "(ideal.h - inletH)/(outlet.h - inletH)"
+												}
+											},
+											{
+												"name": "polyEff",
+												"Notes": "Ep - Polytropic Efficiency",
+												"DiagramX": 280,
+												"DiagramY": 315,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "adEff *\n(\n\tn / (n - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p\n\t\t\t/\n\t\t\tinletP\n\t\t)^((n-1)/n)\n\t\t - 1\n\t)\n)\n/\n(\n\tns/ (ns - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p\n\t\t\t/\n\t\t\tinletP\n\t\t)^((ns-1)/ns)\n\t\t- 1\n\t)\n)"
+												},
+												"isOutput": "y"
+											},
+											{
+												"name": "Overview",
+												"Notes": "Polytropic efficiency overview",
+												"DiagramX": 180,
+												"DiagramY": 130,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "HTML Form",
+												"Formula": {
+													"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Polytropic Efficiency</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model calculates the polytropic efficiency for a <a href=\"https://en.wikipedia.org/wiki/Compressor\" target=\"_blank\">compressor</a>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe input expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>InletV</b> - the molar volume of the inlet fluid</li>\n\t\t\t<li><b>inletP</b> - the pressure of the inlet fluid</li>\n\t\t\t<li><b>inletH</b> - the molar enthalpy of the inlet fluid</li>\n\t\t\t<li><b>Ideal</b> - the flash results for the outlet fluid assuming isentropic compression.</li>\n\t\t\t<li><b>Outlet</b> - the flash results for the actual outlet fluid</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe outlet expression is <b>polyEff</b>, the polytropic efficiency.\n\t\t</p>\n\t\t<p>\n\t\t\tThe other expressions implement the calculation outlined below and where the expression calculates a variable mentioned here the the variable's symbol is listed in the expression notes.\n\t\t</p>\n\t\t<h4>Calculation overview</h4>\n\t\t<p>\n\t\t\tPolytropic efficiency can be defined as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEp = Wp / Wa\n\t\t</p>\n\t\t<p>where:</p>\n\t\t<ul>\n\t\t\t<li>Ep = polytropic efficiency</li>\n\t\t\t<li>Wp = polytropic work</li>\n\t\t\t<li>Wa = actual work</li>\n\t\t</ul>\n\t\t<p>\n\t\t\twhere the actual work <b>Wa</b> is:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tWa = Ws / Ea\n\t\t</p>\n\t\t<p>where:</p>\n\t\t<ul>\n\t\t\t<li>Ea = adiabatic efficiency</li>\n\t\t\t<li>Ws = isentropic work</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tand the adiabatic efficiency <b>Eq</b> can be calculated from:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEa = (hIout - hin) / (hAout - hin)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>hin is the enthalpy of the inlet fluid</li>\n\t\t\t<li>hIOut is the enthalpy of the outlet for the ideal (isentropic) process</li>\n\t\t\t<li>hAout is the enthalpy of the outlet for tne nonideal process</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tBack substituting Wa into the polytropic efficiency formula becomes:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEp = Ea * Wp / Ws\n\t\t</p>\n\t\t<p>\n\t\t\tThe formulas for <b>Wp</b> and <b>Ws</b> are of the same form and after eliminating common terms from the numerator and denominator, we get\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEp = Ea * (<br>\n\t\t\t&nbsp;&nbsp;&nbsp;n/(n-1) * ((p2/p1)^((n-1)/n) - 1)<br>\n\t\t\t/<br>\n\t\t\t&nbsp;&nbsp;&nbsp;ns/(ns-1) * ((p2/p1)^((ns-1)/ns) - 1)<br>\n\t\t\t)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul class=\"formula\">\n\t\t\t<li>n = ln(p2/p1) / ln(v1/vs)</li>\n\t\t\t<li>ns = ln(p2/p1) / ln(v1/va)</li>\n\t\t\t<li>p1 = inlet pressure, p2 = outlet pressure</li>\n\t\t\t<li>v1 = inlet molar volume</li>\n\t\t\t<li>vs = isentropic outlet molar volume</li>\n\t\t\t<li>va = actual outlet molar volume</li>\n\t\t</ul>\n\n\t\t</div>\n\t</body>\n</html>"
+												}
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "Expander",
+								"Notes": "Basic expander calculation.",
+								"DiagramX": 235,
+								"DiagramY": 220,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"indexTool": "expander",
+								"Objects": [
+									{
+										"name": "Feed",
+										"DiagramX": 120,
+										"DiagramY": 140,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ""
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "e",
+										"Notes": "If efficiency is greater than one, assume it is a percentage",
+										"DiagramX": 230,
+										"DiagramY": 135,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{if {gt efficiency, 1.0},\n\tefficiency/100,\n\tefficiency\n}"
+										}
+									},
+									{
+										"name": "OutletP",
+										"DiagramX": 120,
+										"DiagramY": 170,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ""
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "Efficiency",
+										"DiagramX": 120,
+										"DiagramY": 195,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ".75"
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "H",
+										"Notes": "The outlet enthalpy is determined by dividing the difference between the inlet and ideal outlet enthalpies by the efficiency and adding the result to the feed enthalpy.",
+										"DiagramX": 345,
+										"DiagramY": 215,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feedH + \n(IdealOut.h - feedH) * e"
+										}
+									},
+									{
+										"name": "Power",
+										"DiagramX": 345,
+										"DiagramY": 165,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "(feedH - outfluid.h)*F"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "OutFluid",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 255,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "IdealOut.thermo"
+										},
+										"firstprop": {
+											"Formula": "OutletP"
+										},
+										"secondprop": {
+											"Formula": "h"
+										},
+										"molefrac": {
+											"Formula": "idealout.x"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "idealout.f"
+										}
+									},
+									{
+										"name": "IdealOut",
+										"Notes": "Ideal expansion is isentropic",
+										"DiagramX": 230,
+										"DiagramY": 225,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "feed.thermo"
+										},
+										"firstprop": {
+											"Formula": "OutletP"
+										},
+										"secondprop": {
+											"Formula": "feedS"
+										},
+										"molefrac": {
+											"Formula": "X"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "F"
+										}
+									},
+									{
+										"name": "Out",
+										"Notes": "",
+										"DiagramX": 345,
+										"DiagramY": 140,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "OutFluid"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "polyEff",
+										"Notes": "",
+										"DiagramX": 345,
+										"DiagramY": 190,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "polytropic.polyeff"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "feedH",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 110,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.h"
+										}
+									},
+									{
+										"name": "feedS",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 245,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.s"
+										}
+									},
+									{
+										"name": "F",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 175,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.f"
+										}
+									},
+									{
+										"name": "X",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 200,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.x"
+										}
+									},
+									{
+										"name": "Pin",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 220,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.p"
+										}
+									},
+									{
+										"name": "feedV",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 270,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "1/feed.dmolar"
+										}
+									},
+									{
+										"name": "Expander",
+										"Notes": "Overview",
+										"DiagramX": 120,
+										"DiagramY": 110,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Expander Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model represents a thermodynamic model of an expander, which is a device that extracts work from the expansion of a fluid.  It is essentially a compressor in reverse.\n\t\t</p>\n\t\t<p>\n\t\t\tThe input expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>feed</b> - a flash result or similar representing the inlet fluid</li>\n\t\t\t<li><b>feedPhase</b> - the phase of feed to use. It should be one of the following strings;\n\t\t\t\t<ul>\n\t\t\t\t\t<li><b>\"b\"</b> - the bulk fluid</li>\n\t\t\t\t\t<li><b>\"v\"</b> - the vapour phase</li>\n\t\t\t\t\t<li><b>\t\"l\"</b> - the liquid phase</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t\t<li><b>outletP</b> - the outlet pressure that the fluid will be reduced to.</li>\n\t\t\t<li><b>efficiency</b> - the actual power produced divided by the ideal power produced</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe outlet expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>out</b> - the outlet fluid flash</li>\n\t\t\t<li><b>power</b> - the power produced by the expansion</li>\n  \t\t<li><b>polyEff</b> - the calculated polytropic efficiency</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tAn ideal expander is first modeled by performing an isentropic flash using the outlet pressure and the feed entropy in tool <b>IdealOut</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe efficiency, e, of an non-ideal expander is taken to be:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\te = (hAout - hin) / (hIout - hin)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>hin is the enthalpy of the inlet fluid</li>\n\t\t\t<li>hIOut is the enthalpy of the outlet for the ideal (isentropic) process</li>\n\t\t\t<li>hAout is the enthalpy of the outlet for tne nonideal process</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe desired efficiency is supplied in the input expression <b>Efficiency</b> so by rearranging, the expression <b>H</b> can calculate the nonideal outlet enthalpy, which is used with the outlet pressure to perform an isenthalpic flash in <b>OutFluid</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe power produced by the expander can then be calculated in expression <b>Power</b> by multiplying the flow by the difference between the inlet fluid enthalpy and the outlet fluid enthalpy.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+										}
+									},
+									{
+										"name": "polytropic",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 285,
+										"HideInfo": "n",
+										"DiagramNotes": "n",
+										"Type": "Model",
+										"diagramScale": 1,
+										"indexTool": "overview",
+										"Objects": [
+											{
+												"name": "n",
+												"Notes": "n - polytropic path exponent",
+												"DiagramX": 280,
+												"DiagramY": 255,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "logpratio / {ln InletV / OutletV}"
+												}
+											},
+											{
+												"name": "logPRatio",
+												"Notes": "Log pressure ratio",
+												"DiagramX": 280,
+												"DiagramY": 195,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "{ln outlet.p / inletP}"
+												}
+											},
+											{
+												"name": "ns",
+												"Notes": "ns - isentropic path exponent",
+												"DiagramX": 280,
+												"DiagramY": 225,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "logpratio / {ln InletV / IdealV}"
+												}
+											},
+											{
+												"name": "IdealV",
+												"Notes": "vs - Isentropic outlet molar volume",
+												"DiagramX": 280,
+												"DiagramY": 130,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "1/Ideal.dmolar"
+												}
+											},
+											{
+												"name": "InletV",
+												"Notes": "v1 - Inlet molar volume",
+												"DiagramX": 180,
+												"DiagramY": 165,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "feedV"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "OutletV",
+												"Notes": "va - Actual outlet molar volume",
+												"DiagramX": 280,
+												"DiagramY": 165,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "1/Outlet.dmolar"
+												}
+											},
+											{
+												"name": "Ideal",
+												"Notes": "Isetropic outlet fluid",
+												"DiagramX": 180,
+												"DiagramY": 255,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "IdealOut"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "Outlet",
+												"Notes": "Actual outlet fluid",
+												"DiagramX": 180,
+												"DiagramY": 285,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "OutFluid"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "inletP",
+												"Notes": "p1 - Inlet Pressure",
+												"DiagramX": 180,
+												"DiagramY": 195,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "Pin"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "InletH",
+												"Notes": "hin - Inlet molar enthalpy",
+												"DiagramX": 180,
+												"DiagramY": 225,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "feedH"
+												},
+												"isInput": "y"
+											},
+											{
+												"name": "adEff",
+												"Notes": "Ea - Adiabatic efficiency",
+												"DiagramX": 280,
+												"DiagramY": 285,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "(ideal.h - inletH)/(outlet.h - inletH)"
+												}
+											},
+											{
+												"name": "polyEff",
+												"Notes": "Ep - Polytropic Efficiency",
+												"DiagramX": 280,
+												"DiagramY": 315,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "adEff *\n(\n\tn / (n - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p\n\t\t\t/\n\t\t\tinletP\n\t\t)^((n-1)/n)\n\t\t - 1\n\t)\n)\n/\n(\n\tns/ (ns - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p\n\t\t\t/\n\t\t\tinletP\n\t\t)^((ns-1)/ns)\n\t\t- 1\n\t)\n)"
+												},
+												"isOutput": "y"
+											},
+											{
+												"name": "Overview",
+												"Notes": "Polytropic efficiency overview",
+												"DiagramX": 180,
+												"DiagramY": 130,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"Type": "HTML Form",
+												"Formula": {
+													"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Polytropic Efficiency</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThis model calculates the polytropic efficiency for a <a href=\"https://en.wikipedia.org/wiki/Compressor\" target=\"_blank\">compressor</a>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe input expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>InletV</b> - the molar volume of the inlet fluid</li>\n\t\t\t<li><b>inletP</b> - the pressure of the inlet fluid</li>\n\t\t\t<li><b>inletH</b> - the molar enthalpy of the inlet fluid</li>\n\t\t\t<li><b>Ideal</b> - the flash results for the outlet fluid assuming isentropic compression.</li>\n\t\t\t<li><b>Outlet</b> - the flash results for the actual outlet fluid</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe outlet expression is <b>polyEff</b>, the polytropic efficiency.\n\t\t</p>\n\t\t<p>\n\t\t\tThe other expressions implement the calculation outlined below and where the expression calculates a variable mentioned here the the variable's symbol is listed in the expression notes.\n\t\t</p>\n\t\t<h4>Calculation overview</h4>\n\t\t<p>\n\t\t\tPolytropic efficiency can be defined as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEp = Wp / Wa\n\t\t</p>\n\t\t<p>where:</p>\n\t\t<ul>\n\t\t\t<li>Ep = polytropic efficiency</li>\n\t\t\t<li>Wp = polytropic work</li>\n\t\t\t<li>Wa = actual work</li>\n\t\t</ul>\n\t\t<p>\n\t\t\twhere the actual work <b>Wa</b> is:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tWa = Ws / Ea\n\t\t</p>\n\t\t<p>where:</p>\n\t\t<ul>\n\t\t\t<li>Ea = adiabatic efficiency</li>\n\t\t\t<li>Ws = isentropic work</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tand the adiabatic efficiency <b>Eq</b> can be calculated from:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEa = (hIout - hin) / (hAout - hin)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>hin is the enthalpy of the inlet fluid</li>\n\t\t\t<li>hIOut is the enthalpy of the outlet for the ideal (isentropic) process</li>\n\t\t\t<li>hAout is the enthalpy of the outlet for tne nonideal process</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tBack substituting Wa into the polytropic efficiency formula becomes:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEp = Ea * Wp / Ws\n\t\t</p>\n\t\t<p>\n\t\t\tThe formulas for <b>Wp</b> and <b>Ws</b> are of the same form and after eliminating common terms from the numerator and denominator, we get\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tEp = Ea * (<br>\n\t\t\t&nbsp;&nbsp;&nbsp;n/(n-1) * ((p2/p1)^((n-1)/n) - 1)<br>\n\t\t\t/<br>\n\t\t\t&nbsp;&nbsp;&nbsp;ns/(ns-1) * ((p2/p1)^((ns-1)/ns) - 1)<br>\n\t\t\t)\n\t\t</p>\n\t\t<p>\n\t\t\twhere:\n\t\t</p>\n\t\t<ul class=\"formula\">\n\t\t\t<li>n = ln(p2/p1) / ln(v1/vs)</li>\n\t\t\t<li>ns = ln(p2/p1) / ln(v1/va)</li>\n\t\t\t<li>p1 = inlet pressure, p2 = outlet pressure</li>\n\t\t\t<li>v1 = inlet molar volume</li>\n\t\t\t<li>vs = isentropic outlet molar volume</li>\n\t\t\t<li>va = actual outlet molar volume</li>\n\t\t</ul>\n\n\t\t</div>\n\t</body>\n</html>"
+												}
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "Mix3",
+								"Notes": "Takes three flash results and produces thermo, p, f, h and x values for the combined fluid.",
+								"DiagramX": 235,
+								"DiagramY": 250,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"indexTool": "overview",
+								"Objects": [
+									{
+										"name": "Feed1",
+										"DiagramX": 100,
+										"DiagramY": 70,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ""
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "Feed2",
+										"DiagramX": 100,
+										"DiagramY": 105,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ""
+										},
+										"isInput": "y"
+									},
+									{
+										"name": "P",
+										"DiagramX": 200,
+										"DiagramY": 55,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{min feed1.p, feed2.p, feed3.p}"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "F",
+										"DiagramX": 200,
+										"DiagramY": 80,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "Feed1.f + feed2.f + feed3.f"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "H",
+										"DiagramX": 200,
+										"DiagramY": 105,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "(feed1.hflow + feed2.hflow + feed3.hflow)\n/\nF"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "X",
+										"DiagramX": 200,
+										"DiagramY": 130,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "(\n\tfeed1.x * feed1.f +\n\tfeed2.x * feed2.f +\n\tfeed3.x * feed3.f\n)\n/\nf"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "thermo",
+										"Notes": "",
+										"DiagramX": 200,
+										"DiagramY": 30,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "Feed1.thermo"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "Overview",
+										"Notes": "Mix2 Overview",
+										"DiagramX": 100,
+										"DiagramY": 35,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Mix3 Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tFrom the mixing of three fluids this model calculates the properties required as <b>flash tool</b> inputs.\n\t\t</p>\n\t\t<p>\n\t\t\tThe input expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>feed1</b> - a flash result or similar representing the inlet fluid. Must have thermo, pressure, flow and mole fraction properties.</li>\n\t\t\t<li><b>feed2</b> - second feed with same requirements as feed1, except thermo is not used.</li>\n\t\t\t<li><b>feed3</b> - third feed with same requirements as feed1, except thermo is not used.</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe outlet expressions are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>thermo</b> - thermo definition copied from feed1</li>\n\t\t\t<li><b>p</b> - the outlet pressure, which is assumed to be the lessor of the two feed pressures</li>\n  \t\t<li><b>f</b> - the combined molar flow</li>\n  \t\t<li><b>h</b> - the mixture enthalpy</li>\n  \t\t<li><b>x</b> - the mixture mole fraction</li>\n\t\t</ul>\n\t\t</div>\n\t</body>\n</html>"
+										}
+									},
+									{
+										"name": "Feed3",
+										"Notes": "",
+										"DiagramX": 100,
+										"DiagramY": 140,
+										"HideInfo": "n",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ""
+										},
+										"isInput": "y"
 									}
 								]
 							}
 						]
+					},
+					{
+						"name": "Examples",
+						"Notes": "",
+						"DiagramX": 170,
+						"DiagramY": 5,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.example {\n\t\t\tborder-bottom: 1px solid black;\n\t\t\tpadding-bottom: 10px;\n\t\t\tmargin-bottom: 2em;\n\t\t}\n\t\t.extitle {\n\t\t\tfont-size: 1em;\n\t\t\tfont-family: \"Verdana\";\n\t\t\tfont-style: italic;\n\t\t\tfont-weight: bold;\n\t\t}\n\n\t\t.exsubtitle {\n\t\t\tborder-bottom: 1px dashed black;\n\t\t\tmargin-bottom: 0.75em;\n\t\t\tpadding-bottom: 0.5em;\n\t\t}\n\t\t.hiddenalert {\n\t\t\tcolor: #F00;\n\t\t}\t\n\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>Math Minion CoolProp Examples</h3>\n\t\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<div id=\"preface\">\n\t\t\t<p>\n\t\t\t\tBelow are a few examples of using the CoolProp based <a href=\"./help/flash.html\" target=\"_blank\">flash tool</a>. They are all pretty idealized, but they illustrate the principles and have hopefully decent explanations.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tAdditional suggestions are most \t\t\t<a href=\"http://redtree.com/contact.html\" target=\"_blank\">welcome</a>.\n\t\t\t</p>\n\t\t</div>\n\t\t<div id=\"examples\">\n\t\t\t<div id=\"cascaderefrig\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tCascade Refrigeration\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\tIllustrates a cascade refrigeration system with a high temperature loop and a low temperature one having different refrigerants.\n\t\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/coolmm/cascade refrig.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"azeo\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tAzeotrope\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\tThis model uses an Optimizer tool to determine the well known azeotrope of the ethanol water mixture at 1 atmosphere.\n\n\t\t\t\t\t\t\tSeparately an Interator tool is used to prepare the input for Graph tools that plot the bubble point temperature for the mixture against the ethanol mass fraction and the vapour-liquid equilibrium of the mixture.\t\t\t\t\t\t\t\n\t\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/coolmm/EtOH Azeotrope.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"liqair\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\tHampson-Linde Air Liquification\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThe Hampson-Linde cycle is one of the first and simplest processes for liquifying air.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/coolmm/liqair.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"gasplant\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tGas Plant HC Dewpoint Control\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tAn attempt to model a very fictitious dew point control gas plant front end. The techniques might be of interest, but read to the end to see why this isn't a good idea with CoolProp.\n\t\t\t\t\t</p>\t\t\t\t\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/coolmm/gasplant.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"steamturbine\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tCondensing Steam Turbine\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis is a model of a simplified condensing steam turbine system for a power plant.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/coolmm/steam turbine.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div id=\"toolbox\" class=\"example\">\n\t\t\t\t<div class=\"extitle\">\n\t\t\t\t\t\tTool Box\n\t\t\t\t</div>\n\t\t\t\t<div class=\"exdesc\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\tThis model is contained in the <b>Getting Started</b> session of the <b>CoolMM</b> version of Math Minion, but it is also included here to make it easy to add to your library of sessions. It can be handy to quickly copy the session and past it temporarily into a session you are working on and the copy and paste tools out of it.\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\tIt also has a couple of examples (refrigeration loop and McCabe Thiele) for added justification in including it here.\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"link\">\n\t\t\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../examples/coolmm/ToolBox.txt'});\">Import</button>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t\t</div>\n\t</body>\n</html>"
+						}
 					}
 				]
 			}
