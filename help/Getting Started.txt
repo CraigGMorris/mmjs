@@ -10,8 +10,8 @@
 	],
 	"CaseName": "Getting Started",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "Overview",
-	"ModelPath": "/.root.CoolMM",
+	"SelectedObject": "Welcome",
+	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
