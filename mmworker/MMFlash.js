@@ -343,13 +343,13 @@ class MMFlash extends MMTool {
 
 		if (phase === 'b'){
 			if (property === 'x') {
-				if (!this.moleX && this.massX) {
+				if (!this.moleX && this.massX && this.mwts) {
 					return MMNumberValue.numberArrayValue(this.convertMassFracToMole(this.massX.values));
 				}
 				return this.moleX;
 			}
 			else if (property === 'massx') {
-				if (this.moleX && this.massX) {
+				if (this.moleX && !this.massX && this.mwts) {
 					return MMNumberValue.numberArrayValue(this.convertMoleFracToMass(this.moleX.values));
 				}
 				return this.massX;
@@ -392,10 +392,20 @@ class MMFlash extends MMTool {
 			let returnValue;
 			switch(property) {
 				case 'x':
-					returnValue = this.moleX;
+					if (!this.moleX && this.massX && this.mwts) {
+						returnValue = MMNumberValue.numberArrayValue(this.convertMassFracToMole(this.massX.values));
+					}
+					else {
+						returnValue = this.moleX;
+					}
 					break;
 				case 'massx':
-					returnValue = this.massX;
+					if (this.moleX && !this.massX && this.mwts) {
+						returnValue = MMNumberValue.numberArrayValue(this.convertMoleFracToMass(this.moleX.values));
+					}
+					else {
+						returnValue = this.massX;
+					}
 					break;
 				case 'f': {
 					if (!this.flow) { this.flow = this.flowFormula.value(); }
