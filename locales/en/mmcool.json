@@ -4,7 +4,7 @@
 	"flashDisplayName": "Flash",
 	"flashDuplicatePropTypes": "First and second property types can't be the same\nin {{path}}",
 	"flashFailed": "Flash failed in\n{{path}}\n\n{{msg}}",
-	"flashFirstPropNotTorP": "First property for flash must be T or P\nin {{path}}",
+	"flashFirstPropNotTorPorD": "First property for flash must be T, P or DMolar\nin {{path}}",
 	"flashInvalidSecondPropType": "Second property type is invalid for\n {{path}}",
 	"flashPHBadBound": "P{{type}} calculation ended against failed flash\n{{path}}",
 	"flashPHHitBound": "P{{type}} calculation hit max or min bound for fluid\n{{path}}",

@@ -40,6 +40,11 @@ EMSCRIPTEN_BINDINGS(coolprop_bindings) {
         .value("HmolarP_INPUTS", CoolProp::HmolarP_INPUTS)
         .value("SmolarT_INPUTS", CoolProp::SmolarT_INPUTS)
         .value("PSmolar_INPUTS", CoolProp::PSmolar_INPUTS)      
+        .value("DmolarT_INPUTS", CoolProp::DmolarT_INPUTS)
+        .value("DmolarP_INPUTS", CoolProp::DmolarP_INPUTS)      
+        .value("DmolarQ_INPUTS", CoolProp::DmolarQ_INPUTS)      
+        .value("DmolarHmolar_INPUTS", CoolProp::DmolarHmolar_INPUTS)      
+        .value("DmolarSmolar_INPUTS", CoolProp::DmolarSmolar_INPUTS)      
     ;
     
     enum_<CoolProp::parameters>("parameters")

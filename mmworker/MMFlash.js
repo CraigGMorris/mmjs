@@ -558,8 +558,11 @@ class MMFlash extends MMTool {
 			else if (MMFlash.isPropertyType(this.firstProperty,'p')) {
 				this.firstPropertyType = 'P';
 			}
+			else if (MMFlash.isPropertyType(this.firstProperty,'dmolar')) {
+				this.firstPropertyType = 'DMolar';
+			}
 			else {
-				this.setError('mmcool:flashFirstPropNotTorP', {path: this.getPath()});
+				this.setError('mmcool:flashFirstPropNotTorPorD', {path: this.getPath()});
 				this.firstProperty = null;
 			}
 		}
@@ -678,7 +681,41 @@ class MMFlash extends MMTool {
 			else {
 				return;
 			}
-		} else {
+		} else if (this.firstPropertyType === 'DMolar') {
+			if (this.nComponents !== 1) {
+				return; // not available for multicomponent
+			}
+			if (this.secondPropertyType === 'T') {
+				flashType = Module.input_pairs.DmolarT_INPUTS;
+				firstValue = this.firstProperty.values[0];
+				secondValue = this.secondProperty.values[0];
+			}
+			else if (this.secondPropertyType === 'P') {
+				flashType = Module.input_pairs.DmolarP_INPUTS;
+				firstValue = this.firstProperty.values[0];
+				secondValue = this.secondProperty.values[0];
+			}
+			else if (this.secondPropertyType === 'Q') {
+				flashType = Module.input_pairs.DmolarQ_INPUTS;
+				firstValue = this.firstProperty.values[0];
+				secondValue = this.secondProperty.values[0];
+			}
+			else if (this.secondPropertyType === 'H') {
+				flashType = Module.input_pairs.DmolarHmolar_INPUTS;
+				firstValue = this.firstProperty.values[0];
+				secondValue = this.secondProperty.values[0];
+			}
+			else if (this.secondPropertyType === 'S') {
+				flashType = Module.input_pairs.DmolarSmolar_INPUTS;
+				firstValue = this.firstProperty.values[0];
+				secondValue = this.secondProperty.values[0];
+			}
+			else {
+				return;
+			}
+		}
+		
+		else {
 			return;
 		}
 
