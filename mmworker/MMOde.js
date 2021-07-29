@@ -608,7 +608,8 @@ class MMOde extends MMTool {
 		if (!description) {
 			return super.valueDescribedBy(description, requestor);
 		}
-		const lcDescription = description.toLowerCase();
+		const descriptionParts = description.toLowerCase().split('.');
+		const lcDescription = descriptionParts[0];
 		if (lcDescription === 'solved') {
 			if (this.isSolved) {
 				this.addRequestor(requestor);
@@ -632,6 +633,12 @@ class MMOde extends MMTool {
 
 		// convenience function to add requestor is return value is known
 		const returnValue = (v) => {
+			if (v instanceof MMTableValue && descriptionParts.length > 1) {
+				const column = v.columnNamed(descriptionParts[1]);
+				if (column) {
+					v = column.value;
+				}
+			}
 			if (v) {
 				this.addRequestor(requestor);
 				return v;
@@ -681,7 +688,7 @@ class MMOde extends MMTool {
 			case 'reltol':
 				return returnValue(this.relTolFormula.numberValue());
 
-			case 'abdtol':
+			case 'abstol':
 				return returnValue(this.absTolFormula.numberValue());
 			
 			case 'y0':
@@ -792,10 +799,10 @@ class MMOde extends MMTool {
 	calcDy(t, y, dy) {
 		this.forgetStep();
 		this.odeT.values[0] = t;
-		const cachedV = this.cachedY.values;
-		const nEqns = cachedV.length;
+		const cachedY = this.cachedY.values;
+		const nEqns = cachedY.length;
 		for (let i = 0; i < nEqns; i++) {
-			cachedV[i] = y[i];
+			cachedY[i] = y[i];
 		}
 
 		const newDy = this.derivativeFormula.value();
