@@ -307,6 +307,9 @@ class MMDataTable extends MMTool {
 		if ((!displayUnit || !displayUnit.length) && insertValue instanceof MMNumberValue) {
 			displayUnit = theMMSession.unitSystem.baseUnitWithDimensions(insertValue.unitDimensions);
 		}
+		else if (insertValue instanceof MMStringValue) {
+			displayUnit = 'string';
+		}
 
 		const column = new MMDataTableColumn(this, options.name, displayUnit);
 		column.defaultValue = options.defaultValue;
@@ -890,6 +893,7 @@ class MMDataTable extends MMTool {
 				return;
 			}
 		}
+		this.rowCount = rowCount;
 		for (let i = 0; i < columnCount; i++) {
 			columns[i].columnValue.updateFromStringArray(columnData[i]);
 		}
