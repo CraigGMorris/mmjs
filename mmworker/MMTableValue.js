@@ -761,6 +761,66 @@ class MMTableValue extends MMValue {
 		return null;
 	}
 
+	/**
+	 * @method select
+	 * @param {MMValue} selector 
+	 * @returns MMTableValue
+	 */
+	select(selector) {
+		if (!selector) {
+			return null;
+		}
+
+		if (selector instanceof MMNumberValue) {
+			if (selector.columnCount > 1) {
+				this.exceptionWith('mmcmd:formulaSelectColumns');
+			}
+			if (selector.rowCount !== this.rowCount) {
+				this.exceptionWith('mmcmd:formulaSelectRowMismatch');
+			}
+
+			let newRowCount = 0;
+			let myRowCount = this.rowCount;
+			const sValues = selector.values;
+
+			for (let i = 0; i < myRowCount; i++) {
+				if (sValues[i] != 0.0) {
+					newRowCount++;
+				}
+			}
+			if (newRowCount) {
+				if (!this.columns.length) {
+					return null;
+				}
+				const newColumns = [];
+				for (let column of this.columns ) {
+					const cValue = column.value;
+					if (!cValue) {
+						return null;
+					}
+					const selectedValues = cValue.select(selector);
+					if (!selectedValues) {
+						return null;
+					}
+
+					const newColumn = new MMTableValueColumn({
+						name: column.name,
+						displayUnit: column.displayUnit ? column.displayUnit.name : null,
+						value: selectedValues
+					});
+					newColumns.push(newColumn);
+					
+				}
+				return new MMTableValue({
+					columns: newColumns
+				});
+			}
+		}
+		else if (selector instanceof MMStringValue) {
+			console.log('unimplemented');
+		}
+	}	
+
 	// statistical functions
 
 	calcMean(resultType, f) {
