@@ -957,19 +957,36 @@ class MMModel extends MMTool {
 			return;
 		}
 
+		// see if there is a parent import
+		let parentWithImport = this.parent;
+		while(parentWithImport && !parentWithImport.importInfo) {
+			parentWithImport = parentWithImport.parent;
+		}
+		const parentImportInfo = parentWithImport ? parentWithImport.importInfo : null;
+
 		// get the session from local storage
 		if (importName.startsWith('/')) {
 			// absolute path - just strip leading slash
 			importName = importName.substring(1);
+			importInfo.importPath = importName.replace(/\/[^/]+$/,'/');
 		}
-		else if (this.parent.importInfo ) {
-			const parentPath = this.parent.importInfo.sessionName.replace(/\/[^/]+$/,'/');
-			importName = parentPath + importName
+		else if (parentImportInfo) {
+			// has ancestor import - use its import path
+			importName = parentImportInfo.importPath + importName;
+			importInfo.importPath = parentImportInfo.importPath;
 		}
 		else if (theMMSession.storePath.match(/\//) ){
 			// relative - prepend current session folder
-			importName = theMMSession.storePath.replace(/\/[^/]+$/,'/') + importName;
+			importInfo.importPath = theMMSession.storePath.replace(/\/[^/]+$/,'/');
+			importName = importInfo.importPath + importName;
 		}
+		else if (importName.match(/\//)) {
+			importInfo.importPath = importName.replace(/\/[^/]+$/,'/');
+		}
+		else {
+			importInfo.importPath = '';
+		}
+
 		const savedJson = await theMMSession.storage.load(importName);
 		if (!savedJson) {
 			this.setError('mmcmd:sessionImportNotFound', {name: importName, path: this.getPath()});
