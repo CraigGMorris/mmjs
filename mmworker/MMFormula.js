@@ -3057,7 +3057,7 @@ class MMSelectFunction extends MMMultipleArgumentFunction {
 	value() {
 		const v = this.arguments[1].value();
 		const b = this.arguments[0].value();
-		if ((v instanceof MMValue) && (b instanceof MMNumberValue)) {
+		if ((v instanceof MMValue) && (b instanceof MMNumberValue || b instanceof MMStringValue)) {
 			return v.select(b);
 		}
 		return null;
