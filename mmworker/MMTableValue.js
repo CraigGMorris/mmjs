@@ -762,63 +762,157 @@ class MMTableValue extends MMValue {
 	}
 
 	/**
-	 * @method select
-	 * @param {MMValue} selector 
+	 * @method selectBoolean
+	 * @param {MMNumberValue} selector
 	 * @returns MMTableValue
 	 */
-	select(selector) {
-		if (!selector) {
-			return null;
+	selectBoolean(selector) {
+		if (selector.columnCount > 1) {
+			this.exceptionWith('mmcmd:formulaSelectColumns');
+		}
+		if (selector.rowCount !== this.rowCount) {
+			this.exceptionWith('mmcmd:formulaSelectRowMismatch');
 		}
 
-		if (selector instanceof MMNumberValue) {
-			if (selector.columnCount > 1) {
-				this.exceptionWith('mmcmd:formulaSelectColumns');
-			}
-			if (selector.rowCount !== this.rowCount) {
-				this.exceptionWith('mmcmd:formulaSelectRowMismatch');
-			}
+		let newRowCount = 0;
+		let myRowCount = this.rowCount;
+		const sValues = selector.values;
 
-			let newRowCount = 0;
-			let myRowCount = this.rowCount;
-			const sValues = selector.values;
-
-			for (let i = 0; i < myRowCount; i++) {
-				if (sValues[i] != 0.0) {
-					newRowCount++;
-				}
+		for (let i = 0; i < myRowCount; i++) {
+			if (sValues[i] != 0.0) {
+				newRowCount++;
 			}
-			if (newRowCount) {
-				if (!this.columns.length) {
+		}
+		if (newRowCount) {
+			if (!this.columns.length) {
+				return null;
+			}
+			const newColumns = [];
+			for (let column of this.columns ) {
+				const cValue = column.value;
+				if (!cValue) {
 					return null;
 				}
-				const newColumns = [];
-				for (let column of this.columns ) {
-					const cValue = column.value;
-					if (!cValue) {
-						return null;
-					}
-					const selectedValues = cValue.select(selector);
-					if (!selectedValues) {
-						return null;
-					}
-
-					const newColumn = new MMTableValueColumn({
-						name: column.name,
-						displayUnit: column.displayUnit ? column.displayUnit.name : null,
-						value: selectedValues
-					});
-					newColumns.push(newColumn);
-					
+				const selectedValues = cValue.select(selector);
+				if (!selectedValues) {
+					return null;
 				}
-				return new MMTableValue({
-					columns: newColumns
+
+				const newColumn = new MMTableValueColumn({
+					name: column.name,
+					displayUnit: column.displayUnit ? column.displayUnit.name : null,
+					value: selectedValues
 				});
+				newColumns.push(newColumn);
+				
+			}
+			return new MMTableValue({
+				columns: newColumns
+			});
+		}
+	}
+
+	/**
+	 * @method selectString
+	 * @param {MMStringValue} selectors
+	 * @returns MMTableValue
+	 */
+	selectString(selectors) {
+		const syntaxError = (term) => {
+			this.exceptionWith('mmcmd:tableSelectSyntax', {term: term});
+		}
+
+		const initialSelector = [];
+		initialSelector.length = this.rowCount;
+		initialSelector.fill(1); // set all true to start
+		const boolSelector = MMNumberValue.numberArrayValue(initialSelector);
+		for (let selectorNumber = 0; selectorNumber < selectors.valueCount; selectorNumber++) {
+			const selectorValue = selectors.values[selectorNumber];
+			let selector = selectorValue.trim();
+			if (selector.length === 0) { syntaxError(selectorValue); }
+			let orOperation = false;
+
+			if (selector[0] === '|') {
+				orOperation = true;
+				selector = selector.substring(1).trim();
+			}
+			else if (selector[0] === '&') {
+				selector = selector.substring(1).trim();
+			}
+			const nameMatch = selector.match(/^[^<=>]+/);
+			if (!nameMatch) { syntaxError(selectorValue); }
+			const columnName = nameMatch[0].trim();
+			const column = this.columnNamed(columnName);
+			if (!column) {
+				this.exceptionWith('mmcmd:tableSelectBadColumn', {name: columnName});
+			}
+			const columnValue = column.value;
+			if (!columnValue) {
+				return null;
+			}
+			selector = selector.substring(nameMatch[0].length).trim();
+
+			if (selector.length < 2) { syntaxError(selectorValue); }
+			let opString = selector[0];
+			let valueString = '';
+			if (selector[1] === '=') {
+				opString += selector[1];
+				valueString = selector.substring(2).trim();
+			}
+			else {
+				valueString = selector.substring(1).trim();
+			}
+			if (valueString.length === 0) { syntaxError(selectorValue)}
+
+			let findValue;
+			if (columnValue instanceof MMNumberValue) {
+				const valueParts = valueString.split(' ');
+				findValue = parseFloat(valueParts[0]);
+				if (isNaN(findValue)) {
+					syntaxError(selectorValue);
+				}
+				if (valueParts.length > 1) {
+					// assume unit
+					const unit = theMMSession.unitSystem.unitNamed(valueParts[1]);
+					if (unit) {
+						findValue = unit.convertToBase(findValue);
+					}
+					else {
+						this.exceptionWith('mmunit:unknownUnit', {name: valueParts[1]});
+					}
+				}
+			}
+			else {
+				findValue = valueString.toLowerCase();
+			}
+
+			const op = {
+				'=': (a, b) => {return a === b ? 1 : 0;},
+				'==': (a, b) => {return a === b ? 1 : 0;},
+				'<': (a, b) => {return a < b ? 1 : 0;},
+				'>': (a, b) => {return a > b ? 1 : 0;},
+				'<=': (a, b) => {return a <= b ? 1 : 0;},
+				'>=': (a, b) => {return a >= b ? 1 : 0;}
+			}[opString];
+
+			for (let i = 0; i < this.rowCount; i++) {
+				let value = columnValue.values[i];
+				if (columnValue instanceof MMStringValue) {
+					value = value.toLowerCase();
+				}
+				if (orOperation) {
+					if (op(value, findValue)) {
+						boolSelector.values[i] = 1;
+					}
+				}
+				else { // and operation}
+					if (!op(value, findValue)) {
+						boolSelector.values[i] = 0
+					}
+				}
 			}
 		}
-		else if (selector instanceof MMStringValue) {
-			console.log('unimplemented');
-		}
+		return this.selectBoolean(boolSelector);
 	}	
 
 	// statistical functions

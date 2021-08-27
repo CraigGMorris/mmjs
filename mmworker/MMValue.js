@@ -447,7 +447,12 @@ class MMValue {
 		return rv;
 	}	
 
-	select(selector) {
+	/**
+	 * @method selectBoolean
+	 * @param {MMNumberValue} selector
+	 * @returns MMValue
+	 */
+	selectBoolean(selector) {
 		if (!selector) {
 			return null;
 		}
@@ -476,6 +481,9 @@ class MMValue {
 			else if (this instanceof MMStringValue) {
 				rv = new MMStringValue(newRowCount, this.columnCount);
 			}
+			else {
+				return null;
+			}
 			const rvValues = rv.values;
 			const myValues = this._values;
 			let newRow = 0;
@@ -491,4 +499,117 @@ class MMValue {
 			return rv;
 		}
 	}	
+
+	/**
+	 * @method selectString
+	 * @param {MMStringValue} selector
+	 * @returns MMValue
+	 */
+	selectString(selectors) {
+		const syntaxError = (term) => {
+			this.exceptionWith('mmcmd:tableSelectSyntax', {term: term});
+		}
+
+		const initialSelector = [];
+		initialSelector.length = this.rowCount;
+		initialSelector.fill(1); // set all true to start
+		const boolSelector = MMNumberValue.numberArrayValue(initialSelector);
+		for (let selectorNumber = 0; selectorNumber < selectors.valueCount; selectorNumber++) {
+			const selectorValue = selectors.values[selectorNumber];
+			let selector = selectorValue.trim();
+			if (selector.length === 0) { syntaxError(selectorValue); }
+			let orOperation = false;
+
+			if (selector[0] === '|') {
+				orOperation = true;
+				selector = selector.substring(1).trim();
+			}
+			else if (selector[0] === '&') {
+				selector = selector.substring(1).trim();
+			}
+			const columnMatch = selector.match(/^[^<=>]+/);
+			if (!columnMatch) { syntaxError(selectorValue); }
+			const columnNumber = parseFloat(columnMatch[0].trim());
+			if (isNaN(columnNumber) || columnNumber > this.columnCount) {
+				this.exceptionWith('mmcmd:formulaSelectBadColumn', {number: columnMatch});
+			}
+			selector = selector.substring(columnMatch[0].length).trim();
+
+			if (selector.length < 2) { syntaxError(selectorValue); }
+			let opString = selector[0];
+			let valueString = '';
+			if (selector[1] === '=') {
+				opString += selector[1];
+				valueString = selector.substring(2).trim();
+			}
+			else {
+				valueString = selector.substring(1).trim();
+			}
+			if (valueString.length === 0) { syntaxError(selectorValue)}
+
+			let findValue;
+			if (this instanceof MMNumberValue) {
+				const valueParts = valueString.split(' ');
+				findValue = parseFloat(valueParts[0]);
+				if (isNaN(findValue)) {
+					syntaxError(selectorValue);
+				}
+				if (valueParts.length > 1) {
+					// assume unit
+					const unit = theMMSession.unitSystem.unitNamed(valueParts[1]);
+					if (unit) {
+						findValue = unit.convertToBase(findValue);
+					}
+					else {
+						this.exceptionWith('mmunit:unknownUnit', {name: valueParts[1]});
+					}
+				}
+			}
+			else {
+				findValue = valueString.toLowerCase();
+			}
+
+			const op = {
+				'=': (a, b) => {return a === b ? 1 : 0;},
+				'==': (a, b) => {return a === b ? 1 : 0;},
+				'<': (a, b) => {return a < b ? 1 : 0;},
+				'>': (a, b) => {return a > b ? 1 : 0;},
+				'<=': (a, b) => {return a <= b ? 1 : 0;},
+				'>=': (a, b) => {return a >= b ? 1 : 0;}
+			}[opString];
+
+			for (let i = 0; i < this.rowCount; i++) {
+				let value = this.valueAtRowColumn(i + 1, columnNumber);
+				if (this instanceof MMStringValue) {
+					value = value.toLowerCase();
+				}
+				if (orOperation) {
+					if (op(value, findValue)) {
+						boolSelector.values[i] = 1;
+					}
+				}
+				else { // and operation}
+					if (!op(value, findValue)) {
+						boolSelector.values[i] = 0
+					}
+				}
+			}
+		}
+		return this.selectBoolean(boolSelector);
+	}
+
+	select(selector) {
+		if (!selector) {
+			return null;
+		}
+		if (selector instanceof MMNumberValue) {
+			return this.selectBoolean(selector);
+		}
+		else if (selector instanceof MMStringValue) {
+			return this.selectString(selector);
+		}
+		else {
+			return null;
+		}
+	}
 }

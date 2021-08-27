@@ -24,6 +24,38 @@
  */
 	// eslint-disable-next-line no-unused-vars
 	export function functionPickerData(language) {
+	const selectorDesc = {
+		f: "{select from, selector}",
+		desc: `<p>
+			Rows will be selected from the "from" argument, which can be a string, number or table value.
+			</p><p>
+			The "selector" value can either be a numeric value having a single column and the same number of rows as the "from"
+			value.  The returned value will consist of all the rows of "from" for which the corresponding row value of "selector"
+			is nonzero.
+			</p><p>
+				Alternatively the "selector" value can be a string value where each row consists of a query of the form
+			</p>
+			<p class="formula">column op value"</p>
+			<p>
+				where column is the name of the column if "from" is a table or the number of the column if it is a numeric or string
+				value. The "op" term is one of ("=", "&lt;", "&lt;=", "&gt;", "&gt;="). The "value" term is some value that will be
+				matched against each row of the column using the given operation.  The value isn't a formula, but can have a unit if
+				it is numeric. String comparisons are case insensitive.
+			</p>
+			<p>
+				If the selector has more than one row, each result is "ANDed" with the previous result, unless the "column" term is
+				preceded by a "|" character, in which case an OR operation is performed with the previous result. An "&" character
+				can optionally be used for AND operations to make the formula more descriptive.
+			</p>
+			<p>
+				Selector xamples might be:
+			</p>
+			<ul>
+				<li>"name = fred"</li>
+				<li>{cc "dept = sales", "age >= 30"}</li>
+				<li>{cc "dept = sales", "| dept = support", "&amp; age >= 30"}</li>
+			`,
+	}
 	const data = {
 		title: 'Formula Functions',
 		instructions: `
@@ -719,12 +751,7 @@
 								unique value.  String columns are ignored.
 							</p>`,
 					},
-					{
-						f: "{select from, bool}",
-						desc: `Rows will be selected from the "from" argument, which can be a string, number or table value.  The
-							"bool" value must be numeric and have a single column and the same number of rows as the "from" value.  The
-							returned value will consist of all the rows of "from" for which the corresponding row value of "bool" is nonzero.`,
-					},
+					selectorDesc
 				]
 			},
 			{
@@ -753,12 +780,7 @@
 								in the corresponding row of the returned value.
 							</p>`,
 					},
-					{
-						f: "{select from, bool}",
-						desc: `Rows will be selected from the "from" argument, which can be a string, number or table value.  The "bool"
-							value must be numeric and have a single column and the same number of rows as the "from" value.  The returned
-							value will consist of all the rows of "from" for which the corresponding row value of "bool" is nonzero.`,
-					},
+					selectorDesc,
 				]
 			},
 			{

@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "mainTest",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "errorCount",
+	"SelectedObject": "",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -17036,8 +17036,8 @@
 							{
 								"name": "table",
 								"Notes": "",
-								"DiagramX": 80,
-								"DiagramY": 335,
+								"DiagramX": 385,
+								"DiagramY": 125,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
@@ -17048,8 +17048,8 @@
 							{
 								"name": "selectT",
 								"Notes": "",
-								"DiagramX": 80,
-								"DiagramY": 360,
+								"DiagramX": 385,
+								"DiagramY": 150,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
@@ -17097,8 +17097,8 @@
 							{
 								"name": "tableErrors",
 								"Notes": "",
-								"DiagramX": 175,
-								"DiagramY": 335,
+								"DiagramX": 285,
+								"DiagramY": 125,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
@@ -17195,14 +17195,219 @@
 								"name": "errorCount",
 								"Notes": "",
 								"DiagramX": 175,
-								"DiagramY": 360,
+								"DiagramY": 390,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "lookupErrors +\nnIndexError +\nsIndexError +\nnumbersError +\nstringsError +\ntableErrors"
+									"Formula": "lookupErrors +\nnIndexError +\nsIndexError +\nnumbersError +\nstringsError +\nsByStringError +\nnByStringError +\ntableErrors +\ntByStringErrors +\nsalesErrors +\njrSalesErrors +\nsupportErrors"
 								},
 								"isOutput": "y"
+							},
+							{
+								"name": "Employees",
+								"Notes": "",
+								"DiagramX": 385,
+								"DiagramY": 205,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "Name",
+										"displayUnit": "string",
+										"sValues": [
+											"Tom",
+											"Dick",
+											"Harry",
+											"Jack",
+											"Bill"
+										],
+										"defaultValue": "'Tom"
+									},
+									{
+										"name": "Age",
+										"displayUnit": "year",
+										"nValues": [
+											946728000,
+											1262304000,
+											915170400,
+											1893456000,
+											788940000
+										],
+										"unitDimensions": "0 0 1 0 0 0 0",
+										"defaultValue": "30 year"
+									},
+									{
+										"name": "Dept",
+										"displayUnit": "string",
+										"sValues": [
+											"Sales",
+											"Eng",
+											"Support",
+											"HR",
+											"Sales"
+										],
+										"defaultValue": "'Sales"
+									},
+									{
+										"name": "Salary",
+										"displayUnit": "Fraction",
+										"nValues": [
+											60000,
+											70000,
+											45000,
+											90000,
+											40000
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "40000 Fraction"
+									}
+								]
+							},
+							{
+								"name": "Sales",
+								"Notes": "",
+								"DiagramX": 385,
+								"DiagramY": 235,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{select Employees, \"dept = Sales\"}"
+								}
+							},
+							{
+								"name": "JrSales",
+								"Notes": "",
+								"DiagramX": 385,
+								"DiagramY": 260,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{select employees, {cc\n\t\"dept = Sales\",\n\t\"age < 30 year\"\n\t}\n}"
+								}
+							},
+							{
+								"name": "SalesSupport",
+								"Notes": "",
+								"DiagramX": 385,
+								"DiagramY": 290,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{select employees {cc\n\t\"dept = sales\",\n\t\"| dept = Support\"\n\t}\n}[0,{cc \"name\", \"dept\"}]"
+								}
+							},
+							{
+								"name": "sByStringError",
+								"Notes": "",
+								"DiagramX": 175,
+								"DiagramY": 335,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {ne sByString,\n\t{cc\n\t\t\"f\",\"g\",\"h\",\"i\",\"j\"\n\t}\n}}"
+								}
+							},
+							{
+								"name": "nByString",
+								"Notes": "",
+								"DiagramX": 80,
+								"DiagramY": 365,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{select {append 1:50, 51:100},\n\t\"2 > 95\"\n}"
+								}
+							},
+							{
+								"name": "sByString",
+								"Notes": "",
+								"DiagramX": 80,
+								"DiagramY": 340,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{select\n\t{cc\n\t\t\"a\",\"b\",\"c\",\"d\",\"e\",\n\t\t\"f\",\"g\",\"h\",\"i\",\"j\"\n\t}, \"1 >= f\"\n}"
+								}
+							},
+							{
+								"name": "nByStringError",
+								"Notes": "",
+								"DiagramX": 175,
+								"DiagramY": 365,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {ne nByString,\n\t{append 46:50, 96:100}\n}}"
+								}
+							},
+							{
+								"name": "tByStringErrors",
+								"Notes": "",
+								"DiagramX": 285,
+								"DiagramY": 155,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {ne tByString.n,\n\t{cc 3,4,9,10}\n}}\n+\n{sum {ne tByString.s,\n\t{cc \"c\",\"d\",\"i\",\"j\"}\n}}\n+\n{sum {ne tByString.n2,\n\t{cc 203,204,209,210}\n}}"
+								}
+							},
+							{
+								"name": "tByString",
+								"Notes": "",
+								"DiagramX": 385,
+								"DiagramY": 175,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{select table, {cc\n\t\"s >= c\", \"n <= 4\", \"|n2 >= 209\"\n\t}\n}"
+								}
+							},
+							{
+								"name": "salesErrors",
+								"Notes": "",
+								"DiagramX": 285,
+								"DiagramY": 190,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {ne sales.name,\n\t{cc \"Tom\", \"Bill\"}\n}}\n+\n{sum {ne sales.age,\n\t{cc 30,25} * 1 year\n}}\n+\n{sum {ne sales.salary,\n\t{cc 60000,40000}\n}}"
+								}
+							},
+							{
+								"name": "jrSalesErrors",
+								"Notes": "",
+								"DiagramX": 285,
+								"DiagramY": 220,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {ne jrsales.name,\"Bill\"}}\n+\n{sum {ne jrsales.age, 25 year}}\n+\n{sum {ne jrsales.salary, 40000}}"
+								}
+							},
+							{
+								"name": "supportErrors",
+								"Notes": "",
+								"DiagramX": 285,
+								"DiagramY": 250,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {ne salesSupport.name,\n\t{cc \"Tom\", \"Harry\", \"Bill\"}\n}}\n+\n{sum {ne salesSupport.dept,\n\t{cc \"Sales\", \"Support\", \"Sales\"}\n}}"
+								}
 							}
 						]
 					},
