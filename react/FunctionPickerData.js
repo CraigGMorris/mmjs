@@ -29,13 +29,14 @@
 		desc: `<p>
 			Rows will be selected from the "from" argument, which can be a string, number or table value.
 			</p><p>
-			The "selector" value can either be a numeric value having a single column and the same number of rows as the "from"
-			value.  The returned value will consist of all the rows of "from" for which the corresponding row value of "selector"
+			The "selector" can be either a numeric or string value. If it is a numeric value, it should have a
+			single column and the same number of rows as the "from" value.
+			The returned value will consist of all the rows of "from" for which the corresponding row value of "selector"
 			is nonzero.
 			</p><p>
-				Alternatively the "selector" value can be a string value where each row consists of a query of the form
+				Alternatively if the "selector" value is a string value, then each row should consist of a query of the form
 			</p>
-			<p class="formula">column op value"</p>
+			<p class="formula">"column op value"</p>
 			<p>
 				where column is the name of the column if "from" is a table or the number of the column if it is a numeric or string
 				value. The "op" term is one of ("=", "&lt;", "&lt;=", "&gt;", "&gt;="). The "value" term is some value that will be
