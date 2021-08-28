@@ -1912,7 +1912,7 @@ class ContextMenu extends React.Component {
     e.stopPropagation();
     e.preventDefault();
 		e.target.addEventListener('pointerup', this.onPointerUp);
-		this.lineNumberDown = Math.floor((e.clientY - this.config.offset.y) / this.config.itemHeight);
+		this.lineNumberDown = Math.floor((e.clientY - this.config.offset.y - 10) / this.config.itemHeight);
 	}
 
 	onPointerUp(e) {
