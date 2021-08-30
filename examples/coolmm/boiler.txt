@@ -1,0 +1,387 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [],
+	"CaseName": "boiler",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "Overview",
+	"ModelPath": "/.root",
+	"RootModel": {
+		"name": "root",
+		"Notes": "",
+		"DiagramX": 0,
+		"DiagramY": 0,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "boilerH",
+				"Notes": "boiler enthalpy from energy and mass holdups",
+				"DiagramX": 510,
+				"DiagramY": 130,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "ode.y.boilerEnergy * water.mwt / boilerHoldup"
+				}
+			},
+			{
+				"name": "utilityCond",
+				"Notes": "Condensate return conditions",
+				"DiagramX": 390,
+				"DiagramY": 230,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "water.thermo"
+				},
+				"firstprop": {
+					"Formula": "boilerFlash.p"
+				},
+				"secondprop": {
+					"Formula": "80 degc"
+				},
+				"molefrac": {
+					"Formula": "1"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "ode.y.condHoldup * 1 \"1/min\""
+				}
+			},
+			{
+				"name": "utilityP",
+				"Notes": "Steam utility pressure",
+				"DiagramX": 280,
+				"DiagramY": 155,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "700 kpa"
+				}
+			},
+			{
+				"name": "steamHeader",
+				"Notes": "utility header conditions",
+				"DiagramX": 390,
+				"DiagramY": 200,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "water.thermo"
+				},
+				"firstprop": {
+					"Formula": "utilityP"
+				},
+				"secondprop": {
+					"Formula": "boilerFlash.v.h"
+				},
+				"molefrac": {
+					"Formula": "1"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "{max 0 \"kg/h\", steamFlow}"
+				}
+			},
+			{
+				"name": "boilerHeat",
+				"Notes": "heat flow to boiler from PI controller calc",
+				"DiagramX": 510,
+				"DiagramY": 260,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "5000 kw *\n{max 0, {min 1, FlowErrorSig * 3 +\node.y.errorAccum * 0.2}}"
+				},
+				"displayUnit": "kW"
+			},
+			{
+				"name": "SteamChest",
+				"Notes": "Volume of boiler steam chest",
+				"DiagramX": 280,
+				"DiagramY": 195,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "3 m^3"
+				}
+			},
+			{
+				"name": "boilerFlash",
+				"Notes": "boiler conditions",
+				"DiagramX": 390,
+				"DiagramY": 170,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "water.thermo"
+				},
+				"firstprop": {
+					"Formula": "boilerHoldup / water.mwt / SteamChest"
+				},
+				"secondprop": {
+					"Formula": "boilerH"
+				},
+				"molefrac": {
+					"Formula": "1"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": ""
+				}
+			},
+			{
+				"name": "dBoilerMass",
+				"Notes": "derivative of boiler holdup",
+				"DiagramX": 510,
+				"DiagramY": 165,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "utilityCond.massf - steamHeader.massf"
+				},
+				"isOutput": "y"
+			},
+			{
+				"name": "boilerHoldup",
+				"Notes": "integrated boiler holdup",
+				"DiagramX": 510,
+				"DiagramY": 100,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "Ode.y.boilerHoldup"
+				}
+			},
+			{
+				"name": "dCondMass",
+				"Notes": "derivative of condensate holdup",
+				"DiagramX": 510,
+				"DiagramY": 195,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "steamHeader.massf - utilityCond.massf"
+				}
+			},
+			{
+				"name": "ode",
+				"Notes": "",
+				"DiagramX": 390,
+				"DiagramY": 300,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "ODE Solver",
+				"y0Formula": {
+					"Formula": "initialY"
+				},
+				"dyFormula": {
+					"Formula": "derivatives"
+				},
+				"nextTFormula": {
+					"Formula": "$.t + 1 * {baseunit $.t}"
+				},
+				"endTFormula": {
+					"Formula": "5 min"
+				},
+				"relTolFormula": {
+					"Formula": "1e-5"
+				},
+				"absTolFormula": {
+					"Formula": "1.0e-10*{baseunit $.y}"
+				},
+				"recFormulas": [
+					{
+						"Formula": "$.t'time"
+					},
+					{
+						"Formula": "boilerHoldup'boilerHoldup"
+					},
+					{
+						"Formula": "boilerFlash.p'BoilerP"
+					},
+					{
+						"Formula": "steamFlow'Flow"
+					},
+					{
+						"Formula": "$.y.condHoldup'CondHoldup"
+					}
+				],
+				"AutoRun": "y"
+			},
+			{
+				"name": "derivatives",
+				"Notes": "table of derivatives",
+				"DiagramX": 390,
+				"DiagramY": 265,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{table {cc \"dBoilerMass\", \"dCondMass\", \"dBoilerEnergy\", \"AccumFlowError\"},\n\tdBoilerMass,\n\tdCondMass,\n\tdBoilerEnergy,\n\tflowErrorSig / 1 s\n}"
+				}
+			},
+			{
+				"name": "initialY",
+				"Notes": "Table of initial values for the integrated properties:\n\nboiler holdup,\ncondensate holdup\nboiler energy\ncontroller accumulated error",
+				"DiagramX": 280,
+				"DiagramY": 270,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{table\n\t{cc \n\t\t\"boilerHoldup\",\n\t\t\"condHoldup\",\n\t\t\"boilerEnergy\",\n\t\t\"errorAccum\"\n\t},\n\t95 kg,\n\t50 kg,\n\t120000 kj,\n\t0\n}"
+				}
+			},
+			{
+				"name": "dBoilerEnergy",
+				"Notes": "derivative of boiler energy holdup",
+				"DiagramX": 510,
+				"DiagramY": 225,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "boilerHeat + utilityCond.hFlow - steamHeader.hflow"
+				}
+			},
+			{
+				"name": "steamFlow",
+				"Notes": "Flow rate of steam from boiler",
+				"DiagramX": 390,
+				"DiagramY": 100,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "0.005 \"kg/m\" *\n((boilerFlash.p - utilityP)\n/\nboilerFlash.v.dmass)^0.5"
+				}
+			},
+			{
+				"name": "FlowErrorSig",
+				"Notes": "Error signal for flow control",
+				"DiagramX": 510,
+				"DiagramY": 295,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "(3000 \"kg/h\" - steamFlow) / 6000 \"kg/h\""
+				}
+			},
+			{
+				"name": "plots",
+				"Notes": "",
+				"DiagramX": 390,
+				"DiagramY": 330,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"Type": "Graph",
+				"X1": {
+					"v": "Ode.time'Time",
+					"vmin": "",
+					"vmax": "",
+					"Y1": {
+						"v": "ode.boilerHoldup'Boiler Holdup",
+						"vmin": "50 kg",
+						"vmax": "100 kg",
+						"lineType": 0
+					},
+					"Y2": {
+						"v": "ode.boilerP'Boiler P",
+						"vmin": "500 kpa",
+						"vmax": "1500 kpa",
+						"lineType": 0
+					},
+					"Y3": {
+						"v": "ode.flow'Steam Flow",
+						"vmin": "0 kg/h",
+						"vmax": "8000 kg/h",
+						"lineType": 0
+					},
+					"Y4": {
+						"v": "ode.condHoldup'Cond Holdup",
+						"vmin": "45 kg",
+						"vmax": "55 kg",
+						"lineType": 0
+					}
+				}
+			},
+			{
+				"name": "water",
+				"Notes": "Dummy water flash\ndefines thermo and mwt",
+				"DiagramX": 390,
+				"DiagramY": 130,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "'Water;dmass,massf,hflow"
+				},
+				"firstprop": {
+					"Formula": "25 degc"
+				},
+				"secondprop": {
+					"Formula": "1 atm"
+				},
+				"molefrac": {
+					"Formula": "1"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": ""
+				}
+			},
+			{
+				"name": "odeY",
+				"Notes": "integrated values",
+				"DiagramX": 510,
+				"DiagramY": 330,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "ode.y"
+				}
+			},
+			{
+				"name": "Overview",
+				"Notes": "Dynamic Steam Boiler Overview",
+				"DiagramX": 280,
+				"DiagramY": 105,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"Type": "HTML Form",
+				"Formula": {
+					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Idealized Steam Boiler Dynamics</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tCoolProp has the ability to do flashes where one of the intensive properties is a density, but only for systems that contain a single compound.  In addition isenthalpic and isentropic flashes are much faster for single component systems since CoolProp handles these natively, while Math Minion adds a search mechanism to find a result for multicomponent systems.\n\t\t</p>\n\t\t<p>\n\t\t\tThis model demonstrates the use of a denisty-enthalpy flash for steam in a highly idealized dynamic simulation of a steam boiler. \n\t\t</p>\n\t\t<svg width=\"100%\" height=\"100%\" viewBox=\"0 0 650 600\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xml:space=\"preserve\" xmlns:serif=\"http://www.serif.com/\" style=\"fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;\">\n\t\t\t\t<g id=\"Steam-Utilities\" serif:id=\"Steam Utilities\" transform=\"matrix(1,0,0,1,-0.382115,181.158)\">\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-1.40431,-71.8052)\">\n\t\t\t\t\t\t\t\t<rect x=\"435.787\" y=\"134.883\" width=\"168.38\" height=\"48.966\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,68.7328,-56.719)\">\n\t\t\t\t\t\t\t\t<text x=\"372.808px\" y=\"148.24px\" style=\"font-family:'ArialMT', 'Arial', sans-serif;font-size:24px;\">Steam Utilities</text>\n\t\t\t\t\t\t</g>\n\t\t\t\t</g>\n\t\t\t\t<g id=\"Boiler-Heat\" serif:id=\"Boiler Heat\" transform=\"matrix(1,0,0,1,-181.493,216.618)\">\n\t\t\t\t\t\t<g transform=\"matrix(0.790654,0,0,1.49219,89.8258,-138.193)\">\n\t\t\t\t\t\t\t\t<rect x=\"435.787\" y=\"134.883\" width=\"168.38\" height=\"48.966\" style=\"fill:none;stroke:black;stroke-width:0.84px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,51.6906,-55.0826)\">\n\t\t\t\t\t\t\t\t<text x=\"410.806px\" y=\"148.24px\" style=\"font-family:'ArialMT', 'Arial', sans-serif;font-size:24px;\">Heat to</text>\n\t\t\t\t\t\t\t\t<text x=\"418.816px\" y=\"173.025px\" style=\"font-family:'ArialMT', 'Arial', sans-serif;font-size:24px;\">Boiler</text>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,179.933,-279.426)\">\n\t\t\t\t\t\t\t\t<path d=\"M222.038,378.557L254.945,378.84\" style=\"fill:none;stroke:rgb(253,8,8);stroke-width:1px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,179.933,-279.426)\">\n\t\t\t\t\t\t\t\t<path d=\"M369.617,150.545L370.616,217.124\" style=\"fill:none;stroke:rgb(0,0,255);stroke-width:2.5px;stroke-dasharray:2.5,7.5,0,0;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,179.933,-279.426)\">\n\t\t\t\t\t\t\t\t<path d=\"M329.931,291.589L330.065,331.06L330.065,341.686\" style=\"fill:none;stroke:rgb(0,5,255);stroke-width:3px;stroke-dasharray:3,9,0,0;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t</g>\n\t\t\t\t<g id=\"Flow-Controller\" serif:id=\"Flow Controller\" transform=\"matrix(1,0,0,1,-181.659,92.4442)\">\n\t\t\t\t\t\t<g transform=\"matrix(0.790654,0,0,1.49219,89.8258,-138.193)\">\n\t\t\t\t\t\t\t\t<rect x=\"435.787\" y=\"134.883\" width=\"168.38\" height=\"48.966\" style=\"fill:none;stroke:black;stroke-width:0.84px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,51.6906,-55.0826)\">\n\t\t\t\t\t\t\t\t<text x=\"424.16px\" y=\"148.24px\" style=\"font-family:'ArialMT', 'Arial', sans-serif;font-size:24px;\">Flow</text>\n\t\t\t\t\t\t\t\t<text x=\"397.476px\" y=\"173.025px\" style=\"font-family:'ArialMT', 'Arial', sans-serif;font-size:24px;\">Controller</text>\n\t\t\t\t\t\t</g>\n\t\t\t\t</g>\n\t\t\t\t<g id=\"Steam-Header\" serif:id=\"Steam Header\">\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-1.40431,-71.8052)\">\n\t\t\t\t\t\t\t\t<rect x=\"435.787\" y=\"134.883\" width=\"168.38\" height=\"48.966\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,68.7328,-55.4062)\">\n\t\t\t\t\t\t\t\t<text x=\"372.123px\" y=\"148.24px\" style=\"font-family:'ArialMT', 'Arial', sans-serif;font-size:24px;\">Steam Header</text>\n\t\t\t\t\t\t</g>\n\t\t\t\t</g>\n\t\t\t\t<g id=\"LPPump\" transform=\"matrix(-1.00784,0,0,1.00784,767.806,-52.4952)\">\n\t\t\t\t\t\t<g transform=\"matrix(0.943997,1.42699e-18,1.42699e-18,0.955649,73.9539,-212.822)\">\n\t\t\t\t\t\t\t\t<circle cx=\"347.674\" cy=\"749.821\" r=\"49.456\" style=\"fill:none;stroke:black;stroke-width:1.04px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(0.936656,1.41589e-18,1.41589e-18,0.948218,74.502,-208.209)\">\n\t\t\t\t\t\t\t\t<path d=\"M320.466,791.162L310.193,809.294L390.394,809.294L379.742,791.162\" style=\"fill:none;stroke:black;stroke-width:1.05px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(0.936656,1.41589e-18,1.41589e-18,0.948218,74.502,-208.209)\">\n\t\t\t\t\t\t\t\t<path d=\"M350.948,749.321L279.204,749.198\" style=\"fill:none;stroke:black;stroke-width:1.05px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(0.936656,1.41589e-18,1.41589e-18,0.948218,74.502,-208.209)\">\n\t\t\t\t\t\t\t\t<path d=\"M350.948,700.676L419.821,699.54\" style=\"fill:none;stroke:black;stroke-width:1.05px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(5.30498e-17,0.706519,-1.01971,-1.54144e-18,473.645,-136.297)\">\n\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.13px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t</g>\n\t\t\t\t<g id=\"Boiler\" transform=\"matrix(-0.874912,0,0,0.874912,824.619,384.294)\">\n\t\t\t\t\t\t<g transform=\"matrix(0.943997,-1.42699e-18,-1.42699e-18,0.955649,88.5971,-282.369)\">\n\t\t\t\t\t\t\t\t<circle cx=\"735.181\" cy=\"167.587\" r=\"69.251\" style=\"fill:none;stroke:black;stroke-width:1.2px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(0.943997,-1.42699e-18,-1.42699e-18,0.955649,10.1691,-267.298)\">\n\t\t\t\t\t\t\t\t<path d=\"M799.807,119.07L719.951,198.427\" style=\"fill:none;stroke:rgb(251,4,4);stroke-width:1.2px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(0.943997,-1.42699e-18,-1.42699e-18,0.955649,10.1691,-267.298)\">\n\t\t\t\t\t\t\t\t<path d=\"M838.062,180.07L799.807,119.07\" style=\"fill:none;stroke:rgb(251,5,5);stroke-width:1.2px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(0.943997,-1.42699e-18,-1.42699e-18,0.955649,10.1691,-267.298)\">\n\t\t\t\t\t\t\t\t<path d=\"M920.578,98.174L838.052,179.677\" style=\"fill:none;stroke:rgb(251,7,7);stroke-width:1.2px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(0.497361,0.5035,-0.726695,0.735665,479.832,-679.122)\">\n\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(244,9,9);stroke:rgb(254,9,9);stroke-width:1.28px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t</g>\n\t\t\t\t<g id=\"streams\">\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,0.021777,-180.108)\">\n\t\t\t\t\t\t\t\t<path d=\"M138.044,399.957L138.044,267.439L297.438,267.439\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(0.570695,0,0,1,59.2183,-180.108)\">\n\t\t\t\t\t\t\t\t<path d=\"M417.65,586.234L137.889,586.234\" style=\"fill:none;stroke:black;stroke-width:1.23px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,0.021777,-180.108)\">\n\t\t\t\t\t\t\t\t<path d=\"M137.748,515.252L137.748,585.889\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1.40667e-16,-0.712057,-1.0277,-1.24304e-16,368.807,730.745)\">\n\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.13px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1.40667e-16,-0.712057,-1.0277,-1.24304e-16,505.433,731.055)\">\n\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.13px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(0.712057,9.70665e-17,6.1375e-17,-1.0277,-126.837,314.878)\">\n\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.13px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(0.712057,9.70665e-17,6.1375e-17,-1.0277,-274.76,226.764)\">\n\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(9,0,255);stroke:rgb(6,0,255);stroke-width:1.13px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(0.712057,9.70665e-17,6.1375e-17,-1.0277,-315.175,351.046)\">\n\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(9,0,255);stroke:rgb(6,0,255);stroke-width:1.13px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(-0.712057,-9.86472e-18,6.44821e-17,1.0277,781.337,264.911)\">\n\t\t\t\t\t\t\t\t<path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:1.13px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-1.55979,-62.8079)\">\n\t\t\t\t\t\t\t\t<path d=\"M340.424,149.972L435.671,150.337\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-1.55979,-62.8079)\">\n\t\t\t\t\t\t\t\t<path d=\"M521.167,175.156L518.242,306.639\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-1.55979,-62.8079)\">\n\t\t\t\t\t\t\t\t<path d=\"M519.748,356.105L519.748,516.466L430.91,516.466\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t</g>\n\t\t\t\t<g id=\"valve\" transform=\"matrix(0.34932,0,0,0.477322,198.56,86.677)\">\n\t\t\t\t\t\t<g transform=\"matrix(6.15827e-17,1,-1,6.15827e-17,447.186,-317.671)\">\n\t\t\t\t\t\t\t\t<path d=\"M318.772,105.125L347.185,160.635L290.359,160.635L318.772,105.125Z\" style=\"fill:none;stroke:black;stroke-width:2.39px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(6.0882e-17,-1,1,6.0882e-17,236.936,319.873)\">\n\t\t\t\t\t\t\t\t<path d=\"M318.772,105.125L347.185,160.635L290.359,160.635L318.772,105.125Z\" style=\"fill:none;stroke:black;stroke-width:2.39px;\"/>\n\t\t\t\t\t\t</g>\n\t\t\t\t</g>\n\t\t\t\t<g id=\"Labels\">\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-144.308,-161.008)\">\n\t\t\t\t\t\t\t\t<text x=\"441.033px\" y=\"708.584px\" style=\"font-family:'ArialMT', 'Arial', sans-serif;font-size:24px;\">Condensate</text>\n\t\t\t\t\t\t\t\t<text x=\"474.402px\" y=\"733.369px\" style=\"font-family:'ArialMT', 'Arial', sans-serif;font-size:24px;\">Pump</text>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,-92.792,-168.642)\">\n\t\t\t\t\t\t\t\t<text x=\"137.12px\" y=\"527.325px\" style=\"font-family:'ArialMT', 'Arial', sans-serif;font-size:24px;\">Boiler</text>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,42.251,19.0035)\">\n\t\t\t\t\t\t\t\t<text x=\"173.196px\" y=\"18.355px\" style=\"font-family:'ArialMT', 'Arial', sans-serif;font-size:30px;\">Dynamic Steam Boiler</text>\n\t\t\t\t\t\t</g>\n\t\t\t\t\t\t<g transform=\"matrix(1,0,0,1,66.6402,-52.0523)\">\n\t\t\t\t\t\t\t\t<text x=\"65.223px\" y=\"484.68px\" style=\"font-family:'ArialMT', 'Arial', sans-serif;font-size:24px;\">Condensate</text>\n\t\t\t\t\t\t\t\t<text x=\"93.922px\" y=\"509.465px\" style=\"font-family:'ArialMT', 'Arial', sans-serif;font-size:24px;\">Return</text>\n\t\t\t\t\t\t</g>\n\t\t\t\t</g>\n\t\t</svg>\n\t\t<p>\n\t\t\tSteam is raised in a boiler and accumulates in its steam chest, before flowing through a valve into a steam utilities header.  From there it is used in some sort of utilities, resulting in condensate, that is pumped back up to the boiler pressure and arbitrarily assumed to be 80 C. The condensate flow is assumed to be proportional to the holdup in the condensate tank, while a proportional integral controller regulates the heat flow to the boiler to meet a steam flow set point.\n\t\t</p>\n\t\t<p>\n\t\t\tThe model integrates four values, with the initial values set in expression <b>initialY</b>:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>boiler holdup (95 kg)</li>\n\t\t\t<li>condensate holdup (50 kg)</li>\n\t\t\t<li>boiler energy (120,000 kJ)</li>\n\t\t\t<li>steam flow controller accumulated error (0 unitless)</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe <b>boilerFlash</b> uses the formula\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tboilerHoldup / water.mwt / SteamChest\n\t\t</p>\n\t\t<p>\n\t\t\tTo determine the density of the steam in the steam chest. A dummy flash <b>water</b> is used merely to obtain the molecular weight of water, while the <b>SteamChest</b> expression specifies the volume of the steam chest as 3 m^3. This formula is entered, rather counterintuitively, in the <b>T or P</b> field, while the boiler energy holdup integrated by the <b>ode</b> tool and represented by the <b>boilerH</b> expression goes in the <b>2nd Prop</b> field.  The result is a density/enthalpy flash that determines the steam properties, including pressure.\n\t\t</p>\n\t\t<p>\n\t\t\tThe flow of steam through the valve to the steam header is calculated from a form of the <a href=\"https://en.wikipedia.org/wiki/Flow_coefficient\">flow coefficient equation</a>, using the pressure difference between the calculated boiler pressure and the specified steam header pressure of 700 kPa. \n\t\t</p>\n\t\t<p>\n\t\t\tThe valve is assumed to be isenthalpic and so the boiler vapour enthalpy can be used with the specified <b>utilityP</b> pressure to determine the steam header properties in flash <b>steamHeader</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThe properties of the condensate return to the boiler, that is after the pump, are calculated in flash <b>utilityCond</b> using the boiler pressure and the assumed 80 C temperature. The flow rate is a simple function of the condensate hold up:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tode.y.condHoldup * 1 \"1/min\"\n\t\t</p>\n\t\t<p>\n\t\t\tWith these properties, the derivatives for <b>ode</b> can be calculated.\n\t\t</p>\n\t\t<p>\n\t\t\tThe derivitive for boiler mass holdup is simply the difference between the steam produced and the return condensate, which is calculated in expression <b>dBoilerMass</b> as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tutilityCond.massf - steamHeader.massf\n\t\t</p>\n\t\t<p>\n\t\t\tSimilarly the condensate holdup derivative is just the negative of the above difference:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tsteamHeader.massf - utilityCond.massf\n\t\t</p>\n\t\t<p>\n\t\t\twhich is calculated in <b>dCondMass</b> for clarity, but just using <b>-dBoilerMass</b> would have been sufficient.\n\t\t</p>\n\t\t<p>\n\t\t\tA heat balance around the boiler provides the boiler energy derivative, by subtracting the steam header energy flow, again assuming the valve to be isentropic, from the supplied boiler heat plus the energy of the condensate return. This is done in expression <b>dBoilerEnergy</b>:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tboilerHeat + utilityCond.hFlow - steamHeader.hflow\n\t\t</p>\n\t\t<p>\n\t\t\tFinally the error signal for the flow controller calculation is taken as the difference between the desired flow, 3000 kg/h, and the actual flow divided by a scaling factor. This is done in <b>FlowSigError</b> as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t(3000 \"kg/h\" - steamFlow) / 6000 \"kg/h\"\n\t\t</p>\n\t\t<p>\n\t\t\tThe error derivative for the integral portion of the controller is entered directly in the table of derivatives in <b>derivatives</b> as:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tflowErrorSig / 1 s\n\t\t</p>\n\t\t<p>\n\t\t\tThe resulting heat flow to the boiler is calculated from the controller formula:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t5000 kw *\n\t\t\t{max 0, {min 1, FlowErrorSig * 3 +\n\t\t\tode.y.errorAccum * 0.2}}\n\t\t</p>\n\t\t<p>\n\t\t\twith the output signal using a proportionality constant of 3 and an integral constant of 0.2. The signal is constrained to the range 0 to 1 and multiplied by a heat flow of 5000 kw.\n\t\t</p>\n\t\t<p>\n\t\t\tThe <b>ode</b> tool records time, boiler holdup, boiler pressure, steam flow and condensate hold up and these are plotted in the <b>plots</b> with time on the x axis. Tap on the y axis in <b>plots</b> to cycle through the various lines. A static image is presented below:\n\t\t</p>\n\t\t<mm>plots.svg</mm>\n\t\t<p>\n\t\t\t<a href=\"http://redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+				},
+				"f0": "plots.svg",
+				"f1": "zoomed_vle.svg"
+			}
+		]
+	}
+}
