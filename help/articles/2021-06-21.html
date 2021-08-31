@@ -1,0 +1,79 @@
+		<style>
+			#header {
+				display: grid;
+				grid-template-columns: 1fr 65px;
+				grid-gap: 10px;
+				border-bottom: 1px solid black;
+				margin-bottom: 10px;
+			}
+			#header img {
+				align-self: center;
+			}
+		</style>
+		<div id="page">
+		<div id="header">
+		<h3>Welcome to Math Minion News</h3>
+		<img src="./help/minion64.png"/>
+		</div>
+		<div class="section">
+			<p><b>2021-06-22</b></p>
+			<h3>New News</h3>
+			<p>
+				Rather than just posting news on the main web page, where it probably would be missed by folks actually running Math Minion, I am trying something new.
+			</p>
+			<p>
+				Now when Math Minion loads and there is new news, it will automatically download and open a <b>MM_News</b> session from the server. The idea behind using a session rather than a simple text post is that it may sometimes be helpful to include examples along with the text. In any event the HtmlPage tool provides an easy way to present information. 
+			</p>
+			<p>
+				Feel free to delete the <b>MM_News</b> session. It won't be downloaded again until there is more news. Please note that if you make any changes to the MM_News session, they will be replaced the next time there is news, so save them somewhere else if you want to keep them.
+			</p>
+		</div>
+		<div class="section">
+			<h3>Server Address Changes (Again)</h3>
+			<p>
+				I previously posted some information on the main web page about problems that arose with a recent update of Apple's Safari web browser.
+			</p>
+			<p>
+				In essence they decided that any address using a CName DNS record for redirection must be trying to avoid their anti tracking measures and so they clear that site's browser database whenever the browser quits. In Math Minion's case this would have the effect of erasing all saved sessions. Not good!
+			</p>
+			<p>
+				The CName record was being used to redirect from mathminion.org the the Amazon AWS S3 bucket that acts as a static server for Math Minion. I initially suggested using the actual, if ugly, Amazon url to run Math Minion, namely:
+			</p>
+			<p class="formula">https://s3.amazonaws.com/<br>www.mathminion.org/run.html</p>
+			<p>
+				This required exporting the sessions from the existing address and importing them for the new address. Browser databases are only accessible to the domain names that create them, so an address change means a new database.
+			</p>
+			<p>
+				Unfortunately using the Amazon address has its own problems, but by using an Amazon DNS server, it is possible to avoid using the CName record Safari gets sniffy about.  So I am now recommending going back to:
+			</p>
+			<p class="formula">http://mathminion.org/run.html</p>
+			<p>
+				Alas this will mean once again moving your sessions.  Fortunately it is pretty easy:
+			</p>
+			<ul>
+				<li>Use the Amazon address to run Math Minion. Tap the <b>Sessions</b> button at the bottom of the <a href="./help/infoview.html" target="_blank">information view</a> to open the <a href="./help/sessions.html" target="_blank">sessions view</a> and click on the <b>Export All</b> button.</b> Save the exported file someplace convenient.  (You should do this frequently to ensure you have a backup of your sessions.</li>
+				<li>Now use the <b>http://mathminion.org/run.html</b> address to run Math Minion.</li>
+				<li>If you have any old sessions saved from before, you should probably delete them to avoid duplicates.</li>
+				<li>
+					Go to the sessions view again and click on import.  Select the file you saved.
+				</li>
+				<li>The imported sessions will be in a top level folder called root. Go to the sessions view and click on the gear icon to the right of the root folder name.</li>
+				<li>Select <b>Rename</b> and rename <b>/root</b> to just <b>/</b>. This will have the effect of moving all your session to the top level folder.
+					<p>
+						Note that if a session already exists at the top level with the same name as one in <b>/root</b>, the file from /root will be put in a folder named <b>copy-2</b> or similar.
+					</p>
+				</li>
+			</ul>
+			<p>
+				My apologies for all the trouble.
+			</p>
+		</div>
+		<div class="section">
+			<h3>Other Changes</h3>
+			<p>
+				For a full list of changes please see the
+				<a href="https://github.com/CraigGMorris/mmjs/commits/master" target="_blank">Git Hub log of changes</a>.
+			</p>
+		</div>
+		<p>Craig - Please feel free to <a href="http://www.redtree.com/contact.html" target="_blank">Contact me</a></p>
+		</div>
