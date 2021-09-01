@@ -1,0 +1,39 @@
+		<style>
+			#header {
+				display: grid;
+				grid-template-columns: 1fr 65px;
+				grid-gap: 10px;
+				border-bottom: 1px solid black;
+				margin-bottom: 10px;
+			}
+			#header img {
+				align-self: center;
+			}
+		</style>
+		<div id="page">
+		<div id="header">
+		<h3>Welcome to Math Minion News</h3>
+		<img src="./help/minion64.png"/>
+		</div>
+		<div class="section">
+			<p><b>2021-07-03</b></p>
+			<h3>CoolMM</h3>
+			<p>
+				Having once had some background in chemical engineering software, I have long been intrigued with the idea of adding a fluid flash tool to Math Minion.  Thus when I discovered that the open source <a href="http://coolprop.org" target="_blank">CoolProp</a> property package had a Javascript wrapper based on web assembly, I couldn't resist doing just that.
+			</p>
+			<p>
+				The result is a <b>CoolMM</b> version that can be run at at:
+			</p>
+			<p class="formula">
+				http://coolmm.mathminion.org
+			</p>
+			<p>
+				However please be patient for CoolProp is written in C++ and is compiled into web assembly. This allows it to be incorporated in Math Minion and run directly in the browser, but it also means there is a lot of code to download. Otherwise this version is identical to the normal version of Math Minion.
+			</p>
+			<p>
+				CoolProp aims to emulate RefProp from NIST and as might be expected from the name, seems to do best with refrigeration and steam problems, but does have a range of other mainly light components. I did experience some strange flash behaviour and failures in the an example with a multicomponent natural gas like compositions.  I discuss some of it in the example.
+			</p>
+			<p>
+				<a href="http://redtree.com/contact.html" target="_blank">Craig</a>
+			</p>
+		</div>

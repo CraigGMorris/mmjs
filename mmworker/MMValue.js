@@ -21,6 +21,7 @@
 	MMCommandMessage:readonly
 	MMNumberValue:readonly
 	MMStringValue:readonly
+	theMMSession:readonly
 */
 
 /**

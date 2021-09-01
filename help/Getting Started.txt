@@ -12787,8 +12787,8 @@
 				"Objects": [
 					{
 						"name": "Operators",
-						"DiagramX": -5,
-						"DiagramY": -50,
+						"DiagramX": -75,
+						"DiagramY": -20,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -12834,8 +12834,8 @@
 					},
 					{
 						"name": "Functions",
-						"DiagramX": -5,
-						"DiagramY": -30,
+						"DiagramX": -75,
+						"DiagramY": 0,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -12882,8 +12882,8 @@
 					},
 					{
 						"name": "Scalars",
-						"DiagramX": -5,
-						"DiagramY": -70,
+						"DiagramX": -75,
+						"DiagramY": -40,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -12929,8 +12929,8 @@
 					},
 					{
 						"name": "Arrays",
-						"DiagramX": -5,
-						"DiagramY": -10,
+						"DiagramX": -75,
+						"DiagramY": 20,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -13230,8 +13230,8 @@
 					{
 						"name": "Comparisons",
 						"Notes": "",
-						"DiagramX": -5,
-						"DiagramY": 10,
+						"DiagramX": -75,
+						"DiagramY": 40,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -13300,184 +13300,157 @@
 						]
 					},
 					{
-						"name": "Other_Values",
+						"name": "Formulas",
+						"Notes": "Overview",
+						"DiagramX": -40,
+						"DiagramY": -70,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Formulas</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tAt the heart of Math Minion calculations are the formulas that express the relationships between various objects.\n\t\t</p>\n\t\t<p>\n\t\t\tThey can be as simple as a scalar constant, or <b>2 + 2</b>, but if the need arises, they can be complicated expressions involving functions and conditions.\n\t\t</p>\n\t\t<p>\n\t\t\tTap on the icons for the models on the right of the diagram to explore the different features of formulas.\n\t\t</p>\n\t\t<p>\n\t\t\tFormulas are display in blue text in fields preceded by and equals sign (<b>=</b>). Tapping on the field will open a formula editor.  See the help for more information on its features.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+						}
+					},
+					{
+						"name": "Date_And_Time",
 						"Notes": "",
 						"DiagramX": -5,
-						"DiagramY": 30,
+						"DiagramY": -40,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
-						"indexTool": "other_values",
+						"indexTool": "dateunit",
 						"Objects": [
 							{
-								"name": "Date_And_Time",
-								"Notes": "",
-								"DiagramX": 95,
-								"DiagramY": 10,
+								"name": "Input_Output",
+								"Notes": "Examples of different date units",
+								"DiagramX": 480,
+								"DiagramY": 520,
 								"HideInfo": "n",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
 								"Type": "Model",
 								"diagramScale": 1,
-								"indexTool": "dateunit",
 								"Objects": [
 									{
-										"name": "Input_Output",
-										"Notes": "Examples of different date units",
-										"DiagramX": 480,
-										"DiagramY": 520,
-										"HideInfo": "n",
+										"name": "InputDate",
+										"Notes": "The date and time of Apollo 11's landing on the moon is input using the date unit and displayed with the same unit.\n",
+										"DiagramX": 20,
+										"DiagramY": 20,
+										"HideInfo": "y",
 										"DiagramNotes": "y",
-										"Type": "Model",
-										"diagramScale": 1,
-										"Objects": [
-											{
-												"name": "InputDate",
-												"Notes": "The date and time of Apollo 11's landing on the moon is input using the date unit and displayed with the same unit.\n",
-												"DiagramX": 20,
-												"DiagramY": 20,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "19690720.2018 date"
-												},
-												"displayUnit": "date"
-											},
-											{
-												"name": "OutDateD",
-												"Notes": "This is the InputDate value displayed with the dated unit, which has the format\nddmmyyyy.hhmmss.",
-												"DiagramX": 105,
-												"DiagramY": 20,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "InputDate"
-												},
-												"displayUnit": "dated"
-											},
-											{
-												"name": "OutputDateM",
-												"Notes": "This is the InputDate value displayed with the datem unit, which has the format\nmmddyyyy.hhmmss.",
-												"DiagramX": 190,
-												"DiagramY": 20,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "OutDateD"
-												},
-												"displayUnit": "datem"
-											},
-											{
-												"name": "InputDateM",
-												"Notes": "The date and time of Apollo 11's landing on the moon is input using the datem unit and displayed with the same unit.\n\nThe datem format is\nddmmyyyy.hhmmss.",
-												"DiagramX": 20,
-												"DiagramY": 85,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "07201969.2018 datem"
-												},
-												"displayUnit": "datem"
-											},
-											{
-												"name": "InputDateD",
-												"Notes": "The date and time of Apollo 11's landing on the moon is input using the dated unit and displayed with the same unit.\n\nThe dated format is\nddmmyyyy.hhmmss.",
-												"DiagramX": 105,
-												"DiagramY": 85,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "20071969.2018 dated"
-												},
-												"displayUnit": "dated"
-											}
-										]
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "19690720.2018 date"
+										},
+										"displayUnit": "date"
 									},
 									{
-										"name": "Functions",
-										"Notes": "Examples of functions that deal with date and time.",
-										"DiagramX": 480,
-										"DiagramY": 560,
-										"HideInfo": "n",
+										"name": "OutDateD",
+										"Notes": "This is the InputDate value displayed with the dated unit, which has the format\nddmmyyyy.hhmmss.",
+										"DiagramX": 105,
+										"DiagramY": 20,
+										"HideInfo": "y",
 										"DiagramNotes": "y",
-										"Type": "Model",
-										"diagramScale": 1,
-										"Objects": [
-											{
-												"name": "DateFunc",
-												"Notes": "The date function converts a time into a dimensionless number of the form:\n\nyyyymmdd.hhmmss\n",
-												"DiagramX": 25,
-												"DiagramY": 65,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{date {now}}"
-												}
-											},
-											{
-												"name": "MktimeFunc",
-												"Notes": "The mktime function is the inverse of the date function.  It takes a dimensionless number of the form yyyymmdd.hhmmss and converts it into the number of seconds since 00:00 Jan 1, 1970 GMT.\n\nThe result can of course be displayed with any time unit.",
-												"DiagramX": 115,
-												"DiagramY": 65,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{mktime DateFunc}"
-												},
-												"displayUnit": "date"
-											},
-											{
-												"name": "Now",
-												"Notes": "The current time in seconds since 00:00 January 1, 1970. GMT.\n\nSince expressions cache their results unless they are changed, this value will only be calculated when first viewed in a given session.\n\nTo force it to update, click the equals  button to the left of the formula field.\n\nSince no display unit has been assigned, it is displayed in seconds.",
-												"DiagramX": 30,
-												"DiagramY": -65,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{now}"
-												}
-											},
-											{
-												"name": "HumanNow",
-												"Notes": "By using the date display unit, we get a more readable date and time.  Unless you are in the GMT time zone though, it won't represent your local time.\n",
-												"DiagramX": 115,
-												"DiagramY": -65,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{now}"
-												},
-												"displayUnit": "date"
-											},
-											{
-												"name": "NowWithTZ",
-												"Notes": "By adding the result of the {timezone} function, we can convert a time from GMT to our local timezone.\n",
-												"DiagramX": 115,
-												"DiagramY": -5,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{now} + {timezone}"
-												},
-												"displayUnit": "date"
-											}
-										]
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "InputDate"
+										},
+										"displayUnit": "dated"
+									},
+									{
+										"name": "OutputDateM",
+										"Notes": "This is the InputDate value displayed with the datem unit, which has the format\nmmddyyyy.hhmmss.",
+										"DiagramX": 190,
+										"DiagramY": 20,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "OutDateD"
+										},
+										"displayUnit": "datem"
+									},
+									{
+										"name": "InputDateM",
+										"Notes": "The date and time of Apollo 11's landing on the moon is input using the datem unit and displayed with the same unit.\n\nThe datem format is\nddmmyyyy.hhmmss.",
+										"DiagramX": 20,
+										"DiagramY": 85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "07201969.2018 datem"
+										},
+										"displayUnit": "datem"
+									},
+									{
+										"name": "InputDateD",
+										"Notes": "The date and time of Apollo 11's landing on the moon is input using the dated unit and displayed with the same unit.\n\nThe dated format is\nddmmyyyy.hhmmss.",
+										"DiagramX": 105,
+										"DiagramY": 85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "20071969.2018 dated"
+										},
+										"displayUnit": "dated"
+									}
+								]
+							},
+							{
+								"name": "Functions",
+								"Notes": "Examples of functions that deal with date and time.",
+								"DiagramX": 480,
+								"DiagramY": 560,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "DateFunc",
+										"Notes": "The date function converts a time into a dimensionless number of the form:\n\nyyyymmdd.hhmmss\n",
+										"DiagramX": 25,
+										"DiagramY": 65,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{date {now}}"
+										}
+									},
+									{
+										"name": "MktimeFunc",
+										"Notes": "The mktime function is the inverse of the date function.  It takes a dimensionless number of the form yyyymmdd.hhmmss and converts it into the number of seconds since 00:00 Jan 1, 1970 GMT.\n\nThe result can of course be displayed with any time unit.",
+										"DiagramX": 115,
+										"DiagramY": 65,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{mktime DateFunc}"
+										},
+										"displayUnit": "date"
 									},
 									{
 										"name": "Now",
-										"Notes": "The current time, displayed with a date unit.",
-										"DiagramX": 395,
-										"DiagramY": 560,
+										"Notes": "The current time in seconds since 00:00 January 1, 1970. GMT.\n\nSince expressions cache their results unless they are changed, this value will only be calculated when first viewed in a given session.\n\nTo force it to update, click the equals  button to the left of the formula field.\n\nSince no display unit has been assigned, it is displayed in seconds.",
+										"DiagramX": 30,
+										"DiagramY": -65,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{now}"
+										}
+									},
+									{
+										"name": "HumanNow",
+										"Notes": "By using the date display unit, we get a more readable date and time.  Unless you are in the GMT time zone though, it won't represent your local time.\n",
+										"DiagramX": 115,
+										"DiagramY": -65,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
@@ -13487,1252 +13460,1375 @@
 										"displayUnit": "date"
 									},
 									{
-										"name": "DateUnit",
-										"Notes": "Date and time values",
-										"DiagramX": 395,
-										"DiagramY": 520,
+										"name": "NowWithTZ",
+										"Notes": "By adding the result of the {timezone} function, we can convert a time from GMT to our local timezone.\n",
+										"DiagramX": 115,
+										"DiagramY": -5,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{now} + {timezone}"
+										},
+										"displayUnit": "date"
+									}
+								]
+							},
+							{
+								"name": "Now",
+								"Notes": "The current time, displayed with a date unit.",
+								"DiagramX": 395,
+								"DiagramY": 560,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{now}"
+								},
+								"displayUnit": "date"
+							},
+							{
+								"name": "DateUnit",
+								"Notes": "Date and time values",
+								"DiagramX": 395,
+								"DiagramY": 520,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Date Unit</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tDate and time in Math Minion is simply a measure of the number of seconds since 00:00 January 1, 1970.\n\t\t</p> \n\t\t<p>\n\t\t\tHowever since X billion seconds isn't all that comprehensible a date measurement, there is a special date unit for time, which will output a time value in the form:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tyyyymmdd.hhmmss\n\t\t</p>\n\t\t<p>\n\t\t\tIn other words the date in year, month day before the decimal point and the time in hours, minutes and seconds after the decimal point.\n\t\t</p>\n\t\t<p>\n\t\t\tThere are two additional time units available which can be used to input or display alternate date formats:\n\t\t</p>\n\t\t<p class=\"formula\">\ndated - ddmmyyyy.hhmmss<br>\ndatem - mmddyyyy.hhmmss\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								}
+							}
+						]
+					},
+					{
+						"name": "TableValues",
+						"Notes": "",
+						"DiagramX": -5,
+						"DiagramY": 0,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "Table_Values",
+								"Notes": "In addition to arrays and matrices of numbers and strings, Math Minion can also have table values.\n\nThese often originate with a Data Table object like the Hours object in this and the example models, but they can be created directly from formulas as illustrated in the MakeTable expressions.\n\nEssentially a table value is a collection of columns, which all have the same number of rows.\n\nThey can be of different types; that is string or numeric and if numeric, they can have different unit types.\n\nData table tools will be discussed in more detail in the Tools model of the Root model.\n",
+								"DiagramX": -5,
+								"DiagramY": -155,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{table {cc \"Name\", \"Score\"},\n\t{cc \"Tom\", \"Dick\", \"Harry\"},\n\t60 + 10*1:3\n}"
+								}
+							},
+							{
+								"name": "MakeTable",
+								"DiagramX": 75,
+								"DiagramY": -5,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "MakeTable",
+										"Notes": "The table function can be used to make a table value.\n\nThe first argument must be an array of names that will be used as the table column names.\n\nThe remaining parameters must all be arrays having the same number of rows.\n\nTheir columns will be used to make the columns of the new table value.\n\nIf the number of names in the first argument is not the same as the total number of columns in the rest of the arguments, the lessor is used and any extras ignored.\n",
+										"DiagramX": 30,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table {cc \"one\", \"two\", \"three\"},\n\t{cc \"s1\", \"s2\", \"s3\", \"s4\"},\n\t1:4,\n\t{fmt \"n=%3.0f\", 1:4*10}\n}"
+										}
+									},
+									{
+										"name": "MakeTable2",
+										"Notes": "The table function is used to make a table with two numeric columns with different unit types, as well as two string columns.",
+										"DiagramX": 115,
+										"DiagramY": 125,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table\n\t{cc \"Row\",\"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"Row\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 1\"m\",\n\t100:105 * 1\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t\t100:105 * 1\"kg\",\n\t\t\t\t\"lb\"\n\t\t\t}\n}"
+										}
+									},
+									{
+										"name": "MakeTable3",
+										"Notes": "Another table, conformable to MakeTable2",
+										"DiagramX": 205,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table {cc\n\t\t\"Row\", \"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"No\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t100:104 * 1\"kg\", \"lb\"\n\t}\n}"
+										}
+									},
+									{
+										"name": "TableArithmetic",
+										"Notes": "The basic arithmetic operators can be used with tables, with the proviso that the units must conform.  Thus if you are adding or subtracting a scalar, then all the columns must have the same unit type as the scalar.\n\nNote that the first and third columns are strings and are just copied without change.",
+										"DiagramX": 115,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "2 * MakeTable / 3"
+										}
+									},
+									{
+										"name": "AddTables",
+										"Notes": "The two tables are added together.  They must have the same number of rows and columns and the columns must conform in type and unit type.\n\nNote that the first and last columns are strings and are just taken from the first argument, without modification.\n",
+										"DiagramX": 205,
+										"DiagramY": 85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "MakeTable2 + MakeTable3"
+										}
+									}
+								]
+							},
+							{
+								"name": "Index",
+								"DiagramX": 75,
+								"DiagramY": -65,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "indexCell",
+										"Notes": "Cells of a table value can be referenced with the [ ] index operator in the normal row, column manner using numbers.",
+										"DiagramX": 10,
+										"DiagramY": 95,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours[3, 2]"
+										}
+									},
+									{
+										"name": "indexCell2",
+										"Notes": "A column index can be replaced with a column name for a table value.",
+										"DiagramX": 10,
+										"DiagramY": 155,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours[3, \"Client\"]"
+										}
+									},
+									{
+										"name": "IndexRows",
+										"Notes": "An array of row indexes can be used to get certain rows of a table value.  The result will itself be a table value.",
+										"DiagramX": 10,
+										"DiagramY": 200,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours[ 3:5 ]"
+										}
+									},
+									{
+										"name": "IndexColumns",
+										"Notes": "If an array of column names (here created by the concat function) is used as a column index, then those columns will be in the table value result.",
+										"DiagramX": 205,
+										"DiagramY": 90,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours[ 0, {cc \"project\", \"hours\"} ]"
+										}
+									},
+									{
+										"name": "SingleColumn",
+										"Notes": "If only a single column is returned, then it is returned as a normal numeric or string array, rather than as a table value.\n\nNote that in this case the display unit is not retained and the value is displayed in seconds.  You could of course set the display unit for this expression.",
+										"DiagramX": 205,
+										"DiagramY": 155,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours[0,1]"
+										}
+									},
+									{
+										"name": "ColumnRef",
+										"Notes": "A single column can also be obtained by using the column name in the dot notation.\n\nHere the display unit has been set on this expression.",
+										"DiagramX": 200,
+										"DiagramY": 255,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours.date"
+										},
+										"displayUnit": "date"
+									},
+									{
+										"name": "Hours",
+										"Notes": "This expression has its input checkbox checked, which lets it reference the Hours data table in the parent model. Its value is thus the table value from that table.\n\nThings to note:\n - cells cannot be modified as they can in the source data table.\n\n - the display unit for each column retains the display unit from its source, but you can change that by clicking on the column name and then the button to the right of the display unit (above the table).",
+										"DiagramX": 110,
+										"DiagramY": 85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours"
+										},
+										"isInput": "y",
+										"tableUnits": {}
+									}
+								]
+							},
+							{
+								"name": "Select",
+								"DiagramX": 75,
+								"DiagramY": -45,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"indexTool": "Select_Function",
+								"Objects": [
+									{
+										"name": "Hours",
+										"Notes": "This expression has its input checkbox checked, which lets it reference the Hours data table in the parent model. Its value is thus the table value from that table.",
+										"DiagramX": 30,
+										"DiagramY": 85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours"
+										},
+										"isInput": "y",
+										"tableUnits": {}
+									},
+									{
+										"name": "boolSelect",
+										"Notes": "Also finds all the rows of Hours that have Coyote in the project column, but uses a boolean selector array instead of a string command.",
+										"DiagramX": 115,
+										"DiagramY": 85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours,\n\t{eq hours.project, \"Coyote\"}\n}"
+										}
+									},
+									{
+										"name": "Select",
+										"Notes": "Find all the rows of Hours that have Coyote in the project column.",
+										"DiagramX": 115,
+										"DiagramY": 40,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours, \"project = Coyote\"}"
+										}
+									},
+									{
+										"name": "Select_Function",
+										"Notes": "Select Function Overview",
+										"DiagramX": 30,
+										"DiagramY": 40,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "HTML Form",
 										"Formula": {
-											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Date Unit</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tDate and time in Math Minion is simply a measure of the number of seconds since 00:00 January 1, 1970.\n\t\t</p> \n\t\t<p>\n\t\t\tHowever since X billion seconds isn't all that comprehensible a date measurement, there is a special date unit for time, which will output a time value in the form:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\tyyyymmdd.hhmmss\n\t\t</p>\n\t\t<p>\n\t\t\tIn other words the date in year, month day before the decimal point and the time in hours, minutes and seconds after the decimal point.\n\t\t</p>\n\t\t<p>\n\t\t\tThere are two additional time units available which can be used to input or display alternate date formats:\n\t\t</p>\n\t\t<p class=\"formula\">\ndated - ddmmyyyy.hhmmss<br>\ndatem - mmddyyyy.hhmmss\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Select Function</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t\t<p>\n\t\t\t\tThe select function can be used to choose certain rows of a table, thus creating a new table value. For instance the <b>Select</b> expression in this model uses the formula:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t{select hours, \"project = Coyote\"}\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tto find all the rows in the table value <b>hours</b> which have a value of \"Coyote\" in the project column.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tThe first parameter of the function is simply the table value, in this case from the expression <b>hours</b>.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tThe second parameter is a string of the form\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\t\n\t\t\t\t\"column op value\"\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\twhere <b>column</b> is the name of the table column and the <b>op</b> term is one of (<b>=, <, <=, >, >=</b>). The <b>value</b> term is some value that will be matched against each row of the column using the given operation.  The value isn't a formula, but can have a unit if it is numeric. String comparisons are case insensitive.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tIf the selector has more than one row, each result is \"ANDed\" with the previous result, unless the \"column\" term is preceded by a \"|\" character, in which case an OR operation is performed with the previous result. An \"&\" character can optionally be used for AND operations to make the formula more descriptive.\n\t\t\t<p>\n\t\t\t<p>\n\t\t\t\tInstead of a string value, the second parameter of select can be a column array with the same number of rows as the table.  All the rows of this argument which are nonzero will be selected from the source table and included in the result.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe expression <b>boolSelect</b> uses the formula:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t{select hours, {eq hours.project, \"Coyote\"}}\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\twhich will also select all the rows whose project column has a value of \"Coyote\", producing the same result as the <b>Select</b> expression.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe select command will also work on matrices of numbers and strings in the same way, with the column name being replaced by the column number.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tSee the various other expressions in this model for examples.\n\t\t\t</p>\n\n\t\t</div>\n\t</body>\n</html>"
+										}
+									},
+									{
+										"name": "OrSelect",
+										"Notes": "Find all rows where project is either Coyote or Accounting",
+										"DiagramX": 30,
+										"DiagramY": 205,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours,\n\t{cc\n\t\t\"project = coyote\",\n\t\t\"| project = accounting\"\n\t}\n}"
+										}
+									},
+									{
+										"name": "BeforeAugust",
+										"Notes": "Another example of using the select, this time to obtain all the records before Aug 1, 2012. Note the use of the date unit.",
+										"DiagramX": 115,
+										"DiagramY": 150,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours, \"date < 20120801 date\"}"
+										}
+									},
+									{
+										"name": "OrAndSelect",
+										"Notes": "Select all rows where the project is either Coyote or Accounting and has a date before August.",
+										"DiagramX": 115,
+										"DiagramY": 205,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours,\n\t{cc\n\t\t\"project = coyote\",\n\t\t\"| project = accounting\",\n\t\t\"date < 20120801 date\"\n\t}\n}"
+										}
+									},
+									{
+										"name": "NumberbyString",
+										"Notes": "Select rows where column 2 is less than 60",
+										"DiagramX": 30,
+										"DiagramY": 255,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select {append 1:50, 51:100},\n\t\"2 <= 60\"\n}"
+										}
+									},
+									{
+										"name": "StringByString",
+										"Notes": "Select rows where column 1 (the only column) are greater or equal to \"f\".",
+										"DiagramX": 110,
+										"DiagramY": 255,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select\n\t{cc\n\t\t\"a\",\"b\",\"c\",\"d\",\"e\",\n\t\t\"f\",\"g\",\"h\",\"i\",\"j\"\n\t}, \"1 >= f\"\n}"
+										}
+									},
+									{
+										"name": "AndSelect",
+										"Notes": "Select rows where Fred is the client and the project is Accounting.",
+										"DiagramX": 30,
+										"DiagramY": 150,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours,\n\t{cc\n\t\t\"client = Fred\",\n\t\t\"project = accounting\"\n\t}\n}"
 										}
 									}
 								]
 							},
 							{
-								"name": "TableValues",
-								"Notes": "",
-								"DiagramX": 95,
-								"DiagramY": 60,
+								"name": "Sums",
+								"DiagramX": 75,
+								"DiagramY": -25,
 								"HideInfo": "n",
 								"DiagramNotes": "n",
 								"Type": "Model",
 								"diagramScale": 1,
 								"Objects": [
 									{
-										"name": "Table_Values",
-										"Notes": "In addition to arrays and matrices of numbers and strings, Math Minion can also have table values.\n\nThese often originate with a Data Table object like the Hours object in this and the example models, but they can be created directly from formulas as illustrated in the MakeTable expressions.\n\nEssentially a table value is a collection of columns, which all have the same number of rows.\n\nThey can be of different types; that is string or numeric and if numeric, they can have different unit types.\n\nData table tools will be discussed in more detail in the Tools model of the Root model.\n",
-										"DiagramX": -5,
-										"DiagramY": -155,
+										"name": "DayHours",
+										"Notes": "If you group on a numeric column, the values in the column are first converted to strings.\n\nHere we calculated the total number of hours on each date.\n",
+										"DiagramX": 285,
+										"DiagramY": 80,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{table {cc \"Name\", \"Score\"},\n\t{cc \"Tom\", \"Dick\", \"Harry\"},\n\t60 + 10*1:3\n}"
+											"Formula": "{groupsum Hours, \"Date\"}"
+										},
+										"tableUnits": {
+											"1": "date"
 										}
 									},
 									{
-										"name": "MakeTable",
-										"DiagramX": 75,
-										"DiagramY": -5,
-										"HideInfo": "n",
-										"DiagramNotes": "n",
-										"Type": "Model",
-										"diagramScale": 1,
-										"Objects": [
-											{
-												"name": "MakeTable",
-												"Notes": "The table function can be used to make a table value.\n\nThe first argument must be an array of names that will be used as the table column names.\n\nThe remaining parameters must all be arrays having the same number of rows.\n\nTheir columns will be used to make the columns of the new table value.\n\nIf the number of names in the first argument is not the same as the total number of columns in the rest of the arguments, the lessor is used and any extras ignored.\n",
-												"DiagramX": 30,
-												"DiagramY": 25,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{table {cc \"one\", \"two\", \"three\"},\n\t{cc \"s1\", \"s2\", \"s3\", \"s4\"},\n\t1:4,\n\t{fmt \"n=%3.0f\", 1:4*10}\n}"
-												}
-											},
-											{
-												"name": "MakeTable2",
-												"Notes": "The table function is used to make a table with two numeric columns with different unit types, as well as two string columns.",
-												"DiagramX": 115,
-												"DiagramY": 125,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{table\n\t{cc \"Row\",\"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"Row\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 1\"m\",\n\t100:105 * 1\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t\t100:105 * 1\"kg\",\n\t\t\t\t\"lb\"\n\t\t\t}\n}"
-												}
-											},
-											{
-												"name": "MakeTable3",
-												"Notes": "Another table, conformable to MakeTable2",
-												"DiagramX": 205,
-												"DiagramY": 25,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{table {cc\n\t\t\"Row\", \"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"No\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t100:104 * 1\"kg\", \"lb\"\n\t}\n}"
-												}
-											},
-											{
-												"name": "TableArithmetic",
-												"Notes": "The basic arithmetic operators can be used with tables, with the proviso that the units must conform.  Thus if you are adding or subtracting a scalar, then all the columns must have the same unit type as the scalar.\n\nNote that the first and third columns are strings and are just copied without change.",
-												"DiagramX": 115,
-												"DiagramY": 25,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "2 * MakeTable / 3"
-												}
-											},
-											{
-												"name": "AddTables",
-												"Notes": "The two tables are added together.  They must have the same number of rows and columns and the columns must conform in type and unit type.\n\nNote that the first and last columns are strings and are just taken from the first argument, without modification.\n",
-												"DiagramX": 205,
-												"DiagramY": 85,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "MakeTable2 + MakeTable3"
-												}
-											}
-										]
+										"name": "clients",
+										"Notes": "Here the indexof values are used to extract the client names from Hours, corresponding to the projects in projectsum.\n\nhours.client[ indexof[0,1] ]\n\nBecause it is a single column, it is returned as a simple column array, not a table value.",
+										"DiagramX": 270,
+										"DiagramY": 190,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours.client[ indexof[0,1] ]"
+										}
 									},
 									{
-										"name": "Index",
-										"DiagramX": 75,
-										"DiagramY": -65,
-										"HideInfo": "n",
-										"DiagramNotes": "n",
-										"Type": "Model",
-										"diagramScale": 1,
-										"Objects": [
-											{
-												"name": "indexCell",
-												"Notes": "Cells of a table value can be referenced with the [ ] index operator in the normal row, column manner using numbers.",
-												"DiagramX": 10,
-												"DiagramY": 95,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "hours[3, 2]"
-												}
-											},
-											{
-												"name": "indexCell2",
-												"Notes": "A column index can be replaced with a column name for a table value.",
-												"DiagramX": 10,
-												"DiagramY": 155,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "hours[3, \"Client\"]"
-												}
-											},
-											{
-												"name": "IndexRows",
-												"Notes": "An array of row indexes can be used to get certain rows of a table value.  The result will itself be a table value.",
-												"DiagramX": 10,
-												"DiagramY": 200,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "hours[ 3:5 ]"
-												}
-											},
-											{
-												"name": "IndexColumns",
-												"Notes": "If an array of column names (here created by the concat function) is used as a column index, then those columns will be in the table value result.",
-												"DiagramX": 205,
-												"DiagramY": 90,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "hours[ 0, {cc \"project\", \"hours\"} ]"
-												}
-											},
-											{
-												"name": "SingleColumn",
-												"Notes": "If only a single column is returned, then it is returned as a normal numeric or string array, rather than as a table value.\n\nNote that in this case the display unit is not retained and the value is displayed in seconds.  You could of course set the display unit for this expression.",
-												"DiagramX": 205,
-												"DiagramY": 155,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "hours[0,1]"
-												}
-											},
-											{
-												"name": "ColumnRef",
-												"Notes": "A single column can also be obtained by using the column name in the dot notation.\n\nHere the display unit has been set on this expression.",
-												"DiagramX": 200,
-												"DiagramY": 255,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "hours.date"
-												},
-												"displayUnit": "date"
-											},
-											{
-												"name": "Hours",
-												"Notes": "This expression has its input checkbox checked, which lets it reference the Hours data table in the parent model. Its value is thus the table value from that table.\n\nThings to note:\n - cells cannot be modified as they can in the source data table.\n\n - the display unit for each column retains the display unit from its source, but you can change that by clicking on the column name and then the button to the right of the display unit (above the table).",
-												"DiagramX": 110,
-												"DiagramY": 85,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "hours"
-												},
-												"isInput": "y",
-												"tableUnits": {}
-											}
-										]
+										"name": "ProjectHours",
+										"Notes": "The append function can be used to combine the columns of different tables into a single table.  All of the arguments must have the same number of rows.\n\nIt is used here to add a column of client names to the projectsum result:\n\n{append projectsum,\n   {table \"Client\", clients}\n}\n\nThe clients value is not a table, but we can easily convert it into one with the table function.",
+										"DiagramX": 350,
+										"DiagramY": 160,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{append projectsum,\n\t{table \"Client\", clients}\n}"
+										}
 									},
 									{
-										"name": "Select",
-										"DiagramX": 75,
-										"DiagramY": -45,
-										"HideInfo": "n",
-										"DiagramNotes": "n",
-										"Type": "Model",
-										"diagramScale": 1,
-										"Objects": [
-											{
-												"name": "select",
-												"Notes": "The select function can be used to choose certain rows of a table, thus creating a new table value.\n\nThe formula in this case is:\n\n{select hours, {eq hours.project, \"Coyote\"}}\n\nThe first parameter of the function is simply the table value.\n\nThe second parameter is a column array with the same number of rows as the table.  All the rows of this argument which are nonzero (or not zero length if a string), will be selected from the source table and included in the result.\n\nIn this case that will be all the rows whose project column has a value of \"Coyote\".\n\nNote the select command will also work on matrices of numbers and strings in the same way.",
-												"DiagramX": 110,
-												"DiagramY": 40,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{select hours,\n\t{eq hours.project, \"Coyote\"}\n}"
-												}
-											},
-											{
-												"name": "July",
-												"Notes": "Another example of using the select, this time to obtain all the records before Aug 1, 2012.",
-												"DiagramX": 185,
-												"DiagramY": 30,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{select hours,\n\t{lt hours.date, 20120801\"date\"}\n}"
-												}
-											},
-											{
-												"name": "Hours",
-												"Notes": "This expression has its input checkbox checked, which lets it reference the Hours data table in the parent model. Its value is thus the table value from that table.",
-												"DiagramX": 25,
-												"DiagramY": 30,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "hours"
-												},
-												"isInput": "y",
-												"tableUnits": {}
-											}
-										]
+										"name": "projectsum",
+										"Notes": "This expression uses the groupsum function to get the total hours by project:\n\n{groupsum\n\thours[0,{cc \"project\", \"Hours\"}],\n\t\"project\"\n} \n\nThe first argument is the table value to be totalled.  In this case the index operator has been used to select just the project and hours columns.\n\nThe second argument is the column for which identical values are to be grouped together into a single row.\n\n Other columns in that row will be the sums of the values for that group.\n\nThe argument must be a string and must be the name of a column in the table.\n\nThere are also groupmin and groupmax functions.\n",
+										"DiagramX": 85,
+										"DiagramY": 100,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{groupsum\n\thours[0,{cc \"project\", \"Hours\"}],\n\t\"project\"\n} "
+										}
 									},
 									{
-										"name": "Sums",
-										"DiagramX": 75,
-										"DiagramY": -25,
-										"HideInfo": "n",
-										"DiagramNotes": "n",
-										"Type": "Model",
-										"diagramScale": 1,
-										"Objects": [
-											{
-												"name": "DayHours",
-												"Notes": "If you group on a numeric column, the values in the column are first converted to strings.\n\nHere we calculated the total number of hours on each date.\n",
-												"DiagramX": 285,
-												"DiagramY": 80,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{groupsum Hours, \"Date\"}"
-												},
-												"tableUnits": {
-													"1": "date"
-												}
-											},
-											{
-												"name": "clients",
-												"Notes": "Here the indexof values are used to extract the client names from Hours, corresponding to the projects in projectsum.\n\nhours.client[ indexof[0,1] ]\n\nBecause it is a single column, it is returned as a simple column array, not a table value.",
-												"DiagramX": 270,
-												"DiagramY": 190,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "hours.client[ indexof[0,1] ]"
-												}
-											},
-											{
-												"name": "ProjectHours",
-												"Notes": "The append function can be used to combine the columns of different tables into a single table.  All of the arguments must have the same number of rows.\n\nIt is used here to add a column of client names to the projectsum result:\n\n{append projectsum,\n   {table \"Client\", clients}\n}\n\nThe clients value is not a table, but we can easily convert it into one with the table function.",
-												"DiagramX": 350,
-												"DiagramY": 160,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{append projectsum,\n\t{table \"Client\", clients}\n}"
-												}
-											},
-											{
-												"name": "projectsum",
-												"Notes": "This expression uses the groupsum function to get the total hours by project:\n\n{groupsum\n\thours[0,{cc \"project\", \"Hours\"}],\n\t\"project\"\n} \n\nThe first argument is the table value to be totalled.  In this case the index operator has been used to select just the project and hours columns.\n\nThe second argument is the column for which identical values are to be grouped together into a single row.\n\n Other columns in that row will be the sums of the values for that group.\n\nThe argument must be a string and must be the name of a column in the table.\n\nThere are also groupmin and groupmax functions.\n",
-												"DiagramX": 85,
-												"DiagramY": 100,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{groupsum\n\thours[0,{cc \"project\", \"Hours\"}],\n\t\"project\"\n} "
-												}
-											},
-											{
-												"name": "indexof",
-												"Notes": "{indexof\n\tprojectsum.project,\n\thours.project\n}\n\nIndexof returns a matrix with two columns.\n\nThe first column holds the row numbers of the first cell found in hours.project, which has the same value as the first value found in projectsum.project.\n\nThe second column holds the column number of that cell.\n\nThus for each project name in projectsum, there will be a row with the indices for the first occurrence of that name in the projects column of hours.",
-												"DiagramX": 175,
-												"DiagramY": 145,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{indexof\n\tprojectsum.project,\n\thours.project\n}"
-												}
-											},
-											{
-												"name": "Hours",
-												"Notes": "This expression has its input checkbox checked, which lets it reference the Hours data table in the parent model. Its value is thus the table value from that table.",
-												"DiagramX": 200,
-												"DiagramY": 75,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "hours"
-												},
-												"isInput": "y",
-												"tableUnits": {}
-											}
-										]
+										"name": "indexof",
+										"Notes": "{indexof\n\tprojectsum.project,\n\thours.project\n}\n\nIndexof returns a matrix with two columns.\n\nThe first column holds the row numbers of the first cell found in hours.project, which has the same value as the first value found in projectsum.project.\n\nThe second column holds the column number of that cell.\n\nThus for each project name in projectsum, there will be a row with the indices for the first occurrence of that name in the projects column of hours.",
+										"DiagramX": 175,
+										"DiagramY": 145,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{indexof\n\tprojectsum.project,\n\thours.project\n}"
+										}
 									},
 									{
 										"name": "Hours",
-										"Notes": "This data table tool is a simple fictitious time sheet with a month of values.  It has four columns, consisting of Date, Client, Project and hours.\n\nWhen new rows are added, they are initialized with today's date, the last row's Client and Project value and 0 hours.",
-										"DiagramX": 75,
-										"DiagramY": -155,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Data Table",
-										"Columns": [
-											{
-												"name": "Date",
-												"displayUnit": "date",
-												"nValues": [
-													1342396800,
-													1342396800,
-													1342483200,
-													1342569600,
-													1342569600,
-													1342656000,
-													1342656000,
-													1342742400,
-													1342742400,
-													1342828800,
-													1342828800,
-													1342915200,
-													1343001600,
-													1343174400,
-													1343174400,
-													1343260800,
-													1343347200,
-													1343433600,
-													1343433600,
-													1343520000,
-													1343606400,
-													1343692800,
-													1343779200,
-													1343779200,
-													1343865600,
-													1343865600,
-													1343952000,
-													1344038400,
-													1344038400,
-													1344124800,
-													1344124800,
-													1344297600,
-													1344384000,
-													1344470400,
-													1344556800,
-													1344556800,
-													1344643200,
-													1344729600,
-													1344729600,
-													1344816000,
-													1344902400,
-													1344902400,
-													1344988800,
-													1344988800
-												],
-												"unitDimensions": "0 0 1 0 0 0 0",
-												"defaultValue": "{mktime {int {date {now}}}}"
-											},
-											{
-												"name": "Client",
-												"displayUnit": "string",
-												"sValues": [
-													"HAL",
-													"Fred",
-													"Acme",
-													"Acme",
-													"Acme",
-													"HAL",
-													"Acme",
-													"HAL",
-													"Fred",
-													"Fred",
-													"Acme",
-													"Acme",
-													"Acme",
-													"Fred",
-													"HAL",
-													"HAL",
-													"HAL",
-													"HAL",
-													"Acme",
-													"Acme",
-													"Pear",
-													"Pear",
-													"Pear",
-													"HAL",
-													"Pear",
-													"Fred",
-													"Pear",
-													"Pear",
-													"Acme",
-													"Pear",
-													"HAL",
-													"HAL",
-													"HAL",
-													"HAL",
-													"Fred",
-													"HAL",
-													"HAL",
-													"HAL",
-													"Fred",
-													"Fred",
-													"Pear",
-													"Fred",
-													"HAL",
-													"Acme"
-												],
-												"defaultValue": "$[$.nrows,2]"
-											},
-											{
-												"name": "Project",
-												"displayUnit": "string",
-												"sValues": [
-													"DeepThought",
-													"Accounting",
-													"Coyote",
-													"Coyote",
-													"Coyote",
-													"DeepThought",
-													"RR",
-													"DeepThought",
-													"Accounting",
-													"Accounting",
-													"RR",
-													"RR",
-													"RR",
-													"Accounting",
-													"DeepThought",
-													"DeepThought",
-													"DeepThought",
-													"DeepThought",
-													"RR",
-													"Coyote",
-													"iWant",
-													"iWant",
-													"iWant",
-													"DeepThought",
-													"iWant",
-													"Accounting",
-													"iWant",
-													"iWish",
-													"RR",
-													"iWish",
-													"Clarke",
-													"Clarke",
-													"Clarke",
-													"Clarke",
-													"Accounting",
-													"Clarke",
-													"Clarke",
-													"Clarke",
-													"Report",
-													"Report",
-													"iWish",
-													"Report",
-													"Clarke",
-													"Coyote"
-												],
-												"defaultValue": "$[$.nrows,3]"
-											},
-											{
-												"name": "Hours",
-												"displayUnit": "h",
-												"nValues": [
-													7200,
-													10800,
-													18000,
-													21600,
-													7200,
-													10800,
-													7200,
-													10800,
-													7200,
-													14400,
-													21600,
-													28800,
-													32400,
-													18000,
-													10800,
-													25200,
-													28800,
-													7200,
-													14400,
-													14400,
-													21600,
-													32400,
-													25200,
-													7200,
-													25200,
-													7200,
-													25200,
-													21600,
-													7200,
-													18000,
-													7200,
-													28800,
-													32400,
-													25200,
-													7200,
-													18000,
-													28800,
-													18000,
-													10800,
-													28800,
-													18000,
-													7200,
-													25200,
-													7200
-												],
-												"unitDimensions": "0 0 1 0 0 0 0",
-												"defaultValue": "0 h"
-											}
-										]
-									},
-									{
-										"name": "Numeric",
-										"Notes": "The numeric function will transform a table into a numeric matrix, but only if all the numeric columns have the same unit type.\n\nThe string columns are simply omitted.\n\n  Here both date and hours are of type time and the other columns are strings, so the operation is allowed.\n",
-										"DiagramX": 160,
-										"DiagramY": -155,
+										"Notes": "This expression has its input checkbox checked, which lets it reference the Hours data table in the parent model. Its value is thus the table value from that table.",
+										"DiagramX": 200,
+										"DiagramY": 75,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{numeric hours}"
-										}
+											"Formula": "hours"
+										},
+										"isInput": "y",
+										"tableUnits": {}
 									}
 								]
 							},
 							{
-								"name": "Strings",
+								"name": "Hours",
+								"Notes": "This data table tool is a simple fictitious time sheet with a month of values.  It has four columns, consisting of Date, Client, Project and hours.\n\nWhen new rows are added, they are initialized with today's date, the last row's Client and Project value and 0 hours.",
+								"DiagramX": 75,
+								"DiagramY": -155,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "Date",
+										"displayUnit": "date",
+										"nValues": [
+											1342396800,
+											1342396800,
+											1342483200,
+											1342569600,
+											1342569600,
+											1342656000,
+											1342656000,
+											1342742400,
+											1342742400,
+											1342828800,
+											1342828800,
+											1342915200,
+											1343001600,
+											1343174400,
+											1343174400,
+											1343260800,
+											1343347200,
+											1343433600,
+											1343433600,
+											1343520000,
+											1343606400,
+											1343692800,
+											1343779200,
+											1343779200,
+											1343865600,
+											1343865600,
+											1343952000,
+											1344038400,
+											1344038400,
+											1344124800,
+											1344124800,
+											1344297600,
+											1344384000,
+											1344470400,
+											1344556800,
+											1344556800,
+											1344643200,
+											1344729600,
+											1344729600,
+											1344816000,
+											1344902400,
+											1344902400,
+											1344988800,
+											1344988800
+										],
+										"unitDimensions": "0 0 1 0 0 0 0",
+										"defaultValue": "{mktime {int {date {now}}}}"
+									},
+									{
+										"name": "Client",
+										"displayUnit": "string",
+										"sValues": [
+											"HAL",
+											"Fred",
+											"Acme",
+											"Acme",
+											"Acme",
+											"HAL",
+											"Acme",
+											"HAL",
+											"Fred",
+											"Fred",
+											"Acme",
+											"Acme",
+											"Acme",
+											"Fred",
+											"HAL",
+											"HAL",
+											"HAL",
+											"HAL",
+											"Acme",
+											"Acme",
+											"Pear",
+											"Pear",
+											"Pear",
+											"HAL",
+											"Pear",
+											"Fred",
+											"Pear",
+											"Pear",
+											"Acme",
+											"Pear",
+											"HAL",
+											"HAL",
+											"HAL",
+											"HAL",
+											"Fred",
+											"HAL",
+											"HAL",
+											"HAL",
+											"Fred",
+											"Fred",
+											"Pear",
+											"Fred",
+											"HAL",
+											"Acme"
+										],
+										"defaultValue": "$[$.nrows,2]"
+									},
+									{
+										"name": "Project",
+										"displayUnit": "string",
+										"sValues": [
+											"DeepThought",
+											"Accounting",
+											"Coyote",
+											"Coyote",
+											"Coyote",
+											"DeepThought",
+											"RR",
+											"DeepThought",
+											"Accounting",
+											"Accounting",
+											"RR",
+											"RR",
+											"RR",
+											"Accounting",
+											"DeepThought",
+											"DeepThought",
+											"DeepThought",
+											"DeepThought",
+											"RR",
+											"Coyote",
+											"iWant",
+											"iWant",
+											"iWant",
+											"DeepThought",
+											"iWant",
+											"Accounting",
+											"iWant",
+											"iWish",
+											"RR",
+											"iWish",
+											"Clarke",
+											"Clarke",
+											"Clarke",
+											"Clarke",
+											"Accounting",
+											"Clarke",
+											"Clarke",
+											"Clarke",
+											"Report",
+											"Report",
+											"iWish",
+											"Report",
+											"Clarke",
+											"Coyote"
+										],
+										"defaultValue": "$[$.nrows,3]"
+									},
+									{
+										"name": "Hours",
+										"displayUnit": "h",
+										"nValues": [
+											7200,
+											10800,
+											18000,
+											21600,
+											7200,
+											10800,
+											7200,
+											10800,
+											7200,
+											14400,
+											21600,
+											28800,
+											32400,
+											18000,
+											10800,
+											25200,
+											28800,
+											7200,
+											14400,
+											14400,
+											21600,
+											32400,
+											25200,
+											7200,
+											25200,
+											7200,
+											25200,
+											21600,
+											7200,
+											18000,
+											7200,
+											28800,
+											32400,
+											25200,
+											7200,
+											18000,
+											28800,
+											18000,
+											10800,
+											28800,
+											18000,
+											7200,
+											25200,
+											7200
+										],
+										"unitDimensions": "0 0 1 0 0 0 0",
+										"defaultValue": "0 h"
+									}
+								]
+							},
+							{
+								"name": "Numeric",
+								"Notes": "The numeric function will transform a table into a numeric matrix, but only if all the numeric columns have the same unit type.\n\nThe string columns are simply omitted.\n\n  Here both date and hours are of type time and the other columns are strings, so the operation is allowed.\n",
+								"DiagramX": 160,
+								"DiagramY": -155,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{numeric hours}"
+								}
+							}
+						]
+					},
+					{
+						"name": "Strings",
+						"Notes": "",
+						"DiagramX": -5,
+						"DiagramY": -20,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "aString",
+								"Notes": "A string is represented by text surrounded by double quotes.",
+								"DiagramX": 30,
+								"DiagramY": -70,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "\"The quick red fox\""
+								}
+							},
+							{
+								"name": "StringLogicals",
 								"Notes": "",
-								"DiagramX": 95,
-								"DiagramY": 35,
+								"DiagramX": 105,
+								"DiagramY": 10,
 								"HideInfo": "n",
 								"DiagramNotes": "n",
 								"Type": "Model",
 								"diagramScale": 1,
 								"Objects": [
 									{
-										"name": "aString",
-										"Notes": "A string is represented by text surrounded by double quotes.",
-										"DiagramX": 30,
-										"DiagramY": -70,
+										"name": "le",
+										"DiagramX": 100,
+										"DiagramY": 20,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{le \"ab\", \"abc\"}"
+										}
+									},
+									{
+										"name": "lt",
+										"DiagramX": 100,
+										"DiagramY": 40,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{lt \"ab\", \"abc\"}"
+										}
+									},
+									{
+										"name": "ge",
+										"DiagramX": 100,
+										"DiagramY": 60,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{ge \"ab\", \"abc\"}"
+										}
+									},
+									{
+										"name": "gt",
+										"DiagramX": 100,
+										"DiagramY": 80,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{gt \"ab\", \"abc\"}"
+										}
+									},
+									{
+										"name": "and",
+										"DiagramX": 100,
+										"DiagramY": 100,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{and \"\", \"abc\"}"
+										}
+									},
+									{
+										"name": "or",
+										"DiagramX": 100,
+										"DiagramY": 120,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{or \"\", \"abc\"}"
+										}
+									},
+									{
+										"name": "not",
+										"DiagramX": 100,
+										"DiagramY": 140,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{not \"a\"}"
+										}
+									},
+									{
+										"name": "ifBlank",
+										"Notes": "If a string value is used as a condition in an if function, a blank string will evaluate as false, while all others will be true.\n\nIn this case, the third element of the condition is blank, so the result will use the third element of the third parameter.",
+										"DiagramX": 20,
+										"DiagramY": 100,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "\"The quick red fox\""
+											"Formula": "{if\t{concat \"a\",\"b\",\"\",\"d\"},\n\t{concat 1, 2, 3, 4},\n\t{concat 11, 12, 13, 14}\n}"
 										}
 									},
 									{
 										"name": "StringLogicals",
-										"Notes": "",
-										"DiagramX": 105,
-										"DiagramY": 10,
-										"HideInfo": "n",
-										"DiagramNotes": "n",
-										"Type": "Model",
-										"diagramScale": 1,
-										"Objects": [
-											{
-												"name": "le",
-												"DiagramX": 100,
-												"DiagramY": 20,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{le \"ab\", \"abc\"}"
-												}
-											},
-											{
-												"name": "lt",
-												"DiagramX": 100,
-												"DiagramY": 40,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{lt \"ab\", \"abc\"}"
-												}
-											},
-											{
-												"name": "ge",
-												"DiagramX": 100,
-												"DiagramY": 60,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{ge \"ab\", \"abc\"}"
-												}
-											},
-											{
-												"name": "gt",
-												"DiagramX": 100,
-												"DiagramY": 80,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{gt \"ab\", \"abc\"}"
-												}
-											},
-											{
-												"name": "and",
-												"DiagramX": 100,
-												"DiagramY": 100,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{and \"\", \"abc\"}"
-												}
-											},
-											{
-												"name": "or",
-												"DiagramX": 100,
-												"DiagramY": 120,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{or \"\", \"abc\"}"
-												}
-											},
-											{
-												"name": "not",
-												"DiagramX": 100,
-												"DiagramY": 140,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{not \"a\"}"
-												}
-											},
-											{
-												"name": "ifBlank",
-												"Notes": "If a string value is used as a condition in an if function, a blank string will evaluate as false, while all others will be true.\n\nIn this case, the third element of the condition is blank, so the result will use the third element of the third parameter.",
-												"DiagramX": 20,
-												"DiagramY": 100,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{if\t{concat \"a\",\"b\",\"\",\"d\"},\n\t{concat 1, 2, 3, 4},\n\t{concat 11, 12, 13, 14}\n}"
-												}
-											},
-											{
-												"name": "StringLogicals",
-												"Notes": "The comparison and logical functions work with strings as well.  A blank string is considered false, while a string that contains anything is considered true.  Comparisons are done lexically.",
-												"DiagramX": 20,
-												"DiagramY": 20,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{if \"something here?\", \"true\", \"false\"}"
-												}
-											}
-										]
-									},
-									{
-										"name": "Multiline",
-										"DiagramX": 105,
-										"DiagramY": -70,
-										"HideInfo": "n",
-										"DiagramNotes": "n",
-										"Type": "Model",
-										"diagramScale": 1,
-										"Objects": [
-											{
-												"name": "Multiline",
-												"Notes": "A string can span more than one line.  As with normal strings, it must begin and end with double quotes.\n\nAlternatively, if the formula starts with a single quote, normally the comment character, then everything that follows it will be considered a string value and a closing quote is not necessary.\n\nA long string like this won't fit into an expression's result display cell, but clicking on a string cell will produce a view of the entire string.",
-												"DiagramX": 25,
-												"DiagramY": 25,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "\"A string can span more than one line.  As with normal strings, it must begin and end with double quotes.\n\nAlternatively, if the formula starts with a single quote, normally the comment character, then everything that follows it will be considered a string value and a closing quote is not necessary.\n\nA long string like this won't fit into an expression's result display cell, but clicking on a string cell will produce a view of the entire string.\""
-												}
-											}
-										]
-									},
-									{
-										"name": "Format",
-										"DiagramX": 105,
-										"DiagramY": -30,
-										"HideInfo": "n",
-										"DiagramNotes": "n",
-										"Type": "Model",
-										"diagramScale": 1,
-										"Objects": [
-											{
-												"name": "Format",
-												"Notes": "A number can be formatted using the fmt function.\n\nThe first first parameter should be a string containing a C style number format specification, such as \"%12.2f\", which designates a field 12 characters wide, with two decimal places in floating point format.\n\nTable cells are 14 characters wide, so this leaves two spaces to the right of the value.\n\nNote that numbers in Math Minion are always real numbers, not integers.",
-												"DiagramX": 15,
-												"DiagramY": 15,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{fmt \"%12.2f\", 12.1234}"
-												}
-											},
-											{
-												"name": "Format_Unit",
-												"Notes": "An optional third parameter can be supplied to the fmt function and if present, it should be a string that is the name of the unit that should be used for the number.\n\nThis unit must be of the same unit type as the number being formatted.\n\nIn this case the number is dimensionless and a percentage unit is requested.",
-												"DiagramX": 110,
-												"DiagramY": 15,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{fmt \"%12.2f\", 12.1234, \"%\"}"
-												}
-											}
-										]
-									},
-									{
-										"name": "Addition",
-										"DiagramX": 105,
-										"DiagramY": -50,
-										"HideInfo": "n",
-										"DiagramNotes": "n",
-										"Type": "Model",
-										"diagramScale": 1,
-										"Objects": [
-											{
-												"name": "Addition",
-												"Notes": "Adding strings with the + operator, concatenates them.",
-												"DiagramX": 15,
-												"DiagramY": 15,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "\"hello \" + \"world\""
-												}
-											}
-										]
-									},
-									{
-										"name": "Arrays",
-										"DiagramX": 105,
-										"DiagramY": -10,
-										"HideInfo": "n",
-										"DiagramNotes": "n",
-										"Type": "Model",
-										"diagramScale": 1,
-										"Objects": [
-											{
-												"name": "Arrays",
-												"Notes": "String arrays are allowed.",
-												"DiagramX": 15,
-												"DiagramY": 20,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{cc \"tom\", \"dick\", \"harry\"}"
-												}
-											},
-											{
-												"name": "length",
-												"Notes": "The strlen function returns the length of the elements of a string value.",
-												"DiagramX": 15,
-												"DiagramY": 60,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{strlen Arrays}"
-												}
-											},
-											{
-												"name": "upperCase",
-												"Notes": "Makes all characters uppercase.",
-												"DiagramX": 15,
-												"DiagramY": 105,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{uppercase Arrays}"
-												}
-											},
-											{
-												"name": "Join",
-												"Notes": "The join function creates a single string from an array of strings and a separator string.",
-												"DiagramX": 15,
-												"DiagramY": 140,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{join Arrays, \" and \"}"
-												}
-											},
-											{
-												"name": "lowerCase",
-												"Notes": "Makes all characters lowercase.",
-												"DiagramX": 110,
-												"DiagramY": 20,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{lowercase upperCase}"
-												}
-											},
-											{
-												"name": "split",
-												"Notes": "The split function separates a string into parts.  If there are just two arguments, the first is the string to split and the second is the character or phrase to split upon.\n\nIf the string has more than one column and more than one row, the result will be one row per value of s, with each value split into columns.\n\nAlso an optional third parameter can be supplied, in which case the second parameter is used to separate the columns and the third parameter is used to separate the rows, resulting in a string matrix. In this case, only the first value of the string is used (i.e. element 1,1).",
-												"DiagramX": 110,
-												"DiagramY": 55,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{split join, \" \"}"
-												}
-											}
-										]
-									},
-									{
-										"name": "Examples",
-										"Notes": "Illustrates the use of a number of string functions.  See the function browser for a complete list.",
-										"DiagramX": 105,
-										"DiagramY": 30,
-										"HideInfo": "n",
+										"Notes": "The comparison and logical functions work with strings as well.  A blank string is considered false, while a string that contains anything is considered true.  Comparisons are done lexically.",
+										"DiagramX": 20,
+										"DiagramY": 20,
+										"HideInfo": "y",
 										"DiagramNotes": "y",
-										"Type": "Model",
-										"diagramScale": 1,
-										"Objects": [
-											{
-												"name": "Numbers",
-												"Notes": "A matrix of numbers to use with string functions.\n",
-												"DiagramX": 25,
-												"DiagramY": 25,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "-7:7+{tr 1:2}/10"
-												}
-											},
-											{
-												"name": "multiFmt",
-												"Notes": "Just to confuse things, here an array of format statements is created using a fmt function and a range.  ",
-												"DiagramX": 25,
-												"DiagramY": 65,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "\"%9.\" + {fmt \"%1.0f\", 1:3} + \"f\""
-												}
-											},
-											{
-												"name": "columnFmt",
-												"Notes": "Here we are creating a row array with different format strings for each column.",
-												"DiagramX": 25,
-												"DiagramY": 120,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{transpose  {concat \"%10.2f\", \"%10.3f\"}} "
-												}
-											},
-											{
-												"name": "formattedMatrix",
-												"Notes": "Here multFmt, the fabricated column array of format strings, is applied to a matrix of numbers.\n\nSince there are fewer format rows than number rows, the format array is repeated as necessary in the same way that matrix operations work with numbers.",
-												"DiagramX": 105,
-												"DiagramY": 25,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{fmt multiFmt, numbers, \"%\" } "
-												}
-											},
-											{
-												"name": "formattedColumns",
-												"Notes": "When the row format is used with the number matrix, the individual columns are formatted appropriately.\n",
-												"DiagramX": 105,
-												"DiagramY": 120,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{fmt columnFmt, numbers } "
-												}
-											},
-											{
-												"name": "matrixAddition",
-												"Notes": "The rules for adding different dimension string values are the same as for number values.",
-												"DiagramX": 195,
-												"DiagramY": 230,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "\"X =  \" + formattedColumns"
-												}
-											},
-											{
-												"name": "find",
-												"Notes": "The strfind function searches the first argument for the regular expression represented by the second argument. In this case it means searching for a string of digits.\n\nA numeric matrix is returned, with two columns and one row for each element of the searched value.  The position of the start of the first occurrence of expression will be in the first column and the length in the second column.  If the searched value is a matrix, the order of the results will be row by row.\n\nIf the expression is not found, the position will be a huge value and the length 0.",
-												"DiagramX": 190,
-												"DiagramY": 10,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{strfind formattedMatrix, \"\\d+\"}"
-												}
-											},
-											{
-												"name": "subString2",
-												"Notes": "If the substr function contains a third parameter, it will be used as the length of the sub string.\n\nNote here how the 30 elements of each column of the find expression are used correctly in order with the elements of the 15x2 elements of formattedMatrix.\n\nThe result is the first set of digits found in each element of formattedMatrix.",
-												"DiagramX": 190,
-												"DiagramY": 45,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{substr formattedMatrix,\n\tfind[0,1], find[0,2]}"
-												}
-											},
-											{
-												"name": "JoinMatrix",
-												"Notes": "Joining a matrix will produce a single column array with all the columns joined together.  Here the columns of formattedColumns are joined by a string consisting of some spaces and ->.",
-												"DiagramX": 195,
-												"DiagramY": 85,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{join formattedColumns, \"\t->\"}"
-												}
-											},
-											{
-												"name": "Join2",
-												"Notes": "With three parameters, the second is used to join columns and the third to join rows.  Note that the third parameter is a newline in quotes.\n\nSame as nested joins",
-												"DiagramX": 195,
-												"DiagramY": 120,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{join formattedColumns, \"\t->\t\", \"\n\"}"
-												}
-											},
-											{
-												"name": "Match",
-												"Notes": "The match function will return the first string in each string value element, that is matched by a regular expression.  Here the regular expression  designates that a decimal point followed by 0 or more digits is to be matched.",
-												"DiagramX": 195,
-												"DiagramY": 155,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{match \"\\.\\d*\" formattedColumns }"
-												}
-											},
-											{
-												"name": "Replace",
-												"Notes": "The replace function returns a string value where each element is transformed by applying a regular expression replacement.  The first parameter is the string to match, while the second is the replacement and the third the source string value.\n\nHere every digit is replaced with the character \"x\".",
-												"DiagramX": 195,
-												"DiagramY": 195,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{replace \"\\d\", \"x\", formattedColumns} "
-												}
-											},
-											{
-												"name": "JoinJoin",
-												"Notes": "Using join again to create a single string, with each row separated by a newline character.",
-												"DiagramX": 275,
-												"DiagramY": 85,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{join JoinMatrix, \"\\n\"}"
-												}
-											},
-											{
-												"name": "split2",
-												"Notes": "With three parameters, the second parameter is used to split the string into columns, while the third splits it into rows.",
-												"DiagramX": 275,
-												"DiagramY": 120,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{split join2, \"\t->\t\", \"\n\"}"
-												}
-											},
-											{
-												"name": "indexof",
-												"Notes": "The indexOf function works with strings, but it must be an exact match.",
-												"DiagramX": 275,
-												"DiagramY": 155,
-												"HideInfo": "y",
-												"DiagramNotes": "n",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{indexof \".200\", match}"
-												}
-											},
-											{
-												"name": "equal",
-												"Notes": "Check that strings are equal",
-												"DiagramX": 275,
-												"DiagramY": 195,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{eq match, \".10\"}"
-												}
-											},
-											{
-												"name": "aString",
-												"Notes": "",
-												"DiagramX": 25,
-												"DiagramY": 170,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "\"Hello World\""
-												}
-											},
-											{
-												"name": "subString",
-												"Notes": "With just two parameters, the substr function returns the portion of the string in the first parameter starting at the character position given by the second parameter and continuing to the end of the string.\n\nIf the first parameter has more elements than the second, the second's elements will be reused as necessary.",
-												"DiagramX": 105,
-												"DiagramY": 170,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{substr aString 7}"
-												}
-											},
-											{
-												"name": "subString2Copy",
-												"Notes": "If the substr function contains a third parameter, it will be used as the length of the sub string.\n",
-												"DiagramX": 25,
-												"DiagramY": 200,
-												"HideInfo": "y",
-												"DiagramNotes": "y",
-												"Type": "Expression",
-												"Formula": {
-													"Formula": "{substr aString, 7, 3}\n"
-												}
-											}
-										]
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{if \"something here?\", \"true\", \"false\"}"
+										}
 									}
 								]
+							},
+							{
+								"name": "Multiline",
+								"DiagramX": 105,
+								"DiagramY": -70,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "Multiline",
+										"Notes": "A string can span more than one line.  As with normal strings, it must begin and end with double quotes.\n\nAlternatively, if the formula starts with a single quote, normally the comment character, then everything that follows it will be considered a string value and a closing quote is not necessary.\n\nA long string like this won't fit into an expression's result display cell, but clicking on a string cell will produce a view of the entire string.",
+										"DiagramX": 25,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "\"A string can span more than one line.  As with normal strings, it must begin and end with double quotes.\n\nAlternatively, if the formula starts with a single quote, normally the comment character, then everything that follows it will be considered a string value and a closing quote is not necessary.\n\nA long string like this won't fit into an expression's result display cell, but clicking on a string cell will produce a view of the entire string.\""
+										}
+									}
+								]
+							},
+							{
+								"name": "Format",
+								"DiagramX": 105,
+								"DiagramY": -30,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "Format",
+										"Notes": "A number can be formatted using the fmt function.\n\nThe first first parameter should be a string containing a C style number format specification, such as \"%12.2f\", which designates a field 12 characters wide, with two decimal places in floating point format.\n\nTable cells are 14 characters wide, so this leaves two spaces to the right of the value.\n\nNote that numbers in Math Minion are always real numbers, not integers.",
+										"DiagramX": 15,
+										"DiagramY": 15,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{fmt \"%12.2f\", 12.1234}"
+										}
+									},
+									{
+										"name": "Format_Unit",
+										"Notes": "An optional third parameter can be supplied to the fmt function and if present, it should be a string that is the name of the unit that should be used for the number.\n\nThis unit must be of the same unit type as the number being formatted.\n\nIn this case the number is dimensionless and a percentage unit is requested.",
+										"DiagramX": 110,
+										"DiagramY": 15,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{fmt \"%12.2f\", 12.1234, \"%\"}"
+										}
+									}
+								]
+							},
+							{
+								"name": "Addition",
+								"DiagramX": 105,
+								"DiagramY": -50,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "Addition",
+										"Notes": "Adding strings with the + operator, concatenates them.",
+										"DiagramX": 15,
+										"DiagramY": 15,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "\"hello \" + \"world\""
+										}
+									}
+								]
+							},
+							{
+								"name": "Arrays",
+								"DiagramX": 105,
+								"DiagramY": -10,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "Arrays",
+										"Notes": "String arrays are allowed.",
+										"DiagramX": 15,
+										"DiagramY": 20,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cc \"tom\", \"dick\", \"harry\"}"
+										}
+									},
+									{
+										"name": "length",
+										"Notes": "The strlen function returns the length of the elements of a string value.",
+										"DiagramX": 15,
+										"DiagramY": 60,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{strlen Arrays}"
+										}
+									},
+									{
+										"name": "upperCase",
+										"Notes": "Makes all characters uppercase.",
+										"DiagramX": 15,
+										"DiagramY": 105,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{uppercase Arrays}"
+										}
+									},
+									{
+										"name": "Join",
+										"Notes": "The join function creates a single string from an array of strings and a separator string.",
+										"DiagramX": 15,
+										"DiagramY": 140,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{join Arrays, \" and \"}"
+										}
+									},
+									{
+										"name": "lowerCase",
+										"Notes": "Makes all characters lowercase.",
+										"DiagramX": 110,
+										"DiagramY": 20,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{lowercase upperCase}"
+										}
+									},
+									{
+										"name": "split",
+										"Notes": "The split function separates a string into parts.  If there are just two arguments, the first is the string to split and the second is the character or phrase to split upon.\n\nIf the string has more than one column and more than one row, the result will be one row per value of s, with each value split into columns.\n\nAlso an optional third parameter can be supplied, in which case the second parameter is used to separate the columns and the third parameter is used to separate the rows, resulting in a string matrix. In this case, only the first value of the string is used (i.e. element 1,1).",
+										"DiagramX": 110,
+										"DiagramY": 55,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{split join, \" \"}"
+										}
+									}
+								]
+							},
+							{
+								"name": "Examples",
+								"Notes": "Illustrates the use of a number of string functions.  See the function browser for a complete list.",
+								"DiagramX": 105,
+								"DiagramY": 30,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "Numbers",
+										"Notes": "A matrix of numbers to use with string functions.\n",
+										"DiagramX": 25,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "-7:7+{tr 1:2}/10"
+										}
+									},
+									{
+										"name": "multiFmt",
+										"Notes": "Just to confuse things, here an array of format statements is created using a fmt function and a range.  ",
+										"DiagramX": 25,
+										"DiagramY": 65,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "\"%9.\" + {fmt \"%1.0f\", 1:3} + \"f\""
+										}
+									},
+									{
+										"name": "columnFmt",
+										"Notes": "Here we are creating a row array with different format strings for each column.",
+										"DiagramX": 25,
+										"DiagramY": 120,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{transpose  {concat \"%10.2f\", \"%10.3f\"}} "
+										}
+									},
+									{
+										"name": "formattedMatrix",
+										"Notes": "Here multFmt, the fabricated column array of format strings, is applied to a matrix of numbers.\n\nSince there are fewer format rows than number rows, the format array is repeated as necessary in the same way that matrix operations work with numbers.",
+										"DiagramX": 105,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{fmt multiFmt, numbers, \"%\" } "
+										}
+									},
+									{
+										"name": "formattedColumns",
+										"Notes": "When the row format is used with the number matrix, the individual columns are formatted appropriately.\n",
+										"DiagramX": 105,
+										"DiagramY": 120,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{fmt columnFmt, numbers } "
+										}
+									},
+									{
+										"name": "matrixAddition",
+										"Notes": "The rules for adding different dimension string values are the same as for number values.",
+										"DiagramX": 195,
+										"DiagramY": 230,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "\"X =  \" + formattedColumns"
+										}
+									},
+									{
+										"name": "find",
+										"Notes": "The strfind function searches the first argument for the regular expression represented by the second argument. In this case it means searching for a string of digits.\n\nA numeric matrix is returned, with two columns and one row for each element of the searched value.  The position of the start of the first occurrence of expression will be in the first column and the length in the second column.  If the searched value is a matrix, the order of the results will be row by row.\n\nIf the expression is not found, the position will be a huge value and the length 0.",
+										"DiagramX": 190,
+										"DiagramY": 10,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{strfind formattedMatrix, \"\\d+\"}"
+										}
+									},
+									{
+										"name": "subString2",
+										"Notes": "If the substr function contains a third parameter, it will be used as the length of the sub string.\n\nNote here how the 30 elements of each column of the find expression are used correctly in order with the elements of the 15x2 elements of formattedMatrix.\n\nThe result is the first set of digits found in each element of formattedMatrix.",
+										"DiagramX": 190,
+										"DiagramY": 45,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{substr formattedMatrix,\n\tfind[0,1], find[0,2]}"
+										}
+									},
+									{
+										"name": "JoinMatrix",
+										"Notes": "Joining a matrix will produce a single column array with all the columns joined together.  Here the columns of formattedColumns are joined by a string consisting of some spaces and ->.",
+										"DiagramX": 195,
+										"DiagramY": 85,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{join formattedColumns, \"\t->\"}"
+										}
+									},
+									{
+										"name": "Join2",
+										"Notes": "With three parameters, the second is used to join columns and the third to join rows.  Note that the third parameter is a newline in quotes.\n\nSame as nested joins",
+										"DiagramX": 195,
+										"DiagramY": 120,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{join formattedColumns, \"\t->\t\", \"\n\"}"
+										}
+									},
+									{
+										"name": "Match",
+										"Notes": "The match function will return the first string in each string value element, that is matched by a regular expression.  Here the regular expression  designates that a decimal point followed by 0 or more digits is to be matched.",
+										"DiagramX": 195,
+										"DiagramY": 155,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{match \"\\.\\d*\" formattedColumns }"
+										}
+									},
+									{
+										"name": "Replace",
+										"Notes": "The replace function returns a string value where each element is transformed by applying a regular expression replacement.  The first parameter is the string to match, while the second is the replacement and the third the source string value.\n\nHere every digit is replaced with the character \"x\".",
+										"DiagramX": 195,
+										"DiagramY": 195,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{replace \"\\d\", \"x\", formattedColumns} "
+										}
+									},
+									{
+										"name": "JoinJoin",
+										"Notes": "Using join again to create a single string, with each row separated by a newline character.",
+										"DiagramX": 275,
+										"DiagramY": 85,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{join JoinMatrix, \"\\n\"}"
+										}
+									},
+									{
+										"name": "split2",
+										"Notes": "With three parameters, the second parameter is used to split the string into columns, while the third splits it into rows.",
+										"DiagramX": 275,
+										"DiagramY": 120,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{split join2, \"\t->\t\", \"\n\"}"
+										}
+									},
+									{
+										"name": "indexof",
+										"Notes": "The indexOf function works with strings, but it must be an exact match.",
+										"DiagramX": 275,
+										"DiagramY": 155,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{indexof \".200\", match}"
+										}
+									},
+									{
+										"name": "equal",
+										"Notes": "Check that strings are equal",
+										"DiagramX": 275,
+										"DiagramY": 195,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{eq match, \".10\"}"
+										}
+									},
+									{
+										"name": "aString",
+										"Notes": "",
+										"DiagramX": 25,
+										"DiagramY": 170,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "\"Hello World\""
+										}
+									},
+									{
+										"name": "subString",
+										"Notes": "With just two parameters, the substr function returns the portion of the string in the first parameter starting at the character position given by the second parameter and continuing to the end of the string.\n\nIf the first parameter has more elements than the second, the second's elements will be reused as necessary.",
+										"DiagramX": 105,
+										"DiagramY": 170,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{substr aString 7}"
+										}
+									},
+									{
+										"name": "subString2Copy",
+										"Notes": "If the substr function contains a third parameter, it will be used as the length of the sub string.\n",
+										"DiagramX": 25,
+										"DiagramY": 200,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{substr aString, 7, 3}\n"
+										}
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "Complex",
+						"Notes": "",
+						"DiagramX": -5,
+						"DiagramY": 20,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "CValue",
+								"Notes": "The complex function is used to create a table value representing an array of complex numbers.  The \"r\" column is the real component and the \"i\" column is the imaginary one.\n\nThis is a nice representation, but any two column numeric can be used as a complex number.",
+								"DiagramX": 10,
+								"DiagramY": 0,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": " {complex -5:5, -5:5^2}"
+								}
+							},
+							{
+								"name": "csin",
+								"Notes": "complex sin",
+								"DiagramX": 95,
+								"DiagramY": -90,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{csin cvalue}"
+								}
+							},
+							{
+								"name": "cmult",
+								"Notes": "Use cmult to multiply cvalue by itself.\n",
+								"DiagramX": 95,
+								"DiagramY": -55,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{cmult cvalue, cvalue}"
+								}
+							},
+							{
+								"name": "Polar",
+								"Notes": "The polar function is used to convert CValue into polar coordinates.\n\nNote that the units for the second column have been set to degrees, by clicking on the column header and then clicking the button beside the unit line and selecting the unit from the unit browser.\n\nAlso note there is no valid angle when converting 0, 0 to polar.",
+								"DiagramX": 95,
+								"DiagramY": -15,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{polar CValue}"
+								},
+								"tableUnits": {
+									"2": "degree"
+								}
+							},
+							{
+								"name": "sqrt",
+								"Notes": "Use cpow to take the square root of cmult and retrieve cvalue.\n\nIn this case the exponent is a real, but it can also be a complex value as well.",
+								"DiagramX": 170,
+								"DiagramY": -100,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{cpow cmult, 0.5}"
+								}
+							},
+							{
+								"name": "Cartesian",
+								"Notes": "The cart function is used to transform the polar version of CValue back into cartesian coordinates.\n\nThere is no valid conversion for 0, 0.",
+								"DiagramX": 170,
+								"DiagramY": -30,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{cart polar}"
+								},
+								"tableUnits": {}
+							},
+							{
+								"name": "Plot",
+								"Notes": "A plot of CValue's imaginary component versus its real one.",
+								"DiagramX": 95,
+								"DiagramY": -130,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Graph",
+								"X1": {
+									"v": "Cvalue.r",
+									"vmin": "",
+									"vmax": "",
+									"Y1": {
+										"v": "Cvalue.i",
+										"vmin": "",
+										"vmax": "",
+										"lineType": 0
+									}
+								}
 							},
 							{
 								"name": "Complex",
-								"Notes": "",
-								"DiagramX": 95,
-								"DiagramY": 85,
-								"HideInfo": "n",
-								"DiagramNotes": "n",
-								"Type": "Model",
-								"diagramScale": 1,
-								"Objects": [
-									{
-										"name": "CValue",
-										"Notes": "The complex function is used to create a table value representing an array of complex numbers.  The \"r\" column is the real component and the \"i\" column is the imaginary one.\n\nThis is a nice representation, but any two column numeric can be used as a complex number.",
-										"DiagramX": 10,
-										"DiagramY": 0,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": " {complex -5:5, -5:5^2}"
-										}
-									},
-									{
-										"name": "csin",
-										"Notes": "complex sin",
-										"DiagramX": 95,
-										"DiagramY": -90,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{csin cvalue}"
-										}
-									},
-									{
-										"name": "cmult",
-										"Notes": "Use cmult to multiply cvalue by itself.\n",
-										"DiagramX": 95,
-										"DiagramY": -55,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{cmult cvalue, cvalue}"
-										}
-									},
-									{
-										"name": "Polar",
-										"Notes": "The polar function is used to convert CValue into polar coordinates.\n\nNote that the units for the second column have been set to degrees, by clicking on the column header and then clicking the button beside the unit line and selecting the unit from the unit browser.\n\nAlso note there is no valid angle when converting 0, 0 to polar.",
-										"DiagramX": 95,
-										"DiagramY": -15,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{polar CValue}"
-										},
-										"tableUnits": {
-											"2": "degree"
-										}
-									},
-									{
-										"name": "sqrt",
-										"Notes": "Use cpow to take the square root of cmult and retrieve cvalue.\n\nIn this case the exponent is a real, but it can also be a complex value as well.",
-										"DiagramX": 170,
-										"DiagramY": -100,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{cpow cmult, 0.5}"
-										}
-									},
-									{
-										"name": "Cartesian",
-										"Notes": "The cart function is used to transform the polar version of CValue back into cartesian coordinates.\n\nThere is no valid conversion for 0, 0.",
-										"DiagramX": 170,
-										"DiagramY": -30,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{cart polar}"
-										},
-										"tableUnits": {}
-									},
-									{
-										"name": "Plot",
-										"Notes": "A plot of CValue's imaginary component versus its real one.",
-										"DiagramX": 95,
-										"DiagramY": -130,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Graph",
-										"X1": {
-											"v": "Cvalue.r",
-											"vmin": "",
-											"vmax": "",
-											"Y1": {
-												"v": "Cvalue.i",
-												"vmin": "",
-												"vmax": "",
-												"lineType": 0
-											}
-										}
-									},
-									{
-										"name": "Complex",
-										"Notes": "Complex numbers in Math Minion are represented by either a matrix or table value with two columns, the first column being the real component and the second the imaginary one.\n\n All complex value functions return table values with the first column labeled r and the second labeled i.\n\nBe sure to check out the Complex Numbers section of the function browser as well as the Complex Number help page that it links to.\n",
-										"DiagramX": 5,
-										"DiagramY": -130,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{complex 1, 2}"
-										}
-									}
-								]
-							},
+								"Notes": "Complex numbers in Math Minion are represented by either a matrix or table value with two columns, the first column being the real component and the second the imaginary one.\n\n All complex value functions return table values with the first column labeled r and the second labeled i.\n\nBe sure to check out the Complex Numbers section of the function browser as well as the Complex Number help page that it links to.\n",
+								"DiagramX": 5,
+								"DiagramY": -130,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{complex 1, 2}"
+								}
+							}
+						]
+					},
+					{
+						"name": "References",
+						"DiagramX": -5,
+						"DiagramY": 40,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
 							{
-								"name": "References",
-								"DiagramX": 95,
-								"DiagramY": 110,
+								"name": "aModel",
+								"Notes": "This  model demonstrates the use of tool paths and tool references.\n\nIt contains yet another model, which in turn just contains an expression with a value of 2 times pi.\n\nThis expression is designated as an outlet expression so that the parent model can access it.\n\nThe expression \"sub\" in this model is also designated as an output and its formula is simply the name of the sub-model.\n\nThis allows the sub-model itself to be accessed by the parent model of this model.\n\nSee the \"Reference\" expression  for an example of referencing these tools.",
+								"DiagramX": 15,
+								"DiagramY": 15,
 								"HideInfo": "n",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
 								"Type": "Model",
 								"diagramScale": 1,
 								"Objects": [
 									{
-										"name": "aModel",
-										"Notes": "This  model demonstrates the use of tool paths and tool references.\n\nIt contains yet another model, which in turn just contains an expression with a value of 2 times pi.\n\nThis expression is designated as an outlet expression so that the parent model can access it.\n\nThe expression \"sub\" in this model is also designated as an output and its formula is simply the name of the sub-model.\n\nThis allows the sub-model itself to be accessed by the parent model of this model.\n\nSee the \"Reference\" expression  for an example of referencing these tools.",
-										"DiagramX": 15,
+										"name": "subModel",
+										"Notes": "Another sub-model, which in turn just contains an expression with a value of 2 times pi.\n\nThis expression is designated as an outlet expression so that the parent model can access it.",
+										"DiagramX": 115,
 										"DiagramY": 15,
 										"HideInfo": "n",
 										"DiagramNotes": "y",
@@ -14740,84 +14836,48 @@
 										"diagramScale": 1,
 										"Objects": [
 											{
-												"name": "subModel",
-												"Notes": "Another sub-model, which in turn just contains an expression with a value of 2 times pi.\n\nThis expression is designated as an outlet expression so that the parent model can access it.",
-												"DiagramX": 115,
-												"DiagramY": 15,
-												"HideInfo": "n",
-												"DiagramNotes": "y",
-												"Type": "Model",
-												"diagramScale": 1,
-												"Objects": [
-													{
-														"name": "twoPi",
-														"Notes": "Just a value to return. In this case it uses the pi function to calculate 2pi.",
-														"DiagramX": 65,
-														"DiagramY": 20,
-														"HideInfo": "y",
-														"DiagramNotes": "y",
-														"Type": "Expression",
-														"Formula": {
-															"Formula": "{pi}*2"
-														},
-														"isOutput": "y"
-													}
-												]
-											},
-											{
-												"name": "sub",
-												"Notes": "This expression is also designated as an output and its formula is simply the name of the sub-model.\n\nThis allows the sub-model itself to be accessed by the parent model of this model.",
-												"DiagramX": 190,
-												"DiagramY": 15,
+												"name": "twoPi",
+												"Notes": "Just a value to return. In this case it uses the pi function to calculate 2pi.",
+												"DiagramX": 65,
+												"DiagramY": 20,
 												"HideInfo": "y",
 												"DiagramNotes": "y",
 												"Type": "Expression",
 												"Formula": {
-													"Formula": "subModel"
+													"Formula": "{pi}*2"
 												},
 												"isOutput": "y"
 											}
 										]
 									},
 									{
-										"name": "Reference",
-										"Notes": "The formula for this expression is:\n\naModel.sub.twoPi\n\nwhich first accesses the sub output expression of \"aModel\" and then the twoPi output expression of the model which \"sub\" references.\n\nYou can use the value browser when you are editing a formula to drill down through tools to the desired tool and parameter and have it inserted into the formula.",
-										"DiagramX": 105,
+										"name": "sub",
+										"Notes": "This expression is also designated as an output and its formula is simply the name of the sub-model.\n\nThis allows the sub-model itself to be accessed by the parent model of this model.",
+										"DiagramX": 190,
 										"DiagramY": 15,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "aModel.sub.twoPi"
-										}
+											"Formula": "subModel"
+										},
+										"isOutput": "y"
 									}
 								]
 							},
 							{
-								"name": "Other_Values",
-								"Notes": "Values other than simple numbers.",
-								"DiagramX": 10,
-								"DiagramY": 10,
+								"name": "Reference",
+								"Notes": "The formula for this expression is:\n\naModel.sub.twoPi\n\nwhich first accesses the sub output expression of \"aModel\" and then the twoPi output expression of the model which \"sub\" references.\n\nYou can use the value browser when you are editing a formula to drill down through tools to the desired tool and parameter and have it inserted into the formula.",
+								"DiagramX": 105,
+								"DiagramY": 15,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
-								"Type": "HTML Form",
+								"Type": "Expression",
 								"Formula": {
-									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Values other than Simple Numbers</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tMost simple Math Minion calculations will just involve numbers, possibly with units and perhaps in arrays or matrices.\n\t\t</p>\n\t\t<p>\n\t\t\tHowever complex, string, table and reference values are all possible.\n\t\t</p>\n\t\t<p>\n\t\t\tTap on the models in the diagram to explore the various types.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+									"Formula": "aModel.sub.twoPi"
 								}
 							}
 						]
-					},
-					{
-						"name": "Formulas",
-						"Notes": "Overview",
-						"DiagramX": -75,
-						"DiagramY": -70,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "HTML Form",
-						"Formula": {
-							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Formulas</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tAt the heart of Math Minion calculations are the formulas that express the relationships between various objects.\n\t\t</p>\n\t\t<p>\n\t\t\tThey can be as simple as a scalar constant, or <b>2 + 2</b>, but if the need arises, they can be complicated expressions involving functions and conditions.\n\t\t</p>\n\t\t<p>\n\t\t\tTap on the icons for the models on the right of the diagram to explore the different features of formulas.\n\t\t</p>\n\t\t<p>\n\t\t\tFormulas are display in blue text in fields preceded by and equals sign (<b>=</b>). Tapping on the field will open a formula editor.  See the help for more information on its features.\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
-						}
 					}
 				]
 			},
