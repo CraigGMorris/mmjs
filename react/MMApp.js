@@ -576,10 +576,14 @@ export function MMApp(props) {
 const pushTool = useCallback((toolName, path, toolType) => {
 	const updateCommand = `${path} toolViewInfo`;
 	doCommand(updateCommand, (cmds) => {
+		if (cmds.error) {
+			alert(`${props.t(cmds.error.msgKey, cmds.error.args)}`)
+			return;
+		}
 		let newInfoState = {
 			title: (toolName ? toolName : ''),
 			path: (path ? path : ''),
-			modelPath: cmds[0].results.modelPath,
+			modelPath: cmds[0].modelPath,
 			stackIndex: infoStack.length,
 			updateCommands: updateCommand,			// commands used to update the view state
 			updateResults: cmds,		// result of doCommand on the updateCommands

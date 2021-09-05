@@ -1323,6 +1323,10 @@ class MMTool extends MMCommandParent {
 	 * @param {MMCommand} command 
 	 */
 	renameto(command) {
+		if (command.args.search(/[^\w]/) !== -1 || command.args.search(/^\d/) !== -1) {
+			this.setError('mmcmd:toolBadName', {name: command.args});
+			return;
+		}
 		this.forgetCalculated();
 		super.renameto(command);
 	}
