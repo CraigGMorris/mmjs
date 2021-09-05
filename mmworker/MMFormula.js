@@ -445,7 +445,12 @@ class MMDyadicOperator extends MMFormulaOperator {
 				v1.exceptionWith('mmcmd:tableArithRowCount');
 			}
 			if (v2 instanceof MMNumberValue) {
-				return numberOpTable(v2, v1);
+				if (v2.columnCount === 1) {
+					return numberOpTable(v2, v1);
+				}
+				else {
+					return this.operationOn(v1.numberValue(), v2);
+				}
 			}
 			else if (v2 instanceof MMTableValue) {
 				// table operation table
@@ -487,7 +492,12 @@ class MMDyadicOperator extends MMFormulaOperator {
 			}
 		}
 		else if (v2 instanceof MMTableValue && v1 instanceof MMNumberValue) {
-			return numberOpTable(v1, v2);
+			if (v1.columnCount === 1) {
+				return numberOpTable(v1, v2);
+			}
+			else {
+				return this.operationOn(v1, v2.numberValue());
+			}
 		}
 
 		return null;
