@@ -308,10 +308,14 @@
 					can also accept a string scalar or array of column names as the column index.
 				</p>
 					The arithmetic operators also work with table values, as long as there are no unit
-					conflicts.  The result will itself be a table value.  Most numeric functions
-					(things like log, sin etc) will not work with table values, but there are a number
-					of functions that allow for creating, selecting and manipulating table data. See the
-					<a href="formulaeditor.html#fbrowser">function browser</a> for details.
+					conflicts.  The result will itself be a table value, unless the operation is between
+					a table value and a number value which has more than one column, in which case an
+					attempt will be made to convert the table to a number value.
+				</p>
+				<p>
+					There are a number of functions that allow for creating, selecting and manipulating
+					table data. See the <a href="formulaeditor.html#fbrowser">function browser</a> for
+					details.
 				</p>
 			</div>
 		</div>
