@@ -178,6 +178,7 @@
 	"tableUnitTypeMismatch": "Data table error\n\nUnit type mismatch for row {{row}} of column {{column}} of {{table}}",
 	"tableUpdateNoName": "Could not find a column named '{{name}}' in {{path}}",
 	"tableValueIndexError": "Illegal index in table value",
+	"toolBadName": "Illegal name {{name}}",
 	"unitTypeMismatch": "Unit types don't match",
 	"valueMatrixBoundsError": "Index [{{row}},{{column}}] out of bounds [{{rowCount}},{{columnCount}}]",
 	"valuePowerHasUnits": "Exponent cannot have units",
