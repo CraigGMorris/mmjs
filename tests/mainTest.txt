@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "mainTest",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
+	"SelectedObject": "Tolerance",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -16258,12 +16258,12 @@
 								"name": "errorCount",
 								"Notes": "",
 								"DiagramX": 260,
-								"DiagramY": 575,
+								"DiagramY": 635,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "multiply.errorCount +\nsumColsError +\nminMax.errorCount +\nconcatError +\ntableFunc.errorCount +\ngroups.errorCount"
+									"Formula": "multiply.errorCount +\nsumColsError +\nminMax.errorCount +\nconcatError +\ntableFunc.errorCount +\nsumRowsNError +\nsumRowsTError +\ngroups.errorCount"
 								},
 								"isOutput": "y"
 							},
@@ -16525,7 +16525,7 @@
 									{
 										"name": "multiplyTable",
 										"Notes": "",
-										"DiagramX": 245,
+										"DiagramX": 270,
 										"DiagramY": 265,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
@@ -16562,7 +16562,7 @@
 										"name": "tColumns",
 										"Notes": "",
 										"DiagramX": 145,
-										"DiagramY": 415,
+										"DiagramY": 540,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -16616,7 +16616,7 @@
 									{
 										"name": "multError",
 										"Notes": "",
-										"DiagramX": 245,
+										"DiagramX": 270,
 										"DiagramY": 295,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
@@ -16628,7 +16628,7 @@
 									{
 										"name": "tmnError",
 										"Notes": "",
-										"DiagramX": 245,
+										"DiagramX": 270,
 										"DiagramY": 320,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
@@ -16640,7 +16640,7 @@
 									{
 										"name": "nmtError",
 										"Notes": "",
-										"DiagramX": 245,
+										"DiagramX": 270,
 										"DiagramY": 345,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
@@ -16652,8 +16652,8 @@
 									{
 										"name": "columnsError",
 										"Notes": "",
-										"DiagramX": 245,
-										"DiagramY": 370,
+										"DiagramX": 270,
+										"DiagramY": 470,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
@@ -16664,15 +16664,128 @@
 									{
 										"name": "errorCount",
 										"Notes": "",
-										"DiagramX": 245,
+										"DiagramX": 270,
+										"DiagramY": 495,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "multError +\ntmnError +\nnmtError +\ntdnError +\nndtError +\nt2dnError +\nndt2Error +\ncolumnsError"
+										},
+										"isOutput": "y"
+									},
+									{
+										"name": "TDivN",
+										"Notes": "",
+										"DiagramX": 145,
+										"DiagramY": 415,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "t / {array 3, 1, 1:3}"
+										}
+									},
+									{
+										"name": "NDivT",
+										"Notes": "",
+										"DiagramX": 145,
+										"DiagramY": 440,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{array 3, 1, 1:3} / t"
+										},
+										"tableUnits": {
+											"2": "1/ft^2",
+											"3": "1/litre"
+										}
+									},
+									{
+										"name": "tdnError",
+										"Notes": "",
+										"DiagramX": 270,
+										"DiagramY": 370,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{sum\n\t{ne TdivN.name, t.name}\n\t+\n\t{gt\n\t{abs\n\t\tTdivN.area -\n\t\tt.area / 1:3\n\t}, tolerance * 1 \"m^2\"\n\t} +\n\t{gt\n\t\t{abs\n\t\t\tTDivN.volume -\n\t\t\tt.volume / 1:3\n\t\t}, tolerance * 1 \"m^3\"\n\t}\n}"
+										}
+									},
+									{
+										"name": "ndtError",
+										"Notes": "",
+										"DiagramX": 270,
 										"DiagramY": 395,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "multError +\ntmnError +\nnmtError +\ncolumnsError"
+											"Formula": "{sum\n\t{ne NdivT.name, t.name}\n\t+\n\t{gt\n\t\t{abs\n\t\t\tNdivT.area -\n\t\t\t1:3/t.area\n\t\t}, tolerance * 1 \"1/m^2\"\n\t} +\n\t{gt\n\t\t{abs\n\t\t\tNdivT.volume -\n\t\t\t1:3/t.volume\n\t\t}, tolerance * 1 \"1/m^3\"\n\t}\n}"
+										}
+									},
+									{
+										"name": "t2",
+										"Notes": "",
+										"DiagramX": 145,
+										"DiagramY": 465,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table {cc \"Name\", \"C1\", \"C2\"},\n\t{cc \"One\", \"Two\", \"Three\"},\n\t1:3 * 1 m, 4:6 * 1 m\n}"
+										}
+									},
+									{
+										"name": "NDivT2",
+										"Notes": "",
+										"DiagramX": 145,
+										"DiagramY": 515,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{tr 1:2 * 2 s} / t2"
 										},
-										"isOutput": "y"
+										"tableUnits": {}
+									},
+									{
+										"name": "T2DivN",
+										"Notes": "",
+										"DiagramX": 145,
+										"DiagramY": 490,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "t2 / {tr 1:2 * 2 s}"
+										}
+									},
+									{
+										"name": "t2dnError",
+										"Notes": "",
+										"DiagramX": 270,
+										"DiagramY": 420,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{sum\n\t{ne T2divN.name, t2.name}\n\t+\n\t{gt\n\t\t{abs\n\t\t\t{numeric T2divN}\n\t\t\t- {array 3, 2,\n\t\t\t\t{cc 0.5, 1,\n\t\t\t\t\t1, 1.25,\n\t\t\t\t\t1.5, 1.5\n\t\t\t\t}\n\t\t\t} * 1 \"m/s\"\n\t\t}, tolerance * 1 \"m/s\"\n\t}\n}"
+										}
+									},
+									{
+										"name": "ndt2Error",
+										"Notes": "",
+										"DiagramX": 270,
+										"DiagramY": 445,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{sum\n\t{ne NdivT2.name, t2.name}\n\t+\n\t{gt\n\t\t{abs\n\t\t\t{numeric NdivT2}\n\t\t\t-\n\t\t\t1 / {array 3, 2,\n\t\t\t\t{cc\n\t\t\t\t\t0.5, 1,\n\t\t\t\t\t1, 1.25,\n\t\t\t\t\t1.5, 1.5\n\t\t\t\t}\n\t\t\t} * 1 \"s/m\"\n\t\t}, tolerance * 1 \"s/m\"\n\t}\n}"
+										}
 									}
 								]
 							},
@@ -16960,6 +17073,66 @@
 										"isOutput": "y"
 									}
 								]
+							},
+							{
+								"name": "sumrowsN",
+								"Notes": "",
+								"DiagramX": 165,
+								"DiagramY": 610,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sumrows t2}"
+								}
+							},
+							{
+								"name": "sumrowsT",
+								"Notes": "",
+								"DiagramX": 165,
+								"DiagramY": 635,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sumrows t2, \"Sum\"}"
+								}
+							},
+							{
+								"name": "SumRowsNError",
+								"Notes": "",
+								"DiagramX": 260,
+								"DiagramY": 585,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum\n\t{gt\n\t\t{abs\n\t\t\tsumRowsN - {cc 5, 7, 9} * 1 m\n\t\t}, tolerance * 1 m\n\t}\n}"
+								}
+							},
+							{
+								"name": "SumRowsTError",
+								"Notes": "",
+								"DiagramX": 260,
+								"DiagramY": 610,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum\n\t{ne sumRowsT.name, t2.name}\n\t+\n\t{gt\n\t\t{abs\n\t\t\tsumRowsT.sum - {cc 5, 7, 9} * 1 m\n\t\t}, tolerance * 1 m\n\t}\n}"
+								}
+							},
+							{
+								"name": "t2",
+								"Notes": "",
+								"DiagramX": 165,
+								"DiagramY": 585,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{table {cc \"Name\", \"C1\", \"C2\"},\n\t{cc \"One\", \"Two\", \"Three\"},\n\t1:3 * 1 m, 4:6 * 1 m\n}"
+								}
 							}
 						]
 					},
