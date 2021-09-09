@@ -2790,7 +2790,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{sumrows input}"
+											"Formula": "{sumrows input, \"Sum\"}"
 										}
 									},
 									{
@@ -2923,7 +2923,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "\t\t{abs\n\t\t\tsumRows -\n\t\t\texpectedSumRows\n\t\t} / tolerance"
+											"Formula": "{ne sumrows.name, {cc \"a\",\"b\",\"c\",\"d\", \"e\"}}\n +\n{abs\n\tsumRows.sum -\n\texpectedSumRows\n} / tolerance"
 										}
 									},
 									{

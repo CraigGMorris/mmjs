@@ -55,6 +55,7 @@
 				<li>"name = fred"</li>
 				<li>{cc "dept = sales", "age >= 30"}</li>
 				<li>{cc "dept = sales", "| dept = support", "&amp; age >= 30"}</li>
+			</ul>
 			`
 	}
 	const sumRowsDesc = {
