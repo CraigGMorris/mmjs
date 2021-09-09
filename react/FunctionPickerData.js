@@ -55,8 +55,23 @@
 				<li>"name = fred"</li>
 				<li>{cc "dept = sales", "age >= 30"}</li>
 				<li>{cc "dept = sales", "| dept = support", "&amp; age >= 30"}</li>
-			`,
+			`
 	}
+	const sumRowsDesc = {
+		f: "{sumrows x}",
+		desc: `<p>
+			Returns a column array with the summations of the values in each row of x.  If x is a
+			table value, then all the numeric columns must have the same unit dimensions, but string
+				columns are simply ignored.
+			</p>
+			<p>
+				However if a second argument is given as a string, then that string is used as a column
+				name for the sums and a table value is returned. Also in this case if x is a table value,
+				any string columns are copied into the result as well.
+			</p>
+			`
+	}
+	
 	const data = {
 		title: 'Formula Functions',
 		instructions: `
@@ -278,10 +293,7 @@
 						f: "{sum x}",
 						desc: "Returns the summation of the values in x. If x is a table value, then all numeric columns must have the same dimensions.  String columns are ignored.",
 					},
-					{
-						f: "{sumrows x}",
-						desc: "Returns a column array with the summations of the values in each row of x.  If x is a table value, then all the numeric columns must have the same unit dimensions, but string columns are simply ignored.",
-					},
+					sumRowsDesc,
 					{
 						f: "{sumcols x}",
 						desc: "Returns a row array with the summations of the values in each column of x.  String columns in table values are ignored.",
@@ -693,11 +705,7 @@
 						desc: `Returns the summation of the values in x. If x is a table value, then all numeric columns must have the
 						same dimensions.  String columns are ignored.`,
 					},
-					{
-						f: "{sumrows x}",
-						desc: `Returns a column array with the summations of the values in each row of x.  If x is a table value, then
-						all the numeric columns must have the same unit dimensions, but string columns are simply copied.`,
-					},
+					sumRowsDesc,
 					{
 						f: "{sumcols x}",
 						desc: "Returns a row array with the summations of the values in each column of x.  String columns in table values are ignored.",

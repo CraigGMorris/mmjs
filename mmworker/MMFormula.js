@@ -403,12 +403,17 @@ class MMDyadicOperator extends MMFormulaOperator {
 	 * @returns {MMValue}
 	 */
 	valueFor(v1, v2) {
-		const numberOpTable = (vn, vt) => {
-			// table operation number
-			if (vn.columnCount !== 1) {
-				// number value can only have a single column
-				vn.exceptionWith('mmcmd:tableArithNonscalarColumnCount');
+		const numberOpTable = (v1, v2) => {
+			let vn, vt;
+			if (v1 instanceof MMNumberValue) {
+				vn = v1;
+				vt = v2;
 			}
+			else {
+				vn = v2;
+				vt = v1;
+			}
+			let columnNumber  = 0;
 			const columns = [];
 			for (let column of vt.columns) {
 				if (column.value instanceof MMStringValue) {
@@ -417,7 +422,20 @@ class MMDyadicOperator extends MMFormulaOperator {
 				}
 				else if (column.value instanceof MMNumberValue) {
 					// perform the numeric operation between column value and second operand
-					const newValue = this.operationOn(column.value, vn);
+					let numberValue;
+					if (vn.columnCount > 1) {
+						// get the appropriate column from the number value
+						numberValue = vn.valueForColumnNumber(columnNumber + 1);
+						columnNumber = (columnNumber + 1) % vn.columnCount;
+					}
+					else {
+						numberValue = vn;
+					}
+
+					const newValue = v1 === vn ?
+						this.operationOn(numberValue, column.value)
+						:
+						this.operationOn(column.value, numberValue);
 					let displayUnit;
 					if (MMUnitSystem.areDimensionsEqual(column.value.unitDimensions, newValue.unitDimensions)) {
 						displayUnit = column.displayUnit;
@@ -440,21 +458,16 @@ class MMDyadicOperator extends MMFormulaOperator {
 			return this.operationOn(v1, v2);
 		}
 		else if (v1 instanceof MMTableValue) {
-			if (v1.rowCount !== 1 && v2.rowCount !== 1 && v1.rowCount !== v2.rowCount) {
-				// must have same row count or one must have only one row
-				v1.exceptionWith('mmcmd:tableArithRowCount');
-			}
 			if (v2 instanceof MMNumberValue) {
-				if (v2.columnCount === 1) {
-					return numberOpTable(v2, v1);
-				}
-				else {
-					return this.operationOn(v1.numberValue(), v2);
-				}
+					return numberOpTable(v1, v2);
 			}
 			else if (v2 instanceof MMTableValue) {
 				// table operation table
-				if (v1.columnCount !== v2.columnCount) {
+				if (v1.rowCount !== 1 && v2.rowCount !== 1 && v1.rowCount !== v2.rowCount) {
+					// must have same row count or one must have only one row
+					v1.exceptionWith('mmcmd:tableArithRowCount');
+				}
+					if (v1.columnCount !== v2.columnCount) {
 					v1.exceptionWith('mmcmd:tableTableArithColumnCount')
 				}
 				const columns = [];
@@ -492,12 +505,12 @@ class MMDyadicOperator extends MMFormulaOperator {
 			}
 		}
 		else if (v2 instanceof MMTableValue && v1 instanceof MMNumberValue) {
-			if (v1.columnCount === 1) {
+			// if (v1.columnCount === 1) {
 				return numberOpTable(v1, v2);
-			}
-			else {
-				return this.operationOn(v1, v2.numberValue());
-			}
+			// }
+			// else {
+			// 	return this.operationOn(v1, v2.numberValue());
+			// }
 		}
 
 		return null;
@@ -1781,16 +1794,61 @@ class MMSumFunction extends MMSingleValueFunction {
 	}
 }
 
-class MMSumRowsFunction extends MMSingleValueFunction {	
-	operationOn(v) {
-		if (v) {
-			return v.sumRows();
-		}
+class MMSumRowsFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 1);
 	}
 
-	operationOnTable(v) {
-		if (v) {
-			return v.numberValue().sumRows();
+	value() {
+		const argCount = this.arguments.length;
+		let v, name;
+		if (argCount > 1) {
+			v = this.arguments[1].value();
+			name = this.arguments[0].value();
+		}
+		else {
+			v = this.arguments[0].value();
+		}
+		if (name instanceof MMStringValue) {
+			// return a table value
+			if (v instanceof MMNumberValue) {
+				const sum = v.sumRows();
+				const column = new MMTableValueColumn({
+					name: name.values[0],
+					displayUnit: null,
+					value: sum
+				});
+				return new MMTableValue({columns: [column]});
+			}
+			else if (v instanceof MMTableValue) {
+				const rowSums = v.numberValue().sumRows();
+				const columns = [];
+				let displayUnit
+				for (let column of v.columns) {
+					if (column.value instanceof MMStringValue) {
+						// string columns aren't affected by operation
+						columns.push(column);
+					}
+					else if (column.displayUnit) {
+						displayUnit = column.displayUnit
+					}
+				}
+	
+				const newColumn = new MMTableValueColumn({
+					name: name.values[0],
+					displayUnit: displayUnit ? displayUnit.name : null,
+					value: rowSums
+				});
+				columns.push(newColumn);
+				return new MMTableValue({columns: columns});	
+			}
+		} else {
+			if (v instanceof MMNumberValue) {
+				return v.sumRows();
+			}
+			else if (v instanceof MMTableValue) {
+				return v.numberValue().sumRows();
+			}
 		}
 	}
 }
@@ -2397,9 +2455,11 @@ class MMEigenVectorFunction extends MMMultipleArgumentFunction {
 	}
 
 	value() {
-		const matrix = this.arguments[1].value();
+		let matrix = this.arguments[1].value();
+		if (matrix instanceof MMTableValue) { matrix = matrix.numberValue(); }
 		if (matrix instanceof MMNumberValue) {
-			const eigenValue = this.arguments[0].value();
+			let eigenValue = this.arguments[0].value();
+			if (eigenValue instanceof MMTableValue) { eigenValue = eigenValue.numberValue(); }
 			if (eigenValue instanceof MMNumberValue) {
 				return matrix.eigenVectorForLamba(eigenValue);
 			}
