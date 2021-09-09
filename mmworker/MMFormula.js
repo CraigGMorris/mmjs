@@ -413,7 +413,7 @@ class MMDyadicOperator extends MMFormulaOperator {
 				vn = v2;
 				vt = v1;
 			}
-			let columnNumber  = 1;
+			let columnNumber  = 0;
 			const columns = [];
 			for (let column of vt.columns) {
 				if (column.value instanceof MMStringValue) {
@@ -425,7 +425,8 @@ class MMDyadicOperator extends MMFormulaOperator {
 					let numberValue;
 					if (vn.columnCount > 1) {
 						// get the appropriate column from the number value
-						numberValue = vn.valueForColumnNumber(columnNumber++);
+						numberValue = vn.valueForColumnNumber(columnNumber + 1);
+						columnNumber = (columnNumber + 1) % vn.columnCount;
 					}
 					else {
 						numberValue = vn;
