@@ -572,6 +572,10 @@ export function MMApp(props) {
 	},[popView]);
 
 const pushTool = useCallback((toolName, path, toolType) => {
+	if (toolType === 'Model') {
+		pushModel(toolName);
+		return;
+	}
 	const updateCommand = `${path} toolViewInfo`;
 	doCommand(updateCommand, (cmds) => {
 		if (cmds.error) {
