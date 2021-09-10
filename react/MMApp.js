@@ -596,7 +596,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 		setStateViewType(viewType === ViewType.diagram ? ViewType.info : viewType);
 		updateDiagram();
 	});
-}, [doCommand, props, updateDiagram, viewType, setStateViewType]);
+}, [doCommand, pushModel, setStateViewType, viewType, updateDiagram, props]);
 
 	/**
 	 * viewTool
