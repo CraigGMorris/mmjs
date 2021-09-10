@@ -35,7 +35,6 @@
 	MMHtmlPage:readonly
 	theMMSession:readonly
 	MMToolValue:readonly
-	MMFlash:readonly
 */
 
 /** @class MMPoint
@@ -1030,12 +1029,6 @@ class MMSession extends MMCommandParent {
 
 	// testing method - place to easily try things out
 	async test(command) {
-		// const a = Module.get_global_param_string('fluids_list');
-		// const aList = a.split(',');
-		// for (const name of aList) {
-		// 		console.log(name);
-		// }
-
 		let results = ['no test implemented']
 		// let test = command.args;
 
@@ -1083,10 +1076,6 @@ const MMToolTypes = {
 	"HtmlPage": {
 		factory: (name, parent) => {return new MMHtmlPage(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:htmlPageDisplayName'),
-	},
-	"Flash": {
-		factory: (name, parent) => {return new MMFlash(name, parent)},
-		displayName: new MMCommandMessage('mmcool:flashDisplayName'),
 	},
 };
 
