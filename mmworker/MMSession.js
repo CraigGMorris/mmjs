@@ -1077,6 +1077,10 @@ const MMToolTypes = {
 		factory: (name, parent) => {return new MMHtmlPage(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:htmlPageDisplayName'),
 	},
+	"Flash": {
+		factory: (name, parent) => {return new MMFlash(name, parent)},
+		displayName: new MMCommandMessage('mmcool:flashDisplayName'),
+	},
 };
 
 /**
