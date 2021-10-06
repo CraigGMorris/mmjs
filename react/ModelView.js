@@ -246,6 +246,7 @@ export function ModelView(props) {
 		const indexToolFields = e(
 			'div', {
 				id: 'model__indextool-fields',
+				key: '_indextool',
 				title: t('react:modelIndexToolTitle'),
 			},
 			e(
