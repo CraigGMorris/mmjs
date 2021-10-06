@@ -739,14 +739,6 @@ a:hover {
 	user-select: none;
 }
 
-#info-nav .three-column {
-	grid-template-columns: 1fr 3fr 1fr;
-}
-
-#info-nav .two-column {
-	grid-template-columns: 0px 1fr;
-}
-
 #info-nav__back {
 	grid-area: back;
 	margin-left: 10px;

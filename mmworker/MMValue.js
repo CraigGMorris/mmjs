@@ -290,6 +290,24 @@ class MMValue {
 	}
 
 	/**
+	 * @method columnHeader
+	 * @param {Number} number 
+	 * @returns {String || Number}
+	 */
+	columnHeader(number) {
+		return number; // table values might return string
+	}
+
+	/**
+	 * @method columnDisplayUnitName
+	 * @param {Number} number 
+	 * @returns {String || Number}
+	 */
+	columnDisplayUnitName() {
+		return null;
+	}
+
+	/**
 	 * @method append
 	 * appends columns to value
 	 * @param {MMValue} additions
@@ -318,16 +336,21 @@ class MMValue {
 				unitName = this.defaultUnit.name;
 			}
 			lines.push('\n<table>');
-			lines.push(`\t<tr>\n\t\t<td>${unitName}</td>`);
+			lines.push(`\t<tr>\n\t\t<th class="col0">${unitName}</th>`);
 			for (let column = 1; column <= this.columnCount; column++) {
-				lines.push(`\t\t<td>${column}</td>`);
+				let header = this.columnHeader(column);
+				const unitName = this.columnDisplayUnitName(column);
+				if (unitName) {
+					header += `<br>${unitName}`
+				}
+				lines.push(`\t\t<th class="col${column}">${header}</th>`);
 			}
 			lines.push('\t</tr>');
 			for (let row = 1; row <= this.rowCount; row++) {
-				lines.push(`<tr>\n\t\t<td>${row}</td>`)
+				lines.push(`<tr>\n\t\t<th class="col0">${row}</th>`)
 				for (let column = 1; column <= this.columnCount; column++) {
 					const v = this.stringForRowColumnUnit(row, column, this.defaultUnit);
-					lines.push(`\t\t<td>${v}</td>`)
+					lines.push(`\t\t<td class="col${column}">${v}</td>`)
 				}
 				lines.push('\t</tr>');
 			}

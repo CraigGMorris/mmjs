@@ -613,6 +613,33 @@ class MMTableValue extends MMValue {
 	}
 
 	/**
+	 * @method columnHeader
+	 * @param {Number} number 
+	 * @returns {String || Number}
+	 */
+		columnHeader(number) {
+			if (number <= this.columns.length) {
+				return  this.columns[number - 1].name;
+			}
+			return null;
+		}
+	
+	/**
+	 * @method columnDisplayUnitName
+	 * @param {Number} number 
+	 * @returns {String || Number}
+	 */
+	columnDisplayUnitName(number) {
+		if (number <= this.columns.length) {
+			const unit =  this.columns[number - 1].displayUnit;
+			if (unit) {
+				return unit.name;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * @method valueForIndexRowColumn
 	 * @override
 	 * @param {MMValue} rowIndex
@@ -666,6 +693,28 @@ class MMTableValue extends MMValue {
 			}
 		}
 	}
+
+	/**
+	 * @method stringForRowColumnUnit
+	 * @param {Number} rowNumber
+	 * @param {Number} columnNumber
+	 * @param {MMUnit} outUnit
+	 * @returns {String}
+	 */
+	// eslint-disable-next-line no-unused-vars
+	stringForRowColumnUnit(rowNumber, columnNumber, outUnit) {
+		const column = this.columns[columnNumber - 1];
+
+		if (!outUnit) {
+			outUnit = column.displayUnit;
+		}
+		if (!outUnit) {
+			outUnit = column.value.defaultUnit;
+		}
+
+		return column.value.stringForRowColumnUnit(rowNumber, 1, outUnit);
+	}
+
 
 	/**
 	 * @method jsonValue
