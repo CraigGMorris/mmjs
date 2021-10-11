@@ -35,6 +35,7 @@
 	MMHtmlPage:readonly
 	theMMSession:readonly
 	MMToolValue:readonly
+	MMFlash:readonly
 */
 
 /** @class MMPoint
