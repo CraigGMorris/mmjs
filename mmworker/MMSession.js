@@ -35,6 +35,7 @@
 	MMHtmlPage:readonly
 	theMMSession:readonly
 	MMToolValue:readonly
+	PouchDB:readonly
 */
 
 /** @class MMPoint
@@ -199,6 +200,77 @@ class MMSessionStorage  {
 }
 
 /**
+ * @class MMPouchDBStorage - persistent storage for session using pouchdb
+ */
+class MMPouchDBStorage {
+	/**
+	 * @method save
+	 * @param {String} path - persistent storage path
+	 * @param {String} json - json representation of session
+	*/
+	constructor() {
+		this.db = new PouchDB('MMSessions');
+		this.revs = {};
+	}
+
+	async save(path, json) {
+		const record = {
+			_id: path,
+			_rev: this.revs[path],
+			json: json
+		}
+		console.log(`saving ${path} rev ${record._rev}`);
+		const result = await this.db.put(record);
+		this.revs[path] = result.rev;
+		console.log(`saved ${path} rev ${result.rev}`);
+		return result.json;	
+
+		// let storage = this;
+		// return new Promise((resolve, reject) =>  {
+		// 	const record = {
+		// 		_id: path,
+		// 		_rev: storage.revs[path],
+		// 		json: json
+		// 	}
+		// 	console.log(`saving ${path} rev ${record._rev}`);
+		// 	storage.db.put(record, function callback(err, result) {
+		// 		if (err) {
+		// 			reject(err);
+		// 		}
+		// 		else {
+		// 			storage.revs[path] = result.rev
+		// 			console.log(`saved ${path} rev ${result.rev}`);
+		// 			resolve(result);
+		// 		}
+		// 	});
+		// });
+	}
+
+	/**
+	 * @method load
+	 * @param {String} path - persistent storage path
+	 */
+	async load(path) {
+		let storage = this;
+		return new Promise((resolve, reject) =>  {
+			const request = storage.db.get(path)
+			request.onsuccess = () => {
+				if (request.result) {
+					resolve(request.result.session);
+				}
+				else {
+					resolve(null);
+				}
+			};
+			request.onerror = (event) => {
+				reject(event.target.errorCode);
+			}
+		});
+	}
+
+}
+
+/**
  * @class MMSession - base Math Minion class
  * @extends MMCommandParent
  * @member {MMUnitSystem} unitSystem
@@ -223,6 +295,7 @@ class MMSession extends MMCommandParent {
 		// construct the unit system - it will add itself to my children
 		new MMUnitSystem(this);
 		this.storage = new MMSessionStorage();
+		this.pouchStorage = new MMPouchDBStorage();
 		this.savedLastPathId = '(lastPath)';
 		this.savedLastNewsId = '(lastNews)';
 		this.lastNews = '20211010';
@@ -397,6 +470,7 @@ class MMSession extends MMCommandParent {
 			const caseJson = this.sessionAsJson();
 			try {
 				await this.storage.save(this.storePath, caseJson);
+				await this.pouchStorage.save(this.storePath, caseJson);
 			}
 			catch(e) {
 				const msg = (typeof e === 'string') ? e : e.message;

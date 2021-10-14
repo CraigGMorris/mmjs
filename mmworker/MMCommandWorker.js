@@ -50,7 +50,8 @@ importScripts(
   "MMIterator.js",
   "MMOptimizer.js",
   "MMGraph.js",
-  "MMHtmlPage.js"
+  "MMHtmlPage.js",
+  "pouchdb.min.js"
 );
 
 class MMCommandWorker {
