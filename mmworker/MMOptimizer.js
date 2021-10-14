@@ -316,8 +316,8 @@ class MMOptimizer extends MMTool {
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view
 	 */
-	toolViewInfo(command) {
-		super.toolViewInfo(command);
+	async toolViewInfo(command) {
+		await super.toolViewInfo(command);
 		const results = command.results;
 		results['formulas'] = {
 			'optFormula': this.fxFormula.formula,
