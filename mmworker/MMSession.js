@@ -1171,13 +1171,13 @@ class MMTool extends MMCommandParent {
 	 * command.results contains the info for tool info view
 	 * should be overridden by derived classes
 	 */
-	toolViewInfo(command) {
+	async toolViewInfo(command) {
 		// console.log(`toolviewinfo ${this.getPath()} ${this.session.selectedObject}`);
 		let parent = this;
 		const oldSelected = this.session.selectedObject;
 		this.session.selectedObject = this.name;
 		if (oldSelected !== this.name) {
-			this.session.autoSaveSession();
+			await this.session.autoSaveSession();
 		}
 		while (parent.typeName !== 'Model') {
 			parent = parent.parent;

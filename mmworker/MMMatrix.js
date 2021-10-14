@@ -311,8 +311,8 @@ class MMMatrix extends MMTool {
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view
 	 */
-	toolViewInfo(command) {
-		super.toolViewInfo(command);
+	async toolViewInfo(command) {
+		await super.toolViewInfo(command);
 		let results = command.results;
 		results['rowCountFormula'] = this.rowCountFormula.formula;
 		results['columnCountFormula'] = this.columnCountFormula.formula;
