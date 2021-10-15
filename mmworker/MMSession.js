@@ -220,10 +220,8 @@ class MMPouchDBStorage {
 			_rev: this.revs[path],
 			json: json
 		}
-		console.log(`saving ${path} rev ${record._rev}`);
 		const result = await this.db.put(record);
 		this.revs[path] = result.rev;
-		console.log(`saved ${path} rev ${result.rev}`);
 		return result.json;	
 	}
 
@@ -261,7 +259,7 @@ class MMPouchDBStorage {
 	 * @param {String} path - persistent storage path to delete
 	*/
 	async delete(path) {
-		await this.db.remove(path);
+		await this.db.remove(path, this.revs[path]);
 		delete this.revs[path];
 	}
 
@@ -304,15 +302,6 @@ class MMSession extends MMCommandParent {
 		super('session',  processor, 'MMSession');
 		// construct the unit system - it will add itself to my children
 		new MMUnitSystem(this);
-		try {
-			this.storage = new MMSessionStorage();
-			this.storage.listSessions().then((list) => {
-				console.log(`nSessions ${list.length}`);
-			});
-		}
-		catch(e) {
-			console.log(`storage error ${e.message}`);
-		}
 		this.pouchStorage = new MMPouchDBStorage();
 		this.savedLastPathId = '(lastPath)';
 		this.savedLastNewsId = '(lastNews)';
@@ -487,7 +476,6 @@ class MMSession extends MMCommandParent {
 		if (!this.isLoadingCase) {
 			const caseJson = this.sessionAsJson();
 			try {
-				// await this.storage.save(this.storePath, caseJson);
 				await this.pouchStorage.save(this.storePath, caseJson);
 			}
 			catch(e) {
@@ -524,9 +512,6 @@ class MMSession extends MMCommandParent {
 		try {
 			this.isLoadingCase = true;
 			let result = await this.pouchStorage.load(path);
-			if (!result) {
-				result = await this.storage.load(path);
-			}
 			new MMUnitSystem(this);  // clear any user units and sets
 			const returnValue =await this.initializeFromJson(result, path);
 			this.storePath = path;
@@ -543,15 +528,29 @@ class MMSession extends MMCommandParent {
 		}
 	}
 
+	async importOldStorage() {
+		const storage = new MMSessionStorage();
+		const paths = await storage.listSessions();
+		for (const path of paths) {
+			console.log(`importing ${path}`);
+			const session = await storage.load(path);
+			await this.pouchStorage.save(path, session);
+		}
+	}
+
 	/** @method loadAutoSaved
 	 * load the autosaved session from persistent storage
 	 */
 	async loadAutoSaved() {
+		const sessionPaths = await this.pouchStorage.listSessions();
+		if (sessionPaths.length === 0) {
+			await this.importOldStorage();
+		}
 		try {
 			this.isLoadingCase = true;
 			this.newSession();
-			const lastNews = await this.storage.load(this.savedLastNewsId);
-			const lastPath = await this.storage.load(this.savedLastPathId);
+			const lastNews = await this.pouchStorage.load(this.savedLastNewsId);
+			const lastPath = await this.pouchStorage.load(this.savedLastPathId);
 			const newsUrl = '../news/MM_News.txt';
 			if (
 				(lastNews && lastNews != this.lastNews) ||
@@ -568,9 +567,6 @@ class MMSession extends MMCommandParent {
 				if (lastPath) {
 					let returnValue;
 					let result = await this.pouchStorage.load(lastPath);
-					if (!result) {
-						result = await this.storage.load(lastPath);
-					}
 					if (result) {
 						new MMUnitSystem(this);  // clear any user units and sets
 						returnValue = await this.initializeFromJson(result, lastPath);
@@ -819,7 +815,6 @@ class MMSession extends MMCommandParent {
 	 * list all the stored sessions
 	 */
 	async listSessionsCommand(command) {
-		// let result = await this.storage.listSessions();
 		const result = await this.pouchStorage.listSessions();
 		command.results = {paths: result, currentPath: this.storePath};
 	}
@@ -949,10 +944,7 @@ class MMSession extends MMCommandParent {
 				for (const path of sessionPaths) {
 					if (!path.startsWith('(') && (isRootFolder || path.startsWith(args))) {
 						let sessionJson = await this.pouchStorage.load(path);
-						if (!sessionJson) {
-							sessionJson = await this.storage.load(path);
-						}
-							let pathName = path.substring(args.length-1);
+						let pathName = path.substring(args.length-1);
 						archive[pathName] = sessionJson;
 					}
 				}
@@ -961,9 +953,6 @@ class MMSession extends MMCommandParent {
 			else {
 				try {
 					let result = await this.pouchStorage.load(args);
-					if (!result) {
-						result = await this.storage.load(args);
-					}
 					command.results = result;
 				}
 				catch(e) {
