@@ -56,8 +56,9 @@ class MMPoint {
 class MMSessionStorage  {
 	constructor() {
 		this.isSetup = false;
+		this._exists = true;
 	}
-	
+
 	/**
 	 * @method setup - prepare db for storage
 	 */
@@ -224,26 +225,6 @@ class MMPouchDBStorage {
 		this.revs[path] = result.rev;
 		console.log(`saved ${path} rev ${result.rev}`);
 		return result.json;	
-
-		// let storage = this;
-		// return new Promise((resolve, reject) =>  {
-		// 	const record = {
-		// 		_id: path,
-		// 		_rev: storage.revs[path],
-		// 		json: json
-		// 	}
-		// 	console.log(`saving ${path} rev ${record._rev}`);
-		// 	storage.db.put(record, function callback(err, result) {
-		// 		if (err) {
-		// 			reject(err);
-		// 		}
-		// 		else {
-		// 			storage.revs[path] = result.rev
-		// 			console.log(`saved ${path} rev ${result.rev}`);
-		// 			resolve(result);
-		// 		}
-		// 	});
-		// });
 	}
 
 	/**
@@ -251,23 +232,51 @@ class MMPouchDBStorage {
 	 * @param {String} path - persistent storage path
 	 */
 	async load(path) {
-		let storage = this;
-		return new Promise((resolve, reject) =>  {
-			const request = storage.db.get(path)
-			request.onsuccess = () => {
-				if (request.result) {
-					resolve(request.result.session);
-				}
-				else {
-					resolve(null);
-				}
-			};
-			request.onerror = (event) => {
-				reject(event.target.errorCode);
-			}
-		});
+		try {
+			const result = await this.db.get(path);
+			this.revs[path] = result._rev;
+			return result.json;
+		}
+		catch(e) {
+			console.log(e.message);
+			return;
+		}
 	}
 
+	/**
+	 * @emethod copy
+	 * @param {String} oldPath
+	 * @param {String} newPath
+	 */
+	async copy(oldPath, newPath) {
+		let session = await this.load(oldPath);
+		if (session) {
+			await this.save(newPath, session);
+			return newPath;
+		}
+	}
+	
+	/**
+	 * @method delete
+	 * @param {String} path - persistent storage path to delete
+	*/
+	async delete(path) {
+		await this.db.remove(path);
+		delete this.revs[path];
+	}
+
+	/**
+	 * @method listSessions
+	 */
+	async listSessions() {
+		const result = await this.db.allDocs();
+		if (result) {
+			const docIds = result.rows.map(row => row.id);
+			return docIds;
+		}
+
+		return [];
+	}
 }
 
 /**
@@ -281,6 +290,7 @@ class MMPouchDBStorage {
  * @member {MMPoint} unknownPosition
  * @member {MMPoint} nextToolLocation
  * @member {MMSessionStorage} storage
+ * @member {MMPouchDBStorage} pouchStorage
  */
 // eslint-disable-next-line no-unused-vars
 class MMSession extends MMCommandParent {
@@ -294,7 +304,15 @@ class MMSession extends MMCommandParent {
 		super('session',  processor, 'MMSession');
 		// construct the unit system - it will add itself to my children
 		new MMUnitSystem(this);
-		this.storage = new MMSessionStorage();
+		try {
+			this.storage = new MMSessionStorage();
+			this.storage.listSessions().then((list) => {
+				console.log(`nSessions ${list.length}`);
+			});
+		}
+		catch(e) {
+			console.log(`storage error ${e.message}`);
+		}
 		this.pouchStorage = new MMPouchDBStorage();
 		this.savedLastPathId = '(lastPath)';
 		this.savedLastNewsId = '(lastNews)';
@@ -452,7 +470,7 @@ class MMSession extends MMCommandParent {
 	async saveSession(path) {
 		let caseJson = this.sessionAsJson(path);
 		try {
-			await this.storage.save(this.storePath, caseJson);
+			await this.pouchStorage.save(this.storePath, caseJson);
 			return this.storePath;
 		}
 		catch(e) {
@@ -469,7 +487,7 @@ class MMSession extends MMCommandParent {
 		if (!this.isLoadingCase) {
 			const caseJson = this.sessionAsJson();
 			try {
-				await this.storage.save(this.storePath, caseJson);
+				// await this.storage.save(this.storePath, caseJson);
 				await this.pouchStorage.save(this.storePath, caseJson);
 			}
 			catch(e) {
@@ -489,7 +507,7 @@ class MMSession extends MMCommandParent {
 	async saveLastSessionPath() {
 		if (this.storePath) {
 			try {
-				await this.storage.save(this.savedLastPathId, this.storePath);
+				await this.pouchStorage.save(this.savedLastPathId, this.storePath);
 			}
 			catch(e) {
 				const msg = (typeof e === 'string') ? e : e.message;
@@ -505,7 +523,10 @@ class MMSession extends MMCommandParent {
 	async loadSession(path) {
 		try {
 			this.isLoadingCase = true;
-			let result = await this.storage.load(path);
+			let result = await this.pouchStorage.load(path);
+			if (!result) {
+				result = await this.storage.load(path);
+			}
 			new MMUnitSystem(this);  // clear any user units and sets
 			const returnValue =await this.initializeFromJson(result, path);
 			this.storePath = path;
@@ -537,16 +558,19 @@ class MMSession extends MMCommandParent {
 				(!lastNews && lastPath)
 			) {
 				const returnValue = await this.loadUrl(newsUrl);
-				await this.storage.save(this.savedLastNewsId, this.lastNews);
+				await this.pouchStorage.save(this.savedLastNewsId, this.lastNews);
 				return returnValue;
 			}
 			else {
 				if (!lastNews) {
-					await this.storage.save(this.savedLastNewsId, this.lastNews);
+					await this.pouchStorage.save(this.savedLastNewsId, this.lastNews);
 				}
 				if (lastPath) {
 					let returnValue;
-					let result = await this.storage.load(lastPath);
+					let result = await this.pouchStorage.load(lastPath);
+					if (!result) {
+						result = await this.storage.load(lastPath);
+					}
 					if (result) {
 						new MMUnitSystem(this);  // clear any user units and sets
 						returnValue = await this.initializeFromJson(result, lastPath);
@@ -578,10 +602,10 @@ class MMSession extends MMCommandParent {
 	async deleteSession(path) {
 		if (path) {
 			if (path.endsWith('/')) {
-				const sessionPaths = await this.storage.listSessions();
+				const sessionPaths = await this.pouchStorage.listSessions();
 				for (const existingPath of sessionPaths) {
 					if (existingPath.startsWith(path)) {
-						await this.storage.delete(existingPath);
+						await this.pouchStorage.delete(existingPath);
 						if (this.storePath === existingPath) {
 							this.storePath = '(unnamed)';
 							await this.saveLastSessionPath()
@@ -591,7 +615,7 @@ class MMSession extends MMCommandParent {
 			}
 			else {
 				try {
-					await this.storage.delete(path);
+					await this.pouchStorage.delete(path);
 					if (this.storePath === path) {
 						this.storePath = '(unnamed)';
 						await this.saveLastSessionPath()
@@ -616,12 +640,12 @@ class MMSession extends MMCommandParent {
 			if (!newPath.endsWith('/')) {
 				newPath += '/';
 			}
-			const sessionPaths = await this.storage.listSessions();
+			const sessionPaths = await this.pouchStorage.listSessions();
 			for (const existingPath of sessionPaths) {
 				if (existingPath.startsWith(oldPath)) {
 					const newSessionPath = newPath + existingPath.substring(oldPath.length);
 					try {
-						await this.storage.copy(existingPath, newSessionPath);
+						await this.pouchStorage.copy(existingPath, newSessionPath);
 					}
 					catch(e) {
 						const msg = (typeof e === 'string') ? e : e.message;
@@ -638,7 +662,7 @@ class MMSession extends MMCommandParent {
 		}
 		else {
 			try {
-				await this.storage.copy(oldPath, newPath);
+				await this.pouchStorage.copy(oldPath, newPath);
 				return newPath;
 			}
 			catch(e) {
@@ -662,7 +686,7 @@ class MMSession extends MMCommandParent {
 			if (newPath === '/') {
 				newPath = ''; // renaming to root;
 			}
-			const sessionPaths = await this.storage.listSessions();
+			const sessionPaths = await this.pouchStorage.listSessions();
 			const setOfPaths = new Set(sessionPaths);
 			for (const existingPath of sessionPaths) {
 				if (existingPath.startsWith(oldPath)) {
@@ -672,8 +696,8 @@ class MMSession extends MMCommandParent {
 						newSessionPath = newPath + `copy-${n++}/` +existingPath.substring(oldPath.length);
 					}
 					try {
-						await this.storage.copy(existingPath, newSessionPath);
-						await this.storage.delete(existingPath);
+						await this.pouchStorage.copy(existingPath, newSessionPath);
+						await this.pouchStorage.delete(existingPath);
 					}
 					catch(e) {
 						const msg = (typeof e === 'string') ? e : e.message;
@@ -690,8 +714,8 @@ class MMSession extends MMCommandParent {
 		}
 		else {
 			try {
-				await this.storage.copy(oldPath, newPath);
-				await this.storage.delete(oldPath);
+				await this.pouchStorage.copy(oldPath, newPath);
+				await this.pouchStorage.delete(oldPath);
 				if (this.storePath === oldPath) {
 					this.storePath = newPath;
 					await this.saveLastSessionPath();
@@ -795,7 +819,8 @@ class MMSession extends MMCommandParent {
 	 * list all the stored sessions
 	 */
 	async listSessionsCommand(command) {
-		let result = await this.storage.listSessions();
+		// let result = await this.storage.listSessions();
+		const result = await this.pouchStorage.listSessions();
 		command.results = {paths: result, currentPath: this.storePath};
 	}
 
@@ -915,7 +940,7 @@ class MMSession extends MMCommandParent {
 		const args = command.args;
 		if (args) {
 			if (args.endsWith('/')) {
-				const sessionPaths = await this.storage.listSessions();
+				const sessionPaths = await this.pouchStorage.listSessions();
 				const pathParts = args.split('/');
 				pathParts.pop();
 				const isRootFolder = args === '/';
@@ -923,8 +948,11 @@ class MMSession extends MMCommandParent {
 				const archive = {}
 				for (const path of sessionPaths) {
 					if (!path.startsWith('(') && (isRootFolder || path.startsWith(args))) {
-						const sessionJson = await this.storage.load(path);
-						let pathName = path.substring(args.length-1);
+						let sessionJson = await this.pouchStorage.load(path);
+						if (!sessionJson) {
+							sessionJson = await this.storage.load(path);
+						}
+							let pathName = path.substring(args.length-1);
 						archive[pathName] = sessionJson;
 					}
 				}
@@ -932,7 +960,10 @@ class MMSession extends MMCommandParent {
 			}
 			else {
 				try {
-					let result = await this.storage.load(args);
+					let result = await this.pouchStorage.load(args);
+					if (!result) {
+						result = await this.storage.load(args);
+					}
 					command.results = result;
 				}
 				catch(e) {
@@ -955,7 +986,7 @@ class MMSession extends MMCommandParent {
 	async importCommand(command) {
 		const rootPathLength = command.args.indexOf(':');
 		const rootPath = command.args.substring(0, rootPathLength);
-		const existingPaths = await this.storage.listSessions();
+		const existingPaths = await this.pouchStorage.listSessions();
 		const pathAlreadyUsed = (newPath) => {
 			for (const path of existingPaths) {
 				if (path.startsWith(newPath)) {
@@ -978,7 +1009,7 @@ class MMSession extends MMCommandParent {
 
 			for (const path of Object.keys(sessions)) {
 				const fullPath = newFolderPath + path;
-				await this.storage.save(fullPath, sessions[path]);
+				await this.pouchStorage.save(fullPath, sessions[path]);
 			}
 
 		}
