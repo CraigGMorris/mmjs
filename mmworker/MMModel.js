@@ -698,8 +698,8 @@ class MMModel extends MMTool {
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view
 	 */
-	toolViewInfo(command) {
-		super.toolViewInfo(command);
+	async toolViewInfo(command) {
+		await super.toolViewInfo(command);
 		this.session.selectedObject = '';
 		const inputs = [];
 		const outputs = [];

@@ -53,6 +53,8 @@ importScripts(
   "MMHtmlPage.js",
   "MMFlash.js",
   "coolprop.js",
+  // "pouchdb.min.js"
+  "pouchdb.js"
 );
 
 /* global

@@ -221,8 +221,15 @@ export function MMApp(props) {
 				setAutoLoadComplete(true);
 			});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		}	}, []);
+		}
+	}, []);
 
+	useEffect(() => {
+		if (statusMessage && statusMessage === '__refresh') {
+			updateDiagram();
+			updateView(null, false, false);
+		}
+	}, [statusMessage])
 
 	/** setStateViewType
 	 * sets the actual viewType, but with some additional processing
@@ -432,7 +439,7 @@ export function MMApp(props) {
 	 * @param {Boolean} rescaleDiagram - should diagram be rescaled - default false
 	 * call doCommand with updateCommands to update th info view state
 	 */
-	const updateView = useCallback((stackIndex, rescaleDiagram = false) => {
+	const updateView = useCallback((stackIndex, rescaleDiagram = false, doAutoSave = true) => {
 		if (stackIndex == null) {
 			// assume top view
 			stackIndex = infoStack.length - 1;
@@ -445,7 +452,9 @@ export function MMApp(props) {
 					top.updateResults = cmds;
 					setViewInfo({...top});
 					updateDiagram(rescaleDiagram);
-					doCommand('/ autosave');
+					if (doAutoSave) {
+						doCommand('/ autosave');
+					}
 				});
 			}
 			else {

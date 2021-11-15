@@ -1843,8 +1843,8 @@ class MMGraph extends MMTool {
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view
 	 */
-	toolViewInfo(command) {
-		super.toolViewInfo(command);
+	async toolViewInfo(command) {
+		await super.toolViewInfo(command);
 		const results = command.results;
 		const xValues = [];
 		const xCount = this.xValues.length;
