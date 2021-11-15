@@ -551,8 +551,8 @@ const mminputs = (idNames) => {
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view
 	 */
-	toolViewInfo(command) {
-		super.toolViewInfo(command);
+	async toolViewInfo(command) {
+		await super.toolViewInfo(command);
 		const results = command.results;
 		results.formula = this.formula.formula;
 		results.html = this.htmlForRequestor();

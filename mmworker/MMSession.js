@@ -35,6 +35,7 @@
 	MMHtmlPage:readonly
 	theMMSession:readonly
 	MMToolValue:readonly
+	PouchDB:readonly
 */
 
 /** @class MMPoint
@@ -50,13 +51,14 @@ class MMPoint {
 }
 
 /**
- * @class MMSessionStorage - persistent storage for session
+ * @class MMIndexedDBStorage - original indexedDB persistent storage for session
  */
-class MMSessionStorage  {
+class MMIndexedDBStorage  {
 	constructor() {
 		this.isSetup = false;
+		this._exists = true;
 	}
-	
+
 	/**
 	 * @method setup - prepare db for storage
 	 */
@@ -199,6 +201,90 @@ class MMSessionStorage  {
 }
 
 /**
+ * @class MMPouchDBStorage - persistent storage for session using pouchdb
+ */
+class MMPouchDBStorage {
+	/**
+	 * @method save
+	 * @param {String} path - persistent storage path
+	 * @param {String} json - json representation of session
+	*/
+	constructor() {
+		this.db = new PouchDB('MMSessions', {auto_compaction: true});
+		this.revs = {};
+	}
+
+	async save(path, json) {
+		const record = {
+			_id: path,
+			_rev: this.revs[path],
+			json: json
+		}
+		// console.log(`saving ${path} rev ${record._rev}`);
+		const result = await this.db.put(record);
+		// console.log(`saved ${path} rev ${result.rev}`);
+		this.revs[path] = result.rev;
+		return result.json;	
+	}
+
+	/**
+	 * @method load
+	 * @param {String} path - persistent storage path
+	 */
+	async load(path) {
+		try {
+			const result = await this.db.get(path);
+			this.revs[path] = result._rev;
+			return result.json;
+		}
+		catch(e) {
+			console.log(e.message);
+			return;
+		}
+	}
+
+	/**
+	 * @emethod copy
+	 * @param {String} oldPath
+	 * @param {String} newPath
+	 */
+	async copy(oldPath, newPath) {
+		let session = await this.load(oldPath);
+		if (session) {
+			await this.save(newPath, session);
+			return newPath;
+		}
+	}
+	
+	/**
+	 * @method delete
+	 * @param {String} path - persistent storage path to delete
+	*/
+	async delete(path) {
+		await this.db.remove(path, this.revs[path]);
+		delete this.revs[path];
+	}
+
+	/**
+	 * @method listSessions
+	 */
+	async listSessions() {
+		const result = await this.db.allDocs();
+		if (result) {
+			const docIds = [];
+			for (const row of result.rows) {
+				docIds.push(row.id);
+				this.revs[row.id] = row.value.rev;
+			}
+			// const docIds = result.rows.map(row => row.id);
+			return docIds;
+		}
+
+		return [];
+	}
+}
+
+/**
  * @class MMSession - base Math Minion class
  * @extends MMCommandParent
  * @member {MMUnitSystem} unitSystem
@@ -208,7 +294,7 @@ class MMSessionStorage  {
  * @member {string} storePath - path to persistent storage
  * @member {MMPoint} unknownPosition
  * @member {MMPoint} nextToolLocation
- * @member {MMSessionStorage} storage
+ * @member {MMPouchDBStorage} pouchStorage
  */
 // eslint-disable-next-line no-unused-vars
 class MMSession extends MMCommandParent {
@@ -222,12 +308,42 @@ class MMSession extends MMCommandParent {
 		super('session',  processor, 'MMSession');
 		// construct the unit system - it will add itself to my children
 		new MMUnitSystem(this);
-		this.storage = new MMSessionStorage();
+		this.storage = new MMPouchDBStorage();
 		this.savedLastPathId = '(lastPath)';
 		this.savedLastNewsId = '(lastNews)';
 		this.lastNews = '20211010';
 		this.newSession();
 	}
+
+	/**
+	 * @method couchDBSync
+	 * if this.remoteCouch is set up, sync session database
+	 */
+	couchDBSync() {
+		if (this.remoteCouch) {
+			var opts = {live: true};
+			this.storage.db.replicate.to(this.remoteCouch, opts, () => {
+				console.log(`There was an error syncing to ${this.remoteCouch}`);
+			});
+			this.storage.db.replicate.from(this.remoteCouch, opts, () => {
+				console.log(`There was an error syncing from ${this.remoteCouch}`);
+			}).on('change', (info) => {
+				for(const record of info.docs) {
+					if (record._id === this.storePath) {
+						this.storage.load(this.storePath).then(result => {
+							if (result) {
+								new MMUnitSystem(this);  // clear any user units and sets
+								this.initializeFromJson(result, this.storePath);
+								this.processor.statusCallBack({msgKey: '__refresh'});
+							}
+						});
+						break;
+					}
+				}
+			});
+		}
+	}
+
 
 	/** @method newSession
 	 * initialize to new empty session
@@ -393,14 +509,18 @@ class MMSession extends MMCommandParent {
 	 * returns the autosave path
 	 */
 	async autoSaveSession() {
-		if (!this.isLoadingCase) {
+		if (!this.isLoadingCase && !this.isAutoSaving) {
 			const caseJson = this.sessionAsJson();
 			try {
+				this.isAutoSaving = true;
 				await this.storage.save(this.storePath, caseJson);
 			}
 			catch(e) {
 				const msg = (typeof e === 'string') ? e : e.message;
 				this.setError('mmcmd:sessionSaveFailed', {path: this.storePath, error: msg});
+			}
+			finally {
+				this.isAutoSaving = false;
 			}
 			return this.storePath;
 		}
@@ -448,10 +568,26 @@ class MMSession extends MMCommandParent {
 		}
 	}
 
+	async importOldStorage(indexedDB) {
+		const paths = await indexedDB.listSessions();
+		for (const path of paths) {
+			// console.log(`importing ${path}`);
+			const session = await indexedDB.load(path);
+			await this.storage.save(path, session);
+		}
+	}
+
 	/** @method loadAutoSaved
 	 * load the autosaved session from persistent storage
 	 */
 	async loadAutoSaved() {
+		const indexedDB = new MMIndexedDBStorage();
+		const sessionPaths = await this.storage.listSessions();
+		if (sessionPaths.length === 0) {
+			await this.importOldStorage(indexedDB);
+		}
+		this.remoteCouch = await indexedDB.load('(remoteCouch)');
+		this.couchDBSync();
 		try {
 			this.isLoadingCase = true;
 			this.newSession();
@@ -651,7 +787,8 @@ class MMSession extends MMCommandParent {
 		verbs['getjson'] = this.getJsonCommand;
 		verbs['pushmodel'] = this.pushModelCommand;
 		verbs['popmodel'] = this.popModelCommand;
-		verbs['import'] =this.importCommand;
+		verbs['import'] = this.importCommand;
+		verbs['remote'] = this.remoteDBCommand;
 		return verbs;
 	}
 
@@ -672,7 +809,9 @@ class MMSession extends MMCommandParent {
 			delete: 'mmcmd:?sessionDelete',
 			getjson: 'mmcmd:?sessionGetJson',
 			pushmodel: 'mmcmd:?sessionPushModel',
-			popmodel: 'mmcmd:?sessionPopModel'
+			popmodel: 'mmcmd:?sessionPopModel',
+			import: 'mmcmd:?sessionImport',
+			remote: 'mmcmd:?sessionRemote'
 		}[command];
 		if (key) {
 			return key;
@@ -721,7 +860,7 @@ class MMSession extends MMCommandParent {
 	 * list all the stored sessions
 	 */
 	async listSessionsCommand(command) {
-		let result = await this.storage.listSessions();
+		const result = await this.storage.listSessions();
 		command.results = {paths: result, currentPath: this.storePath};
 	}
 
@@ -731,9 +870,9 @@ class MMSession extends MMCommandParent {
 	 * @param {MMCommand} command
 	 * command.args contains the store path for the new session
 	 */
-	newSessionCommand(command) {
+	async newSessionCommand(command) {
 		this.newSession(command.args);
-		this.saveLastSessionPath();
+		await this.saveLastSessionPath();
 		command.results = this.storePath;
 	}
 
@@ -849,7 +988,7 @@ class MMSession extends MMCommandParent {
 				const archive = {}
 				for (const path of sessionPaths) {
 					if (!path.startsWith('(') && (isRootFolder || path.startsWith(args))) {
-						const sessionJson = await this.storage.load(path);
+						let sessionJson = await this.storage.load(path);
 						let pathName = path.substring(args.length-1);
 						archive[pathName] = sessionJson;
 					}
@@ -975,6 +1114,18 @@ class MMSession extends MMCommandParent {
 	}
 
 	/**
+	 * @method remoteDBCommand
+	 * @param {MMCommand} command 
+	 * command.args should contain the url (including name and pw) of the couchDB to sync with
+	 * an empty argument will turn off syncing
+	 */
+	async remoteDBCommand(command) {
+		this.remoteCouch = command.args;
+		const indexedDB = new MMIndexedDBStorage();
+		await indexedDB.save('(remoteCouch)', this.remoteCouch);
+	}
+
+	/**
 	 * @method diagramInfo
 	 * verb
 	 * @param {MMCommand} command
@@ -992,11 +1143,11 @@ class MMSession extends MMCommandParent {
 	 * command.args contains the name of the model to be pushed
 	 * command.results contains name new current model
 	 */
-	pushModelCommand(command) {
+	async pushModelCommand(command) {
 		const model = this.currentModel.childNamed(command.args);
 		if (model instanceof MMModel) {
 			this.pushModel(model);
-			this.autoSaveSession();
+			await this.autoSaveSession();
 		}
 
 		command.results = {path: this.currentModel.getPath()};
@@ -1016,14 +1167,14 @@ class MMSession extends MMCommandParent {
 	 * @param {MMCommand} command - args can be count of how many to pop - default 1
 	 * command.results contains name new current model
 	 */
-	popModelCommand(command) {
+	async popModelCommand(command) {
 		if (command.args) {
 			this.popModel(command.args);
 		}
 		else {
 			this.popModel();
 		}
-		this.autoSaveSession();
+		await this.autoSaveSession();
 		command.results = this.currentModel.getPath();
 	}
 
@@ -1171,13 +1322,13 @@ class MMTool extends MMCommandParent {
 	 * command.results contains the info for tool info view
 	 * should be overridden by derived classes
 	 */
-	toolViewInfo(command) {
+	async toolViewInfo(command) {
 		// console.log(`toolviewinfo ${this.getPath()} ${this.session.selectedObject}`);
 		let parent = this;
 		const oldSelected = this.session.selectedObject;
 		this.session.selectedObject = this.name;
 		if (oldSelected !== this.name) {
-			this.session.autoSaveSession();
+			await this.session.autoSaveSession();
 		}
 		while (parent.typeName !== 'Model') {
 			parent = parent.parent;
