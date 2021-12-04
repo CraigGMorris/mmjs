@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('CouchDB Integration',{
+					overview: 'Overview',
+					connecting: 'Connecting MM to CouchDB',
+					get: 'Getting or Accessing Couch',
+					restrictions: 'Browser Security Restrictions',
+					hosting: 'Hosting Scenarios',
+					needhelp: 'Need Help?',
+				});
+			};			
+		</script>	
+		<title>CouchDB</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					Math Minion sessions are stored in the browser's <a href="https://en.wikipedia.org/wiki/Indexed_Database_API">indexedDB</a> using a <a href="https://pouchdb.com">PouchDB</a> layer which permits replication to external databases that conform to the <a href="https://couchdb.apache.org">CouchDB</a> sync protocol.
+				</p>
+				<p>
+					While there is no need to use an external database with Math Minion and I doubt many users will choose to do so, there are some significant advantages to doing so for those interested in giving it a try.
+				</p>
+				<p>
+					First it provides additional external backup for your sessions. While I strongly advise frequenty backing everything up with the <b>Export All</b> button from the <b>Sessions</b> page to ensure everything isn't lost should you or the browser clear the indexedDB for some reason, having the session automatically stored in an external database provides additional security.
+				</p>
+				<p>
+					Second, the database allows multiple browsers and devices to share the same sessions and can even allow changes to be reflected on other devices in near real time.
+				</p>
+			</div>
+			<div id="connecting" class="section">
+				<h3>Connecting MM to CouchDB</h3>
+				<p>
+					Assuming you have access to a CouchDB server, you can tell Math Minion to sync its sessions to a database by switching to the <a href="console.html">console view</a> with the button at the bottom of the <a href="infoview.html">information view</a> entering a command like:
+				</p>
+				<p class="formula">
+					/ remote https://myName:myPassword:6984@myDomain.org/my_db
+				</p>
+				<p>
+					where <b>myName</b> and <b>myPassword</b> are legitimate credentials with access to the <b>my_db</b> database on the server hosted at <b>myDomain.org</b>. Of course all of those terms will be different for you. (BTW <b>6984</b> is the default port that CouchDB uses for HTTPS connections. The default unencrypted port is 5984)
+				</p>
+				<p>
+					I am far from an expert at running CouchDB, but I have used it in a number of different ways and will share some thoughts from those experiences below.
+				</p>
+			</div>
+			<div id="get" class="section">
+				<h3>Getting or Accessing Couch</h3>
+				<p>
+					Perhaps the easiest solution is to make use of the free tier IBM offers for their <a href="https://www.ibm.com/cloud/cloudant">Cloudant database</a>. While it has limited throughput and storage, it is more than adequate for use with Math Minion.
+				</p>
+				<p>
+					Alternatively you can setup a CouchDB on your personal computer or one you control either physically or in the cloud, by following the <a href="https://docs.couchdb.org/en/stable/install/index.html"_blank">installation instructions</a> on the <a href="https://couchdb.apache.org">CouchDB</a> site. You can then follow up with the <a href="https://docs.couchdb.org/en/stable/setup/single-node.html">single node setup</a>. 
+				</p>
+			</div>
+			<div id="restrictions" class="section">
+				<h3>Browser Security Restrictions</h3>
+				<p>
+					Web browsers understandably impose significant restrictions to try and prevent bad actors from messing with your stuff. These have an impact on how Math Minion and a database can communicate and have been the source of most of my difficulties in setup. An incomplete list of things to consider would be:
+				</p>
+				<ul>
+					<li>
+						<b>Cross Origin Restrictions</b> -
+						Browsers by default prevent web applications from requesting resources from a different origin than the one the application was loaded from. Since the Math Minion server is different from the CouchDB server, requests will be blocked unless the CouchDB server is configured to allow them in its <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">CORS</a> set up. Fortunately this is easily done.
+						<p>
+							If you are using <b>Cloudant</b>, tap on the account icon at the left of the dashboard and then the CORS tab. Enable CORS for all domains.
+						</p>
+						<p>
+							On a CouchDB server, in the Fauxton web interface (/_utils at the server address) tap on the gear icon at the left, then select CORS and enable it for all domains. Then go to the <b>Main Config</b> and see if the <b>cors</b> section has the following entries:
+						</p>
+						<ul>
+							<li>
+								<b>credentials</b>	true
+							</li>
+							<li>
+								<b>headers</b> accept, authorization, content-type, origin, referer
+							</li>
+							<li>
+								<b>methods</b> GET, PUT, POST, HEAD, DELETE
+							</li>
+							<li>
+								<b>origins</b> *
+							</li>
+						</ul>
+						<p>
+							If not, add or edit them as appropriate.
+						</p>
+						<p>
+							Unless you are only accessing the server from the same machine it is hosted on, change the <b>bind_address</b> field in the <b>chttpd</b> section to <b>0.0.0.0</b>.
+						</p>
+					</li>
+					<li>
+						<b>Private Network Restriction</b> - A web application loaded from the internet, such as from mathminion.org, is not allowed to access resources on your private lan, that is from devices using the private IP addresses your router provides them.
+						<p>
+							This means if you host a CouchDB server on a machine that cannot be accessed from the Internet, you will also have to <a href="mmserver.html">host Math Minion</a> on your that machine or one on the same local network.
+						</p>
+					</li>
+					<li>
+						<b>HTTPS</b> - If you want to be able to access the CouchDB when you are away from local network, you will need to host it on a device accessible from the Internet. Regardless of how you do this, both the CouchDB server and the Math Minion server will have to support the encrypted <a href="https://en.wikipedia.org/wiki/HTTPS">HTTPS</a> protocol.
+						<p>
+							The mathminion.org, coolmm.mathminion.org and Cloudant all support HTTPS connections, but if you are hosting your own server, it will need to be configured with a legitimate (not self signed) TSL certificate. If you also wanted to run your own Math Minion, it would also have to have HTTPS enabled. Fortunately <a href="https://letsencrypt.org">Let's Encrypt</a> can provide free certificates and is supported by a who's who of Internet companies as well as the <a href="https://www.eff.org">Electronic Frontier Foundation</a>, so it isn't some fly by night scam. I have only used it on Linux, but it worked well there and I imagine it does on other platforms as well.
+						</p>
+					</li>
+				</ul>
+			</div>
+			<div id="hosting" class="section">
+				<h3>Hosting Scenarios</h3>
+				<p>
+					Given the above security restrictions, the options for hosting are:
+				</p>
+				<ul>
+					<li>
+						<b>Cloudant</b> - This probably the easiest, although I seem to recall some confusion in the initial setup, but it was too long ago for me to remember what. This would not require running your own Math Minion server unless you wished to for some other reason.
+					</li>
+					<li>
+						<b>Single Computer</b> - Hosting both Math Minion and CouchDB on a single computer is pretty straightforward and no SSL certificates are needed. You don't even need to know the IP address of the computer since you will just access it at <b>localhost:5984</b>. However the benefits are limited to having your sessions backed up in the database and being able to share them between different browsers on that machine.
+					</li>
+					<li>
+						<b>Local Area Network</b> - This is almost as easy as the single computer option and probably sufficient for many users. You will only need to know the IP address of the computer hosting CouchDB and Math Minion and make minor configuration changes to CouchDB. This allows you to share the sessions with other computers, phones and tablets on the same local network. However when away from the local network and using Math Minion from the mathminion.org or other Internet site, you wouldn't have access to the sessions associated with the lan server.
+						<p>
+							The server machine doesn't have to be your personal computer and doesn't need to be a workhorse, so any old computer or even something like a <a href="https://www.raspberrypi.com">Raspberry Pi</a> should work fine.
+						</p>
+						<p>
+							<b>Note</b> that since HTTPS isn't being used, all information is sent unencrypted, including your database password, so this is only appropriate on a LAN that you control and where you trust all the users who have access to it.
+						</p>
+					</li>
+					<li>
+						<b>Internet Server</b> - The easiest way to do this is probably to spin up a Linux instance on a Cloud service. This is very inexpensive for personal traffic and gives you the greatest flexibilty, but it is also more complicated and beyond the scope of this document.
+					</li>
+				</ul>
+			</div>
+			<div id="needhelp" class="section">
+				<h3>Need Help?</h3>
+				<p>
+					If you do decide to try this and have problems, feel free to <a href="https://www.redtree.com/contact.html" target="_blank">contact me</a>. There is no guarentee I will be able to help, but I will if I can.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

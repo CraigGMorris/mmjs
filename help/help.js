@@ -26,9 +26,10 @@ function rtSetupHeading(title, sections) {
 	lines.push('<div id="contentsmenu" hidden="true">');
 	lines.push(`
 	<div class="contentlink"><a href="getstarted.html">Getting Started</a></div>
+	<div class="contentlink"><a href="tutorial.html">Tutorial</a></div>
+	<div class="contentlink"><a href="http://www.redtree.com/mmexamples">Examples</a></div>
 	<div class="contentlink"><a href="http://www.redtree.com/contact.html">Contact Me</a></div>
 	<div class="contentlink"><a href="freeprivate.html">License</a></div>
-	<div class="contentlink"><a href="news.html">News</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink"><a href="diagram.html">Diagram</a></div>
 	<div class="contentlink"><a href="infoview.html">Information View</a></div>
@@ -58,8 +59,10 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink subsection"><a href="importedmodel.html">Imported Model</a></div>
 	<div class="contentlink subsection"><a href="notes.html">Tool Notes</a></div>
 	<div>&nbsp;</div>
-	<div class="contentlink"><a href="tutorial.html">Tutorial</a></div>
-	<div class="contentlink"><a href="http://www.redtree.com/mmexamples">Examples</a></div>
+	<div class="contentlink"><a href="tools.html">Nerdy Stuff</a></div>
+	<div class="contentlink subsection"><a href="mmserver.html">Running a MM Server</a></div>
+	<div class="contentlink subsection"><a href="couchdb.html">CouchDB Integration</a></div>
+	<div>&nbsp;</div>
 	<div class="contentlink"><a href="http://www.redtree.com/mm">MM Home Page</a></div>
 	`);
 	lines.push('</div>');
