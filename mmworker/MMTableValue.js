@@ -63,7 +63,13 @@ class MMTableValueColumn {
 			if (this._value) {
 				if (this._value instanceof MMNumberValue) {
 					if (context.displayUnit) {
-						this.displayUnit = theMMSession.unitSystem.unitNamed(context.displayUnit);
+						try {
+							this.displayUnit = theMMSession.unitSystem.unitNamed(context.displayUnit);
+						}
+						catch(e) {
+							this.displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(this._value.unitDimensions);
+							theMMSession.setError(e.msgKey, {error: e.args});
+						}
 					}
 					else {
 						this.displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(this._value.unitDimensions);

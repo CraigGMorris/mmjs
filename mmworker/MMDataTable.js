@@ -38,24 +38,35 @@ class MMDataTableColumn extends MMCommandObject {
 	/**
 	 * @constructor
 	 * @param {MMDataTable} table - owner
-	 * @param {String} name
-	 * @param {String} displayUnit - can be a string or a unit
-	 * if omitted, Fraction is assumed
-	 * if "string" then the column holds string values
-	 * this type cannot be later changed, although if can be changed to another unit of the same type
+	 * @param {Object} options containing:
+	 * name - required string
+	 * displayUnit - required MMUnit or String
+	 * 	if string value equaling "string" then the column holds string values
+	 * 	this type cannot be later changed, although if can be changed to another unit of the same type
 	 */
-	constructor(table, name, displayUnit) {
-		super(name, table, 'MMDataTableColumn');
-		const displayUnitName = displayUnit instanceof MMUnit ? displayUnit.name : displayUnit;
-		this.columnValue = new MMTableValueColumn({
-			name: name,
-			displayUnit: displayUnitName,
-		});
-		if (this.columnValue.isString) {
-			this.defaultValue = '';
+	constructor(table, options) {
+		super(options.name, table, 'MMDataTableColumn');
+		const displayUnitName = options.displayUnit instanceof MMUnit ? options.displayUnit.name : options.displayUnit;
+		this.isCalculated = options.isCalculated;
+		this.displayUnitName = displayUnitName;
+		this.defaultValue = options.defaultValue;
+		this.format = options.format;
+		if (this.isCalculated) {
+			this.insertFormula = new MMFormula('insertFormula', this.parent);
 		}
 		else {
-			this.defaultValue = `0 ${this.columnValue.displayUnit.name}`;
+			this._columnValue = new MMTableValueColumn({
+				name: options.name,
+				displayUnit: displayUnitName,
+			});
+			if (!this.defaultValue) {
+				if (this._columnValue.isString) {
+					this.defaultValue = '';
+				}
+				else {
+					this.defaultValue = `0 ${this._columnValue.displayUnit.name}`;
+				}
+			}
 		}
 	}
 
@@ -65,6 +76,31 @@ class MMDataTableColumn extends MMCommandObject {
 		d['displayUnit'] = {type: MMPropertyType.string, readOnly: false};
 		d['format'] = {type: MMPropertyType.string, readOnly: false};
 		return d;
+	}
+
+	get columnValue() {
+		if (this._columnValue) {
+			return this._columnValue;
+		}
+		// must be calculated value if _columnValue is not known
+		let calculatedValue;
+		if (this.defaultValue) {
+			this.insertFormula.formula = this.defaultValue;
+			calculatedValue = this.insertFormula.value();
+		}
+		if (!(calculatedValue instanceof MMNumberValue) && !(calculatedValue instanceof MMStringValue)) {
+			// make empty string result as placeholder
+			calculatedValue = new MMStringValue(this.parent.rowCount, 1);
+		}
+		this._columnValue = new MMTableValueColumn({
+			name: this.name,
+			// displayUnit: this.displayUnitName,
+			value: calculatedValue
+		});
+		if (this.displayUnitName) {
+			this._columnValue.displayUnit = this.displayUnitName;
+		}
+		return this._columnValue;
 	}
 
 	get defaultValue() {
@@ -80,6 +116,7 @@ class MMDataTableColumn extends MMCommandObject {
 	}
 
 	set displayUnit(unitName) {
+		this.displayUnitName = unitName;
 		this.columnValue.displayUnit = unitName;
 		this.parent.forgetCalculated();
 	}
@@ -156,9 +193,8 @@ class MMDataTableColumn extends MMCommandObject {
 	saveObject() {
 		const o = this.columnValue.saveObject();
 		o.defaultValue = this.defaultValue;
-		if (this.format) {
-			o.format = this.format;
-		}
+		if (this.format) { o.format = this.format; }
+		if (this.isCalculated) { o.isCalculated = true; }
 		return o;
 	}
 
@@ -169,10 +205,15 @@ class MMDataTableColumn extends MMCommandObject {
 	 */
 	initFromSaved(saved) {
 		this.defaultValue = saved.defaultValue;
-		if (saved.format) {
-			this.format = saved.format;
-		}
+		if (saved.format) { this.format = saved.format; }
+		if (saved.isCalculated) { this.isCalculated = true; }
 		this.columnValue.initFromSaved(saved);
+	}
+
+	forgetCalculated() {
+		if (this.isCalculated) {
+			this._columnValue = null;
+		}
 	}
 }
 
@@ -258,10 +299,12 @@ class MMDataTable extends MMTool {
 	 * name: column name - default Field_n where n is columnNumber
 	 * columnNmber: n - the 1 based number where the column should be inserted
 	 * 		- default is as the last column
+	 * isCalculated - if present and true this will be a calculated column
 	 * displayUnit: this unit also determines the column type - Fraction is assumed
 	 * 		- use "string" for a string column
 	 * 		- this type cannot be later changed, although if can be changed to another unit of the same type
 	 * defaultValue: a string containing a formula to be used as the initial value for new rows
+	 *   - if isCalculated is true, then the formula should return an array of rowCount length
 	 *   - should be the same type as designated by displayUnit
 	 * format: a string designating number of decimal points and type of number formatting
 	 * 		- types f: fixed 2f => 1.23, e: exp 2e => 1.23e0
@@ -298,20 +341,23 @@ class MMDataTable extends MMTool {
 		}
 
 		let insertValue;
-		if (options.defaultValue) {
-			this.insertFormula.formula = options.defaultValue;
-			insertValue = this.insertFormula.value();
-		}
-
 		let displayUnit = options.displayUnit;
-		if ((!displayUnit || !displayUnit.length) && insertValue instanceof MMNumberValue) {
-			displayUnit = theMMSession.unitSystem.baseUnitWithDimensions(insertValue.unitDimensions);
-		}
-		else if (insertValue instanceof MMStringValue) {
-			displayUnit = 'string';
+		
+		if (!options.isCalculated) {
+			if (options.defaultValue) {
+				this.insertFormula.formula = options.defaultValue;
+				insertValue = this.insertFormula.value();
+			}
+
+			if ((!displayUnit || !displayUnit.length) && insertValue instanceof MMNumberValue) {
+				options.displayUnit = theMMSession.unitSystem.baseUnitWithDimensions(insertValue.unitDimensions);
+			}
+			else if (insertValue instanceof MMStringValue) {
+				options.displayUnit = 'string';
+			}
 		}
 
-		const column = new MMDataTableColumn(this, options.name, displayUnit);
+		const column = new MMDataTableColumn(this, options);
 		column.defaultValue = options.defaultValue;
 		column.format = options.format;
 		if (options.columnNumber && options.columnNumber <= this.columnCount && options.columnNumber > 0) {
@@ -396,21 +442,26 @@ class MMDataTable extends MMTool {
 			undoOptions.name = column.name;
 		}
 
-		if (options.displayUnit && options.displayUnit !== column.displayUnit) {
-			const oldUnit = column.displayUnit;
-			try {
-				column.displayUnit = options.displayUnit;
-			}
-			catch (e) {
-				this.setError(e.msgKey, e.args);
-				return undoOptions;
-			}
-			undoOptions.displayUnit = oldUnit;
-		}
-
 		if (options.defaultValue && options.defaultValue !== column.defaultValue) {
 			undoOptions.defaultValue = column.defaultValue || '';
 			column.defaultValue = options.defaultValue;
+		}
+
+		if (column.isCalculated) {
+			// clear the column calculated value so it is recalculated before setting unit
+			column.forgetCalculated();
+			column.displayUnitName = options.displayUnit;
+		}
+		if (options.displayUnit && options.displayUnit !== column.displayUnit) {
+				const oldUnit = column.displayUnit;
+				try {
+					column.displayUnit = options.displayUnit;
+				}
+				catch (e) {
+					this.setError(e.msgKey, e.args);
+					return undoOptions;
+				}
+				undoOptions.displayUnit = oldUnit;
 		}
 
 		if (options.format !== column.format) {
@@ -527,7 +578,11 @@ class MMDataTable extends MMTool {
 				displayUnit = displayUnit.name;
 			}
 		}
-		const column = new MMDataTableColumn(this, saved.name, displayUnit);
+		const column = new MMDataTableColumn(this, {
+			name: saved.name,
+			displayUnit: displayUnit,
+			isCalculated: saved.isCalculated
+		});
 		column.initFromSaved(saved);
 		this.columnArray.splice(columnNumber - 1, 0, column);
 	}
@@ -588,14 +643,16 @@ class MMDataTable extends MMTool {
 		let successCount = 0;
 		let error;
 		for (let column of this.columnArray) {
-			try {
-				column.addRow(rowNumber);
-			} catch(e) {
-				error = e;
-				break;
-			}
-			if (column.columnValue.rowCount !== this.rowCount + 1) {
-				break;
+			if (!column.isCalculated) {
+				try {
+					column.addRow(rowNumber);
+				} catch(e) {
+					error = e;
+					break;
+				}
+				if (column.columnValue.rowCount !== this.rowCount + 1) {
+					break;
+				}
 			}
 			successCount++;
 		}
@@ -830,7 +887,10 @@ class MMDataTable extends MMTool {
 			let unitName = unitNames[i];
 			unitName = unitName.substring(1,unitName.length -1);  // strip off the quotes
 			if (!uniqueNames.has(columnName)) {
-				const column = new MMDataTableColumn(this, columnName, unitName);
+				const column = new MMDataTableColumn(this, {
+					name: columnName,
+					displayUnit: unitName
+				});
 				columns.push(column);
 				columnData.push([]);
 				uniqueNames.add(columnName);
@@ -1004,6 +1064,9 @@ class MMDataTable extends MMTool {
 				requestor.forgetCalculated();
 			}
 			this.valueRequestors.clear();
+			for (let column of this.columnArray) {
+				column.forgetCalculated();
+			}
 			super.forgetCalculated();
 			this.forgetRecursionBlockIsOn = false;
 		}

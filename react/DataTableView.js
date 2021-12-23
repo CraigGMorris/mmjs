@@ -55,6 +55,7 @@ function EditColumnView(props) {
 	const [formulaOffset, setFormulaOffset] = useState(0);
 	const [displayUnit, setDisplayUnit] = useState(columnProperties.displayUnit);
 	const [defaultValue, setDefaultValue] = useState(columnProperties.defaultValue);
+	const [isCalculated, setIsCalculated] = useState(columnProperties.isCalculated || false);
 
 	const cancelButton = e(
 		'button', {
@@ -68,6 +69,7 @@ function EditColumnView(props) {
 
 	let actionButton;  // changes depending on whether defining new column or updating existiong
 	let deleteButton;  // not shown for new columns - just cancel if not wanted
+	let isCalculatedField;  // has a toggle for isCalculate for new columns
 	if (selectedColumn) {
 		// has selectedColumn, so is update, not add
 		actionButton = e(
@@ -114,6 +116,7 @@ function EditColumnView(props) {
 					columnProperties.columnNumber = columnNumber;
 					columnProperties.displayUnit = displayUnit;
 					columnProperties.format = columnFormat;
+					if (isCalculated) { columnProperties.isCalculated = true; }
 					const json = JSON.stringify(columnProperties);
 					props.actions.doCommand(`__blob__${path} addcolumn__blob__${json}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
@@ -123,6 +126,39 @@ function EditColumnView(props) {
 			},
 			t('react:dataAddColumnButton')
 		);
+		isCalculatedField = e(
+			'span', {
+				id: 'datatable__column-iscalculated',
+				onClick: () => {
+					// toggle isCalculated
+					setIsCalculated(!isCalculated);						
+				}
+			},
+			isCalculated ? 'Calculated' : 'Data',
+		)
+		// isCalculatedField = e(
+		// 	'div', {
+		// 		id: 'datatable__column-calc-line',
+		// 		className: 'datatable__column-edit-section',
+		// 	},	
+		// 	e(
+		// 		'label', {
+		// 			id: 'datatable__column-iscalculated-label',
+		// 			htmlFor: 'datatable__column-iscalculated-checkbox',
+		// 		},
+		// 		t('react:dataColumnIsCalculated'),
+		// 	),
+		// 	e('input', {
+		// 		id: 'datatable__column-iscalculated-checkbox',
+		// 		className: 'checkbox__input',
+		// 		type: 'checkbox',
+		// 		checked: isCalculated,
+		// 		onChange: () => {
+		// 			// toggle isCalculated
+		// 			setIsCalculated(!isCalculated);						
+		// 		}
+		// 	})
+		// )
 	}
 
 	switch(editColumnDisplay) {
@@ -173,7 +209,7 @@ function EditColumnView(props) {
 					},
 					cancelButton,
 					actionButton,
-				),
+					),
 				e(
 					'div', {
 						id: 'datatable__column-name-line',
@@ -228,13 +264,19 @@ function EditColumnView(props) {
 						className: 'datatable__column-edit-section',
 					},
 					e(
-						'label', {
-							id: 'datatable__column-value-label',
-							htmlFor: 'datatable__formula',
+						'div', {
+							id: 'datatable__column-value-header'
 						},
-						t('react:dataColumnValue'),
+						e(
+							'label', {
+								id: 'datatable__column-value-label',
+								htmlFor: 'datatable__formula',
+							},
+							t('react:dataColumnValue'),
+						),
+						isCalculatedField,
 					),
-					e (
+					e(
 						FormulaField, {
 							id: 'datatable__formula',
 							t: t,

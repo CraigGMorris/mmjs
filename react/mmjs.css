@@ -296,6 +296,22 @@ a:hover {
 	margin-right: 10px;
 }
 
+#datatable__column-value-header {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: var(--input--height);
+	box-sizing: border-box;
+	grid-gap: 20px;
+}
+
+#datatable__column-iscalculated {
+	color: var(--link--color);
+}
+
+#datatable__column-iscalculated:hover {
+	color: var(--link--color-hover);
+}
+
 .diagram__import-warning {
 	fill: red;
 	stroke: red;
