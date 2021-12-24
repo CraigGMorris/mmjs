@@ -19,7 +19,7 @@
 
 import {MMCommandPipe} from '../mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
-import {ClipboardView} from './ClipBoard.js';
+import {ClipboardView} from './Clipboard.js';
 import {SessionsView} from './SessionsView.js';
 import {Diagram} from './Diagram.js';
 import {UnitsView, UserUnitsView, UnitSetsView, UnitSetView} from './UnitsView.js';
