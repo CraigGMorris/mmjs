@@ -1239,7 +1239,12 @@ export class Diagram extends React.Component {
 		let clipboardComponent;
 		if (this.state.showClipboard) {
 			clipboardComponent = e(
-				ClipboardView, {}
+				ClipboardView, {
+					t: t,
+					close: () => {
+						this.setState({showClipboard: false});
+					}
+				}
 			)
 		}
 		return e(

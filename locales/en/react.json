@@ -1,6 +1,8 @@
 {
 	"applyChanges": "Apply (Shift-Enter)",
 	"cancel": "Cancel",
+	"clipboardTitle": "Clipboard",
+	"clipboardImportButton": "Import from File",
 	"consoleReadCommands": "Read Command File",
 	"consoleReadPlaceHolder": "Enter command",
 	"consoleTitle": "Console",

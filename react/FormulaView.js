@@ -74,7 +74,7 @@ export function FormulaField(props) {
 			'div', {
 				className: 'formula-field__text-display',
 			},
-			props.formula
+			props.formula.slice(0,200)
 		),
 		e(
 			'div', {
@@ -442,6 +442,10 @@ export function FormulaEditor(props) {
 				value: formula,
 				id: "formula-editor__editor",
 				placeholder: t('react:formulaValueUnknown'),
+				spellcheck: "false",
+				autocorrect: "off",
+				autocapitalize: "none",
+				autocomplete: "off",
 				onChange: (e) => {
 					// keeps input field in sync
 					setFormula(e.target.value);
