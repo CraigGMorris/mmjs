@@ -17,7 +17,7 @@
 */
 'use strict';
 
-import { writeClipboard, readClipboard, hasSystemClipboard, ClipboardView } from "./ClipBoard.js";
+import { writeClipboard, readClipboard, hasSystemClipboard, ClipboardView } from "./Clipboard.js";
 
 // this works better as a class component as one can then have a ref to it
 // and call getModelInfo with the appropriate scaling argument to update it
@@ -1239,7 +1239,12 @@ export class Diagram extends React.Component {
 		let clipboardComponent;
 		if (this.state.showClipboard) {
 			clipboardComponent = e(
-				ClipboardView, {}
+				ClipboardView, {
+					t: t,
+					close: () => {
+						this.setState({showClipboard: false});
+					}
+				}
 			)
 		}
 		return e(
