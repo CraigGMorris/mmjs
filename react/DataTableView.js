@@ -136,29 +136,6 @@ function EditColumnView(props) {
 			},
 			isCalculated ? 'Calculated' : 'Data',
 		)
-		// isCalculatedField = e(
-		// 	'div', {
-		// 		id: 'datatable__column-calc-line',
-		// 		className: 'datatable__column-edit-section',
-		// 	},	
-		// 	e(
-		// 		'label', {
-		// 			id: 'datatable__column-iscalculated-label',
-		// 			htmlFor: 'datatable__column-iscalculated-checkbox',
-		// 		},
-		// 		t('react:dataColumnIsCalculated'),
-		// 	),
-		// 	e('input', {
-		// 		id: 'datatable__column-iscalculated-checkbox',
-		// 		className: 'checkbox__input',
-		// 		type: 'checkbox',
-		// 		checked: isCalculated,
-		// 		onChange: () => {
-		// 			// toggle isCalculated
-		// 			setIsCalculated(!isCalculated);						
-		// 		}
-		// 	})
-		// )
 	}
 
 	switch(editColumnDisplay) {
@@ -272,7 +249,9 @@ function EditColumnView(props) {
 								id: 'datatable__column-value-label',
 								htmlFor: 'datatable__formula',
 							},
-							t('react:dataColumnValue'),
+							((selectedColumn && selectedColumn.isCalculated) || isCalculated) ?
+								t('react:dataColumnCalcFormula') :
+								t('react:dataColumnValue'),
 						),
 						isCalculatedField,
 					),

@@ -52,7 +52,7 @@ class MMDataTableColumn extends MMCommandObject {
 		this.defaultValue = options.defaultValue;
 		this.format = options.format;
 		if (this.isCalculated) {
-			this.insertFormula = new MMFormula('insertFormula', this.parent);
+			this.insertFormula = new MMFormula(`${options.name}InsertFormula`, this.parent);
 		}
 		else {
 			this._columnValue = new MMTableValueColumn({
@@ -94,7 +94,6 @@ class MMDataTableColumn extends MMCommandObject {
 		}
 		this._columnValue = new MMTableValueColumn({
 			name: this.name,
-			// displayUnit: this.displayUnitName,
 			value: calculatedValue
 		});
 		if (this.displayUnitName) {
@@ -957,7 +956,6 @@ class MMDataTable extends MMTool {
 		for (let i = 0; i < columnCount; i++) {
 			columns[i].columnValue.updateFromStringArray(columnData[i]);
 		}
-		console.log('made it');
 	}
 
 	/**
@@ -982,6 +980,9 @@ class MMDataTable extends MMTool {
 				v.unitType = theMMSession.unitSystem.typeNameForUnitNamed(column.columnValue.displayUnit.name);
 			}
 			v.format = column.format;
+			if (column.isCalculated) {
+				v.isCalculated = true;
+			}
 		}
 		results['value'] = value;
 	}
@@ -1005,14 +1006,6 @@ class MMDataTable extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
-		// const tableValue = () => {
-		// 	const values = []
-		// 	for (const column of this.columnArray) {
-		// 		values.push(column.columnValue);
-		// 	}
-		// 	return new MMTableValue({columns: values});
-		// }
-
 		let value;
 		if (description) {
 			const lcDescription = description.toLowerCase();

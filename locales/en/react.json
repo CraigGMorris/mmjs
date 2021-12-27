@@ -16,6 +16,7 @@
 	"dataColumnPosition": "Column Number",
 	"dataColumnUnit": "Display Unit:",
 	"dataColumnValue": "Initial Value",
+	"dataColumnCalcFormula": "Column Formula",
 	"dataDeleteColumnButton": "Delete Column",
 	"dataDeleteRowsButton": "Delete {{count}} Rows",
 	"dataUpdateButton": "Update",
