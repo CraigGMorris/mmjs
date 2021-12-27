@@ -54,7 +54,7 @@ class MMOptimizer extends MMTool {
 		this.zEps = 1e-8;
 		this.cGold = 0.3819660;
 		this.gOld = 1.618034;
-		this.gLimit = 100.;
+		this.gLimit = 100.0;
 		this.isLoadingCase = false;
 	}
 
