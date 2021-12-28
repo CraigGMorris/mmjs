@@ -372,8 +372,8 @@ class MMIterator extends MMTool {
 							return returnValue(this.valueForRecorded(rNumber));
 						}
 					}
+					return super.valueDescribedBy(description, requestor);
 				}
-				break;
 		}
 	}
 

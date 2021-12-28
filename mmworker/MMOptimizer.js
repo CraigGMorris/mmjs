@@ -295,6 +295,7 @@ class MMOptimizer extends MMTool {
 			const v = MMNumberValue.scalarValue(this.outputs[outputNumber - 1]);
 			return returnValue(v);
 		}
+		return super.valueDescribedBy(description, requestor);
 	}
 
 	/**

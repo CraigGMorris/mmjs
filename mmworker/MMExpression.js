@@ -261,7 +261,7 @@ class MMExpression extends MMTool {
 						const column = value.columnNamed(description);
 						value = column ? column.value : null;
 					}
-					else {
+					if (!value) {
 						value = super.valueDescribedBy(description, requestor);
 					}
 				}

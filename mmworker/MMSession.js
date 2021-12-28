@@ -1298,6 +1298,17 @@ class MMTool extends MMCommandParent {
 		return verbs;
 	}
 
+	/**
+	 * @method parameters
+	 * i.e. things that can be appended to a formula value
+	 */
+	parameters() {
+		let p = super.parameters();
+		p.push('notes');
+		return p;
+	}
+	
+
 	/** @method getVerbUsageKey
 	 * @override
 	 * @param {string} command - command to get the usage key for
@@ -1423,8 +1434,11 @@ class MMTool extends MMCommandParent {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
-		if (!description || description == 'self') {
+		if (!description || description === 'self') {
 			return MMToolValue.scalarValue(this);
+		}
+		else if (description === 'notes') {
+			return MMStringValue.scalarValue(this.notes);
 		}
 		else if (description === 'myName') { // deprecated, but kept for old files
 			if (requestor) {
