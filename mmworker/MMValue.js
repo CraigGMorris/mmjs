@@ -336,7 +336,7 @@ class MMValue {
 				unitName = this.defaultUnit.name;
 			}
 			lines.push('\n<table>');
-			lines.push(`\t<tr>\n\t\t<th class="col0">${unitName}</th>`);
+			lines.push(`\t<tr class="row0">\n\t\t<th class="col0">${unitName}</th>`);
 			for (let column = 1; column <= this.columnCount; column++) {
 				let header = this.columnHeader(column);
 				const unitName = this.columnDisplayUnitName(column);
@@ -347,7 +347,7 @@ class MMValue {
 			}
 			lines.push('\t</tr>');
 			for (let row = 1; row <= this.rowCount; row++) {
-				lines.push(`<tr>\n\t\t<th class="col0">${row}</th>`)
+				lines.push(`<tr class="row{$row}">\n\t\t<th class="col0">${row}</th>`)
 				for (let column = 1; column <= this.columnCount; column++) {
 					const v = this.stringForRowColumnUnit(row, column, this.defaultUnit);
 					lines.push(`\t\t<td class="col${column}">${v}</td>`)
