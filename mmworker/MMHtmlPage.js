@@ -41,6 +41,7 @@ class MMHtmlPage extends MMTool {
 		super(name, parentModel, 'HtmlPage');
 		this.formula = new MMFormula('Formula', this);
 		this.formula.formula = `'
+<!-- Modify the body and any other part of this html to meet your needs -->
 <html>
 	<head>
 	<style>
@@ -69,16 +70,22 @@ class MMHtmlPage extends MMTool {
 	</style>
 	</head>
 	<body>
-		<p>Replace this content in the source formula with your own content.</p>
 		<p>
-			You can use the &lt;mm&gt; tag to insert the results of a Math Minion formula.
-			For instance <b>&lt;mm&gt;{rand 3, 3}&lt;/mm&gt;</b> is used below to insert a
-			small matrix of random numbers.
+			Replace this content in the source formula
+			with your own content.
+		</p>
+		<p>
+			You can use the &lt;mm&gt; tag to insert the results of a Math Minion formula. For instance
+		</p>
+		<p>
+			<b>&lt;mm&gt;{rand 3, 3}&lt;/mm&gt;</b>
+		</p>
+		<p>
+			is used below to insert a small matrix of random numbers.
 		</p>
 		<mm>{rand 3, 3}</mm>
 		<p>
-			Here a second &lt;mm&gt; tag inserts the current date.time
-			(<mm>{fmt "12.4f", {now} + {timezone}, "date"}</mm>) into this sentence.
+			Here a second <b>&lt;mm&gt;</b> tag inserts the current date.time (<b><mm>{fmt "12.4f", {now} + {timezone}, "date"}</mm></b>) into this sentence.
 		</p>
 		<p>
 			The HtmlPage also has a script function called <b>mmpost</b> that can do lots of interesting things. See the help for more information.
