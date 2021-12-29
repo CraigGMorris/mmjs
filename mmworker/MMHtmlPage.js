@@ -559,7 +559,7 @@ const mminputs = (idNames) => {
 			}
 			if (this.rawHtml) {
 				let chunks = [messageCode];
-				let regex = RegExp('<mm>.*?</mm>','g');
+				let regex = RegExp('<mm>.*?</mm>','msig');
 				const rawHtml = this.rawHtml;
 				const matches = rawHtml.matchAll(regex);
 				let formulaNumber = 0;
