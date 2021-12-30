@@ -166,7 +166,7 @@ export function TableView(props) {
 		}
 	}, [pointerCaptured, dragOrigin.x, dragOrigin.y, cellClick, longPress, xyToRowColumn])
 
-	const pointerMove = useCallback(e => {
+const pointerMove = useCallback(e => {
 		if (dragType === TableViewDragType.none) {
 			return;
 		}
@@ -185,7 +185,7 @@ export function TableView(props) {
 			let offsetY = Math.max(0, deltaY + initialOffset.y);
 			const maxY = viewBox[3];
 			const maxX = viewBox[2];
-
+	
 			// make sure at least one row and column appear
 			const nRows = Math.max(0,value.nr - maxY/cellHeight + 1);
 			const nColumns = Math.max(0,value.nc - maxX/cellWidth + 1);	
@@ -249,6 +249,32 @@ export function TableView(props) {
 			}	
 		}
 	}, [dragOrigin, dragType, pointerCaptured, initialOffset, viewBox, value])
+
+	const wheel = useCallback(e => {
+		let offsetX = Math.max(0, e.deltaX + initialOffset.x);
+		let offsetY = Math.max(0, e.deltaY + initialOffset.y);
+		// console.log(`wheel ix ${initialOffset.x} iy ${initialOffset.y}`);
+		const maxY = viewBox[3];
+		const maxX = viewBox[2];
+
+		// make sure at least one row and column appear
+		const nRows = Math.max(0,value.nr - maxY/cellHeight + 1);
+		const nColumns = Math.max(0,value.nc - maxX/cellWidth + 1);	
+		offsetX = Math.min(offsetX, nColumns*cellWidth)
+		offsetY = Math.min(offsetY, nRows*cellHeight);
+		// console.log(`wheel x ${offsetX} y ${offsetY}`);
+		setTableViewOffset({x: offsetX, y: offsetY});
+		setInitialOffset({x: offsetX, y: offsetY});
+		e.stopPropagation();
+		e.preventDefault();
+	}, [initialOffset]);
+
+	useEffect(() => {
+    window.addEventListener('wheel', wheel, {passive: false});
+    return () => {
+      window.removeEventListener('wheel', wheel);
+    };
+  }, [wheel]);
 
 	const pointerEnter = useCallback(e => {
 		if (dragType != TableViewDragType.none) {
