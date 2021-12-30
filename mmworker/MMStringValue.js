@@ -168,7 +168,7 @@ class MMStringValue extends MMValue {
 		}
 	}
 
-		/**
+	/**
 	 * @method stringForRowColumnUnit
 	 * @override
 	 * @param {Number} row

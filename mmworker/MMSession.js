@@ -1450,6 +1450,14 @@ class MMTool extends MMCommandParent {
 	}
 
 	/**
+	 * @method htmlValue
+	 * @returns {String}
+	 */
+	htmlValue() {
+		return null;
+	}
+
+	/**
 	 * @method inputSources
 	 * @returns {Set} contains tools referenced by this tool - filled in by derived classes
 	 */

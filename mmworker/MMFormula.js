@@ -2364,6 +2364,7 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 				}
 			}
 			else {
+				this.formula.functionError('concat','mmcmd:concatTypeMismatch');
 				return null;
 			}
 			valueCount += obj.valueCount;

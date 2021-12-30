@@ -6,6 +6,7 @@
 	"appendTableRowMismatch": "Can't append table values with different row counts",
 	"calculating": "Calculating",
 	"concatTableColumnMismatch": "Can't concat table values with different column counts",
+	"concatTypeMismatch": "Can't concat differing types",
 	"crossProductNot3": "The number of values in cross product arguments must be divisible by 3",
 	"dataTableDisplayName": "Data Table",
 	"displayUnitTypeMismatch": "Unit type mismatch in setting display unit {{unitName}} on table value",

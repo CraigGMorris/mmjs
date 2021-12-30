@@ -32,17 +32,17 @@ class MMToolValue extends MMValue {
 	 * @param {Number} rowCount
 	 * @param {Number} columnCount
 	*/
-	constructor(rowCount, columnCount) {
-		super(rowCount, columnCount);
-		this._values = new Array(this.valueCount);
+	constructor() {
+		super(1, 1); // tool values are always scalar
+		this._values = new Array(1);
 	}
 
 	/** @method copyOf
 	 * @returns {MMValue}  - a copy of this instance
 	 */
 	copyOf() {
-		let newValue = new MMToolValue(this.rowCount, this.columnCount);
-		newValue._values = Array.from(this._values);
+		let newValue = new MMToolValue();
+		newValue._values[0] = this._values[0];
 		return newValue;
 	}
 
@@ -56,18 +56,8 @@ class MMToolValue extends MMValue {
 	 * @returns {MMToolValue}
 	 */
 	static scalarValue(value) {
-		let newValue = new MMToolValue(1, 1);
+		let newValue = new MMToolValue();
 		newValue._values[0] = value;
-		return newValue;
-	}
-
-	/** @static toolArrayValue
-	 * creates a MMToolValue from an array of strings
-	 * @param {MMTool[]} values
-	 */
-	static toolArrayValue(values) {
-		let newValue = new MMToolValue(values.length, 1);
-		newValue._values = Array.from(values);
 		return newValue;
 	}
 
@@ -128,7 +118,7 @@ class MMToolValue extends MMValue {
 		});
 	}
 
-		/**
+	/**
 	 * @method stringWithUnit
 	 * @param {MMUnit} unit - optional
 	 * @returns {String} 
@@ -136,49 +126,15 @@ class MMToolValue extends MMValue {
 	// eslint-disable-next-line no-unused-vars
 	stringWithUnit(unit) {
 	// ignore unit
-		if (this.valueCount == 1) {
+		if (this.valueCount === 1) {
 			return this._values[0].name;
-		}
-		else if (this.valueCount > 1) {
-			return `this._values[0].name...[${this.rowCount}, ${this.columnCount}]`
 		}
 		else {
 			return '---';
 		}
 	}
-
-	/*
-	 * dyadic functions
-	 */
-
-	/**
-	 * @member add
-	 * returns the sum of this and value
-	 * @param {MMStringValue} value
-	 * @returns {MMStringValue}
-	 */
-	add(value) {
-		let rv = this.dyadicStringResult(value);
-		let v1 = rv._values;
-		let v2 = value._values;
-		let rowCount = rv.rowCount;
-		let columnCount = rv.columnCount;
-		let valueRowCount = value.rowCount;
-		let valueColumnCount = value.columnCount;
-		for(let i = 0; i < rowCount; i++) {
-			let rMine = i % this.rowCount;
-			let rValue = i % valueRowCount;
-			for(let j = 0; j < columnCount; j++) {
-				let cMine = j % this.columnCount;
-				let cValue = j % valueColumnCount;
-				v1[i*columnCount+j] = this._values[rMine*this.columnCount + cMine] +
-					v2[rValue*valueColumnCount + cValue];
-			}
-		}
-		return rv;
-	}
 	
-		/**
+	/**
 	 * @method jsonValue
 	 * @override
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
@@ -186,9 +142,27 @@ class MMToolValue extends MMValue {
 	jsonValue() {
 		return {
 			t: 's',
-			v: this._values.map(t => t.name),
+			v: this._values.map(t => t.typeName + ": " + t.name),
 			nr: this.rowCount,
 			nc: this.columnCount
 		}
 	}
+
+	/**
+	 * @method htmlValue
+	 * @returns {String}
+	 */
+		htmlValue() {
+			if (this.valueCount === 1) {
+				const v = this._values[0];
+				const html = v.htmlValue();
+				if (html) {
+					return html;
+				}
+				else {
+					return v.typeName + ': ' + v.name;
+				}
+			}
+			return super.htmlValue()
+		}
 }
