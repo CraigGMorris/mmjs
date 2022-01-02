@@ -562,6 +562,7 @@ export function DataTableView(props) {
 					EditColumnView, {
 						t: props.t,
 						viewInfo: props.viewInfo,
+						infoWidth: props.infoWidth,
 						path: path,
 						columnProperties: columnProperties,
 						actions: props.actions,

@@ -108,6 +108,9 @@ class MMDataTableColumn extends MMCommandObject {
 
 	set defaultValue(newValue) {
 		this._defaultValue = newValue;
+		if (this.isCalculated) {
+			this.forgetCalculated();
+		}
 	}
 
 	get displayUnit() {
@@ -117,7 +120,7 @@ class MMDataTableColumn extends MMCommandObject {
 	set displayUnit(unitName) {
 		this.displayUnitName = unitName;
 		this.columnValue.displayUnit = unitName;
-		this.parent.forgetCalculated();
+		this.forgetCalculated();
 	}
 
 	get format() {
@@ -213,6 +216,7 @@ class MMDataTableColumn extends MMCommandObject {
 		if (this.isCalculated) {
 			this._columnValue = null;
 		}
+		this.parent.forgetCalculated();
 	}
 }
 
