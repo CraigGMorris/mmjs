@@ -79,6 +79,7 @@ export function OdeView(props) {
 				key: 'editor',
 				t: t,
 				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
 				actions: props.actions,
 				formula: results.formulas[formulaIndex][1],
 				formulaOffset: formulaOffset,

@@ -512,13 +512,18 @@ a:hover {
 #formula-editor__edit {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: var(--input--height) var(--input--height) 1fr;
+	grid-template-rows: var(--input--height) 1fr var(--input--height) 100px;
 	grid-template-areas: "toolbar"
+		"input"
 		"actions"
-		"input";
+		"preview";
 	height: 100%;
 	box-sizing: border-box;
 	grid-gap: 5px;
+}
+
+#formula-editor__preview {
+	grid-area: preview;
 }
 
 #formula-editor__toolbar {
@@ -540,18 +545,26 @@ a:hover {
 #formula-editor__actions {
 	display: grid;
 	grid-area: actions;
-	grid-template-columns: 1fr 2fr;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
 	grid-template-rows: 1fr;
-	grid-template-areas: "cancel apply";
+	grid-template-areas: "cancel preview current apply";
 	grid-gap: 10px;
 }
 
-#formula-editor__cancel {
+#formula-editor__cancel-button {
 	grid-area: cancel;
 }
 
-#formula-editor__apply {
+#formula-editor__apply-button {
 	grid-area: apply;
+}
+
+#formula-editor__preview-button {
+	grid-area: preview;
+}
+
+#formula-editor__current-button {
+	grid-area: current;
 }
 
 #formula-editor__editor {

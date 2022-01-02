@@ -145,6 +145,7 @@ function EditColumnView(props) {
 					id: 'datatable__column-formula-editor',
 					t: t,
 					viewInfo: props.viewInfo,
+					infoWidth: props.infoWidth,
 					actions: props.actions,
 					formula: defaultValue,
 					formulaOffset: formulaOffset,
@@ -263,7 +264,6 @@ function EditColumnView(props) {
 							path: `${path}.${name}`,
 							formula: defaultValue,
 							viewInfo: props.viewInfo,
-							infoWidth: props.infoWidth,
 							clickAction: (offset) => {
 								setFormulaOffset(offset);
 								setEditColumnDisplay(DataTableDisplay.formulaEditor);
@@ -580,7 +580,7 @@ export function DataTableView(props) {
 				const tableColumn = value.v[column - 1];
 				const v = tableColumn.v.v[row - 1];
 				if (typeof v === 'string') {
-					formulaString = v;
+					formulaString = "'" + v;
 				}
 				else if (typeof v === 'number') {
 					formulaString = `${v.toString().replace(/(\..*)(0+$)/,'$1')} ${tableColumn.dUnit}`;
@@ -592,6 +592,7 @@ export function DataTableView(props) {
 					id: 'datatable__column-cell-editor',
 					t: t,
 					viewInfo: props.viewInfo,
+					infoWidth: props.infoWidth,
 					actions: props.actions,
 					formula: formulaString || '',
 					formulaOffset: 0,

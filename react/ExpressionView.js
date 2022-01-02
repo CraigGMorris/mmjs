@@ -116,6 +116,7 @@ export function ExpressionView(props) {
 					key: 'edit',
 					t: t,
 					viewInfo: props.viewInfo,
+					infoWidth: props.infoWidth,
 					actions: props.actions,
 					formula: results.formula || '',
 					formulaOffset: formulaOffset,

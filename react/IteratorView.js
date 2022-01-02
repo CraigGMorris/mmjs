@@ -81,6 +81,7 @@ export function IteratorView(props) {
 				key: 'editor',
 				t: t,
 				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
 				actions: props.actions,
 				formula: formulas[formulaIndex][1],
 				formulaOffset: formulaOffset,

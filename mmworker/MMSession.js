@@ -35,6 +35,7 @@
 	MMHtmlPage:readonly
 	theMMSession:readonly
 	MMToolValue:readonly
+	MMFormula:readonly
 	PouchDB:readonly
 */
 
@@ -1295,6 +1296,7 @@ class MMTool extends MMCommandParent {
 		let verbs = super.verbs;
 		verbs['toolviewinfo'] = this.toolViewInfo;
 		verbs['value'] = this.valueJson;
+		verbs['fpreview'] = this.formulaPreview;
 		return verbs;
 	}
 
@@ -1318,6 +1320,7 @@ class MMTool extends MMCommandParent {
 		let key = {
 			toolViewInfo: 'mmcmd:?toolViewInfo',
 			value: 'mmcmd:?valueJson',
+			fpreview: 'mmcmd:?fpreview',
 		}[command];
 		if (key) {
 			return key;
@@ -1355,12 +1358,30 @@ class MMTool extends MMCommandParent {
 
 	/**
 	 * @method valueJson
-	 * @returns {String} json value for valueDescribedBy
+	 * @param {MMCommand} command
+	 * @returns {String} json value for valueDescribedBy(command.args)
 	 */
 	valueJson(command) {
 		const value = this.valueDescribedBy(command.args);
 		if (value) {
 			command.results = JSON.stringify(value);
+		}
+		else {
+			command.results = '';
+		}
+	}
+
+	/**
+	 * @method formulaPreview
+	 * @param {MMCommand} command
+	 * @returns {String} json value from evaluating the formula in command.args
+	 */
+	formulaPreview(command) {
+		const f = new MMFormula('fpreview', this);
+		f.formula = command.args;
+		const value = f.value();
+		if (value) {
+			command.results = value.jsonValue();
 		}
 		else {
 			command.results = '';

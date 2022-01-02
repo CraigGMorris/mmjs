@@ -51,6 +51,8 @@ export function TableView(props) {
 	const [initialOffset, setInitialOffset] = useState({x: 0, y: 0});
 	const [tableViewOffset, setTableViewOffset] = useState({x: 0, y: 0});
 
+	// reference to svg to allow addlisterner for wheel
+	const svgRef = React.useRef(null);
 
 	const cellHeight = 30;
 	const cellWidth = 120;
@@ -267,12 +269,12 @@ const pointerMove = useCallback(e => {
 		setInitialOffset({x: offsetX, y: offsetY});
 		e.stopPropagation();
 		e.preventDefault();
-	}, [initialOffset]);
+	}, [initialOffset, props.value]);
 
 	useEffect(() => {
-    window.addEventListener('wheel', wheel, {passive: false});
+    svgRef.current.addEventListener('wheel', wheel, {passive: false});
     return () => {
-      window.removeEventListener('wheel', wheel);
+      svgRef.current.removeEventListener('wheel', wheel);
     };
   }, [wheel]);
 
@@ -525,6 +527,7 @@ const pointerMove = useCallback(e => {
 	return e(
 		'svg', {
 			id: 'tableview__value-svg',
+			ref: svgRef,
 			viewBox: viewBox,
 			onPointerDown: pointerStart,
 			onPointerUp: pointerEnd,

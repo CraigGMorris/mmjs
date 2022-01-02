@@ -87,6 +87,7 @@ export function OptimizerView(props) {
 				key: 'editor',
 				t: t,
 				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
 				actions: props.actions,
 				formula: results.formulas[formulaName],
 				formulaOffset: formulaOffset,
