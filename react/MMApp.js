@@ -313,8 +313,9 @@ export function MMApp(props) {
 	 * doCommand - sends command to worker
 	 * @param {string} cmd
 	 * @param {function} callBack - (cmds[]) => {}
+	 * @param {function} errorHandler (String) => {} - optional - alert if not provided
 	 */
-	const doCommand = useCallback((cmd, callBack) => {
+	const doCommand = useCallback((cmd, callBack, errorHandler) => {
 		// console.log(`doCommand ${cmd}`);
 		/**
 		 * errorAlert
@@ -326,7 +327,12 @@ export function MMApp(props) {
 			// avoid multiple alerts
 			const t = new Date().getTime();
 			if (t - lastErrorTime > 1000) {
-				alert(s);
+				if (errorHandler) {
+					errorHandler(s);
+				}
+				else {
+					alert(s);
+				}
 				lastErrorTime = new Date().getTime();
 			}
 		}
@@ -340,7 +346,12 @@ export function MMApp(props) {
 			const t = new Date().getTime();
 			if (t - lastErrorTime > 1000) {
 				const s = `${props.t('mmcmd:alert')}\n\n${msg}`;
-				alert(s);
+				if (errorHandler) {
+					errorHandler(s);
+				}
+				else {
+					alert(s);
+				}
 				lastErrorTime = new Date().getTime();
 			}
 		}
