@@ -36,10 +36,11 @@ const DataTableDisplay = Object.freeze({
 	editColumn: 1,
 	unitPicker: 2,
 	formulaEditor: 3,
-	cellEditor: 4,
+	editCell: 4,
+	editRow: 5,
 });
 
-/** EditColumnComponent
+/** Edit Column Component
  */
 function EditColumnView(props) {
 	const t = props.t;
@@ -325,6 +326,159 @@ function EditColumnView(props) {
 }
 
 /**
+ * Edit Row Component
+ * 
+ */
+function EditRowView(props) {
+	const [row, column] = props.selectedCell;
+	const t = props.t;
+	const [editRowDisplay, setEditRowDisplay] = useState(DataTableDisplay.editRow);
+	const [formulaOffset, setFormulaOffset] = useState(0);
+	const [selectedField, setSelectedField] = useState(column);
+	const [selectedRow, setSelectedRow] = useState(row);
+	const value = props.value;
+	switch(editRowDisplay) {
+		case DataTableDisplay.editRow:
+			const fields = [];
+			
+			for (let columnNumber = 0; columnNumber < value.nc; columnNumber++) {
+				const column = value.v[columnNumber];
+				const v = column.v.v[selectedRow - 1];
+				let formulaString = '';
+				if (typeof v === 'string') {
+					formulaString = "'" + v;
+				}
+				else if (typeof v === 'number') {
+					formulaString = `${v.toString().replace(/(\..*)(0+$)/,'$1')} ${column.dUnit}`;
+				}
+				let valueField;
+				if (column.isCalculated) {
+					valueField = formulaString;
+				}
+				else {
+					valueField = e(
+						FormulaField, {
+							class: 'datatable__row-formula-field',
+							t: t,
+							viewInfo: props.viewInfo,
+							infoWidth: props.infoWidth,
+							actions: props.actions,
+							formula: formulaString || '',
+							clickAction: (offset) => {
+								setSelectedField(columnNumber + 1);
+								setFormulaOffset(offset);
+								setEditRowDisplay(DataTableDisplay.editCell);
+							},
+						}
+					);
+				}
+				fields.push(
+					e(
+						'div', {
+							class: 'datatable__row-cell',
+							key: columnNumber,
+						},
+						e(
+							'div', {
+								className: 'datatable__edit-row-name-label',
+							},
+							column.name
+						),
+						valueField
+					)
+				)
+			}
+
+			return e(
+				'div', {
+					id: 'datatable__row-view',
+				},
+				e(
+					'div', {
+						class: 'datatable__edit-row-title',
+					},
+					t('react:dataRowTitle', {row: selectedRow, nr: value.nr}),
+				),
+				e(
+					'div', {
+						id: 'datatable_edit-row-buttons',
+					},
+					e(
+						'button', {
+							id: 'datatable__edit-row-prev',
+							disabled: selectedRow <= 1,
+							onClick: () => {
+								if (selectedRow > 1) {
+									setSelectedRow(selectedRow-1);
+								}
+							},
+						},
+						t('react:dataRowPrevButton')
+					),
+					e(
+						'button', {
+							id: 'datatable__edit-row-next',
+							disabled: selectedRow >= value.nr,
+							onClick: () => {
+								if (selectedRow < value.nr) {
+									setSelectedRow(selectedRow+1);
+								}
+							},
+						},
+						t('react:dataRowNextButton')
+					),
+					e(
+						'button', {
+							id: 'datatable__edit-row-done',
+							onClick: () => {
+								props.setDisplay(DataTableDisplay.table);
+							},
+						},
+						t('react:dataRowDoneButton')
+					),
+				),
+				fields
+			);
+
+		case DataTableDisplay.editCell:
+			let formulaString = '';
+			const tableColumn = value.v[selectedField - 1];
+			const v = tableColumn.v.v[selectedRow - 1];
+			if (typeof v === 'string') {
+				formulaString = "'" + v;
+			}
+			else if (typeof v === 'number') {
+				formulaString = `${v.toString().replace(/(\..*)(0+$)/,'$1')} ${tableColumn.dUnit}`;
+			}
+
+			return e(
+				FormulaEditor, {
+					id: 'datatable__column-cell-editor',
+					t: t,
+					viewInfo: props.viewInfo,
+					infoWidth: props.infoWidth,
+					actions: props.actions,
+					formula: formulaString || '',
+					formulaOffset: 0,
+					cancelAction: () => {
+						setEditRowDisplay(DataTableDisplay.editRow);
+					},
+					applyChanges: (formula) => {
+						const path = props.viewInfo.path;
+						props.actions.doCommand(`__blob__${path} setcell ${selectedRow} ${selectedField}__blob__${formula}`,() => {
+							setEditRowDisplay(DataTableDisplay.editRow);
+							props.actions.updateView(props.viewInfo.stackIndex);
+						})
+					},
+				}
+			);
+	
+		default:
+			return e('div', {}, 'Invalid row data');
+	}
+}
+
+/**
  * DataTableView
  * info view for data table
  */
@@ -430,7 +584,7 @@ export function DataTableView(props) {
 					}
 					setSelectedCell([row,column]);
 					setSelectedRows();
-					setDisplay(DataTableDisplay.cellEditor)
+					setDisplay(DataTableDisplay.editRow);
 				}
 			}
 
@@ -574,7 +728,30 @@ export function DataTableView(props) {
 			)
 		}
 			break;
-		case DataTableDisplay.cellEditor: {
+
+		case DataTableDisplay.editRow: {			
+			displayComponent = e(
+				'div', {
+					key: 'edit',
+					id: 'datatable__edit-row',
+				},
+				e(
+					EditRowView, {
+						t: props.t,
+						viewInfo: props.viewInfo,
+						infoWidth: props.infoWidth,
+						value: value,
+						path: path,
+						actions: props.actions,
+						selectedCell: selectedCell,
+						setDisplay: setDisplay,
+					},
+				)
+			)
+		}
+			break;
+	
+		case DataTableDisplay.editCell: {
 			const [row, column] = selectedCell;
 			let formulaString = '';
 			if (column > 0 && row > 0) {
