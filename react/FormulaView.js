@@ -45,19 +45,19 @@ export function FormulaField(props) {
 	return e(
 		'div', {
 			className: 'formula-field',
-			onClick: e => {
-				e.stopPropagation();
-				let offset = window.getSelection().anchorOffset;
-				offset = Math.max(0, offset);
-				if (props.clickAction) {
-					props.clickAction(offset);
-				}
-			}
 		},
 		e(
 			'div', {
 				className: 'formula-field__text-display',
-			},
+				onClick: e => {
+					e.stopPropagation();
+					let offset = window.getSelection().anchorOffset;
+					offset = Math.max(0, offset);
+					if (props.clickAction) {
+						props.clickAction(offset);
+					}
+				}
+				},
 			props.formula.slice(0,200)
 		),
 		e(
@@ -71,7 +71,6 @@ export function FormulaField(props) {
 				},
 			},
 			'='
-			// '\u21A9'
 		)
 	);
 }
@@ -353,6 +352,7 @@ export function FormulaEditor(props) {
 	const offset = props.formulaOffset ? props.formulaOffset : props.viewInfo.formulaOffset
 	const [selection, setSelection] = useState([offset,offset]);
 	const [previewValue, setPreviewValue] = useState(props.value || '');
+	const [errorMessage, setErrorMessage] = useState(null);
 
 	// reference to editor textarea to keep track of selection and focus
 	const inputRef = React.useRef(null);
@@ -385,7 +385,13 @@ export function FormulaEditor(props) {
 		});
 	}
 
+	const previewErrorHandler = (s) => {
+		setErrorMessage(s);
+		console.log(`Error ${s}`);
+	}
+
 	const updatePreview = () => {
+		setErrorMessage(null);
 		const selStart = inputRef.current.selectionStart;
 		const selEnd = inputRef.current.selectionEnd;
 		const f = (selStart === selEnd) ? formula : inputRef.current.value.substring(selStart, selEnd);
@@ -393,10 +399,11 @@ export function FormulaEditor(props) {
 			if (results) {
 				setPreviewValue(results[0].results);
 			}
-		});
+		}, previewErrorHandler);
 	}
 
 	const previewCurrent = () => {
+		setErrorMessage(null);
 		const f = props.formula !== undefined ? props.formula : props.viewInfo.formula;
 		setPreviewValue(props.value || '');
 		if (f) {
@@ -404,7 +411,7 @@ export function FormulaEditor(props) {
 				if (results) {
 					setPreviewValue(results[0].results);
 				}
-			});	
+			}, previewErrorHandler);	
 		}
 	}
 
@@ -627,7 +634,7 @@ export function FormulaEditor(props) {
 			'div', {
 				id: 'formula-editor__preview-table',
 			},
-			e(
+			errorMessage ? errorMessage : e(
 				TableView, {
 					id: 'formula-editor__previewtable',
 					value: previewValue,
