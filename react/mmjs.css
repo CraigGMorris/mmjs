@@ -310,6 +310,40 @@ a:hover {
 	margin-top: 20px;
 }
 
+#datatable__row-view {
+	display: grid;
+	grid-template-rows: var(--input--height) var(--input--height) 1fr;
+	grid-template-areas: "number"
+		"buttons"
+		"fields";
+	grid-gap: 5px;
+	margin-top: 5px;
+}
+
+#datatable__edit-row-number {
+	grid-area: number;
+	display: grid;
+	grid-template-columns: 1fr 30px 30px 30px 30px;
+	grid-gap: 5px;
+}
+
+#datatable__edit-row-fields {
+	grid-area: fields;
+	display: grid;
+	grid-gap: 5px;
+}
+
+#datatable_edit-row-buttons {
+	grid-area: buttons;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-gap: 10px;
+}
+
+#datatable__edit-row-last,  #datatable__edit-row-first {
+	font-size: 16pt;
+}
+
 #datatable__table {
 	display: grid;
 	grid-area: display-area;
@@ -483,7 +517,18 @@ a:hover {
 	cursor: pointer;
 }
 
-.formula-field__text-display:hover, .formula-field__refresh:hover {
+.formula-input-field {
+	display: grid;
+	grid-template-columns: 20px 1fr 20px;
+	grid-template-rows: 1fr;
+	grid-template-areas: "formula-refresh formula-display formula-edit";
+	width: 100%;
+	box-sizing: border-box;
+	color: var(--link--color);
+	cursor: pointer;
+}
+
+.formula-field__text-display:hover, .formula-field__refresh:hover, .formula-field__edit-button:hover {
 	color: var(--link--color-hover);
 }
 
@@ -501,6 +546,12 @@ a:hover {
 
 .formula-field__refresh {
 	grid-area: formula-refresh;
+}
+
+.formula-field__edit-button {
+	grid-area: formula-edit;
+	justify-self: center;
+	font-size: 16pt;
 }
 
 #formula-editor {

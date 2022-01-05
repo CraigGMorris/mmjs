@@ -272,9 +272,15 @@ const pointerMove = useCallback(e => {
 	}, [initialOffset, props.value]);
 
 	useEffect(() => {
-    svgRef.current.addEventListener('wheel', wheel, {passive: false});
+		if (svgRef.current) {
+			// console.log('add listener');
+			svgRef.current.addEventListener('wheel', wheel, {passive: false});
+		}
     return () => {
-      svgRef.current.removeEventListener('wheel', wheel);
+			if (svgRef.current) {
+				// console.log('remove listener');
+	      svgRef.current.removeEventListener('wheel', wheel);
+			}
     };
   }, [wheel]);
 

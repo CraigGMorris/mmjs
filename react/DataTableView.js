@@ -18,7 +18,7 @@
 'use strict';
 
 import {ToolView} from './ToolView.js';
-import {FormulaField, FormulaEditor} from './FormulaView.js';
+import {FormulaField, FormulaEditor, FormulaInputField} from './FormulaView.js';
 import {TableView} from './TableView.js';
 import {UnitPicker} from './UnitsView.js';
 
@@ -357,14 +357,27 @@ function EditRowView(props) {
 				}
 				else {
 					valueField = e(
-						FormulaField, {
-							class: 'datatable__row-formula-field',
+						FormulaInputField, {
+							className: 'datatable__row-formula-field',
 							t: t,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							actions: props.actions,
 							formula: formulaString || '',
-							clickAction: (offset) => {
+							applyChanges: (formula) => {
+								// console.log(`apply ${selectedRow} ${selectedField} ${formula}`);
+								const path = props.viewInfo.path;
+								props.actions.doCommand(`__blob__${path} setcell ${selectedRow} ${selectedField}__blob__${formula}`,() => {
+									setEditRowDisplay(DataTableDisplay.editRow);
+									props.actions.updateView(props.viewInfo.stackIndex);
+								})
+							},
+							gotFocusAction: () => {
+								// console.log(`select column ${columnNumber + 1}`);
+								setSelectedField(columnNumber + 1);
+							},
+
+							editAction: (offset) => {
 								setSelectedField(columnNumber + 1);
 								setFormulaOffset(offset);
 								setEditRowDisplay(DataTableDisplay.editCell);
@@ -375,7 +388,7 @@ function EditRowView(props) {
 				fields.push(
 					e(
 						'div', {
-							class: 'datatable__row-cell',
+							className: 'datatable__row-cell',
 							key: columnNumber,
 						},
 						e(
@@ -392,17 +405,27 @@ function EditRowView(props) {
 			return e(
 				'div', {
 					id: 'datatable__row-view',
+					onKeyDown: e => {
+						if (e.key === 'Escape') {
+							e.preventDefault();
+							props.setDisplay(DataTableDisplay.table);
+						}
+					}
 				},
 				e(
 					'div', {
-						class: 'datatable__edit-row-title',
+						id: 'datatable__edit-row-number',
 					},
 					t('react:dataRowTitle', {row: selectedRow, nr: value.nr}),
-				),
-				e(
-					'div', {
-						id: 'datatable_edit-row-buttons',
-					},
+					e(
+						'button', {
+							id: 'datatable__edit-row-first',
+							onClick: () => {
+								setSelectedRow(1);
+							}							
+						},
+						t('react:dataRowFirstButton')
+					),
 					e(
 						'button', {
 							id: 'datatable__edit-row-prev',
@@ -429,6 +452,52 @@ function EditRowView(props) {
 					),
 					e(
 						'button', {
+							id: 'datatable__edit-row-last',
+							onClick: () => {
+								setSelectedRow(value.nr);
+							}							
+						},
+						t('react:dataRowLastButton')
+					),
+				),
+				e(
+					'div', {
+						id: 'datatable_edit-row-buttons',
+					},
+					e(
+						'button', {
+							id: 'datatable__edit-row-add-button',
+							disabled: (value && value.nc) ? false : true,
+							onClick: () => {
+								if (value && value.nc > 0) {
+									props.actions.doCommand(`${props.path} addrow ${selectedRow + 1}`, () => {
+										props.actions.updateView(props.viewInfo.stackIndex);
+										setSelectedRow(selectedRow + 1);
+									});
+								}
+							},
+						},	
+						t('react:dataRowAddButton')
+					),
+					e(
+						'button', {
+							id: 'datatable__edit-row-delete-button',
+							onClick: () => {
+								props.actions.doCommand(`${props.path} removerows ${selectedRow}`, () => {
+									props.actions.updateView(props.viewInfo.stackIndex);
+									if (value.nr === 1) {
+										props.setDisplay(DataTableDisplay.table);										
+									}
+									else if (selectedRow >= value.nr) {
+										setSelectedRow(value.nr - 1);
+									}
+								});		
+											}
+							},
+						t('react:dataRowDeleteButton')
+					),
+					e(
+						'button', {
 							id: 'datatable__edit-row-done',
 							onClick: () => {
 								props.setDisplay(DataTableDisplay.table);
@@ -437,7 +506,12 @@ function EditRowView(props) {
 						t('react:dataRowDoneButton')
 					),
 				),
-				fields
+				e(
+					'div', {
+						id: 'datatable__edit-row-fields',
+					},
+					fields
+				)
 			);
 
 		case DataTableDisplay.editCell:
@@ -649,6 +723,7 @@ export function DataTableView(props) {
 									props.actions.updateView(props.viewInfo.stackIndex);
 									setSelectedCell([value.nr + 1, 1]);
 									setSelectedRows();
+									setDisplay(DataTableDisplay.editRow);
 								});
 							}
 						}

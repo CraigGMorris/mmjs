@@ -37,7 +37,6 @@ const FormulaDisplay = Object.freeze({
 	values: 3
 });
 
-
 /**
  * common field for displaying and entering formulas
  */
@@ -71,6 +70,104 @@ export function FormulaField(props) {
 				},
 			},
 			'='
+		)
+	);
+}
+
+export function FormulaInputField(props) {
+	const [formula, setFormula] = useState(props.formula !== undefined ? props.formula : props.viewInfo.formula);
+
+	useEffect(() => {
+		setFormula(props.formula !== undefined ? props.formula : props.viewInfo.formula);
+	}, [props.formula]);
+
+	const applyChanges = (formula) => {
+		formula = formula.replace(/[“”]/g,'"');	// defeat smart quotes
+		const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
+		f(formula);
+	}
+
+	return e(
+		'div', {
+			className: 'formula-input-field',
+		},
+		e(
+			'input', {
+				className: 'formula-field__text-display',
+				value: formula.slice(0,200) || '',
+				width: props.infoWidth - 25,
+				title: props.t('react:formulaFieldInputHover'),
+				onChange: (event) => {
+					// keeps input field in sync
+					setFormula(event.target.value);
+				},
+				onKeyDown: e => {
+					if (e.key == 'Enter') {
+						if (e.shiftKey ) {
+							// watches for Shift Enter and sends command when it see it
+							e.preventDefault();
+							e.stopPropagation();
+							let offset = window.getSelection().anchorOffset;
+							offset = Math.max(0, offset);
+							if (props.editAction) {
+								props.editAction(offset);
+							}
+								return;
+						}
+						else {
+							// watches for Enter and applys changes when it see it
+							e.preventDefault();
+							applyChanges(formula);
+							return;
+						}
+					}
+				},
+				onBlur: e => {
+					applyChanges(formula);
+				},
+
+				onFocus: e => {
+					if (formula.length > 100 || formula.includes('\n')) {
+						e.stopPropagation();
+						let offset = window.getSelection().anchorOffset;
+						offset = Math.max(0, offset);
+						if (props.editAction) {
+							props.editAction(offset);
+						}
+					}
+					else {
+						if (props.gotFocusAction) {
+							props.gotFocusAction();
+						}
+					}
+				}
+			},
+		),
+		e(
+			'div', {
+				className: 'formula-field__refresh',
+				onClick: e => {
+					e.stopPropagation();
+					props.actions.doCommand(`${props.path} refresh`, () => {
+						props.actions.updateView(props.viewInfo.stackIndex);
+					});
+				},
+			},
+			'='
+		),
+		e(
+			'div', {
+				className: 'formula-field__edit-button',
+				onClick: e => {
+					e.stopPropagation();
+					let offset = window.getSelection().anchorOffset;
+					offset = Math.max(0, offset);
+					if (props.editAction) {
+						props.editAction(offset);
+					}
+				},
+			},
+			'⤢'			
 		)
 	);
 }
@@ -387,7 +484,6 @@ export function FormulaEditor(props) {
 
 	const previewErrorHandler = (s) => {
 		setErrorMessage(s);
-		console.log(`Error ${s}`);
 	}
 
 	const updatePreview = () => {
@@ -405,7 +501,7 @@ export function FormulaEditor(props) {
 	const previewCurrent = () => {
 		setErrorMessage(null);
 		const f = props.formula !== undefined ? props.formula : props.viewInfo.formula;
-		setPreviewValue(props.value || '');
+		// setPreviewValue(props.value || '');
 		if (f) {
 			props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview__blob__${f}`, (results) => {
 				if (results) {
@@ -462,10 +558,10 @@ export function FormulaEditor(props) {
 				value: formula,
 				id: "formula-editor__editor",
 				placeholder: t('react:formulaValueUnknown'),
-				spellcheck: "false",
-				autocorrect: "off",
-				autocapitalize: "none",
-				autocomplete: "off",
+				spellCheck: "false",
+				autoCorrect: "off",
+				autoCapitalize: "none",
+				autoComplete: "off",
 				onChange: (e) => {
 					// keeps input field in sync
 					setFormula(e.target.value);
