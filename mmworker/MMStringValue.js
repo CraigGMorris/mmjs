@@ -262,6 +262,27 @@ class MMStringValue extends MMValue {
 		return rv;
 	}
 
+	/** @method sumColumns
+	 * for string just return blank
+	 */
+	sumColumns() {
+		return MMStringValue.scalarValue('');
+	}
+
+	/** @method maxColumns
+	 * for string just return blank
+	 */
+	maxColumns() {
+		return MMStringValue.scalarValue('');
+	}
+
+	/** @method minColumns
+	 * for string just return blank
+	 */
+	minColumns() {
+		return MMStringValue.scalarValue('');
+	}
+
 	/** @method transpose
 	 *  @returns {MMStringValue}
 	 */

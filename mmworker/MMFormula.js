@@ -1190,7 +1190,7 @@ class MMSingleValueFunction extends MMFunctionOperator {
 				}				
 			}
 			else if (value instanceof MMStringValue) {
-				if (!this.needsNumericArgument) {
+				if (!this.needsNumericArgument || this.noStringColumns) {
 					const calcValue = this.operationOnString(value);
 					const calcColumn = new MMTableValueColumn({
 						name: column.name,
@@ -1199,10 +1199,10 @@ class MMSingleValueFunction extends MMFunctionOperator {
 					})
 					calcColumns.push(calcColumn);
 				}
-				else if (!this.noStringColumns) {
+				else {
 					// just include original column if operation does not apply to it
 					calcColumns.push(column);
-				}				
+				}
 			}
 			else {
 				return null;
@@ -1714,6 +1714,12 @@ class MMColumnMinimumsFunction extends MMSingleValueFunction {
 			return v.minColumns();
 		}
 	}
+
+	operationOnString(v) {
+		if (v) {
+			return v.minColumns();
+		}
+	}
 }
 
 class MMMaximumFunction extends MMMultipleArgumentFunction {
@@ -1774,6 +1780,12 @@ class MMColumnMaximumsFunction extends MMSingleValueFunction {
 	}
 
 	operationOn(v) {
+		if (v) {
+			return v.maxColumns();
+		}
+	}
+
+	operationOnString(v) {
 		if (v) {
 			return v.maxColumns();
 		}
@@ -1860,6 +1872,12 @@ class MMSumColumnsFunction extends MMSingleValueFunction {
 	}
 
 	operationOn(v) {
+		if (v) {
+			return v.sumColumns();
+		}
+	}
+
+	operationOnString(v) {
 		if (v) {
 			return v.sumColumns();
 		}
