@@ -37,63 +37,37 @@ const FormulaDisplay = Object.freeze({
 	values: 3
 });
 
-/**
- * common field for displaying and entering formulas
- */
 export function FormulaField(props) {
-	return e(
-		'div', {
-			className: 'formula-field',
-		},
-		e(
-			'div', {
-				className: 'formula-field__text-display',
-				onClick: e => {
-					e.stopPropagation();
-					let offset = window.getSelection().anchorOffset;
-					offset = Math.max(0, offset);
-					if (props.clickAction) {
-						props.clickAction(offset);
-					}
-				}
-				},
-			props.formula.slice(0,200)
-		),
-		e(
-			'div', {
-				className: 'formula-field__refresh',
-				onClick: e => {
-					e.stopPropagation();
-					props.actions.doCommand(`${props.path} refresh`, () => {
-						props.actions.updateView(props.viewInfo.stackIndex);
-					});
-				},
-			},
-			'='
-		)
-	);
-}
-
-export function FormulaInputField(props) {
 	const [formula, setFormula] = useState(props.formula !== undefined ? props.formula : props.viewInfo.formula);
+	const [initialFormula, setInitialFormula] = useState('');
 
 	useEffect(() => {
-		setFormula(props.formula !== undefined ? props.formula : props.viewInfo.formula);
+		const f = props.formula !== undefined ? props.formula : props.viewInfo.formula;
+		setFormula(f);
+		setInitialFormula(f);
 	}, [props.formula]);
+
+	const fieldInputRef = React.useRef(null);
 
 	const applyChanges = (formula) => {
 		formula = formula.replace(/[“”]/g,'"');	// defeat smart quotes
-		const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
-		f(formula);
+		if (formula !== initialFormula) { // only apply if changed
+			const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
+			f(formula);
+		}
 	}
 
 	return e(
 		'div', {
 			className: 'formula-input-field',
+			onBlur: e => {
+				applyChanges(formula);
+			},
 		},
 		e(
 			'input', {
 				className: 'formula-field__text-display',
+				ref: fieldInputRef,
 				value: formula.slice(0,200) || '',
 				width: props.infoWidth - 25,
 				title: props.t('react:formulaFieldInputHover'),
@@ -107,32 +81,44 @@ export function FormulaInputField(props) {
 							// watches for Shift Enter and sends command when it see it
 							e.preventDefault();
 							e.stopPropagation();
-							let offset = window.getSelection().anchorOffset;
-							offset = Math.max(0, offset);
+							let selStart = e.target.selectionStart;
+							selStart = Math.max(0, selStart);
+							let selEnd = fieldInputRef.current.selectionEnd;
+							selEnd = Math.max(selStart, selEnd);
 							if (props.editAction) {
-								props.editAction(offset);
+								props.editAction({
+									formula: formula,
+									initialFormula: initialFormula,
+									selectionStart: selStart,
+									selectionEnd: selEnd
+								});
 							}
 								return;
 						}
 						else {
 							// watches for Enter and applys changes when it see it
 							e.preventDefault();
-							applyChanges(formula);
+							// since a blur will apply changes, just do that so two applychanges aren't done
+							fieldInputRef.current.blur();
 							return;
 						}
 					}
-				},
-				onBlur: e => {
-					applyChanges(formula);
 				},
 
 				onFocus: e => {
 					if (formula.length > 100 || formula.includes('\n')) {
 						e.stopPropagation();
-						let offset = window.getSelection().anchorOffset;
-						offset = Math.max(0, offset);
+						let selStart = e.target.selectionStart;
+						selStart = Math.max(0, selStart);
+						let selEnd = fieldInputRef.current.selectionEnd;
+						selEnd = Math.max(selStart, selEnd);
 						if (props.editAction) {
-							props.editAction(offset);
+							props.editAction({
+								formula: formula,
+								initialFormula: initialFormula,
+								selectionStart: selStart,
+								selectionEnd: selEnd
+							});
 						}
 					}
 					else {
@@ -160,10 +146,17 @@ export function FormulaInputField(props) {
 				className: 'formula-field__edit-button',
 				onClick: e => {
 					e.stopPropagation();
-					let offset = window.getSelection().anchorOffset;
-					offset = Math.max(0, offset);
+					let selStart = fieldInputRef.current.selectionStart;
+					selStart = Math.max(0, selStart);
+					let selEnd = fieldInputRef.current.selectionEnd;
+					selEnd = Math.max(selStart, selEnd);
 					if (props.editAction) {
-						props.editAction(offset);
+						props.editAction({
+							formula: formula,
+							initialFormula: initialFormula,
+							selectionStart: selStart,
+							selectionEnd: selEnd
+						});
 					}
 				},
 			},
@@ -444,15 +437,17 @@ export function FormulaEditor(props) {
 	let t = props.t;
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 
-	const [formula, setFormula] = useState(props.formula !== undefined ? props.formula : props.viewInfo.formula);
 	const [display, setDisplay] = useState(FormulaDisplay.editor);
-	const offset = props.formulaOffset ? props.formulaOffset : props.viewInfo.formulaOffset
-	const [selection, setSelection] = useState([offset,offset]);
+	const editOptions = props.editOptions || {};
+	const [formula, setFormula] = useState(editOptions.formula || '');
+	const selStart = editOptions.selectionStart ? editOptions.selectionStart : 0;
+	const selEnd = editOptions.selectionEnd ? editOptions.selectionEnd : selStart;
+	const [selection, setSelection] = useState([selStart,selEnd]);
 	const [previewValue, setPreviewValue] = useState(props.value || '');
 	const [errorMessage, setErrorMessage] = useState(null);
 
 	// reference to editor textarea to keep track of selection and focus
-	const inputRef = React.useRef(null);
+	const editInputRef = React.useRef(null);
 
 	useEffect(() => {
 		previewCurrent();
@@ -460,13 +455,13 @@ export function FormulaEditor(props) {
 
 	useEffect(() => {
 		if (display === FormulaDisplay.editor) {
-			inputRef.current.focus();
+			editInputRef.current.focus();
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [display]);
 
 	useEffect(() => {
-		inputRef.current.setSelectionRange(selection[0], selection[1]);
+		editInputRef.current.setSelectionRange(selection[0], selection[1]);
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selection]);
 
@@ -488,9 +483,9 @@ export function FormulaEditor(props) {
 
 	const updatePreview = () => {
 		setErrorMessage(null);
-		const selStart = inputRef.current.selectionStart;
-		const selEnd = inputRef.current.selectionEnd;
-		const f = (selStart === selEnd) ? formula : inputRef.current.value.substring(selStart, selEnd);
+		const selStart = editInputRef.current.selectionStart;
+		const selEnd = editInputRef.current.selectionEnd;
+		const f = (selStart === selEnd) ? formula : editInputRef.current.value.substring(selStart, selEnd);
 		props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview__blob__${f}`, (results) => {
 			if (results) {
 				setPreviewValue(results[0].results);
@@ -500,9 +495,8 @@ export function FormulaEditor(props) {
 
 	const previewCurrent = () => {
 		setErrorMessage(null);
-		const f = props.formula !== undefined ? props.formula : props.viewInfo.formula;
-		// setPreviewValue(props.value || '');
-		if (f) {
+		const f = editOptions.initialFormula;
+		if (typeof(f) ===  "string") {
 			props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview__blob__${f}`, (results) => {
 				if (results) {
 					setPreviewValue(results[0].results);
@@ -512,8 +506,8 @@ export function FormulaEditor(props) {
 	}
 
 	const pickerButtonClick = (picker) => {
-			const selectionStart = inputRef.current.selectionStart;
-			const selectionEnd = inputRef.current.selectionEnd;
+			const selectionStart = editInputRef.current.selectionStart;
+			const selectionEnd = editInputRef.current.selectionEnd;
 			setSelection([selectionStart, selectionEnd]);
 			setDisplay(picker);
 	}
@@ -554,7 +548,7 @@ export function FormulaEditor(props) {
 		),
 		e(
 			'textarea', {
-				ref: inputRef,
+				ref: editInputRef,
 				value: formula,
 				id: "formula-editor__editor",
 				placeholder: t('react:formulaValueUnknown'),
@@ -743,8 +737,8 @@ export function FormulaEditor(props) {
 
 	const apply = (value, cursorOffset) => {
 		const current = formula;
-		const selectionStart = inputRef.current.selectionStart;
-		const selectionEnd = inputRef.current.selectionEnd;
+		const selectionStart = editInputRef.current.selectionStart;
+		const selectionEnd = editInputRef.current.selectionEnd;
 		if (display === FormulaDisplay.units) {
 			if (value.includes('-') || value.includes('/') || value.includes('^')) {
 				value = `"${value}"`;

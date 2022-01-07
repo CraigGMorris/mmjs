@@ -46,7 +46,8 @@ export function ExpressionView(props) {
 	const [display, setDisplay] = useState(ExpressionDisplay.expression);
 	const [stringDisplay, setStringDisplay] = useState();
 	const [selectedCell, setSelectedCell] = useState([0,0]);
-	const [formulaOffset, setFormulaOffset] = useState(0);
+	const [editOptions, setEditOptions] = useState({});
+
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -78,6 +79,14 @@ export function ExpressionView(props) {
 		});
 		return null;
 	}
+
+	const applyChanges = (formula) => {
+		props.actions.doCommand(`__blob__${path}.${formulaName} set formula__blob__${formula}`, () => {
+			props.actions.updateView(props.viewInfo.stackIndex);
+			setDisplay(ExpressionDisplay.expression);
+		});
+	}
+
 	const results = updateResults.length ? updateResults[0].results : {};
 	const path = results.path;
 	const value = results.value;
@@ -118,17 +127,11 @@ export function ExpressionView(props) {
 					viewInfo: props.viewInfo,
 					infoWidth: props.infoWidth,
 					actions: props.actions,
-					formula: results.formula || '',
-					formulaOffset: formulaOffset,
+					editOptions: editOptions,
 					cancelAction: () => {
 						setDisplay(ExpressionDisplay.expression);
 					},
-					applyChanges: (formula) => {
-						props.actions.doCommand(`__blob__${path}.${formulaName} set formula__blob__${formula}`, () => {
-							props.actions.updateView(props.viewInfo.stackIndex);
-							setDisplay(ExpressionDisplay.expression);
-						});
-					}
+					applyChanges: applyChanges,
 				}
 			);
 		}
@@ -278,11 +281,11 @@ export function ExpressionView(props) {
 							formula: results.formula || '',
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							clickAction: (offset) => {
-								setFormulaOffset(offset);
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
 								setDisplay(ExpressionDisplay.formulaEditor);
-							}
-	
+							},
+							applyChanges: applyChanges,	
 						}
 					)
 				),

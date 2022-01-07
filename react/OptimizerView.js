@@ -41,7 +41,7 @@ const OptimizerDisplay = Object.freeze({
 export function OptimizerView(props) {
 	const [display, setDisplay] = useState(OptimizerDisplay.input);
 	const [formulaName, setFormulaName] = useState('')
-	const [formulaOffset, setFormulaOffset] = useState(0);
+	const [editOptions, setEditOptions] = useState({});
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -89,8 +89,7 @@ export function OptimizerView(props) {
 				viewInfo: props.viewInfo,
 				infoWidth: props.infoWidth,
 				actions: props.actions,
-				formula: results.formulas[formulaName],
-				formulaOffset: formulaOffset,
+				editOptions: editOptions,
 				cancelAction: () => {
 					setDisplay(OptimizerDisplay.input);
 				},
@@ -146,11 +145,12 @@ export function OptimizerView(props) {
 						formula: results.formulas.optFormula,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						clickAction: (offset) => {
-							setFormulaOffset(offset);
+						editAction: (editOptions) => {
+							setEditOptions(editOptions);
 							setFormulaName('optFormula');
 							setDisplay(OptimizerDisplay.formulaEditor);
-						}
+						},
+						applyChanges: applyChanges('optFormula'),
 					}
 				),
 			),
@@ -192,11 +192,12 @@ export function OptimizerView(props) {
 						formula: results.formulas.countFormula,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						clickAction: (offset) => {
-							setFormulaOffset(offset);
+						editAction: (editOptions) => {
+							setEditOptions(editOptions);
 							setFormulaName('countFormula');
 							setDisplay(OptimizerDisplay.formulaEditor);
-						}
+						},
+						applyChanges: applyChanges('countFormula'),
 					}
 				),
 			),

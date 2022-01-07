@@ -48,7 +48,7 @@ const HtmlPageDisplay = Object.freeze({
  */
 export function HtmlPageView(props) {
 	const [display, setDisplay] = useState(HtmlPageDisplay.input);
-	const [formulaOffset, setFormulaOffset] = useState(0);
+	const [editOptions, setEditOptions] = useState({});
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -142,8 +142,7 @@ export function HtmlPageView(props) {
 				viewInfo: props.viewInfo,
 				infoWidth: props.infoWidth,
 				actions: props.actions,
-				formula: results.formula,
-				formulaOffset: formulaOffset,
+				editOptions: editOptions,
 				cancelAction: () => {
 					setDisplay(HtmlPageDisplay.main);
 				},
@@ -170,10 +169,11 @@ export function HtmlPageView(props) {
 						formula: results.formula || '',
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						clickAction: (offset) => {
-							setFormulaOffset(offset);
+						editAction: (editOptions) => {
+							setEditOptions(editOptions);
 							setDisplay(HtmlPageDisplay.formulaEditor);
-						}
+						},
+						applyChanges: applyChanges(),
 					}
 				),
 			),

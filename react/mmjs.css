@@ -573,8 +573,10 @@ a:hover {
 	grid-gap: 5px;
 }
 
-#formula-editor__preview {
+#formula-editor__previewtable {
 	grid-area: preview;
+	height: 100px;
+	box-sizing: border-box;
 }
 
 #formula-editor__toolbar {
@@ -599,7 +601,13 @@ a:hover {
 	grid-template-columns: 1fr 1fr 1fr 1fr;
 	grid-template-rows: 1fr;
 	grid-template-areas: "cancel preview current apply";
-	grid-gap: 10px;
+	grid-gap: 5px;
+}
+
+#formula-editor__actions button {
+	font-size: 10pt;
+	width: 70px;
+	justify-self: center;
 }
 
 #formula-editor__cancel-button {

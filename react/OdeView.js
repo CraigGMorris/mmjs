@@ -41,7 +41,7 @@ const OdeDisplay = Object.freeze({
 export function OdeView(props) {
 	const [display, setDisplay] = useState(OdeDisplay.input);
 	const [formulaIndex, setFormulaIndex] = useState('')
-	const [formulaOffset, setFormulaOffset] = useState(0);
+	const [editOptions, setEditOptions] = useState({});
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -81,8 +81,7 @@ export function OdeView(props) {
 				viewInfo: props.viewInfo,
 				infoWidth: props.infoWidth,
 				actions: props.actions,
-				formula: results.formulas[formulaIndex][1],
-				formulaOffset: formulaOffset,
+				editOptions: editOptions,
 				cancelAction: () => {
 					setDisplay(OdeDisplay.input);
 				},
@@ -148,11 +147,12 @@ export function OdeView(props) {
 						formula: formula,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						clickAction: (offset) => {
-							setFormulaOffset(offset);
+						editAction: (editOptions) => {
+							setEditOptions(editOptions);
 							setFormulaIndex(i);
 							setDisplay(OdeDisplay.formulaEditor);
-						}
+						},
+						applyChanges: applyChanges(name),
 					}
 				),
 				e(

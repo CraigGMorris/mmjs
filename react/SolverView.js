@@ -41,7 +41,7 @@ const SolverDisplay = Object.freeze({
 export function SolverView(props) {
 	const [display, setDisplay] = useState(SolverDisplay.input);
 	const [formulaName, setFormulaName] = useState('')
-	const [formulaOffset, setFormulaOffset] = useState(0);
+	const [editOptions, setEditOptions] = useState({});
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -89,8 +89,7 @@ export function SolverView(props) {
 				viewInfo: props.viewInfo,
 				infoWidth: props.infoWidth,
 				actions: props.actions,
-				formula: results.formulas[formulaName],
-				formulaOffset: formulaOffset,
+				editOptions: editOptions,
 				cancelAction: () => {
 					setDisplay(SolverDisplay.input);
 				},
@@ -127,11 +126,12 @@ export function SolverView(props) {
 						formula: results.formulas[funcName],
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						clickAction: (offset) => {
-							setFormulaOffset(offset);
+						editAction: (editOptions) => {
+							setEditOptions(editOptions);
 							setFormulaName(funcName);
 							setDisplay(SolverDisplay.formulaEditor);
-						}
+						},
+						applyChanges: applyChanges(funcName),
 					}
 				),
 				e(
@@ -150,11 +150,12 @@ export function SolverView(props) {
 						formula: results.formulas[countName],
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						clickAction: (offset) => {
-							setFormulaOffset(offset);
+						editAction: (editOptions) => {
+							setEditOptions(editOptions);
 							setFormulaName(countName);
 							setDisplay(SolverDisplay.formulaEditor);
-						}
+						},
+						applyChanges: applyChanges(countName),
 					}
 				),
 				e(
@@ -222,11 +223,12 @@ export function SolverView(props) {
 						formula: results.formulas.maxIter,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						clickAction: (offset) => {
-							setFormulaOffset(offset);
+						editAction: (editOptions) => {
+							setEditOptions(editOptions);
 							setFormulaName('maxIter');
 							setDisplay(SolverDisplay.formulaEditor);
-						}
+						},
+						applyChanges: applyChanges('maxIter'),
 					}
 				),
 				e(
@@ -244,11 +246,12 @@ export function SolverView(props) {
 						formula: results.formulas.maxJacobian,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						clickAction: (offset) => {
-							setFormulaOffset(offset);
+						editAction: (editOptions) => {
+							setEditOptions(editOptions);
 							setFormulaName('maxJacobian');
 							setDisplay(SolverDisplay.formulaEditor);
-						}
+						},
+						applyChanges: applyChanges('maxJacobian'),
 					}
 				),
 			),
