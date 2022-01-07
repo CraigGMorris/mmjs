@@ -89,6 +89,18 @@ export function TableView(props) {
 		}
 	}, [value.t, currentCell, nRows, lastRow, maxDisplayedRows, maxDisplayedCols]);
 
+	useEffect(() => {
+		// make sure at least one row and column appear
+		const maxY = props.viewBox[3];
+		const maxX = props.viewBox[2];
+		const nRows = Math.max(0,props.value.nr - maxY/cellHeight + 1);
+		const nColumns = Math.max(0,props.value.nc - maxX/cellWidth + 1);
+		if (tableViewOffset.x > nColumns*cellWidth || tableViewOffset.y > nRows*cellHeight) {
+			setTableViewOffset({x: 0, y: 0});
+			setInitialOffset({x: 0, y: 0});		
+		}	
+	}, [props.value, props.viewBox]);
+
 	const xTextPad = 5;
 
 	const offset = tableViewOffset;
