@@ -2218,24 +2218,34 @@ class MMAppendFunction extends MMMultipleArgumentFunction {
 		let columnCount = 0;
 		let first;
 		let argCount = this.arguments.length;
+		let isTableResult = false;
 		while (argCount-- > 0) {
 			const obj = this.arguments[argCount].value();
 			if (!obj) {
 				return null;
 			}
-		
 			if (!first) {
 				first = obj;
+			}
+			if (Object.getPrototypeOf(obj).constructor !== Object.getPrototypeOf(first).constructor) {
+				isTableResult = true;
+				break;
+			}
+		}
+
+		argCount = this.arguments.length - 1;
+		while (argCount-- > 0) {
+			const obj = this.arguments[argCount].value();
+		
+			if (isTableResult) {
+				if (first.rowCount !== obj.rowCount) {
+					this.formula.functionError('append','mmcmd:appendTableRowMismatch');
+					return null;
+				}
 			}
 			else if (Object.getPrototypeOf(obj).constructor == Object.getPrototypeOf(first).constructor) {
 				if (first instanceof MMNumberValue) {
 					first.checkUnitDimensionsAreEqualTo(obj.unitDimensions);
-				}
-				else if (first instanceof MMTableValue) {
-					if (first.rowCount !== obj.rowCount) {
-						this.formula.functionError('append','mmcmd:appendTableRowMismatch');
-						return null;
-					}
 				}
 			}
 			else {
@@ -2245,15 +2255,25 @@ class MMAppendFunction extends MMMultipleArgumentFunction {
 		}
 
 		if (columnCount) {
-			if (first instanceof MMTableValue) {
+			if (isTableResult) {
 				argCount = this.arguments.length;
 				let columns = [];
 				while (argCount-- > 0) {
-					const table = this.arguments[argCount].value();
-					if (!(table instanceof MMTableValue)) {
-						return null;
+					let table = this.arguments[argCount].value();
+					if (table instanceof MMTableValue) {
+						columns = columns.concat(table.columns);
 					}
-					columns = columns.concat(table.columns);
+					else if (table instanceof MMNumberValue || table instanceof MMStringValue) {
+						const nColumns = table.columnCount;
+						for (let n = 1; n <= nColumns; n++) {
+							const column = new MMTableValueColumn({
+								name: `${columns.length + 1}`,
+								displayUnit: table instanceof MMStringValue ? 'string' : null,
+								value: table.valueForColumnNumber(n)
+							});
+							columns.push(column);
+						}
+					}
 				}
 				return new MMTableValue({columns: columns});
 			}
@@ -2416,6 +2436,7 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 							}
 						}
 						else  {
+							this.formula.functionError('concat','mmcmd:concatColumnTypeMismatch');
 							return null;
 						}
 					}

@@ -5,6 +5,7 @@
 	"alertMessage": "{{msg}}",
 	"appendTableRowMismatch": "Can't append table values with different row counts",
 	"calculating": "Calculating",
+	"concatColumnTypeMismatch": "Can't concat table values with different column types",
 	"concatTableColumnMismatch": "Can't concat table values with different column counts",
 	"concatTypeMismatch": "Can't concat differing types",
 	"crossProductNot3": "The number of values in cross product arguments must be divisible by 3",
