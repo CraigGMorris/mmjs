@@ -450,6 +450,7 @@ export function FormulaEditor(props) {
 	const selEnd = editOptions.selectionEnd ? editOptions.selectionEnd : selStart;
 	const [selection, setSelection] = useState([selStart,selEnd]);
 	const [previewValue, setPreviewValue] = useState(props.value || '');
+	const [previewingCurrent, setPreviewingCurrent] = useState(true);
 	const [errorMessage, setErrorMessage] = useState(null);
 
 	// reference to editor textarea to keep track of selection and focus
@@ -457,6 +458,7 @@ export function FormulaEditor(props) {
 
 	useEffect(() => {
 		previewCurrent();
+		setPreviewingCurrent(true);
 	}, []);
 
 	useEffect(() => {
@@ -496,6 +498,7 @@ export function FormulaEditor(props) {
 		props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview__blob__${f}`, (results) => {
 			if (results) {
 				setPreviewValue(results[0].results);
+				setPreviewingCurrent(false);
 			}
 		}, previewErrorHandler);
 	}
@@ -507,6 +510,7 @@ export function FormulaEditor(props) {
 			props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview__blob__${f}`, (results) => {
 				if (results) {
 					setPreviewValue(results[0].results);
+					setPreviewingCurrent(true);
 				}
 			}, previewErrorHandler);	
 		}
@@ -731,6 +735,22 @@ export function FormulaEditor(props) {
 			'div', {
 				id: 'formula-editor__preview-table',
 			},
+			e(
+				'div', {
+					id: 'formula-editor__preview-unit',
+				},
+				(previewingCurrent ? t('react:formulaEditorCurrentButton') : t('react:formulaEditorPreviewButton'))
+				+
+				(previewValue ?
+					(previewValue.t === 's' ?
+						' = String' : 
+						(previewValue.unit ? 
+							` = ${previewValue.unitType} : ${previewValue.unit}` :
+							''
+						)
+					) :
+					''),
+			),
 			errorMessage ? errorMessage : e(
 				TableView, {
 					id: 'formula-editor__previewtable',

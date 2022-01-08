@@ -563,14 +563,20 @@ a:hover {
 #formula-editor__edit {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: var(--input--height) 1fr var(--input--height) 100px;
+	grid-template-rows: var(--input--height) 1fr var(--input--height) 15px 100px;
 	grid-template-areas: "toolbar"
 		"input"
 		"actions"
+		"previewunits"
 		"preview";
 	height: 100%;
 	box-sizing: border-box;
 	grid-gap: 5px;
+}
+
+#formula-editor__preview-unit {
+	grid-area: previewunits;
+	font-size: 15px;
 }
 
 #formula-editor__previewtable {
