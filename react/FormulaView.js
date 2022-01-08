@@ -37,6 +37,12 @@ const FormulaDisplay = Object.freeze({
 	values: 3
 });
 
+const replaceSmartQuotes = (f) => {
+	f = f.replace(/[“”]/g,'"');	// defeat smart quotes
+	f = f.replace(/[‘’]/g, "'");
+	return f;
+}
+
 export function FormulaField(props) {
 	const [formula, setFormula] = useState(props.formula !== undefined ? props.formula : props.viewInfo.formula);
 	const [initialFormula, setInitialFormula] = useState('');
@@ -50,7 +56,7 @@ export function FormulaField(props) {
 	const fieldInputRef = React.useRef(null);
 
 	const applyChanges = (formula) => {
-		formula = formula.replace(/[“”]/g,'"');	// defeat smart quotes
+		formula = replaceSmartQuotes(formula);
 		if (formula !== initialFormula) { // only apply if changed
 			const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
 			f(formula);
@@ -470,7 +476,7 @@ export function FormulaEditor(props) {
 	// }, [formula]);
 
 	const applyChanges = (formula) => {
-		formula = formula.replace(/[“”]/g,'"');	// defeat smart quotes
+		formula = replaceSmartQuotes(formula);
 		const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
 		f(formula, () => {
 			props.actions.popView();
@@ -485,7 +491,8 @@ export function FormulaEditor(props) {
 		setErrorMessage(null);
 		const selStart = editInputRef.current.selectionStart;
 		const selEnd = editInputRef.current.selectionEnd;
-		const f = (selStart === selEnd) ? formula : editInputRef.current.value.substring(selStart, selEnd);
+		let f = (selStart === selEnd) ? formula : editInputRef.current.value.substring(selStart, selEnd);
+		f = replaceSmartQuotes(f);
 		props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview__blob__${f}`, (results) => {
 			if (results) {
 				setPreviewValue(results[0].results);
