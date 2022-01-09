@@ -314,6 +314,7 @@ class MMSession extends MMCommandParent {
 		this.savedLastNewsId = '(lastNews)';
 		this.lastNews = '2021216';
 		this.newSession();
+		this.couchError = null;
 	}
 
 	/**
@@ -323,11 +324,15 @@ class MMSession extends MMCommandParent {
 	couchDBSync() {
 		if (this.remoteCouch) {
 			var opts = {live: true};
-			this.storage.db.replicate.to(this.remoteCouch, opts, () => {
-				console.log(`There was an error syncing to ${this.remoteCouch}`);
+			this.storage.db.replicate.to(this.remoteCouch, opts, (err) => {
+				const destination = this.remoteCouch.split('@')[1]
+				console.log(`There was an error syncing to ${destination}\n${err.error}`);
+				this.couchError = {key: 'mmcmd:couchToError', options: {dest: destination, msg: err.error}};
 			});
-			this.storage.db.replicate.from(this.remoteCouch, opts, () => {
-				console.log(`There was an error syncing from ${this.remoteCouch}`);
+			this.storage.db.replicate.from(this.remoteCouch, opts, (err) => {
+				const destination = this.remoteCouch.split('@')[1]
+				console.log(`There was an error syncing from ${destination}\n${err.error}`);
+				this.couchError = {key: 'mmcmd:couchFromError', options: {dest: destination, msg: err.error}};
 			}).on('change', (info) => {
 				for(const record of info.docs) {
 					if (record._id === this.storePath) {
@@ -515,6 +520,10 @@ class MMSession extends MMCommandParent {
 			try {
 				this.isAutoSaving = true;
 				await this.storage.save(this.storePath, caseJson);
+				if (this.couchError) {
+					this.setError(this.couchError.key, this.couchError.options);
+					this.couchError = null;
+				}
 			}
 			catch(e) {
 				const msg = (typeof e === 'string') ? e : e.message;

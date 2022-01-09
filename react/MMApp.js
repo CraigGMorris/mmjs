@@ -360,7 +360,7 @@ export function MMApp(props) {
 		commandCallBacks.set(callBackId, callBack);
 		const timeoutId = setTimeout(() => {
 				setStatusMessage(props.t('mmcmd:calculating'));
-		}, 200);
+		}, 500);
 		let cmdObject = {cmdString: cmd, id: callBackId++, timeoutId: timeoutId};
 		pipe.doCommand(cmdObject, (results) => {
 			clearTimeout(results.timeoutId);
