@@ -598,6 +598,17 @@ class MMNumberValue extends MMValue {
 		if (this.valueCount === 1) {
 			return this;
 		}
+		else if (this.valueCount > 30000) {
+			// Math.min seems to use recursion that stack overflows with large lists
+			// use brute force instead
+			let min = Number.MAX_VALUE;
+			let count = this.valueCount;
+			for (let i = 0; i < count; i++) {
+				const v = this._values[i]
+				min = (v < min) ? v : min;
+			}
+			return MMNumberValue.scalarValue(min, this.unitDimensions);
+		}
 		else if (this.valueCount > 0)  {
 			const min = Math.min(...(this._values));
 			return MMNumberValue.scalarValue(min, this.unitDimensions);
@@ -646,6 +657,17 @@ class MMNumberValue extends MMValue {
 	max() {
 		if (this.valueCount === 1) {
 			return this;
+		}
+		else if (this.valueCount > 30000) {
+			// Math.max seems to use recursion that stack overflows with large lists
+			// use brute force instead
+			let max = -Number.MAX_VALUE;
+			let count = this.valueCount;
+			for (let i = 0; i < count; i++) {
+				const v = this._values[i]
+				max = (v > max) ? v : max;
+			}
+			return MMNumberValue.scalarValue(max, this.unitDimensions);
 		}
 		else if (this.valueCount > 0)  {
 			const max = Math.max(...(this._values));
