@@ -1386,7 +1386,8 @@ class MMTool extends MMCommandParent {
 	 * @returns {String} json value from evaluating the formula in command.args
 	 */
 	formulaPreview(command) {
-		const f = new MMFormula('fpreview', this);
+		const formulaName = '_fpreview';
+		const f = new MMFormula(formulaName, this);
 		f.formula = command.args;
 		const value = f.value();
 		if (value) {
@@ -1395,6 +1396,7 @@ class MMTool extends MMCommandParent {
 		else {
 			command.results = '';
 		}
+		this.removeChildNamed(formulaName);
 	}
 
 	/**
