@@ -268,7 +268,7 @@ class MMModel extends MMTool {
 		const savedTools = [];
 		for (let name of names) {
 			const tool = this.childNamed(name);
-			if (tool) {
+			if (tool instanceof MMTool) {
 				let savedTool;
 				try {
 					savedTool = tool.saveObject();
@@ -340,7 +340,7 @@ class MMModel extends MMTool {
 		const savedTools = [];
 		for (let name of names) {
 			const tool = this.childNamed(name);
-			if (tool) {
+			if (tool instanceof MMTool) {
 				savedTools.push(tool.saveObject());
 			}
 		}
@@ -620,8 +620,10 @@ class MMModel extends MMTool {
 			let tools = [];
 			for (const key in this.children) {
 				const tool = this.children[key];
-				let saveTool = tool.saveObject();
-				tools.push(saveTool);
+				if (tool instanceof MMTool) {
+					let saveTool = tool.saveObject();
+					tools.push(saveTool);
+				}
 			}
 			o.Objects = tools;
 		}
