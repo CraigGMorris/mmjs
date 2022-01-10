@@ -8,6 +8,7 @@
 	"concatColumnTypeMismatch": "Can't concat table values with different column types",
 	"concatTableColumnMismatch": "Can't concat table values with different column counts",
 	"concatTypeMismatch": "Can't concat differing types",
+	"couchFromError": "There was an error syncing from CouchDB {{dest}}\n{{msg}}",
 	"couchToError": "There was an error syncing to CouchDB {{dest}}\n{{msg}}",
 	"crossProductNot3": "The number of values in cross product arguments must be divisible by 3",
 	"dataTableDisplayName": "Data Table",
