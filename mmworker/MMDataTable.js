@@ -938,12 +938,6 @@ class MMDataTable extends MMTool {
 				}
 				columnNumber = (columnNumber + 1) % columnCount;
 			}
-			if (columnNumber >= 30) {
-				const rowCount = columnData[0].length;
-				if (rowCount >= 185) {
-					console.log('breakpoint');
-				}
-			}
 			csvColumnNumber = (csvColumnNumber + 1) % csvColumnCount;
 			i++;
 			match = csv.substring(i).match(re);
