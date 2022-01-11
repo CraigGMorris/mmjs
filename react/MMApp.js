@@ -222,13 +222,6 @@ export function MMApp(props) {
 		}
 	}, []);
 
-	useEffect(() => {
-		if (statusMessage && statusMessage === '__refresh') {
-			updateDiagram();
-			updateView(null, false, false);
-		}
-	}, [statusMessage])
-
 	/** setStateViewType
 	 * sets the actual viewType, but with some additional processing
 	 * @param {ViewType} newType

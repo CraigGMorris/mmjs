@@ -340,7 +340,6 @@ class MMSession extends MMCommandParent {
 							if (result) {
 								new MMUnitSystem(this);  // clear any user units and sets
 								this.initializeFromJson(result, this.storePath);
-								this.processor.statusCallBack({msgKey: '__refresh'});
 							}
 						});
 						break;
@@ -545,7 +544,8 @@ class MMSession extends MMCommandParent {
 	async saveLastSessionPath() {
 		if (this.storePath) {
 			try {
-				await this.storage.save(this.savedLastPathId, this.storePath);
+				const indexedDB = new MMIndexedDBStorage();
+				await indexedDB.save(this.savedLastPathId, this.storePath);
 			}
 			catch(e) {
 				const msg = (typeof e === 'string') ? e : e.message;
@@ -602,7 +602,7 @@ class MMSession extends MMCommandParent {
 			this.isLoadingCase = true;
 			this.newSession();
 			const lastNews = await this.storage.load(this.savedLastNewsId);
-			const lastPath = await this.storage.load(this.savedLastPathId);
+			const lastPath = await indexedDB.load(this.savedLastPathId);
 			const newsUrl = '../news/MM_News.txt';
 			if (
 				(lastNews && lastNews != this.lastNews) ||
