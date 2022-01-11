@@ -810,7 +810,7 @@ export function FormulaEditor(props) {
 				ValuePicker, {
 					t: props.t,
 					actions: props.actions,
-					modelPath: props.viewInfo.modelPath,
+					modelPath: editOptions.modelInputPath || props.viewInfo.modelPath,
 					cancel: () => {
 						setDisplay(FormulaDisplay.editor);
 					},
