@@ -323,7 +323,7 @@ class MMSession extends MMCommandParent {
 	 */
 	couchDBSync() {
 		if (this.remoteCouch) {
-			var opts = {live: true};
+			var opts = {live: true, retry: true};
 			this.storage.db.replicate.to(this.remoteCouch, opts, (err) => {
 				const destination = this.remoteCouch.split('@')[1]
 				console.log(`There was an error syncing to ${destination}\n${err.error}`);
