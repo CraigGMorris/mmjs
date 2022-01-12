@@ -151,7 +151,10 @@ class MMModel extends MMTool {
 	parameters() {
 		let p = super.parameters();
 		for (const name in this.children) {
-			p.push(name + '.');
+			const child = this.children[name];
+			if (child instanceof MMTool) {
+				p.push(name + '.');
+			}
 		}
 		return p;
 	}
@@ -233,12 +236,14 @@ class MMModel extends MMTool {
 				let maxX = 10, maxY = 10;
 				for (const key in this.children) {
 					const tool = this.children[key];
-					if (tool.position.y > maxY) {
-						maxY = tool.position.y;
-						maxX = tool.position.x;
-					}
-					else if (tool.position.y == maxY && tool.position.x > maxX) {
-						maxX = tool.position.x;
+					if (tool instanceof MMTool) {
+						if (tool.position.y > maxY) {
+							maxY = tool.position.y;
+							maxX = tool.position.x;
+						}
+						else if (tool.position.y == maxY && tool.position.x > maxX) {
+							maxX = tool.position.x;
+						}
 					}
 				}
 
@@ -558,8 +563,11 @@ class MMModel extends MMTool {
 	diagramInfo() {
 		let tools = {};
 		for (const key in this.children) {
-			let requestors = [];
 			const tool = this.children[key];
+			if (!(tool instanceof MMTool)) {
+				continue;
+			}
+			let requestors = [];
 			const sources = tool.inputSources();
 			for (const source of sources) {
 				if (source !== tool) {
@@ -795,17 +803,19 @@ class MMModel extends MMTool {
 		while (i + 2 < parts.length) {
 			const toolName = parts[i++];
 			let tool = this.children[toolName.toLowerCase()];
-			const x = parseFloat(parts[i++]);
-			const y = parseFloat(parts[i++]);
-			if (tool && !isNaN(x) && !isNaN(y)) {
-				undoParts.push(`${toolName} ${tool.position.x} ${tool.position.y}`);
-				tool.position = new MMPoint(x, y);
+			if (tool instanceof MMTool) {
+				const x = parseFloat(parts[i++]);
+				const y = parseFloat(parts[i++]);
+				if (tool && !isNaN(x) && !isNaN(y)) {
+					undoParts.push(`${toolName} ${tool.position.x} ${tool.position.y}`);
+					tool.position = new MMPoint(x, y);
+				}
+				else {
+					throw(this.t('mmcmd:modelSetPosition', {command: command, tool: toolName}));
+				}
 			}
-			else {
-				throw(this.t('mmcmd:modelSetPosition', {command: command, tool: toolName}));
-			}
+			command.undo = undoParts.join(' ');
 		}
-		command.undo = undoParts.join(' ');
 	}
 
 		/**
@@ -826,7 +836,7 @@ class MMModel extends MMTool {
 		const toolName = toolNameParts.shift().toLowerCase();
 		const restOfPath = toolNameParts.join('.');
 		const tool = this.children[toolName];
-		if (tool) {
+		if (tool instanceof MMTool) {
 			value = tool.valueDescribedBy(restOfPath, requestor);
 		}
 		else {
@@ -841,7 +851,10 @@ class MMModel extends MMTool {
 	forgetAllCalculations() {
 		super.forgetAllCalculations();
 		for(let key in this.children) {
-			this.children[key].forgetAllCalculations();
+			const tool = this.children[key];
+			if (tool instanceof MMTool) {
+				tool.forgetAllCalculations();
+			}
 		}
 	}
 

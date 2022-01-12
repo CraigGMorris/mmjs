@@ -159,11 +159,11 @@ export function ModelView(props) {
 						)
 					);
 				}
-				let modelInputPath = results.modelPath;
-				if (modelInputPath) {
-					const inputPathParts = modelInputPath.split('.');
+				let nameSpace = results.modelPath;
+				if (nameSpace) {
+					const inputPathParts = nameSpace.split('.');
 					if (inputPathParts.length > 2) {
-						modelInputPath = modelInputPath.replace(/\.[^\.]*$/,'')
+						nameSpace = nameSpace.replace(/\.[^\.]*$/,'')
 					}	
 				}
 				for (let input of results.inputs) {
@@ -191,7 +191,8 @@ export function ModelView(props) {
 								viewInfo: props.viewInfo,
 								infoWidth: props.infoWidth,
 								editAction: (editOptions) => {
-									editOptions.modelInputPath = modelInputPath;
+									editOptions.path = inputPath;
+									editOptions.nameSpace = nameSpace;
 									setEditOptions(editOptions);
 									setDisplay(ModelDisplay.formulaEditor);
 								},

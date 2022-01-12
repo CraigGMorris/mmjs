@@ -195,7 +195,7 @@
 	"?setColumnUnit": "set the display unit for a column\n\nusage: setcolumnunit columnNumber unitName",
 	"?formulaRefresh": "reevaluate the formula\n\nusage: refresh",
 	"?formulaValue": "return formula value as json\n\nusage: value",
-	"?fpreview": "evaluate arbitrary formula and return value\n\nusage: tool fpreview formula",
+	"?fpreview": "evaluate arbitrary formula and return value\n\nusage: tool fpreview namespace formula",
 	"?graphAddAxis": "Add an axis to the graph\n\nusage: addaxis axisName\n\nwhere axisName is of form x, y, z, y2, y2_3, z2 etc",
 	"?graphPlotInfo": "returns information needed to draw plot",
 	"?graphRemoveAxis": "removes the named axis\n\nusage removeaxis axisName",

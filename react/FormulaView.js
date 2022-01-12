@@ -63,6 +63,12 @@ export function FormulaField(props) {
 		}
 	}
 
+	const editOptions = {
+		formula: formula,
+		initialFormula: initialFormula,
+		nameSpace: props.viewInfo.modelPath,
+	};
+
 	return e(
 		'div', {
 			className: 'formula-input-field',
@@ -88,16 +94,11 @@ export function FormulaField(props) {
 							e.preventDefault();
 							e.stopPropagation();
 							let selStart = e.target.selectionStart;
-							selStart = Math.max(0, selStart);
+							editOptions.selectionStart = Math.max(0, selStart);
 							let selEnd = fieldInputRef.current.selectionEnd;
-							selEnd = Math.max(selStart, selEnd);
+							editOptions.selectionEnd = Math.max(selStart, selEnd);
 							if (props.editAction) {
-								props.editAction({
-									formula: formula,
-									initialFormula: initialFormula,
-									selectionStart: selStart,
-									selectionEnd: selEnd
-								});
+								props.editAction(editOptions);
 							}
 								return;
 						}
@@ -115,16 +116,11 @@ export function FormulaField(props) {
 					if (formula.length > 100 || formula.includes('\n')) {
 						e.stopPropagation();
 						let selStart = e.target.selectionStart;
-						selStart = Math.max(0, selStart);
+						editOptions.selectionStart = Math.max(0, selStart);
 						let selEnd = fieldInputRef.current.selectionEnd;
-						selEnd = Math.max(selStart, selEnd);
+						editOptions.selectionEnd = Math.max(selStart, selEnd);
 						if (props.editAction) {
-							props.editAction({
-								formula: formula,
-								initialFormula: initialFormula,
-								selectionStart: selStart,
-								selectionEnd: selEnd
-							});
+							props.editAction(editOptions);
 						}
 					}
 					else {
@@ -153,16 +149,11 @@ export function FormulaField(props) {
 				onClick: e => {
 					e.stopPropagation();
 					let selStart = fieldInputRef.current.selectionStart;
-					selStart = Math.max(0, selStart);
+					editOptions.selectionStart = Math.max(0, selStart);
 					let selEnd = fieldInputRef.current.selectionEnd;
-					selEnd = Math.max(selStart, selEnd);
+					editOptions.selectionEnd = Math.max(selStart, selEnd);
 					if (props.editAction) {
-						props.editAction({
-							formula: formula,
-							initialFormula: initialFormula,
-							selectionStart: selStart,
-							selectionEnd: selEnd
-						});
+						props.editAction(editOptions);
 					}
 				},
 			},
@@ -495,7 +486,8 @@ export function FormulaEditor(props) {
 		const selEnd = editInputRef.current.selectionEnd;
 		let f = (selStart === selEnd) ? formula : editInputRef.current.value.substring(selStart, selEnd);
 		f = replaceSmartQuotes(f);
-		props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview__blob__${f}`, (results) => {
+		const nameSpace = editOptions.nameSpace;
+		props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview ${nameSpace}__blob__${f}`, (results) => {
 			if (results) {
 				setPreviewValue(results[0].results);
 				setPreviewingCurrent(false);
@@ -506,8 +498,9 @@ export function FormulaEditor(props) {
 	const previewCurrent = () => {
 		setErrorMessage(null);
 		const f = editOptions.initialFormula;
+		const nameSpace = editOptions.nameSpace;
 		if (typeof(f) ===  "string") {
-			props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview__blob__${f}`, (results) => {
+			props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview ${nameSpace}__blob__${f}`, (results) => {
 				if (results) {
 					setPreviewValue(results[0].results);
 					setPreviewingCurrent(true);
@@ -810,7 +803,7 @@ export function FormulaEditor(props) {
 				ValuePicker, {
 					t: props.t,
 					actions: props.actions,
-					modelPath: editOptions.modelInputPath || props.viewInfo.modelPath,
+					modelPath: editOptions.nameSpace || props.viewInfo.modelPath,
 					cancel: () => {
 						setDisplay(FormulaDisplay.editor);
 					},
