@@ -894,7 +894,7 @@ class MMTableValue extends MMValue {
 			else if (selector[0] === '&') {
 				selector = selector.substring(1).trim();
 			}
-			const nameMatch = selector.match(/^[^<=>]+/);
+			const nameMatch = selector.match(/^[^!<=>]+/);
 			if (!nameMatch) { syntaxError(selectorValue); }
 			const columnName = nameMatch[0].trim();
 			const column = this.columnNamed(columnName);
@@ -907,7 +907,7 @@ class MMTableValue extends MMValue {
 			}
 			selector = selector.substring(nameMatch[0].length).trim();
 
-			if (selector.length < 2) { syntaxError(selectorValue); }
+			if (selector.length < 1) { syntaxError(selectorValue); }
 			let opString = selector[0];
 			let valueString = '';
 			if (selector[1] === '=') {
@@ -917,10 +917,10 @@ class MMTableValue extends MMValue {
 			else {
 				valueString = selector.substring(1).trim();
 			}
-			if (valueString.length === 0) { syntaxError(selectorValue)}
 
 			let findValue;
 			if (columnValue instanceof MMNumberValue) {
+				if (valueString.length === 0) { syntaxError(selectorValue)}
 				const valueParts = valueString.split(' ');
 				findValue = parseFloat(valueParts[0]);
 				if (isNaN(findValue)) {
@@ -944,6 +944,7 @@ class MMTableValue extends MMValue {
 			const op = {
 				'=': (a, b) => {return a === b ? 1 : 0;},
 				'==': (a, b) => {return a === b ? 1 : 0;},
+				'!=': (a, b) => {return a === b ? 0 : 1},
 				'<': (a, b) => {return a < b ? 1 : 0;},
 				'>': (a, b) => {return a > b ? 1 : 0;},
 				'<=': (a, b) => {return a <= b ? 1 : 0;},
@@ -953,7 +954,7 @@ class MMTableValue extends MMValue {
 			for (let i = 0; i < this.rowCount; i++) {
 				let value = columnValue.values[i];
 				if (columnValue instanceof MMStringValue) {
-					value = value.toLowerCase();
+					value = value.toLowerCase().trim();
 				}
 				if (orOperation) {
 					if (op(value, findValue)) {
