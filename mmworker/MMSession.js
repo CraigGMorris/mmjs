@@ -1386,20 +1386,20 @@ class MMTool extends MMCommandParent {
 	 * @returns {String} json value from evaluating the formula in command.args
 	 */
 	formulaPreview(command) {
-		const formulaName = '_fpreview';
-		const f = new MMFormula(formulaName, this);
 		const args = command.args;
+		command.results = '';
 		const pathEnd = args.indexOf(' ');
-		f.formula = args.substring(pathEnd+1);
-		f.nameSpace = this.processor.getObjectFromPath(args.substring(0, pathEnd));
-		const value = f.value();
-		if (value) {
-			command.results = value.jsonValue();
+		if (pathEnd !== -1) {
+			const formulaName = '_fpreview';
+			const f = new MMFormula(formulaName, this);
+			f.formula = args.substring(pathEnd+1);
+			f.nameSpace = this.processor.getObjectFromPath(args.substring(0, pathEnd));
+			const value = f.value();
+			if (value) {
+				command.results = value.jsonValue();
+			}
+			this.removeChildNamed(formulaName);
 		}
-		else {
-			command.results = '';
-		}
-		this.removeChildNamed(formulaName);
 	}
 
 	/**
