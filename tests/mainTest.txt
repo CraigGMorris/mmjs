@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "mainTest",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "Tolerance",
+	"SelectedObject": "errorCount",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -16239,7 +16239,7 @@
 								"DiagramNotes": "n",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{gt\n\tsumcols[0,2] -\n\t92.9030400000 \"litre\",\n\ttolerance * 1 litre\n} \n+\n{gt\n\tsumcols[0,1] -\n\t-27.320390161 \"ft^2\",\n\ttolerance * 1 \"ft^2\"\n}"
+									"Formula": "{gt\n\tsumcols[0,3] -\n\t92.9030400000 \"litre\",\n\ttolerance * 1 litre\n} \n+\n{gt\n\tsumcols[0,2] -\n\t-27.320390161 \"ft^2\",\n\ttolerance * 1 \"ft^2\"\n}"
 								}
 							},
 							{
@@ -16263,7 +16263,7 @@
 								"DiagramNotes": "n",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "multiply.errorCount +\nsumColsError +\nminMax.errorCount +\nconcatError +\ntableFunc.errorCount +\nsumRowsNError +\nsumRowsTError +\ngroups.errorCount"
+									"Formula": "multiply.errorCount +\nsumColsError +\nminMax.errorCount +\nconcatError +\ntableFunc.errorCount +\nsumRowsNError +\nsumRowsTError +\nappendError +\ngroups.errorCount"
 								},
 								"isOutput": "y"
 							},
@@ -16396,7 +16396,7 @@
 										"DiagramNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{gt\n\tmaxcols[0,1] -\n\t13.2396098126 \"ft^2\",\n\ttolerance * 1 \"ft^2\"\n} +\n{gt\n\tmaxcols[0,2] -\n\t92.90304 \"litre\",\n\ttolerance * 1 litre\n} +\n{gt\n\tmincols[0,1] -\n\t-43.5599999742 \"ft^2\",\n\ttolerance * 1 \"ft^2\"\n} +\n{gt\n\tmincols[0,2] -\n\t0 \"litre\",\n\ttolerance * 1 litre\n}"
+											"Formula": "{gt\n\tmaxcols[0,2] -\n\t13.2396098126 \"ft^2\",\n\ttolerance * 1 \"ft^2\"\n} +\n{gt\n\tmaxcols[0,3] -\n\t92.90304 \"litre\",\n\ttolerance * 1 litre\n} +\n{gt\n\tmincols[0,2] -\n\t-43.5599999742 \"ft^2\",\n\ttolerance * 1 \"ft^2\"\n} +\n{gt\n\tmincols[0,3] -\n\t0 \"litre\",\n\ttolerance * 1 litre\n}"
 										}
 									},
 									{
@@ -16471,7 +16471,7 @@
 								"DiagramNotes": "n",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{ne {nrows concat}, 6} +\n{ne {ncols concat}, 3} +\n{gt\n\t{sumcols concat}[0,2] -\n\t92.9030400000 * 3 \"litre\",\n\ttolerance * 1 litre\n} \n+\n{gt\n\t{sumcols concat}[0,1] -\n\t-27.320390161 * 3 \"ft^2\",\n\ttolerance * 1 \"ft^2\"\n}"
+									"Formula": "{ne {nrows concat}, 6} +\n{ne {ncols concat}, 3} +\n{gt\n\t{sumcols concat}[0,3] -\n\t92.9030400000 * 3 \"litre\",\n\ttolerance * 1 litre\n} \n+\n{gt\n\t{sumcols concat}[0,2] -\n\t-27.320390161 * 3 \"ft^2\",\n\ttolerance * 1 \"ft^2\"\n}"
 								}
 							},
 							{
@@ -16810,7 +16810,7 @@
 								"DiagramNotes": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{ne {nrows append}, 3} +\n{ne {ncols append}, 6} +\n{sum {gt\n\tappend[0,6] -\n\t92.9030400000 * 2 \"litre\",\n\ttolerance * 1 litre\n}}\n+\n{ne\n\t{colnames append}[5],\n\t\"volume\"\n}"
+									"Formula": "{ne {nrows append}, 3} +\n{ne {ncols append}, 6} +\n{sum {gt\n\t{abs append[0,6] - t_1[0,3]*2}\n\ttolerance * 1 litre\n}}\n+\n{ne\n\t{colnames append}[6],\n\t\"volume\"\n}"
 								}
 							},
 							{
@@ -20832,7 +20832,7 @@
 									{
 										"name": "a1",
 										"Notes": "Acceleration of pendulum 1",
-										"DiagramX": 190,
+										"DiagramX": 185,
 										"DiagramY": 390,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
@@ -22524,7 +22524,7 @@
 										"name": "errorCount",
 										"Notes": "",
 										"DiagramX": 280,
-										"DiagramY": 630,
+										"DiagramY": 635,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Expression",
