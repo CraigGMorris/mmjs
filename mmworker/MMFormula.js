@@ -2227,7 +2227,10 @@ class MMAppendFunction extends MMMultipleArgumentFunction {
 			if (!first) {
 				first = obj;
 			}
-			if (Object.getPrototypeOf(obj).constructor !== Object.getPrototypeOf(first).constructor) {
+			if (first instanceof MMTableValue ||
+				obj instanceof MMTableValue ||
+				Object.getPrototypeOf(obj).constructor !== Object.getPrototypeOf(first).constructor
+				) {
 				isTableResult = true;
 				break;
 			}
