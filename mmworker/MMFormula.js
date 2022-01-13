@@ -4410,7 +4410,7 @@ class MMFormula extends MMCommandObject {
 						// let f = MMFunctionDictionary[token];
 						// if (f) {
 						// 	let op = f(this);
-						let op = MMFormulaFactory(token, this);
+						let op = MMFormulaFactory(token.toLowerCase(), this);
 						if (op) {
 							operatorStack.push(op);
 							treatMinusAsUnary = true;
@@ -4447,10 +4447,7 @@ class MMFormula extends MMCommandObject {
 						op = new MMUnaryMinusOperator();
 					}
 					else {
-						op = MMFormulaFactory(token, this);
-						// let opFactory = MMFormulaOpDictionary[token];
-						// if (opFactory) {
-							// op = opFactory(this);
+						op = MMFormulaFactory(token.toLowerCase(), this);
 						if (op) {
 							let prevOp = operatorStack[operatorStack.length - 1];
 							while (!(prevOp instanceof MMParenthesisOperator) &&
