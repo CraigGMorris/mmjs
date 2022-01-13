@@ -446,10 +446,26 @@ export function FormulaEditor(props) {
 
 	// reference to editor textarea to keep track of selection and focus
 	const editInputRef = React.useRef(null);
+//	const normalClose = React.useRef(false);
 
 	useEffect(() => {
 		previewCurrent();
 		setPreviewingCurrent(true);
+	}, []);
+
+	const latestFormula = React.useRef(null);
+  useEffect(() => {
+    latestFormula.current = formula;
+  });
+
+	useEffect(() => {
+		return () => {
+			if (latestFormula.current !== props.editOptions.initialFormula) {
+				const formula = replaceSmartQuotes(latestFormula.current);
+				const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
+				f(formula);
+			}
+		};
 	}, []);
 
 	useEffect(() => {
@@ -470,10 +486,9 @@ export function FormulaEditor(props) {
 
 	const applyChanges = (formula) => {
 		formula = replaceSmartQuotes(formula);
+		latestFormula.current = props.editOptions.initialFormula; // block the unmount action
 		const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
-		f(formula, () => {
-			props.actions.popView();
-		});
+		f(formula);
 	}
 
 	const previewErrorHandler = (s) => {
@@ -522,7 +537,7 @@ export function FormulaEditor(props) {
 			id: 'formula-editor__edit',
 			style: {
 				display: display === FormulaDisplay.editor ? 'grid' : 'none',
-			}
+			},
 		},
 		e(
 			'div', {
@@ -611,6 +626,7 @@ export function FormulaEditor(props) {
 					}
 					else if (e.key === 'Escape') {
 						e.preventDefault();
+						latestFormula.current = props.editOptions.initialFormula;
 						if (props.cancelAction) {
 							props.cancelAction();
 						}
@@ -687,6 +703,7 @@ export function FormulaEditor(props) {
 					id: 'formula-editor__cancel-button',
 					title: t('react:formulaEditorCancelKey'),
 					onClick: () => {
+						latestFormula.current = props.editOptions.initialFormula;
 						if (props.cancelAction) {
 							props.cancelAction();
 						}
