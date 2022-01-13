@@ -546,6 +546,7 @@ export function FormulaEditor(props) {
 			e(
 				'button', {
 					className: 'formula-editor__toolbar-values',
+					title: t('react:formulaEditorValuesHover'),
 					onClick: () => { pickerButtonClick(FormulaDisplay.values); }
 				},
 				'<v>'
@@ -553,6 +554,7 @@ export function FormulaEditor(props) {
 			e(
 				'button', {
 					className: 'formula-editor__toolbar-units',
+					title: t('react:formulaEditorUnitsHover'),
 					onClick: () => { pickerButtonClick(FormulaDisplay.units); }
 				},
 				'"u"'
@@ -560,6 +562,7 @@ export function FormulaEditor(props) {
 			e(
 				'button', {
 					className: 'formula-editor__toolbar-functions',
+					title: t('react:formulaEditorFunctionsHover'),
 					onClick: () => { pickerButtonClick(FormulaDisplay.functiions); }
 				},
 				'{f}}'
@@ -580,17 +583,27 @@ export function FormulaEditor(props) {
 					setFormula(e.target.value);
 				},
 				onKeyDown: e => {
-
-					if (e.key == 'Enter') {
+					if (e.ctrlKey) {
+						if (e.key === 'Enter') {
+							e.preventDefault();
+							updatePreview();
+							return;
+						}
+						else if (e.key === 'v') {
+							pickerButtonClick(FormulaDisplay.values);
+						}
+						else if (e.key === 'u') {
+							pickerButtonClick(FormulaDisplay.units);
+						}
+						else if (e.key === 'f') {
+							pickerButtonClick(FormulaDisplay.functiions);
+						}
+					}
+					else if (e.key === 'Enter') {
 						if (e.shiftKey ) {
 							// watches for Shift Enter and sends command when it see it
 							e.preventDefault();
 							applyChanges(formula);
-							return;
-						}
-						else if (e.ctrlKey) {
-							e.preventDefault();
-							updatePreview();
 							return;
 						}
 						else if (e.altKey) {
