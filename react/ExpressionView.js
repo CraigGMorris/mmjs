@@ -48,27 +48,11 @@ export function ExpressionView(props) {
 	const [selectedCell, setSelectedCell] = useState([0,0]);
 	const [editOptions, setEditOptions] = useState({});
 
-
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
-
-		if (props.viewInfo.expressionViewState) {
-			setDisplay(props.viewInfo.expressionViewState.display);
-		}
-		else {
-			props.viewInfo.expressionViewState = {
-				display: display,
-			};
-		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-
-	useEffect(() => {
-		if (props.viewInfo.expressionViewState) {
-			props.viewInfo.expressionViewState.display = display;
-		}
-	}, [display, props.viewInfo])
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
