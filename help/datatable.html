@@ -12,12 +12,13 @@
 					infoview: 'Information View',
 					addrow: 'Add Row',
 					addcol: 'Add Column',
-					tablecells: 'Value Table Cells',
-					tableheaders: 'Value Table Headers',
+					tablecells: 'Table Display',
+					tableheaders: 'Table Display Headers',
 					coleditor: 'Column Definition Editor',
+					roweditor: 'Row Editor',
 					import: 'Importing, Copying and Pasting',
 				});
-			};			
+			};
 		</script>	
 		<title>Data Table</title>
 	</head>	
@@ -46,6 +47,13 @@
 					hence visible, operations to slice and dice this data into other table value
 					representations, without altering the source data.
 				</p>
+				<p>
+					There is an exception though, in that you can create data table columns whose
+					values are calculated by a single formula. This is really just a display
+					convenience that makes it easy display some calculated results, usually involving
+					values from other columns, along side the data columns. For instance you might have
+					a calculated column displaying the result of adding other columns together.
+				</p>
 			</div>
 			<div id="columns" class="section">
 				<h3>Columns (Fields)</h3>
@@ -53,12 +61,18 @@
 					Unlike the <a href="matrix.html">matrix</a> tool, each column of a data table
 					has a name and columns can have a different unit types or can even contain textual
 					information.  In this way columns behave much like the fields of a database table,
-					with the rows being the records.
+					with the rows being the records. Columns will normally be data columns, but it is
+					possible to define a calculated column if desired.
 				</p>
 				<p>
-					Each column also has a default formula, which is evaluated whenever a new row is
+					Each data column also has a default formula, which is evaluated whenever a new row is
 					added to the table.  The result of this evaluation is used as the initial value
 					for that column's cell in the new row.
+				</p>
+				<p>
+					A calculated column has a single formula that must evaluate to an array with the same
+					number of rows as the data table has. Individual cells in a calculated column cannot be
+					modified.
 				</p>
 			</div>
 			<div id="infoview" class="section">
@@ -74,8 +88,9 @@
 				<h3>Add Row</h3>
 				<p>
 					The <b>Add Row</b> button will add a new row to the bottom of the the table, with default
-					values set as defined by the column definition.  This button is disabled if there isn't at
-					least one column defined.
+					values set as defined by the column definition and open a
+					<a href="#roweditor">row editor</a> where you can modify those values.
+					The <b>Add Row</b> button is disabled if there isn't at least one column defined.
 				</p>
 			</div>
 			<div id="addcol" class="section">
@@ -86,14 +101,14 @@
 					view to create a new column.
 				</p>
 				<p>
-					If the table already has one or more rows when a column is added, the initial
+					If the table already has one or more rows when a data column is added, the initial
 					value formula (see the <a href="#coleditor">column definition editor</a>) will be
 					evaluated for each existing row and the resulting value used for that row in the
 					new column.
 				</p>
 			</div>
 			<div id="tablecells" class="section">
-				<h3>Value Table Cells</h3>
+				<h3>Table Display</h3>
 				<p>
 					The lower part of the information view shows the table data. You can scroll this
 					table both horizontally and vertically by dragging on a cell. Dragging on the row
@@ -101,10 +116,12 @@
 				</p>
 				<p>
 					Tapping on a cell that isn't a row or column header will open a
-					<a href="formulaeditor.html">formula editor</a> with the existing
-					cell value and unit filled in. You can change this to any valid formula and
-					when you tap the <b>Apply</b> button, it will be immediately evaluated and the
-					result placed in the cell.  The formula itself is not retained though.
+					<a href="#roweditor">row editor</a> displaying
+					<a href="formulaeditor.html#fields">formula fields</a> for all the data columns
+					and static displays for any calculated columns. You can change the values for data
+					columns to any valid formula and as soon as you leave the field, the formula will be
+					immediately evaluated and the result placed in that field.  The formula itself is not
+					retained though. Tab and shift tab are convenient shortcuts for moving between fields.
 				</p>
 				<p>
 					Note the value you enter must match the unit type for the column, which usually
@@ -121,7 +138,7 @@
 				</p>
 			</div>
 			<div id="tableheaders" class="section">
-				<h3>Value Table Headers</h3>
+				<h3>Table Display Headers</h3>
 				<p>
 					Tapping on a <b>column header</b> cell (i.e. label in top row) will open the
 					<a href="#coleditor">column definition editor</a> for that column.
@@ -145,26 +162,49 @@
 				<h3>Column Definition Editor</h3>
 				<p>
 					Tapping on the <b>Add Column</b> button or on the column header for an existing column
-					will bring up an editor where you can define the column properties.  Tapping on the cell
-					at the top of the first column, labeled <b>Date</b> yields the following editor
+					will bring up an editor where you can define the column properties.  If it is a new column,
+					the editor will look like:
 				</p>
-				<img src="datatableedit.png" alt="Column Definition Editor"/>
+				<img src="datatablecoledit1.png" alt="New column editor">
 				<p>
-					The <b>Cancel</b> button dismisses the editor, abandoning any changes made, while
-					the <b>Update</b> applies the changes to the column before dismissing the editor.
+
 				</p>
+				<p>
+					Tapping on header cell for an existing column, will bring up the editor with the fields 
+					filled in with the existing values and with some different buttons:
+				</p>
+				<img src="datatablecoledit2.png" alt="Column Definition Editor"/>
+				<div class="subsection">
+					<h3>Button Functions</h3>
+					<ul>
+						<li><b>Cancel</b>: dismisses the editor, without adding a column
+							and abandoning any changes made for an existing column.</li>
+
+						<li><b>Add Column</b>: only appears for new columns and when tapped adds the
+							new column to the data table and dismisses the editor.</li>
+
+						<li><b>Update</b>: appears instead of the <b>Add Column</b> button when an existing column
+							is edited. Tapping it applies changes made and dismisses the editor.</li>
+
+						<li><b>Data</b>: the data label only appears for a new column and tapping it will switch the
+							column to a calculated type.  The formula field will be relabelled <b>Column Formula</b> and
+							the <b>Data</b> label will change to <b>Calculated</b>. Tapping that will toggle back to the
+							data type.<br><br> <b>Note</b>: once added, the column type cannot be changed</li>
+					</ul>
+				</div>
 				<div class="subsection">
 					<h3>Column Name</h3>
 					<p>
 						A new column will be given a generic name, but you will almost always want to
 						use this field to modify it to something meaningful.  The columns of a given
-						data table must have unique names.
+						data table must have unique names. Having spaces in the names is allowed, but
+						not recommended.
 					</p>
 				</div>
 				<div class="subsection">
 					<h3>Column Number</h3>
 					<p>
-						This be a number representing the position of the column in the table from 1 for
+						This is a number representing the position of the column in the table from 1 for
 						to the number of columns starting with the leftmost.  Changing it will move the
 						column to the new position.
 					</p>
@@ -172,7 +212,7 @@
 				<div class="subsection">
 					<h3>Initial Value</h3>
 					<p>
-						The formula you enter into this field will be evaluated whenever a new row is
+						This data column formula will be evaluated whenever a new row is
 						added to the table.  The result will become the initial value for the column
 						cell of the new row.
 					</p>
@@ -192,9 +232,10 @@
 						numeric column and if numeric, what its unit type will be.
 					</p>
 					<p>
-						<b>Note</b> that once you have quit from the definition editor after adding a column,
-						the type of column cannot be changed without removing the column and adding it again.
-						You can however modify the formula as long as it returns the same type of value.
+						<b>Note</b>: after adding a column, the type of column cannot be changed without
+						removing the column and adding it again.
+						You can however modify the initial value formula as long as it returns the same
+						type of value.
 					</p>
 					<p>
 						The formula can reference other fields to the left of it in the table.
@@ -215,6 +256,19 @@
 						You would also want to change the initial value formula to something like it originally
 						was.
 					</p>
+				</div>
+				<div class="subsection">
+					<h3>Column Formula</h3>
+					<p>
+						For calculated columns, the formula is labeled <b>Column Formula</b> and must
+						evaluate to an array of the same length as the number of rows in the table.
+					</p>
+					<p>
+						The formula can reference other fields in the table and in this case will return the
+						entire column.  This is useful for doing things like displaying a column that is the
+						sum of some other columns.
+					</p>
+
 				</div>
 				<div class="subsection">
 					<h3>Display Unit</h3>
@@ -242,17 +296,66 @@
 					</p>
 					<p>
 						which says the field should be 12 characters wide with 4 characters after the
-						decimal point in normal floating point format.  An <b>e</b> can be used instead
+						decimal point in normal floating point format. In Math Minion, the percent sign is
+						optional.
+					</p>
+					<p>An <b>e</b> can be used instead
 						of the <b>f</b> for exponential format and you can even show numbers with an arbitrary
 						base between 2 and 36.  For instance a value could be represented in hex with
-						<b>%14.16x</b>.  Note it is also permissable to omit the size number, i.e.
-						<b>%.2f</b> would be fine and the number would just be right justified.
+						<b>14.16x</b>.  Note it is also permissable to omit the size number, i.e.
+						<b>.2f</b> would be fine and the number would just be right justified.
+					</p>
+				</div>
+			</div>
+			<div id="roweditor" class="section">
+				<h3>Row Editor</h3>
+				<p>
+					When add a row or you tap on any cell in a row, other than the row number, the 
+					row editor with appear:
+				</p>
+				<img src="datatablerowedit.png" alt="Row editor">
+				<p>
+					It contains the following:
+				</p>
+				<div class="subsection">
+					<h3>Record Number and Count</h3>
+					<p><b>Record 1 of 1912</b> - hopefully pretty self explanatory.</p>
+				</div>
+				<div class="subsection">
+					<h3>Row Navigation Buttons</h3>
+					<ul>
+						<li><b>&#x21C8;</b> - first record</li>
+						<li><b>&#11014;</b> - previous record</li>
+						<li><b>&#11015;</b> - next record</li>
+						<li><b>&#x21CA;</b> - last record</li>
+					</ul>
+				</div>
+				<div class="subsection">
+					<h3>Add</h3>
+					<p>
+						Adds a new row after the current row and display it in the editor. Note that
+						while the <b>Add Row</b> button on the main data table page always adds the row
+						to the end of the table, this allows you to insert a row into the table.
 					</p>
 				</div>
 				<div class="subsection">
-					<h3>Delete Column</h3>
+					<h3>Delete</h3>
 					<p>
-						Click this button to delete the column and all of its data.
+						Deletes the displayed row.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Done</h3>
+					<p>
+						Exits the row editor and returns to the main data table display.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Fields</h3>
+					<p>
+						Each column is presented with its name and a
+						<a href="formulaeditor.html#fields">formula field</a> containing its value. (Calculated
+						columns just have an uneditable display).
 					</p>
 				</div>
 			</div>
