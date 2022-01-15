@@ -31,31 +31,35 @@
 				</p>
 				<p>
 					It's name can be used in other formulas to represent the value it calculates.  Thus if
-					an expression named "speed" has a formula that is just:
+					an expression named <b>speed</b> has a formula that is just:
 				</p>
 				<p class="formula">
 					100 kph
 				</p>
 				<p>
-					and a second expression "distance" has a formula:
+					and a second expression <b>distance</b> has a formula:
 				</p>
 				<p>
 					speed * 2 h
 				</p>
 				<p>
-					The value of distance will be 200 km.
+					The value of <b>distance</b> will be 200 km.
 				</p>
-				<p>If instead of a scalar, speed was a 2x2 matrix of <b>kph</b> values:
+				<p>If instead of a scalar, <b>speed</b> was a 2x2 matrix of <b>kph</b> values:
 				<table class="formula">
 					<tr><td>25</td><td>50</td></tr>
 					<tr><td>75</td><td>100</td></tr>
 				</table>
 				</p>
 				<p>
-					then the <a href="infoview.html">information view</a> for the distance expression
+					then the <a href="infoview.html">information view</a> for the <b>distance</b> expression
 					would look like:
 				</p>
 				<img src="expression.png" alt="Expression info view"/>
+				<p>
+					Tapping on <b>Length: m</b> and selecting <b>km</b> as the display unit would result in:
+				</p>
+				<img src="expression2.png" alt="Expression info view"/>
 			</div>
 			<div id="inputs" class="section">
 				<h3>Inputs</h3>
@@ -92,14 +96,13 @@
 				<div id="formula" class="subsection">
 					<h3>Formula Field</h3>
 					<p>
-						This has the <a href="formula.html">formula</a> that defines the value of the expression.
-						Tap on it to open an
-						<a href="formulaeditor.html">editor</a> where you enter or edit the expression formula.
+						The <a href="formulaeditor.html#fields">formula field</a> has the
+						<a href="formula.html">formula</a> that defines the value of the expression.
 					</p>
 					<p>
 						Tapping on the equal sign to the left of the formula field will cause the expression
 						to be reevaluated.  This is normally only pertinent for formulas using something like
-						the {now} function, to force them to replace their cached values. It can also be used to
+						the <b>{now}</b> function, to force them to replace their cached values. It can also be used to
 						regenerate error and warning dialogs resulting from the calculation.
 					</p>
 				</div>
