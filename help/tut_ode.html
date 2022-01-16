@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('ODE Tutorial',{
+					overview: 'Overview',
+					new: 'Starting a New Session',
+					add: 'Adding Expressions',
+					ode: 'Integrating',
+					plot: 'Plotting Results',
+				});
+			};			
+		</script>	
+		<title>ODE Tutorial</title>
+		<style>
+				#page {
+					/* background-color: rgb(253, 255, 247); */
+					background-color: rgb(255, 253, 225);
+				}
+				img {
+					border: solid 2px black;
+				}
+		</style>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					This tutorial will outline the steps to solve a simple problem; calculating
+					the height of liquid in a tank with a fixed in flow and height variable outflow.
+				</p>
+				<p>
+					If you are brand new to Math Minion, you might want to review the
+					<a href="tutorial.html">basic tutorial</a> first.
+				</p>
+				<p>So let's get started.</p>
+			</div>
+			<div id="new" class="section">
+				<h3>Start a New Session</h3>
+				<p>
+					On the <a href="infoview.html#bottombar">button bar</a>
+				</p>
+				<img src="tutorial/infobuttons.png" alt="Information view buttons">
+				<p>
+					tap the <b>Sessions</b> button to bring up a view of the saved
+					<a href="sessions.html">sessions.</a>
+				</p>
+				<img src="tutorial/sessionstop.png" alt="Top of sessions view">
+				<p>
+					Tap the <a href="sessions.html#new">New</a> button to start a new session.  The
+					<a href="infoview.html">information view</a> should now be empty except for the
+					name field for the <b>root</b> <a href="model.html">model</a> and the
+					<a href="diagram.html">diagram</a> should be blank.
+				</p>
+			</div>
+			<div id="add" class="section">
+				<h3>Add an Expression</h3>
+				<p>
+					Tapping any where on the diagram background will produce this
+					<a href="diagram.html#bgmenu">background menu</a>:
+				</p>
+				<img src="tutorial/dgmbgmenu.png" alt="Diagram background menu">
+				<p>
+					Tap on <b>Add Tool to Model</b> to get another menu, this time of available
+					tools:
+				</p>
+				<img src="tutorial/toolmenu.png" alt="Tool menu">
+				<p>
+					Tap on <b>Expression</b> to create an <a href="expression.html">expression tool</a>.
+					An icon will appear on the <a href="diagram.html">diagram</a> where you originally tapped:
+				</p>
+				<img src="tutorial/expricon.png" alt="Expression Icon">
+				<p>and the top of the <a href="infoview.html">information view</a> will become:</p>
+				<img src="tutorial/x1info.png" alt="New expression info view">
+				<p>
+					Note, if you make a mistake, you can probably just tap the <b>Undo</b>
+					button on the <a href="infoview.html#bottombar">bottom button bar</a>
+					to reverse it.
+				</p>
+				<p>
+					Tap in the name field (currently has <b>x1</b>) and change the name to <b>flowIn</b>
+					and hit return.
+				</p>
+				<p>
+					Now tap in the <a href="formula.html">formula</a> field (to the right of the equals
+					sign) to bring up the <a href="formulaeditor.html">formula editor</a>.
+					Enter the formula
+				</p>
+				<p class="formula">
+					100 gal/min
+				</p>
+				<p>
+					The <a href="infoview.html">information view</a> should now like this: 
+				</p>
+				<img src="tutorial/flowininfo.png" alt="flowIn expression info">
+				<p>
+					The current <a href="units.html#sets">conversion unit set</a> is SI, so the value
+					is displayed in <b>m^3/s</b>.  All Math Minion values are matrices, so this scalar
+					appears as a 1x1 matrix.
+				</p>
+				<p>
+					Tap on the <a href="diagram.html">diagram</a> background again and follow the same
+					procedure to add another <a href="expression.html">expression</a>.
+					Name this one <b>volume</b> and give it a formula of:
+				</p>
+				<p class="formula">
+					8 m^3
+				</p>
+				<p>
+					Now create a third <a href="expression.html">expression</a> called <b>height</b>
+					and give it the formula:
+				</p>
+				<p class="formula">
+					volume / 2 "m^2"
+				</p>
+				<p>
+					Which divides the volume by an assumed cross sectional area of the tank.
+				</p>
+				<p>
+					Note that the <a href="units.html">unit</a> <b>m^2</b> is in quotes.  This is
+					necessary for units that contain <b>/</b>, <b>-</b> or <b>^</b> symbols unless
+					the entire formula is just a number and unit. This lets Math Minion differentiate
+					between formula operators and unit definitions.
+				</p>
+				<p>
+					Your diagram should now look something like this, although the icons will
+					probably be in different positions:
+				</p>
+				<img src="tutorial/dgm3icons.png" alt="Diagram after added 3 expressions">
+				<p>
+					Note the <a href="diagram.html#connections">connecting line</a> between the
+					corner of <b>volume</b> and the middle of a vertical edge of <b>height</b>. This
+					designates that the value of <b>volume</b> is used in the calculation of
+					<b>height</b>.
+				</p>
+				<p>
+					See the <a href="diagram.html">diagram help</a> on how to rearrange, rescale, etc.
+					the diagram.  The <a href="infoview.html">information view</a> for <b>height</b>
+					should now be:
+				</p>
+				<p>
+					As <b>height</b> is currently selected, other icons are dimmed and the
+					<a href="infoview.html">information view</a> should look like:
+				</p>
+				<img src="tutorial/height.png" alt="Height information view">
+				<p>
+					Add yet another <a href="expression.html">expression</a>, this time called
+					<b>flowOut</b> and give it the formula:
+				</p>
+				<p class="formula">
+					height^2 * 200 "gal/min-m^2"
+				</p>
+				<p>
+					This is just a made up formula that assumes the outlet flow will be
+					proportional to the square of the pressure drop, represented here by the
+					<b>height</b>. A suitable unit has to provided for the proportionality
+					constant to yield a flow rate.
+				</p>
+				<p>
+					Having the inlet and outlet flow rates, we can calculate the rate of filling
+					or emptying by just subtracting in, yes another
+					<a href="expression.html">expression</a>.  Call this one <b>dv</b> and give
+					it the formula:
+				</p>
+				<p class="formula">
+					flowin - flowout
+				</p>
+				<p>
+					After a little rearranging, my diagram looks like:
+				</p>
+				<img src="tutorial/dgm5icons.png" alt="Diagram after adding dv expression">
+				<p>
+					The value for <b>dv</b> is <b>-0.19558 m^3/s</b>.  To integrate this over
+					time, we will add an
+					<a href="ode.html">ordinary differential equation</a> <b>ODE</b> solver tool.
+				</p>
+			</div>
+			<div id="ode" class="section">
+				<h3>Integrating</h3>
+				<p>
+					Proceed as with the <a href="expression.html">expressions</a>, but choose
+					<b>ODE Solver</b> from the tools menu and rename it <b>ode</b>.  The
+					<a href="infoview.html">information view</a> should look like:
+				</p>
+				<img src="tutorial/ode1.png" alt="ODE solver information view">
+				<p>
+					although you might have to scroll the table below the <b>Reset</b> and
+					<b>Run</b> buttons to see all the fields.
+				</p>
+				<p>
+					Do the following:
+				</p>
+				<ul>
+					<li>Tap on the <b>Auto Run</b> check box to turn it off for now</li>
+					<li>
+						Tap on the <b>Y0</b> <a href="formula.html#fields">formula field</a> and
+						enter the same formula that we gave to <b>volume</b>:
+						<p class="formula">
+							8 m^3
+						</p>
+					</li>
+					<li>Enter <b>dv</b> as the formula for <b>dY/dT</b>.</li>
+					<li>Enter <b>20 min</b> as the formula for <b>EndT</b></li>
+				</ul>
+				<p>
+					The <a href="infoview.html">information view</a> should now look like:
+				</p>
+				<img src="tutorial/ode2.png" alt="2nd ODE solver information view">
+				<p>
+					The solver is set up to integrate the volume for 20 minutes given the
+					rate of change of volume calculated by
+					<a href="expression.html">expression</a> <b>dv</b>, but at this point
+					<b>dv</b> is just a constant value.
+				</p>
+				<p>
+					Return to the <a href="diagram.html">diagram</a> and tap on the <b>volume</b>
+					icon to bring up its information view and change its formula to:
+				</p>
+				<p class="formula">
+					ode.y
+				</p>
+				<p>
+					where <b>y</b> is the <a href="ode.html#parameter">ODE parameter</a> for the
+					dependant (i.e. integrated) variable.  Since the solver <b>auto run</b> is turned
+					off and its <b>t</b> value is 0, the value of volume just becomes the <b>Y0</b>
+					initial value we assigned to the solver - i.e. still <b>8 m^3</b>.
+				</p>
+				<img src="tutorial/volume.png" alt="Volume information view">
+				<p>
+					Return to <b>ode</b> and tap on its <b>Auto Run</b> checkbox. The
+					<a href="infoview.html">information view</a>:
+				</p>
+				<img src="tutorial/ode3.png" alt="3rd ODE solver information view">
+				<p>
+					shows <b>T</b> is now 1200 s (i.e. 20 min) and the value for <b>dv</b> is almost
+					zero. Looking at the <a href="diagram.html">diagram</a>, once again slightly
+					rearranged:
+				</p>
+				<img src="tutorial/dgm6icons.png" alt="Diagram with ODE solver">
+				<p>
+					we see the <b>volume</b> is now about 1.4 m^3 and the <b>height</b> is about
+					0.7 m.  While knowing the end result is nice, it can also be useful to see the
+					path.  This can be accomplished by adding recordings to the
+					<a href="ode.html">ODE solver</a>.  Return to the solver
+					<a href="infoview.html">information view</a> and tap the
+					<a href="ode.html#addrec">Add Recording</a> button and scroll the fields table
+					to the bottom. A row will have been added like this:
+				</p>
+				<img src="tutorial/rectime.png" alt="First recorded value (time)">
+				<p>
+					A default formula of <b>$.t</b> have been added to record the t values. 
+					The <b>$</b> is just a shortcut for the name of the tool that owns the formula.
+					The longer <b>ode.t</b> would be equivalent
+					We want to record the time values, but change the formula to by adding <b>'Time</b>
+					to the end
+				</p>
+				<p class="formula">
+					$.t'Time
+				</p>
+				<p>
+					The single quote designates that the rest of the line is just a comment, but
+					some <a href="tools.html">tools</a>, including this one, also use it as an
+					alternate <a href="formula.html#toolrefs">parameter</a>.  ODE
+					<a href="ode.html#addrec">recordings</a> can always be referenced as r1, r2, etc.,
+					so we can reference the time recording as <b>ode.r1</b>. However with the commment,
+					we can use the easier to remember <b>ode.time</b>.
+				</p>
+				<p>
+					Add another recording and this time use the formula:
+				</p>
+				<p class="formula">
+					height
+				</p>
+				<p>to record the height value.  We don't need a comment here because the
+					<a href="ode.html">ode solver</a> will also use the formula itself as a parameter
+					if it just consists of another tool name. The bottom of the information view
+					should now look like:
+				</p>
+				<img src="tutorial/tworecords.png" alt="Both recorded value fields">
+				<p>
+					Go back to the diagram and add another <a href="expression.html">expression</a> and
+					call it <b>recorded</b>.  Make its formula
+				</p>
+				<p class="formula">
+					ode.table
+				</p>
+				<p>
+					The top of <a href="infoview.html">information view</a> for this should look like:
+				</p>
+				<img src="tutorial/recorded.png" alt="Recorded value table">
+				<p>
+					which shows a <a href="minionvalue.html#table">table value</a> with the two recorded
+					values as columns.  You can scroll this by just dragging on a cell, but if you drag
+					the row number column up and down, you can quickly scroll through all 1201 rows.
+				</p>
+				<p>
+					This is nice, but a <a href="graph.html">plot</a> would be better.
+				</p>
+			</div>
+			<div id="plot" class="section">
+				<h3>Plotting Results</h3>
+				<p>
+					Go back to the diagram and add a <a href="graph.html">Graph</a> tool and name it
+					<b>plot</b>. You should get an <a href="infoview.html">information view</a> like this:
+				</p>
+				<img src="tutorial/graph1.png" alt="Initial graph information view">
+				<p>
+					Tap in the <b>x1</b> field and enter the formula:
+				</p>
+				<p class="formula">
+					ode.time 'Time
+				</p>
+				<p>
+					Like the <a href="ode.html">ODE solver</a>, the <a href="graph.html">graph</a> makes
+					use of formula comments, in this case for
+					<a href="graph.html#axisformula">axis titles</a>.
+				</p>
+				<p>
+					Add the formula:
+				</p>
+				<p class="formula">
+					ode.height 'Height
+				</p>
+				<p>
+					to the <b>y1_1</b> field so the <a href="infoview.html">information view</a>
+					looks like:
+				</p>
+				<img src="tutorial/graph2.png" alt="Second graph information view">
+				<p>
+					Now tap the <b>Plot</b> button to see the plot.
+				</p>
+				<img src="tutorial/graph3.png" alt="Graph plot">
+				<p>
+					Dragging the graph around will result in the axis labels changing accordingly. You
+					can also <a href="graph.html#zoom2d">zoom in and out</a>.
+				</p>
+				<img src="tutorial/graph4.png" alt="Zoomed and panned plot">
+				<p>
+					Tap on the <b>Edit</b> button at the upper left of the plot to return to the
+					<a href="infoview.html">information view</a>. 
+				</p>
+				<p>
+					By default the <a href="graph.html#axistable">plot axis</a> will use the minimum
+					and maximum plot values as the upper and lower bounds.  In this case it might
+					look better to set <b>0 m</b> as the lower bound for height. Tap on the <b>Min</b>
+					field for <b>Y1_1</b> and enter that as the formula. Tap the <b>Plot</b> button again.
+				</p>
+				<img src="tutorial/graph5.png" alt="Plot with new Y axis">
+				<p>
+					Try choosing a different value for <b>flowIn</b> or the constant in
+					<b>flowOut</b> and then tap on the <b>plot</b> icon. The results will be
+					automatically updated to reflect the changes.
+				</p>
+			</div>
+			<div id="conclusion" class="section">
+				<h3>Follow Up</h3>
+				<p>
+					For more information on the things Math Minion can do, you might want
+					to go back to the <a href="getstarted.html#getstart">Getting Started session</a>
+					and browse through its examples and descriptions.
+				</p>
+				<p>
+					You can also direct any questions or comments to me on the
+					<a href="http://www.redtree.com/contact.html">contact page</a>.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>
