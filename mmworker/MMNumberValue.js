@@ -267,7 +267,7 @@ class MMNumberValue extends MMValue {
 	 * @returns {String}
 	 */
 	stringWithUnit(outUnit) {
-		if(!outUnit) {
+		if(!outUnit || !MMUnitSystem.areDimensionsEqual(this.unitDimensions, outUnit.dimensions)) {
 			outUnit = this.defaultUnit;
 		}
 
