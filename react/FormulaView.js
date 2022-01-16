@@ -456,7 +456,7 @@ export function FormulaEditor(props) {
 	const latestFormula = React.useRef(null);
   useEffect(() => {
     latestFormula.current = formula;
-  });
+  }, [formula]);
 
 	useEffect(() => {
 		return () => {
