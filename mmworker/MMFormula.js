@@ -2248,7 +2248,9 @@ class MMAppendFunction extends MMMultipleArgumentFunction {
 			}
 			else if (Object.getPrototypeOf(obj).constructor == Object.getPrototypeOf(first).constructor) {
 				if (first instanceof MMNumberValue) {
-					first.checkUnitDimensionsAreEqualTo(obj.unitDimensions);
+					if (!MMUnitSystem.areDimensionsEqual(first.unitDimensions, obj.unitDimensions)) {
+						isTableResult = true;
+					}
 				}
 			}
 			else {
