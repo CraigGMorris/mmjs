@@ -33,7 +33,6 @@ export function ToolView(props) {
 		const updateResults = props.viewInfo.updateResults;
 		const notes = updateResults.length ? updateResults[0].results.notes : '';		
 		setNotesText(notes);
-		setInitialNotes(notes);
 	}, [props.viewInfo.updateResults]);
 
 	const pathParts = props.viewInfo.path.split('.');
@@ -43,21 +42,7 @@ export function ToolView(props) {
 	const updateResults = props.viewInfo.updateResults;
 	const notes = updateResults.length ? updateResults[0].results.notes : '';	
 	const [notesText, setNotesText] = useState(notes);
-	const [initialNotes, setInitialNotes] = useState(notes);
 	const diagramNotes = updateResults.length ? updateResults[0].results.diagramNotes : false;
-
-	const latestNotes = React.useRef(null);
-  useEffect(() => {
-    latestNotes.current = notesText;
-  },[notesText]);
-
-	useEffect(() => {
-		return () => {
-			if (latestNotes.current !== initialNotes) {
-				doSetNotes(latestNotes.current);
-			}
-		};
-	}, []);
 
 	const doRename = () => {
 		const path = props.viewInfo.path;
@@ -155,7 +140,14 @@ export function ToolView(props) {
 					onChange: (event) => {
 						// keeps input field in sync
 						const value = event.target.value;
-						setNotesText(value);	
+						setNotesText(value);
+					},
+					onKeyDown: (e) => {
+						if (e.key === 'Enter' && e.shiftKey) {
+							e.preventDefault();
+							e.stopPropagation();
+							doSetNotes(notesText);
+						}
 					},
 					onBlur: () => {
 						// watch for loss of focus
