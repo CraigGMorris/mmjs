@@ -12938,7 +12938,7 @@
 						"Objects": [
 							{
 								"name": "Range",
-								"Notes": "Create a column array",
+								"Notes": "Create a column array with range operator :",
 								"DiagramX": 20,
 								"DiagramY": 15,
 								"HideInfo": "n",
@@ -13221,6 +13221,168 @@
 										"Type": "Expression",
 										"Formula": {
 											"Formula": "column * row"
+										}
+									}
+								]
+							},
+							{
+								"name": "Concatenate",
+								"Notes": "Concatenating values into an array.",
+								"DiagramX": 20,
+								"DiagramY": -20,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "scalarNumbers",
+										"Notes": "Perhaps the most common way to make an array is with the concatenate function cc.\n\nIt simply combines all the values of its arguments into a column array. If an argument is a matrix, its values are taken row by row.\n\nThe arguments must all have the same unit type.",
+										"DiagramX": 20,
+										"DiagramY": -15,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cc 1, 5, 6}"
+										}
+									},
+									{
+										"name": "arrays",
+										"Notes": "In this case two arrays are concatenated.",
+										"DiagramX": 105,
+										"DiagramY": -15,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cc scalarNumbers {cc -1, -100, -1000}}"
+										}
+									},
+									{
+										"name": "array123",
+										"Notes": "a 4x3 matrix of metre values",
+										"DiagramX": 105,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cc 1, 2, 3} * 1 m"
+										}
+									},
+									{
+										"name": "matrix",
+										"Notes": "A 2x3 matrix of random value between 0 and 10 metres",
+										"DiagramX": 105,
+										"DiagramY": 55,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Matrix",
+										"unit": "m",
+										"CellInputs": {
+											"0_0": "{row}  * 1 m + {col} * 10 m"
+										},
+										"rowCount": "2",
+										"columnCount": "3"
+									},
+									{
+										"name": "mixedSize",
+										"Notes": "Shows concatenating an array and a matrix and how the matrix is unwound.",
+										"DiagramX": 105,
+										"DiagramY": 95,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cc array123, matrix}"
+										}
+									}
+								]
+							},
+							{
+								"name": "Append",
+								"Notes": "Appending columns",
+								"DiagramX": 95,
+								"DiagramY": -20,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "mArray",
+										"Notes": "An array of meter values from to 10 to 50 in 10 m increments",
+										"DiagramX": 15,
+										"DiagramY": 30,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "1:5 * 10 m"
+										}
+									},
+									{
+										"name": "mMatrix",
+										"Notes": "A matrix of metre values representing the row and column position",
+										"DiagramX": 15,
+										"DiagramY": 70,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Matrix",
+										"unit": "m",
+										"CellInputs": {
+											"0_0": "{row} * 1 m + {col} * 10 m"
+										},
+										"rowCount": "5",
+										"columnCount": "2"
+									},
+									{
+										"name": "AppendSameUnit",
+										"Notes": "Appending adds columns together to form a matrix of all the columns.\n\nAll columns must have the same number of rows.",
+										"DiagramX": 100,
+										"DiagramY": 30,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{append mArray, mMatrix}"
+										}
+									},
+									{
+										"name": "kgArray",
+										"Notes": "An array of meter values from to 10 to 50 in 10 m increments",
+										"DiagramX": 15,
+										"DiagramY": 110,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "1:5 * 10 kg"
+										}
+									},
+									{
+										"name": "AppendDifferent",
+										"Notes": "Appending arrays with different unit types or numbers and strings will result in a table value with column numbers being used as the column names",
+										"DiagramX": 100,
+										"DiagramY": 110,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{append kgArray, mMatrix, sArray}"
+										}
+									},
+									{
+										"name": "sArray",
+										"Notes": "A string array",
+										"DiagramX": 15,
+										"DiagramY": 150,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cc \"a\",\"b\",\"c\",\"d\",\"e\"}"
 										}
 									}
 								]
@@ -13749,7 +13911,7 @@
 										"DiagramNotes": "y",
 										"Type": "HTML Form",
 										"Formula": {
-											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Select Function</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t\t<p>\n\t\t\t\tThe select function can be used to choose certain rows of a table, thus creating a new table value. For instance the <b>Select</b> expression in this model uses the formula:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t{select hours, \"project = Coyote\"}\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tto find all the rows in the table value <b>hours</b> which have a value of \"Coyote\" in the project column.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tThe first parameter of the function is simply the table value, in this case from the expression <b>hours</b>.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tThe second parameter is a string of the form\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\t\n\t\t\t\t\"column op value\"\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\twhere <b>column</b> is the name of the table column and the <b>op</b> term is one of (<b>=, <, <=, >, >=</b>). The <b>value</b> term is some value that will be matched against each row of the column using the given operation.  The value isn't a formula, but can have a unit if it is numeric. String comparisons are case insensitive.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tIf the selector has more than one row, each result is \"ANDed\" with the previous result, unless the \"column\" term is preceded by a \"|\" character, in which case an OR operation is performed with the previous result. An \"&\" character can optionally be used for AND operations to make the formula more descriptive.\n\t\t\t<p>\n\t\t\t<p>\n\t\t\t\tInstead of a string value, the second parameter of select can be a column array with the same number of rows as the table.  All the rows of this argument which are nonzero will be selected from the source table and included in the result.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe expression <b>boolSelect</b> uses the formula:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t{select hours, {eq hours.project, \"Coyote\"}}\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\twhich will also select all the rows whose project column has a value of \"Coyote\", producing the same result as the <b>Select</b> expression.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe select command will also work on matrices of numbers and strings in the same way, with the column name being replaced by the column number.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tSee the various other expressions in this model for examples.\n\t\t\t</p>\n\n\t\t</div>\n\t</body>\n</html>"
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Select Function</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t\t<p>\n\t\t\t\tThe select function can be used to choose certain rows of a table, thus creating a new table value. For instance the <b>Select</b> expression in this model uses the formula:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t{select hours, \"project = Coyote\"}\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tto find all the rows in the table value <b>hours</b> which have a value of \"Coyote\" in the project column.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tThe first parameter of the function is simply the table value, in this case from the expression <b>hours</b>.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tThe second parameter is a string of the form\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\t\n\t\t\t\t\"column op value\"\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\twhere <b>column</b> is the name of the table column and the <b>op</b> term is one of (<b>=, !=, <, <=, >, >=</b>). The <b>value</b> term is some value that will be matched against each row of the column using the given operation.  The value isn't a formula, but can have a unit if it is numeric. String comparisons are case insensitive and a missing value term will match a string made up zero or more blanks.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tIf the selector has more than one row, each result is \"ANDed\" with the previous result, unless the \"column\" term is preceded by a \"|\" character, in which case an OR operation is performed with the previous result. An \"&\" character can optionally be used for AND operations to make the formula more descriptive.\n\t\t\t<p>\n\t\t\t<p>\n\t\t\t\tInstead of a string value, the second parameter of select can be a column array with the same number of rows as the table.  All the rows of this argument which are nonzero will be selected from the source table and included in the result.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe expression <b>boolSelect</b> uses the formula:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t{select hours, {eq hours.project, \"Coyote\"}}\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\twhich will also select all the rows whose project column has a value of \"Coyote\", producing the same result as the <b>Select</b> expression.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe select command will also work on matrices of numbers and strings in the same way, with the column name being replaced by the column number.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tSee the various other expressions in this model for examples.\n\t\t\t</p>\n\n\t\t</div>\n\t</body>\n</html>"
 										}
 									},
 									{
@@ -14890,7 +15052,7 @@
 				"DiagramNotes": "y",
 				"Type": "HTML Form",
 				"Formula": {
-					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.disclaimer {\n\t\t\t\tcolor: #004400;\n\t\t\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\t\t\tfont-size: 0.7em;\n\t\t\t\tfont-style: italic;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p class=\"disclaimer\">\n\t\t\tMath Minion is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the <a href=\"../LICENSE.txt\" target=\"_blank\">GNU General Public License</a> for more details.\n\t\t</p>\n\t\t<p>\n\t\t\tThis session contains numerous explanations and small illustrations of how Math Minion works. However before diving in, I fear you really should, <b>gasp</b>, read a bit of the help.\n\t\t</p>\n\t\t<p>\n\t\t\tPlease put your natural horror aside and <b><a href=\"./help/getstarted.html\" target=\"_blank\">click here</a></b> to open the help in another browser window or tab.\n\t\t</p>\n\t\t<p>\n\t\t\tIf nothing else following the links for the <b><a href=\"./help/diagram.html\" target=\"_blank\">diagram</a></b> and <b><a href=\"./help/infoview.html\" target=\"_blank\">information view</a></b> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the right and the examples you can import from the page displayed by tapping on the <b>Examples</b> icon.\n\t\t</p>\n\t\t<p>\n\t\t\tIf you have any questions, you can always use the <b><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Contact Me</a></b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>Craig</p>\n\t\t</div>\n\t</body>\n</html>"
+					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.disclaimer {\n\t\t\t\tcolor: #004400;\n\t\t\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\t\t\tfont-size: 0.7em;\n\t\t\t\tfont-style: italic;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p class=\"disclaimer\">\n\t\t\tMath Minion is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the <a href=\"../LICENSE.txt\" target=\"_blank\">GNU General Public License</a> for more details.\n\t\t</p>\n\t\t<p>\n\t\t\tThis session contains numerous explanations and small illustrations of how Math Minion works. However before diving in, I fear you really should, <b>gasp</b>, read a bit of the help.\n\t\t</p>\n\t\t<p>\n\t\t\tPlease put your natural horror aside and <b><a href=\"./help/getstarted.html\" target=\"_blank\">click here</a></b> to open the help in another browser window or tab.\n\t\t</p>\n\t\t<p>\n\t\t\tIf nothing else following the links for the <b><a href=\"./help/diagram.html\" target=\"_blank\">diagram</a></b> and <b><a href=\"./help/infoview.html\" target=\"_blank\">information view</a></b> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the diagram and the examples you can import from the <b>Examples</b> HtmlPage.\n\t\t</p>\n\t\t<p>\n\t\t\tIf you have any questions, you can always use the <b><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Contact Me</a></b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>Craig</p>\n\t\t</div>\n\t</body>\n</html>"
 				}
 			},
 			{
