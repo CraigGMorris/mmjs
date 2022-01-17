@@ -8470,7 +8470,7 @@
 								"DiagramNotes": "n",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{select Records[ 0, {concat \"Date\", \"MinT\"} ],\n\t{ne Records.MinT, EmptyT}\n}"
+									"Formula": "{select Records[\n\t\t0, {concat \"Date\", \"MinT\"}\n\t], \n\t{ne Records.MinT, EmptyT}\n}"
 								},
 								"tableUnits": {}
 							},
@@ -8483,19 +8483,19 @@
 								"DiagramNotes": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{select Records[ 0, {concat \"Date\", \"MaxT\"} ],\n\t{ne Records.MaxT, EmptyT}\n}"
+									"Formula": "{select Records[\n\t0,\n\t{concat \"Date\", \"MaxT\"}\n\t],\n\t{ne Records.MaxT, EmptyT}\n}"
 								}
 							},
 							{
 								"name": "RainFall",
-								"Notes": "Similar to the MinT expression except for rain fall and the use of the greater or equal function to select the valid rows.",
+								"Notes": "Similar to the MinT expression except for rain fall and the use of a string selector to select the valid rows.",
 								"DiagramX": 45,
 								"DiagramY": 35,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{select Records[ 0, {concat \"Date\", \"Rain_Fall\"} ],\n  {ge Records.Rain_Fall, 0\"cm\"}\n}"
+									"Formula": "{select\n\tRecords[\n\t\t0, \n\t\t{concat \"Date\", \"Rain_Fall\"}\n\t],\n\t\"Rain_Fall >= 0 cm\"\n}"
 								},
 								"tableUnits": {}
 							},
@@ -8508,7 +8508,7 @@
 								"DiagramNotes": "n",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{select Records,[ 0, {cc \"Date\", \"MinT\",\"MaxT\"} ]\n\t{and\n\t\t{ne Records.MinT, EmptyT},\n\t\t{ne Records.MaxT, EmptyT}\n\t}\n}"
+									"Formula": "{select Records,[\n\t\t0, {cc \"Date\", \"MinT\",\"MaxT\"}\n\t],\n\t{and\n\t\t{ne Records.MinT, EmptyT},\n\t\t{ne Records.MaxT, EmptyT}\n\t}\n}"
 								}
 							},
 							{
@@ -12929,6 +12929,7 @@
 					},
 					{
 						"name": "Arrays",
+						"Notes": "",
 						"DiagramX": -75,
 						"DiagramY": 20,
 						"HideInfo": "n",
@@ -13687,6 +13688,7 @@
 							},
 							{
 								"name": "MakeTable",
+								"Notes": "",
 								"DiagramX": 75,
 								"DiagramY": -5,
 								"HideInfo": "n",
@@ -13696,7 +13698,7 @@
 								"Objects": [
 									{
 										"name": "MakeTable",
-										"Notes": "The table function can be used to make a table value.\n\nThe first argument must be an array of names that will be used as the table column names.\n\nThe remaining parameters must all be arrays having the same number of rows.\n\nTheir columns will be used to make the columns of the new table value.\n\nIf the number of names in the first argument is not the same as the total number of columns in the rest of the arguments, the lessor is used and any extras ignored.\n",
+										"Notes": "The table function can be used to make a table value.\n\nThe first argument must be an array of names that will be used as the table column names.\n\nThe remaining parameters must all be arrays having the same number of rows.\n\nTheir columns will be used to make the columns of the new table value.\n\nIf the number of names in the first argument is not the same as the total number of columns in the rest of the arguments, the lessor is used and any extras ignored.",
 										"DiagramX": 30,
 										"DiagramY": 25,
 										"HideInfo": "y",
@@ -13744,7 +13746,7 @@
 									},
 									{
 										"name": "AddTables",
-										"Notes": "The two tables are added together.  They must have the same number of rows and columns and the columns must conform in type and unit type.\n\nNote that the first and last columns are strings and are just taken from the first argument, without modification.\n",
+										"Notes": "The two tables are added together.  They must have the same number of rows and columns and the columns must conform in type and unit type.\n\nNote that the first and last columns are strings and are just taken from the first argument, without modification.",
 										"DiagramX": 205,
 										"DiagramY": 85,
 										"HideInfo": "y",
@@ -14304,6 +14306,126 @@
 								"Formula": {
 									"Formula": "{numeric hours}"
 								}
+							},
+							{
+								"name": "TableArithmetic",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": -50,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "TableArithmetic",
+										"Notes": "The basic arithmetic operators can be used with tables, with the proviso that the units must conform.  Thus if you are adding or subtracting a scalar, then all the columns must have the same unit type as the scalar.\n\nNote that the first and third columns are strings and are just copied without change.",
+										"DiagramX": 0,
+										"DiagramY": -145,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "2 * MakeTable / 3"
+										}
+									},
+									{
+										"name": "AddTables",
+										"Notes": "The two tables are added together.  They must have the same number of rows and columns and the columns must conform in type and unit type.\n\nNote that the first and last columns are strings and are just taken from the first argument, without modification.",
+										"DiagramX": 160,
+										"DiagramY": -145,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "Table1 + Table2"
+										}
+									},
+									{
+										"name": "Table1",
+										"Notes": "The table function is used to make a table with two numeric columns with different unit types, as well as two string columns.",
+										"DiagramX": 75,
+										"DiagramY": -145,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table\n\t{cc \"Row\",\"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"Row\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 1\"m\",\n\t100:105 * 1\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t\t100:105 * 1\"kg\",\n\t\t\t\t\"lb\"\n\t\t\t}\n}"
+										}
+									},
+									{
+										"name": "Table2",
+										"Notes": "Another table, conformable to MakeTable2",
+										"DiagramX": 75,
+										"DiagramY": -90,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table {cc\n\t\t\"Row\", \"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"No\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t100:104 * 1\"kg\", \"lb\"\n\t}\n}"
+										}
+									}
+								]
+							},
+							{
+								"name": "Combining",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": -25,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "Concatenate",
+										"Notes": "Conformable tables can be concatenated using the cc function. The resulting table value has all of the rows of the concatenated tables.",
+										"DiagramX": 90,
+										"DiagramY": -145,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cc table1, table2}"
+										}
+									},
+									{
+										"name": "Table1",
+										"Notes": "The table function is used to make a table with two numeric columns with different unit types, as well as two string columns.",
+										"DiagramX": 0,
+										"DiagramY": -145,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table\n\t{cc \"Row\",\"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"Row\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 1\"m\",\n\t100:105 * 1\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t\t100:105 * 1\"kg\",\n\t\t\t\t\"lb\"\n\t\t\t}\n}"
+										}
+									},
+									{
+										"name": "Table2",
+										"Notes": "Another table, conformable to MakeTable2",
+										"DiagramX": 0,
+										"DiagramY": -85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table {cc\n\t\t\"Row\", \"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"No\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t100:104 * 1\"kg\", \"lb\"\n\t}\n}"
+										}
+									},
+									{
+										"name": "Append",
+										"Notes": "The append command will produce a table with all the columns of the arguments.  The arguments must all have the same number of rows.\n\nYou can also append column arrays to tables and they will be given a column name equivalent to their column number.",
+										"DiagramX": 85,
+										"DiagramY": -85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{append table1, table2, 1:5 * 10 kg}"
+										}
+									}
+								]
 							}
 						]
 					},
@@ -15052,7 +15174,7 @@
 				"DiagramNotes": "y",
 				"Type": "HTML Form",
 				"Formula": {
-					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.disclaimer {\n\t\t\t\tcolor: #004400;\n\t\t\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\t\t\tfont-size: 0.7em;\n\t\t\t\tfont-style: italic;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p class=\"disclaimer\">\n\t\t\tMath Minion is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the <a href=\"../LICENSE.txt\" target=\"_blank\">GNU General Public License</a> for more details.\n\t\t</p>\n\t\t<p>\n\t\t\tThis session contains numerous explanations and small illustrations of how Math Minion works. However before diving in, I fear you really should, <b>gasp</b>, read a bit of the help.\n\t\t</p>\n\t\t<p>\n\t\t\tPlease put your natural horror aside and <b><a href=\"./help/getstarted.html\" target=\"_blank\">click here</a></b> to open the help in another browser window or tab.\n\t\t</p>\n\t\t<p>\n\t\t\tIf nothing else following the links for the <b><a href=\"./help/diagram.html\" target=\"_blank\">diagram</a></b> and <b><a href=\"./help/infoview.html\" target=\"_blank\">information view</a></b> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the diagram and the examples you can import from the <b>Examples</b> HtmlPage.\n\t\t</p>\n\t\t<p>\n\t\t\tIf you have any questions, you can always use the <b><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Contact Me</a></b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>Craig</p>\n\t\t</div>\n\t</body>\n</html>"
+					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.disclaimer {\n\t\t\t\tcolor: #004400;\n\t\t\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\t\t\tfont-size: 0.7em;\n\t\t\t\tfont-style: italic;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p class=\"disclaimer\">\n\t\t\tMath Minion is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the <a href=\"../LICENSE.txt\" target=\"_blank\">GNU General Public License</a> for more details.\n\t\t</p>\n\t\t<p>\n\t\t\tThis session contains numerous explanations and small illustrations of how Math Minion works. However before diving in, I fear you really should, <b>gasp</b>, read a bit of the help.\n\t\t</p>\n\t\t<p>\n\t\t\tPlease put your natural horror aside and <b><a href=\"./help/getstarted.html\" target=\"_blank\">click here</a></b> to open the help in another browser window or tab.\n\t\t</p>\n\t\t<p>\n\t\t\tIf nothing else following the links for the <b><a href=\"./help/diagram.html\" target=\"_blank\">diagram</a></b> and <b><a href=\"./help/infoview.html\" target=\"_blank\">information view</a></b> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the diagram and the examples you can import from the <b>Examples</b> HtmlPage.\n\t\t</p>\n\t\t<p>\n\t\t\tIf you wish to reload the latest Getting Started session from the server, click the button below.\n\t\t</p>\n\t\t<div class=\"link\">\n\t\t\t<button onClick=\"mmpost({}, {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\">Refresh Getting Started</button>\n\t\t</div> \n\t\t<p>\n\t\t\tIf you have any questions, you can always use the <b><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Contact Me</a></b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>Craig</p>\n\t\t</div>\n\t</body>\n</html>"
 				}
 			},
 			{
