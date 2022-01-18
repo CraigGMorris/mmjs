@@ -1046,6 +1046,21 @@ class MMDataTable extends MMTool {
 	}
 
 	/**
+	 * @method inputSources
+	 * @override
+	 * @returns {Set} contains tools referenced by this tool
+	 */
+	inputSources() {
+		let sources = super.inputSources();		
+		for (let column of this.columnArray) {
+			if (column.isCalculated) {
+				column.insertFormula.addInputSourcesToSet(sources);
+			}
+		}			
+		return sources;
+	}
+	
+	/**
 	 * @override forgetCalculated
 	 */
 	forgetCalculated() {
