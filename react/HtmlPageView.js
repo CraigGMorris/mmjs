@@ -72,12 +72,12 @@ export function HtmlPageView(props) {
 							source.postMessage(received, '*');
 						}
 						if (received.view) {
-							console.log(`view ${received.view.name} ${received.view.type}`);
+							// console.log(`view ${received.view.name} ${received.view.type}`);
 							props.actions.viewTool(received.view.name, received.view.type);
 							props.actions.updateDiagram();
 						}
 						else if (received.push) {
-							console.log(`push ${received.push.name} ${received.push.type}`);
+							// console.log(`push ${received.push.name} ${received.push.type}`);
 							props.actions.pushTool(received.push.name, received.push.path, received.push.type);
 							props.actions.updateDiagram();
 						}
@@ -88,7 +88,7 @@ export function HtmlPageView(props) {
 							}
 						}
 						else if (received.update) {
-							console.log('updating');
+							// console.log('updating');
 							props.actions.updateView(props.viewInfo.stackIndex);
 						}
 						else {
