@@ -574,11 +574,12 @@ class MMDataTable extends MMTool {
 	 */
 	restoreColumn(columnNumber, saved) {
 		let displayUnit = saved.sValues ? 'string' : saved.displayUnit;
-		if (!displayUnit && saved.unitDimensions) {
+		if ((!displayUnit || !theMMSession.unitSystem.unitNamed(displayUnit)) && saved.unitDimensions) {
 			const dimensions = MMUnit.dimensionsFromString(saved.unitDimensions);
 			displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(dimensions);
 			if (displayUnit) {
 				displayUnit = displayUnit.name;
+				saved.displayUnit = displayUnit;
 			}
 		}
 		const column = new MMDataTableColumn(this, {

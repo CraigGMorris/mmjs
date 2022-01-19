@@ -183,6 +183,7 @@
 	"tableUpdateNoName": "Could not find a column named '{{name}}' in {{path}}",
 	"tableValueIndexError": "Illegal index in table value",
 	"toolBadName": "Illegal name {{name}}",
+	"unitIgnoreUserUnit": "Ignoring user unit {{unit}}\nIs already a master unit",
 	"unitTypeMismatch": "Unit types don't match",
 	"valueMatrixBoundsError": "Index [{{row}},{{column}}] out of bounds [{{rowCount}},{{columnCount}}]",
 	"valuePowerHasUnits": "Exponent cannot have units",

@@ -83,15 +83,15 @@ class MMTableValueColumn {
 				}
 				else {
 					this._displayUnit = theMMSession.unitSystem.unitNamed(unitName);
-					if (this._displayUnit) {
-						this._value = new MMNumberValue(0, 0, this._displayUnit.dimensions);
-					}
-					else {
-						this.exceptionWith('mmcmd:tableBadUnit', {
+					if (!this._displayUnit) {
+						// don't want to fail as it could make session unreadable
+						theMMSession.setWarning('mmcmd:tableBadUnit', {
 							unit: unitName,
 							name: this.name,
 						});
+						this._displayUnit = theMMSession.unitSystem.unitNamed('Fraction');
 					}
+					this._value = new MMNumberValue(0, 0, this._displayUnit.dimensions);
 				}
 			}
 		}
