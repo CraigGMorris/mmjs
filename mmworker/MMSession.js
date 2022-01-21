@@ -710,7 +710,12 @@ class MMSession extends MMCommandParent {
 		}
 		else {
 			try {
-				await this.storage.copy(oldPath, newPath);
+				const sessionJson = await this.storage.load(oldPath);
+				if (sessionJson) {
+					const session = JSON.parse(sessionJson);
+					session.CaseName = newPath.split('/').pop();
+					await this.storage.save(newPath, JSON.stringify(session, null, '\t'));
+				}		
 				return newPath;
 			}
 			catch(e) {
@@ -762,7 +767,16 @@ class MMSession extends MMCommandParent {
 		}
 		else {
 			try {
-				await this.storage.copy(oldPath, newPath);
+				const sessionJson = await this.storage.load(oldPath);
+				if (sessionJson) {
+					const session = JSON.parse(sessionJson);
+					session.CaseName = newPath.split('/').pop();
+					await this.storage.save(newPath, JSON.stringify(session, null, '\t'));
+				}		
+				else {
+					throw('Load failed');
+				}			
+				// await this.storage.copy(oldPath, newPath);
 				await this.storage.delete(oldPath);
 				if (this.storePath === oldPath) {
 					this.storePath = newPath;
