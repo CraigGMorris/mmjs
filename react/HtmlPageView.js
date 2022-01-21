@@ -71,7 +71,13 @@ export function HtmlPageView(props) {
 						if (received.results) {
 							source.postMessage(received, '*');
 						}
-						if (received.view) {
+						if (received.didLoad) {
+							if (received.resetInfo) {
+								props.actions.resetInfoStack('root', received.resetInfo);
+								props.actions.updateDiagram(true);
+							}
+						}
+						else if (received.view) {
 							// console.log(`view ${received.view.name} ${received.view.type}`);
 							props.actions.viewTool(received.view.name, received.view.type);
 							props.actions.updateDiagram();
@@ -80,12 +86,6 @@ export function HtmlPageView(props) {
 							// console.log(`push ${received.push.name} ${received.push.type}`);
 							props.actions.pushTool(received.push.name, received.push.path, received.push.type);
 							props.actions.updateDiagram();
-						}
-						else if (received.didLoad) {
-							if (received.resetInfo) {
-								props.actions.resetInfoStack('root', received.resetInfo);
-								props.actions.updateDiagram(true);
-							}
 						}
 						else if (received.update) {
 							// console.log('updating');
