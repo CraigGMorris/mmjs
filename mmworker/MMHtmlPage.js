@@ -553,6 +553,7 @@ const mminputs = (idNames) => {
 		if (!this.processedHtml) {
 			if (!this.rawHtml) {
 				const htmlValue = this.formula.value();
+				this.tagFormulas = [];
 				if (htmlValue) {
 					this.rawHtml = htmlValue.values[0];
 				}
