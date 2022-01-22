@@ -22,16 +22,21 @@ const useState = React.useState;
 const useEffect = React.useEffect;
 
 var clipboardText = '';
+var importedFileText = '';
 var useNavigator = (navigator.vendor.startsWith('Google') && navigator.clipboard);
 
 export function hasSystemClipboard() { return useNavigator; } 
 
 export async function readClipboard() {
 	if (useNavigator) {
-		return navigator.clipboard.readText();
+		let result = await navigator.clipboard.readText();
+		return result;
 	}
 	else {
 		return new Promise((resolve) => {
+			if (importedFileText) {
+				resolve(importedFileText);
+			}
 			resolve(clipboardText);
 		});
 	}
@@ -39,7 +44,8 @@ export async function readClipboard() {
 
 export async function writeClipboard(text) {
 	if (useNavigator) {
-			return navigator.clipboard.writeText(text);
+			const result = await navigator.clipboard.writeText(text);
+			return result;
 		}
 		else {
 			return new Promise((resolve) => {
@@ -49,16 +55,55 @@ export async function writeClipboard(text) {
 		}
 }
 
-export function ClipboardView() {
+export function ClipboardView(props) {
 	const [displayedText, setDisplayedText] = useState(clipboardText);
 	useEffect(() => {
 		clipboardText = displayedText;
 	})
 
+	importedFileText = '';
 	return e(
 		'div', {
 			id: 'clipboard',
 		},
+		e(
+			'div', {
+				id: 'clipboard__header'
+			},
+			e(
+				'div', {
+					id: 'clipboard__header-title'
+				},
+				props.t('react:clipboardTitle')
+			),
+			e(
+				'label', {
+					id: 'clipboard__import-button',
+					className: 'input-file-button',
+				},
+				props.t('react:clipboardImportButton'),
+				e(
+					'input', {
+						id: 'clipboard__import-input',
+						type: 'file',
+						onChange: event => {
+							var f = event.target.files[0];		
+							if (f) {
+								let r = new FileReader();
+								r.onload = (e) => { 
+									let contents = e.target.result;
+									importedFileText = contents;
+									props.close();
+								};
+								r.readAsText(f);
+							} else { 
+								alert("Failed to load file");
+							}
+						},
+					}
+				),
+			)	
+		),
 		e(
 			'textarea',{
 				id: 'clipboard__display',

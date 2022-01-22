@@ -43,6 +43,7 @@ export function ToolView(props) {
 	const notes = updateResults.length ? updateResults[0].results.notes : '';	
 	const [notesText, setNotesText] = useState(notes);
 	const diagramNotes = updateResults.length ? updateResults[0].results.diagramNotes : false;
+
 	const doRename = () => {
 		const path = props.viewInfo.path;
 		if (path.split('.').pop() != toolName) {
@@ -139,7 +140,14 @@ export function ToolView(props) {
 					onChange: (event) => {
 						// keeps input field in sync
 						const value = event.target.value;
-						setNotesText(value);	
+						setNotesText(value);
+					},
+					onKeyDown: (e) => {
+						if (e.key === 'Enter' && e.shiftKey) {
+							e.preventDefault();
+							e.stopPropagation();
+							doSetNotes(notesText);
+						}
 					},
 					onBlur: () => {
 						// watch for loss of focus

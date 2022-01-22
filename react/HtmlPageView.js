@@ -48,7 +48,7 @@ const HtmlPageDisplay = Object.freeze({
  */
 export function HtmlPageView(props) {
 	const [display, setDisplay] = useState(HtmlPageDisplay.input);
-	const [formulaOffset, setFormulaOffset] = useState(0);
+	const [editOptions, setEditOptions] = useState({});
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -71,24 +71,24 @@ export function HtmlPageView(props) {
 						if (received.results) {
 							source.postMessage(received, '*');
 						}
-						if (received.view) {
-							console.log(`view ${received.view.name} ${received.view.type}`);
-							props.actions.viewTool(received.view.name, received.view.type);
-							props.actions.updateDiagram();
-						}
-						else if (received.push) {
-							console.log(`push ${received.push.name} ${received.push.type}`);
-							props.actions.pushTool(received.push.name, received.push.path, received.push.type);
-							props.actions.updateDiagram();
-						}
-						else if (received.didLoad) {
+						if (received.didLoad) {
 							if (received.resetInfo) {
 								props.actions.resetInfoStack('root', received.resetInfo);
 								props.actions.updateDiagram(true);
 							}
 						}
+						else if (received.view) {
+							// console.log(`view ${received.view.name} ${received.view.type}`);
+							props.actions.viewTool(received.view.name, received.view.type);
+							props.actions.updateDiagram();
+						}
+						else if (received.push) {
+							// console.log(`push ${received.push.name} ${received.push.type}`);
+							props.actions.pushTool(received.push.name, received.push.path, received.push.type);
+							props.actions.updateDiagram();
+						}
 						else if (received.update) {
-							console.log('updating');
+							// console.log('updating');
 							props.actions.updateView(props.viewInfo.stackIndex);
 						}
 						else {
@@ -140,9 +140,9 @@ export function HtmlPageView(props) {
 				key: 'editor',
 				t: t,
 				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
 				actions: props.actions,
-				formula: results.formula,
-				formulaOffset: formulaOffset,
+				editOptions: editOptions,
 				cancelAction: () => {
 					setDisplay(HtmlPageDisplay.main);
 				},
@@ -169,10 +169,11 @@ export function HtmlPageView(props) {
 						formula: results.formula || '',
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						clickAction: (offset) => {
-							setFormulaOffset(offset);
+						editAction: (editOptions) => {
+							setEditOptions(editOptions);
 							setDisplay(HtmlPageDisplay.formulaEditor);
-						}
+						},
+						applyChanges: applyChanges(),
 					}
 				),
 			),

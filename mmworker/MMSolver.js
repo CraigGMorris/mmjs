@@ -609,7 +609,7 @@ class MMSolver extends MMTool {
 		else {
 			const n = parseInt(lcDescription);
 			if (isNaN(n) || n < 1 || n > this.functions.length) {
-				return null;
+				return super.valueDescribedBy(description, requestor);
 			}
 			const func = this.functions[n-1];
 			const countValue = func.countFormula.value();

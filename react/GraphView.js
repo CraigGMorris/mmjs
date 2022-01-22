@@ -60,9 +60,8 @@ const MMGraphLineType = Object.freeze({
 export function GraphView(props) {
 
 	const [display, setDisplay] = useState(DisplayType.none);
-	const [editFormula, setEditFormula] = useState('');
 	const [formulaName, setFormulaName] = useState('');
-	const [formulaOffset, setFormulaOffset] = useState(0);
+	const [editOptions, setEditOptions] = useState({});
 	const [unitLineName, setUnitLineName] = useState('x1');
 	const [unitType, setUnitType] = useState('');
 	const [plotInfo, setPlotInfo] = useState('');
@@ -124,9 +123,9 @@ export function GraphView(props) {
 				key: 'editor',
 				t: t,
 				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
 				actions: props.actions,
-				formula: editFormula,
-				formulaOffset: formulaOffset,
+				editOptions: editOptions,
 				cancelAction: () => {
 					setDisplay(DisplayType.input);
 				},
@@ -251,12 +250,12 @@ export function GraphView(props) {
 							formula: value.v,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							clickAction: (offset) => {
-								setEditFormula(value.v);
-								setFormulaOffset(offset);
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
 								setFormulaName(name);
 								setDisplay(DisplayType.formulaEditor);
-							}
+							},
+							applyChanges: applyChanges(name),
 						},
 					),
 					e(
@@ -286,12 +285,12 @@ export function GraphView(props) {
 							formula: value.vmin,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							clickAction: (offset) => {
-								setEditFormula(value.vmin);
-								setFormulaOffset(offset);
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
 								setFormulaName(`min${name}`);
 								setDisplay(DisplayType.formulaEditor);
-							}
+							},
+							applyChanges: applyChanges(`min${name}`),
 						}
 					),
 					e(
@@ -316,12 +315,12 @@ export function GraphView(props) {
 							formula: value.vmax,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							clickAction: (offset) => {
-								setEditFormula(value.vmax);
-								setFormulaOffset(offset);
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
 								setFormulaName(`max${name}`);
 								setDisplay(DisplayType.formulaEditor);
-							}
+							},
+							applyChanges: applyChanges(`max${name}`),
 						}
 					),
 					e(

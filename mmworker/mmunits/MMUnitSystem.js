@@ -18,6 +18,7 @@
 'use strict';
 
 /* globals
+	theMMSession:readonly
 	MMCommandParent:readonly
 	MMCommandObject:readonly
 	MMPropertyType:readonly
@@ -475,16 +476,16 @@ class MMUnit extends MMCommandObject {
 		}
 		switch (typeFlag) {
 			case MMUnitDateType.YYYYMMDD:
-				result = year * 10000. + month * 100.0 + day;
+				result = year * 10000.0 + month * 100.0 + day;
 				break;
 			case MMUnitDateType.DDMMYYYY:
-				result = day * 1000000. + month * 10000.0 + year;
+				result = day * 1000000.0 + month * 10000.0 + year;
 				break;
 			case MMUnitDateType.MMDDYYYY:
-				result = month * 1000000. + day * 10000.0 + year;
+				result = month * 1000000.0 + day * 10000.0 + year;
 				break;
 		}
-		result += date.getUTCHours() / 100.0 + date.getUTCMinutes() / 10000. + date.getUTCSeconds() / 1000000.0;
+		result += date.getUTCHours() / 100.0 + date.getUTCMinutes() / 10000.0 + date.getUTCSeconds() / 1000000.0;
 		if (isBC) {
 			result = -result;
 		}
@@ -1170,9 +1171,10 @@ class MMUnitsContainer extends MMCommandParent {
 	 * @param {string} definition - should be name = scale * existingUnit
 	 * example - workday = 8 h
 	 * existingUnit can be a previously undefined compound unit
+	 * @param {Boolean} loadingUser - true if loading session user units
 	 * @returns {MMUnit} the new unit
 	*/
-	addUserDefinition(definition) {
+	addUserDefinition(definition, loadingUser = false) {
 		let parts = definition.split(/\s*=\s*|\s+/);
 		if (parts.length != 3) {
 			throw(this.t('mmunit:definitionError', {definition: definition}));
@@ -1186,6 +1188,12 @@ class MMUnitsContainer extends MMCommandParent {
 		let newUnit = this.children[lowerName];
 		if (newUnit) {
 			if (newUnit.isMaster) {
+				if (loadingUser) {
+					// loading a user unit that conflicts with a master unit (probably new)
+					// set warning and ignore user unit
+					theMMSession.setWarning('mmcmd:unitIgnoreUserUnit', { unit: unitName });
+					return newUnit;
+				}
 				throw(this.t('mmunit:nameInUse', {name: unitName}));
 			}
 			newUnit.parseDefinition(parts[2]);
@@ -1277,7 +1285,7 @@ class MMUnitsContainer extends MMCommandParent {
 	loadFromJsonObject(object) {
 		for (let definition of object) {
 			if (definition) {
-				this.addUserDefinition(definition);
+				this.addUserDefinition(definition, true);
 			}
 		}
 	}
@@ -1293,6 +1301,7 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addUnit("degree","1 0 0 0 0 0 0 0 0.017453292519943295",true);
 		this.addUnit("arcmin","1 0 0 0 0 0 0 0 0.00029088820866572158",true);
 		this.addUnit("arcsec","1 0 0 0 0 0 0 0 4.8481368110953598e-06",true);
+		this.addUnit("dollar","1 0 0 0 0 0 0 0 1.000000e+00",true)
 	
 		this.addUnit("m","1 1 0 0 0 0 0 0 1.000000e+00",true);
 		this.addUnit("angstrom","1 1 0 0 0 0 0 0 1.000000e-10",true);

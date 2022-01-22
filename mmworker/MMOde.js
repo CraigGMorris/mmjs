@@ -785,6 +785,7 @@ class MMOde extends MMTool {
 							return returnValue(this.valueForRecorded(rNumber));
 						}
 					}
+					return super.valueDescribedBy(description, requestor);
 				}
 		}
 	}

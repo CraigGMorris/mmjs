@@ -1838,6 +1838,17 @@ class MMGraph extends MMTool {
 	}
 
 	/**
+	 * @method htmlValue
+	 * @returns {String}
+	 */
+	htmlValue() {
+		const s = this.svgForDescription('svg');
+		if (s) {
+			return s.values[0];
+		}
+	}
+	
+	/**
 	 * @method toolViewInfo
 	 * @override
 	 * @param {MMCommand} command

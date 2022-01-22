@@ -1190,7 +1190,7 @@ class MMSingleValueFunction extends MMFunctionOperator {
 				}				
 			}
 			else if (value instanceof MMStringValue) {
-				if (!this.needsNumericArgument) {
+				if (!this.needsNumericArgument || this.noStringColumns) {
 					const calcValue = this.operationOnString(value);
 					const calcColumn = new MMTableValueColumn({
 						name: column.name,
@@ -1199,10 +1199,10 @@ class MMSingleValueFunction extends MMFunctionOperator {
 					})
 					calcColumns.push(calcColumn);
 				}
-				else if (!this.noStringColumns) {
+				else {
 					// just include original column if operation does not apply to it
 					calcColumns.push(column);
-				}				
+				}
 			}
 			else {
 				return null;
@@ -1714,6 +1714,12 @@ class MMColumnMinimumsFunction extends MMSingleValueFunction {
 			return v.minColumns();
 		}
 	}
+
+	operationOnString(v) {
+		if (v) {
+			return v.minColumns();
+		}
+	}
 }
 
 class MMMaximumFunction extends MMMultipleArgumentFunction {
@@ -1774,6 +1780,12 @@ class MMColumnMaximumsFunction extends MMSingleValueFunction {
 	}
 
 	operationOn(v) {
+		if (v) {
+			return v.maxColumns();
+		}
+	}
+
+	operationOnString(v) {
 		if (v) {
 			return v.maxColumns();
 		}
@@ -1860,6 +1872,12 @@ class MMSumColumnsFunction extends MMSingleValueFunction {
 	}
 
 	operationOn(v) {
+		if (v) {
+			return v.sumColumns();
+		}
+	}
+
+	operationOnString(v) {
 		if (v) {
 			return v.sumColumns();
 		}
@@ -2200,23 +2218,38 @@ class MMAppendFunction extends MMMultipleArgumentFunction {
 		let columnCount = 0;
 		let first;
 		let argCount = this.arguments.length;
+		let isTableResult = false;
 		while (argCount-- > 0) {
 			const obj = this.arguments[argCount].value();
 			if (!obj) {
 				return null;
 			}
-		
 			if (!first) {
 				first = obj;
 			}
+			if (first instanceof MMTableValue ||
+				obj instanceof MMTableValue ||
+				Object.getPrototypeOf(obj).constructor !== Object.getPrototypeOf(first).constructor
+				) {
+				isTableResult = true;
+				break;
+			}
+		}
+
+		argCount = this.arguments.length - 1;
+		while (argCount-- > 0) {
+			const obj = this.arguments[argCount].value();
+		
+			if (isTableResult) {
+				if (first.rowCount !== obj.rowCount) {
+					this.formula.functionError('append','mmcmd:appendTableRowMismatch');
+					return null;
+				}
+			}
 			else if (Object.getPrototypeOf(obj).constructor == Object.getPrototypeOf(first).constructor) {
 				if (first instanceof MMNumberValue) {
-					first.checkUnitDimensionsAreEqualTo(obj.unitDimensions);
-				}
-				else if (first instanceof MMTableValue) {
-					if (first.rowCount !== obj.rowCount) {
-						this.formula.functionError('append','mmcmd:appendTableRowMismatch');
-						return null;
+					if (!MMUnitSystem.areDimensionsEqual(first.unitDimensions, obj.unitDimensions)) {
+						isTableResult = true;
 					}
 				}
 			}
@@ -2227,15 +2260,25 @@ class MMAppendFunction extends MMMultipleArgumentFunction {
 		}
 
 		if (columnCount) {
-			if (first instanceof MMTableValue) {
+			if (isTableResult) {
 				argCount = this.arguments.length;
 				let columns = [];
 				while (argCount-- > 0) {
-					const table = this.arguments[argCount].value();
-					if (!(table instanceof MMTableValue)) {
-						return null;
+					let table = this.arguments[argCount].value();
+					if (table instanceof MMTableValue) {
+						columns = columns.concat(table.columns);
 					}
-					columns = columns.concat(table.columns);
+					else if (table instanceof MMNumberValue || table instanceof MMStringValue) {
+						const nColumns = table.columnCount;
+						for (let n = 1; n <= nColumns; n++) {
+							const column = new MMTableValueColumn({
+								name: `${columns.length + 1}`,
+								displayUnit: table instanceof MMStringValue ? 'string' : null,
+								value: table.valueForColumnNumber(n)
+							});
+							columns.push(column);
+						}
+					}
 				}
 				return new MMTableValue({columns: columns});
 			}
@@ -2364,6 +2407,7 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 				}
 			}
 			else {
+				this.formula.functionError('concat','mmcmd:concatTypeMismatch');
 				return null;
 			}
 			valueCount += obj.valueCount;
@@ -2397,6 +2441,7 @@ class MMConcatFunction extends MMMultipleArgumentFunction {
 							}
 						}
 						else  {
+							this.formula.functionError('concat','mmcmd:concatColumnTypeMismatch');
 							return null;
 						}
 					}
@@ -4367,7 +4412,7 @@ class MMFormula extends MMCommandObject {
 						// let f = MMFunctionDictionary[token];
 						// if (f) {
 						// 	let op = f(this);
-						let op = MMFormulaFactory(token, this);
+						let op = MMFormulaFactory(token.toLowerCase(), this);
 						if (op) {
 							operatorStack.push(op);
 							treatMinusAsUnary = true;
@@ -4404,10 +4449,7 @@ class MMFormula extends MMCommandObject {
 						op = new MMUnaryMinusOperator();
 					}
 					else {
-						op = MMFormulaFactory(token, this);
-						// let opFactory = MMFormulaOpDictionary[token];
-						// if (opFactory) {
-							// op = opFactory(this);
+						op = MMFormulaFactory(token.toLowerCase(), this);
 						if (op) {
 							let prevOp = operatorStack[operatorStack.length - 1];
 							while (!(prevOp instanceof MMParenthesisOperator) &&

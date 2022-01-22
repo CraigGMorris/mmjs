@@ -168,7 +168,7 @@ class MMStringValue extends MMValue {
 		}
 	}
 
-		/**
+	/**
 	 * @method stringForRowColumnUnit
 	 * @override
 	 * @param {Number} row
@@ -260,6 +260,27 @@ class MMStringValue extends MMValue {
 			rv._values = Array.from(this._values);
 		}
 		return rv;
+	}
+
+	/** @method sumColumns
+	 * for string just return blank
+	 */
+	sumColumns() {
+		return MMStringValue.scalarValue('');
+	}
+
+	/** @method maxColumns
+	 * for string just return blank
+	 */
+	maxColumns() {
+		return MMStringValue.scalarValue('');
+	}
+
+	/** @method minColumns
+	 * for string just return blank
+	 */
+	minColumns() {
+		return MMStringValue.scalarValue('');
 	}
 
 	/** @method transpose

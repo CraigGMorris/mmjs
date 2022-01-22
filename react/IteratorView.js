@@ -41,7 +41,7 @@ const DisplayType = Object.freeze({
 export function IteratorView(props) {
 	const [display, setDisplay] = useState(DisplayType.input);
 	const [formulaIndex, setFormulaIndex] = useState('')
-	const [formulaOffset, setFormulaOffset] = useState(0);
+	const [editOptions, setEditOptions] = useState('');
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -81,9 +81,9 @@ export function IteratorView(props) {
 				key: 'editor',
 				t: t,
 				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
 				actions: props.actions,
-				formula: formulas[formulaIndex][1],
-				formulaOffset: formulaOffset,
+				editOptions: editOptions,
 				cancelAction: () => {
 					setDisplay(DisplayType.input);
 				},
@@ -147,11 +147,12 @@ export function IteratorView(props) {
 						formula: formula,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						clickAction: (offset) => {
-							setFormulaOffset(offset);
+						editAction: (editOptions) => {
+							setEditOptions(editOptions);
 							setFormulaIndex(i);
 							setDisplay(DisplayType.formulaEditor);
-						}
+						},
+						applyChanges: applyChanges(name),
 					}
 				),
 				e(
@@ -207,9 +208,8 @@ export function IteratorView(props) {
 						id: 'iter__addrecord-button',
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addrecorded`, () => {
-								setFormulaOffset(0);
 								setFormulaIndex(formulaCount);
-								setDisplay(DisplayType.formulaEditor);	
+								// setDisplay(DisplayType.formulaEditor);	
 								props.actions.updateView(props.viewInfo.stackIndex);
 							})
 						}

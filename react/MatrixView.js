@@ -58,7 +58,7 @@ export function MatrixView(props) {
 	const [display, setDisplay] = useState(MatrixDisplay.table);
 	const originInput = cellInputs[currentCell.join('_')];
 	const [editFormula, setEditFormula] = useState(originInput ? originInput.input : '')
-	const [formulaOffset, setFormulaOffset] = useState(editFormula.length);
+	const [editOptions, setEditOptions] = useState({})
 	const [applyType, setApplyType] = useState('cell');
 
 	useEffect(() => {
@@ -169,9 +169,9 @@ export function MatrixView(props) {
 					key: 'editor',
 					t: t,
 					viewInfo: props.viewInfo,
+					infoWidth: props.infoWidth,
 					actions: props.actions,
-					formula: editFormula,
-					formulaOffset: formulaOffset,
+					editOptions: editOptions,
 					cancelAction: () => {
 						setDisplay(MatrixDisplay.table);
 					},
@@ -189,8 +189,6 @@ export function MatrixView(props) {
 				const formula = cellInput ? cellInput.input : '';
 				setEditFormula(formula);
 				setApplyType('cell');
-				setFormulaOffset(formula.length);
-				setDisplay(MatrixDisplay.formulaEditor);
 			}
 
 			displayComponent = e(
@@ -218,13 +216,13 @@ export function MatrixView(props) {
 							formula: rowCountFormula || '',
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							clickAction: (offset) => {
-								setFormulaOffset(offset);
-								setEditFormula(rowCountFormula || '');
+							editAction: (editOptins) => {
+								setEditOptions(editOptions);
 								setApplyType('rows');
 								setDisplay(MatrixDisplay.formulaEditor);
-							}
-						}
+							},
+							applyChanges: applyChanges('rows'),
+						},
 					),
 					e(
 						'span', {
@@ -241,12 +239,12 @@ export function MatrixView(props) {
 							formula: columnCountFormula || '',
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							clickAction: (offset) => {
-								setFormulaOffset(offset);
-								setEditFormula(columnCountFormula || '');
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
 								setApplyType('columns');
 								setDisplay(MatrixDisplay.formulaEditor);
-							}
+							},
+							applyChanges: applyChanges('columns'),
 						}
 					)
 				),
@@ -283,14 +281,12 @@ export function MatrixView(props) {
 							formula: editFormula,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							clickAction: (offset) => {
-								setFormulaOffset(offset);
-								const cellInput = cellInputs[`${currentCell.join('_')}`];
-								const formula = cellInput ? cellInput.input : '';
-								setEditFormula(formula);
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
 								setApplyType('cell');
 								setDisplay(MatrixDisplay.formulaEditor);
-							}
+							},
+							applyChanges: applyChanges('cell'),
 						}
 
 					)

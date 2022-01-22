@@ -219,7 +219,40 @@ a:hover {
 	top: 20px;
 	height: 80%;
 	width: 45%;
+	background-color: var(--body--bgcolor);
 }
+
+#clipboard__header {
+	display: grid;
+	grid-template-columns: 1fr 3fr;
+	grid-template-areas: "title import";
+	grid-column-gap: 10px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 10px;
+}
+
+#clipboard__header-title {
+	grid-area: title;
+	align-self: center;
+	font-size: 18pt;
+}
+
+#clipboard__import-button {
+	grid-area: import;
+	border: solid 1px;
+	width: auto;
+	justify-self: left;
+	border-color: var(--link--color);
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+#clipboard__import-button:hover {
+	color: var(--link--color-hover);
+	border-color: var(--link--color-hover);
+}
+
 
 #clipboard__display {
 	width: 100%;
@@ -277,6 +310,42 @@ a:hover {
 	margin-top: 20px;
 }
 
+#datatable__row-view {
+	display: grid;
+	grid-template-rows: var(--input--height) var(--input--height) 1fr;
+	grid-template-areas: "number"
+		"buttons"
+		"fields";
+	grid-gap: 5px;
+	margin-top: 5px;
+}
+
+#datatable__edit-row-number {
+	grid-area: number;
+	display: grid;
+	grid-template-columns: 1fr 30px 30px 30px 30px;
+	grid-gap: 5px;
+}
+
+#datatable__edit-row-fields {
+	overflow: auto;
+	grid-area: fields;
+	height: calc(var(--info-height) - 120px);
+	display: grid;
+	grid-gap: 5px;
+}
+
+#datatable_edit-row-buttons {
+	grid-area: buttons;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-gap: 10px;
+}
+
+#datatable__edit-row-last,  #datatable__edit-row-first {
+	font-size: 16pt;
+}
+
 #datatable__table {
 	display: grid;
 	grid-area: display-area;
@@ -294,6 +363,22 @@ a:hover {
 
 #datatable__display-buttons button {
 	margin-right: 10px;
+}
+
+#datatable__column-value-header {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: var(--input--height);
+	box-sizing: border-box;
+	grid-gap: 20px;
+}
+
+#datatable__column-iscalculated {
+	color: var(--link--color);
+}
+
+#datatable__column-iscalculated:hover {
+	color: var(--link--color-hover);
 }
 
 .diagram__import-warning {
@@ -442,7 +527,18 @@ a:hover {
 	cursor: pointer;
 }
 
-.formula-field:hover {
+.formula-input-field {
+	display: grid;
+	grid-template-columns: 20px 1fr 20px;
+	grid-template-rows: 1fr;
+	grid-template-areas: "formula-refresh formula-display formula-edit";
+	width: 100%;
+	box-sizing: border-box;
+	color: var(--link--color);
+	cursor: pointer;
+}
+
+.formula-field__text-display:hover, .formula-field__refresh:hover, .formula-field__edit-button:hover {
 	color: var(--link--color-hover);
 }
 
@@ -462,6 +558,12 @@ a:hover {
 	grid-area: formula-refresh;
 }
 
+.formula-field__edit-button {
+	grid-area: formula-edit;
+	justify-self: center;
+	font-size: 16pt;
+}
+
 #formula-editor {
 	height: 100%;
 	padding-top: 2px;
@@ -471,13 +573,26 @@ a:hover {
 #formula-editor__edit {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: var(--input--height) var(--input--height) 1fr;
+	grid-template-rows: var(--input--height) 1fr var(--input--height) 15px 100px;
 	grid-template-areas: "toolbar"
+		"input"
 		"actions"
-		"input";
+		"previewunits"
+		"preview";
 	height: 100%;
 	box-sizing: border-box;
 	grid-gap: 5px;
+}
+
+#formula-editor__preview-unit {
+	grid-area: previewunits;
+	font-size: 15px;
+}
+
+#formula-editor__previewtable {
+	grid-area: preview;
+	height: 100px;
+	box-sizing: border-box;
 }
 
 #formula-editor__toolbar {
@@ -499,18 +614,32 @@ a:hover {
 #formula-editor__actions {
 	display: grid;
 	grid-area: actions;
-	grid-template-columns: 1fr 2fr;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
 	grid-template-rows: 1fr;
-	grid-template-areas: "cancel apply";
-	grid-gap: 10px;
+	grid-template-areas: "cancel preview current apply";
+	grid-gap: 5px;
 }
 
-#formula-editor__cancel {
+#formula-editor__actions button {
+	font-size: 10pt;
+	width: 70px;
+	justify-self: center;
+}
+
+#formula-editor__cancel-button {
 	grid-area: cancel;
 }
 
-#formula-editor__apply {
+#formula-editor__apply-button {
 	grid-area: apply;
+}
+
+#formula-editor__preview-button {
+	grid-area: preview;
+}
+
+#formula-editor__current-button {
+	grid-area: current;
 }
 
 #formula-editor__editor {

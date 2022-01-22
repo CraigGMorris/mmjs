@@ -266,7 +266,7 @@ class MMExpression extends MMTool {
 					else if (value instanceof MMFlashPhaseValue) {
 						value = value.valueDescribedBy(description, requestor);
 					}
-					else {
+					if (!value) {
 						value = super.valueDescribedBy(description, requestor);
 					}
 				}

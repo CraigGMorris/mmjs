@@ -336,7 +336,7 @@ class MMValue {
 				unitName = this.defaultUnit.name;
 			}
 			lines.push('\n<table>');
-			lines.push(`\t<tr>\n\t\t<th class="col0">${unitName}</th>`);
+			lines.push(`\t<tr class="row0">\n\t\t<th class="col0">${unitName}</th>`);
 			for (let column = 1; column <= this.columnCount; column++) {
 				let header = this.columnHeader(column);
 				const unitName = this.columnDisplayUnitName(column);
@@ -347,7 +347,7 @@ class MMValue {
 			}
 			lines.push('\t</tr>');
 			for (let row = 1; row <= this.rowCount; row++) {
-				lines.push(`<tr>\n\t\t<th class="col0">${row}</th>`)
+				lines.push(`<tr class="row{$row}">\n\t\t<th class="col0">${row}</th>`)
 				for (let column = 1; column <= this.columnCount; column++) {
 					const v = this.stringForRowColumnUnit(row, column, this.defaultUnit);
 					lines.push(`\t\t<td class="col${column}">${v}</td>`)
@@ -551,7 +551,7 @@ class MMValue {
 			else if (selector[0] === '&') {
 				selector = selector.substring(1).trim();
 			}
-			const columnMatch = selector.match(/^[^<=>]+/);
+			const columnMatch = selector.match(/^[^!<=>]+/);
 			if (!columnMatch) { syntaxError(selectorValue); }
 			const columnNumber = parseFloat(columnMatch[0].trim());
 			if (isNaN(columnNumber) || columnNumber > this.columnCount) {
@@ -559,7 +559,7 @@ class MMValue {
 			}
 			selector = selector.substring(columnMatch[0].length).trim();
 
-			if (selector.length < 2) { syntaxError(selectorValue); }
+			if (selector.length < 1) { syntaxError(selectorValue); }
 			let opString = selector[0];
 			let valueString = '';
 			if (selector[1] === '=') {
@@ -569,10 +569,10 @@ class MMValue {
 			else {
 				valueString = selector.substring(1).trim();
 			}
-			if (valueString.length === 0) { syntaxError(selectorValue)}
 
 			let findValue;
 			if (this instanceof MMNumberValue) {
+				if (valueString.length === 0) { syntaxError(selectorValue)}
 				const valueParts = valueString.split(' ');
 				findValue = parseFloat(valueParts[0]);
 				if (isNaN(findValue)) {
@@ -596,6 +596,7 @@ class MMValue {
 			const op = {
 				'=': (a, b) => {return a === b ? 1 : 0;},
 				'==': (a, b) => {return a === b ? 1 : 0;},
+				'!=': (a, b) => {return a === b ? 0 : 1},
 				'<': (a, b) => {return a < b ? 1 : 0;},
 				'>': (a, b) => {return a > b ? 1 : 0;},
 				'<=': (a, b) => {return a <= b ? 1 : 0;},
@@ -605,7 +606,7 @@ class MMValue {
 			for (let i = 0; i < this.rowCount; i++) {
 				let value = this.valueAtRowColumn(i + 1, columnNumber);
 				if (this instanceof MMStringValue) {
-					value = value.toLowerCase();
+					value = value.toLowerCase().trim();
 				}
 				if (orOperation) {
 					if (op(value, findValue)) {

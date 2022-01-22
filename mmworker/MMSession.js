@@ -36,6 +36,7 @@
 	theMMSession:readonly
 	MMToolValue:readonly
 	MMFlash:readonly
+	MMFormula:readonly
 	PouchDB:readonly
 */
 
@@ -312,8 +313,9 @@ class MMSession extends MMCommandParent {
 		this.storage = new MMPouchDBStorage();
 		this.savedLastPathId = '(lastPath)';
 		this.savedLastNewsId = '(lastNews)';
-		this.lastNews = '2021216';
+		this.lastNews = '20220121';
 		this.newSession();
+		this.couchError = null;
 	}
 
 	/**
@@ -322,12 +324,16 @@ class MMSession extends MMCommandParent {
 	 */
 	couchDBSync() {
 		if (this.remoteCouch) {
-			var opts = {live: true};
-			this.storage.db.replicate.to(this.remoteCouch, opts, () => {
-				console.log(`There was an error syncing to ${this.remoteCouch}`);
+			var opts = {live: true, retry: true};
+			this.storage.db.replicate.to(this.remoteCouch, opts, (err) => {
+				const destination = this.remoteCouch.split('@')[1]
+				console.log(`There was an error syncing to ${destination}\n${err.error}`);
+				this.couchError = {key: 'mmcmd:couchToError', options: {dest: destination, msg: err.error}};
 			});
-			this.storage.db.replicate.from(this.remoteCouch, opts, () => {
-				console.log(`There was an error syncing from ${this.remoteCouch}`);
+			this.storage.db.replicate.from(this.remoteCouch, opts, (err) => {
+				const destination = this.remoteCouch.split('@')[1]
+				console.log(`There was an error syncing from ${destination}\n${err.error}`);
+				this.couchError = {key: 'mmcmd:couchFromError', options: {dest: destination, msg: err.error}};
 			}).on('change', (info) => {
 				for(const record of info.docs) {
 					if (record._id === this.storePath) {
@@ -335,7 +341,6 @@ class MMSession extends MMCommandParent {
 							if (result) {
 								new MMUnitSystem(this);  // clear any user units and sets
 								this.initializeFromJson(result, this.storePath);
-								this.processor.statusCallBack({msgKey: '__refresh'});
 							}
 						});
 						break;
@@ -515,6 +520,10 @@ class MMSession extends MMCommandParent {
 			try {
 				this.isAutoSaving = true;
 				await this.storage.save(this.storePath, caseJson);
+				if (this.couchError) {
+					this.setError(this.couchError.key, this.couchError.options);
+					this.couchError = null;
+				}
 			}
 			catch(e) {
 				const msg = (typeof e === 'string') ? e : e.message;
@@ -536,7 +545,8 @@ class MMSession extends MMCommandParent {
 	async saveLastSessionPath() {
 		if (this.storePath) {
 			try {
-				await this.storage.save(this.savedLastPathId, this.storePath);
+				const indexedDB = new MMIndexedDBStorage();
+				await indexedDB.save(this.savedLastPathId, this.storePath);
 			}
 			catch(e) {
 				const msg = (typeof e === 'string') ? e : e.message;
@@ -593,7 +603,7 @@ class MMSession extends MMCommandParent {
 			this.isLoadingCase = true;
 			this.newSession();
 			const lastNews = await this.storage.load(this.savedLastNewsId);
-			const lastPath = await this.storage.load(this.savedLastPathId);
+			const lastPath = await indexedDB.load(this.savedLastPathId);
 			const newsUrl = '../news/MM_News.txt';
 			if (
 				(lastNews && lastNews != this.lastNews) ||
@@ -701,7 +711,12 @@ class MMSession extends MMCommandParent {
 		}
 		else {
 			try {
-				await this.storage.copy(oldPath, newPath);
+				const sessionJson = await this.storage.load(oldPath);
+				if (sessionJson) {
+					const session = JSON.parse(sessionJson);
+					session.CaseName = newPath.split('/').pop();
+					await this.storage.save(newPath, JSON.stringify(session, null, '\t'));
+				}		
 				return newPath;
 			}
 			catch(e) {
@@ -753,7 +768,16 @@ class MMSession extends MMCommandParent {
 		}
 		else {
 			try {
-				await this.storage.copy(oldPath, newPath);
+				const sessionJson = await this.storage.load(oldPath);
+				if (sessionJson) {
+					const session = JSON.parse(sessionJson);
+					session.CaseName = newPath.split('/').pop();
+					await this.storage.save(newPath, JSON.stringify(session, null, '\t'));
+				}		
+				else {
+					throw('Load failed');
+				}			
+				// await this.storage.copy(oldPath, newPath);
 				await this.storage.delete(oldPath);
 				if (this.storePath === oldPath) {
 					this.storePath = newPath;
@@ -1300,8 +1324,20 @@ class MMTool extends MMCommandParent {
 		let verbs = super.verbs;
 		verbs['toolviewinfo'] = this.toolViewInfo;
 		verbs['value'] = this.valueJson;
+		verbs['fpreview'] = this.formulaPreview;
 		return verbs;
 	}
+
+	/**
+	 * @method parameters
+	 * i.e. things that can be appended to a formula value
+	 */
+	parameters() {
+		let p = super.parameters();
+		p.push('notes');
+		return p;
+	}
+	
 
 	/** @method getVerbUsageKey
 	 * @override
@@ -1312,6 +1348,7 @@ class MMTool extends MMCommandParent {
 		let key = {
 			toolViewInfo: 'mmcmd:?toolViewInfo',
 			value: 'mmcmd:?valueJson',
+			fpreview: 'mmcmd:?fpreview',
 		}[command];
 		if (key) {
 			return key;
@@ -1349,7 +1386,8 @@ class MMTool extends MMCommandParent {
 
 	/**
 	 * @method valueJson
-	 * @returns {String} json value for valueDescribedBy
+	 * @param {MMCommand} command
+	 * @returns {String} json value for valueDescribedBy(command.args)
 	 */
 	valueJson(command) {
 		const value = this.valueDescribedBy(command.args);
@@ -1358,6 +1396,28 @@ class MMTool extends MMCommandParent {
 		}
 		else {
 			command.results = '';
+		}
+	}
+
+	/**
+	 * @method formulaPreview
+	 * @param {MMCommand} command
+	 * @returns {String} json value from evaluating the formula in command.args
+	 */
+	formulaPreview(command) {
+		const args = command.args;
+		command.results = '';
+		const pathEnd = args.indexOf(' ');
+		if (pathEnd !== -1) {
+			const formulaName = '_fpreview';
+			const f = new MMFormula(formulaName, this);
+			f.formula = args.substring(pathEnd+1);
+			f.nameSpace = this.processor.getObjectFromPath(args.substring(0, pathEnd));
+			const value = f.value();
+			if (value) {
+				command.results = value.jsonValue();
+			}
+			this.removeChildNamed(formulaName);
 		}
 	}
 
@@ -1428,8 +1488,11 @@ class MMTool extends MMCommandParent {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
-		if (!description || description == 'self') {
+		if (!description || description === 'self') {
 			return MMToolValue.scalarValue(this);
+		}
+		else if (description === 'notes') {
+			return MMStringValue.scalarValue(this.notes);
 		}
 		else if (description === 'myName') { // deprecated, but kept for old files
 			if (requestor) {
@@ -1437,6 +1500,14 @@ class MMTool extends MMCommandParent {
 			}
 			return MMStringValue.scalarValue(this.name);
 		}
+		return null;
+	}
+
+	/**
+	 * @method htmlValue
+	 * @returns {String}
+	 */
+	htmlValue() {
 		return null;
 	}
 

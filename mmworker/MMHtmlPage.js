@@ -41,14 +41,55 @@ class MMHtmlPage extends MMTool {
 		super(name, parentModel, 'HtmlPage');
 		this.formula = new MMFormula('Formula', this);
 		this.formula.formula = `'
+<!-- Modify the body and any other part of this html to meet your needs -->
 <html>
 	<head>
-		<style>
-			body {background-color: #EEFFEE; color: black;}
-		</style>
+	<style>
+		body {background-color: #EEFFEE; color: black;}
+		table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+		td, th {
+			border: 1px solid #ddd;
+			padding: 4px;
+		}
+
+		tr:nth-child(even){background-color: #f2f2f2;}
+		
+		tr:hover {background-color: #ddd;}
+		
+		th {
+			text-align: left;
+			background-color: #04AA6D;
+			color: white;
+		}
+		th.col0, td.col0 {
+			width: 50px;
+		}
+	</style>
 	</head>
 	<body>
-		<p>Replace the HTML source formula with something appropriate.</p>
+		<p>
+			Replace this content in the source formula
+			with your own content.
+		</p>
+		<p>
+			You can use the &lt;mm&gt; tag to insert the results of a Math Minion formula. For instance
+		</p>
+		<p>
+			<b>&lt;mm&gt;{rand 3, 3}&lt;/mm&gt;</b>
+		</p>
+		<p>
+			is used below to insert a small matrix of random numbers.
+		</p>
+		<mm>{rand 3, 3}</mm>
+		<p>
+			Here a second <b>&lt;mm&gt;</b> tag inserts the current date.time (<b><mm>{fmt "12.4f", {now} + {timezone}, "date"}</mm></b>) into this sentence.
+		</p>
+		<p>
+			The HtmlPage also has a script function called <b>mmpost</b> that can do lots of interesting things. See the help for more information.
+		</p>
 	</body>
 </html>`
 		this.tagFormulas = [];
@@ -244,6 +285,9 @@ class MMHtmlPage extends MMTool {
 					}
 				}
 			}
+		}
+		if (!value && description) {
+			return super.valueDescribedBy(description, requestor);
 		}
 		if (value) {
 			this.addRequestor(requestor);
@@ -515,7 +559,7 @@ const mminputs = (idNames) => {
 			}
 			if (this.rawHtml) {
 				let chunks = [messageCode];
-				let regex = RegExp('<mm>.*?</mm>','g');
+				let regex = RegExp('<mm>.*?</mm>','msig');
 				const rawHtml = this.rawHtml;
 				const matches = rawHtml.matchAll(regex);
 				let formulaNumber = 0;

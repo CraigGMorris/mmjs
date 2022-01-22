@@ -19,7 +19,7 @@
 
 import {MMCommandPipe} from '../mmworker/MMCommandPipe.js';
 import {ConsoleView} from './ConsoleView.js';
-import {ClipboardView} from './ClipBoard.js';
+import {ClipboardView} from './Clipboard.js';
 import {SessionsView} from './SessionsView.js';
 import {Diagram} from './Diagram.js';
 import {UnitsView, UserUnitsView, UnitSetsView, UnitSetView} from './UnitsView.js';
@@ -224,13 +224,6 @@ export function MMApp(props) {
 		}
 	}, []);
 
-	useEffect(() => {
-		if (statusMessage && statusMessage === '__refresh') {
-			updateDiagram();
-			updateView(null, false, false);
-		}
-	}, [statusMessage])
-
 	/** setStateViewType
 	 * sets the actual viewType, but with some additional processing
 	 * @param {ViewType} newType
@@ -315,8 +308,9 @@ export function MMApp(props) {
 	 * doCommand - sends command to worker
 	 * @param {string} cmd
 	 * @param {function} callBack - (cmds[]) => {}
+	 * @param {function} errorHandler (String) => {} - optional - alert if not provided
 	 */
-	const doCommand = useCallback((cmd, callBack) => {
+	const doCommand = useCallback((cmd, callBack, errorHandler) => {
 		// console.log(`doCommand ${cmd}`);
 		/**
 		 * errorAlert
@@ -328,7 +322,12 @@ export function MMApp(props) {
 			// avoid multiple alerts
 			const t = new Date().getTime();
 			if (t - lastErrorTime > 1000) {
-				alert(s);
+				if (errorHandler) {
+					errorHandler(s);
+				}
+				else {
+					alert(s);
+				}
 				lastErrorTime = new Date().getTime();
 			}
 		}
@@ -342,7 +341,12 @@ export function MMApp(props) {
 			const t = new Date().getTime();
 			if (t - lastErrorTime > 1000) {
 				const s = `${props.t('mmcmd:alert')}\n\n${msg}`;
-				alert(s);
+				if (errorHandler) {
+					errorHandler(s);
+				}
+				else {
+					alert(s);
+				}
 				lastErrorTime = new Date().getTime();
 			}
 		}
@@ -351,7 +355,7 @@ export function MMApp(props) {
 		commandCallBacks.set(callBackId, callBack);
 		const timeoutId = setTimeout(() => {
 				setStatusMessage(props.t('mmcmd:calculating'));
-		}, 200);
+		}, 500);
 		let cmdObject = {cmdString: cmd, id: callBackId++, timeoutId: timeoutId};
 		pipe.doCommand(cmdObject, (results) => {
 			clearTimeout(results.timeoutId);
@@ -596,7 +600,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 		let newInfoState = {
 			title: (toolName ? toolName : ''),
 			path: (path ? path : ''),
-			modelPath: cmds[0].modelPath,
+			modelPath: cmds[0].results.modelPath,
 			stackIndex: infoStack.length,
 			updateCommands: updateCommand,			// commands used to update the view state
 			updateResults: cmds,		// result of doCommand on the updateCommands
