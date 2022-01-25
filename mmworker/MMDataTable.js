@@ -944,11 +944,16 @@ class MMDataTable extends MMTool {
 			match = csv.substring(i).match(re);
 		}
 
-		const rowCount = columnData[0].length;
+		let rowCount = columnData[0].length;
 		for (let i = 1; i < columnCount; i++) {
 			if (columnData[i].length !== rowCount) {
-				this.setError('mmcmd:tableCsvRowCountsDiffer', {path: this.getPath()});
-				return;
+				this.setWarning('mmcmd:tableCsvRowCountsDiffer', {
+					path: this.getPath(),
+					column: i,
+					ilength: columnData[i].length,
+					rowcount: rowCount
+				});
+				rowCount = Math.min(columnData[i].length, rowCount);
 			}
 		}
 		this.rowCount = rowCount;

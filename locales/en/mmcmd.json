@@ -170,7 +170,7 @@
 	"tableBadUnit": "Unrecognized unit '{{unit}}' in table column {{name}}",
 	"tableDuplicateColumnName": "A column already has the name {{name}} in {{path}}",
 	"tableCsvExpectedString": "Expected string in csv table {{path}}\n\ntoken: {{token}}\ncolumn: {{column}}\nrow: {{row}}",
-	"tableCsvRowCountsDiffer": "Row counts aren't all the same in csv table {{path}}",
+	"tableCsvRowCountsDiffer": "Row counts aren't all the same in csv table {{path}}\n\ncolumn {{column}} {{ilength}} != {{rowcount}}",
 	"tableCsvUnexpectedString": "Unexpected string in csv table {{path}}\n\ntoken: {{token}}\ncolumn: {{column}}\nrow: {{row}}",
 	"tableCsvColumnCountsDiffer": "Different number of names and units in csv table {{path}}",
 	"tableNumberValueUnits": "All columns of a table must have the same units when attempting to convert to a number value",
