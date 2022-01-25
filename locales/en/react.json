@@ -127,6 +127,7 @@
 	"sessionsRenameButton": "Rename",
 	"sessionsRenameOverwrite": "A session named {{newName}} already exists\nDo you wish to overwrite it with {{oldName}}",
 	"sessionsRenamePrompt": "New Name for {{oldName}}?",
+	"sessionsRemoteLabel": "Remote: {{remote}}",
 	"sessionsSaveButton": "Save",
 	"sessionsSaveAsButton": "Save As ...",
 	"sessionsSaveNamePrompt": "Please enter the name to use for the session.",

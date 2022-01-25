@@ -1434,6 +1434,14 @@ a:hover {
 	color: var(--link--color-hover);
 }
 
+#sessions__remote {
+	padding-bottom: 5px;
+	border-bottom: solid 1px;
+	text-align: center;
+	color: green;
+	/* color:rgb(220, 140, 20) */
+}
+
 #solver__button-fields {
 	width: 100%;
 	display: grid;

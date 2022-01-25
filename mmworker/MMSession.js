@@ -886,6 +886,11 @@ class MMSession extends MMCommandParent {
 	async listSessionsCommand(command) {
 		const result = await this.storage.listSessions();
 		command.results = {paths: result, currentPath: this.storePath};
+		const indexedDB = new MMIndexedDBStorage();
+		const remote = await indexedDB.load('(remoteCouch)');
+		if (remote) {
+			command.results.remote = remote.split('@')[1];
+		}
 	}
 
 	/**
