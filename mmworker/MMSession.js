@@ -262,7 +262,13 @@ class MMPouchDBStorage {
 	 * @param {String} path - persistent storage path to delete
 	*/
 	async delete(path) {
-		await this.db.remove(path, this.revs[path]);
+		const doc = await this.db.get(path, {conflicts: true});
+		if (doc._conflicts) {
+			for (let conflictRev of doc._conflicts) {
+				await this.db.remove(doc._id, conflictRev);
+			}
+		}
+		await this.db.remove(doc._id, doc._rev);
 		delete this.revs[path];
 	}
 
