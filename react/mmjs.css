@@ -1506,7 +1506,7 @@ a:hover {
 	grid-area: display;
 	background-color: var(--tableview__value--bgcolor);
 	width: 100%;
-	font-size: 12pt;
+	font-size: 10pt;
 	stroke: var(--tableview__value--stroke-color);
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
