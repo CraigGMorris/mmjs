@@ -572,6 +572,7 @@ const mminputs = (idNames) => {
 						this.tagFormulas.push(new MMFormula(`f${formulaNumber}`, this)); 
 					}
 					const tagFormula = this.tagFormulas[formulaNumber];
+					tagFormula.nameSpace = this.parent; // make sure correct namespace
 					tagFormula.formula = match[0].substring(4, match[0].length - 5);
 					formulaNumber++;
 					const value = tagFormula.value();
