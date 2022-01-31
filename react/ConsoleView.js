@@ -27,6 +27,11 @@ export function ConsoleView(props) {
 	const [output, setOutput] = useState('');
 	const [input, setInput] = useState('');
 	const t = props.t;
+	const inputRef = React.useRef(null);
+
+	React.useEffect(() => {
+		inputRef.current.focus();
+	}, []);
 
 	/** function callBack - called when the worker completes command
 	 * @param {MMCommand[]} cmds
@@ -98,6 +103,7 @@ export function ConsoleView(props) {
 				id: 'console__input',
 				value: input || '',
 				placeholder: t('react:consoleReadPlaceHolder'),
+				ref: inputRef,
 				onChange: event => {
 					//keeps input field in sync
 					const value = event.target.value;

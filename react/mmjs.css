@@ -277,6 +277,7 @@ a:hover {
 #console__input {
 	grid-area: input;
 	justify-self: center;
+	margin-top: 3px;
 }
 
 #console__read-file {
