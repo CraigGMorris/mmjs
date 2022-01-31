@@ -874,6 +874,7 @@ class MMSession extends MMCommandParent {
 			this.modelStack.push(this.currentModel);
 		}
 		this.currentModel = model;
+		this.processor.defaultObject = model;
 	}
 
 	/**
@@ -883,6 +884,7 @@ class MMSession extends MMCommandParent {
 	popModel(count=1) {
 		while (this.modelStack.length > 0 && count-- > 0) {
 			this.currentModel = this.modelStack.pop();
+			this.processor.defaultObject = this.currentModel;
 		}
 	}
 
