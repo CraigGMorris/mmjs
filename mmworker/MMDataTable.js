@@ -235,6 +235,7 @@ class MMDataTable extends MMTool {
 		this.columnArray = [];
 		this.rowCount = 0;
 		this.insertFormula = new MMFormula('insertFormula', this);
+		this.filterFormula = new MMFormula('filterFormula', this);
 	}
 
 	get columnCount() {
@@ -247,6 +248,7 @@ class MMDataTable extends MMTool {
 			verbs['addcolumn'] = this.addColumnCommand;
 			verbs['updatecolumn'] = this.updateColumnCommand;
 			verbs['addrow'] = this.addRowCommand;
+			verbs['undoaddrow'] = this.undoAddRowCommand;
 			verbs['removecolumn'] = this.removeColumnCommand;
 			verbs['removerows'] = this.removeRowsCommand;
 			verbs['restorecolumn'] = this.restoreColumnCommand;
@@ -266,6 +268,7 @@ class MMDataTable extends MMTool {
 				// value: 'mmcmd:?toolValue'
 				addcolumn: 			'mmcmd:?tableAddColumn',
 				addrow:					'mmcmd:?tableAddRow',
+				undoaddrow:			'mmcmd:?tableUndoAddRow',
 				removecolumn: 	'mmcmd:?tableRemoveColumn',
 				removerows:			'mmcmd:?tableRemoveRows',
 				restorecolumn:	'mmcmd?tableRestoreColumn',
@@ -594,7 +597,7 @@ class MMDataTable extends MMTool {
 	/**
 	 * @method restoreColumnCommand
 	 * @param {MMCommand} command
-	 * command.args should be the the row number followed by the undo json
+	 * command.args should be the the column number followed by the undo json
 	 * in the form __blob__/.x restorecolumn 1__blob__ followed by the json text
 	 */
 	restoreColumnCommand(command) {
@@ -636,6 +639,50 @@ class MMDataTable extends MMTool {
 		const toNumber = parseInt(parts[1]);
 		this.moveColumn(fromNumber, toNumber);
 		command.undo = `${this.getPath()} movecolumn ${fromNumber} ${toNumber}`;
+	}
+
+	/**
+	 * @method displayRows
+	 * @returns {[Number]} returns an array of the row numbers to be displayed
+	 */
+	get displayRows() {
+		if (this._displayRows) {
+			return this._displayRows;
+		}
+
+		if (!this.filterFormula.formula) {
+			return null;
+		}
+
+		const value = this.filterFormula.value();
+		if (value) {
+			let filters;
+			if (value instanceof MMNumberValue) {
+				filters = value.values;
+			}
+			else if (
+				value instanceof MMStringValue &&
+				value.valueCount && !
+				value.values[0].startsWith("'"))
+			{
+				const boolValue = this.tableValue().stringSelectorsToBoolean(value);
+				if (boolValue) {
+					filters = boolValue.values;
+				}
+			}
+
+			if (filters) {
+				this._displayRows = [];
+				for (let rowNumber in filters) {
+					rowNumber = Number(rowNumber);
+					if (filters[rowNumber]) {
+						this._displayRows.push(rowNumber % this.rowCount + 1);
+					}
+				}
+			}
+			return this._displayRows;
+		}
+		return null;
 	}
 
 	/**
@@ -692,23 +739,52 @@ class MMDataTable extends MMTool {
 	 * command.args should be the the row number
 	 */
 	addRowCommand(command) {
-		const rowNumber = this.addRow(command.args ? parseInt(command.args) : 0);
+		let rowNumber = command.args ? parseInt(command.args) : 0;
+		if (rowNumber && this.displayRows) {
+			// the row number will be one plus the displayed row number
+			// make it one plus the real row number
+			rowNumber = this.displayRows[rowNumber - 2] + 1;
+		}
+
+		rowNumber = this.addRow(rowNumber);
 		if (rowNumber > 0) {
-			command.undo = `${this.getPath()} removerows ${rowNumber}}`;
+			command.undo = `${this.getPath()} undoaddrow ${rowNumber}}`;
 		}
 		command.results = {rowNumber: rowNumber};
 	}
 
 	/**
+	 * @method undoAddRowCommand
+	 * @param {MMCommand} command
+	 * command.args should be the the unfiltered row number
+	 */
+	undoAddRowCommand(command) {
+		const rowNumber = parseInt(command.args);
+		const oldInputs = this.removeRows([rowNumber], true);
+		if (Object.keys(oldInputs).length) {
+			const inputsJson = JSON.stringify(oldInputs);
+			command.undo = `__blob__${this.getPath()} restorerows__blob__${inputsJson}`;
+		}
+	}
+
+	/**
 	 * @method removeRows
 	 * @param {Array} rowNumbers
+	 * @param {Boolean} ignoreFilter - set to true to ignore row filter
 	 * @returns {Object} - old inputs for undo keyed by row number - empty if fails
 	 */
-	removeRows(rowNumbers) {
+	removeRows(rowNumbers, ignoreFilter=false) {
 		const oldInputs = {};
 		rowNumbers.sort((a,b) => a - b).reverse();
+		const displayRows = this.displayRows;
 		for (let rowNumber of rowNumbers) {
 			if (rowNumber > 0 && rowNumber <= this.rowCount) {
+				if (displayRows && !ignoreFilter) {
+					if (rowNumber > displayRows.length) {
+						continue; // shouldn't happen
+					}
+					rowNumber = displayRows[rowNumber - 1];
+				}
 				const columnInput = [];
 				for (let column of this.columnArray) {
 					const input = column.stringForRowWithUnit(rowNumber);
@@ -778,25 +854,37 @@ class MMDataTable extends MMTool {
 	 * command.args should have the the rowNumber columnNumber input
 	 */
 	setCellCommand(command) {
-		const indicesMatch = command.args.match(/^\d+\s+\d+\s+/);
+		const indicesMatch = command.args.match(/^-?\d+\s+\d+\s+/);
 		if (indicesMatch) {
 			const parts = indicesMatch[0].split(/\s+/,2);
 			if (parts.length >= 2) {
-				const rowNumber = Number(parts[0]);
+				let rowNumber = Number(parts[0]);
 				const columnNumber = Number(parts[1]);
+				let displayRows;
+				// in nasty hack use negative row number for undo to disable row filter
+				if (rowNumber > 0) {
+					displayRows = this.displayRows;
+				}
+				else {
+					rowNumber = -rowNumber;
+				}
 				if (
 					isNaN(rowNumber) || isNaN(columnNumber) || 
 					rowNumber < 1 || rowNumber > this.rowCount || 
-					columnNumber < 1 ||  columnNumber > this.columnArray.length
+					columnNumber < 1 ||  columnNumber > this.columnArray.length ||
+					(displayRows && rowNumber > this.displayRows.length)
 				) {
 					throw(this.t('mmcmd:tableRowColumnError', { path: this.getPath(), args: command.args }));
+				}
+				if (displayRows) {
+					rowNumber = displayRows[rowNumber - 1];
 				}
 
 				const input = command.args.substring(indicesMatch[0].length);
 				const column = this.columnArray[columnNumber - 1];
 				const oldInput = column.stringForRowWithUnit(rowNumber);
 				column.setCell(rowNumber, input);
-				command.undo = `${this.getPath()} setcell ${rowNumber} ${columnNumber} ${oldInput}`;
+				command.undo = `${this.getPath()} setcell ${-rowNumber} ${columnNumber} ${oldInput}`;
 			}
 			else {
 				throw(this.t('mmcmd:tableSetCellError', { path: this.getPath(), args: command.args }));
@@ -814,8 +902,8 @@ class MMDataTable extends MMTool {
 	saveObject() {
 		let o =   super.saveObject();
 		o['Type'] = 'Data Table';
-		o
 		o['Columns'] = this.columnArray.map(col => col.saveObject());
+		o['Filter'] = {'Formula': this.filterFormula.formula};
 		return o;
 	}
 
@@ -832,6 +920,9 @@ class MMDataTable extends MMTool {
 		}
 		if (this.columnArray.length) {
 			this.rowCount = this.columnArray[0].columnValue.value.rowCount;
+		}
+		if (saved.Filter) {
+			this.filterFormula.formula = saved.Filter.Formula;
 		}
 	}
 
@@ -971,6 +1062,23 @@ class MMDataTable extends MMTool {
 		await super.toolViewInfo(command);
 		let results = command.results;
 		const value = this.tableValue().jsonValue();
+		const displayRows = this.displayRows;
+		value.filter = this.filterFormula.formula;
+		if (displayRows) {
+			// filter out all but rows to display
+			const nRows = displayRows.length;
+			value.allNr = value.nr;
+			value.nr = nRows;
+			for (const column of value.v) {
+				column.v.nr = nRows;
+				const newV = [];
+				for (const row of displayRows) {
+					newV.push(column.v.v[row - 1]);
+				}
+				column.v.v = newV;
+			}
+
+		}
 		const nc = this.columnArray.length;
 		for (let i = 0; i < nc; i++) {
 			const column = this.columnArray[i];
@@ -1057,7 +1165,8 @@ class MMDataTable extends MMTool {
 	 * @returns {Set} contains tools referenced by this tool
 	 */
 	inputSources() {
-		let sources = super.inputSources();		
+		let sources = super.inputSources();
+		this.filterFormula.addInputSourcesToSet(sources);	
 		for (let column of this.columnArray) {
 			if (column.isCalculated) {
 				column.insertFormula.addInputSourcesToSet(sources);
@@ -1079,6 +1188,7 @@ class MMDataTable extends MMTool {
 			for (let column of this.columnArray) {
 				column.forgetCalculated();
 			}
+			this._displayRows = null;
 			super.forgetCalculated();
 			this.forgetRecursionBlockIsOn = false;
 		}

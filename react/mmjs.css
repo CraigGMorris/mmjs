@@ -349,9 +349,10 @@ a:hover {
 #datatable__table {
 	display: grid;
 	grid-area: display-area;
-	grid-template-rows: var(--input--height) 1fr;
+	grid-template-rows: var(--input--height) var(--input--height) 1fr;
 	grid-template-columns: 1fr;
 	grid-template-areas: "display-buttons"
+		"filter"
 		"display";
 	grid-gap: 5px;
 	margin-top: 5px;
@@ -379,6 +380,11 @@ a:hover {
 
 #datatable__column-iscalculated:hover {
 	color: var(--link--color-hover);
+}
+
+#datatable__filter-row {
+	display: grid;
+	grid-template-columns: 40px 1fr;
 }
 
 .diagram__import-warning {

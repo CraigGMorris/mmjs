@@ -251,6 +251,7 @@
 	"?tableRemoveRows": "remove a row from the data table\n\nusage removerows rowNumber(s)",
 	"?tableRestoreColumn": "used by undo to restore a deleted table column\n\nusage restorecolumn columnNumber recoveryJson",
 	"?tableRestoreRows": "used by undo to restore a deleted table row\n\nusage restorerows recoveryJson",
+	"?tableUndoAddRow": "used by undo to remove added row - uses unfiltered row number",
 	"?tableSetCell": "sets value of cell\n\nusage: setcell rowNumber columnNumber value",
 	"?toolViewInfo": "returns json information about tool used for info views\n\nusage: toolviewinfo",
 	"?toolValue": "returns value as json\n\nusage: value",
