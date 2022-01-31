@@ -3985,8 +3985,8 @@ class MMFormula extends MMCommandObject {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			value: 'mmcmd:?formulaValue',
-			refresh: 'mmcmd:?formulaRefresh',
+			value: 'mmcmd:_formulaValue',
+			refresh: 'mmcmd:_formulaRefresh',
 		}[command];
 		if (key) {
 			return key;

@@ -164,7 +164,7 @@ class MMHtmlPage extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			htmlaction: 'mmcmd:?htmlAction',
+			htmlaction: 'mmcmd:_htmlAction',
 		}[command];
 		if (key) {
 			return key;

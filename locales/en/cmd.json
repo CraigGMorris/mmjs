@@ -15,15 +15,15 @@
 	"subjectNotFound": "{{className}} {{path}} doesn't understand the subject {{subject}}",
 	"unknownClass": "Cannot create unknown class {{className}}",
 	"unknownCommand": "I don't know the command {{command}}",
-	"?help": "Usage: help [command you want usage for]\n\nWithout an argument returns list of all commands\n",
-	"?cd": "Change default subject for commands\n\nUsage: cd pathToObject",
-	"?info": "get information (class and path) about the subject or its properties\n\nUsage: info [properties]\n",
-	"?get": "retrieve the value for a property\n\nUsage: get propertyName\n\nif propertyName is the word:\nproperties - list all properties\nparameters - list formula parameters",
-	"?read": "read commands from file\n\nUsage: read filePath\n",
-	"?renameto": "renames the subject\n\nUsage: renameto newName\n",
-	"?set": "sets a property value or removes if value not given\n\nUsage: set propertyName [propertyValue]\n",	
-	"?createchild": "Usage: createchild className childName",
-	"?list": "list the children of subject\n\nUsage: list [pattern_to_match_in_name]\n",
-	"?removechild": "deletes the named child from subject\n\nUsage: removechild pathToChild\n"
+	"_help": "Usage: help [command you want usage for]\n\nWithout an argument returns list of all commands\n",
+	"_cd": "Change default subject for commands\n\nUsage: cd pathToObject",
+	"_info": "get information (class and path) about the subject or its properties\n\nUsage: info [properties]\n",
+	"_get": "retrieve the value for a property\n\nUsage: get propertyName\n\nif propertyName is the word:\nproperties - list all properties\nparameters - list formula parameters",
+	"_read": "read commands from file\n\nUsage: read filePath\n",
+	"_renameto": "renames the subject\n\nUsage: renameto newName\n",
+	"_set": "sets a property value or removes if value not given\n\nUsage: set propertyName [propertyValue]\n",	
+	"_createchild": "Usage: createchild className childName",
+	"_list": "list the children of subject\n\nUsage: list [pattern_to_match_in_name]\n",
+	"_removechild": "deletes the named child from subject\n\nUsage: removechild pathToChild\n"
 
 }

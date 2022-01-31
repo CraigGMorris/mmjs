@@ -265,16 +265,16 @@ class MMDataTable extends MMTool {
 		 */
 		getVerbUsageKey(command) {
 			let key = {
-				// value: 'mmcmd:?toolValue'
-				addcolumn: 			'mmcmd:?tableAddColumn',
-				addrow:					'mmcmd:?tableAddRow',
-				undoaddrow:			'mmcmd:?tableUndoAddRow',
-				removecolumn: 	'mmcmd:?tableRemoveColumn',
-				removerows:			'mmcmd:?tableRemoveRows',
+				// value: 'mmcmd:_toolValue'
+				addcolumn: 			'mmcmd:_tableAddColumn',
+				addrow:					'mmcmd:_tableAddRow',
+				undoaddrow:			'mmcmd:_tableUndoAddRow',
+				removecolumn: 	'mmcmd:_tableRemoveColumn',
+				removerows:			'mmcmd:_tableRemoveRows',
 				restorecolumn:	'mmcmd?tableRestoreColumn',
 				restorerows:		'mmcmd?tableRestoreRows',
-				setcell:				'mmcmd:?tableSetCell',
-				movecolumn:			'mmcmd:?tableMoveColumn',
+				setcell:				'mmcmd:_tableSetCell',
+				movecolumn:			'mmcmd:_tableMoveColumn',
 			}[command];
 			if (key) {
 				return key;
@@ -632,7 +632,7 @@ class MMDataTable extends MMTool {
 	moveColumnCommand(command) {
 		const parts = command.args.split(/\s/);
 		if (parts.length !== 2) {
-			this.setError('mmcmd:?tableMoveColumn', {path: this.getPath(), name: name});
+			this.setError('mmcmd:_tableMoveColumn', {path: this.getPath(), name: name});
 			return;
 		}
 		const fromNumber = parseInt(parts[0]);

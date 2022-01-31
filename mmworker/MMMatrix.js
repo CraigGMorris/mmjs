@@ -254,10 +254,10 @@ class MMMatrix extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			setcell: 'mmcmd:?matrixSetCell',
-			setrowcount: 'mmcmd:?matrixSetRowCount',
-			setcolumncount: 'mmcmd:?matrixSetColumnCount',
-			value: 'mmcmd:?toolValue'
+			setcell: 'mmcmd:_matrixSetCell',
+			setrowcount: 'mmcmd:_matrixSetRowCount',
+			setcolumncount: 'mmcmd:_matrixSetColumnCount',
+			value: 'mmcmd:_toolValue'
 		}[command];
 		if (key) {
 			return key;

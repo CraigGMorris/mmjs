@@ -479,10 +479,10 @@ class MMIterator extends MMTool {
 		 */
 		getVerbUsageKey(command) {
 			let key = {
-				reset: 'mmcmd:?iterReset',
-				addrecorded: 'mmcmd:?iterAddRecorded',
-				removerecorded: 'mmcmd:?iterRemoveRecorded',
-				restorerecorded: 'mmcmd:?iterRestoreRecorded',
+				reset: 'mmcmd:_iterReset',
+				addrecorded: 'mmcmd:_iterAddRecorded',
+				removerecorded: 'mmcmd:_iterRemoveRecorded',
+				restorerecorded: 'mmcmd:_iterRestoreRecorded',
 			}[command];
 			if (key) {
 				return key;

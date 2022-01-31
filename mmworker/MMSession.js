@@ -829,19 +829,19 @@ class MMSession extends MMCommandParent {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			dgminfo: 'mmcmd:?modelDgmInfo',
-			listsessions: 'mmcmd:?sessionList',
-			new: 'mmcmd:?sessionNew',
-			load: 'mmcmd:?sessionLoad',
-			loadurl: 'mmcmd:?sessionLoadUrl',
-			save: 'mmcmd:?sessionSave',
-			copy: 'mmcmd:?sessionCopy',
-			delete: 'mmcmd:?sessionDelete',
-			getjson: 'mmcmd:?sessionGetJson',
-			pushmodel: 'mmcmd:?sessionPushModel',
-			popmodel: 'mmcmd:?sessionPopModel',
-			import: 'mmcmd:?sessionImport',
-			remote: 'mmcmd:?sessionRemote'
+			dgminfo: 'mmcmd:_modelDgmInfo',
+			listsessions: 'mmcmd:_sessionList',
+			new: 'mmcmd:_sessionNew',
+			load: 'mmcmd:_sessionLoad',
+			loadurl: 'mmcmd:_sessionLoadUrl',
+			save: 'mmcmd:_sessionSave',
+			copy: 'mmcmd:_sessionCopy',
+			delete: 'mmcmd:_sessionDelete',
+			getjson: 'mmcmd:_sessionGetJson',
+			pushmodel: 'mmcmd:_sessionPushModel',
+			popmodel: 'mmcmd:_sessionPopModel',
+			import: 'mmcmd:_sessionImport',
+			remote: 'mmcmd:_sessionRemote'
 		}[command];
 		if (key) {
 			return key;
@@ -1352,9 +1352,9 @@ class MMTool extends MMCommandParent {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			toolViewInfo: 'mmcmd:?toolViewInfo',
-			value: 'mmcmd:?valueJson',
-			fpreview: 'mmcmd:?fpreview',
+			toolViewInfo: 'mmcmd:_toolViewInfo',
+			value: 'mmcmd:_valueJson',
+			fpreview: 'mmcmd:_fpreview',
 		}[command];
 		if (key) {
 			return key;

@@ -178,7 +178,7 @@ class MMOptimizer extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			reset: 'mmcmd:?optReset'
+			reset: 'mmcmd:_optReset'
 		}[command];
 		if (key) {
 			return key;
