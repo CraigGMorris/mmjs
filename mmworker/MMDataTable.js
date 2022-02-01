@@ -654,33 +654,39 @@ class MMDataTable extends MMTool {
 			return null;
 		}
 
-		const value = this.filterFormula.value();
-		if (value) {
-			let filters;
-			if (value instanceof MMNumberValue) {
-				filters = value.values;
-			}
-			else if (
-				value instanceof MMStringValue &&
-				value.valueCount && !
-				value.values[0].startsWith("'"))
-			{
-				const boolValue = this.tableValue().stringSelectorsToBoolean(value);
-				if (boolValue) {
-					filters = boolValue.values;
+		try {
+			const value = this.filterFormula.value();
+			if (value) {
+				let filters;
+				if (value instanceof MMNumberValue) {
+					filters = value.values;
 				}
-			}
-
-			if (filters) {
-				this._displayRows = [];
-				for (let rowNumber in filters) {
-					rowNumber = Number(rowNumber);
-					if (filters[rowNumber]) {
-						this._displayRows.push(rowNumber % this.rowCount + 1);
+				else if (
+					value instanceof MMStringValue &&
+					value.valueCount && !
+					value.values[0].startsWith("'"))
+				{
+					const boolValue = this.tableValue().stringSelectorsToBoolean(value);
+					if (boolValue) {
+						filters = boolValue.values;
 					}
 				}
+
+				if (filters) {
+					this._displayRows = [];
+					for (let rowNumber in filters) {
+						rowNumber = Number(rowNumber);
+						if (filters[rowNumber]) {
+							this._displayRows.push(rowNumber % this.rowCount + 1);
+						}
+					}
+				}
+				return this._displayRows;
 			}
-			return this._displayRows;
+		}
+		catch(e) {
+			this._displayRows = null;
+			this.setWarning(e.msgKey, e.args);
 		}
 		return null;
 	}
