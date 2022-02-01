@@ -4015,6 +4015,7 @@ class MMFormula extends MMCommandObject {
 	 */
 	refreshCommand(command) {
 		this.parent.forgetCalculated();
+		this.parseFormula();
 		command.results = 'forgotten';
 	}
 
