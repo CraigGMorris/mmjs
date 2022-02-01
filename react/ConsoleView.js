@@ -28,6 +28,8 @@ export function ConsoleView(props) {
 	const [input, setInput] = useState('');
 	const t = props.t;
 	const inputRef = React.useRef(null);
+	const inputStackRef = React.useRef([]);
+	const inputStackPos = React.useRef(0);
 
 	React.useEffect(() => {
 		inputRef.current.focus();
@@ -113,10 +115,38 @@ export function ConsoleView(props) {
 					if (event.code == 'Enter') {
 						// watches for Enter and sends command when it see it
 						props.actions.doCommand(input, callBack);
+						const stackLength = inputStackRef.current.length;
+						if (stackLength === 0 || inputStackRef.current[stackLength - 1] !== input) {
+							inputStackRef.current.push(input);
+						}
+						inputStackPos.current = inputStackRef.current.length;
 						setInput('');
 						}
+						else if (event.code === 'ArrowUp') {
+							event.stopPropagation();
+							event.preventDefault();					
+							let pos = inputStackPos.current;
+							if (pos > 0) {
+								setInput(inputStackRef.current[--pos]);
+								inputStackPos.current = pos;
+							}
+						}
+						else if (event.code === 'ArrowDown') {
+							event.stopPropagation();
+							event.preventDefault();					
+							let pos = inputStackPos.current;
+							const currentLength = inputStackRef.current.length
+							if (pos < currentLength - 1) {
+								setInput(inputStackRef.current[++pos]);
+								inputStackPos.current = pos;
+							}
+							else {
+								setInput('');
+								inputStackPos.current = inputStackRef.current.length;
+							}
 					}
 				}
+			}
 		),
 		e(
 			'div', {
