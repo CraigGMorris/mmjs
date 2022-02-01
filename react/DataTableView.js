@@ -415,7 +415,7 @@ function EditRowView(props) {
 				'div', {
 					id: 'datatable__row-view',
 					onKeyDown: e => {
-						if (e.key === 'Escape') {
+						if (e.code === 'Escape') {
 							e.preventDefault();
 							props.setDisplay(DataTableDisplay.table);
 						}

@@ -88,7 +88,7 @@ export function FormulaField(props) {
 					setFormula(event.target.value);
 				},
 				onKeyDown: e => {
-					if (e.key == 'Enter') {
+					if (e.code == 'Enter') {
 						if (e.shiftKey ) {
 							// watches for Shift Enter and sends command when it see it
 							e.preventDefault();
@@ -583,23 +583,22 @@ export function FormulaEditor(props) {
 					setFormula(e.target.value);
 				},
 				onKeyDown: e => {
-					if (e.ctrlKey) {
-						if (e.key === 'Enter') {
+					console.log(`${e.code} ${e.ctrlKey}`);
+					if (e.key === 'v' && e.ctrlKey) {
+						pickerButtonClick(FormulaDisplay.values);
+					}
+					else if (e.key === 'u' && e.ctrlKey) {
+						pickerButtonClick(FormulaDisplay.units);
+					}
+					else if (e.key === 'f' && e.ctrlKey) {
+						pickerButtonClick(FormulaDisplay.functiions);
+					}
+					else if (e.code === 'Enter') {
+						if (e.ctrlKey) {
 							e.preventDefault();
 							updatePreview();
 							return;
 						}
-						else if (e.key === 'v') {
-							pickerButtonClick(FormulaDisplay.values);
-						}
-						else if (e.key === 'u') {
-							pickerButtonClick(FormulaDisplay.units);
-						}
-						else if (e.key === 'f') {
-							pickerButtonClick(FormulaDisplay.functiions);
-						}
-					}
-					else if (e.key === 'Enter') {
 						if (e.shiftKey ) {
 							// watches for Shift Enter and sends command when it see it
 							e.preventDefault();
@@ -637,7 +636,7 @@ export function FormulaEditor(props) {
 							}
 						}
 					}
-					else if (e.key === 'Escape') {
+					else if (e.code === 'Escape') {
 						e.preventDefault();
 						latestFormula.current = props.editOptions.initialFormula;
 						if (props.cancelAction) {
@@ -647,7 +646,7 @@ export function FormulaEditor(props) {
 							props.actions.popView();
 						}
 					}
-					else if (e.key === 'Tab') {
+					else if (e.code === 'Tab') {
 						let selStart = e.target.selectionStart;
 						let selEnd = e.target.selectionEnd;
 						const text = e.target.value;
@@ -703,7 +702,7 @@ export function FormulaEditor(props) {
 						e.preventDefault();
 						return;
 					}
-					// console.log(`key=${e.key}`);
+					// console.log(`key=${e.code}`);
 				},
 			}
 		),

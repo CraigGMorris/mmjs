@@ -109,8 +109,8 @@ export function ConsoleView(props) {
 					const value = event.target.value;
 					setInput(value);				
 				},
-				onKeyPress: event => {
-					if (event.key == 'Enter') {
+				onKeyDown: event => {
+					if (event.code == 'Enter') {
 						// watches for Enter and sends command when it see it
 						props.actions.doCommand(input, callBack);
 						setInput('');
