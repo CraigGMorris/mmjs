@@ -583,7 +583,6 @@ export function FormulaEditor(props) {
 					setFormula(e.target.value);
 				},
 				onKeyDown: e => {
-					console.log(`${e.code} ${e.ctrlKey}`);
 					if (e.key === 'v' && e.ctrlKey) {
 						pickerButtonClick(FormulaDisplay.values);
 					}
