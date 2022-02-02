@@ -1399,8 +1399,8 @@ class MMTool extends MMCommandParent {
 	 */
 	valueJson(command) {
 		const value = this.valueDescribedBy(command.args);
-		if (value) {
-			command.results = JSON.stringify(value);
+		if (value && value.jsonValue) {
+			command.results = value.jsonValue();
 		}
 		else {
 			command.results = '';
