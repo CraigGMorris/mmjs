@@ -245,7 +245,7 @@
 	"_solverRemoveFunction": "Remove function number\n\nusage: removefunction fNumber",
 	"_solverReset": "Reset the solver outputs to 0 and disable\n\nusage: reset",
 	"_tableAddColumn": "add a column to a data table\n\nusage: addcolumn",
-	"_tableAddRow": "add a row to the data table\n\nusage addrow rowNumber\n\nif rowNumber is omitted or invalid, row is added to bottom",
+	"_tableAddRow": "add a row to the data table\n\nusage addrow rowNumber columnValues\n\nif rowNumber is omitted or invalid, row is added to bottom\n\nif supplied columnValues must be json with column names and values\n\nColumns not included will be filled as normal",
 	"_tableMoveColumn": "move column position\n\nusage: moveColumn fromNumber toNumber",
 	"_tableRemoveColumn": "remove a column from the data table\n\nusage removecolumn columnName",
 	"_tableRemoveRows": "remove a row from the data table\n\nusage removerows rowNumber(s)",

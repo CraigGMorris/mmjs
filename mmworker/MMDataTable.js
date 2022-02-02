@@ -134,10 +134,37 @@ class MMDataTableColumn extends MMCommandObject {
 	/**
 	 * @method addRow
 	 * @param {Number} rowNumber
+	 * @param {String} insertValue
 	 */
-	addRow(rowNumber) {
-		this.parent.insertFormula.formula = this.defaultValue;
-		const insertValue = this.parent.insertFormula.value();
+	addRow(rowNumber, suppliedValue) {
+		let insertValue
+		if (suppliedValue == null) {
+			this.parent.insertFormula.formula = this.defaultValue;
+			insertValue = this.parent.insertFormula.value();
+		}
+		else {
+			if (this._columnValue.isString) {
+				insertValue = MMStringValue.scalarValue(suppliedValue);
+			}
+			else {
+				let n;
+				if (typeof suppliedValue === "string") {
+					const valueParts = suppliedValue.split(' ');
+					n = parseFloat(valueParts[0]);
+					if (valueParts.length > 1) {
+						// assume unit
+						const unit = theMMSession.unitSystem.unitNamed(valueParts[1]);
+						if (unit) {
+							n = unit.convertToBase(n);
+						}
+					}
+				}
+				else {
+					n = suppliedValue;
+				}
+				insertValue = MMNumberValue.scalarValue(n, this._columnValue.displayUnit.dimensions);
+			}
+		}
 		this.columnValue.addRow(rowNumber, insertValue);
 	}
 
@@ -694,15 +721,18 @@ class MMDataTable extends MMTool {
 	/**
 	 * @method addRow
 	 * @param {Number} rowNumber
+	 * @param {Object} columnValues - optional dictionary of column values
+	 * - missing values will use default formula
 	 * @returns {Number} - the actual number of the row added or -1 if failed
 	 */
-	addRow(rowNumber) {
+	addRow(rowNumber, columnValues) {
 		let successCount = 0;
 		let error;
 		for (let column of this.columnArray) {
 			if (!column.isCalculated) {
 				try {
-					column.addRow(rowNumber);
+					const value = columnValues ? columnValues[column.name] : null;
+					column.addRow(rowNumber, value);
 				} catch(e) {
 					error = e;
 					break;
@@ -745,14 +775,38 @@ class MMDataTable extends MMTool {
 	 * command.args should be the the row number
 	 */
 	addRowCommand(command) {
-		let rowNumber = command.args ? parseInt(command.args) : 0;
+		let rowNumber, columnValues;
+		if (command.args) {
+			let args = command.args.trim();
+			if (!args.startsWith('{')) { // should be row number
+				rowNumber = parseInt(args);
+				const firstSpace = args.indexOf(' ');
+				if (firstSpace > 0 && args.length > firstSpace) {
+					args = args.substring(firstSpace + 1);
+				}
+				else {
+					args = '';
+				}
+			}
+			if (args.length) {
+				try {
+					columnValues = JSON.parse(args);
+				}
+				catch(e) {
+					columnValues = null;
+				}
+			}
+		}
+		else {
+			rowNumber = 0;
+		}
 		if (rowNumber && this.displayRows) {
 			// the row number will be one plus the displayed row number
 			// make it one plus the real row number
 			rowNumber = this.displayRows[rowNumber - 2] + 1;
 		}
 
-		rowNumber = this.addRow(rowNumber);
+		rowNumber = this.addRow(rowNumber, columnValues);
 		if (rowNumber > 0) {
 			command.undo = `${this.getPath()} undoaddrow ${rowNumber}}`;
 		}
