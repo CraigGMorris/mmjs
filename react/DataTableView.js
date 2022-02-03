@@ -337,16 +337,15 @@ function EditRowView(props) {
 	const [selectedField, setSelectedField] = useState(column);
 	const [selectedRow, setSelectedRow] = useState(row);
 	const [editOptions, setEditOptions] = useState({});
+	const [formulaString, setFormulaString] = useState('');
 	useEffect(() => {
 		const nRows = props.value.nr;
 		if (nRows === 0) {
 			props.setDisplay(DataTableDisplay.table);
 		}
-		else if(selectedRow > nRows) {
-			setSelectedRow(props.value.nr);
-		}
-	}, [props.value.nr, selectedRow]);
+	}, [props.value.nr]);
 
+	const displayedRow = Math.min(props.value.nr, selectedRow)
 	const value = props.value;
 	switch(editRowDisplay) {
 		case DataTableDisplay.editRow:
@@ -354,7 +353,7 @@ function EditRowView(props) {
 			
 			for (let columnNumber = 0; columnNumber < value.nc; columnNumber++) {
 				const column = value.v[columnNumber];
-				const v = column.v.v[selectedRow - 1];
+				const v = column.v.v[displayedRow - 1];
 				let formulaString = '';
 				if (typeof v === 'string') {
 					formulaString = "'" + v;
@@ -362,6 +361,7 @@ function EditRowView(props) {
 				else if (typeof v === 'number') {
 					formulaString = `${v.toString().replace(/(\..*)(0+$)/,'$1')} ${column.dUnit}`;
 				}
+				const rowN = column.v.rowN ? column.v.rowN[displayedRow - 1] : displayedRow;
 				let valueField;
 				if (column.isCalculated) {
 					valueField = formulaString;
@@ -374,10 +374,11 @@ function EditRowView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							actions: props.actions,
-							formula: formulaString || '',
+							formula: formulaString,
+							key: rowN, // need to ensure each formula field is unique when moving through rows
 							applyChanges: (formula) => {
 								const path = props.viewInfo.path;
-								props.actions.doCommand(`__blob__${path} setcell ${selectedRow} ${selectedField}__blob__${formula}`,() => {
+								props.actions.doCommand(`__blob__${path} setcell ${displayedRow} ${selectedField}__blob__${formula}`,() => {
 									setEditRowDisplay(DataTableDisplay.editRow);
 									props.actions.updateView(props.viewInfo.stackIndex);
 								})
@@ -426,7 +427,7 @@ function EditRowView(props) {
 						id: 'datatable__edit-row-number',
 					},
 					t('react:dataRowTitle', {
-						row: selectedRow,
+						row: displayedRow,
 						nr: value.nr,
 						allNr: (value.allNr ? ` // ${value.allNr}` : '')
 					}),
@@ -442,10 +443,10 @@ function EditRowView(props) {
 					e(
 						'button', {
 							id: 'datatable__edit-row-prev',
-							disabled: selectedRow <= 1,
+							disabled: displayedRow <= 1,
 							onClick: () => {
-								if (selectedRow > 1) {
-									setSelectedRow(selectedRow-1);
+								if (displayedRow > 1) {
+									setSelectedRow(displayedRow-1);
 								}
 							},
 						},
@@ -454,10 +455,10 @@ function EditRowView(props) {
 					e(
 						'button', {
 							id: 'datatable__edit-row-next',
-							disabled: selectedRow >= value.nr,
+							disabled: displayedRow >= value.nr,
 							onClick: () => {
-								if (selectedRow < value.nr) {
-									setSelectedRow(selectedRow+1);
+								if (displayedRow < value.nr) {
+									setSelectedRow(displayedRow+1);
 								}
 							},
 						},
@@ -483,9 +484,9 @@ function EditRowView(props) {
 							disabled: (value && value.nc) ? false : true,
 							onClick: () => {
 								if (value && value.nc > 0) {
-									props.actions.doCommand(`${props.path} addrow ${selectedRow + 1}`, () => {
+									props.actions.doCommand(`${props.path} addrow ${displayedRow + 1}`, () => {
 										props.actions.updateView(props.viewInfo.stackIndex);
-										setSelectedRow(selectedRow + 1);
+										setSelectedRow(displayedRow + 1);
 									});
 								}
 							},
@@ -496,12 +497,12 @@ function EditRowView(props) {
 						'button', {
 							id: 'datatable__edit-row-delete-button',
 							onClick: () => {
-								props.actions.doCommand(`${props.path} removerows ${selectedRow}`, () => {
+								props.actions.doCommand(`${props.path} removerows ${displayedRow}`, () => {
 									props.actions.updateView(props.viewInfo.stackIndex);
 									if (value.nr === 1) {
 										props.setDisplay(DataTableDisplay.table);										
 									}
-									else if (selectedRow >= value.nr) {
+									else if (displayedRow >= value.nr) {
 										setSelectedRow(value.nr - 1);
 									}
 								});		
@@ -541,7 +542,7 @@ function EditRowView(props) {
 					},
 					applyChanges: (formula) => {
 						const path = props.viewInfo.path;
-						props.actions.doCommand(`__blob__${path} setcell ${selectedRow} ${selectedField}__blob__${formula}`,() => {
+						props.actions.doCommand(`__blob__${path} setcell ${displayedRow} ${selectedField}__blob__${formula}`,() => {
 							setEditRowDisplay(DataTableDisplay.editRow);
 							props.actions.updateView(props.viewInfo.stackIndex);
 						})

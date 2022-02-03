@@ -1132,10 +1132,13 @@ class MMDataTable extends MMTool {
 			for (const column of value.v) {
 				column.v.nr = nRows;
 				const newV = [];
+				const rowN = []; // reports the real row numbers
 				for (const row of displayRows) {
 					newV.push(column.v.v[row - 1]);
+					rowN.push(row);
 				}
 				column.v.v = newV;
+				column.v.rowN = rowN;
 			}
 
 		}
