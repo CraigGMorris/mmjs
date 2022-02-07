@@ -247,6 +247,9 @@ class MMDataTableColumn extends MMCommandObject {
 		if (saved.format) { this.format = saved.format; }
 		if (saved.isCalculated) { this.isCalculated = true; }
 		if (saved.isMenu) {this.isMenu = true; }
+		if (this.insertFormula && saved.defaultValue) {
+			this.insertFormula.formula = saved.defaultValue;
+		}
 		this.columnValue.initFromSaved(saved);
 	}
 
@@ -647,7 +650,8 @@ class MMDataTable extends MMTool {
 		const column = new MMDataTableColumn(this, {
 			name: saved.name,
 			displayUnit: displayUnit,
-			isCalculated: saved.isCalculated
+			isCalculated: saved.isCalculated,
+			isMenu: saved.isMenu,
 		});
 		column.initFromSaved(saved);
 		this.columnArray.splice(columnNumber - 1, 0, column);
