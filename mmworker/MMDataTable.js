@@ -48,13 +48,14 @@ class MMDataTableColumn extends MMCommandObject {
 		super(options.name, table, 'MMDataTableColumn');
 		const displayUnitName = options.displayUnit instanceof MMUnit ? options.displayUnit.name : options.displayUnit;
 		this.isCalculated = options.isCalculated;
+		this.isMenu = options.isMenu;
 		this.displayUnitName = displayUnitName;
 		this.defaultValue = options.defaultValue;
 		this.format = options.format;
-		if (this.isCalculated) {
+		if (this.isCalculated || this.isMenu) {
 			this.insertFormula = new MMFormula(`${options.name}InsertFormula`, this.parent);
 		}
-		else {
+		if (!this.isCalculated) {
 			this._columnValue = new MMTableValueColumn({
 				name: options.name,
 				displayUnit: displayUnitName,
@@ -141,6 +142,14 @@ class MMDataTableColumn extends MMCommandObject {
 		if (suppliedValue == null) {
 			this.parent.insertFormula.formula = this.defaultValue;
 			insertValue = this.parent.insertFormula.value();
+			if (insertValue instanceof MMTableValue) {
+				if (insertValue.columnCount > 1) {
+					insertValue = insertValue.valueForColumnNumber(2);
+				}
+				else {
+					insertValue = insertValue.valueForColumnNumber(1);
+				}
+			}
 		}
 		else {
 			if (this._columnValue.isString) {
@@ -224,6 +233,7 @@ class MMDataTableColumn extends MMCommandObject {
 		o.defaultValue = this.defaultValue;
 		if (this.format) { o.format = this.format; }
 		if (this.isCalculated) { o.isCalculated = true; }
+		if (this.isMenu) { o.isMenu = true; }
 		return o;
 	}
 
@@ -236,12 +246,16 @@ class MMDataTableColumn extends MMCommandObject {
 		this.defaultValue = saved.defaultValue;
 		if (saved.format) { this.format = saved.format; }
 		if (saved.isCalculated) { this.isCalculated = true; }
+		if (saved.isMenu) {this.isMenu = true; }
 		this.columnValue.initFromSaved(saved);
 	}
 
 	forgetCalculated() {
 		if (this.isCalculated) {
 			this._columnValue = null;
+		}
+		if (this._menu) {
+			this._menu = null;
 		}
 		this.parent.forgetCalculated();
 	}
@@ -380,6 +394,14 @@ class MMDataTable extends MMTool {
 			if (options.defaultValue) {
 				this.insertFormula.formula = options.defaultValue;
 				insertValue = this.insertFormula.value();
+				if (options.isMenu && insertValue instanceof MMTableValue) {
+					if (insertValue.rowCount > 1 && insertValue.columnCount > 1) {
+						insertValue = insertValue.valueForColumnNumber(2);
+					}
+					else {
+						insertValue = insertValue.valueForColumnNumber(1);
+					}
+				}
 			}
 
 			if ((!displayUnit || !displayUnit.length) && insertValue instanceof MMNumberValue) {
@@ -402,6 +424,10 @@ class MMDataTable extends MMTool {
 
 		if (this.rowCount) {
 			let v;
+			if (insertValue instanceof MMTableValue) {
+				insertValue = insertValue.valueForColumnNumber(2);
+			}
+
 			if (insertValue instanceof MMStringValue || options.displayUnit === 'string') {
 				v = new MMStringValue(this.rowCount, 1);
 				insertValue = insertValue ? insertValue.values[0] : ''
@@ -485,6 +511,12 @@ class MMDataTable extends MMTool {
 			column.forgetCalculated();
 			column.displayUnitName = options.displayUnit;
 		}
+
+		if (options.isMenu != column.isMenu) {
+			column.isMenu = options.isMenu;
+			undoOptions.isMenu = !column.isMenu;
+		}
+
 		if (options.displayUnit && options.displayUnit !== column.displayUnit) {
 				const oldUnit = column.displayUnit;
 				try {
@@ -1122,6 +1154,64 @@ class MMDataTable extends MMTool {
 		await super.toolViewInfo(command);
 		let results = command.results;
 		const value = this.tableValue().jsonValue();
+
+		const nc = this.columnArray.length;
+		for (let i = 0; i < nc; i++) {
+			const column = this.columnArray[i];
+			const v = value.v[i];
+			v.defaultValue = column.defaultValue;
+			const columnValue = column.columnValue;
+			if (columnValue.isString) {
+				v.unitType = 'String';
+			}
+			else if (column.columnValue.displayUnit) {
+				v.unitType = theMMSession.unitSystem.typeNameForUnitNamed(column.columnValue.displayUnit.name);
+			}
+			v.format = column.format;
+			if (column.isCalculated) {
+				v.isCalculated = true;
+			}
+			if (column.isMenu) {
+				if (!column._menu) {
+					column._menuLookup = {}
+					if (column.defaultValue) {
+						this.insertFormula.formula = column.defaultValue;
+						const menuValue = this.insertFormula.value();
+						if (menuValue) {
+							column._menu = {selections: [], values: []};
+							if (menuValue.rowCount > 1 && menuValue.columnCount > 1) {
+								for (let i = 1; i <= menuValue.rowCount; i++) {
+									const si = menuValue.valueAtRowColumn(i, 1);
+									const vi = menuValue.valueAtRowColumn(i,2)
+									column._menu.selections.push(si);
+									column._menu.values.push(vi);
+									column._menuLookup[vi] = si;
+								}
+							}
+							else {
+								for (let i = 0; i < menuValue.valueCount; i++) {
+									const vi = menuValue.valueAtCount(i);
+									column._menu.selections.push(vi);
+									column._menu.values.push(vi);
+									column._menuLookup[vi] = vi;
+								}
+							}
+						}
+					}
+					else {
+						column._menu = {selections: ['?'], values: ['?']};
+						column._menuLookup['?'] = '?';
+					}					
+				}
+				v.menu = column._menu;
+				const newV = [];
+				for (let i = 0; i < v.v.nr; i++) {
+					newV.push(column._menuLookup[v.v.v[i]]);
+				}
+				v.v.v = newV
+			}
+		}
+
 		const displayRows = this.displayRows;
 		value.filter = this.filterFormula.formula;
 		if (displayRows) {
@@ -1139,24 +1229,6 @@ class MMDataTable extends MMTool {
 				}
 				column.v.v = newV;
 				column.v.rowN = rowN;
-			}
-
-		}
-		const nc = this.columnArray.length;
-		for (let i = 0; i < nc; i++) {
-			const column = this.columnArray[i];
-			const v = value.v[i];
-			v.defaultValue = column.defaultValue;
-			const columnValue = column.columnValue;
-			if (columnValue.isString) {
-				v.unitType = 'String';
-			}
-			else if (column.columnValue.displayUnit) {
-				v.unitType = theMMSession.unitSystem.typeNameForUnitNamed(column.columnValue.displayUnit.name);
-			}
-			v.format = column.format;
-			if (column.isCalculated) {
-				v.isCalculated = true;
 			}
 		}
 		results['value'] = value;
@@ -1229,9 +1301,9 @@ class MMDataTable extends MMTool {
 	 */
 	inputSources() {
 		let sources = super.inputSources();
-		this.filterFormula.addInputSourcesToSet(sources);	
+		this.filterFormula.addInputSourcesToSet(sources);
 		for (let column of this.columnArray) {
-			if (column.isCalculated) {
+			if (column.insertFormula) {
 				column.insertFormula.addInputSourcesToSet(sources);
 			}
 		}			

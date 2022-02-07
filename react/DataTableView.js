@@ -56,6 +56,7 @@ function EditColumnView(props) {
 	const [displayUnit, setDisplayUnit] = useState(columnProperties.displayUnit);
 	const [defaultValue, setDefaultValue] = useState(columnProperties.defaultValue);
 	const [isCalculated, setIsCalculated] = useState(columnProperties.isCalculated || false);
+	const [isMenu, setIsMenu] = useState(columnProperties.isMenu || false);
 	const [editOptions, setEditOptions] = useState({});
 
 	const cancelButton = e(
@@ -70,7 +71,7 @@ function EditColumnView(props) {
 
 	let actionButton;  // changes depending on whether defining new column or updating existiong
 	let deleteButton;  // not shown for new columns - just cancel if not wanted
-	let isCalculatedField;  // has a toggle for isCalculate for new columns
+	let columnTypeField;  // has a toggle for isCalculated or isMenu for new columns, just data or menu for existing
 	if (selectedColumn) {
 		// has selectedColumn, so is update, not add
 		actionButton = e(
@@ -84,6 +85,7 @@ function EditColumnView(props) {
 					columnProperties.columnNumber = columnNumber;
 					columnProperties.displayUnit = displayUnit;
 					columnProperties.format = columnFormat;
+					columnProperties.isMenu = isMenu ? true : false;
 					const json = JSON.stringify(columnProperties);
 					props.actions.doCommand(`__blob__${path} updatecolumn__blob__${json}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
@@ -105,6 +107,16 @@ function EditColumnView(props) {
 			},
 			t('react:dataDeleteColumnButton'),
 		);
+		columnTypeField = e(
+			'span', {
+				id: 'datatable__column-iscalculated',
+				onClick: () => {
+					// toggle menu / data type - can't change calculated
+					setIsMenu(!isMenu);
+				}
+			},
+			isMenu ? t('react:dataColumnTypeMenu') : t('react:dataColumnTypeData'),
+		);
 	}
 	else {
 		// no selectedColumn, so this is a new column
@@ -118,6 +130,7 @@ function EditColumnView(props) {
 					columnProperties.displayUnit = displayUnit;
 					columnProperties.format = columnFormat;
 					if (isCalculated) { columnProperties.isCalculated = true; }
+					if (isMenu) { columnProperties.isMenu = true;}
 					const json = JSON.stringify(columnProperties);
 					props.actions.doCommand(`__blob__${path} addcolumn__blob__${json}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
@@ -127,15 +140,24 @@ function EditColumnView(props) {
 			},
 			t('react:dataAddColumnButton')
 		);
-		isCalculatedField = e(
+		columnTypeField = e(
 			'span', {
 				id: 'datatable__column-iscalculated',
 				onClick: () => {
-					// toggle isCalculated
-					setIsCalculated(!isCalculated);						
+					// toggle types
+					if (isCalculated) {
+						setIsCalculated(false);
+						setIsMenu(true);
+					}
+					else if (isMenu) {
+						setIsMenu(false);
+					}
+					else {
+						setIsCalculated(true);
+					}						
 				}
 			},
-			isCalculated ? 'Calculated' : 'Data',
+			isCalculated ? t('react:dataColumnTypeCalc') : isMenu ? t('react:dataColumnTypeMenu') : t('react:dataColumnTypeData'),
 		)
 	}
 
@@ -250,9 +272,11 @@ function EditColumnView(props) {
 							},
 							((selectedColumn && selectedColumn.isCalculated) || isCalculated) ?
 								t('react:dataColumnCalcFormula') :
+								((selectedColumn && selectedColumn.isMenu) || isMenu) ?
+								t('react:dataColumnMenuFormula') :
 								t('react:dataColumnValue'),
 						),
-						isCalculatedField,
+						columnTypeField,
 					),
 					e(
 						FormulaField, {
@@ -365,6 +389,42 @@ function EditRowView(props) {
 				let valueField;
 				if (column.isCalculated) {
 					valueField = formulaString;
+				}
+				else if (column.menu) {
+					const options = [];
+					const selections = column.menu.selections;
+					const values = column.menu.values;
+					const nItems = selections.length;
+					for (let i = 0; i < nItems; i++) {
+						const item = selections[i];
+						const value = values[i]
+						options.push(e(
+							'option', {
+								key: item,
+								className: 'datatable__row-menu-option',
+								value: value,
+								selected: item == v,
+							},
+							item
+						));
+					}
+					valueField = e(
+						'select', {
+							className: 'datatable__row-menu-select',
+							onChange: (e) => {
+								const newValue = e.target.value;
+								if (newValue != v) {
+									const replacement = column.v.unit ? newValue + ' ' + column.v.unit : newValue;
+									const path = props.viewInfo.path;
+									props.actions.doCommand(`__blob__${path} setcell ${displayedRow} ${columnNumber + 1}__blob__${replacement}`,() => {
+										setEditRowDisplay(DataTableDisplay.editRow);
+										props.actions.updateView(props.viewInfo.stackIndex);
+									})	
+								}
+							}
+						},
+						options
+					)
 				}
 				else {
 					valueField = e(
@@ -831,6 +891,7 @@ export function DataTableView(props) {
 					name: selectedColumn.name,
 					displayUnit: selectedColumn.dUnit,
 					defaultValue: selectedColumn.defaultValue,
+					isMenu: selectedColumn.menu ? true : false,
 					columnNumber: selectedCell[1],
 					format: selectedColumn.format
 				}
