@@ -387,6 +387,7 @@ function EditRowView(props) {
 				}
 				const rowN = column.v.rowN ? column.v.rowN[displayedRow - 1] : displayedRow;
 				let valueField;
+				let selectValueField;
 				if (column.isCalculated) {
 					valueField = formulaString;
 				}
@@ -398,6 +399,9 @@ function EditRowView(props) {
 					for (let i = 0; i < nItems; i++) {
 						const item = selections[i];
 						const value = values[i]
+						if (item == v) {
+							selectValueField = `: (${value})`;
+						}
 						options.push(e(
 							'option', {
 								key: item,
@@ -465,7 +469,8 @@ function EditRowView(props) {
 							'div', {
 								className: 'datatable__edit-row-name-label',
 							},
-							column.name
+							column.name,
+							selectValueField,
 						),
 						valueField
 					)
