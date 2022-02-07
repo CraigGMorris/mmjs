@@ -701,6 +701,21 @@ class MMTableValue extends MMValue {
 	}
 
 	/**
+	 * @method valueAtRowColumn
+	 * @override
+	 * @param {Number} rowIndex
+	 * @param {Number} columnIndex
+	 * @returns {MMValue}
+	 */
+	valueAtRowColumn(rowIndex, columnIndex) {
+		if (columnIndex > this.columnCount) {
+			this.exceptionWith("mmcmd:tableValueIndexError");
+		}
+		const column = this.columns[columnIndex - 1];
+		return column.value.valueAtRowColumn(rowIndex, 1);
+	}
+
+	/**
 	 * @method stringForRowColumnUnit
 	 * @param {Number} rowNumber
 	 * @param {Number} columnNumber
