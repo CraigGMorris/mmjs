@@ -115,7 +115,7 @@ function EditColumnView(props) {
 					setIsMenu(!isMenu);
 				}
 			},
-			isMenu ? t('react:dataColumnTypeMenu') : t('react:dataColumnTypeData'),
+			isCalculated ? '': isMenu ? t('react:dataColumnTypeMenu') : t('react:dataColumnTypeData'),
 		);
 	}
 	else {
@@ -147,13 +147,14 @@ function EditColumnView(props) {
 					// toggle types
 					if (isCalculated) {
 						setIsCalculated(false);
-						setIsMenu(true);
+						setIsMenu(false);
 					}
 					else if (isMenu) {
+						setIsCalculated(true);
 						setIsMenu(false);
 					}
 					else {
-						setIsCalculated(true);
+						setIsMenu(true);
 					}						
 				}
 			},
@@ -897,6 +898,7 @@ export function DataTableView(props) {
 					displayUnit: selectedColumn.dUnit,
 					defaultValue: selectedColumn.defaultValue,
 					isMenu: selectedColumn.menu ? true : false,
+					isCalculated: selectedColumn.isCalculated ? true : false,
 					columnNumber: selectedCell[1],
 					format: selectedColumn.format
 				}
