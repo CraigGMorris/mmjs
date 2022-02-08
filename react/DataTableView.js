@@ -413,6 +413,9 @@ function EditRowView(props) {
 							item
 						));
 					}
+					if (!selectValueField) {
+						selectValueField = ': ???';
+					}
 					valueField = e(
 						'select', {
 							className: 'datatable__row-menu-select',
