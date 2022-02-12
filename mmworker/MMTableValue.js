@@ -173,13 +173,16 @@ class MMTableValueColumn {
 	 * @returns {MMUnit}
 	 */
 	get displayUnit() {
-		return this._displayUnit;
+		return this.isString ? 'string' : this._displayUnit;
 	}
 
 	/**
 	 * @param {MMUnit} unit - can be string in which case it will try to make unit from it
 	 */
 	set displayUnit(displayUnit) {
+		if (this.isString) {
+			return;
+		}
 		if (typeof displayUnit === 'string' ) {
 			const unitName = displayUnit;
 			displayUnit = theMMSession.unitSystem.unitNamed(unitName);
