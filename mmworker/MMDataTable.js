@@ -428,16 +428,18 @@ class MMDataTable extends MMTool {
 
 			if (insertValue instanceof MMStringValue || options.displayUnit === 'string') {
 				v = new MMStringValue(this.rowCount, 1);
-				insertValue = insertValue ? insertValue.values[0] : ''
+				insertValue = insertValue ? insertValue.values : '';
+				const insertCount = insertValue.length;
 				for (let i = 0; i < this.rowCount; i++ ) {
-					v.values[i] = insertValue;
+					v.values[i] = insertValue[i % insertCount];
 				}
 			}
 			else {
 				v = new MMNumberValue(this.rowCount, 1, column.columnValue.value.unitDimensions);
-				insertValue = insertValue ? insertValue.values[0] : 0.0;
+				insertValue = insertValue ? insertValue.values : 0.0;
+				const insertCount = insertValue.length;
 				for (let i = 0; i < this.rowCount; i++ ) {
-					v.values[i] = insertValue;
+					v.values[i] = insertValue[i % insertCount];
 				}
 			}
 			column.columnValue.updateAllRows(this.rowCount, v);
