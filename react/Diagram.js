@@ -1588,7 +1588,7 @@ class ToolIcon extends React.Component {
 						fontWeight: '100',
 						fill: textColor,
 						stroke: textColor
-					}
+					},
 				},
 				notesLineComponents
 			);
@@ -1613,7 +1613,24 @@ class ToolIcon extends React.Component {
 				},
 			),				
 			textComponents,
-			notesComponent
+			notesComponent,
+			info.notes ? e(
+				'rect', {
+					x: (x + translate.x)*scale,
+					y: (y + translate.y + objectHeight)*scale,
+					width: objectWidth*scale,
+					height: 0.4* objectHeight*scale,
+					style: {
+						stroke: "transparent",
+						fill: "transparent"
+					},
+					onPointerDown: (e) => {
+						e.stopPropagation();
+						e.preventDefault();
+						alert(info.notes);
+					}
+				}
+			) : null,
 		);
 	}
 }
