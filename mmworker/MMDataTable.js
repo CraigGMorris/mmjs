@@ -219,10 +219,7 @@ class MMDataTableColumn extends MMCommandObject {
 	 */
 	saveObject() {
 		const columnValue = this.columnValue;
-		const o = this.isCalculated ? {
-			name: columnValue.name,
-			displayUnit: columnValue.isString ? 'string' : columnValue.displayUnit.name
-		} : columnValue.saveObject();
+		const o = columnValue.saveObject();
 		
 		o.defaultValue = this.defaultFormula.formula
 		if (this.format) { o.format = this.format; }
