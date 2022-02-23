@@ -40,8 +40,9 @@ body {
 	
 	pre {
 		background: #eee;
-		border:     1px solid #ddd;
-		font-size: 10px;
+		font-size: 14px;
+		font-weight: bold;
+		padding: 5px;
 	}
 	
 	hr {
@@ -173,6 +174,11 @@ body {
 	.contentlink {
 		padding-left: 10px;
 		color: blue;
+	}
+
+	.link {
+		color: blue;
+		font-weight: bold;
 	}
 
 	.section {

@@ -8398,7 +8398,10 @@
 										"unitDimensions": "1 0 0 0 0 0 0",
 										"defaultValue": "Records[ records.nrows, \"Rain_Fall\"] "
 									}
-								]
+								],
+								"Filter": {
+									"Formula": ""
+								}
 							},
 							{
 								"name": "EmptyT",
@@ -10002,7 +10005,7 @@
 										"Notes": "Initial states of the pendulums",
 										"DiagramX": -50,
 										"DiagramY": 190,
-										"HideInfo": "n",
+										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Data Table",
 										"Columns": [
@@ -10026,7 +10029,10 @@
 												"unitDimensions": "0 0 -1 0 0 0 0",
 												"defaultValue": "0 radian/s"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "dy",
@@ -10501,8 +10507,8 @@
 							{
 								"name": "WeightPlot",
 								"Notes": "Plot of previous weights.",
-								"DiagramX": 220,
-								"DiagramY": 75,
+								"DiagramX": 125,
+								"DiagramY": 150,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Graph",
@@ -10522,19 +10528,19 @@
 							{
 								"name": "css",
 								"Notes": "Cascading style sheet code for the HTML form.",
-								"DiagramX": 50,
-								"DiagramY": 115,
+								"DiagramX": 130,
+								"DiagramY": 75,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "'\nbody {\n\tbackground-color: #EEFFEE;\n}\n\n\n/* Tables\n * --------------------------------------------------------------------- */\n\n\ttable {\n\t\tborder-top:     0px solid #ddd;\n\t\tborder-left:    0px solid #ddd;\n\t\tmargin-top: 0px;\n\t\tmargin-bottom: 0.5em;\n\t\twidth:300px;\n\t\tfont-size: x-large;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t}\n\tth,td {\n\t\tborder-bottom:  0px solid #ddd;\n\t\tborder-right:   0px solid #ddd;\n\t\tvertical-align: top;\n\t}\n/* Default Classes\n * --------------------------------------------------------------------- */\n\n\tp.title, a.title, div.title {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 2.0em;\n\t\ttext-align: center;\n\t}\n\n\tp.subtitle {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 1.1em;\n\t}\n\t\n\t.explain {\n\t\tcolor: #000;\n\t\tfont-size: 1.2em;\n\t}\n\t\n\t.explain a {\n\t\tcolor: blue;\n\t\ttext-decoration: underline;\n\t}\n\t\n\t.html {\n\t\tcolor: navy;\n\t\tfont-weight: bold;\n\t}\n\t\n\t.htmlresult {\n\t\tcolor: navy;\n\t\tfont-weight: bold;\n\t}\n\t\n\t.center {\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\twidth=320px;\n\t\ttext-align: center;\n\t}\n\t\n\t.input {\n\t\twidth: 100%;\n\t\tfont-size: large;\n\t}\n\tbutton {\n\t\tfont-size: large;\n\t\tmargin-left: 10px;\n\t\tmargin-right: 10px;\n\t\twidth: 120px;\n\t}\n\n\t.result {\n\t\ttext-align: center;\n\t\tfont-size: x-large;\n\t}\t\t\n\n\t.indent {\n\t\tmargin-left: 1\n\t\tem;\n\t}\n\t\n\t.buttonrow {\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\twidth: 300px;\n\t\ttext-align: center;\n\t}"
+									"Formula": "'\nbody {\n\tbackground-color: #EEFFEE;\n}\n\n\n/* Tables\n * --------------------------------------------------------------------- */\n\n\ttable {\n\t\tborder-top:     0px solid #ddd;\n\t\tborder-left:    0px solid #ddd;\n\t\tmargin-top: 0px;\n\t\tmargin-bottom: 0.5em;\n\t\twidth:300px;\n\t\tfont-size: x-large;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t}\n\tth,td {\n\t\tborder-bottom:  0px solid #ddd;\n\t\tborder-right:   0px solid #ddd;\n\t\tvertical-align: top;\n\t}\n/* Default Classes\n * --------------------------------------------------------------------- */\n\n\tp.title, a.title, div.title {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 2.0em;\n\t\ttext-align: center;\n\t}\n\n\tp.subtitle {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 1.1em;\n\t}\n\t\n\tpre {\n\t\tbackground: #eee;\n\t\tfont-size: 14px;\n\t\tfont-weight: bold;\n\t\tpadding: 5px;\n\t}\n\n\t\n\t.explain {\n\t\tcolor: #000;\n\t\tfont-size: 1.2em;\n\t}\n\t\n\t.explain a {\n\t\tcolor: blue;\n\t\ttext-decoration: underline;\n\t}\n\t\n\t.html {\n\t\tcolor: navy;\n\t\tfont-weight: bold;\n\t}\n\t\n\t.htmlresult {\n\t\tcolor: navy;\n\t\tfont-weight: bold;\n\t}\n\t\n\t.center {\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\twidth=320px;\n\t\ttext-align: center;\n\t}\n\t\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t}\n\n\t.input {\n\t\twidth: 100%;\n\t\tfont-size: large;\n\t}\n\tbutton {\n\t\tfont-size: large;\n\t\tmargin-left: 10px;\n\t\tmargin-right: 10px;\n\t\twidth: 120px;\n\t}\n\n\t.result {\n\t\ttext-align: center;\n\t\tfont-size: x-large;\n\t}\t\t\n\n\t.indent {\n\t\tmargin-left: 1\n\t\tem;\n\t}\n\t\n\t.buttonrow {\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\twidth: 300px;\n\t\ttext-align: center;\n\t}"
 								}
 							},
 							{
 								"name": "BMICalc",
 								"Notes": "This is a model which calculates body mass index, which is weight in kg divided by height, in m, squared.\n\nThe result is calculated as a dimensionless value so it is displayed correctly, regardless of display units.",
-								"DiagramX": 130,
+								"DiagramX": 50,
 								"DiagramY": 150,
 								"HideInfo": "n",
 								"DiagramNotes": "y",
@@ -10599,7 +10605,7 @@
 							{
 								"name": "BMI",
 								"Notes": "            BMI Form",
-								"DiagramX": 130,
+								"DiagramX": 50,
 								"DiagramY": 115,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
@@ -10620,8 +10626,8 @@
 							{
 								"name": "Weight",
 								"Notes": "A table of previous weights.",
-								"DiagramX": 135,
-								"DiagramY": 75,
+								"DiagramX": 130,
+								"DiagramY": 115,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Data Table",
@@ -11628,7 +11634,47 @@
 										"unitDimensions": "0 1 0 0 0 0 0",
 										"defaultValue": "{eval bmi.weight}"
 									}
-								]
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "money",
+								"Notes": "Target for calculation command",
+								"DiagramX": 215,
+								"DiagramY": 115,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "40 dollar"
+								}
+							},
+							{
+								"name": "Calc_Commands",
+								"Notes": "Issuing command to the calculation engine.",
+								"DiagramX": 215,
+								"DiagramY": 75,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<!-- Modify the body and any other part of this html to meet your needs -->\n<html>\n\t<head>\n\t<style>\n\t\t<mm>css</mm>\n\t</style>\n\t</head>\n\t<body>\n\t\t<p>\n\t\t\tThe user interface for Math Minion talks to the calculation engine by sending text messages to it and receiving text messages back. The <b>mm_cmd</b action allows an Html page to send a message to the calculation engine and optionally process a reply.\n\t\t</p>\n\t\t<p>\n\t\t\tBelow are two buttons and the one labelled <b>Clear Money</b> is defined by the following HTML:\n\t\t</p>\n\t\t<pre class=\"html\">\n&lt;button onClick=\n  \"mmpost([],\n  {\n    mm_cmd:\n    '.money.formula set formula 0 dollar'\n  }\n)\"\n&gt;\n  Clear Money\n&lt;/button&gt;</pre>\n\t\t<p>\n\t\t\tThe command <b>.money.formula set formula 0 dollar</b> tells the calculation engine to set the formula of the expression named <b>money</b. to <b>0 dollar</b>. Tap it and if money is some other value, your should see it immediately change.\n\t\t</p>\n\t\t<p>\n\t\t\tThe button labeled <b>Money = 40</b> is similar except its command is <b>.money.formula set formula 40 dollar</b> and it has a call back that shows the calculation engine response as JSON in an alert box. Try tapping it and after you have dismissed the alert, the value of money should change to 40 dollar.\n\t\t</p>\n\t\t<div>\n\t\t\t<button onClick=\n\t\t\t\t\"mmpost([],\n\t\t\t\t\t{\n\t\t\t\t\t\tmm_cmd:\n\t\t\t\t\t\t'.money.formula set formula 0 dollar'\n\t\t\t\t\t}\n\t\t\t\t)\"\n\t\t\t>\n\t\t\t\tClear Money\n\t\t\t</button>\n\t\t\t<button onClick=\n\t\t\t\t\"mmpost([],\n\t\t\t\t\t{\n\t\t\t\t\t\tmm_cmd:\n\t\t\t\t\t\t'.money.formula set formula 40 dollar'\n\t\t\t\t\t},\n\t\t\t\t\t(results) => {\n\t\t\t\t\t\talert(JSON.stringify(results, null, '  '));\n\t\t\t\t\t}\n\t\t\t\t)\"\n\t\t\t>\n\t\t\t\tMoney = 40\n\t\t\t</button>\n\t\t</div>\n\t\t<p>\n\t\t\tThe <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Console'})\">Console HtmlPage</span> in this model has a bit more complicated example that generates a rough facsimile of the <a href=\"./help/console.html\" target=\"_blank\">Console View</a>. \n\t</body>\n</html>"
+								},
+								"f0": "css"
+							},
+							{
+								"name": "Console",
+								"Notes": "Issuing command to the calculation engine.",
+								"DiagramX": 215,
+								"DiagramY": 150,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<!-- Modify the body and any other part of this html to meet your needs -->\n<html>\n\t<head>\n\t<style>\n\t\tbody {background-color: #EEFFEE; color: black;}\n\t\ttable {\n\t\t\twidth: 100%;\n\t\t\tborder-collapse: collapse;\n\t\t}\n\t\ttd, th {\n\t\t\tborder: 1px solid #ddd;\n\t\t\tpadding: 4px;\n\t\t}\n\n\t\ttr:nth-child(even){background-color: #f2f2f2;}\n\t\t\n\t\ttr:hover {background-color: #ddd;}\n\t\t\n\t\tth {\n\t\t\ttext-align: left;\n\t\t\tbackground-color: #04AA6D;\n\t\t\tcolor: white;\n\t\t}\n\t\tth.col0, td.col0 {\n\t\t\twidth: 50px;\n\t\t}\n\t\t#output {\n\t\t\twidth: 100%;\n\t\t\theight: 300px;\n\t\t\tmargin-top: 10px;\n\t\t}\n\t\t#input {\n\t\t\twidth: 100%\n\t\t}\n\t</style>\n\t<script>\n\t\tconst handleKey = (event) => {\n\t\t\t// watches for Enter and sends command when it see it\n\t\t\tif (event.code == 'Enter') {\n\t\t\t\tconst input = document.getElementById('input');\n\t\t\t\tmmpost([],{mm_cmd: input.value}, (results) => {\n\t\t\t\t\tconst outputArea = document.getElementById('output');\n\t\t\t\t\toutputArea.innerHTML = JSON.stringify(results, null, '  ');\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\t</script>\n\t</head>\n\t<body>\n\t\t<p>\n\t\t\tBelow is a crude copy of what the <a href=\"./help/console.html\" target=\"_blank\">console view</a> does. See the <a href=\"./help/console.html\" target=\"_blank\">console help</a> for details on giving commands.\n\t\t</p>\n\t\t<p>\n\t\t\tTry giving the command <b>.money.formula set formula 100 kg</b> (note the leading dot) and see what happens to the money expression.\n\t\t</p>\n\t\t<div id=\"main\">\n\t\t\t<div>\n\t\t\t\tCommand:\n\t\t\t\t<input id=\"input\" type=\"text\"><br>\n\t\t\t</div>\n\t\t\tResult\n\t\t\t<textarea id=\"output\">\n\t\t\t</textarea>\n\t\t</div>\n\t\t<script>\n\t\t\tinput.addEventListener('keydown', handleKey);\n\t\t</script>\n\t</body>\n</html>"
+								}
 							}
 						]
 					},
@@ -13665,771 +13711,6 @@
 						]
 					},
 					{
-						"name": "TableValues",
-						"Notes": "",
-						"DiagramX": -5,
-						"DiagramY": 0,
-						"HideInfo": "n",
-						"DiagramNotes": "n",
-						"Type": "Model",
-						"diagramScale": 1,
-						"Objects": [
-							{
-								"name": "Table_Values",
-								"Notes": "In addition to arrays and matrices of numbers and strings, Math Minion can also have table values.\n\nThese often originate with a Data Table object like the Hours object in this and the example models, but they can be created directly from formulas as illustrated in the MakeTable expressions.\n\nEssentially a table value is a collection of columns, which all have the same number of rows.\n\nThey can be of different types; that is string or numeric and if numeric, they can have different unit types.\n\nData table tools will be discussed in more detail in the Tools model of the Root model.\n",
-								"DiagramX": -5,
-								"DiagramY": -155,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "{table {cc \"Name\", \"Score\"},\n\t{cc \"Tom\", \"Dick\", \"Harry\"},\n\t60 + 10*1:3\n}"
-								}
-							},
-							{
-								"name": "MakeTable",
-								"Notes": "",
-								"DiagramX": 75,
-								"DiagramY": -5,
-								"HideInfo": "n",
-								"DiagramNotes": "n",
-								"Type": "Model",
-								"diagramScale": 1,
-								"Objects": [
-									{
-										"name": "MakeTable",
-										"Notes": "The table function can be used to make a table value.\n\nThe first argument must be an array of names that will be used as the table column names.\n\nThe remaining parameters must all be arrays having the same number of rows.\n\nTheir columns will be used to make the columns of the new table value.\n\nIf the number of names in the first argument is not the same as the total number of columns in the rest of the arguments, the lessor is used and any extras ignored.",
-										"DiagramX": 30,
-										"DiagramY": 25,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table {cc \"one\", \"two\", \"three\"},\n\t{cc \"s1\", \"s2\", \"s3\", \"s4\"},\n\t1:4,\n\t{fmt \"n=%3.0f\", 1:4*10}\n}"
-										}
-									},
-									{
-										"name": "MakeTable2",
-										"Notes": "The table function is used to make a table with two numeric columns with different unit types, as well as two string columns.",
-										"DiagramX": 115,
-										"DiagramY": 125,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table\n\t{cc \"Row\",\"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"Row\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 1\"m\",\n\t100:105 * 1\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t\t100:105 * 1\"kg\",\n\t\t\t\t\"lb\"\n\t\t\t}\n}"
-										}
-									},
-									{
-										"name": "MakeTable3",
-										"Notes": "Another table, conformable to MakeTable2",
-										"DiagramX": 205,
-										"DiagramY": 25,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table {cc\n\t\t\"Row\", \"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"No\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t100:104 * 1\"kg\", \"lb\"\n\t}\n}"
-										}
-									},
-									{
-										"name": "TableArithmetic",
-										"Notes": "The basic arithmetic operators can be used with tables, with the proviso that the units must conform.  Thus if you are adding or subtracting a scalar, then all the columns must have the same unit type as the scalar.\n\nNote that the first and third columns are strings and are just copied without change.",
-										"DiagramX": 115,
-										"DiagramY": 25,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "2 * MakeTable / 3"
-										}
-									},
-									{
-										"name": "AddTables",
-										"Notes": "The two tables are added together.  They must have the same number of rows and columns and the columns must conform in type and unit type.\n\nNote that the first and last columns are strings and are just taken from the first argument, without modification.",
-										"DiagramX": 205,
-										"DiagramY": 85,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "MakeTable2 + MakeTable3"
-										}
-									}
-								]
-							},
-							{
-								"name": "Index",
-								"DiagramX": 75,
-								"DiagramY": -65,
-								"HideInfo": "n",
-								"DiagramNotes": "n",
-								"Type": "Model",
-								"diagramScale": 1,
-								"Objects": [
-									{
-										"name": "indexCell",
-										"Notes": "Cells of a table value can be referenced with the [ ] index operator in the normal row, column manner using numbers.",
-										"DiagramX": 10,
-										"DiagramY": 95,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "hours[3, 2]"
-										}
-									},
-									{
-										"name": "indexCell2",
-										"Notes": "A column index can be replaced with a column name for a table value.",
-										"DiagramX": 10,
-										"DiagramY": 155,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "hours[3, \"Client\"]"
-										}
-									},
-									{
-										"name": "IndexRows",
-										"Notes": "An array of row indexes can be used to get certain rows of a table value.  The result will itself be a table value.",
-										"DiagramX": 10,
-										"DiagramY": 200,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "hours[ 3:5 ]"
-										}
-									},
-									{
-										"name": "IndexColumns",
-										"Notes": "If an array of column names (here created by the concat function) is used as a column index, then those columns will be in the table value result.",
-										"DiagramX": 205,
-										"DiagramY": 90,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "hours[ 0, {cc \"project\", \"hours\"} ]"
-										}
-									},
-									{
-										"name": "SingleColumn",
-										"Notes": "If only a single column is returned, then it is returned as a normal numeric or string array, rather than as a table value.\n\nNote that in this case the display unit is not retained and the value is displayed in seconds.  You could of course set the display unit for this expression.",
-										"DiagramX": 205,
-										"DiagramY": 155,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "hours[0,1]"
-										}
-									},
-									{
-										"name": "ColumnRef",
-										"Notes": "A single column can also be obtained by using the column name in the dot notation.\n\nHere the display unit has been set on this expression.",
-										"DiagramX": 200,
-										"DiagramY": 255,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "hours.date"
-										},
-										"displayUnit": "date"
-									},
-									{
-										"name": "Hours",
-										"Notes": "This expression has its input checkbox checked, which lets it reference the Hours data table in the parent model. Its value is thus the table value from that table.\n\nThings to note:\n - cells cannot be modified as they can in the source data table.\n\n - the display unit for each column retains the display unit from its source, but you can change that by clicking on the column name and then the button to the right of the display unit (above the table).",
-										"DiagramX": 110,
-										"DiagramY": 85,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "hours"
-										},
-										"isInput": "y",
-										"tableUnits": {}
-									}
-								]
-							},
-							{
-								"name": "Select",
-								"DiagramX": 75,
-								"DiagramY": -45,
-								"HideInfo": "n",
-								"DiagramNotes": "n",
-								"Type": "Model",
-								"diagramScale": 1,
-								"indexTool": "Select_Function",
-								"Objects": [
-									{
-										"name": "Hours",
-										"Notes": "This expression has its input checkbox checked, which lets it reference the Hours data table in the parent model. Its value is thus the table value from that table.",
-										"DiagramX": 30,
-										"DiagramY": 85,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "hours"
-										},
-										"isInput": "y",
-										"tableUnits": {}
-									},
-									{
-										"name": "boolSelect",
-										"Notes": "Also finds all the rows of Hours that have Coyote in the project column, but uses a boolean selector array instead of a string command.",
-										"DiagramX": 115,
-										"DiagramY": 85,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{select hours,\n\t{eq hours.project, \"Coyote\"}\n}"
-										}
-									},
-									{
-										"name": "Select",
-										"Notes": "Find all the rows of Hours that have Coyote in the project column.",
-										"DiagramX": 115,
-										"DiagramY": 40,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{select hours, \"project = Coyote\"}"
-										}
-									},
-									{
-										"name": "Select_Function",
-										"Notes": "Select Function Overview",
-										"DiagramX": 30,
-										"DiagramY": 40,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "HTML Form",
-										"Formula": {
-											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Select Function</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t\t<p>\n\t\t\t\tThe select function can be used to choose certain rows of a table, thus creating a new table value. For instance the <b>Select</b> expression in this model uses the formula:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t{select hours, \"project = Coyote\"}\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tto find all the rows in the table value <b>hours</b> which have a value of \"Coyote\" in the project column.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tThe first parameter of the function is simply the table value, in this case from the expression <b>hours</b>.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tThe second parameter is a string of the form\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\t\n\t\t\t\t\"column op value\"\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\twhere <b>column</b> is the name of the table column and the <b>op</b> term is one of (<b>=, !=, <, <=, >, >=</b>). The <b>value</b> term is some value that will be matched against each row of the column using the given operation.  The value isn't a formula, but can have a unit if it is numeric. String comparisons are case insensitive and a missing value term will match a string made up zero or more blanks.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tIf the selector has more than one row, each result is \"ANDed\" with the previous result, unless the \"column\" term is preceded by a \"|\" character, in which case an OR operation is performed with the previous result. An \"&\" character can optionally be used for AND operations to make the formula more descriptive.\n\t\t\t<p>\n\t\t\t<p>\n\t\t\t\tInstead of a string value, the second parameter of select can be a column array with the same number of rows as the table.  All the rows of this argument which are nonzero will be selected from the source table and included in the result.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe expression <b>boolSelect</b> uses the formula:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t{select hours, {eq hours.project, \"Coyote\"}}\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\twhich will also select all the rows whose project column has a value of \"Coyote\", producing the same result as the <b>Select</b> expression.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe select command will also work on matrices of numbers and strings in the same way, with the column name being replaced by the column number.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tSee the various other expressions in this model for examples.\n\t\t\t</p>\n\n\t\t</div>\n\t</body>\n</html>"
-										}
-									},
-									{
-										"name": "OrSelect",
-										"Notes": "Find all rows where project is either Coyote or Accounting",
-										"DiagramX": 30,
-										"DiagramY": 205,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{select hours,\n\t{cc\n\t\t\"project = coyote\",\n\t\t\"| project = accounting\"\n\t}\n}"
-										}
-									},
-									{
-										"name": "BeforeAugust",
-										"Notes": "Another example of using the select, this time to obtain all the records before Aug 1, 2012. Note the use of the date unit.",
-										"DiagramX": 115,
-										"DiagramY": 150,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{select hours, \"date < 20120801 date\"}"
-										}
-									},
-									{
-										"name": "OrAndSelect",
-										"Notes": "Select all rows where the project is either Coyote or Accounting and has a date before August.",
-										"DiagramX": 115,
-										"DiagramY": 205,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{select hours,\n\t{cc\n\t\t\"project = coyote\",\n\t\t\"| project = accounting\",\n\t\t\"date < 20120801 date\"\n\t}\n}"
-										}
-									},
-									{
-										"name": "NumberbyString",
-										"Notes": "Select rows where column 2 is less than 60",
-										"DiagramX": 30,
-										"DiagramY": 255,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{select {append 1:50, 51:100},\n\t\"2 <= 60\"\n}"
-										}
-									},
-									{
-										"name": "StringByString",
-										"Notes": "Select rows where column 1 (the only column) are greater or equal to \"f\".",
-										"DiagramX": 110,
-										"DiagramY": 255,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{select\n\t{cc\n\t\t\"a\",\"b\",\"c\",\"d\",\"e\",\n\t\t\"f\",\"g\",\"h\",\"i\",\"j\"\n\t}, \"1 >= f\"\n}"
-										}
-									},
-									{
-										"name": "AndSelect",
-										"Notes": "Select rows where Fred is the client and the project is Accounting.",
-										"DiagramX": 30,
-										"DiagramY": 150,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{select hours,\n\t{cc\n\t\t\"client = Fred\",\n\t\t\"project = accounting\"\n\t}\n}"
-										}
-									}
-								]
-							},
-							{
-								"name": "Sums",
-								"DiagramX": 75,
-								"DiagramY": -25,
-								"HideInfo": "n",
-								"DiagramNotes": "n",
-								"Type": "Model",
-								"diagramScale": 1,
-								"Objects": [
-									{
-										"name": "DayHours",
-										"Notes": "If you group on a numeric column, the values in the column are first converted to strings.\n\nHere we calculated the total number of hours on each date.\n",
-										"DiagramX": 285,
-										"DiagramY": 80,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{groupsum Hours, \"Date\"}"
-										},
-										"tableUnits": {
-											"1": "date"
-										}
-									},
-									{
-										"name": "clients",
-										"Notes": "Here the indexof values are used to extract the client names from Hours, corresponding to the projects in projectsum.\n\nhours.client[ indexof[0,1] ]\n\nBecause it is a single column, it is returned as a simple column array, not a table value.",
-										"DiagramX": 270,
-										"DiagramY": 190,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "hours.client[ indexof[0,1] ]"
-										}
-									},
-									{
-										"name": "ProjectHours",
-										"Notes": "The append function can be used to combine the columns of different tables into a single table.  All of the arguments must have the same number of rows.\n\nIt is used here to add a column of client names to the projectsum result:\n\n{append projectsum,\n   {table \"Client\", clients}\n}\n\nThe clients value is not a table, but we can easily convert it into one with the table function.",
-										"DiagramX": 350,
-										"DiagramY": 160,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{append projectsum,\n\t{table \"Client\", clients}\n}"
-										}
-									},
-									{
-										"name": "projectsum",
-										"Notes": "This expression uses the groupsum function to get the total hours by project:\n\n{groupsum\n\thours[0,{cc \"project\", \"Hours\"}],\n\t\"project\"\n} \n\nThe first argument is the table value to be totalled.  In this case the index operator has been used to select just the project and hours columns.\n\nThe second argument is the column for which identical values are to be grouped together into a single row.\n\n Other columns in that row will be the sums of the values for that group.\n\nThe argument must be a string and must be the name of a column in the table.\n\nThere are also groupmin and groupmax functions.\n",
-										"DiagramX": 85,
-										"DiagramY": 100,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{groupsum\n\thours[0,{cc \"project\", \"Hours\"}],\n\t\"project\"\n} "
-										}
-									},
-									{
-										"name": "indexof",
-										"Notes": "{indexof\n\tprojectsum.project,\n\thours.project\n}\n\nIndexof returns a matrix with two columns.\n\nThe first column holds the row numbers of the first cell found in hours.project, which has the same value as the first value found in projectsum.project.\n\nThe second column holds the column number of that cell.\n\nThus for each project name in projectsum, there will be a row with the indices for the first occurrence of that name in the projects column of hours.",
-										"DiagramX": 175,
-										"DiagramY": 145,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{indexof\n\tprojectsum.project,\n\thours.project\n}"
-										}
-									},
-									{
-										"name": "Hours",
-										"Notes": "This expression has its input checkbox checked, which lets it reference the Hours data table in the parent model. Its value is thus the table value from that table.",
-										"DiagramX": 200,
-										"DiagramY": 75,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "hours"
-										},
-										"isInput": "y",
-										"tableUnits": {}
-									}
-								]
-							},
-							{
-								"name": "Hours",
-								"Notes": "This data table tool is a simple fictitious time sheet with a month of values.  It has four columns, consisting of Date, Client, Project and hours.\n\nWhen new rows are added, they are initialized with today's date, the last row's Client and Project value and 0 hours.",
-								"DiagramX": 75,
-								"DiagramY": -155,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Data Table",
-								"Columns": [
-									{
-										"name": "Date",
-										"displayUnit": "date",
-										"nValues": [
-											1342396800,
-											1342396800,
-											1342483200,
-											1342569600,
-											1342569600,
-											1342656000,
-											1342656000,
-											1342742400,
-											1342742400,
-											1342828800,
-											1342828800,
-											1342915200,
-											1343001600,
-											1343174400,
-											1343174400,
-											1343260800,
-											1343347200,
-											1343433600,
-											1343433600,
-											1343520000,
-											1343606400,
-											1343692800,
-											1343779200,
-											1343779200,
-											1343865600,
-											1343865600,
-											1343952000,
-											1344038400,
-											1344038400,
-											1344124800,
-											1344124800,
-											1344297600,
-											1344384000,
-											1344470400,
-											1344556800,
-											1344556800,
-											1344643200,
-											1344729600,
-											1344729600,
-											1344816000,
-											1344902400,
-											1344902400,
-											1344988800,
-											1344988800
-										],
-										"unitDimensions": "0 0 1 0 0 0 0",
-										"defaultValue": "{mktime {int {date {now}}}}"
-									},
-									{
-										"name": "Client",
-										"displayUnit": "string",
-										"sValues": [
-											"HAL",
-											"Fred",
-											"Acme",
-											"Acme",
-											"Acme",
-											"HAL",
-											"Acme",
-											"HAL",
-											"Fred",
-											"Fred",
-											"Acme",
-											"Acme",
-											"Acme",
-											"Fred",
-											"HAL",
-											"HAL",
-											"HAL",
-											"HAL",
-											"Acme",
-											"Acme",
-											"Pear",
-											"Pear",
-											"Pear",
-											"HAL",
-											"Pear",
-											"Fred",
-											"Pear",
-											"Pear",
-											"Acme",
-											"Pear",
-											"HAL",
-											"HAL",
-											"HAL",
-											"HAL",
-											"Fred",
-											"HAL",
-											"HAL",
-											"HAL",
-											"Fred",
-											"Fred",
-											"Pear",
-											"Fred",
-											"HAL",
-											"Acme"
-										],
-										"defaultValue": "$[$.nrows,2]"
-									},
-									{
-										"name": "Project",
-										"displayUnit": "string",
-										"sValues": [
-											"DeepThought",
-											"Accounting",
-											"Coyote",
-											"Coyote",
-											"Coyote",
-											"DeepThought",
-											"RR",
-											"DeepThought",
-											"Accounting",
-											"Accounting",
-											"RR",
-											"RR",
-											"RR",
-											"Accounting",
-											"DeepThought",
-											"DeepThought",
-											"DeepThought",
-											"DeepThought",
-											"RR",
-											"Coyote",
-											"iWant",
-											"iWant",
-											"iWant",
-											"DeepThought",
-											"iWant",
-											"Accounting",
-											"iWant",
-											"iWish",
-											"RR",
-											"iWish",
-											"Clarke",
-											"Clarke",
-											"Clarke",
-											"Clarke",
-											"Accounting",
-											"Clarke",
-											"Clarke",
-											"Clarke",
-											"Report",
-											"Report",
-											"iWish",
-											"Report",
-											"Clarke",
-											"Coyote"
-										],
-										"defaultValue": "$[$.nrows,3]"
-									},
-									{
-										"name": "Hours",
-										"displayUnit": "h",
-										"nValues": [
-											7200,
-											10800,
-											18000,
-											21600,
-											7200,
-											10800,
-											7200,
-											10800,
-											7200,
-											14400,
-											21600,
-											28800,
-											32400,
-											18000,
-											10800,
-											25200,
-											28800,
-											7200,
-											14400,
-											14400,
-											21600,
-											32400,
-											25200,
-											7200,
-											25200,
-											7200,
-											25200,
-											21600,
-											7200,
-											18000,
-											7200,
-											28800,
-											32400,
-											25200,
-											7200,
-											18000,
-											28800,
-											18000,
-											10800,
-											28800,
-											18000,
-											7200,
-											25200,
-											7200
-										],
-										"unitDimensions": "0 0 1 0 0 0 0",
-										"defaultValue": "0 h"
-									}
-								]
-							},
-							{
-								"name": "Numeric",
-								"Notes": "The numeric function will transform a table into a numeric matrix, but only if all the numeric columns have the same unit type.\n\nThe string columns are simply omitted.\n\n  Here both date and hours are of type time and the other columns are strings, so the operation is allowed.\n",
-								"DiagramX": 160,
-								"DiagramY": -155,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "{numeric hours}"
-								}
-							},
-							{
-								"name": "TableArithmetic",
-								"Notes": "",
-								"DiagramX": 160,
-								"DiagramY": -50,
-								"HideInfo": "n",
-								"DiagramNotes": "n",
-								"Type": "Model",
-								"diagramScale": 1,
-								"Objects": [
-									{
-										"name": "TableArithmetic",
-										"Notes": "The basic arithmetic operators can be used with tables, with the proviso that the units must conform.  Thus if you are adding or subtracting a scalar, then all the columns must have the same unit type as the scalar.\n\nNote that the first and third columns are strings and are just copied without change.",
-										"DiagramX": 0,
-										"DiagramY": -145,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "2 * MakeTable / 3"
-										}
-									},
-									{
-										"name": "AddTables",
-										"Notes": "The two tables are added together.  They must have the same number of rows and columns and the columns must conform in type and unit type.\n\nNote that the first and last columns are strings and are just taken from the first argument, without modification.",
-										"DiagramX": 160,
-										"DiagramY": -145,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "Table1 + Table2"
-										}
-									},
-									{
-										"name": "Table1",
-										"Notes": "The table function is used to make a table with two numeric columns with different unit types, as well as two string columns.",
-										"DiagramX": 75,
-										"DiagramY": -145,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table\n\t{cc \"Row\",\"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"Row\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 1\"m\",\n\t100:105 * 1\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t\t100:105 * 1\"kg\",\n\t\t\t\t\"lb\"\n\t\t\t}\n}"
-										}
-									},
-									{
-										"name": "Table2",
-										"Notes": "Another table, conformable to MakeTable2",
-										"DiagramX": 75,
-										"DiagramY": -90,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table {cc\n\t\t\"Row\", \"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"No\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t100:104 * 1\"kg\", \"lb\"\n\t}\n}"
-										}
-									}
-								]
-							},
-							{
-								"name": "Combining",
-								"Notes": "",
-								"DiagramX": 160,
-								"DiagramY": -25,
-								"HideInfo": "n",
-								"DiagramNotes": "n",
-								"Type": "Model",
-								"diagramScale": 1,
-								"Objects": [
-									{
-										"name": "Concatenate",
-										"Notes": "Conformable tables can be concatenated using the cc function. The resulting table value has all of the rows of the concatenated tables.",
-										"DiagramX": 90,
-										"DiagramY": -145,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{cc table1, table2}"
-										}
-									},
-									{
-										"name": "Table1",
-										"Notes": "The table function is used to make a table with two numeric columns with different unit types, as well as two string columns.",
-										"DiagramX": 0,
-										"DiagramY": -145,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table\n\t{cc \"Row\",\"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"Row\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 1\"m\",\n\t100:105 * 1\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t\t100:105 * 1\"kg\",\n\t\t\t\t\"lb\"\n\t\t\t}\n}"
-										}
-									},
-									{
-										"name": "Table2",
-										"Notes": "Another table, conformable to MakeTable2",
-										"DiagramX": 0,
-										"DiagramY": -85,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table {cc\n\t\t\"Row\", \"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"No\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t100:104 * 1\"kg\", \"lb\"\n\t}\n}"
-										}
-									},
-									{
-										"name": "Append",
-										"Notes": "The append command will produce a table with all the columns of the arguments.  The arguments must all have the same number of rows.\n\nYou can also append column arrays to tables and they will be given a column name equivalent to their column number.",
-										"DiagramX": 85,
-										"DiagramY": -85,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{append table1, table2, 1:5 * 10 kg}"
-										}
-									}
-								]
-							}
-						]
-					},
-					{
 						"name": "Strings",
 						"Notes": "",
 						"DiagramX": -5,
@@ -15162,6 +14443,928 @@
 								}
 							}
 						]
+					},
+					{
+						"name": "TableValues",
+						"Notes": "",
+						"DiagramX": -5,
+						"DiagramY": 0,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"indexTool": "Overview",
+						"Objects": [
+							{
+								"name": "MakeTable",
+								"Notes": "",
+								"DiagramX": 75,
+								"DiagramY": -5,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "MakeTable",
+										"Notes": "The table function can be used to make a table value.\n\nThe first argument must be an array of names that will be used as the table column names.\n\nThe remaining parameters must all be arrays having the same number of rows.\n\nTheir columns will be used to make the columns of the new table value.\n\nIf the number of names in the first argument is not the same as the total number of columns in the rest of the arguments, the lessor is used and any extras ignored.",
+										"DiagramX": 30,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table {cc \"one\", \"two\", \"three\"},\n\t{cc \"s1\", \"s2\", \"s3\", \"s4\"},\n\t1:4,\n\t{fmt \"n=%3.0f\", 1:4*10}\n}"
+										}
+									},
+									{
+										"name": "MakeTable2",
+										"Notes": "The table function is used to make a table with two numeric columns with different unit types, as well as two string columns.",
+										"DiagramX": 115,
+										"DiagramY": 125,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table\n\t{cc \"Row\",\"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"Row\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 1\"m\",\n\t100:105 * 1\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t\t100:105 * 1\"kg\",\n\t\t\t\t\"lb\"\n\t\t\t}\n}"
+										}
+									},
+									{
+										"name": "MakeTable3",
+										"Notes": "Another table, conformable to MakeTable2",
+										"DiagramX": 205,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table {cc\n\t\t\"Row\", \"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"No\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t100:104 * 1\"kg\", \"lb\"\n\t}\n}"
+										}
+									},
+									{
+										"name": "TableArithmetic",
+										"Notes": "The basic arithmetic operators can be used with tables, with the proviso that the units must conform.  Thus if you are adding or subtracting a scalar, then all the columns must have the same unit type as the scalar.\n\nNote that the first and third columns are strings and are just copied without change.",
+										"DiagramX": 115,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "2 * MakeTable / 3"
+										}
+									},
+									{
+										"name": "AddTables",
+										"Notes": "The two tables are added together.  They must have the same number of rows and columns and the columns must conform in type and unit type.\n\nNote that the first and last columns are strings and are just taken from the first argument, without modification.",
+										"DiagramX": 205,
+										"DiagramY": 85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "MakeTable2 + MakeTable3"
+										}
+									}
+								]
+							},
+							{
+								"name": "Index",
+								"DiagramX": 75,
+								"DiagramY": -65,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "indexCell",
+										"Notes": "Cells of a table value can be referenced with the [ ] index operator in the normal row, column manner using numbers.",
+										"DiagramX": 10,
+										"DiagramY": 95,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours[3, 2]"
+										}
+									},
+									{
+										"name": "indexCell2",
+										"Notes": "A column index can be replaced with a column name for a table value.",
+										"DiagramX": 10,
+										"DiagramY": 155,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours[3, \"Client\"]"
+										}
+									},
+									{
+										"name": "IndexRows",
+										"Notes": "An array of row indexes can be used to get certain rows of a table value.  The result will itself be a table value.",
+										"DiagramX": 10,
+										"DiagramY": 200,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours[ 3:5 ]"
+										}
+									},
+									{
+										"name": "IndexColumns",
+										"Notes": "If an array of column names (here created by the concat function) is used as a column index, then those columns will be in the table value result.",
+										"DiagramX": 205,
+										"DiagramY": 90,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours[ 0, {cc \"project\", \"hours\"} ]"
+										}
+									},
+									{
+										"name": "SingleColumn",
+										"Notes": "If only a single column is returned, then it is returned as a normal numeric or string array, rather than as a table value.\n\nNote that in this case the display unit is not retained and the value is displayed in seconds.  You could of course set the display unit for this expression.",
+										"DiagramX": 205,
+										"DiagramY": 155,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours[0,1]"
+										}
+									},
+									{
+										"name": "ColumnRef",
+										"Notes": "A single column can also be obtained by using the column name in the dot notation.\n\nHere the display unit has been set on this expression.",
+										"DiagramX": 200,
+										"DiagramY": 255,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours.date"
+										},
+										"displayUnit": "date"
+									},
+									{
+										"name": "Hours",
+										"Notes": "This expression has its input checkbox checked, which lets it reference the Hours data table in the parent model. Its value is thus the table value from that table.\n\nThings to note:\n - cells cannot be modified as they can in the source data table.\n\n - the display unit for each column retains the display unit from its source, but you can change that by clicking on the column name and then the button to the right of the display unit (above the table).",
+										"DiagramX": 110,
+										"DiagramY": 140,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours"
+										},
+										"isInput": "y",
+										"tableUnits": {}
+									}
+								]
+							},
+							{
+								"name": "Select",
+								"DiagramX": 75,
+								"DiagramY": -45,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"indexTool": "Select_Function",
+								"Objects": [
+									{
+										"name": "Hours",
+										"Notes": "This expression has its input checkbox checked, which lets it reference the Hours data table in the parent model. Its value is thus the table value from that table.",
+										"DiagramX": 30,
+										"DiagramY": 85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours"
+										},
+										"isInput": "y",
+										"tableUnits": {}
+									},
+									{
+										"name": "boolSelect",
+										"Notes": "Also finds all the rows of Hours that have Coyote in the project column, but uses a boolean selector array instead of a string command.",
+										"DiagramX": 115,
+										"DiagramY": 85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours,\n\t{eq hours.project, \"Coyote\"}\n}"
+										}
+									},
+									{
+										"name": "Select",
+										"Notes": "Find all the rows of Hours that have Coyote in the project column.",
+										"DiagramX": 115,
+										"DiagramY": 40,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours, \"project = Coyote\"}"
+										}
+									},
+									{
+										"name": "Select_Function",
+										"Notes": "Select Function Overview",
+										"DiagramX": 30,
+										"DiagramY": 40,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Select Function</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t\t<p>\n\t\t\t\tThe select function can be used to choose certain rows of a table, thus creating a new table value. For instance the <b>Select</b> expression in this model uses the formula:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t{select hours, \"project = Coyote\"}\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tto find all the rows in the table value <b>hours</b> which have a value of \"Coyote\" in the project column.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tThe first parameter of the function is simply the table value, in this case from the expression <b>hours</b>.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tThe second parameter is a string of the form\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\t\n\t\t\t\t\"column op value\"\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\twhere <b>column</b> is the name of the table column and the <b>op</b> term is one of (<b>=, !=, <, <=, >, >=</b>). The <b>value</b> term is some value that will be matched against each row of the column using the given operation.  The value isn't a formula, but can have a unit if it is numeric. String comparisons are case insensitive and a missing value term will match a string made up zero or more blanks.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tIf the selector has more than one row, each result is \"ANDed\" with the previous result, unless the \"column\" term is preceded by a \"|\" character, in which case an OR operation is performed with the previous result. An \"&\" character can optionally be used for AND operations to make the formula more descriptive.\n\t\t\t<p>\n\t\t\t<p>\n\t\t\t\tInstead of a string value, the second parameter of select can be a column array with the same number of rows as the table.  All the rows of this argument which are nonzero will be selected from the source table and included in the result.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe expression <b>boolSelect</b> uses the formula:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t{select hours, {eq hours.project, \"Coyote\"}}\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\twhich will also select all the rows whose project column has a value of \"Coyote\", producing the same result as the <b>Select</b> expression.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe select command will also work on matrices of numbers and strings in the same way, with the column name being replaced by the column number.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tSee the various other expressions in this model for examples.\n\t\t\t</p>\n\n\t\t</div>\n\t</body>\n</html>"
+										}
+									},
+									{
+										"name": "OrSelect",
+										"Notes": "Find all rows where project is either Coyote or Accounting",
+										"DiagramX": 30,
+										"DiagramY": 205,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours,\n\t{cc\n\t\t\"project = coyote\",\n\t\t\"| project = accounting\"\n\t}\n}"
+										}
+									},
+									{
+										"name": "BeforeAugust",
+										"Notes": "Another example of using the select, this time to obtain all the records before Aug 1, 2012. Note the use of the date unit.",
+										"DiagramX": 115,
+										"DiagramY": 150,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours, \"date < 20120801 date\"}"
+										}
+									},
+									{
+										"name": "OrAndSelect",
+										"Notes": "Select all rows where the project is either Coyote or Accounting and has a date before August.",
+										"DiagramX": 115,
+										"DiagramY": 205,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours,\n\t{cc\n\t\t\"project = coyote\",\n\t\t\"| project = accounting\",\n\t\t\"date < 20120801 date\"\n\t}\n}"
+										}
+									},
+									{
+										"name": "NumberbyString",
+										"Notes": "Select rows where column 2 is less than 60",
+										"DiagramX": 30,
+										"DiagramY": 255,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select {append 1:50, 51:100},\n\t\"2 <= 60\"\n}"
+										}
+									},
+									{
+										"name": "StringByString",
+										"Notes": "Select rows where column 1 (the only column) are greater or equal to \"f\".",
+										"DiagramX": 110,
+										"DiagramY": 255,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select\n\t{cc\n\t\t\"a\",\"b\",\"c\",\"d\",\"e\",\n\t\t\"f\",\"g\",\"h\",\"i\",\"j\"\n\t}, \"1 >= f\"\n}"
+										}
+									},
+									{
+										"name": "AndSelect",
+										"Notes": "Select rows where Fred is the client and the project is Accounting.",
+										"DiagramX": 30,
+										"DiagramY": 150,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours,\n\t{cc\n\t\t\"client = Fred\",\n\t\t\"project = accounting\"\n\t}\n}"
+										}
+									}
+								]
+							},
+							{
+								"name": "Sums",
+								"DiagramX": 75,
+								"DiagramY": -25,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"indexTool": "overview",
+								"Objects": [
+									{
+										"name": "DayHours",
+										"Notes": "If you group on a numeric column, the values in the column are first converted to strings.\n\nHere we calculated the total number of hours on each date.\n",
+										"DiagramX": 105,
+										"DiagramY": 295,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{groupsum Hours, \"Date\"}"
+										},
+										"tableUnits": {
+											"1": "date"
+										}
+									},
+									{
+										"name": "clients",
+										"Notes": "Here the indexof values are used to extract the client names from Hours, corresponding to the projects in projectsum.\n\nhours.client[ indexof[0,1] ]\n\nBecause it is a single column, it is returned as a simple column array, not a table value.",
+										"DiagramX": 290,
+										"DiagramY": 90,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours.client[ clientIndex[0,1] ]"
+										}
+									},
+									{
+										"name": "ProjectHours",
+										"Notes": "The append function can be used to combine the columns of different tables into a single table.  All of the arguments must have the same number of rows.\n\nIt is used here to add a column of client names to the projectsum result:\n\n{append\n  {table \"Client\", clients},\n  projectsum\n}\n\nThe clients value is not a table, but we can easily convert it into one with the table function.",
+										"DiagramX": 385,
+										"DiagramY": 90,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{append\n\t{table \"Client\", clients},\n\t projectsum\n}"
+										}
+									},
+									{
+										"name": "projectsum",
+										"Notes": "This expression uses the groupsum function to get the total hours by project:\n\n{groupsum hours[0,\n  {cc\n    \"project\",\n    \"Hours\",\n    \"Charge\"\n  }],\n  \"project\"\n} \n\nThe first argument is the table value to be totalled.  In this case the index operator has been used to select just the project, hours and charge columns.\n\nThe second argument is the column for which identical values are to be grouped together into a single row.\n\n Other columns in that row will be the sums of the values for that group.\n\nThe argument must be a string and must be the name of a column in the table.\n\nThere are also groupmin and groupmax functions.",
+										"DiagramX": 290,
+										"DiagramY": 190,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{groupsum hours[0,\n\t{cc\n\t\t\"project\",\n\t\t\"Hours\",\n\t\t\"Charge\"\n\t}],\n\t\"project\"\n}"
+										}
+									},
+									{
+										"name": "Hours",
+										"Notes": "This expression has its input checkbox checked, which lets it reference the Hours data table in the parent model. Its value is thus the table value from that table.",
+										"DiagramX": 200,
+										"DiagramY": 90,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "hours"
+										},
+										"isInput": "y",
+										"tableUnits": {}
+									},
+									{
+										"name": "clientIndex",
+										"Notes": "{indexof\n  projectsum.project,\n  hours.project\n}\n\nIndexof returns a matrix with two columns.\n\nThe first column holds the row numbers of the first cell found in hours.project, which has the same value as the first value found in projectsum.project.\n\nThe second column holds the column number of that cell.\n\nThus for each project name in projectsum, there will be a row with the indices for the first occurrence of that name in the projects column of hours.",
+										"DiagramX": 200,
+										"DiagramY": 160,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{indexof\n\tprojectsum.project,\n\thours.project\n}"
+										}
+									},
+									{
+										"name": "SumColumns",
+										"Notes": "The sumcols function can be used to sum all the columns of a table. In the resulting table, string columns are retained, but just have a blank value.\n\nIn this case summing the date column doesn't make much sense, but the Hours and Charge columns do.",
+										"DiagramX": 115,
+										"DiagramY": 115,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{sumcols hours}"
+										}
+									},
+									{
+										"name": "SumRows",
+										"Notes": "The sumrows function will sum all the values in a row.  These must all have conformable units, so in this case I have just selected the date and the hours columns. The answer is kind of silly, but makes sense when shown with the date unit type.",
+										"DiagramX": 110,
+										"DiagramY": 210,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{sumrows hours[0, {cc \"date\", \"hours\"}]}"
+										},
+										"displayUnit": "date"
+									},
+									{
+										"name": "Overview",
+										"Notes": "",
+										"DiagramX": 115,
+										"DiagramY": 90,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'\n<!-- Modify the body and any other part of this html to meet your needs -->\n<html>\n\t<head>\n\t<style>\n\t\tbody {background-color: #EEFFEE; color: black;}\n\t\ttable {\n\t\t\twidth: 100%;\n\t\t\tborder-collapse: collapse;\n\t\t}\n\t\ttd, th {\n\t\t\tborder: 1px solid #ddd;\n\t\t\tpadding: 4px;\n\t\t}\n\n\t\ttr:nth-child(even){background-color: #f2f2f2;}\n\t\t\n\t\ttr:hover {background-color: #ddd;}\n\t\t\n\t\tth {\n\t\t\ttext-align: left;\n\t\t\tbackground-color: #04AA6D;\n\t\t\tcolor: white;\n\t\t}\n\t\tth.col0, td.col0 {\n\t\t\twidth: 50px;\n\t\t}\n\t</style>\n\t</head>\n\t<body>\n\t\t<p>\n\t\t\tThis model illustrates the summation functions for table values. These are:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li>\n\t\t\t\t<b>sumcols</b> - returns a single row table with each column having the sum of the table value argument.\n\t\t\t</li>\n\t\t\t<li>\n\t\t\t\t<b>sumrows</b> - returns a numerical array with the row by row sum of all the columns of the table value argument. All the columns must be of the same unit type.\n\t\t\t</li>\n\t\t\t<li>\n\t\t\t\t<b>groupsum</b> - returns a table with each row having the sum of all the rows that have the same value in a given column.\n\t\t\t</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThese functions all have min and max function counterparts.\n\t\t</p>\n\t</body>\n</html>"
+										}
+									}
+								]
+							},
+							{
+								"name": "Numeric",
+								"Notes": "The numeric function will transform a table into a numeric matrix, but only if all the numeric columns have the same unit type.\n\nThe string columns are simply omitted.\n\n  Here both date and hours are of type time and the other columns are strings, so the operation is allowed.\n",
+								"DiagramX": 165,
+								"DiagramY": -100,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{numeric sameunits}"
+								}
+							},
+							{
+								"name": "TableArithmetic",
+								"Notes": "",
+								"DiagramX": 75,
+								"DiagramY": 20,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "Table1",
+										"Notes": "The table function is used to make a table with two numeric columns with different unit types, as well as two string columns.",
+										"DiagramX": 75,
+										"DiagramY": -145,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table\n\t{cc \"Row\",\"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"Row\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 1\"m\",\n\t100:105 * 1\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t\t100:105 * 1\"kg\",\n\t\t\t\t\"lb\"\n\t\t\t}\n}"
+										}
+									},
+									{
+										"name": "Table2",
+										"Notes": "Another table, conformable to MakeTable2",
+										"DiagramX": 75,
+										"DiagramY": -85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table {cc\n\t\t\"Row\", \"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"No\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t100:104 * 1\"kg\", \"lb\"\n\t}\n}"
+										}
+									},
+									{
+										"name": "ScalarArithmetic",
+										"Notes": "The basic arithmetic operators can be used with tables, with the proviso that the units must conform.  Thus if you are adding or subtracting a scalar, then all the columns must have the same unit type as the scalar. Here we are just multiplying and dividing\n\nNote that string columns, like the first one, are just copied without change.",
+										"DiagramX": -10,
+										"DiagramY": -145,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "Table1 * 2 / 3"
+										}
+									},
+									{
+										"name": "AddTables",
+										"Notes": "The two tables are added together.  They must have the same number of columns and the columns must conform in type and unit type. The number of rows must also be the same, unless one argument has just one row.\n\nNote that the first and last columns are strings and are just taken from the first argument, without modification.",
+										"DiagramX": 160,
+										"DiagramY": -145,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "Table1 + Table2"
+										}
+									},
+									{
+										"name": "SingleRow",
+										"Notes": "Tables with a single row can participate in arithmetic operations with multiple row tables as long as their columns are conformable.",
+										"DiagramX": 155,
+										"DiagramY": -45,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "(Table1  + Table2[1]) * Table2[2]"
+										}
+									}
+								]
+							},
+							{
+								"name": "Combining",
+								"Notes": "",
+								"DiagramX": 165,
+								"DiagramY": 15,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "Concatenate",
+										"Notes": "Conformable tables can be concatenated using the cc function. The resulting table value has all of the rows of the concatenated tables.",
+										"DiagramX": 90,
+										"DiagramY": -145,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cc table1, table2}"
+										}
+									},
+									{
+										"name": "Table1",
+										"Notes": "The table function is used to make a table with two numeric columns with different unit types, as well as two string columns.",
+										"DiagramX": 0,
+										"DiagramY": -145,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table\n\t{cc \"Row\",\"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"Row\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 1\"m\",\n\t100:105 * 1\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t\t100:105 * 1\"kg\",\n\t\t\t\t\"lb\"\n\t\t\t}\n}"
+										}
+									},
+									{
+										"name": "Table2",
+										"Notes": "Another table, conformable to MakeTable2",
+										"DiagramX": 0,
+										"DiagramY": -85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table {cc\n\t\t\"Row\", \"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"No\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t100:104 * 1\"kg\", \"lb\"\n\t}\n}"
+										}
+									},
+									{
+										"name": "Append",
+										"Notes": "The append command will produce a table with all the columns of the arguments.  The arguments must all have the same number of rows.\n\nYou can also append column arrays to tables and they will be given a column name equivalent to their column number.",
+										"DiagramX": 85,
+										"DiagramY": -85,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{append table1, table2, 1:5 * 10 kg}"
+										}
+									}
+								]
+							},
+							{
+								"name": "Clients",
+								"Notes": "A list of client names and charge rates",
+								"DiagramX": 80,
+								"DiagramY": -155,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "Name",
+										"displayUnit": "string",
+										"sValues": [
+											"HAL",
+											"Fred",
+											"Acme",
+											"Pear"
+										],
+										"defaultValue": ""
+									},
+									{
+										"name": "Rate",
+										"displayUnit": "dollar/h",
+										"nValues": [
+											0.0333333333,
+											0.0277777778,
+											0.0486111111,
+											0.0388888889
+										],
+										"unitDimensions": "0 0 -1 0 0 0 0",
+										"defaultValue": "0 1/s"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "Hours",
+								"Notes": "This data table tool is a simple fictitious time sheet with a month of values.  See the data table help for a description of how it works",
+								"DiagramX": 80,
+								"DiagramY": -120,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "Date",
+										"displayUnit": "date",
+										"nValues": [
+											1342396800,
+											1342396800,
+											1342483200,
+											1342569600,
+											1342569600,
+											1342656000,
+											1342656000,
+											1342742400,
+											1342742400,
+											1342828800,
+											1342828800,
+											1342915200,
+											1343001600,
+											1343174400,
+											1343174400,
+											1343260800,
+											1343347200,
+											1343433600,
+											1343433600,
+											1343520000,
+											1343606400,
+											1343692800,
+											1343779200,
+											1343779200,
+											1343865600,
+											1343865600,
+											1343952000,
+											1344038400,
+											1344038400,
+											1344124800,
+											1344124800,
+											1344297600,
+											1344384000,
+											1344470400,
+											1344556800,
+											1344556800,
+											1344643200,
+											1344729600,
+											1344729600,
+											1344816000,
+											1344902400,
+											1344902400,
+											1344988800,
+											1344988800
+										],
+										"unitDimensions": "0 0 1 0 0 0 0",
+										"defaultValue": "{mktime {int {date {now}}}}"
+									},
+									{
+										"name": "Client",
+										"displayUnit": "string",
+										"sValues": [
+											"HAL",
+											"Fred",
+											"Acme",
+											"Acme",
+											"Acme",
+											"HAL",
+											"Acme",
+											"HAL",
+											"Fred",
+											"Fred",
+											"Acme",
+											"Acme",
+											"Acme",
+											"Fred",
+											"HAL",
+											"HAL",
+											"HAL",
+											"HAL",
+											"Acme",
+											"Acme",
+											"Pear",
+											"Pear",
+											"Pear",
+											"HAL",
+											"Pear",
+											"Fred",
+											"Pear",
+											"Pear",
+											"Acme",
+											"Pear",
+											"HAL",
+											"HAL",
+											"HAL",
+											"HAL",
+											"Fred",
+											"HAL",
+											"HAL",
+											"HAL",
+											"Fred",
+											"Fred",
+											"Pear",
+											"Fred",
+											"HAL",
+											"Acme"
+										],
+										"defaultValue": "clients.name",
+										"isMenu": true
+									},
+									{
+										"name": "Project",
+										"displayUnit": "string",
+										"sValues": [
+											"DeepThought",
+											"Accounting",
+											"Coyote",
+											"Coyote",
+											"Coyote",
+											"DeepThought",
+											"RR",
+											"DeepThought",
+											"Accounting",
+											"Accounting",
+											"RR",
+											"RR",
+											"RR",
+											"Accounting",
+											"DeepThought",
+											"DeepThought",
+											"DeepThought",
+											"DeepThought",
+											"RR",
+											"Coyote",
+											"iWant",
+											"iWant",
+											"iWant",
+											"DeepThought",
+											"iWant",
+											"Accounting",
+											"iWant",
+											"iWish",
+											"RR",
+											"iWish",
+											"Clarke",
+											"Clarke",
+											"Clarke",
+											"Clarke",
+											"Accounting",
+											"Clarke",
+											"Clarke",
+											"Clarke",
+											"Report",
+											"Report",
+											"iWish",
+											"Report",
+											"Clarke",
+											"Coyote"
+										],
+										"defaultValue": ""
+									},
+									{
+										"name": "Hours",
+										"displayUnit": "h",
+										"nValues": [
+											7200,
+											10800,
+											18000,
+											21600,
+											7200,
+											10800,
+											7200,
+											10800,
+											7200,
+											14400,
+											21600,
+											28800,
+											32400,
+											18000,
+											10800,
+											25200,
+											28800,
+											7200,
+											14400,
+											14400,
+											21600,
+											32400,
+											25200,
+											7200,
+											25200,
+											7200,
+											25200,
+											21600,
+											7200,
+											18000,
+											7200,
+											28800,
+											32400,
+											25200,
+											7200,
+											18000,
+											28800,
+											18000,
+											10800,
+											28800,
+											18000,
+											7200,
+											25200,
+											7200
+										],
+										"unitDimensions": "0 0 1 0 0 0 0",
+										"defaultValue": "0 h"
+									},
+									{
+										"name": "Charge",
+										"displayUnit": "dollar",
+										"nValues": [
+											239.99999975999998,
+											300.00000024,
+											874.9999998,
+											1049.99999976,
+											349.99999992,
+											359.99999963999994,
+											349.99999992,
+											359.99999963999994,
+											200.00000016,
+											400.00000032,
+											1049.99999976,
+											1399.99999968,
+											1574.99999964,
+											500.00000040000003,
+											359.99999963999994,
+											839.9999991599999,
+											959.9999990399999,
+											239.99999975999998,
+											699.99999984,
+											699.99999984,
+											840.0000002400001,
+											1260.00000036,
+											980.00000028,
+											239.99999975999998,
+											980.00000028,
+											200.00000016,
+											980.00000028,
+											840.0000002400001,
+											349.99999992,
+											700.0000002,
+											239.99999975999998,
+											959.9999990399999,
+											1079.9999989199998,
+											839.9999991599999,
+											200.00000016,
+											599.9999994,
+											959.9999990399999,
+											599.9999994,
+											300.00000024,
+											800.00000064,
+											700.0000002,
+											200.00000016,
+											839.9999991599999,
+											349.99999992
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "$.hours * clients.rate[\n\t{indexof\n\t\t$.client,\n\t\tclients.name\n\t}[0,1]\n]",
+										"isCalculated": true
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "SameUnits",
+								"Notes": "Hours without the Charge column (see the Index model) to provide the Numeric expression with a table where all numeric unit types are the same.",
+								"DiagramX": 165,
+								"DiagramY": -155,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "Hours[0,1:4]"
+								}
+							},
+							{
+								"name": "Overview",
+								"Notes": "",
+								"DiagramX": 5,
+								"DiagramY": -155,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<!-- Modify the body and any other part of this html to meet your needs -->\n<html>\n\t<head>\n\t<style>\n\t\tbody {background-color: #EEFFEE; color: black;}\n\t\ttable {\n\t\t\twidth: 100%;\n\t\t\tborder-collapse: collapse;\n\t\t}\n\t\ttd, th {\n\t\t\tborder: 1px solid #ddd;\n\t\t\tpadding: 4px;\n\t\t}\n\n\t\ttr:nth-child(even){background-color: #f2f2f2;}\n\t\t\n\t\ttr:hover {background-color: #ddd;}\n\t\t\n\t\tth {\n\t\t\ttext-align: left;\n\t\t\tbackground-color: #04AA6D;\n\t\t\tcolor: white;\n\t\t}\n\t\tth.col0, td.col0 {\n\t\t\twidth: 50px;\n\t\t}\n\t</style>\n\t</head>\n\t<body>\n\t\t<p>\n\t\t\tIn addition to arrays and matrices of numbers and strings, Math Minion can also have table values.\n\t\t</p>\n\t\t<p>\n\t\t\tThese often originate with a Data Table object like the Hours object in this and the example models, but they can be created directly from formulas as illustrated in the MakeTable expressions.\n\t\t</p>\n\t\t<p>\n\t\t\tEssentially a table value is a collection of columns, which all have the same number of rows.\n\t\t</p>\n\t\t<p>\n\t\t\tThey can be of different types; that is string or numeric and if numeric, they can have different unit types.\n\t\t</p>\n\t\t<p>\n\t\t\tData table tools will be discussed in more detail in the Tools model of the Root model.\n\t\t</p>\n\t</body>\n</html>"
+								}
+							}
+						]
 					}
 				]
 			},
@@ -15174,7 +15377,7 @@
 				"DiagramNotes": "y",
 				"Type": "HTML Form",
 				"Formula": {
-					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.disclaimer {\n\t\t\t\tcolor: #004400;\n\t\t\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\t\t\tfont-size: 0.7em;\n\t\t\t\tfont-style: italic;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t}\n\t\t\t.link {\n\t\t\t\tcolor: blue;\n\t\t\t\tfont-weight: bold;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p class=\"disclaimer\">\n\t\t\tMath Minion is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the <a href=\"../LICENSE.txt\" target=\"_blank\">GNU General Public License</a> for more details.\n\t\t</p>\n\t\t<p>\n\t\t\tThis session contains numerous explanations and small illustrations of how Math Minion works. However before diving in, I fear you really should, <b>gasp</b>, read a bit of the help.\n\t\t</p>\n\t\t<p>\n\t\t\tPlease put your natural horror aside and <b><a href=\"./help/getstarted.html\" target=\"_blank\">click here</a></b> to open the help in another browser window or tab.\n\t\t</p>\n\t\t<p>\n\t\t\tIf nothing else following the links for the <b><a href=\"./help/diagram.html\" target=\"_blank\">diagram</a></b> and <b><a href=\"./help/infoview.html\" target=\"_blank\">information view</a></b> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the diagram and the examples you can import from the <b>Examples</b> HtmlPage.\n\t\t</p>\n\t\t<p>\n\t\t\tKeep your <b>Getting Started</b> session and <b>Math Minion News</b> session up to date by\n\t\t\treloading them with these links:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\">Reload Getting Started</span></li>\n\t\t\t<li><span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../news/MM_News.txt', mm_view: 'Welcome'});\">Reload MM_News</span></li>\n\t\t</ul>\n\t\t<p>\n\t\t\tIf you have any questions, you can always use the <b><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Contact Me</a></b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>Craig</p>\n\t\t</div>\n\t</body>\n</html>"
+					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.disclaimer {\n\t\t\t\tcolor: #004400;\n\t\t\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\t\t\tfont-size: 0.7em;\n\t\t\t\tfont-style: italic;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t}\n\t\t\t.link {\n\t\t\t\tcolor: blue;\n\t\t\t\tfont-weight: bold;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p class=\"disclaimer\">\n\t\t\tMath Minion is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the <a href=\"../LICENSE.txt\" target=\"_blank\">GNU General Public License</a> for more details.\n\t\t</p>\n\t\t<p>\n\t\t\tThis session contains numerous explanations and small illustrations of how Math Minion works. However before diving in, I fear you really should, <b>gasp</b>, read a bit of the help.\n\t\t</p>\n\t\t<p>\n\t\t\tPlease put your natural horror aside and <b><a href=\"./help/getstarted.html\" target=\"_blank\">click here</a></b> to open the help in another browser window or tab.\n\t\t</p>\n\t\t<p>\n\t\t\tIf nothing else following the links for the <b><a href=\"./help/diagram.html\" target=\"_blank\">diagram</a></b> and <b><a href=\"./help/infoview.html\" target=\"_blank\">information view</a></b> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the diagram and the examples you can import from the <b>Examples</b> HtmlPage.\n\t\t</p>\n\t\t<p>\n\t\t\tKeep your <b>Getting Started</b> session and <b>Math Minion News</b> session up to date by\n\t\t\treloading them with these links:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\">Reload Getting Started</span></li>\n\t\t\t<li><span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../news/MM_News.txt', mm_view: 'Welcome'});\">Reload MM_News</span></li>\n\t\t</ul>\n\t\t<p>\n\t\t\tIf you have any questions or comments, please use the <b><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Contact Me</a></b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>Craig</p>\n\t\t</div>\n\t</body>\n</html>"
 				}
 			},
 			{

@@ -23,6 +23,7 @@
 					clear: '&nbsp;&nbsp;Clear',
 					update: '&nbsp;&nbsp;Update',
 					load: '&nbsp;&nbsp;Loading a Different Session',
+					cmd: '&nbsp;&nbsp;Calc Engine Command',
 					parameters: 'Formula Parameters',
 				});
 			};			
@@ -336,6 +337,39 @@
 						Web security protocols (specifically CORS) may prevent you from importing from
 						servers you don't control and thus can't set the appropriate permissions on. However
 						it should alway be possible to load from the server hosting Math Minion itself.
+					</p>
+				</div>
+				<div id="cmd" class="subsection">
+					<h3>Calc Engine Command - mm_cmd</h3>
+					<p>
+						The user interface for Math Minion talks to the calculation engine by sending text
+						messages to it and receiving text messages back. The
+						<a href="console.html">console view</a> accessed by the button at the bottom of the
+						<a href="infoview.html">information view</a> allows you to manually enter commands
+						and view the results. The Html Page tool also has an action which allows you to
+						send commands to the engine.						
+					</p>
+					<p>
+						For example the HTML code:
+					</p>
+					<pre>
+&lt;button onClick=
+  "mmpost([],{mm_cmd: '.money.formula set formula 0 dollar'})"
+&gt;
+  Clear Money
+&lt;/button&gt;
+					</pre>
+					<p>
+						would create a button that when pressed would set the formula of the expression
+						<b>money</b> to <b>0 dollar</b>.
+					</p>
+					<p>
+						See the Html page is getting started for a more complete example.
+					</p>
+					<p class="reminder">
+						<b>Note that the calculation engine
+						runs in a separate process within your browser and no messages are sent to an
+						external server.</b>
 					</p>
 				</div>
 				<div id="parameters" class="section">

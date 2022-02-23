@@ -86,17 +86,17 @@
 					The necessary files are included with the Math Minion code, so all that is needed is to edit the <b>run.html</b> file in the <b>mmjs</b> folder. Using your favourite text editor, you need to comment out the four <b>script</b> tags referencing <b>unpkg.com</b> and uncomment the four referencing <b>offline</b>. The result should look like:
 				</p>
 				<pre>
-		&lt;!--
-		&lt;script src="https://unpkg.com/i18next/i18next.js"&gt;&lt;/script&gt;
-		&lt;script src="https://unpkg.com/i18next-xhr-backend/i18nextXHRBackend.js"&gt;&lt;/script&gt;
-		&lt;script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin&gt;&lt;/script&gt;
-		&lt;script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin&gt;&lt;/script&gt;
-		--&gt;
-	
-		&lt;script src="offline/i18next.js"&gt;&lt;/script&gt;
-		&lt;script src="offline/i18nextXHRBackend.js"&gt;&lt;/script&gt;
-		&lt;script src="offline/react.development.js" crossorigin&gt;&lt;/script&gt;
-		&lt;script src="offline/react-dom.development.js" crossorigin&gt;&lt;/script&gt;
+&lt;!--
+&lt;script src="https://unpkg.com/i18next/i18next.js"&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/i18next-xhr-backend/i18nextXHRBackend.js"&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin&gt;&lt;/script&gt;
+--&gt;
+
+&lt;script src="offline/i18next.js"&gt;&lt;/script&gt;
+&lt;script src="offline/i18nextXHRBackend.js"&gt;&lt;/script&gt;
+&lt;script src="offline/react.development.js" crossorigin&gt;&lt;/script&gt;
+&lt;script src="offline/react-dom.development.js" crossorigin&gt;&lt;/script&gt;
 				</pre>
 				<p>
 					Now loading this file from your local server should work even if the Internet is not available.
