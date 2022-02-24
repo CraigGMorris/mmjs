@@ -5,10 +5,10 @@
 	"DeviceWidth": 1024,
 	"UserUnitSets": {},
 	"UserUnits": [],
-	"CaseName": "MM_News",
+	"CaseName": "New MM_News",
 	"DefaultUnitSet": "SI",
 	"SelectedObject": "The_News",
-	"ModelPath": "/.root.All_Articles.News_20220121",
+	"ModelPath": "/.root.All_Articles.News_20220226",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
@@ -34,7 +34,7 @@
 						"name": "News_20211010",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -65,
+						"DiagramY": -40,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -257,7 +257,10 @@
 										"unitDimensions": "0 0 1 0 0 0 0",
 										"defaultValue": "0 h"
 									}
-								]
+								],
+								"Filter": {
+									"Formula": ""
+								}
 							},
 							{
 								"name": "ProjectHours",
@@ -331,7 +334,7 @@
 						"name": "News_20210910",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -40,
+						"DiagramY": -15,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -671,7 +674,10 @@
 												"unitDimensions": "0 0 1 0 0 0 0",
 												"defaultValue": "0 h"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									}
 								]
 							},
@@ -693,7 +699,7 @@
 						"name": "News_20210703",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -15,
+						"DiagramY": 10,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -718,7 +724,7 @@
 						"name": "News_20210621",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": 10,
+						"DiagramY": 35,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -743,24 +749,19 @@
 						"name": "News_20211207",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -90,
+						"DiagramY": -65,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"Type": "HTML Form",
 						"Formula": {
 							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.link {color: blue;}\n\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h4>Math Minion News: 2021-12-07</h4>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Hopefully Invisible Changes to Storage</h3>\n\t\t\t<p>\n\t\t\t\tA version uploaded last weekend brings a switch in how sessions are stored in the browser database. It should be invisible to users, but brings significant benefits to anyone nerdy enough (probably just me) to make use of it.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tSessions are still stored in the browser indexedDB, but a <a href=\"https://pouchdb.com\" target=\"_blank\">PouchDB</a> layer has been introduced that permits the sessions to be synchronized with <a href=\"https://couchdb.apache.org\" target=\"_blank\">CouchDB</a> databases. Ideally this allows you to keep your Math Minion sessions backed up to an external database as well as sharing them across browsers and devices. One can even make a change on one device and see it reflected on another in near real time.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tHowever in order to make use of these features, you will need to run a CouchDB server of your own or use a cloud based one. Due to security restrictions in browsers, you may have to also run your own Math Minion server.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThere are new help pages with some thoughts on:\n\t\t\t</p>\n\t\t\t<ul>\n\t\t\t\t<li><a href=\"help/couchdb.html\" target=\"_blank\">CouchDB Integration</a></li>\n\t\t\t\t<li><a href=\"help/mmserver.html\" target=\"_blank\">Running a MM Server</a></li>\n\t\t\t</ul>\n\t\t\t<p>\n\t\t\t\tbut they are far from complete how-to guides on running servers.\n\t\t\t</p>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>MM App Removed from App Store</h3>\n\t\t\t<p>\n\t\t\t\tSince I had no plans to further update the app store version of Math Minion and it was accumulating an increasing list of deprecations that would eventually come home to roost, I decided to remove it from the app store so new users weren't downloading an end of life program.\n\t\t\t</p>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Feedback</h3>\n\t\t\t<p>\n\t\t\t\tAs always, any and all feedback or questions are encouraged and appreciated.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
-						},
-						"f0": "{pi}",
-						"f1": "{array 3, 2, 1:6} * 1 kg",
-						"f2": "clientHours",
-						"f3": "projectHours",
-						"f4": "{array 10, 4, 1:40} * 1 min"
+						}
 					},
 					{
 						"name": "News_20220121",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -115,
+						"DiagramY": -90,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"Type": "Model",
@@ -801,7 +802,7 @@
 									},
 									{
 										"name": "Rate",
-										"displayUnit": "dollar/h",
+										"displayUnit": "1/s",
 										"nValues": [
 											0.03333333333333333,
 											0.0277777778,
@@ -811,7 +812,10 @@
 										"unitDimensions": "0 0 -1 0 0 0 0",
 										"defaultValue": "0 dollar/h"
 									}
-								]
+								],
+								"Filter": {
+									"Formula": ""
+								}
 							},
 							{
 								"name": "Hours",
@@ -1031,7 +1035,7 @@
 									},
 									{
 										"name": "Rate",
-										"displayUnit": "dollar/h",
+										"displayUnit": "1/s",
 										"nValues": [
 											0.03333333333333333,
 											0.03333333333333333,
@@ -1128,8 +1132,7 @@
 									},
 									{
 										"name": "Charge",
-										"displayUnit": "dollar",
-										"format": ".2f",
+										"displayUnit": "Fraction",
 										"nValues": [
 											240,
 											360,
@@ -1222,9 +1225,13 @@
 										],
 										"unitDimensions": "0 0 0 0 0 0 0",
 										"defaultValue": "$.hours*$.rate",
+										"format": ".2f",
 										"isCalculated": true
 									}
-								]
+								],
+								"Filter": {
+									"Formula": ""
+								}
 							},
 							{
 								"name": "Calc_Columns",
@@ -1322,8 +1329,380 @@
 						"DiagramNotes": "n",
 						"Type": "HTML Form",
 						"Formula": {
-							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.link {color: blue;}\n\t\t\t.date {\n\t\t\t\tfont-size: 14pt;\n\t\t\t\tcolor: blue;\n\t\t\t}\n\t\t\t.article {\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n \t\t\t}\n\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>Math Minion News Articles</h3>\n\t\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220121'});\">2022-01-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>It is now possible to add calculated columns to data tables.</li>\n\t\t\t\t<li>Data table rows can now be edited and browsed in a new\n\t\t\t\t<a href=\"help/datatable.html#roweditor\" target=\"_blank\">row editor</a></li>\n\t\t\t\t<li>Enhancements to the Htmlpage tool.</li>\n\t\t\t\t<li>Added notes as a formula parameter to all tools.</li>\n\t\t\t\t<li>Added an import button to the clipboard view.</li>\n\t\t\t\t<li>Added scroll wheel (two finger trackpad drag) scrolling for table views.</li>\n\t\t\t\t<li>Improvements to the append, select, sumcols, mincols, and maxcols functions</li>\n\t\t\t\t<li>Added <b>dollar</b> as a dimensionless unit</li>\n\t\t\t\t<li>Miscellaneous other fixes and changes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211207'});\">2021-12-07 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Changes to Session Storage</li>\n\t\t\t\t<li><a href=\"help/couchdb.html\" target=\"_blank\">CouchDB Integration</a></li>\n\t\t\t\t<li><a href=\"help/mmserver.html\" target=\"_blank\">Running a MM Server</a></li>\n\t\t\t\t<li>MM App Removed from App Store</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211010'});\">2021-10-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Yet Another News Iteration</li>\n\t\t\t\t<li>HTML Page Fixes and Upgrades</li>\n\t\t\t\t<li>Printing and PDFs</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210910'});\">2021-09-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Select Function Features</li>\n\t\t\t\t<li>Table Value Enhancements</li>\n\t\t\t\t<li>Miscellaneous Fixes etc.</li>\n\t\t\t\t<li>Coolprop molar density flashes</li>\n\t\t\t\t<li>Updated Getting Started</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210703'});\">2021-07-03 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>CoolMM - Math Minion + Coolprop</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210621'});\">2021-06-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New News</li>\n\t\t\t\t<li>Server Address Changes (Again)</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Feedback</h3>\n\t\t\t<p>\n\t\t\t\tAs always, any and all feedback or questions are encouraged and appreciated.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.link {color: blue;}\n\t\t\t.date {\n\t\t\t\tfont-size: 14pt;\n\t\t\t\tcolor: blue;\n\t\t\t}\n\t\t\t.article {\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n \t\t\t}\n\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>Math Minion News Articles</h3>\n\t\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220226'});\">2022-02-26 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Added a filter field to the <a href=\"help/datatable.html#infoview\" target=\"_blank\">Data Table view</a></li>\n\t\t\t\t<li>Data table columns can now be presented as <a href=\"help/datatable.html#coleditor\" target=\"_blank\">menus</a></li>\n\t\t\t\t<li>Html pages can now issue <a href=\"help/htmlpage.html#cmd\" target=\"_blank\">commands</a> directly to the calculation engine.</li>\n\t\t\t\t<li>Miscellaneous changes and fixes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220121'});\">2022-01-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>It is now possible to add calculated columns to data tables.</li>\n\t\t\t\t<li>Data table rows can now be edited and browsed in a new\n\t\t\t\t<a href=\"help/datatable.html#roweditor\" target=\"_blank\">row editor</a></li>\n\t\t\t\t<li>Enhancements to the Htmlpage tool.</li>\n\t\t\t\t<li>Added notes as a formula parameter to all tools.</li>\n\t\t\t\t<li>Added an import button to the clipboard view.</li>\n\t\t\t\t<li>Added scroll wheel (two finger trackpad drag) scrolling for table views.</li>\n\t\t\t\t<li>Improvements to the append, select, sumcols, mincols, and maxcols functions</li>\n\t\t\t\t<li>Added <b>dollar</b> as a dimensionless unit</li>\n\t\t\t\t<li>Miscellaneous other fixes and changes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211207'});\">2021-12-07 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Changes to Session Storage</li>\n\t\t\t\t<li><a href=\"help/couchdb.html\" target=\"_blank\">CouchDB Integration</a></li>\n\t\t\t\t<li><a href=\"help/mmserver.html\" target=\"_blank\">Running a MM Server</a></li>\n\t\t\t\t<li>MM App Removed from App Store</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211010'});\">2021-10-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Yet Another News Iteration</li>\n\t\t\t\t<li>HTML Page Fixes and Upgrades</li>\n\t\t\t\t<li>Printing and PDFs</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210910'});\">2021-09-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Select Function Features</li>\n\t\t\t\t<li>Table Value Enhancements</li>\n\t\t\t\t<li>Miscellaneous Fixes etc.</li>\n\t\t\t\t<li>Coolprop molar density flashes</li>\n\t\t\t\t<li>Updated Getting Started</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210703'});\">2021-07-03 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>CoolMM - Math Minion + Coolprop</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210621'});\">2021-06-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New News</li>\n\t\t\t\t<li>Server Address Changes (Again)</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Feedback</h3>\n\t\t\t<p>\n\t\t\t\tAs always, any and all feedback or questions are encouraged and appreciated.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
 						}
+					},
+					{
+						"name": "News_20220226",
+						"Notes": "",
+						"DiagramX": 85,
+						"DiagramY": -115,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"indexTool": "The_News",
+						"Objects": [
+							{
+								"name": "The_News",
+								"Notes": "",
+								"DiagramX": 100,
+								"DiagramY": -120,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.link {\n\t\t\t\tcolor: blue;\n\t\t\t\tfont-weight: bold;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Math Minion News: 2022-02-26</h4>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Data Table Filter</h3>\n\t\t\t<p>\n\t\t\t\tSome hopefully useful changes have been made to the <a href=\"./help/datatable.html\" target=\"_blank\">data table</a>, including the introduction of a filter field in the information view. If you tap on the <span class=\"link\" onClick=\"mmpost([],{mm_push: 'Hours'});\">Hours</span> icon in this model and enter <b>'client=fred</b>, only records that have <b>fred</b> in the client column will be displayed.\n\t\t\t<p>\n\t\t\t\tNote the leading single quote that makes the result of this formula a string.  If instead the formula resolves to a numeric array of the same length as number of records, only the records correspond to non zero values will be shown. This is similar to the behaviour of the <b>select</b> function. \n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe filter only affects the data table information display. The table value resulting from a reference to it will still have all the records, although those can of course be filtered by a <b>select</b> commmand.\n\t\t\t</p>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Data Table Menu Columns</h3>\n\t\t\t<p>\n\t\t\t\tIt is now possible to designate data table columns as menu values. These still store static data, but in the <a href=\"./help/datatable.html#roweditor\" target=\"_blank\">row editor</a> they will be shown as a menu of discrete values. These values are obtained from a menu formula, which in this case is just the <b>Name</b> column of the <b>Clients</b> table. It is also possible to have separate values for the display and the stored value.  See the <a href=\"./help/datatable.html#coleditor\" target=\"_blank\">column editor</a> help for more details.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tUnlike <b>calculated</b> columns, you can freely switch a column between the <b>data</b> and <b>menu</b> types, although you will probably need to change the menu/initial value formula when you do.\n\t\t\t</p>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Html Page mm_cmd Action</h3>\n\t\t\t<p>\n\t\t\t\tOkay this is kind of geeky. Math Minion actually consists of a user interface process that talks to a calculation process by means of simple text commands. A new <b>mmpost</b> action <b>mm_cmd</b> allows the HtmlPage tool to perform essentially any action possible in Math Minion.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tFor example\n\t\t\t\t<span class=\"link\" \n\t\t\t\t\tonClick=\"mmpost([], {\n\t\t\t\t\t\tmm_cmd: `.time_string.formula set formula '${(new Date()).toLocaleTimeString()}`\n\t\t\t\t\t});\"\n\t\t\t\t>clicking here </span>\n\t\t\t\twill set the formula of the <b>Time_String</b> expression to the current time, while\n\t\t\t\t<span class=\"link\"\n\t\t\t\t\tonClick=\"mmpost([], {\n\t\t\t\t\t\tmm_cmd: `.time_string.formula set formula`\n\t\t\t\t\t});\"\n\t\t\t\t>clicking here</span> will clear it.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tThe <b>Set Notes</b> button below will set the notes of the <b>Time_String</b> expression to the current time and the <b>Increment</b> button will increment the value in the <b>Incremented</b> expression by one.\n\t\t\t</p>\n\t\t\t<button onClick=\"mmpost([], {\n\t\t\t\tmm_cmd: `.Time_String set notes ${(new Date()).toLocaleTimeString()}`});\"\n\t\t\t>\n\t\t\t\tSet Notes\n\t\t\t</button>\n\t\t\t<button onClick=\"mmpost([], {mm_cmd: `.incremented value`},\n\t\t\t\t(result) => {\n\t\t\t\t\tmmpost([], {mm_cmd: `.incremented.formula set formula ${result[0].results.v[0] + 1}`})\n\t\t\t\t});\">\n\t\t\t\tIncrement\n\t\t\t</button>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Miscellaneous</h3>\n\t\t\t<div class=\"subsection\">\n\t\t\t\t<h3>Diagram Notes</h3>\n\t\t\t\t<p>\n\t\t\t\t\tYou can now click on the first line of notes displayed in the diagram, including the minimized <b>Notes</b> designation, to display the complete notes in a pop up window.\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class=\"subsection\">\n\t\t\t\t<h3>Column References</h3>\n\t\t\t\t<p>\n\t\t\t\t\tWhen an expression ending in a <b>} ] or )</b> returns a table value, you can now reference a column by following it by dot column name as in the <b>{select hours, \"charge > 1000 dollar\"}.client</b> formula used in the <span class=\"link\" onClick=\"mmpost([],{mm_push: 'select'});\">select</span> expression formula in this model. You can still use the more general index method, which would be <b>{select hours, \"charge > 1000 dollar\"}[0,\"client\"]\"</b>.\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class=\"subsection\">\n\t\t\t\t<h3>Console View</h3>\n\t\t\t\t<ul>\n\t\t\t\t\t<li>\n\t\t\t\t\t\tAdded command history accessed by up and down arrows. This only persists while the console is open, but still quite useful.\n\t\t\t\t\t</li>\n\t\t\t\t\t<li>\n\t\t\t\t\t\tCommand input field now immediately gets focus when console opened.\n\t\t\t\t\t</li>\n\t\t\t\t\t<li>\n\t\t\t\t\t\tFixed problem with help command not displaying full message.\n\t\t\t\t\t</li>\n\t\t\t\t\t<li>\n\t\t\t\t\t\tWhen you switch models, the default object is now set to the new current model.\n\t\t\t\t\t</li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\t\t\t<div class=\"subsection\">\n\t\t\t\t<h3>Row Numbers for Big Tables</h3>\n\t\t\t\t<p>\n\t\t\t\t\tThe table view row number font was slightly reduced after discovering tables in excess of 100,000 rows worked fine.\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class=\"subsection\">\n\t\t\t\t<h3>Getting Started and Help</h3>\n\t\t\t\t<p>\n\t\t\t\t\tTne <b>Getting Started</b> session and help were updated. <span class=\"link\" onClick=\"mmpost([], {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\"> click here</span> to replace your Getting Started session with the new one.\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Feedback</h3>\n\t\t\t<p>\n\t\t\t\tAs always, any and all <a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">feedback</a> is encouraged and appreciated. It would be nice to know if anyone actually reads this stuff, so please let me know if you do.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								}
+							},
+							{
+								"name": "Clients",
+								"Notes": "A list of client names and charge rates",
+								"DiagramX": 175,
+								"DiagramY": -120,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "Name",
+										"displayUnit": "string",
+										"sValues": [
+											"HAL",
+											"Fred",
+											"Acme",
+											"Pear"
+										],
+										"defaultValue": ""
+									},
+									{
+										"name": "Rate",
+										"displayUnit": "dollar/h",
+										"nValues": [
+											0.0333333333,
+											0.0277777778,
+											0.0486111111,
+											0.0388888889
+										],
+										"unitDimensions": "0 0 -1 0 0 0 0",
+										"defaultValue": "0 1/s"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "Hours",
+								"Notes": "This data table tool is a simple fictitious time sheet.\n\nType 'client=fred into the filter field to just see the Fred records (note the leading single quote)",
+								"DiagramX": 175,
+								"DiagramY": -80,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "Date",
+										"displayUnit": "date",
+										"nValues": [
+											1342396800,
+											1342396800,
+											1342483200,
+											1342569600,
+											1342569600,
+											1342656000,
+											1342656000,
+											1342742400,
+											1342742400,
+											1342828800,
+											1342828800,
+											1342915200,
+											1343001600,
+											1343174400,
+											1343174400,
+											1343260800,
+											1343347200,
+											1343433600,
+											1343433600,
+											1343520000,
+											1343606400,
+											1343692800,
+											1343779200,
+											1343779200,
+											1343865600,
+											1343865600,
+											1343952000,
+											1344038400,
+											1344038400,
+											1344124800,
+											1344124800,
+											1344297600,
+											1344384000,
+											1344470400,
+											1344556800,
+											1344556800,
+											1344643200,
+											1344729600,
+											1344729600,
+											1344816000,
+											1344902400,
+											1344902400,
+											1344988800,
+											1344988800
+										],
+										"unitDimensions": "0 0 1 0 0 0 0",
+										"defaultValue": "{mktime {int {date {now}}}}"
+									},
+									{
+										"name": "Client",
+										"displayUnit": "string",
+										"sValues": [
+											"HAL",
+											"Fred",
+											"Acme",
+											"Acme",
+											"Acme",
+											"HAL",
+											"Acme",
+											"HAL",
+											"Fred",
+											"Fred",
+											"Acme",
+											"Acme",
+											"Acme",
+											"Fred",
+											"HAL",
+											"HAL",
+											"HAL",
+											"HAL",
+											"Acme",
+											"Acme",
+											"Pear",
+											"Pear",
+											"Pear",
+											"HAL",
+											"Pear",
+											"Fred",
+											"Pear",
+											"Pear",
+											"Acme",
+											"Pear",
+											"HAL",
+											"HAL",
+											"HAL",
+											"HAL",
+											"Fred",
+											"HAL",
+											"HAL",
+											"HAL",
+											"Fred",
+											"Fred",
+											"Pear",
+											"Fred",
+											"HAL",
+											"Acme"
+										],
+										"defaultValue": "clients.name",
+										"isMenu": true
+									},
+									{
+										"name": "Project",
+										"displayUnit": "string",
+										"sValues": [
+											"DeepThought",
+											"Accounting",
+											"Coyote",
+											"Coyote",
+											"Coyote",
+											"DeepThought",
+											"RR",
+											"DeepThought",
+											"Accounting",
+											"Accounting",
+											"RR",
+											"RR",
+											"RR",
+											"Accounting",
+											"DeepThought",
+											"DeepThought",
+											"DeepThought",
+											"DeepThought",
+											"RR",
+											"Coyote",
+											"iWant",
+											"iWant",
+											"iWant",
+											"DeepThought",
+											"iWant",
+											"Accounting",
+											"iWant",
+											"iWish",
+											"RR",
+											"iWish",
+											"Clarke",
+											"Clarke",
+											"Clarke",
+											"Clarke",
+											"Accounting",
+											"Clarke",
+											"Clarke",
+											"Clarke",
+											"Report",
+											"Report",
+											"iWish",
+											"Report",
+											"Clarke",
+											"Coyote"
+										],
+										"defaultValue": ""
+									},
+									{
+										"name": "Hours",
+										"displayUnit": "h",
+										"nValues": [
+											7200,
+											10800,
+											18000,
+											21600,
+											7200,
+											10800,
+											7200,
+											10800,
+											7200,
+											14400,
+											21600,
+											28800,
+											32400,
+											18000,
+											10800,
+											25200,
+											28800,
+											7200,
+											14400,
+											14400,
+											21600,
+											32400,
+											25200,
+											7200,
+											25200,
+											7200,
+											25200,
+											21600,
+											7200,
+											18000,
+											7200,
+											28800,
+											32400,
+											25200,
+											7200,
+											18000,
+											28800,
+											18000,
+											10800,
+											28800,
+											18000,
+											7200,
+											25200,
+											7200
+										],
+										"unitDimensions": "0 0 1 0 0 0 0",
+										"defaultValue": "0 h"
+									},
+									{
+										"name": "Charge",
+										"displayUnit": "dollar",
+										"nValues": [
+											239.99999975999998,
+											300.00000024,
+											874.9999998,
+											1049.99999976,
+											349.99999992,
+											359.99999963999994,
+											349.99999992,
+											359.99999963999994,
+											200.00000016,
+											400.00000032,
+											1049.99999976,
+											1399.99999968,
+											1574.99999964,
+											500.00000040000003,
+											359.99999963999994,
+											839.9999991599999,
+											959.9999990399999,
+											239.99999975999998,
+											699.99999984,
+											699.99999984,
+											840.0000002400001,
+											1260.00000036,
+											980.00000028,
+											239.99999975999998,
+											980.00000028,
+											200.00000016,
+											980.00000028,
+											840.0000002400001,
+											349.99999992,
+											700.0000002,
+											239.99999975999998,
+											959.9999990399999,
+											1079.9999989199998,
+											839.9999991599999,
+											200.00000016,
+											599.9999994,
+											959.9999990399999,
+											599.9999994,
+											300.00000024,
+											800.00000064,
+											700.0000002,
+											200.00000016,
+											839.9999991599999,
+											349.99999992
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "$.hours * clients.rate[\n\t{indexof\n\t\t$.client,\n\t\tclients.name\n\t}[0,1]\n]",
+										"isCalculated": true
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "select",
+								"Notes": "",
+								"DiagramX": 175,
+								"DiagramY": -10,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{select hours, \"charge > 1000 dollar\"}.client"
+								}
+							},
+							{
+								"name": "Time_String",
+								"Notes": "",
+								"DiagramX": 100,
+								"DiagramY": -95,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "Incremented",
+								"Notes": "Value incremented from Html page",
+								"DiagramX": 100,
+								"DiagramY": -60,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "10"
+								}
+							}
+						]
 					}
 				]
 			}
