@@ -124,17 +124,17 @@ class MMModel extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			addtool: 'mmcmd:?modelAddTool',
-			removetool: 'mmcmd:?modelRemoveTool',
-			restoretool: 'mmcmd:?modelRestoreTool',
-			dgminfo: 'mmcmd:?modelDgmInfo',
-			setpositions: 'mmcmd:?modelSetPositions',
-			copytool: 'mmcmd:?modelCopyTool',
-			copyastable: 'mmcmd:?modelCopyAsTable',
-			paste: 'mmcmd:?modelPaste',
-			import: 'mmcmd:?modelImport',
-			makelocal: 'mmcmd:?modelMakeLocal',
-			restoreimport: 'mmcmd:?modelRestoreImport'
+			addtool: 'mmcmd:_modelAddTool',
+			removetool: 'mmcmd:_modelRemoveTool',
+			restoretool: 'mmcmd:_modelRestoreTool',
+			dgminfo: 'mmcmd:_modelDgmInfo',
+			setpositions: 'mmcmd:_modelSetPositions',
+			copytool: 'mmcmd:_modelCopyTool',
+			copyastable: 'mmcmd:_modelCopyAsTable',
+			paste: 'mmcmd:_modelPaste',
+			import: 'mmcmd:_modelImport',
+			makelocal: 'mmcmd:_modelMakeLocal',
+			restoreimport: 'mmcmd:_modelRestoreImport'
 		}[command];
 		if (key) {
 			return key;

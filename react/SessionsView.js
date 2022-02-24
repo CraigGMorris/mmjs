@@ -52,9 +52,11 @@ export class SessionsView extends React.Component {
 		let results = this.props.viewInfo.updateResults;
 		let sessionPaths = [];
 		let currentPath = '';
+		let remoteUrl = null;
 		if (results.length) {
 			sessionPaths = results[0].results.paths;
 			currentPath = results[0].results.currentPath;
+			remoteUrl = results[0].results.remote;
 		}
 		let sessionList = [];
 		let key = 0;
@@ -401,6 +403,15 @@ export class SessionsView extends React.Component {
 			}
 			if (sessionPaths.length === 0 && this.props.viewInfo.sessionPaths) {
 				sessionPaths = this.props.viewInfo.sessionPaths;
+			}
+
+			if (remoteUrl) {
+				sessionList.push(e(
+					'div', {
+						id: 'sessions__remote'
+					},
+					t('react:sessionsRemoteLabel', {remote: remoteUrl})
+				))
 			}
 
 			const foundFolders = new Set();

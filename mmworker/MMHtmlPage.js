@@ -164,7 +164,7 @@ class MMHtmlPage extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			htmlaction: 'mmcmd:?htmlAction',
+			htmlaction: 'mmcmd:_htmlAction',
 		}[command];
 		if (key) {
 			return key;
@@ -466,16 +466,28 @@ class MMHtmlPage extends MMTool {
 						}
 					}
 						break;
-						case 'mm_loadurl': {
-							// load a different session from a url
-							const path = actions[action];
-							if (path) {
-								response.resetInfo = await theMMSession.loadUrl(path);
-								response.didLoad = true;
-							}
+					case 'mm_loadurl': {
+						// load a different session from a url
+						const path = actions[action];
+						if (path) {
+							response.resetInfo = await theMMSession.loadUrl(path);
+							response.didLoad = true;
 						}
-							break;
-						default:
+					}
+						break;
+					case 'mm_cmd': {
+						// have session execute a command(s)
+						const cmds = actions[action];
+						const results = await theMMSession.processor.processCommandString(cmds);
+						if (results) {
+							response.results = results
+						}
+						else {
+							response.results = '';
+						}
+					}
+						break;
+					default:
 						this.setError('mmcmd:htmlBadAction', {action: action, path: this.getPath()});
 						break;
 				}

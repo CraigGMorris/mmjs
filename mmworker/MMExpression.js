@@ -136,7 +136,7 @@ class MMExpression extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			value: 'mmcmd:?toolValue',
+			value: 'mmcmd:_toolValue',
 			setcolumnunit: 'mmcmd?exprSetColumnUnit',
 		}[command];
 		if (key) {
@@ -362,7 +362,7 @@ class MMExpression extends MMTool {
 			command.results = '';
 			return;
 		}
-		this.setError('mmcmd:?setColumnUnit', {});
+		this.setError('mmcmd:_setColumnUnit', {});
 	}
 
 /**

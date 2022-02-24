@@ -263,7 +263,13 @@ class MMPouchDBStorage {
 	 * @param {String} path - persistent storage path to delete
 	*/
 	async delete(path) {
-		await this.db.remove(path, this.revs[path]);
+		const doc = await this.db.get(path, {conflicts: true});
+		if (doc._conflicts) {
+			for (let conflictRev of doc._conflicts) {
+				await this.db.remove(doc._id, conflictRev);
+			}
+		}
+		await this.db.remove(doc._id, doc._rev);
 		delete this.revs[path];
 	}
 
@@ -824,19 +830,19 @@ class MMSession extends MMCommandParent {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			dgminfo: 'mmcmd:?modelDgmInfo',
-			listsessions: 'mmcmd:?sessionList',
-			new: 'mmcmd:?sessionNew',
-			load: 'mmcmd:?sessionLoad',
-			loadurl: 'mmcmd:?sessionLoadUrl',
-			save: 'mmcmd:?sessionSave',
-			copy: 'mmcmd:?sessionCopy',
-			delete: 'mmcmd:?sessionDelete',
-			getjson: 'mmcmd:?sessionGetJson',
-			pushmodel: 'mmcmd:?sessionPushModel',
-			popmodel: 'mmcmd:?sessionPopModel',
-			import: 'mmcmd:?sessionImport',
-			remote: 'mmcmd:?sessionRemote'
+			dgminfo: 'mmcmd:_modelDgmInfo',
+			listsessions: 'mmcmd:_sessionList',
+			new: 'mmcmd:_sessionNew',
+			load: 'mmcmd:_sessionLoad',
+			loadurl: 'mmcmd:_sessionLoadUrl',
+			save: 'mmcmd:_sessionSave',
+			copy: 'mmcmd:_sessionCopy',
+			delete: 'mmcmd:_sessionDelete',
+			getjson: 'mmcmd:_sessionGetJson',
+			pushmodel: 'mmcmd:_sessionPushModel',
+			popmodel: 'mmcmd:_sessionPopModel',
+			import: 'mmcmd:_sessionImport',
+			remote: 'mmcmd:_sessionRemote'
 		}[command];
 		if (key) {
 			return key;
@@ -869,6 +875,7 @@ class MMSession extends MMCommandParent {
 			this.modelStack.push(this.currentModel);
 		}
 		this.currentModel = model;
+		this.processor.defaultObject = model;
 	}
 
 	/**
@@ -878,6 +885,7 @@ class MMSession extends MMCommandParent {
 	popModel(count=1) {
 		while (this.modelStack.length > 0 && count-- > 0) {
 			this.currentModel = this.modelStack.pop();
+			this.processor.defaultObject = this.currentModel;
 		}
 	}
 
@@ -887,6 +895,11 @@ class MMSession extends MMCommandParent {
 	async listSessionsCommand(command) {
 		const result = await this.storage.listSessions();
 		command.results = {paths: result, currentPath: this.storePath};
+		const indexedDB = new MMIndexedDBStorage();
+		const remote = await indexedDB.load('(remoteCouch)');
+		if (remote) {
+			command.results.remote = remote.split('@')[1];
+		}
 	}
 
 	/**
@@ -1346,9 +1359,9 @@ class MMTool extends MMCommandParent {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			toolViewInfo: 'mmcmd:?toolViewInfo',
-			value: 'mmcmd:?valueJson',
-			fpreview: 'mmcmd:?fpreview',
+			toolViewInfo: 'mmcmd:_toolViewInfo',
+			value: 'mmcmd:_valueJson',
+			fpreview: 'mmcmd:_fpreview',
 		}[command];
 		if (key) {
 			return key;
@@ -1391,8 +1404,8 @@ class MMTool extends MMCommandParent {
 	 */
 	valueJson(command) {
 		const value = this.valueDescribedBy(command.args);
-		if (value) {
-			command.results = JSON.stringify(value);
+		if (value && value.jsonValue) {
+			command.results = value.jsonValue();
 		}
 		else {
 			command.results = '';

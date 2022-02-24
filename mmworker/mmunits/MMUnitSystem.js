@@ -850,11 +850,11 @@ class MMUnitSet extends MMCommandObject {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			addtype: 			'mmunit:?addtype',
-			renametype: 	'mmunit:?renametype',
-			removetype: 	'mmunit:?removetype',
-			unitfortype:	'mmunit:?unitfortype',
-			listtypes:		'mmunit:?listtypes',
+			addtype: 			'mmunit:_addtype',
+			renametype: 	'mmunit:_renametype',
+			removetype: 	'mmunit:_removetype',
+			unitfortype:	'mmunit:_unitfortype',
+			listtypes:		'mmunit:_listtypes',
 		}[command];
 		if (key) {
 			return key;
@@ -1110,10 +1110,10 @@ class MMUnitsContainer extends MMCommandParent {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			adduserunit: 'mmunit:?adduserunit',
-			listuserunits: 'mmunit:?listuserunits',
-			remove: 'mmunit:?removeuserunit',
-			unitsfordim:	'mmunit:?unitsfordim',
+			adduserunit: 'mmunit:_adduserunit',
+			listuserunits: 'mmunit:_listuserunits',
+			remove: 'mmunit:_removeuserunit',
+			unitsfordim:	'mmunit:_unitsfordim',
 		}[command];
 		if (key) {
 			return key;
@@ -1490,9 +1490,9 @@ class MMUnitSetsContainer extends MMCommandParent {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			clone:	'mmunit:?cloneset',
-			remove:	'mmunit:?removeset',
-			listsets: 'mmunit:?listsets'
+			clone:	'mmunit:_cloneset',
+			remove:	'mmunit:_removeset',
+			listsets: 'mmunit:_listsets'
 		}[command];
 		if (key) {
 			return key;

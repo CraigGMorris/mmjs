@@ -307,11 +307,11 @@ class MMOde extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			run: 'mmcmd:?odeRun',
-			reset: 'mmcmd:?odeReset',
-			addrecorded: 'mmcmd:?odeAddRecorded',
-			removerecorded: 'mmcmd:?odeRemoveRecorded',
-			restorerecorded: 'mmcmd:?odeRestoreRecorded',
+			run: 'mmcmd:_odeRun',
+			reset: 'mmcmd:_odeReset',
+			addrecorded: 'mmcmd:_odeAddRecorded',
+			removerecorded: 'mmcmd:_odeRemoveRecorded',
+			restorerecorded: 'mmcmd:_odeRestoreRecorded',
 		}[command];
 		if (key) {
 			return key;

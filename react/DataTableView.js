@@ -35,9 +35,10 @@ const DataTableDisplay = Object.freeze({
 	table: 0,
 	editColumn: 1,
 	unitPicker: 2,
-	formulaEditor: 3,
-	editCell: 4,
-	editRow: 5,
+	filterEditor: 3,
+	defaultEditor: 4,
+	editCell: 5,
+	editRow: 6,
 });
 
 /** Edit Column Component
@@ -47,7 +48,6 @@ function EditColumnView(props) {
 	const selectedColumn = props.selectedColumn;
 	const columnProperties = props.columnProperties;
 	const path = props.path;
-	// const name = props.name;
 
 	const [editColumnDisplay, setEditColumnDisplay] = useState(DataTableDisplay.editColumn);
 	const [columnName, setColumnName] = useState(columnProperties.name);
@@ -56,6 +56,7 @@ function EditColumnView(props) {
 	const [displayUnit, setDisplayUnit] = useState(columnProperties.displayUnit);
 	const [defaultValue, setDefaultValue] = useState(columnProperties.defaultValue);
 	const [isCalculated, setIsCalculated] = useState(columnProperties.isCalculated || false);
+	const [isMenu, setIsMenu] = useState(columnProperties.isMenu || false);
 	const [editOptions, setEditOptions] = useState({});
 
 	const cancelButton = e(
@@ -70,7 +71,7 @@ function EditColumnView(props) {
 
 	let actionButton;  // changes depending on whether defining new column or updating existiong
 	let deleteButton;  // not shown for new columns - just cancel if not wanted
-	let isCalculatedField;  // has a toggle for isCalculate for new columns
+	let columnTypeField;  // has a toggle for isCalculated or isMenu for new columns, just data or menu for existing
 	if (selectedColumn) {
 		// has selectedColumn, so is update, not add
 		actionButton = e(
@@ -84,6 +85,7 @@ function EditColumnView(props) {
 					columnProperties.columnNumber = columnNumber;
 					columnProperties.displayUnit = displayUnit;
 					columnProperties.format = columnFormat;
+					columnProperties.isMenu = isMenu ? true : false;
 					const json = JSON.stringify(columnProperties);
 					props.actions.doCommand(`__blob__${path} updatecolumn__blob__${json}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
@@ -105,6 +107,16 @@ function EditColumnView(props) {
 			},
 			t('react:dataDeleteColumnButton'),
 		);
+		columnTypeField = e(
+			'span', {
+				id: 'datatable__column-iscalculated',
+				onClick: () => {
+					// toggle menu / data type - can't change calculated
+					setIsMenu(!isMenu);
+				}
+			},
+			isCalculated ? '': isMenu ? t('react:dataColumnTypeMenu') : t('react:dataColumnTypeData'),
+		);
 	}
 	else {
 		// no selectedColumn, so this is a new column
@@ -118,6 +130,7 @@ function EditColumnView(props) {
 					columnProperties.displayUnit = displayUnit;
 					columnProperties.format = columnFormat;
 					if (isCalculated) { columnProperties.isCalculated = true; }
+					if (isMenu) { columnProperties.isMenu = true;}
 					const json = JSON.stringify(columnProperties);
 					props.actions.doCommand(`__blob__${path} addcolumn__blob__${json}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
@@ -127,20 +140,30 @@ function EditColumnView(props) {
 			},
 			t('react:dataAddColumnButton')
 		);
-		isCalculatedField = e(
+		columnTypeField = e(
 			'span', {
 				id: 'datatable__column-iscalculated',
 				onClick: () => {
-					// toggle isCalculated
-					setIsCalculated(!isCalculated);						
+					// toggle types
+					if (isCalculated) {
+						setIsCalculated(false);
+						setIsMenu(false);
+					}
+					else if (isMenu) {
+						setIsCalculated(true);
+						setIsMenu(false);
+					}
+					else {
+						setIsMenu(true);
+					}						
 				}
 			},
-			isCalculated ? 'Calculated' : 'Data',
+			isCalculated ? t('react:dataColumnTypeCalc') : isMenu ? t('react:dataColumnTypeMenu') : t('react:dataColumnTypeData'),
 		)
 	}
 
 	switch(editColumnDisplay) {
-		case DataTableDisplay.formulaEditor:
+		case DataTableDisplay.defaultEditor:
 			return e(
 				FormulaEditor, {
 					id: 'datatable__column-formula-editor',
@@ -204,7 +227,6 @@ function EditColumnView(props) {
 						'input', {
 							id: 'datatable__column-name-field',
 							value: columnName,
-							// width: this.props.infoWidth - 25,
 							onChange: (event) => {
 								// keeps input field in sync
 								setColumnName(event.target.value);
@@ -228,7 +250,6 @@ function EditColumnView(props) {
 						'input', {
 							id: 'datatable__column-position-field',
 							value: columnNumber,
-							// width: this.props.infoWidth - 25,
 							onChange: (event) => {
 								// keeps input field in sync
 								setColumnNumber(event.target.value);
@@ -252,9 +273,11 @@ function EditColumnView(props) {
 							},
 							((selectedColumn && selectedColumn.isCalculated) || isCalculated) ?
 								t('react:dataColumnCalcFormula') :
+								((selectedColumn && selectedColumn.isMenu) || isMenu) ?
+								t('react:dataColumnMenuFormula') :
 								t('react:dataColumnValue'),
 						),
-						isCalculatedField,
+						columnTypeField,
 					),
 					e(
 						FormulaField, {
@@ -266,7 +289,7 @@ function EditColumnView(props) {
 							viewInfo: props.viewInfo,
 							editAction: (editOptions) => {
 								setEditOptions(editOptions);
-								setEditColumnDisplay(DataTableDisplay.formulaEditor);
+								setEditColumnDisplay(DataTableDisplay.defaultEditor);
 							},
 							applyChanges: (formula) => {
 								setDefaultValue(formula);
@@ -339,6 +362,15 @@ function EditRowView(props) {
 	const [selectedField, setSelectedField] = useState(column);
 	const [selectedRow, setSelectedRow] = useState(row);
 	const [editOptions, setEditOptions] = useState({});
+	const [formulaString, setFormulaString] = useState('');
+	useEffect(() => {
+		const nRows = props.value.nr;
+		if (nRows === 0) {
+			props.setDisplay(DataTableDisplay.table);
+		}
+	}, [props.value.nr]);
+
+	const displayedRow = Math.min(props.value.nr, selectedRow)
 	const value = props.value;
 	switch(editRowDisplay) {
 		case DataTableDisplay.editRow:
@@ -346,7 +378,7 @@ function EditRowView(props) {
 			
 			for (let columnNumber = 0; columnNumber < value.nc; columnNumber++) {
 				const column = value.v[columnNumber];
-				const v = column.v.v[selectedRow - 1];
+				const v = column.v.v[displayedRow - 1];
 				let formulaString = '';
 				if (typeof v === 'string') {
 					formulaString = "'" + v;
@@ -354,9 +386,53 @@ function EditRowView(props) {
 				else if (typeof v === 'number') {
 					formulaString = `${v.toString().replace(/(\..*)(0+$)/,'$1')} ${column.dUnit}`;
 				}
+				const rowN = column.v.rowN ? column.v.rowN[displayedRow - 1] : displayedRow;
 				let valueField;
+				let selectValueField;
 				if (column.isCalculated) {
 					valueField = formulaString;
+				}
+				else if (column.menu) {
+					const options = [];
+					const selections = column.menu.selections;
+					const values = column.menu.values;
+					const nItems = selections.length;
+					for (let i = 0; i < nItems; i++) {
+						const item = selections[i];
+						const value = values[i]
+						if (item == v) {
+							selectValueField = `: (${value})`;
+						}
+						options.push(e(
+							'option', {
+								key: item,
+								className: 'datatable__row-menu-option',
+								value: value,
+								selected: item == v,
+							},
+							item
+						));
+					}
+					if (!selectValueField) {
+						selectValueField = ': ???';
+					}
+					valueField = e(
+						'select', {
+							className: 'datatable__row-menu-select',
+							onChange: (e) => {
+								const newValue = e.target.value;
+								if (newValue != v) {
+									const replacement = column.v.unit ? newValue + ' ' + column.v.unit : newValue;
+									const path = props.viewInfo.path;
+									props.actions.doCommand(`__blob__${path} setcell ${displayedRow} ${columnNumber + 1}__blob__${replacement}`,() => {
+										setEditRowDisplay(DataTableDisplay.editRow);
+										props.actions.updateView(props.viewInfo.stackIndex);
+									})	
+								}
+							}
+						},
+						options
+					)
 				}
 				else {
 					valueField = e(
@@ -366,16 +442,16 @@ function EditRowView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							actions: props.actions,
-							formula: formulaString || '',
+							formula: formulaString,
+							key: rowN, // need to ensure each formula field is unique when moving through rows
 							applyChanges: (formula) => {
 								const path = props.viewInfo.path;
-								props.actions.doCommand(`__blob__${path} setcell ${selectedRow} ${selectedField}__blob__${formula}`,() => {
+								props.actions.doCommand(`__blob__${path} setcell ${displayedRow} ${selectedField}__blob__${formula}`,() => {
 									setEditRowDisplay(DataTableDisplay.editRow);
 									props.actions.updateView(props.viewInfo.stackIndex);
 								})
 							},
 							gotFocusAction: () => {
-								// console.log(`select column ${columnNumber + 1}`);
 								setSelectedField(columnNumber + 1);
 							},
 
@@ -397,7 +473,8 @@ function EditRowView(props) {
 							'div', {
 								className: 'datatable__edit-row-name-label',
 							},
-							column.name
+							column.name,
+							selectValueField,
 						),
 						valueField
 					)
@@ -408,7 +485,7 @@ function EditRowView(props) {
 				'div', {
 					id: 'datatable__row-view',
 					onKeyDown: e => {
-						if (e.key === 'Escape') {
+						if (e.code === 'Escape') {
 							e.preventDefault();
 							props.setDisplay(DataTableDisplay.table);
 						}
@@ -418,7 +495,11 @@ function EditRowView(props) {
 					'div', {
 						id: 'datatable__edit-row-number',
 					},
-					t('react:dataRowTitle', {row: selectedRow, nr: value.nr}),
+					t('react:dataRowTitle', {
+						row: displayedRow,
+						nr: value.nr,
+						allNr: (value.allNr ? ` // ${value.allNr}` : '')
+					}),
 					e(
 						'button', {
 							id: 'datatable__edit-row-first',
@@ -431,10 +512,10 @@ function EditRowView(props) {
 					e(
 						'button', {
 							id: 'datatable__edit-row-prev',
-							disabled: selectedRow <= 1,
+							disabled: displayedRow <= 1,
 							onClick: () => {
-								if (selectedRow > 1) {
-									setSelectedRow(selectedRow-1);
+								if (displayedRow > 1) {
+									setSelectedRow(displayedRow-1);
 								}
 							},
 						},
@@ -443,10 +524,10 @@ function EditRowView(props) {
 					e(
 						'button', {
 							id: 'datatable__edit-row-next',
-							disabled: selectedRow >= value.nr,
+							disabled: displayedRow >= value.nr,
 							onClick: () => {
-								if (selectedRow < value.nr) {
-									setSelectedRow(selectedRow+1);
+								if (displayedRow < value.nr) {
+									setSelectedRow(displayedRow+1);
 								}
 							},
 						},
@@ -472,9 +553,9 @@ function EditRowView(props) {
 							disabled: (value && value.nc) ? false : true,
 							onClick: () => {
 								if (value && value.nc > 0) {
-									props.actions.doCommand(`${props.path} addrow ${selectedRow + 1}`, () => {
+									props.actions.doCommand(`${props.path} addrow ${displayedRow + 1}`, () => {
 										props.actions.updateView(props.viewInfo.stackIndex);
-										setSelectedRow(selectedRow + 1);
+										setSelectedRow(displayedRow + 1);
 									});
 								}
 							},
@@ -485,12 +566,12 @@ function EditRowView(props) {
 						'button', {
 							id: 'datatable__edit-row-delete-button',
 							onClick: () => {
-								props.actions.doCommand(`${props.path} removerows ${selectedRow}`, () => {
+								props.actions.doCommand(`${props.path} removerows ${displayedRow}`, () => {
 									props.actions.updateView(props.viewInfo.stackIndex);
 									if (value.nr === 1) {
 										props.setDisplay(DataTableDisplay.table);										
 									}
-									else if (selectedRow >= value.nr) {
+									else if (displayedRow >= value.nr) {
 										setSelectedRow(value.nr - 1);
 									}
 								});		
@@ -530,7 +611,7 @@ function EditRowView(props) {
 					},
 					applyChanges: (formula) => {
 						const path = props.viewInfo.path;
-						props.actions.doCommand(`__blob__${path} setcell ${selectedRow} ${selectedField}__blob__${formula}`,() => {
+						props.actions.doCommand(`__blob__${path} setcell ${displayedRow} ${selectedField}__blob__${formula}`,() => {
 							setEditRowDisplay(DataTableDisplay.editRow);
 							props.actions.updateView(props.viewInfo.stackIndex);
 						})
@@ -738,12 +819,38 @@ export function DataTableView(props) {
 					deleteRowsButton,
 				),
 				e(
+					'div', {
+						id: "datatable__filter-row",
+					},
+					t('react:dataFilterLabel'),
+					e(
+						FormulaField, {
+							id: 'datatable__filter-formula',
+							t: t,
+							actions: props.actions,
+							path: `${path}.filterFormula`,
+							formula: results.value.filter || '',
+							viewInfo: props.viewInfo,
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
+								setDisplay(DataTableDisplay.filterEditor);
+							},
+							applyChanges: (formula) => {
+								const path = props.viewInfo.path;
+								props.actions.doCommand(`__blob__${path}.filterFormula set formula__blob__${formula}`,() => {
+									props.actions.updateView(props.viewInfo.stackIndex);
+								})
+							}
+						}
+					),
+				),
+				e(
 					TableView, {
 						id: 'datatable__value',
 						value: results.value,
 						actions: props.actions,
 						viewInfo: props.viewInfo,
-						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 2*nInputHeight - 14],
+						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 3*nInputHeight - 24],
 						selectedRows: selectedRows,
 						currentCell: selectedCell[0] === 0 && selectedCell[1] === 0 ? null : selectedCell,
 						cellClick: cellClick,
@@ -753,6 +860,30 @@ export function DataTableView(props) {
 			)}
 			break;
 
+		case DataTableDisplay.filterEditor: {
+			displayComponent = e(
+				FormulaEditor, {
+					id: 'datatable__filter-formula-editor',
+					t: t,
+					viewInfo: props.viewInfo,
+					infoWidth: props.infoWidth,
+					actions: props.actions,
+					editOptions: editOptions,
+					cancelAction: () => {
+						setDisplay(DataTableDisplay.table);
+					},
+					applyChanges: (formula) => {
+						const path = props.viewInfo.path;
+						props.actions.doCommand(`__blob__${path}.filterFormula set formula__blob__${formula}`,() => {
+							props.actions.updateView(props.viewInfo.stackIndex);
+							setDisplay(DataTableDisplay.table);
+						})
+					}
+				}
+			);
+		}
+			break;
+	
 		case DataTableDisplay.editColumn: {
 			let columnProperties;
 			if (!selectedColumn) {
@@ -769,6 +900,8 @@ export function DataTableView(props) {
 					name: selectedColumn.name,
 					displayUnit: selectedColumn.dUnit,
 					defaultValue: selectedColumn.defaultValue,
+					isMenu: selectedColumn.menu ? true : false,
+					isCalculated: selectedColumn.isCalculated ? true : false,
 					columnNumber: selectedCell[1],
 					format: selectedColumn.format
 				}

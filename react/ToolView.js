@@ -79,9 +79,9 @@ export function ToolView(props) {
 					const value = event.target.value;
 					setToolName(value);	
 				},
-				onKeyPress: (event) => {
+				onKeyDown: (event) => {
 					// watches for Enter and sends command when it see it
-					if (event.key == 'Enter') {
+					if (event.code == 'Enter') {
 						doRename()
 					}		
 				},
@@ -143,10 +143,11 @@ export function ToolView(props) {
 						setNotesText(value);
 					},
 					onKeyDown: (e) => {
-						if (e.key === 'Enter' && e.shiftKey) {
+						if (e.code === 'Enter' && e.shiftKey) {
 							e.preventDefault();
 							e.stopPropagation();
 							doSetNotes(notesText);
+							setShowNotes(false);
 						}
 					},
 					onBlur: () => {

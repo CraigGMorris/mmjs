@@ -309,9 +309,9 @@ class MMSolver extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			addfunction: 'mmcmd:?solverAddFunction',
-			removefunction: 'mmcmd:?solverRemoveFunction',
-			reset: 'mmcmd:?solverReset'
+			addfunction: 'mmcmd:_solverAddFunction',
+			removefunction: 'mmcmd:_solverRemoveFunction',
+			reset: 'mmcmd:_solverReset'
 		}[command];
 		if (key) {
 			return key;

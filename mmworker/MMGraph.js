@@ -1920,13 +1920,13 @@ class MMGraph extends MMTool {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			addaxis: 'mmcmd:?graphAddAxis',
-			setlinetype: 'mmcmd:?graphSetLineType',
-			setunit: 'mmcmd:?graphSetUnit',
-			removeaxis: 'mmcmd:?graphRemoveAxis',
-			restoreaxis: 'mmcmd:?graphRestoreAxis',
-			svg: 'mmcmd:?graphSvg',
-			plotinfo: 'mmcmd:?graphPlotInfo',
+			addaxis: 'mmcmd:_graphAddAxis',
+			setlinetype: 'mmcmd:_graphSetLineType',
+			setunit: 'mmcmd:_graphSetUnit',
+			removeaxis: 'mmcmd:_graphRemoveAxis',
+			restoreaxis: 'mmcmd:_graphRestoreAxis',
+			svg: 'mmcmd:_graphSvg',
+			plotinfo: 'mmcmd:_graphPlotInfo',
 		}[command];
 		if (key) {
 			return key;
@@ -2101,7 +2101,7 @@ class MMGraph extends MMTool {
 			}
 		}
 
-		this.setError('mmcmd:?graphSetLineType');
+		this.setError('mmcmd:_graphSetLineType');
 		return;
 	}
 
@@ -2125,7 +2125,7 @@ class MMGraph extends MMTool {
 				return;
 			}
 		}
-		this.setError('mmcmd:?graphSetUnit');
+		this.setError('mmcmd:_graphSetUnit');
 		return;	
 	}
 

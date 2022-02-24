@@ -135,9 +135,9 @@ export function ModelView(props) {
 									onChange: (event) => {
 										setImportSource(event.target.value);
 									},
-									onKeyPress: (event) => {
+									onKeyDown: (event) => {
 										// watches for Enter and sends command when it see it
-										if (event.key == 'Enter') {
+										if (event.code == 'Enter') {
 											props.actions.doCommand(`${results.path} import ${importSource}`, () => {
 												props.actions.updateView(props.viewInfo.stackIndex);
 											})
@@ -300,9 +300,9 @@ export function ModelView(props) {
 							// keeps input field in sync
 							setIndexToolName(event.target.value);
 						},
-						onKeyPress: (event) => {
+						onKeyDown: (event) => {
 							// watches for Enter and sends command when it see it
-							if (event.key == 'Enter') {
+							if (event.code == 'Enter') {
 								props.actions.doCommand(`${props.viewInfo.path} set indexTool ${indexToolName}`, () => {
 									event.target.blur();
 									props.actions.updateView(props.viewInfo.stackIndex);

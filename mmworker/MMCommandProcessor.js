@@ -390,12 +390,12 @@ class MMCommandProcessor {
 	 */
 	getVerbUsageKey(command) {
 		return {
-			help: 		"cmd:?help",
-			cd: 			"cmd:?cd",
-			info: 		"cmd:?info",
-			renameto:	"cmd:?renameto",
-			get: 			"cmd:?get",
-			set: 			"cmd:?set"
+			help: 		"cmd:_help",
+			cd: 			"cmd:_cd",
+			info: 		"cmd:_info",
+			renameto:	"cmd:_renameto",
+			get: 			"cmd:_get",
+			set: 			"cmd:_set"
 		}[command];
 	}
 
@@ -516,7 +516,7 @@ class MMCommandProcessor {
 	setProperty(command) {
 		let args = command.args;
 		if (!args) {
-			throw(this.t('cmd:?set'));
+			throw(this.t('cmd:_set'));
 		}
 		let firstSpace = args.indexOf(' ');
 		let propertyName;
@@ -791,9 +791,9 @@ class MMCommandProcessor {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			list:					'cmd:?list',
-			createchild:	'cmd:?createchild',
-			removechild:	'cmd:?removechild'
+			list:					'cmd:_list',
+			createchild:	'cmd:_createchild',
+			removechild:	'cmd:_removechild'
 		}[command];
 		if (key) {
 			return key;
@@ -829,7 +829,7 @@ class MMCommandProcessor {
 	createChildFromArgs(command) {
 		let argValues = this.splitArgsString(command.args);
 		if (argValues.length < 2) {
-			throw(this.t('cmd:?createchild'));
+			throw(this.t('cmd:_createchild'));
 		}
 		let name = argValues[1];
 		this.createChild(argValues[0], name);

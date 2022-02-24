@@ -3985,8 +3985,8 @@ class MMFormula extends MMCommandObject {
 	 */
 	getVerbUsageKey(command) {
 		let key = {
-			value: 'mmcmd:?formulaValue',
-			refresh: 'mmcmd:?formulaRefresh',
+			value: 'mmcmd:_formulaValue',
+			refresh: 'mmcmd:_formulaRefresh',
 		}[command];
 		if (key) {
 			return key;
@@ -4015,6 +4015,7 @@ class MMFormula extends MMCommandObject {
 	 */
 	refreshCommand(command) {
 		this.parent.forgetCalculated();
+		this.parseFormula();
 		command.results = 'forgotten';
 	}
 
@@ -4354,6 +4355,12 @@ class MMFormula extends MMCommandObject {
 			}
 
 			// didn't seem to be value and unit - parse for equation
+			// but first look for a ) ] or } follow by a dot and replace with index
+			const dotRegex = /([)}\]])\.(\w+)/;
+			while (workingFormula.match(dotRegex)) {
+				workingFormula = workingFormula.replace(dotRegex, '$1[0,"$2"]');
+			}
+
 			let pattern = /"[\s\S]*?"|[=*/+\-^:%()'@{}#[\],]|[\w.$]+/g;
 			tokens = workingFormula.match(pattern);
 			let nTokens = tokens.length;

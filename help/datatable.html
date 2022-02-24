@@ -65,12 +65,22 @@
 					possible to define a calculated column if desired.
 				</p>
 				<p>
-					Each data column also has a default formula, which is evaluated whenever a new row is
+					Each <b>data</b> column also has a default formula, which is evaluated whenever a new row is
 					added to the table.  The result of this evaluation is used as the initial value
 					for that column's cell in the new row.
 				</p>
 				<p>
-					A calculated column has a single formula that must evaluate to an array with the same
+					Data columns can also be presented as <b>menu</b> columns, in which case the default
+					formula should produce a table, matrix or array value. If this value has two or more
+					columns, the first column will be the displayed values, while the second column will be the
+					actual stored values. If there is only a single row or column, then those values will be both
+					the displayed and stored values. This allows you to select values using more convenient
+					names, such as a company name, while actually storing some id code that will stay the
+					same, even if the company changes its name. New rows will initially have the value of the
+					first item.
+				</p>
+				<p>
+					A <b>calculated</b> column has a single formula that must evaluate to an array with the same
 					number of rows as the data table has. Individual cells in a calculated column cannot be
 					modified.
 				</p>
@@ -82,7 +92,7 @@
 					data table allows you to modify cell contents, add rows and columns or edit the
 					properties of existing columns.
 				</p>
-				<img src="datatable.png" alt="Expression info view"/>
+				<img src="datatable.png" alt="Data Table info view"/>
 			</div>
 			<div id="addrow" class="section">
 				<h3>Add Row</h3>
@@ -107,6 +117,27 @@
 					new column.
 				</p>
 			</div>
+			<div id="filter" class="section">
+				<h3>Filter</h3>
+				<p>
+					If a <a href="formula.html">formula</a> is supplied for the filter
+					<a href="formulaeditor.html#fields">formula field</a>, only the rows matching the filter
+					will be shown. The result of the formula should either be a string, as shown below, or a
+					boolean array the with rows to be shown being true. See the description of the arguments
+					for the <b>select function</b> in the
+					<a href="formulaeditor.html#fbrowser">function browser</a> for more detail.
+				</p>
+				<img src="datatablefilter.png" alt="Filtered Data Table info view"/>
+				<p>
+					The filter only affects what is shown in the <b>Table Display</b> and does not change
+					the value returned by references to the tool.
+				</p>
+				<p>
+					Note that if the filter formula resolves to a string, but the first character of the
+					string is a single quote, then it is ignored. This means prefixing any filter formula with
+					two single quotes will disable the filter, which is handy for temporarily turning it off.
+				</p>
+			</div>
 			<div id="tablecells" class="section">
 				<h3>Table Display</h3>
 				<p>
@@ -117,11 +148,20 @@
 				<p>
 					Tapping on a cell that isn't a row or column header will open a
 					<a href="#roweditor">row editor</a> displaying
-					<a href="formulaeditor.html#fields">formula fields</a> for all the data columns
-					and static displays for any calculated columns. You can change the values for data
-					columns to any valid formula and as soon as you leave the field, the formula will be
-					immediately evaluated and the result placed in that field.  The formula itself is not
-					retained though. Tab and shift tab are convenient shortcuts for moving between fields.
+					<a href="formulaeditor.html#fields">formula fields</a> for all the data
+					columns, menus for menu columns and static displays for any calculated columns.
+				</p>
+				<p>
+					You can change the values for data columns to any valid formula and as soon as you
+					leave the field, the formula will be immediately evaluated and the result placed in
+					that field.  The formula itself is not retained though.
+				</p>
+				<p>
+					Similarly you can choose any item from a menu column's menu and the associated value
+					will be placed in that field.
+				</p>
+				<p>
+					Tab and shift tab are convenient shortcuts for moving between fields.
 				</p>
 				<p>
 					Note the value you enter must match the unit type for the column, which usually
@@ -186,10 +226,16 @@
 						<li><b>Update</b>: appears instead of the <b>Add Column</b> button when an existing column
 							is edited. Tapping it applies changes made and dismisses the editor.</li>
 
-						<li><b>Data</b>: the data label only appears for a new column and tapping it will switch the
-							column to a calculated type.  The formula field will be relabelled <b>Column Formula</b> and
-							the <b>Data</b> label will change to <b>Calculated</b>. Tapping that will toggle back to the
-							data type.<br><br> <b>Note</b>: once added, the column type cannot be changed</li>
+						<li><b>Data</b>: indicates the column type. Tapping it will switch the column to a
+							<b>menu</b> type and the formula field will be relabelled <b>Menu Formula</b> and the
+							<b>Data</b> label will change to <b>Menu</b>. An additional <b>calculated</b> column
+							type can be selected by tapping on <b>Menu</b> when you are first adding a column. The
+							label will change to <b>Calculated</b> and tapping on it will cycle back to <b>Data</b>
+							<p>
+								Once a column has actually been added it is only possible to switch between <b>Data</b>
+								and <b>Menu</b>. The label will no longer appear for <b>calculated</b> columns.
+							</p>
+						</li>
 					</ul>
 				</div>
 				<div class="subsection">
@@ -212,9 +258,9 @@
 				<div class="subsection">
 					<h3>Initial Value</h3>
 					<p>
-						This data column formula will be evaluated whenever a new row is
-						added to the table.  The result will become the initial value for the column
-						cell of the new row.
+						A data column has a formula labeled <b>Initial Value</b> which will be evaluated
+						whenever a new row is added to the table.  The result will become the initial value
+						for the column cell of the new row.
 					</p>
 					<p>
 						The initial value formula in the image above is:
@@ -232,8 +278,8 @@
 						numeric column and if numeric, what its unit type will be.
 					</p>
 					<p>
-						<b>Note</b>: after adding a column, the type of column cannot be changed without
-						removing the column and adding it again.
+						<b>Note</b>: after adding a column, the type of value the column holds cannot be
+						changed without removing the column and adding it again.
 						You can however modify the initial value formula as long as it returns the same
 						type of value.
 					</p>
@@ -258,17 +304,56 @@
 					</p>
 				</div>
 				<div class="subsection">
+					<h3>Menu Formula</h3>
+					<p>
+						Menu columns have a formula labeled <b>Menu Formula</b> and it should evaluate to
+						an array of possible values for the column. If it evaluates to a matrix or table with
+						more than one row and one column, then the values of the first column will be what is
+						displayed, while the values of the second column will be what is actually stored in the
+						data table field. When a new row is added, the first value is what is added by default.
+					</p>
+					<p>
+						In this example, taken from the Getting Started session, the client column is a menu that
+						takes its values from the name column of another data table, called <b>Clients</b> and the
+						menu formula is thus:
+					</p>
+					<p class="formula">
+						cients.name
+					</p>
+					<img src="datatablecoledit3.png" alt="Menu Column	 Editor"/>
+				</div>
+				<div class="subsection">
 					<h3>Column Formula</h3>
 					<p>
-						For calculated columns, the formula is labeled <b>Column Formula</b> and must
+						Calculated columns have a formula labeled <b>Column Formula</b> and it must
 						evaluate to an array of the same length as the number of rows in the table.
 					</p>
 					<p>
 						The formula can reference other fields in the table and in this case will return the
 						entire column.  This is useful for doing things like displaying a column that is the
-						sum of some other columns.
+						function of some other columns. In this example, the <b>Charge</b> column of the
+						<b>Hours</b> table is calculated by multiplying the hours column by a rate extracted
+						from the <b>Clients</b> table using the following formula.
 					</p>
-
+					<pre>
+$.hours * clients.rate[
+  {indexof
+    $.client,
+    clients.name
+  }[0,1]
+]</pre>
+					<p>
+						The dollar sign is a shortcut for the tool that owns the formula, i.e. <b>Hours</b>
+						in this case, so <b>$.hours</b> is the hours column of the table. It is
+						multiplied by the rate found in the <b>Clients</b> table by looking up the
+						index of the name of the corresponding row, <b>$.client</b> in the
+						<b>Clients</b> table name column and using it to get the appropriate value
+						from the <b>Rate</b> column of <b>Clients</b>.
+					</p>
+					<p>
+						The results is shown below.
+					</p>
+					<img src="datatablecharge.png" alt="Charge Column"/>
 				</div>
 				<div class="subsection">
 					<h3>Display Unit</h3>
@@ -281,8 +366,11 @@
 						column was first created.
 					</p>
 					<p>
-						In the image above, the time unit <b>Date</b> has been selected as a more human readable
-						time value than the underlying seconds since the beginning of 1970.
+						In the images above, the time unit <b>date</b> has been selected as a more human
+						readable time value than the underlying seconds since the beginning of 1970.
+						Similarly the <b>Hours</b> column has a time unit of <b>h</b> and the <b>Charge</b>
+						column has the convenience unit of <b>dollar</b>, which is just a synonym for
+						the dimensionless <b>Fraction</b> unit.
 					</p>
 				</div>
 				<div class="subsection">
@@ -319,7 +407,7 @@
 				</p>
 				<div class="subsection">
 					<h3>Record Number and Count</h3>
-					<p><b>Record 1 of 1912</b> - hopefully pretty self explanatory.</p>
+					<p><b>Record 1 of 44</b> - hopefully pretty self explanatory.</p>
 				</div>
 				<div class="subsection">
 					<h3>Row Navigation Buttons</h3>
@@ -341,7 +429,7 @@
 				<div class="subsection">
 					<h3>Delete</h3>
 					<p>
-						Deletes the displayed row.
+						Deletes the displayed row and displayes the next one.
 					</p>
 				</div>
 				<div class="subsection">
@@ -353,12 +441,21 @@
 				<div class="subsection">
 					<h3>Fields</h3>
 					<p>
-						Each column is presented with its name and a
-						<a href="formulaeditor.html#fields">formula field</a> containing its value. (Calculated
-						columns just have an uneditable display).
+						Each column is presented with its name and a value field that depends on the column type.
 					</p>
+					<ul>
+						<li><b>Data</b> - <a href="formulaeditor.html#fields">formula field</a> containing its
+							value.</li>
+						<li><b>Menu</b> - a drop down menu of available values.</li>
+						<li><b>Calculated</b> - columns just have an uneditable display.</li>
+					</ul>
 				</div>
-			</div>
+				<p>
+					<b>Note:</b> Be cautious when editing rows while filtering the records shown. If you make
+					a change which makes the current row invisible, the row editor will switch to the next
+					visible row.
+				</p>
+		</div>
 			<div id="import" class="section">
 				<h3>Importing, Copying and Pasting</h3>
 				<p>
@@ -419,9 +516,9 @@
 							<h3>Second Header Line</h3>
 							<p>
 								The second line contains the names to be used for the columns.  These must be double quoted and separated by the separator character.  For instance:
-							</p
+							</p>
 							<p class="formula">
-								"Date","User","Weight","Volume"
+								"Date","Client","Project","Hours","Charge"
 							</p>
 						</div>
 						<div class="subsection">
@@ -430,7 +527,7 @@
 								The third line contains the conversion units that match the values of the data columns below.  These must also be double quoted and separated with the separator character.  If the data for a column is a string, then the unit should be "string".  For example:
 							</p>
 							<p class="formula">
-								"date","string","g","cm^3"
+								"date","string","string","h","dollar"
 							</p>
 						</div>
 						<div class="subsection">
@@ -443,13 +540,12 @@
 							</p>
 							<pre>
 table,en
-"Date","User","Weight","Volume"
-"date","string","g","cm^3"
-20120801.0000000000,"Craig",20.0000000000,23.0000000000
-20120802.0000000000,"Craig",24.0000000000,28.0000000000
-20120803.0000000000,"Craig",19.0000000000,20.0000000000
-20120804.0000000000,"Craig",21.0000000000,23.0000000000
-							</pre>
+"Date","Client","Project","Hours","Charge"
+"date","string","string","h","dollar"
+20120716,"HAL","DeepThought",2,240
+20120716,"Fred","Accounting",3,300
+20120717,"Acme","Coyote",5,875
+20120718,"Acme","Coyote",6,1050</pre>
 						</div>
 					</div>
 				</div>

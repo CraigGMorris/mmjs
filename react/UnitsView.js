@@ -201,9 +201,9 @@ export class UserUnitsView extends React.Component {
 							// keeps input field in sync
 							this.setState({input: event.target.value});
 						},
-						onKeyPress: () => {
+						onKeyDown: (event) => {
 							// watches for Enter and sends command when it see it
-							if (event.key == 'Enter') {
+							if (event.code == 'Enter') {
 								this.props.actions.doCommand(`/unitsys.units adduserunit ${this.state.input}`, () => {
 									this.props.actions.updateView(this.props.viewInfo.stackIndex);
 								});
@@ -334,9 +334,9 @@ export class UnitSetsView extends React.Component {
 							// keeps input field in sync
 							this.setState({input: event.target.value});
 						},
-						onKeyPress: (event) => {
+						onKeyCode: (event) => {
 							// watches for Enter and sends command when it see it
-							if (event.key == 'Enter') {
+							if (event.code == 'Enter') {
 								this.props.actions.doCommand(`/unitsys.sets.${this.state.selected} renameto ${this.state.input}`, () => {
 									this.props.actions.updateView(this.props.viewInfo.stackIndex);
 								})
@@ -391,7 +391,7 @@ export class UnitSetView extends React.Component {
 			nameInput: '',
 			unitInput: ''
 		};
-		this.handleKeyPress = this.handleKeyPress.bind(this);
+		this.handleKeyDown = this.handleKeyDown.bind(this);
 		this.handleSelectClick = this.handleSelectClick.bind(this);
 	}
 
@@ -401,12 +401,12 @@ export class UnitSetView extends React.Component {
 			`${viewInfo.path} listtypes`);
 	}
 
-	/** @method handleKeyPress
+	/** @method handleKeyDown
 	 * watches for Enter and sends command when it see it
 	 * @param {Event} event
 	 */
-	handleKeyPress(event) {
-		if (event.key == 'Enter') {
+	handleKeyDown(event) {
+		if (event.code == 'Enter') {
 			let name = this.state.nameInput;
 			let unit = this.state.unitInput;
 			if (name.length && unit.length) {
@@ -518,7 +518,7 @@ export class UnitSetView extends React.Component {
 							// keeps input field in sync
 							this.setState({nameInput: event.target.value});
 						},
-						onKeyPress: this.handleKeyPress,
+						onKeyDown: this.handleKeyDown,
 					}
 				),
 				e(
@@ -537,7 +537,7 @@ export class UnitSetView extends React.Component {
 							// keeps input field in sync
 							this.setState({unitInput: event.target.value});
 						},
-						onKeyPress: this.handleKeyPress,
+						onKeyDown: this.handleKeyDown,
 					}
 				),
 				e(

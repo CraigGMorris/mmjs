@@ -27,6 +27,13 @@ export function ConsoleView(props) {
 	const [output, setOutput] = useState('');
 	const [input, setInput] = useState('');
 	const t = props.t;
+	const inputRef = React.useRef(null);
+	const inputStackRef = React.useRef([]);
+	const inputStackPos = React.useRef(0);
+
+	React.useEffect(() => {
+		inputRef.current.focus();
+	}, []);
 
 	/** function callBack - called when the worker completes command
 	 * @param {MMCommand[]} cmds
@@ -98,19 +105,48 @@ export function ConsoleView(props) {
 				id: 'console__input',
 				value: input || '',
 				placeholder: t('react:consoleReadPlaceHolder'),
+				ref: inputRef,
 				onChange: event => {
 					//keeps input field in sync
 					const value = event.target.value;
 					setInput(value);				
 				},
-				onKeyPress: event => {
-					if (event.key == 'Enter') {
+				onKeyDown: event => {
+					if (event.code == 'Enter') {
 						// watches for Enter and sends command when it see it
 						props.actions.doCommand(input, callBack);
+						const stackLength = inputStackRef.current.length;
+						if (stackLength === 0 || inputStackRef.current[stackLength - 1] !== input) {
+							inputStackRef.current.push(input);
+						}
+						inputStackPos.current = inputStackRef.current.length;
 						setInput('');
 						}
+						else if (event.code === 'ArrowUp') {
+							event.stopPropagation();
+							event.preventDefault();					
+							let pos = inputStackPos.current;
+							if (pos > 0) {
+								setInput(inputStackRef.current[--pos]);
+								inputStackPos.current = pos;
+							}
+						}
+						else if (event.code === 'ArrowDown') {
+							event.stopPropagation();
+							event.preventDefault();					
+							let pos = inputStackPos.current;
+							const currentLength = inputStackRef.current.length
+							if (pos < currentLength - 1) {
+								setInput(inputStackRef.current[++pos]);
+								inputStackPos.current = pos;
+							}
+							else {
+								setInput('');
+								inputStackPos.current = inputStackRef.current.length;
+							}
 					}
 				}
+			}
 		),
 		e(
 			'div', {
