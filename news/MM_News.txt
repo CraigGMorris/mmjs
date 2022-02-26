@@ -5,7 +5,7 @@
 	"DeviceWidth": 1024,
 	"UserUnitSets": {},
 	"UserUnits": [],
-	"CaseName": "New MM_News",
+	"CaseName": "MM_News",
 	"DefaultUnitSet": "SI",
 	"SelectedObject": "The_News",
 	"ModelPath": "/.root.All_Articles.News_20220226",
