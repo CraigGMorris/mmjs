@@ -64,7 +64,7 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink subsection"><a href="mmserver.html">Running a MM Server</a></div>
 	<div class="contentlink subsection"><a href="couchdb.html">CouchDB Integration</a></div>
 	<div>&nbsp;</div>
-	<div class="contentlink"><a href="http://www.redtree.com/mm">MM Home Page</a></div>
+	<div class="contentlink"><a href="../index.html">MM Home Page</a></div>
 	`);
 	lines.push('</div>');
 	heading.innerHTML = lines.join('\n');
