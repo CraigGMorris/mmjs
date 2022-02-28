@@ -164,6 +164,10 @@ export function TableView(props) {
 			const en = e.nativeEvent;
 			en.target.releasePointerCapture(en.pointerId);
 			setPointerCaptured(false);
+			setInitialOffset({
+				x: tableViewOffset.x,
+				y: tableViewOffset.y
+			});
 		}
 
 		setDragType(TableViewDragType.none);
