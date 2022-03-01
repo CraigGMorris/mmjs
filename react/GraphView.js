@@ -749,6 +749,7 @@ class Plot2D extends React.Component {
 					x: width - 10,
 					y: height - 25,
 					stroke: lineColor,
+					fill: lineColor,
 					textAnchor: 'end',
 				},
 				axisX.title + (axisX.unit ? ` (${axisX.unit})` : '')
@@ -760,6 +761,7 @@ class Plot2D extends React.Component {
 					x: width - 10,
 					y: 25,
 					stroke: 'blue',
+					fill: 'blue',
 					textAnchor: 'end',
 				},
 				this.props.t('react:graphEditLink')
@@ -827,6 +829,7 @@ class Plot2D extends React.Component {
 						x: labelX,
 						y: height - 5,
 						stroke: lineColor,
+						fill: lineColor,
 						textAnchor: anchor,
 					}, labelText(labelValue))
 				)
@@ -868,15 +871,11 @@ class Plot2D extends React.Component {
 						x: 5,
 						y: labelY,
 						stroke: lineColor,
+						fill: lineColor,
 						textAnchor: 'start'
 					}, yLabelText
 				));
 			}
-
-			elements.push(e('g', {className: 'graph__svg-grid', key: 'xLabels'},
-				e('g', {className: 'graph__svg-grid'}, xLabelElements),
-				e('g', {className: 'graph__svg-gridy'}, yLabelElements)
-			));
 
 			// lines
 			const lines = [];
@@ -956,14 +955,15 @@ class Plot2D extends React.Component {
 							let fill, opacity;
 							if (lineType === MMGraphLineType.dot || lineType === MMGraphLineType.barWithDot) {
 								fill = lineColor;
-								opacity = 0.4;
+								// opacity = 0.4;
 								// path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="${lineColor}" opacity="0.4" d="`);
 							}
 							else {
 								fill = 'none';
-								opacity = 1;
+								// opacity = 1;
 								// path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="none" d="`);
 							}
+							opacity = y === axisX.yInfo[yAxisIndex] ? 1 : .5;
 							elements.push(e(
 								'path', {
 									className: lineClass,
@@ -981,6 +981,11 @@ class Plot2D extends React.Component {
 
 			elements.push(e('g', {className: 'graph__svg-lines', key: 'lines'},
 				lines
+			));
+
+			elements.push(e('g', {className: 'graph__svg-grid', key: 'xLabels'},
+				e('g', {className: 'graph__svg-grid'}, xLabelElements),
+				e('g', {className: 'graph__svg-gridy'}, yLabelElements)
 			));
 		}
 
@@ -1305,6 +1310,7 @@ class Plot3D extends React.Component {
 					x: width - 10,
 					y: 25,
 					stroke: 'blue',
+					fill: 'blue',
 					textAnchor: 'end',
 				},
 				this.props.t('react:graphEditLink')
@@ -1484,6 +1490,7 @@ class Plot3D extends React.Component {
 					x: x,
 					y: y,
 					stroke: color,
+					fill: color,
 					textAnchor: anchor
 				}, text
 			)
@@ -1691,7 +1698,7 @@ class Plot3D extends React.Component {
 
 		// add the lines
 
-		const renderLines = (lines, height, lineColor, lineClass, lineType, output) => {
+		const renderLines = (lines, height, lineColor, lineClass, lineType, lineOpacity, output) => {
 			const isnormal = (n) => {
 				return !isNaN(n) && n !== Infinity && n !== -Infinity;
 			}
@@ -1713,6 +1720,7 @@ class Plot3D extends React.Component {
 									key: `${lineClass}_${row}`,
 									stroke: lineColor,
 									fill: lineColor,
+									opacity: lineOpacity,
 									cx: x + radius,
 									cy: height - y,
 									r: radius
@@ -1743,6 +1751,7 @@ class Plot3D extends React.Component {
 								className: lineClass,
 								key: lineClass,
 								stroke: lineColor,
+								opacity: lineOpacity,
 								fill: 'none',
 								d: path.join(' ')
 							}
@@ -1757,6 +1766,7 @@ class Plot3D extends React.Component {
 		let colorNumber = 0;						
 		for (let xNumber = 0; xNumber < info.xInfo.length; xNumber++) {
 			const xValue = info.xInfo[xNumber];
+			const lineOpacity = info.xInfo[xAxisIndex] === xValue ? 1 : 0.5;
 			let xValues = Float64Array.from(xValue.values);
 			const lineClass = `svg_line_${xNumber+1}`;
 			lineColor = lineColors[colorNumber++ % nColors];
@@ -1799,7 +1809,7 @@ class Plot3D extends React.Component {
 					let coords = append(columnCount, xConst, append(columnCount, yValues, zTemp));
 					coords = multiply(transformCoords(transform, coords), scale);
 					const areaClass = `svg_xarea_${xNumber+1}_${row}`
-					renderLines(coords, height, lineColor, areaClass, lineType, lineElements);			
+					renderLines(coords, height, lineColor, areaClass, lineType, lineOpacity, lineElements);			
 				}
 				
 				// y lines
@@ -1814,7 +1824,7 @@ class Plot3D extends React.Component {
 					let coords = append(rowCount, xValues, append(rowCount, yConst, zTemp));
 					coords = multiply(transformCoords(transform, coords), scale);
 					const areaClass = `svg_yarea_${xNumber+1}_${col}`
-					renderLines(coords, height, lineColor, areaClass, lineType, lineElements);			
+					renderLines(coords, height, lineColor, areaClass, lineType, lineOpacity, lineElements);			
 				}				
 			}
 			else if (xValue.columnCount > 1 && xValue.columnCount === yValue.columnCount && xValue.columnCount === zValue.columnCount) {
@@ -1829,7 +1839,7 @@ class Plot3D extends React.Component {
 						coords[row * 3 + 2] = zValues[row * columnCount + column];
 					}
 					coords = multiply(transformCoords(transform, coords), scale);
-					renderLines(coords, height, lineColor, `svg_column_${column}`, lineType, lineElements);			
+					renderLines(coords, height, lineColor, `svg_column_${column}`, lineType, lineOpacity, lineElements);			
 				}
 			}			
 			else {
@@ -1837,17 +1847,15 @@ class Plot3D extends React.Component {
 				let rowCount = xValues.length;
 				let coords = append(rowCount, append(rowCount, xValues, yValues), zValues);
 				coords = multiply(transformCoords(transform,coords), scale);
-				renderLines(coords, height, lineColor, lineClass, lineType, lineElements);			
+				renderLines(coords, height, lineColor, lineClass, lineType, lineOpacity, lineElements);			
 			}
 		}
 
-		gridElements.push(e('g', { className: 'svg_gridx', key: 'gridx'}, gridXElements));
-		gridElements.push(e('g', { className: 'svg_gridy', key: 'gridy'}, gridYElements));
-		gridElements.push(e('g', { className: 'svg_gridz', key: 'gridz'}, gridZElements));
 		elements.push(e('g', {
 			className: 'svg_grid',
 			key: 'grid',
-			stroke: "#b3b3b3"
+			stroke: "#b3b3b3",
+			fill: "#b3b3b3"
 		}, gridElements));
 
 		elements.push(e(
@@ -1857,6 +1865,9 @@ class Plot3D extends React.Component {
 			}, lineElements)
 		)
 
+		gridElements.push(e('g', { className: 'svg_gridx', key: 'gridx'}, gridXElements));
+		gridElements.push(e('g', { className: 'svg_gridy', key: 'gridy'}, gridYElements));
+		gridElements.push(e('g', { className: 'svg_gridz', key: 'gridz'}, gridZElements));
 
 		const svg = e(
 			'svg', {
