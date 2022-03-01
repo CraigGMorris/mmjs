@@ -513,7 +513,7 @@
 					{
 						f: "{average x, t}",
 						desc: `<p>
-								Returns the median of the averages of <b>x</b>.  If the second parameter is 0 or missing, this will be the
+								Returns the average of the values of <b>x</b>.  If the second parameter is 0 or missing, this will be the
 								scalar average of all the values of x.  If it is 1, then the result is a column vector whose values will be
 								the averages of each row of x.  If it is 2, then it will be a row vector of averages of the columns of x.
 							</p>`,
