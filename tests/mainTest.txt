@@ -212,7 +212,10 @@
 										],
 										"defaultValue": ""
 									}
-								]
+								],
+								"Filter": {
+									"Formula": ""
+								}
 							},
 							{
 								"name": "plusStringDiff",
@@ -15780,7 +15783,7 @@
 										"name": "Actual",
 										"DiagramX": 95,
 										"DiagramY": 310,
-										"HideInfo": "n",
+										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"Type": "Data Table",
 										"Columns": [
@@ -15874,7 +15877,10 @@
 												"unitDimensions": "0 0 0 0 0 0 0",
 												"defaultValue": "0 fraction"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "nActual",
@@ -16147,7 +16153,10 @@
 										"unitDimensions": "3 0 0 0 0 0 0",
 										"defaultValue": "1 m^3"
 									}
-								]
+								],
+								"Filter": {
+									"Formula": ""
+								}
 							},
 							{
 								"name": "t_1",
@@ -16191,7 +16200,10 @@
 										"unitDimensions": "3 0 0 0 0 0 0",
 										"defaultValue": "1 m^3"
 									}
-								]
+								],
+								"Filter": {
+									"Formula": ""
+								}
 							},
 							{
 								"name": "tPlust",
@@ -16575,7 +16587,7 @@
 										"Notes": "",
 										"DiagramX": 145,
 										"DiagramY": 340,
-										"HideInfo": "n",
+										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Data Table",
 										"Columns": [
@@ -16611,7 +16623,10 @@
 												"unitDimensions": "3 0 0 0 0 0 0",
 												"defaultValue": "0 litre"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "multError",
@@ -17436,7 +17451,10 @@
 										"unitDimensions": "0 0 0 0 0 0 0",
 										"defaultValue": "40000 Fraction"
 									}
-								]
+								],
+								"Filter": {
+									"Formula": ""
+								}
 							},
 							{
 								"name": "Sales",
@@ -19384,7 +19402,7 @@
 								"name": "sort",
 								"Notes": "",
 								"DiagramX": -135,
-								"DiagramY": 190,
+								"DiagramY": 265,
 								"HideInfo": "n",
 								"DiagramNotes": "n",
 								"Type": "Model",
@@ -19559,7 +19577,7 @@
 								"name": "sortError",
 								"Notes": "",
 								"DiagramX": -50,
-								"DiagramY": 190,
+								"DiagramY": 240,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
@@ -19571,12 +19589,12 @@
 								"name": "errorCount",
 								"Notes": "",
 								"DiagramX": -50,
-								"DiagramY": 215,
+								"DiagramY": 265,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{sum {cc\n\tabsError,\n\tdefUnitError,\n\tbaseUnitError,\n\tevalError,\n\tintError,\n\tsignError,\n\tnumericError,\n\tsortError\n}}"
+									"Formula": "{sum {cc\n\tabsError,\n\tdefUnitError,\n\tbaseUnitError,\n\tevalError,\n\tintError,\n\tsignError,\n\tnumericError,\n\troundError,\n\tsortError\n}}"
 								},
 								"isOutput": "y"
 							},
@@ -19603,6 +19621,108 @@
 								"Formula": {
 									"Formula": "{ne numeric, 2.3}"
 								}
+							},
+							{
+								"name": "getbit",
+								"Notes": "",
+								"DiagramX": -135,
+								"DiagramY": 215,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{getbit 4:1, 1:10}"
+								}
+							},
+							{
+								"name": "round",
+								"Notes": "",
+								"DiagramX": -135,
+								"DiagramY": 190,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{round {cc 3.49, 3.5, 3.51, -3.49, -3.5, -3.51}}"
+								}
+							},
+							{
+								"name": "roundError",
+								"Notes": "",
+								"DiagramX": -50,
+								"DiagramY": 190,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {ne round, {cc 3, 4, 4, -3, -4, -4}}}"
+								}
+							},
+							{
+								"name": "getbitError",
+								"Notes": "",
+								"DiagramX": -50,
+								"DiagramY": 215,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {ne getbit, getbitResult}}"
+								}
+							},
+							{
+								"name": "getbitResult",
+								"Notes": "",
+								"DiagramX": -135,
+								"DiagramY": 240,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"Type": "Matrix",
+								"CellInputs": {
+									"0_0": "0",
+									"1_1": "0",
+									"1_2": "0",
+									"1_3": "0",
+									"1_4": "1",
+									"2_1": "0",
+									"2_2": "0",
+									"2_3": "1",
+									"2_4": "0",
+									"3_1": "0",
+									"3_2": "0",
+									"3_3": "1",
+									"3_4": "1",
+									"4_1": "0",
+									"4_2": "1",
+									"4_3": "0",
+									"4_4": "0",
+									"5_1": "0",
+									"5_2": "1",
+									"5_3": "0",
+									"5_4": "1",
+									"6_1": "0",
+									"6_2": "1",
+									"6_3": "1",
+									"6_4": "0",
+									"7_1": "0",
+									"7_2": "1",
+									"7_3": "1",
+									"7_4": "1",
+									"8_1": "1",
+									"8_2": "0",
+									"8_3": "0",
+									"8_4": "0",
+									"9_1": "1",
+									"9_2": "0",
+									"9_3": "0",
+									"9_4": "1",
+									"10_1": "1",
+									"10_2": "0",
+									"10_3": "1",
+									"10_4": "0"
+								},
+								"rowCount": "10",
+								"columnCount": "4"
 							}
 						]
 					},
@@ -20459,7 +20579,7 @@
 										"Notes": "",
 										"DiagramX": 20,
 										"DiagramY": 325,
-										"HideInfo": "n",
+										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Data Table",
 										"Columns": [
@@ -20683,7 +20803,10 @@
 												"unitDimensions": "0 0 0 0 0 0 0",
 												"defaultValue": "0 Fraction"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "graph",
@@ -20929,7 +21052,10 @@
 												"unitDimensions": "0 0 -1 0 0 0 0",
 												"defaultValue": "0 radian/s"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "ode",
@@ -20972,7 +21098,7 @@
 										"Notes": "",
 										"DiagramX": 60,
 										"DiagramY": 585,
-										"HideInfo": "n",
+										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Data Table",
 										"Columns": [
@@ -22506,7 +22632,10 @@
 												"unitDimensions": "0 0 0 0 0 0 0",
 												"defaultValue": "0 Fraction"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "diffTable",
@@ -23249,7 +23378,7 @@
 										"Notes": "",
 										"DiagramX": 30,
 										"DiagramY": 260,
-										"HideInfo": "n",
+										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Data Table",
 										"Columns": [
@@ -24783,7 +24912,10 @@
 												"unitDimensions": "0 0 0 0 0 0 0",
 												"defaultValue": "0 Fraction"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "diffTable",
@@ -25103,7 +25235,7 @@
 								"Notes": "",
 								"DiagramX": 45,
 								"DiagramY": 285,
-								"HideInfo": "n",
+								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"Type": "Data Table",
 								"Columns": [
@@ -26227,7 +26359,10 @@
 										"unitDimensions": "0 0 0 0 0 0 0",
 										"defaultValue": "0 Fraction"
 									}
-								]
+								],
+								"Filter": {
+									"Formula": ""
+								}
 							},
 							{
 								"name": "tolerance",
@@ -26501,7 +26636,10 @@
 												"unitDimensions": "1 0 0 0 0 0 0",
 												"defaultValue": "0 km"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "theta",
@@ -27287,7 +27425,7 @@
 										"Notes": "",
 										"DiagramX": 305,
 										"DiagramY": 170,
-										"HideInfo": "n",
+										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Data Table",
 										"Columns": [
@@ -27534,7 +27672,10 @@
 												"unitDimensions": "1 0 0 0 0 0 0",
 												"defaultValue": "0 m"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "plot2dTable",
@@ -27567,7 +27708,7 @@
 										"Notes": "",
 										"DiagramX": 305,
 										"DiagramY": 220,
-										"HideInfo": "n",
+										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Data Table",
 										"Columns": [
@@ -27814,7 +27955,10 @@
 												"unitDimensions": "1 0 0 0 0 0 0",
 												"defaultValue": "0 m"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "table3D",
@@ -27834,7 +27978,7 @@
 										"Notes": "",
 										"DiagramX": 305,
 										"DiagramY": 270,
-										"HideInfo": "n",
+										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Data Table",
 										"Columns": [
@@ -28081,7 +28225,10 @@
 												"unitDimensions": "1 0 0 0 0 0 0",
 												"defaultValue": "0 m"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "table3D2",
@@ -28101,7 +28248,7 @@
 										"Notes": "",
 										"DiagramX": 305,
 										"DiagramY": 320,
-										"HideInfo": "n",
+										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"Type": "Data Table",
 										"Columns": [
@@ -32236,7 +32383,10 @@
 												"unitDimensions": "0 0 0 0 0 0 0",
 												"defaultValue": "0 Fraction"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "surfaceTable",
@@ -32876,7 +33026,10 @@
 												"unitDimensions": "0 1 0 0 0 0 0",
 												"defaultValue": "{eval bmi.weight}"
 											}
-										]
+										],
+										"Filter": {
+											"Formula": ""
+										}
 									},
 									{
 										"name": "BMI",

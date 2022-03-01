@@ -543,6 +543,28 @@ class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+		/**
+	 * @method getbit
+	 * returns bit value and bitNumber
+	 * @param {MMNumberValue} bitNumber
+	 * @returns {MMNumberValue}
+	 */
+		getbit(bitNumber) {
+			if (bitNumber instanceof MMNumberValue) {
+				bitNumber.checkUnitDimensionsAreEqualTo();
+				const rv = new MMNumberValue(this.valueCount, bitNumber.valueCount);
+				const nColumns = bitNumber.valueCount;
+				for (let nColumn = 0; nColumn < nColumns; nColumn++) {
+					const nBit = bitNumber._values[nColumn] - 0.9999; // not minus one to avoid round off
+					for (let nRow = 0; nRow < this.valueCount; nRow++) {
+						rv._values[nRow * nColumns + nColumn] = (this._values[nRow] & (1 << nBit)) >>> nBit; 
+					}
+				}
+				return rv;
+			}
+		}
+	
+
 	// monadic functions
 
 	/**

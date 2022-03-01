@@ -214,9 +214,13 @@ const MMFormulaFactory = (token, formula) => {
 		'defunit': (f) => {return new MMDefaultUnitFunction(f)},
 		'eval': (f) => {return new MMEvalFunction(f)},
 		'evaljs': (f) => {return new MMEvalJSFunction(f)},
+		'getbit': (f) => {return new MMGetBitFunction(f)},
 		'int': (f) => {return new MMGenericSingleFunction(f, Math.trunc)},
 		'numeric': (f) => {return new MMNumericFunction(f)},
 		'rand': (f) => {return new MMRandFunction(f)},
+		'round': (f) => {return new MMGenericSingleFunction(f, (x) => {
+			return Math.trunc(x + 0.5 * Math.sign(x))
+		})},
 		'sign': (f) => {return new MMGenericSingleFunction(f, Math.sign)},
 		'isort': (f) => {return new MMISortFunction(f)},
 		'sort': (f) => {return new MMSortFunction(f)},
@@ -3775,6 +3779,27 @@ class MMNumericFunction extends MMSingleValueFunction {
 		return null;
 	}
 }
+
+class MMGetBitFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const bitNumber = this.arguments[1].value();
+		const array = this.arguments[0].value();
+		if (array && bitNumber) {
+			if (array instanceof MMNumberValue && bitNumber instanceof MMNumberValue) {
+				return array.getbit(bitNumber);
+			}
+			else {
+				this.formula.setError('mmcmd:formulaGetBitTypeError');
+				return null;
+			}
+		}
+	}
+}
+
 
 class MMRandFunction extends MMMultipleArgumentFunction {
 	value() {
