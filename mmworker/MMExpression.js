@@ -252,6 +252,10 @@ class MMExpression extends MMTool {
 						}
 					}
 					break;
+				case 'notes':
+					value = super.valueDescribedBy(description, requestor);
+					break;
+
 				default: {
 					if (value instanceof MMToolValue) {
 						let tool = value.valueAtRowColumn(1,1);
