@@ -49,7 +49,8 @@ const MMGraphLineType = Object.freeze({
 	line: 0,
 	dot: 1,
 	bar: 2,
-	barWithDot: 3
+	barWithDot: 3,
+	hidden: 4
 });
 
 
@@ -211,6 +212,13 @@ export function GraphView(props) {
 							onClick: () => {typeClick('bar+dot');},
 						},
 						t('react:graphTypeBarDot')
+					),
+					e(
+						'div', {
+							className: 'graph__type-button' + (value.lineType === 4 ? '' : ' graph__type-selected'),
+							onClick: () => {typeClick('hidden');},
+						},
+						t('react:graphTypeHidden')
 					),
 					e(
 						'div', {
@@ -410,19 +418,29 @@ export function GraphView(props) {
 	}
 	else if (display === DisplayType.graph) {
 		if (results.xValues[0].zValue) {
+			const selected = updateResults && updateResults[0].results && updateResults[0].results.selected ?
+			updateResults[0].results.selected : '0_';
 			displayComponent = e(Plot3D, {
 				key: 'graph',
 				id: 'graph__plot-view',
 				info: plotInfo,
+				selected: selected,
+				actions: props.actions,
+				viewInfo: props.viewInfo,
 				setDisplay: setDisplay,
 				t: props.t,
 			});
 		}
 		else { // 2d
+			const selected = updateResults && updateResults[0].results && updateResults[0].results.selected ?
+			updateResults[0].results.selected : '0_0';
 			displayComponent = e(Plot2D, {
 				key: 'graph',
 				id: 'graph__plot-view',
 				info: plotInfo,
+				selected: selected,
+				actions: props.actions,
+				viewInfo: props.viewInfo,
 				setDisplay: setDisplay,
 				t: props.t,
 			});
@@ -481,12 +499,21 @@ class Plot2D extends React.Component {
 		this.panSum = 0;
 		this.eventCache = [];
 		this.pinch = 0;
-		this.state = {
-			xAxisIndex: 0,
-			yAxisIndex: 0,
-			scale: 1,
-			translate: {x: 0, y: 0},
+		let initialState;
+		if (props.selected) {
+			const nSelected = props.selected.split('_').map(s => parseInt(s));
+			initialState = {
+				xAxisIndex: nSelected[0],
+				yAxisIndex: nSelected[1]	
+			}
 		}
+		else {
+			initialState = this.checkAxis(0,0,0,0);
+		}
+		initialState.scale = 1;
+		initialState.translate =  {x: 0, y: 0};
+		this.state = initialState;
+
 		this.onPointerDown = this.onPointerDown.bind(this);
 		this.onPointerUp = this.onPointerUp.bind(this);
 		this.onPointerMove = this.onPointerMove.bind(this);
@@ -495,6 +522,9 @@ class Plot2D extends React.Component {
 
 	componentDidMount() {
 		this.node.addEventListener('wheel', this.onWheel, {passive: false});
+		this.setState((state) => {
+			return this.checkAxis(state.xAxisIndex, state.yAxisIndex, state.xAxisIndex, state.yAxisIndex);
+		})
 	}
 
 	componentWillUnmount() {
@@ -690,31 +720,70 @@ class Plot2D extends React.Component {
 	}
 
 	/**
+	 * @method checkAxis
+	 * check to ensure selected axis isn't hidden. If so move to first unhidden
+	 */
+	 checkAxis(xAxisIndex, yAxisIndex, currentXAxis, currentYAxis) {
+		const nXValues = this.props.info.xInfo.length;
+		let xIndex = xAxisIndex % nXValues
+		let nXChecked = 0;
+		let rv = {	// if one not found, return original
+			xAxisIndex: xAxisIndex,
+			yAxisIndex: yAxisIndex
+		}
+		while (nXChecked++ < nXValues) {
+			const x = this.props.info.xInfo[xIndex];
+			const nYValues = x.yInfo.length;
+			let nYChecked = 0;
+			let yIndex = yAxisIndex % nYValues;
+			while (nYChecked++ < nYValues) {
+				if (x.yInfo[yIndex].lineType !== MMGraphLineType.hidden) {
+					if (xIndex !== currentXAxis || yIndex !== currentYAxis) {
+						this.props.actions.doCommand(`${this.props.viewInfo.path} setselected ${xIndex}_${yIndex}`, () => {
+							this.props.actions.updateView(this.props.viewInfo.stackIndex);
+						});
+					}
+					return {
+						xAxisIndex: xIndex,
+						yAxisIndex: yIndex
+					}
+				}
+				yIndex = (yIndex + 1) % nXValues;
+			}
+			xIndex = (xIndex + 1) % nXValues
+		}
+
+		return {	// if one not found, return original
+			xAxisIndex: xAxisIndex,
+			yAxisIndex: yAxisIndex
+		}
+	}
+
+
+	/**
 	 * @method incrementXAxis
 	 */
 	incrementXAxis() {
 		this.setState((state) => {
 			const nXValues = this.props.info.xInfo.length;
-			if (nXValues > 1) {
-				return {
-					xAxisIndex: (state.xAxisIndex + 1) % nXValues,
-					yAxisIndex: 0
-				}
-			}
-		})
+			const newIndex = (state.xAxisIndex + 1) % nXValues;
+			return this.checkAxis(newIndex, 0, state.xAxisIndex, state.yAxisIndex);
+		});
 	}
 
-		/**
+	/**
 	 * @method incrementYAxis
 	 */
 	incrementYAxis() {
 		this.setState((state) => {
 			const x = this.props.info.xInfo[state.xAxisIndex];
 			const nYValues = x.yInfo.length;
+			let yAxisIndex = (state.yAxisIndex + 1) % nYValues;
+			while (yAxisIndex < nYValues - 1 && x.yInfo[yAxisIndex].lineType === MMGraphLineType.hidden) {
+				yAxisIndex++;
+			}
 			if (nYValues > 1) {
-				return {
-					yAxisIndex: (state.yAxisIndex + 1) % nYValues
-				}
+				return this.checkAxis(state.xAxisIndex, yAxisIndex, state.xAxisIndex, state.yAxisIndex);
 			}
 		})
 	}
@@ -940,7 +1009,10 @@ class Plot2D extends React.Component {
 										case MMGraphLineType.dot:
 											path.push(`M ${scaledX} ${scaledY} m -1 0 a 1,1 0 1,0 2,0 a 1,1 0 1,0 -2,0`);
 											break;
-											
+
+										case MMGraphLineType.hidden:
+											break;
+
 										default:
 											if (row == 0) {
 												path.push(`M ${scaledX} ${scaledY}`);
@@ -955,13 +1027,9 @@ class Plot2D extends React.Component {
 							let fill, opacity;
 							if (lineType === MMGraphLineType.dot || lineType === MMGraphLineType.barWithDot) {
 								fill = lineColor;
-								// opacity = 0.4;
-								// path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="${lineColor}" opacity="0.4" d="`);
 							}
 							else {
 								fill = 'none';
-								// opacity = 1;
-								// path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="none" d="`);
 							}
 							opacity = y === axisX.yInfo[yAxisIndex] ? 1 : .5;
 							elements.push(e(
@@ -1034,8 +1102,16 @@ class Plot3D extends React.Component {
 		this.isRotating = false;
 		this.lastRotationX = null;
 
+		let nSelected;
+		if (props.selected) {
+			nSelected = parseInt(props.selected);
+		}
+		else {
+			nSelected = this.checkAxis(0,0);
+		}
+
 		this.state = {
-			xAxisIndex: 0,
+			xAxisIndex: nSelected,
 			scale: this.height/1.8,
 			pan: {x: 0, y: 0, z: 0},
 			pinchScale: 1,
@@ -1049,6 +1125,9 @@ class Plot3D extends React.Component {
 
 	componentDidMount() {
 		this.node.addEventListener('wheel', this.onWheel, {passive: false});
+		this.setState((state) => {
+			return {xAxisIndex: this.checkAxis(state.xAxisIndex, state.xAxisIndex)};
+		});
 	}
 
 	componentWillUnmount() {
@@ -1269,19 +1348,39 @@ class Plot3D extends React.Component {
 	}
 
 	/**
+	 * @method checkAxis
+	 */
+	 checkAxis(xAxisIndex, currentXAxis) {
+		const nXValues = this.props.info.xInfo.length;
+		let xIndex = xAxisIndex % nXValues
+		let nChecked = 0;
+		while (nChecked++ < nXValues) {
+			const x = this.props.info.xInfo[xIndex];
+			const z = x.zInfo;
+			if (x.zInfo.lineType !== MMGraphLineType.hidden) {
+				if (xIndex !== currentXAxis) {
+					this.props.actions.doCommand(`${this.props.viewInfo.path} setselected ${xIndex}`, () => {
+						this.props.actions.updateView(this.props.viewInfo.stackIndex);
+						});
+				}
+				return xIndex;
+			}
+			xIndex = (xIndex + 1) % nXValues;
+		}
+		return  xAxisIndex;
+	}
+
+	/**
 	 * @method incrementXAxis
 	 */
 	incrementXAxis() {
 		this.setState((state) => {
 			const nXValues = this.props.info.xInfo.length;
-			if (nXValues > 1) {
-				return {
-					xAxisIndex: (state.xAxisIndex + 1) % nXValues
-				}
-			}
-		})
+			const newIndex = (state.xAxisIndex + 1) % nXValues;
+			return {xAxisIndex: this.checkAxis(newIndex, state.xAxisIndex)};
+		});
 	}
-
+	
 	render() {
 		const height = this.height;
 		const width = this.width;
@@ -1730,7 +1829,10 @@ class Plot3D extends React.Component {
 					}
 				}
 					break;
-					
+				
+				case MMGraphLineType.hidden:
+					break;
+
 				default: {
 					const v = lines;
 					let x = v[0];

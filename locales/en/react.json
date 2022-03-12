@@ -74,6 +74,7 @@
 	"graphTypeScatter": "Scatter",
 	"graphTypeBar": "Bar",
 	"graphTypeBarDot": "Bar+Dot",
+	"graphTypeHidden": "Hide",
 	"infoButtonConsole": "Console",
 	"infoButtonDiagram": "Diagram",
 	"infoButtonExpand": "Expand",

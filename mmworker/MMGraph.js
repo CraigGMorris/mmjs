@@ -37,7 +37,8 @@ const MMGraphLineType = Object.freeze({
 	line: 0,
 	dot: 1,
 	bar: 2,
-	barWithDot: 3
+	barWithDot: 3,
+	hidden: 4
 });
 
 
@@ -662,6 +663,9 @@ class MMGraph extends MMTool {
 			const xValue = this.xValues[i];
 			o[`X${i + 1}`] = xValue.saveObject();
 		}
+		if (this.selectedCurve) {
+			o['Selected'] = this.selectedCurve;
+		}
 
 		return o;
 	}
@@ -678,6 +682,9 @@ class MMGraph extends MMTool {
 		for (let i = 1; (savedX = saved[`X${i}`]); i++) {
 			const xValue = this.addXValue();
 			xValue.initFromSaved(savedX);
+		}
+		if (saved.Selected) {
+			this.selectedCurve = saved.Selected;
 		}
 	}
 
@@ -1254,20 +1261,29 @@ class MMGraph extends MMTool {
 		const lcDescription = description.toLowerCase();
 		let xAxisIndex = 0;
 		let yAxisIndex = 0;
+
+		const parseSelected = (s, offset) => {
+			if (s) {
+				const pathParts = s.split('_');
+				if (pathParts.length > 1) {
+					return [parseInt(pathParts[0]) - offset, parseInt(pathParts[1]) - offset];
+					
+				}
+				else if (pathParts.length === 1) {
+					return [parseInt(pathParts[0]) - offset, 0];
+					
+				}
+				if (xAxisIndex >= this.xValues.length) {
+					return [0, 0];
+				}
+			}
+			return [0, 0];
+		}
+
 		if (lcDescription.length > 3) {
-			const pathParts = lcDescription.substring(3).split('_');
-			if (pathParts.length > 1) {
-				xAxisIndex = parseInt(pathParts[0]) - 1;
-				yAxisIndex = parseInt(pathParts[1]) - 1;
-				
-			}
-			else if (pathParts.length === 1) {
-				xAxisIndex = parseInt(pathParts[0]) - 1;
-				
-			}
-			if (xAxisIndex >= this.xValues.length) {
-				xAxisIndex = 0;
-			}
+			[xAxisIndex, yAxisIndex] = parseSelected(lcDescription.substring(3), 1);
+		} else if (this.selectedCurve) {
+			[xAxisIndex, yAxisIndex] = parseSelected(this.selectedCurve, 0);
 		}
 
 		const height = 500.0;
@@ -1530,7 +1546,7 @@ class MMGraph extends MMTool {
 			}
 
 			// add the lines
-			const renderLines = (lines, height, lineColor, lineClass, lineType, output) => {
+			const renderLines = (lines, height, lineColor, opacity, lineClass, lineType, output) => {
 				const isnormal = (n) => {
 					return !isNaN(n) && n !== Infinity && n !== -Infinity;
 				}
@@ -1546,10 +1562,13 @@ class MMGraph extends MMTool {
 							const x = v[offset];
 							const y = v[offset + 1];
 							if (isnormal(x) && isnormal(y)) {
-								output.push(`<circle stroke="${lineColor}" fill="${lineColor}" class="${lineClass}" cx="${x + radius}" cy="${height - y}" r="${radius}"/>`);
+								output.push(`<circle stroke="${lineColor}" fill="${lineColor}" opacity="${opacity} class="${lineClass}" cx="${x + radius}" cy="${height - y}" r="${radius}"/>`);
 							}
 						}
 					}
+						break;
+
+					case MMGraphLineType.hidden:
 						break;
 						
 					default: {
@@ -1559,7 +1578,7 @@ class MMGraph extends MMTool {
 						if (isnormal(x) && isnormal(y)) {
 							const count = lines.rowCount;
 							const path = []
-							path.push(`<path stroke="${lineColor}" fill="none" class="${lineClass}" d="M ${x} ${height - y}`);
+							path.push(`<path stroke="${lineColor}" fill="none" opacity="${opacity} class="${lineClass}" d="M ${x} ${height - y}`);
 							for (let row = 1; row < count; row++) {
 								const offset = row * 3;
 								x = v[offset];
@@ -1578,6 +1597,7 @@ class MMGraph extends MMTool {
 			lines.push('<g class="svg_lines">');
 			let colorNumber = 0;						
 			for (let xNumber = 0; xNumber < this.xValues.length; xNumber++) {
+				const opacity = xNumber === xAxisIndex ? 1 : 0.5;
 				const xValue = this.xValues[xNumber];
 				let xValues = xValue.values;
 				const lineClass = `svg_line_${xNumber+1}`;
@@ -1627,7 +1647,7 @@ class MMGraph extends MMTool {
 						}
 						let coords = xConst.append(yValues).append(zTemp);
 						coords = transform.transform(coords).multiply(scale);
-						renderLines(coords, height, lineColor, lineClass, lineType, lines);
+						renderLines(coords, height, lineColor, opacity, lineClass, lineType, lines);
 					}
 					
 					// y lines
@@ -1642,7 +1662,7 @@ class MMGraph extends MMTool {
 						}
 						let coords = xValues.append(yConst).append(zTemp);
 						coords = transform.transform(coords).multiply(scale);
-						renderLines(coords, height, lineColor, lineClass, lineType, lines);
+						renderLines(coords, height, lineColor, opacity, lineClass, lineType, lines);
 					}
 				}
 				else if (xValues.columnCount > 1 && xValues.columnCount === yValues.columnCount && xValues.columnCount === zValues.columnCount) {
@@ -1657,14 +1677,14 @@ class MMGraph extends MMTool {
 							coords.values[row * 3 + 2] = zValues.values[row * columnCount + column];
 						}		
 						coords = transform.transform(coords).multiply(scale);
-						renderLines(coords, height, lineColor, lineClass, lineType, lines);
+						renderLines(coords, height, lineColor, opacity, lineClass, lineType, lines);
 					}
 				}
 				else {
 					// line plot
 					let coords = xValues.append(yValues).append(zValues);
 					coords = transform.transform(coords).multiply(scale);
-					renderLines(coords, height, lineColor, lineClass, lineType, lines);
+					renderLines(coords, height, lineColor, opacity, lineClass, lineType, lines);
 				}
 			}
 
@@ -1764,6 +1784,7 @@ class MMGraph extends MMTool {
 					for (let lineNumber = 0; lineNumber < nLines; lineNumber++) {
 						const lineClass = `svg_line_${xNumber+1}_${lineNumber+1}`;
 						const yValue = xValue.yForIndex(lineNumber);
+						const opacity = (xNumber === xAxisIndex && lineNumber === yAxisIndex) ? 1 : 0.5;
 						
 						let yValues = null;
 						try {
@@ -1785,10 +1806,10 @@ class MMGraph extends MMTool {
 								lineColor = lineColors[colorNumber++ % nColors];
 								const path = [];
 								if (lineType === MMGraphLineType.dot || lineType === MMGraphLineType.barWithDot) {
-									path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="${lineColor}" opacity="0.4" d="`);
+									path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="${lineColor}" opacity=${opacity}`);
 								}
-								else {
-									path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="none" d="`);
+								else if (lineType !== MMGraphLineType.hidden) {
+									path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="none" opacity=${opacity} d="`);
 								}
 
 								for (let row = 0; row < rowCount; row++) {
@@ -1812,6 +1833,9 @@ class MMGraph extends MMTool {
 												
 											case MMGraphLineType.dot:
 												path.push(`M ${scaledX} ${scaledY} m -1 0 a 1,1 0 1,0 2,0 a 1,1 0 1,0 -2,0`);
+												break;
+
+											case MMGraphLineType.hidden:
 												break;
 												
 											default:
@@ -1859,6 +1883,9 @@ class MMGraph extends MMTool {
 		const results = command.results;
 		const xValues = [];
 		const xCount = this.xValues.length;
+		if (this.selectedCurve) {
+			results['selected'] = this.selectedCurve;
+		}
 		for (let i = 0; i < xCount; i++) {
 			const xValue = this.xValues[i];
 			xValues.push(xValue.toolViewInfo());
@@ -1910,6 +1937,7 @@ class MMGraph extends MMTool {
 		verbs['restoreaxis'] = this.restoreAxisCommand;
 		verbs['svg'] = this.svgCommand;
 		verbs['plotinfo'] = this.plotInfoCommand;
+		verbs['setselected'] = this.setSelectedCurve;
 		return verbs;
 	}
 
@@ -2091,7 +2119,7 @@ class MMGraph extends MMTool {
 		if (args.length > 1) {
 			const axis = this.axisFromName(args[0]);
 			if (axis && axis.lineType != undefined) {
-				const typeNames = ['line','scatter','bar','bar+dot'];
+				const typeNames = ['line','scatter','bar','bar+dot', 'hidden'];
 				const newType = typeNames.indexOf(args[1]);
 				if (newType !== -1) {
 					command.undo = `${this.getPath()} setlinetype ${args[0]} ${typeNames[axis.lineType]}`
@@ -2103,6 +2131,16 @@ class MMGraph extends MMTool {
 
 		this.setError('mmcmd:_graphSetLineType');
 		return;
+	}
+
+	/**
+	 * @method setSelectedCurve
+	 * @param {MMCommand}} command 
+	 * @returns 
+	 */
+	setSelectedCurve(command) {
+		this.selectedCurve = command.args;
+		this.forgetCalculated();
 	}
 
 	/**
