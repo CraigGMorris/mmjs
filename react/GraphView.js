@@ -1943,6 +1943,21 @@ class Plot3D extends React.Component {
 					coords = multiply(transformCoords(transform, coords), scale);
 					renderLines(coords, height, lineColor, `svg_column_${column}`, lineType, lineOpacity, lineElements);			
 				}
+			}
+			else if (xValues.length !== yValues.length || yValues.length !== zValues.length) {
+				lineElements.push(
+					e(
+						'text', {
+							key: 'axisError',
+							x: 30,
+							y: 30,
+							stroke: 'red',
+							fill: 'red',
+							fontSize: '20pt',
+							textAnchor: 'start'
+						}, 'Axis count mismatch'
+					)
+				)
 			}			
 			else {
 				// line plot
