@@ -594,6 +594,18 @@ class Plot2D extends React.Component {
 						this.props.setDisplay(DisplayType.input);
 						return;
 					}
+					else {
+						this.setState((state) => {
+							const dx = svgPoint.x - this.width/2;
+							const dy = -svgPoint.y + this.height/2;
+							return {
+								translate: {
+									x: state.translate.x - dx,
+									y: state.translate.y + dy
+								}
+							}
+						});
+					}
 				}
 			}
 			this.panSum = 0;
