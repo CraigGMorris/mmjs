@@ -512,6 +512,7 @@ class Plot2D extends React.Component {
 		}
 		initialState.scale = 1;
 		initialState.translate =  {x: 0, y: 0};
+		initialState.cursorPosition = null;
 		this.state = initialState;
 
 		this.onPointerDown = this.onPointerDown.bind(this);
@@ -563,6 +564,11 @@ class Plot2D extends React.Component {
 			this.node.addEventListener('pointerup', this.onPointerUp);
 			e.target.setPointerCapture(e.pointerId);
 		}
+		this.setState((state) => {
+			return {
+				cursorPosition: null
+			}
+		})
   }
 
 	onPointerUp(e) {
@@ -595,14 +601,32 @@ class Plot2D extends React.Component {
 						return;
 					}
 					else {
+						const scale = this.state.scale;
+						const translate = this.state.translate;
+						const axisX = this.props.info.xInfo[this.state.xAxisIndex];
+						const axisY = axisX.yInfo[this.state.yAxisIndex];
+						const width = this.width;
+						const height = this.height;
+						const xSpan = (axisX.maxLabel - axisX.minLabel)
+						const ySpan = (axisY.maxLabel - axisY.minLabel)
+
+						const xLabelTranslate = -xSpan * (translate.x / this.width) / scale;
+						const yLabelTranslate = ySpan * translate.y / height / scale;
+
+						let xValue = (axisX.minLabel + xLabelTranslate) + xSpan * svgPoint.x / width / scale;
+						const xIsDate = (axisX.unit === 'date' || axisX.unit === 'dated' || axisX.unit === 'datem');
+						if (xIsDate) {
+							xValue = convertDateValue(xValue, axisX.unit);
+						}
+
+						let yValue = (axisY.maxLabel + yLabelTranslate) - ySpan * svgPoint.y / height / scale;
+						const yIsDate = (axisY.unit === 'date' || axisY.unit === 'dated' || axisY.unit === 'datem');
+						if (yIsDate) {
+							yValue = convertDateValue(yValue, axisY.unit);
+						}
 						this.setState((state) => {
-							const dx = svgPoint.x - this.width/2;
-							const dy = -svgPoint.y + this.height/2;
 							return {
-								translate: {
-									x: state.translate.x - dx,
-									y: state.translate.y + dy
-								}
+								cursorPosition: {x: xValue, y: yValue}
 							}
 						});
 					}
@@ -850,6 +874,18 @@ class Plot2D extends React.Component {
 		];
 
 		if (axisX.minLabel != null) {
+			const labelText = (labelValue) => {
+				if (labelValue != 0.0 && (Math.abs(labelValue) > 100000000.0 || Math.abs(labelValue) < 0.01)) {
+					return labelValue.toExponential(2);
+				}
+				else if (labelValue >= 1000000.0) {
+					return labelValue.toFixed(0).trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
+				}
+				else {
+					return labelValue.toFixed(3).trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
+				}
+			}
+	
 			const xLabelCount = 5;
 			let step = width / (xLabelCount - 1);
 			let labelStep = (axisX.maxLabel - axisX.minLabel) / (xLabelCount - 1);
@@ -868,18 +904,6 @@ class Plot2D extends React.Component {
 						stroke: 'black'
 					}
 				)
-			}
-
-			const labelText = (labelValue) => {
-				if (labelValue != 0.0 && (Math.abs(labelValue) > 100000000.0 || Math.abs(labelValue) < 0.01)) {
-					return labelValue.toExponential(2);
-				}
-				else if (labelValue >= 1000000.0) {
-					return labelValue.toFixed(0).trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
-				}
-				else {
-					return labelValue.toFixed(3).trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
-				}
 			}
 
 			const xLabelElements = [];
@@ -957,6 +981,34 @@ class Plot2D extends React.Component {
 					}, yLabelText
 				));
 			}
+
+			if (this.state.cursorPosition) {
+				elements.push(e(
+					'text', {
+						className: 'graph__svg-xyCursor',
+						key: 'cursorX',
+						x: width - 200,
+						y: 25,
+							stroke: lineColor,
+						fill: lineColor,
+						textAnchor: 'start',
+					}, labelText(this.state.cursorPosition.x))
+				);
+				elements.push(e(
+					'text', {
+						className: 'graph__svg-xyCursor',
+						key: 'cursorY',
+						x: width - 100,
+						y: 25,
+						stroke: lineColor,
+						fill: lineColor,
+						textAnchor: 'start',
+					}, labelText(this.state.cursorPosition.y))
+				)
+
+			}
+	
+	
 
 			// lines
 			const lines = [];
