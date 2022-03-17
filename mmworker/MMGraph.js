@@ -1051,6 +1051,9 @@ class MMGraph extends MMTool {
 			}
 			return rv;
 		}
+		else if (lcDescription === 'legend') {
+			return this.legendTable();	
+		}
 		else {
 			return super.valueDescribedBy(description, requestor);
 		}
@@ -1170,24 +1173,6 @@ class MMGraph extends MMTool {
 
 							}		
 						}
-
-						// for (let i = 0; i < nYLines; i++) {
-						// 	const yValue = xValue.yValues[i];
-						// 	columnName = this.columnNameForAxis(yValue);
-						// 	v = yValue.values;
-						// 	if (!v) { return null; }
-
-						// 	for (let col = 1; col <= v.columnCount; col++) {
-						// 		const columnNumber = MMNumberValue.scalarValue(col);
-						// 		const columnValue = v.valueForIndexRowColumn(zero, columnNumber);
-						// 		const numberedName = `${columnName}_${col}`;
-						// 		const column = new MMTableValueColumn({
-						// 			name: numberedName,
-						// 			displayUnit: yValue.displayUnit ? yValue.displayUnit.name : null,
-						// 			value: columnValue
-						// 		});
-						// 		a.push(column);
-						// 	}	
 					}
 				}
 				else {
@@ -1250,6 +1235,82 @@ class MMGraph extends MMTool {
 		}
 
 		return returnValue;
+	}
+
+	/**
+	 * @method legendTable
+	 * @returns MMTableValue
+	 */
+	legendTable() {
+		const lineColors =  ['Blue', 'Green', 'Brown', 'Orange', 'Purple', 'Red', 'Yellow'];
+		if (this.xValues[0].zValue) { // 3d
+			const nValues = this.xValues.length;
+			const xTitles = new MMStringValue(nValues, 1);
+			const yTitles = new MMStringValue(nValues, 1);
+			const zTitles = new MMStringValue(nValues, 1);
+			const colors = new MMStringValue(nValues, 1);
+
+			const nColors = lineColors.length;
+			for (let i = 0; i < nValues; i++) {
+				const xValue = this.xValues[i];
+				xTitles.values[i] = xValue.title;
+				yTitles.values[i] = xValue.yValues[0].title;
+				zTitles.values[i] = xValue.zValue.title;
+				colors.values[i] = lineColors[i % nColors];
+			}
+			const columns = [];
+			columns.push(new MMTableValueColumn({
+				name: 'X',
+				value: xTitles
+			}));
+			columns.push(new MMTableValueColumn({
+				name: 'Y',
+				value: yTitles
+			}));
+			columns.push(new MMTableValueColumn({
+				name: 'Z',
+				value: zTitles
+			}));
+			columns.push(new MMTableValueColumn({
+				name: 'Color',
+				value: colors
+			}));
+			return new MMTableValue({columns: columns});
+		}
+		else { // 2d
+			let nValues = 0;
+			for (const xValue of this.xValues) {
+				nValues += xValue.yValues.length;
+			}
+			const xTitles = new MMStringValue(nValues, 1);
+			const yTitles = new MMStringValue(nValues, 1);
+			const colors = new MMStringValue(nValues, 1);
+
+			const nColors = lineColors.length;
+			let valueNumber = 0;
+			for (const xValue of this.xValues) {
+				for (const yValue of xValue.yValues) {
+					xTitles.values[valueNumber] = xValue.title;
+					yTitles.values[valueNumber] = yValue.title;
+					colors.values[valueNumber] = lineColors[valueNumber % nColors];
+					valueNumber++;
+				}
+			}
+			const columns = [];
+			columns.push(new MMTableValueColumn({
+				name: 'X',
+				value: xTitles
+			}));
+			columns.push(new MMTableValueColumn({
+				name: 'Y',
+				value: yTitles
+			}));
+			columns.push(new MMTableValueColumn({
+				name: 'Color',
+				value: colors
+			}));
+			return new MMTableValue({columns: columns});
+		}
 	}
 
 	/**
@@ -1335,9 +1396,6 @@ class MMGraph extends MMTool {
 			const gridFormat = (x1, y1, x2, y2, x3, y3) => {
 				return `<path class="svg_gridlines" fill="none" d="M ${x1} ${y1} L ${x2} ${y2} L ${x3} ${y3}"/>`;
 			}
-			// const gridFormat4 = (x1, y1, x2, y2, x3, y3, x4, y4) => {
-			// 	return `<path class="svg_gridlines" fill="none" d="M ${x1} ${y1} L ${x2} ${y2} L ${x3} ${y3} L ${x4} ${y4}"/>`;
-			// }
 			const labelFormat = (x, y, color, anchor, text) => {
 				return `<text  class="svg_label" x="${x}" y="${y}" stroke="${color}" text-anchor="${anchor}">${text}</text>`;
 			}
@@ -1975,6 +2033,7 @@ class MMGraph extends MMTool {
 		p.push('maxx');
 		p.push('svg');
 		p.push('table');
+		p.push('legend');
 		const xCount = this.xValues.length;
 		const is3d = this.xValues[0].zValue != null;
 		for (let i = 1; i <= xCount; i++) {
