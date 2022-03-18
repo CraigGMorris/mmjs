@@ -571,30 +571,34 @@ const mminputs = (idNames) => {
 				}
 			}
 			if (this.rawHtml) {
-				let chunks = [messageCode];
 				let regex = RegExp('<mm>.*?</mm>','msig');
-				const rawHtml = this.rawHtml;
-				const matches = rawHtml.matchAll(regex);
-				let formulaNumber = 0;
-				let includeFrom = 0;
-				for (const match of matches) {
-					chunks.push(rawHtml.substring(includeFrom, match.index));
-					includeFrom = match.index + match[0].length
-					if (formulaNumber >= this.tagFormulas.length) {
-						this.tagFormulas.push(new MMFormula(`f${formulaNumber}`, this)); 
+				let processedHtml = this.rawHtml;
+				while (regex.test(processedHtml)) {
+					regex.lastIndex = 0;
+					let chunks = [];
+					const matches = processedHtml.matchAll(regex);
+					let formulaNumber = 0;
+					let includeFrom = 0;
+					for (const match of matches) {
+						chunks.push(processedHtml.substring(includeFrom, match.index));
+						includeFrom = match.index + match[0].length
+						if (formulaNumber >= this.tagFormulas.length) {
+							this.tagFormulas.push(new MMFormula(`f${formulaNumber}`, this)); 
+						}
+						const tagFormula = this.tagFormulas[formulaNumber];
+						tagFormula.nameSpace = this.parent; // make sure correct namespace
+						tagFormula.formula = match[0].substring(4, match[0].length - 5);
+						formulaNumber++;
+						const value = tagFormula.value();
+						if (value instanceof MMValue) {
+							chunks.push(value.htmlValue());
+						}
 					}
-					const tagFormula = this.tagFormulas[formulaNumber];
-					tagFormula.nameSpace = this.parent; // make sure correct namespace
-					tagFormula.formula = match[0].substring(4, match[0].length - 5);
-					formulaNumber++;
-					const value = tagFormula.value();
-					if (value instanceof MMValue) {
-						chunks.push(value.htmlValue());
-					}
+					chunks.push(processedHtml.substring(includeFrom));
+					processedHtml = chunks.join('')
 				}
-				chunks.push(rawHtml.substring(includeFrom));
 
-				this.processedHtml = chunks.join('');
+				this.processedHtml = messageCode + processedHtml;
 			}
 		}
 		if (this.processedHtml) {
