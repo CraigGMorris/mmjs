@@ -26,6 +26,9 @@
 	MMReport:readonly
 	MMPoint:readonly
 	MMPropertyType:readonly
+	MMNumberValue:readonly
+	MMStringValue:readonly
+	MMTableValue:readonly
 */
 
 /**
@@ -588,6 +591,10 @@ class MMModel extends MMTool {
 					const v = tool.cachedValue.stringWithUnit(tool.displayUnit);
 					if (v) {
 						toolInfo['result'] = v;
+						toolInfo['resultType'] =
+							tool.cachedValue instanceof MMNumberValue ? 'n' :
+							tool.cachedValue instanceof MMStringValue ? 's' :
+							tool.cachedValue instanceof MMTableValue ? 't' : ''
 					}
 				}
 			}
