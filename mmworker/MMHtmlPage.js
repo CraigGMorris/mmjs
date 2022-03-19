@@ -573,11 +573,11 @@ const mminputs = (idNames) => {
 			if (this.rawHtml) {
 				let regex = RegExp('<mm>.*?</mm>','msig');
 				let processedHtml = this.rawHtml;
+				let formulaNumber = 0;
 				while (regex.test(processedHtml)) {
 					regex.lastIndex = 0;
 					let chunks = [];
 					const matches = processedHtml.matchAll(regex);
-					let formulaNumber = 0;
 					let includeFrom = 0;
 					for (const match of matches) {
 						chunks.push(processedHtml.substring(includeFrom, match.index));
