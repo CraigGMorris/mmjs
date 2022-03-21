@@ -230,9 +230,18 @@ class MMHtmlPage extends MMTool {
 				value = MMStringValue.scalarValue(this.processedHtml);
 			}
 		}
-		else if (lcDescription === 'myformula') {
+		else if (lcDescription.startsWith('block_')) {
 			if ( this.formula.formula ) {
-				value = MMStringValue.scalarValue(this.formula.formula);
+				const rawHtmlValue = this.formula.value();
+				if (rawHtmlValue) {
+					const rawHtml = rawHtmlValue.values[0];
+					const blockName = lcDescription.substring(6);
+					const re = new RegExp(`(<!--begin_${blockName}-->)(.*)(<!--end_${blockName}-->)`, 'msi');
+					const match = rawHtml.match(re);
+					if (match.length > 2) {
+						value = MMStringValue.scalarValue(match[2]);
+					}
+				}
 			}
 		}
 		else if (this.inputs) {
@@ -301,6 +310,8 @@ class MMHtmlPage extends MMTool {
 	 */
 	parameters() {
 		let p = super.parameters();
+		p.push('html');
+		p.push('block_');
 		if (this.inputs) {
 			p = p.concat(Object.keys(this.inputs));
 		}
