@@ -1805,25 +1805,25 @@ class Plot3D extends React.Component {
 
 		// z labels and grid
 		let gridZElements = [];
-		labelPos[0] = -0.05;
+		labelPos[0] = -.3;
 		labelPos[1] = 1.0;
 		labelPos[2] = 1.18;//0.4;
 		labelCoords = multiply(transformCoords(transform, labelPos), scale);
 		gridZElements.push(titleFormat('ztitle',
 			labelCoords[0], // x
 			height - labelCoords[1], // y
-			lineColor, 'end', zValue.title
+			lineColor, 'start', zValue.title
 		));
 
-		labelPos[0] = -0.05;
+		labelPos[0] = -0.3;
 		labelPos[1] = 1.0;
-		labelPos[2] = 1.1;//0.35;
+		labelPos[2] = 1.12;//0.35;
 		labelCoords = transformCoords(transform, labelPos);
 		labelCoords = multiply(labelCoords, scale);
 		gridYElements.push(unitFormat('zunit',
 			labelCoords[0], // x
 			height - labelCoords[1], // y
-			lineColor, 'end', zValue.unit
+			lineColor, 'start', zValue.unit
 		));
 
 		for (let i = 0; i < nGrid; i++) {
