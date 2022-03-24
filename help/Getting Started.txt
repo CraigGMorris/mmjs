@@ -25,8 +25,8 @@
 			{
 				"name": "Models",
 				"Notes": "The icons on this diagram that are labeled 'Model\" have their own tools and diagram. Tap on the one above to open it.",
-				"DiagramX": 145,
-				"DiagramY": -40,
+				"DiagramX": 155,
+				"DiagramY": -35,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
 				"Type": "Model",
@@ -86,8 +86,8 @@
 			},
 			{
 				"name": "Tools",
-				"DiagramX": 145,
-				"DiagramY": 50,
+				"DiagramX": 155,
+				"DiagramY": 55,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"Type": "Model",
@@ -103,39 +103,13 @@
 						"DiagramNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
+						"indexTool": "Overview",
 						"Objects": [
-							{
-								"name": "plot2d",
-								"Notes": "A 2 dimension X-Y graph.\n\nIf Z values are not added, a Graph tool will plot one or more lines of y values against a common x array.\n\nThere can be multiple x arrays, with corresponding y lines.\n\nBecause the graphs in this model are already defined, you will see the plots when you tap on their icons.\n\nTap the Edit button at the top right of the plot to see the graph definition.",
-								"DiagramX": 65,
-								"DiagramY": 255,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Graph",
-								"X1": {
-									"v": "angles",
-									"vmin": "",
-									"vmax": "",
-									"unit": "degree",
-									"Y1": {
-										"v": "3 ft * {sin angles} 'sin",
-										"vmin": "-1 m",
-										"vmax": "1 m",
-										"lineType": 0
-									},
-									"Y2": {
-										"v": "3 ft * {cos angles} 'cos",
-										"vmin": "",
-										"vmax": "",
-										"lineType": 0
-									}
-								}
-							},
 							{
 								"name": "HalfRun",
 								"Notes": "The x and y values can be extracted as the parameters x, y1, y2 etc.  The <o> button on the toolbar is useful for finding what parameters you can reference from an object.",
-								"DiagramX": 60,
-								"DiagramY": 390,
+								"DiagramX": 235,
+								"DiagramY": 205,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
@@ -145,9 +119,9 @@
 							},
 							{
 								"name": "angles",
-								"Notes": "",
-								"DiagramX": 150,
-								"DiagramY": 245,
+								"Notes": "Angles for 2d and 3d plots",
+								"DiagramX": 65,
+								"DiagramY": 275,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
@@ -156,65 +130,22 @@
 								}
 							},
 							{
-								"name": "graph3D",
-								"Notes": "When a Z value is added to a graph, a 3 dimensional plot is produced.\n\nIf the X, Y and Z arrays all have the same number of values, as in this case, a 3D line will be plotted.\n\nOnce a Z value has been added, only the “Add X” button will be enabled and adding an X value will automatically add a Y and Z value for it.\n\nEach X value can only have one Y and Z.\n\nIf there is more than one X, you will not be able to delete a Z value, but you can still delete an entire X set.",
-								"DiagramX": 150,
-								"DiagramY": 290,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "Graph",
-								"X1": {
-									"v": "{sin angles}'sin",
-									"vmin": "",
-									"vmax": "",
-									"Y1": {
-										"v": "{cos angles}'cos",
-										"vmin": "",
-										"vmax": "",
-										"lineType": 0
-									},
-									"Z1": {
-										"v": "0:({nrows $.x1}-1) * 1 m 'Height",
-										"vmin": "0 m",
-										"vmax": "100 m",
-										"lineType": 0
-									}
-								},
-								"X2": {
-									"v": "$.x1'sin",
-									"vmin": "",
-									"vmax": "",
-									"Y1": {
-										"v": "$.y1'cos",
-										"vmin": "",
-										"vmax": "",
-										"lineType": 0
-									},
-									"Z1": {
-										"v": "$.z1 + 20 m",
-										"vmin": "",
-										"vmax": "",
-										"lineType": 0
-									}
-								}
-							},
-							{
 								"name": "table",
 								"Notes": "As with 2 dimensional plots, you can extract the x, y and now z value arrays.\n\nYou can also get tables from the graph tool.  Here a table representing the second X set is displayed.\n",
-								"DiagramX": 230,
-								"DiagramY": 415,
+								"DiagramX": 235,
+								"DiagramY": 310,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "graph3d.table2"
+									"Formula": "plot3d.table2"
 								}
 							},
 							{
 								"name": "xy",
 								"Notes": "      Angles for Surface3D\n",
-								"DiagramX": 150,
-								"DiagramY": 205,
+								"DiagramX": 65,
+								"DiagramY": 310,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
@@ -224,9 +155,9 @@
 							},
 							{
 								"name": "Surface3D",
-								"Notes": "When the number of elements in a Z value is equal to the number of X value elements times the number of Y value elements, a 3D mesh is plotted.\n\nIn this case Z is calculated from:\n\n{cos $.x1} * {sin {tr $.y1}} 'z\n\nwhere the “$.” refers to the graph itself.  Transposing the y value produces a row array and when the sin of that is multiplied by the column cos x array, a matrix is produced.\n\nA second x section draws a circle above the surface.",
-								"DiagramX": 235,
-								"DiagramY": 205,
+								"Notes": "When the number of elements in a Z value is equal to the number of X value elements times the number of Y value elements, a 3D mesh is plotted.",
+								"DiagramX": 150,
+								"DiagramY": 310,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Graph",
@@ -268,30 +199,119 @@
 								}
 							},
 							{
-								"name": "Surface3dHTML",
-								"Notes": "This HTML page shows how a graph can be inserted into a it and styled using CSS.",
-								"DiagramX": 230,
-								"DiagramY": 365,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"Type": "HTML Form",
-								"Formula": {
-									"Formula": "'<html>\n\t<head>\n\t\t<style>\n\t\t\tbody {\n\t\t\t\tbackground-color: rgb(255, 253, 225);\n\t\t\t}\n\t\t\t#svg_surface3d {\n\t\t\t\tbackground-color: #efe;\n\t\t\t\theight: 300px;\n\t\t\t\twidth: 300px;\n\t\t\t}\n\t\t\t.svg_line_1 {\n\t\t\t\tstroke: orange;\n\t\t\t\topacity: 0.3;\n\t\t\t}\n\t\t\t.svg_gridx {\n\t\t\t\tstroke: blue;\n\t\t\t}\n\t\t\t.svg_gridy,\n\t\t\t.svg_gridy .svg_label,\n\t\t\t.svg_gridy .svg_title,\n\t\t\t.svg_gridy .svg_unit {\n\t\t\t\tstroke: red;\n\t\t\t}\n\t\t\t.svg_gridz,\n\t\t\t.svg_gridz .svg_label,\n\t\t\t.svg_gridz .svg_title,\n\t\t\t.svg_gridz .svg_unit {\n\t\t\t\tstroke: green;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<p>Below the Surface3d graph is inserted into this HTML page tool by including <b>surface3d.svg</b> in a &lt;mm&gt; tag.</p>\n\t\t<p>  Check the source formula to see how styles are used to change the grids and labels to different, albeit rather gaudy, colors.</p>\n\t\t<p>Click on the graph below to switch the actual <b>Surface3D</b> graph.\n\t\t</p>\n\t\t<a onclick=\"mmpost([], {mm_push: 'surface3d'})\">\n\t\t<mm>surface3d.svg</mm>\n\t\t</a>\n\t</body>\n</html>"
-								},
-								"inputs": {},
-								"f0": "surface3d.svg"
-							},
-							{
-								"name": "Note",
-								"Notes": "When viewing one of the graphs, tap the Help button to get information on how to interact with it.",
-								"DiagramX": 70,
-								"DiagramY": 205,
+								"name": "Legend2D",
+								"Notes": "The legend parameter returns a table of axis titles and colours.",
+								"DiagramX": 235,
+								"DiagramY": 265,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "'Check the help"
+									"Formula": "plot2d.legend"
 								}
+							},
+							{
+								"name": "legendcss",
+								"Notes": "CSS styling for graph legend",
+								"DiagramX": 65,
+								"DiagramY": 240,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "'\n<style>\n\tth {\n\t\tdisplay: none;\n\t}\n\ttd {\n\t\tbackground-color: white;\n\t}\n\ttable {\n\t\twidth: 50%;\n\t\tmargin-left: auto;\n\t}\n</style>"
+								}
+							},
+							{
+								"name": "Plot3D",
+								"Notes": "When a Z value is added to a graph, a 3 dimensional plot is produced.",
+								"DiagramX": 150,
+								"DiagramY": 265,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Graph",
+								"X1": {
+									"v": "{sin angles}'sin",
+									"vmin": "",
+									"vmax": "",
+									"Y1": {
+										"v": "{cos angles}'cos",
+										"vmin": "",
+										"vmax": "",
+										"lineType": 0
+									},
+									"Z1": {
+										"v": "0:({nrows $.x1}-1) * 1 m 'Height",
+										"vmin": "0 m",
+										"vmax": "100 m",
+										"lineType": 0
+									}
+								},
+								"X2": {
+									"v": "$.x1'sin",
+									"vmin": "",
+									"vmax": "",
+									"Y1": {
+										"v": "$.y1'cos",
+										"vmin": "",
+										"vmax": "",
+										"lineType": 0
+									},
+									"Z1": {
+										"v": "$.z1 + 20 m ' Height + 20",
+										"vmin": "",
+										"vmax": "",
+										"lineType": 0
+									}
+								}
+							},
+							{
+								"name": "Plot2D",
+								"Notes": "A 2 dimension X-Y graph.\n\nTap the Edit button at the top right of the plot to see the graph definition.",
+								"DiagramX": 155,
+								"DiagramY": 205,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "Graph",
+								"X1": {
+									"v": "angles",
+									"vmin": "",
+									"vmax": "",
+									"unit": "degree",
+									"Y1": {
+										"v": "3 ft * {sin angles} 'sin",
+										"vmin": "-1 m",
+										"vmax": "1 m",
+										"lineType": 0
+									},
+									"Y2": {
+										"v": "3 ft * {cos angles} 'cos",
+										"vmin": "",
+										"vmax": "",
+										"lineType": 0
+									}
+								}
+							},
+							{
+								"name": "Overview",
+								"Notes": "Graph overview",
+								"DiagramX": 65,
+								"DiagramY": 205,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Graphs</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThe <b>Graph tool</b> provides basic plotting capability, including the ability to plot multiple curves for both two and three dimensions as well as 3D surface plots.\n\t\t</p>\n\t\t<p>\n\t\t\tThe <a href=\"./help/graph.html\" target=\"_blank\">Graph help</a> has a comprehensive discussion of graph features which won't be repeated here, but its examples use screenshots of the graphs in this model.\n\t\t</p>\n\t\t<div class=\"section\">\n\t\t\t<h3>2D Plots</h3>\n\t\t\t<p>\n\t\t\t\tThe graph named <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Plot2d'});\">Plot2d</span> is a simple two dimension X-Y plot and is shown below (see the <a href=\"./help/htmlpage.html\">HTML page</a> or the source for this page for information on showing graphs in pages like this).\n\t\t\t</p>\n\t\t\t<div>\n\t\t\t\t<mm>legendcss</mm>\n\t\t\t\t<mm>plot2d</mm>\n\t\t\t\t<mm>plot2d.legend[0,2:3]</mm>\n\t\t\t</div>\n\t\t\t<p>\n\t\t\t\tIn this case there is a single X axis, which has two Y curves representing the sin and cosine of the X values. Currently the sin curve is selected and its axis values are shown in the same blue colour as the curve. The unselected green cosine curve is somewhat dimmed.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tTapping on the Y axis will switch to the next available Y curve, in this case the cosine curve. In this case the axis coordinates are the same for both curves, but they can be different.\t\t\t\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tYou can also have multiple X axes and each X axis can have multiple Y curves. Tapping on the X axis will switch between them.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tYou can drag the graph (in the <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Plot2d'});\">actual tool</span>) around and the axis values will change correspondingly. You can also use pinch or scroll actions to zoom in and out and the the axis values will change.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tTapping on the graph other than on the axes will display the tap coordinates at the upper right, while a long tap will reset the graph to its original position and scale.\n\t\t\t</p>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>3D Plots</h3>\n\t\t\t<p>\n\t\t\t\tWhen a Z values is added to an X axis, a three dimensional plot is created. The graph named <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Plot3D'});\">Plot3D</span> is an example and is shown below.\n\t\t\t</p>\n\t\t\t<mm>plot3d</mm>\n\t\t\t<mm>legendcss</mm>\n\t\t\t<mm>plot3d.legend[0,3:4]</mm>\n\t\t\t<p>\n\t\t\t\tA 3D graph can have multiple X axes, as above, but each X axis can only have a single set of Y and Z values. If there are multiple x axes, tapping at the bottom of the graph will switch between them.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tYou can drag along any of the three axes (in the <span class=\"link\" onClick=\"mmpost([], {mm_push: 'plot3d'});\">actual tool</span>) to pan the graph and the axes values will change correspondingly. \n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tDragging horizontally along the top of the graph will rotate it.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tAs with 2D graphs, you can use pinch or scroll actions can be used to zoom the graph in and out and a long tap will reset the graph to its original position and scale. \n\t\t\t</p>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Surface Plots</h3>\n\t\t\t<p>\n\t\t\t\tWhen the number of elements in a Z value is equal to the number of X value elements times the number of Y value elements, a 3D mesh is plotted. This is illustrated in the graph named <span class=\"link\" onClick=\"mmpost([], {mm_push: 'surface3d'});\">Surface3D</span> shown below.\n\t\t\t</p>\n\t\t\t<mm>surface3d</mm>\n\t\t\t<mm>legendcss</mm>\n\t\t\t<mm>surface3d.legend[0,3:4]</mm>\n\t\t\t<p>\n\t\t\t\tIn this case Z is calculated from:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t{cos $.x1} * {sin {tr $.y1}} 'z\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\twhere the <b>$.</b> refers to the graph itself.  Transposing the y value produces a row array and when the sin of that is multiplied by the column cos x array, a matrix is produced.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tA second x section draws a circle above the surface.\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								},
+								"f0": "legendcss",
+								"f1": "plot2d",
+								"f2": "plot2d.legend[0,2:3]",
+								"f3": "plot3d",
+								"f4": "legendcss",
+								"f5": "plot3d.legend[0,3:4]",
+								"f6": "surface3d",
+								"f7": "legendcss",
+								"f8": "surface3d.legend[0,3:4]"
 							}
 						]
 					},
@@ -1560,8 +1580,8 @@
 							{
 								"name": "Interest",
 								"Notes": "In the \"Matrices\" model, there was an example where the growth of an investment was calculated assuming interest that was compounded monthly.\n\nThis example uses the ODE solver to see what would happen if the interest were continuously compounded.",
-								"DiagramX": 5,
-								"DiagramY": -10,
+								"DiagramX": 10,
+								"DiagramY": -15,
 								"HideInfo": "n",
 								"DiagramNotes": "y",
 								"Type": "Model",
@@ -12383,8 +12403,8 @@
 			{
 				"name": "Units",
 				"Notes": "",
-				"DiagramX": 70,
-				"DiagramY": 50,
+				"DiagramX": 80,
+				"DiagramY": 55,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"Type": "Model",
@@ -12508,8 +12528,8 @@
 			{
 				"name": "tidbits",
 				"Notes": "",
-				"DiagramX": 70,
-				"DiagramY": 75,
+				"DiagramX": 80,
+				"DiagramY": 80,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"Type": "Model",
@@ -12843,8 +12863,8 @@
 			{
 				"name": "A_Simple_Calc",
 				"Notes": "",
-				"DiagramX": 70,
-				"DiagramY": 25,
+				"DiagramX": 80,
+				"DiagramY": 30,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"Type": "Model",
@@ -13196,8 +13216,8 @@
 			{
 				"name": "Formulas",
 				"Notes": "",
-				"DiagramX": 145,
-				"DiagramY": 25,
+				"DiagramX": 155,
+				"DiagramY": 30,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"Type": "Model",
@@ -13348,7 +13368,6 @@
 					},
 					{
 						"name": "Arrays",
-						"Notes": "",
 						"DiagramX": -75,
 						"DiagramY": 20,
 						"HideInfo": "n",
@@ -13358,7 +13377,7 @@
 						"Objects": [
 							{
 								"name": "Range",
-								"Notes": "Create a column array with range operator :",
+								"Notes": "Create a column array",
 								"DiagramX": 20,
 								"DiagramY": 15,
 								"HideInfo": "n",
@@ -13641,168 +13660,6 @@
 										"Type": "Expression",
 										"Formula": {
 											"Formula": "column * row"
-										}
-									}
-								]
-							},
-							{
-								"name": "Concatenate",
-								"Notes": "Concatenating values into an array.",
-								"DiagramX": 20,
-								"DiagramY": -20,
-								"HideInfo": "n",
-								"DiagramNotes": "y",
-								"Type": "Model",
-								"diagramScale": 1,
-								"Objects": [
-									{
-										"name": "scalarNumbers",
-										"Notes": "Perhaps the most common way to make an array is with the concatenate function cc.\n\nIt simply combines all the values of its arguments into a column array. If an argument is a matrix, its values are taken row by row.\n\nThe arguments must all have the same unit type.",
-										"DiagramX": 20,
-										"DiagramY": -15,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{cc 1, 5, 6}"
-										}
-									},
-									{
-										"name": "arrays",
-										"Notes": "In this case two arrays are concatenated.",
-										"DiagramX": 105,
-										"DiagramY": -15,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{cc scalarNumbers {cc -1, -100, -1000}}"
-										}
-									},
-									{
-										"name": "array123",
-										"Notes": "a 4x3 matrix of metre values",
-										"DiagramX": 105,
-										"DiagramY": 25,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{cc 1, 2, 3} * 1 m"
-										}
-									},
-									{
-										"name": "matrix",
-										"Notes": "A 2x3 matrix of random value between 0 and 10 metres",
-										"DiagramX": 105,
-										"DiagramY": 55,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Matrix",
-										"unit": "m",
-										"CellInputs": {
-											"0_0": "{row}  * 1 m + {col} * 10 m"
-										},
-										"rowCount": "2",
-										"columnCount": "3"
-									},
-									{
-										"name": "mixedSize",
-										"Notes": "Shows concatenating an array and a matrix and how the matrix is unwound.",
-										"DiagramX": 105,
-										"DiagramY": 95,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{cc array123, matrix}"
-										}
-									}
-								]
-							},
-							{
-								"name": "Append",
-								"Notes": "Appending columns",
-								"DiagramX": 95,
-								"DiagramY": -20,
-								"HideInfo": "n",
-								"DiagramNotes": "y",
-								"Type": "Model",
-								"diagramScale": 1,
-								"Objects": [
-									{
-										"name": "mArray",
-										"Notes": "An array of meter values from to 10 to 50 in 10 m increments",
-										"DiagramX": 15,
-										"DiagramY": 30,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "1:5 * 10 m"
-										}
-									},
-									{
-										"name": "mMatrix",
-										"Notes": "A matrix of metre values representing the row and column position",
-										"DiagramX": 15,
-										"DiagramY": 70,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Matrix",
-										"unit": "m",
-										"CellInputs": {
-											"0_0": "{row} * 1 m + {col} * 10 m"
-										},
-										"rowCount": "5",
-										"columnCount": "2"
-									},
-									{
-										"name": "AppendSameUnit",
-										"Notes": "Appending adds columns together to form a matrix of all the columns.\n\nAll columns must have the same number of rows.",
-										"DiagramX": 100,
-										"DiagramY": 30,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{append mArray, mMatrix}"
-										}
-									},
-									{
-										"name": "kgArray",
-										"Notes": "An array of meter values from to 10 to 50 in 10 m increments",
-										"DiagramX": 15,
-										"DiagramY": 110,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "1:5 * 10 kg"
-										}
-									},
-									{
-										"name": "AppendDifferent",
-										"Notes": "Appending arrays with different unit types or numbers and strings will result in a table value with column numbers being used as the column names",
-										"DiagramX": 100,
-										"DiagramY": 110,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{append kgArray, mMatrix, sArray}"
-										}
-									},
-									{
-										"name": "sArray",
-										"Notes": "A string array",
-										"DiagramX": 15,
-										"DiagramY": 150,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{cc \"a\",\"b\",\"c\",\"d\",\"e\"}"
 										}
 									}
 								]
@@ -15744,8 +15601,8 @@
 			{
 				"name": "Welcome",
 				"Notes": "Welcome to the Math Minion's \"Getting Started\" session.\n\nIf the Welcome contents aren't already visible, tap on the icon above to view them.",
-				"DiagramX": 70,
-				"DiagramY": -40,
+				"DiagramX": 80,
+				"DiagramY": -35,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
 				"Type": "HTML Form",
@@ -15756,8 +15613,8 @@
 			{
 				"name": "Examples",
 				"Notes": "",
-				"DiagramX": 145,
-				"DiagramY": 75,
+				"DiagramX": 155,
+				"DiagramY": 80,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
 				"Type": "HTML Form",
