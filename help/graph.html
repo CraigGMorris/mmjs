@@ -24,6 +24,7 @@
 					axes2d: '&nbsp;&nbsp;2D Axes',
 					zoom2d: '&nbsp;&nbsp;2D Zooming',
 					pan2d: '&nbsp;&nbsp;2D Panning',
+					coord2d: '&nbsp;&nbsp;2D Coordinates',
 					rescale2d: '&nbsp;&nbsp;2D Rescale &amp; Center',
 					plot3d: '3D Plot',
 					axes3d: '&nbsp;&nbsp;3D Axes',
@@ -227,6 +228,7 @@
 						<li><b>Scatter</b> - just the points are plotted</li>
 						<li><b>Bar</b> - a vertical line is drawn from 0 to the y value</li>
 						<li><b>Bar+Dot</b> - same as bar with a point also drawn</li>
+						<li><b>Hide</b> - the curve is not drawn</li>
 					</ul>
 				</div>
 				<div id="delete" class="subsection">
@@ -285,7 +287,7 @@
 						</p>
 						<p>
 							The colour of the <b>Y</b> axis labels will always match the colour of the plotted
-							values that they represent.
+							values that they represent and those will be bolder than other curves.
 						</p>
 					</div>
 					<div id="zoom2d" class="subsection">
@@ -306,6 +308,13 @@
 						</p>
 						<p>
 							The axis labels will adjust their values appropriately.
+						</p>
+					</div>
+					<div id="coord2d" class="subsection">
+						<h3>2D Coordinates</h3>
+						<p>
+							Tapping on the graph, away from the axis select zones, will show the tap position
+							coordinates of the currently selected curve at the upper right of the graph.
 						</p>
 					</div>
 					<div id="rescale2d" class="subsection">
@@ -426,11 +435,12 @@
 					<li><b>maxx</b> - a X axis upper bound</li>
 					<li><b>y</b> - a Y array</li>
 					<li><b>miny</b> - the Y axis lower bound</li>
-					<li><b>maxy</b> - the Y axis upper bound<l/i>
+					<li><b>maxy</b> - the Y axis upper bound</li>
+					<li><b>table</b> - a table value corresponding to the designated X axis</li>
+					<li><b>legend</b> - a table of axis titles and colours.</li>
 					<li><b>svg</b> - a string value containing a Scalable Vector Graphics representation
 						of the plot.  Note that almost every element has a class name assigned, making
 						it easy to use CSS in HTML to change colors, line thickness, fonts etc.</li>
-					<li><b>table</b> - a table value corresponding to the designated X axis</li>
 				</ul>
 			</div>
 		</div>
