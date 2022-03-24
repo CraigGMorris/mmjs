@@ -238,7 +238,7 @@ class MMHtmlPage extends MMTool {
 					const blockName = lcDescription.substring(6);
 					const re = new RegExp(`(<!--begin_${blockName}-->)(.*)(<!--end_${blockName}-->)`, 'msi');
 					const match = rawHtml.match(re);
-					if (match.length > 2) {
+					if (match && match.length > 2) {
 						value = MMStringValue.scalarValue(match[2]);
 					}
 				}
