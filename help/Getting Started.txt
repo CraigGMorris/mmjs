@@ -15625,8 +15625,8 @@
 			{
 				"name": "CoolMM",
 				"Notes": "Tap the icon above for information on CoolProp in Math Minion",
-				"DiagramX": 70,
-				"DiagramY": 100,
+				"DiagramX": 80,
+				"DiagramY": 110,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
 				"Type": "Model",
