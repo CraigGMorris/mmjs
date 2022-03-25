@@ -1424,6 +1424,12 @@ class ToolIcon extends React.Component {
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;
 		if (info.toolTypeName === 'Expression') {
+			const resultColor = info.resultType ? {
+				n: textColor,
+				s: 'green',
+				t: 'blue'
+			}[info.resultType]
+				: textColor;
 			textComponents = e(
 				'svg', {
 					className: 'diagram__text-components',
@@ -1470,8 +1476,8 @@ class ToolIcon extends React.Component {
 							fontSize: `${5*scale}px`,
 							fontFamily: 'Helvetica',
 							fontWeight: '100',
-							fill: (info.result) ? textColor : 'red',
-							stroke: (info.result) ? textColor : 'red',
+							fill: (info.result) ? resultColor : 'red',
+							stroke: (info.result) ? resultColor : 'red',
 						}
 					}, info.result ? (
 						info.result.substring(0,30)

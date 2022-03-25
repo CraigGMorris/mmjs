@@ -381,11 +381,20 @@
 					<p>
 					Any input values posted to the object can be retrieved using their input names.
 					Unless a value is just a number, it will be string value and have to be converted
-					as appropriate, usually using the <b>eval</b> function.
+					as appropriate.
 					</p>
 					<p>
 					The parameter <b>html</b> will return the final HTML code after any mm tag replacements.
 					<p>
+					<p>
+						If the html returned by the formula contains comments of the form
+					</p>
+					<p class="formula">&lt;!--begin_blockname--&gt;<p>
+					<p>and</p>
+					<p class="formula">&lt;!--end_blockname--&gt;<p>
+					<p>
+						Then a parameter block_blockname will return all the code between the two comments.
+					</p>
 				</div>
 			</div>
 		</div>

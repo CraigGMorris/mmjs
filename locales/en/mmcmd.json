@@ -36,6 +36,7 @@
 	"formulaFunctionError": "Error in function {{name}}\nin: {{path}}\nformula: {{formula}}",
 	"formulaFunctionUnitsEqual": "Arguments must have the same type of units for function {{name}}",
 	"formulaFunctionUnitsNone": "Arguments must have dimensionless units for function {{name}}",
+	"formulaGetBitTypeError": "Getbit function must be numbers",
 	"formulaGroupArgs": "group{{action}} arguments must be a table value and column name\nin: {{path}}\nformula: {{formula}}",
 	"formulaIndexMismatch": "Mismatched index operators []\nin: {{path}}\nformula: {{formula}}",
 	"formulaJSError": "Javascript error:\n{{error}}",

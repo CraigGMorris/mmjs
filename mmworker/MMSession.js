@@ -1341,6 +1341,14 @@ class MMTool extends MMCommandParent {
 		return verbs;
 	}
 
+	/** override */
+	setValue(propertyName, value) {
+		if (propertyName === 'notes' && value !== this.notes) {
+			this.forgetCalculated();
+		}
+		super.setValue(propertyName, value);
+	}
+
 	/**
 	 * @method parameters
 	 * i.e. things that can be appended to a formula value
@@ -1502,9 +1510,15 @@ class MMTool extends MMCommandParent {
 	 */
 	valueDescribedBy(description, requestor) {
 		if (!description || description === 'self') {
+			if (requestor) {
+				this.valueRequestors.add(requestor);
+			}
 			return MMToolValue.scalarValue(this);
 		}
 		else if (description === 'notes') {
+			if (requestor) {
+				this.valueRequestors.add(requestor);
+			}
 			return MMStringValue.scalarValue(this.notes);
 		}
 		else if (description === 'myName') { // deprecated, but kept for old files

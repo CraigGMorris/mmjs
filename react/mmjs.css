@@ -788,9 +788,9 @@ a:hover {
 
 .graph__input-row-buttons {
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr 40px;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr 40px;
 	grid-gap: 5px;
-	grid-template-areas: "line scatter bar bardot delete";
+	grid-template-areas: "line scatter bar bardot hidden delete";
 	padding-top: 5px;
 }
 

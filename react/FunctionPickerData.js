@@ -513,7 +513,7 @@
 					{
 						f: "{average x, t}",
 						desc: `<p>
-								Returns the median of the averages of <b>x</b>.  If the second parameter is 0 or missing, this will be the
+								Returns the average of the values of <b>x</b>.  If the second parameter is 0 or missing, this will be the
 								scalar average of all the values of x.  If it is 1, then the result is a column vector whose values will be
 								the averages of each row of x.  If it is 2, then it will be a row vector of averages of the columns of x.
 							</p>`,
@@ -1045,6 +1045,12 @@
 							</p>`,
 					},
 					{
+						f: "{getbit n, x}",
+						desc: `Returns the bit at bit position n of a numeric value x, where a n of 1 would be
+							the least significant bit. The bit number does not have to be a scalar and the returned
+							value will have one column for each bit number value and a row for each value of x`
+					},
+					{
 						f: "{int x}",
 						desc: "Returns integer portion of x",
 					},
@@ -1071,6 +1077,12 @@
 								If the column argument is omitted, it is assumed to be 1 and if both arguments are omitted,
 								they are both assumed to be 1.
 							</p>`,
+					},
+					{
+						f: '{round x}',
+						desc: `returns the nearest whole number of x. Thus an x value of
+						{cc -3.49, -3.5, 3.49, 3.5} would return -3, -4, -4, 3, 4, 4. The x value must have a
+						dimensionless unit type`
 					},
 					{
 						f: "{sign x}",

@@ -230,9 +230,18 @@ class MMHtmlPage extends MMTool {
 				value = MMStringValue.scalarValue(this.processedHtml);
 			}
 		}
-		else if (lcDescription === 'myformula') {
+		else if (lcDescription.startsWith('block_')) {
 			if ( this.formula.formula ) {
-				value = MMStringValue.scalarValue(this.formula.formula);
+				const rawHtmlValue = this.formula.value();
+				if (rawHtmlValue) {
+					const rawHtml = rawHtmlValue.values[0];
+					const blockName = lcDescription.substring(6);
+					const re = new RegExp(`(<!--begin_${blockName}-->)(.*)(<!--end_${blockName}-->)`, 'msi');
+					const match = rawHtml.match(re);
+					if (match && match.length > 2) {
+						value = MMStringValue.scalarValue(match[2]);
+					}
+				}
 			}
 		}
 		else if (this.inputs) {
@@ -301,6 +310,8 @@ class MMHtmlPage extends MMTool {
 	 */
 	parameters() {
 		let p = super.parameters();
+		p.push('html');
+		p.push('block_');
 		if (this.inputs) {
 			p = p.concat(Object.keys(this.inputs));
 		}
@@ -571,30 +582,34 @@ const mminputs = (idNames) => {
 				}
 			}
 			if (this.rawHtml) {
-				let chunks = [messageCode];
 				let regex = RegExp('<mm>.*?</mm>','msig');
-				const rawHtml = this.rawHtml;
-				const matches = rawHtml.matchAll(regex);
+				let processedHtml = this.rawHtml;
 				let formulaNumber = 0;
-				let includeFrom = 0;
-				for (const match of matches) {
-					chunks.push(rawHtml.substring(includeFrom, match.index));
-					includeFrom = match.index + match[0].length
-					if (formulaNumber >= this.tagFormulas.length) {
-						this.tagFormulas.push(new MMFormula(`f${formulaNumber}`, this)); 
+				while (regex.test(processedHtml)) {
+					regex.lastIndex = 0;
+					let chunks = [];
+					const matches = processedHtml.matchAll(regex);
+					let includeFrom = 0;
+					for (const match of matches) {
+						chunks.push(processedHtml.substring(includeFrom, match.index));
+						includeFrom = match.index + match[0].length
+						if (formulaNumber >= this.tagFormulas.length) {
+							this.tagFormulas.push(new MMFormula(`f${formulaNumber}`, this)); 
+						}
+						const tagFormula = this.tagFormulas[formulaNumber];
+						tagFormula.nameSpace = this.parent; // make sure correct namespace
+						tagFormula.formula = match[0].substring(4, match[0].length - 5);
+						formulaNumber++;
+						const value = tagFormula.value();
+						if (value instanceof MMValue) {
+							chunks.push(value.htmlValue());
+						}
 					}
-					const tagFormula = this.tagFormulas[formulaNumber];
-					tagFormula.nameSpace = this.parent; // make sure correct namespace
-					tagFormula.formula = match[0].substring(4, match[0].length - 5);
-					formulaNumber++;
-					const value = tagFormula.value();
-					if (value instanceof MMValue) {
-						chunks.push(value.htmlValue());
-					}
+					chunks.push(processedHtml.substring(includeFrom));
+					processedHtml = chunks.join('')
 				}
-				chunks.push(rawHtml.substring(includeFrom));
 
-				this.processedHtml = chunks.join('');
+				this.processedHtml = messageCode + processedHtml;
 			}
 		}
 		if (this.processedHtml) {
