@@ -319,7 +319,7 @@ class MMSession extends MMCommandParent {
 		this.storage = new MMPouchDBStorage();
 		this.savedLastPathId = '(lastPath)';
 		this.savedLastNewsId = '(lastNews)';
-		this.lastNews = '20220226';
+		this.lastNews = '20220324';
 		this.newSession();
 		this.couchError = null;
 	}
