@@ -196,8 +196,7 @@
 										"vmax": "",
 										"lineType": 0
 									}
-								},
-								"Selected": "0"
+								}
 							},
 							{
 								"name": "Legend2D",
@@ -264,8 +263,7 @@
 										"vmax": "",
 										"lineType": 0
 									}
-								},
-								"Selected": "0"
+								}
 							},
 							{
 								"name": "Plot2D",
@@ -292,8 +290,7 @@
 										"vmax": "",
 										"lineType": 0
 									}
-								},
-								"Selected": "0_0"
+								}
 							},
 							{
 								"name": "Overview",
