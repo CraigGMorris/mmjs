@@ -538,7 +538,7 @@ class MMTableValueColumn {
 				displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(this._value.unitDimensions);
 			}
 		}
-		const displayUnitName = (displayUnit) ? displayUnit.name : '';
+		const displayUnitName = (displayUnit) ? displayUnit.displayName : '';
 		return {
 			t: 'tc',
 			name: this.name,
