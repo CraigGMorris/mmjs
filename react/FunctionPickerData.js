@@ -636,7 +636,7 @@
 								values <b>a</b> and <b>e</b> respectively.  These are then used with the chidist function to calculate
 								the probability that the accepted values could match the expected values.  Normally the <b>a</b> and
 								<b>e</b> values should have the same number of rows and columns, but if they don't, the <b>a</b> sizes
-								are used with <b> values being reused as necessary.
+								are used with values being reused as necessary.
 							</p>`,
 					},
 					{
