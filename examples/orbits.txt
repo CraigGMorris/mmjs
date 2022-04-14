@@ -10,7 +10,7 @@
 	],
 	"CaseName": "orbits",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
+	"SelectedObject": "plot3d",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -404,16 +404,19 @@
 					"v": "x_Coord[0,1]",
 					"vmin": "-graphMinMax",
 					"vmax": "graphMinMax",
+					"unit": "AU",
 					"Y1": {
 						"v": "y_coord[0,1]",
 						"vmin": "-graphMinMax",
 						"vmax": "graphMinMax",
+						"unit": "AU",
 						"lineType": 0
 					},
 					"Z1": {
 						"v": "z_Coord[0,1]",
 						"vmin": "-graphMinMax",
 						"vmax": "graphMinMax",
+						"unit": "AU",
 						"lineType": 0
 					}
 				},
@@ -421,16 +424,19 @@
 					"v": "x_coord[0,2]",
 					"vmin": "-graphMinMax",
 					"vmax": "graphMinMax",
+					"unit": "AU",
 					"Y1": {
 						"v": "y_coord[0,2]",
 						"vmin": "-graphMinMax",
 						"vmax": "graphMinMax",
+						"unit": "AU",
 						"lineType": 0
 					},
 					"Z1": {
 						"v": "z_coord[0,2]",
 						"vmin": "-graphMinMax",
 						"vmax": "graphMinMax",
+						"unit": "AU",
 						"lineType": 0
 					}
 				},
@@ -438,16 +444,19 @@
 					"v": "x_coord[0,3]",
 					"vmin": "",
 					"vmax": "",
+					"unit": "AU",
 					"Y1": {
 						"v": "y_coord[0,3]",
 						"vmin": "",
 						"vmax": "",
+						"unit": "AU",
 						"lineType": 0
 					},
 					"Z1": {
 						"v": "z_coord[0,3]",
 						"vmin": "",
 						"vmax": "",
+						"unit": "AU",
 						"lineType": 0
 					}
 				}
@@ -703,10 +712,12 @@
 					"v": "X_1",
 					"vmin": "{min Y_1,Y_2,X_1,X_2}",
 					"vmax": "{max Y_1,Y_2,X_1,X_2}",
+					"unit": "AU",
 					"Y1": {
 						"v": "Y_1",
 						"vmin": "{min Y_1,Y_2,X_1,X_2}",
 						"vmax": "{max Y_1,Y_2,X_1,X_2}",
+						"unit": "AU",
 						"lineType": 0
 					}
 				},
@@ -714,10 +725,12 @@
 					"v": "X_2",
 					"vmin": "{min Y_1,Y_2,X_1,X_2}",
 					"vmax": "{max Y_1,Y_2,X_1,X_2}",
+					"unit": "AU",
 					"Y1": {
 						"v": "Y_2",
 						"vmin": "{min Y_1,Y_2,X_1,X_2}",
 						"vmax": "{max Y_1,Y_2,X_1,X_2}",
+						"unit": "AU",
 						"lineType": 0
 					}
 				},
@@ -725,10 +738,12 @@
 					"v": "0 AU ' Sun",
 					"vmin": "{min Y_1,Y_2,X_1,X_2}",
 					"vmax": "{max Y_1,Y_2,X_1,X_2}",
+					"unit": "AU",
 					"Y1": {
 						"v": "0 AU ' Sun",
 						"vmin": "{min Y_1,Y_2,X_1,X_2}",
 						"vmax": "{max Y_1,Y_2,X_1,X_2}",
+						"unit": "AU",
 						"lineType": 1
 					}
 				}
@@ -745,10 +760,12 @@
 					"v": "Y_Coord",
 					"vmin": "",
 					"vmax": "",
+					"unit": "AU",
 					"Y1": {
 						"v": "Z_Coord",
 						"vmin": "",
 						"vmax": "",
+						"unit": "AU",
 						"lineType": 0
 					}
 				}
@@ -765,10 +782,12 @@
 					"v": "Y_Coord",
 					"vmin": "",
 					"vmax": "",
+					"unit": "AU",
 					"Y1": {
 						"v": "Z_Coord",
 						"vmin": "",
 						"vmax": "",
+						"unit": "AU",
 						"lineType": 0
 					}
 				}
@@ -785,10 +804,12 @@
 					"v": "X1Local",
 					"vmin": "{min X1Local, X2Local, \nY1Local, Y2Local}",
 					"vmax": "{max X1Local, X2Local, Y1Local, Y2Local}",
+					"unit": "AU",
 					"Y1": {
 						"v": "Y1Local",
 						"vmin": "{min X1Local, X2Local, Y1Local, Y2Local}",
 						"vmax": "{max X1Local, X2Local, Y1Local, Y2Local}",
+						"unit": "AU",
 						"lineType": 0
 					}
 				},
@@ -796,10 +817,12 @@
 					"v": "X2Local",
 					"vmin": "{min X1Local, X2Local, Y1Local, Y2Local}",
 					"vmax": "{max X1Local, X2Local, Y1Local, Y2Local}",
+					"unit": "AU",
 					"Y1": {
 						"v": "Y2Local",
 						"vmin": "{min X1Local, X2Local, Y1Local, Y2Local}",
 						"vmax": "{max X1Local, X2Local, Y1Local, Y2Local}",
+						"unit": "AU",
 						"lineType": 0
 					}
 				}

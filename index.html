@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="./help/help.css">
 	<link rel="icon" type="image/png" href="./favicon32.png">
 	<style>
+		* {box-sizing:border-box}
 		#menu {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -24,7 +25,58 @@
 	.center {
 		text-align: center;
 	}
-	</style>
+
+	/* Slideshow container */
+	.slideshow-container {
+		max-width: 600px;
+		position: relative;
+		margin: auto;
+	}
+
+	/* Make the images invisible by default */
+	.slide {
+		display: none;
+	}
+
+	.slide img {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	/* forward & Back buttons */
+	.back, .forward {
+		cursor: pointer;
+		color: grey;
+		font-weight: bold;
+		font-size: 24px;
+		transition: 0.4s ease;
+			user-select: none;
+	}
+
+	/* Place the "forward button" to the right */
+	/* .forward {
+		right: 0;
+		border-radius: 4px 0 0 4px;
+	} */
+
+	/*when the user hovers,add a black background with some little opacity */
+	.back:hover, .forward:hover {
+		color: rgba(0,200,0,1);
+	}
+
+	/* Caption Info */
+	.info {
+		/* color: #e3e3e3; */
+		display: grid;
+		grid-template-columns: 20px 1fr 20px;
+		font-size: 16px;
+		padding: 10px 14px;
+		bottom: 10px;
+		width: 100%;
+		text-align: center;
+	}
+</style>
 </head>	
 
 <body>
@@ -36,26 +88,102 @@
 			<div id="help"><a href="help/getstarted.html">Help</a></div>
 		</div>
 		<p>
-			(<b>NOTE</b>: this software is at the testing stage.  There will be bugs
-			and the <a href="http://www.redtree.com/contact.html">reporting</a> of them would be appreciated)
-		</p>
-		<p>
-			Math Minion is a general purpose calculation tool that runs completely in the
+			<b>Math Minion</b> is a general purpose calculation tool that runs completely in the
 			browser and is completely
 			<a href="help/freeprivate.html">free and private</a>.
 		</p>
-		<div class="center"><img src="screenshot.png" alt="Screen shot"></div>
+		<p>
+			While it does have many high powered mathmatical tools, it can also be a more adept,
+			transparent and powerful way of performing many of the tasks usually done in <b>spreadsheets</b>
+			and smallish <b>databases</b>.
+		</p>
+		<div class="slideshow-container fade">
+
+			<!-- Full images with numbers and message Info -->
+			<div class="slide">
+				<img src="screenshots/surfaceplot.png" alt="Screen shot">
+				<div class="info">
+					<div class="back" onclick="plusSlides(-1)">&#10094;</div>
+					<div>
+						Of course it can do Math things like this surface plot.
+					</div>
+					<siv class="forward" onclick="plusSlides(1)">&#10095;</div>
+				</div>
+			</div>
+		
+			<div class="slide">
+				<img src="screenshots/timesheet.png" alt="Screen shot">
+				<div class="info">
+					<div class="back" onclick="plusSlides(-1)">&#10094;</div>
+					<div>
+						It can also do small (say less than a million records) database chores, like this
+						timesheet example.
+					</div>
+					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
+				</div>
+			</div>
+		
+			<div class="slide">
+				<img src="screenshots/strings.png" alt="Screen shot">
+				<div class="info">
+					<div class="back" onclick="plusSlides(-1)">&#10094;</div>
+					<div>
+						Quite large strings or arrays of strings can also be processed. Here the javascript code
+						Math Minion's function browser is massaged into html for viewing in the HTML tool.
+					</div>
+					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
+				</div>
+			</div>
+		
+			<div class="slide">
+				<img src="screenshots/pv.png" alt="Screen shot">
+				<div class="info">
+					<div class="back" onclick="plusSlides(-1)">&#10094;</div>
+					<div>
+						The HTML tool can also be used to create forms, as in this present value example,
+						or reports for printing or pdfs.
+					</div>
+					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
+				</div>
+			</div>
+		
+			<div class="slide">
+				<img src="screenshots/predator.png" alt="Screen shot">
+				<div class="info">
+					<div class="back" onclick="plusSlides(-1)">&#10094;</div>
+					<div>
+						Of course it also contains tools for integrating differential equations, such as
+						in this class predator/prey example as well as optimizing, function solving and
+						even a (seldom needed) iterator.
+					</div>
+					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
+				</div>
+			</div>
+		
+			<div class="slide">
+				<img src="screenshots/orbits.png" alt="Screen shot">
+				<div class="info">
+					<div class="back" onclick="plusSlides(-1)">&#10094;</div>
+					<div>
+						When things get more complicated, adding notes to the tools and grouping
+						calculations into nested modules can help.
+					</div>
+					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
+				</div>
+			</div>
 		<p>	
-			It combines a <a href="help/diagram.html">mind map</a> style diagram of the
+			It combines a <a href="help/diagram.html">mind map style diagram</a> of the
 			relationships between a range of <a href="help/tools.html">calculation tools</a>,
 			with a <a href="help/formula.html">formula system</a> that operates transparently
 			on scalars, arrays and matrices. It also includes a
 			<a href="help/units.html">comprehensive conversion unit system</a> 
-			that performs dimensional analysis on all calculations.
+			that performs dimensional analysis such that it knows dividing a btu/h value by a
+			voltage results in amps, but adding a litre and a pound would be an error.
 		</p>	
 		<p>
 			Best of all, if you have a reasonably recent browser and can wait a few seconds for
-			it to load, you can try it right now by tapping on <a href="run.html">Run</a>.
+			it to load, you can try it right now by tapping on <a href="run.html">Run</a> and check out
+			the <b>Getting Started</b> session.
 		</p>
 		<h4>Math Minion and CoolProp</h4>
 		<p>A version of Math Minion is now available that has a fluid flash tool based
@@ -86,5 +214,29 @@
 		</ul>
 	</div>
  </body>
+ <script>
+	 var slidePosition = 1;
+		SlideShow(slidePosition);
 
+		// forward/Back controls
+		function plusSlides(n) {
+			SlideShow(slidePosition += n);
+		}
+
+		//  images controls
+		function currentSlide(n) {
+			SlideShow(slidePosition = n);
+		}
+
+		function SlideShow(n) {
+			let i;
+			const slides = document.getElementsByClassName("slide");
+			if (n > slides.length) {slidePosition = 1}
+			if (n < 1) {slidePosition = slides.length}
+			for (i = 0; i < slides.length; i++) {
+					slides[i].style.display = "none";
+			}
+			slides[slidePosition-1].style.display = "block";
+		} 
+ </script>
 </html>
