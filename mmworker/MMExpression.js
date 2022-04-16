@@ -124,6 +124,7 @@ class MMExpression extends MMTool {
 		let verbs = super.verbs;
 		verbs['value'] = this.valueCommand;
 		verbs['setcolumnunit'] = this.setColumnUnitCommand;
+		verbs['setcolumnformat'] = this.setColumnFormatCommand;
 		return verbs;
 	}
 
@@ -135,7 +136,8 @@ class MMExpression extends MMTool {
 	getVerbUsageKey(command) {
 		let key = {
 			value: 'mmcmd:_toolValue',
-			setcolumnunit: 'mmcmd?exprSetColumnUnit',
+			setcolumnunit: 'mmcmd:_exprSetColumnUnit',
+			setcolumnformat: 'mmcmd:_exprSetColumnFormat',
 		}[command];
 		if (key) {
 			return key;
@@ -311,8 +313,10 @@ class MMExpression extends MMTool {
 		let json = {}
 		if (value) {
 			let displayUnit;
+			let formats;
 			if (value instanceof MMTableValue) {
 				displayUnit = this.tableUnits;
+				formats = this.tableFormats;
 			}
 			else {
 				displayUnit = this.displayUnit;
@@ -320,7 +324,7 @@ class MMExpression extends MMTool {
 					displayUnit = null;  // display unit is wrong type - ignore and use default
 				}
 			}
-			json = value.jsonValue(displayUnit);
+			json = value.jsonValue(displayUnit, formats);
 		}
 		return json;
 	}
@@ -362,6 +366,29 @@ class MMExpression extends MMTool {
 		this.setError('mmcmd:_setColumnUnit', {});
 	}
 
+	/**
+	 * @method setColumnFormatCommand
+	 * @param {MMCommand} command
+	 * command.args should contain columnNumber formatString
+	 * command.results = format
+	 */
+	setColumnFormatCommand(command) {
+		const parts = command.args.split(/\s/);
+		if (parts.length === 2) {
+			if (!this.tableFormats) {
+				this.tableFormats = [];
+			}
+			this.tableFormats[parts[0]] = parts[1];
+			command.results = parts[1];
+			return;
+		}
+		else if (this.tableFormats && this.tableFormats[parts[0]]) {
+			delete this.tableFormats[parts[0]];
+			command.results = '';
+			return;
+		}
+	}
+
 /**
 	 * @method saveObject
 	 * @override
@@ -395,6 +422,7 @@ class MMExpression extends MMTool {
 			});
 			o['tableUnits'] = units;
 		}
+		if (this.tableFormats) { o['tableFormats'] = this.tableFormats; }
 		return o;
 	}
 
@@ -420,5 +448,6 @@ class MMExpression extends MMTool {
 				}
 			});
 		}
+		if (saved.tableFormats) { this.tableFormats = saved.tableFormats; }
 	}
 }
