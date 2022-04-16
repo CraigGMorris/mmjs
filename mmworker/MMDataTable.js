@@ -52,11 +52,12 @@ class MMDataTableColumn extends MMCommandObject {
 		this.isCalculated = options.isCalculated;
 		this.isMenu = options.isMenu;
 		this.displayUnitName = displayUnitName;
-		this.format = options.format;
+		this._format = options.format;
 		if (!this.isCalculated) {
 			this._columnValue = new MMTableValueColumn({
 				name: options.name,
 				displayUnit: displayUnitName,
+				format: this.format,
 			});
 			if (!options.defaultValue && !this._columnValue.isString) {
 				this.defaultFormula.formula = `0 ${this._columnValue.displayUnit.name}`;
@@ -85,7 +86,8 @@ class MMDataTableColumn extends MMCommandObject {
 		}
 		this._columnValue = new MMTableValueColumn({
 			name: this.name,
-			value: calculatedValue
+			value: calculatedValue,
+			format: this.format
 		});
 		if (this.displayUnitName) {
 			this._columnValue.displayUnit = this.displayUnitName;
@@ -120,6 +122,8 @@ class MMDataTableColumn extends MMCommandObject {
 
 	set format(newValue) {
 		this._format = newValue;
+		this.columnValue.format = newValue;
+		this.forgetCalculated();
 	}
 
 	/**

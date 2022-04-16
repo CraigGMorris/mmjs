@@ -59,7 +59,7 @@ class MMTableValueColumn {
 		if (context.name) {
 			this.name = context.name;
 			this._value = context.value;
-			this.format = null;
+			this.format = context.format;
 			if (this._value) {
 				if (this._value instanceof MMNumberValue) {
 					if (context.displayUnit) {
@@ -529,9 +529,10 @@ class MMTableValueColumn {
 	 * @method jsonValue
 	 * @override
 	 * @param {MMUnit} displayUnit
+	 * @param {String} format
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
-	jsonValue(displayUnit) {
+	jsonValue(displayUnit, format) {
 		if (!displayUnit) {
 			displayUnit = this._displayUnit;
 			if (!displayUnit && this._value.unitDimensions) {
@@ -543,7 +544,7 @@ class MMTableValueColumn {
 			t: 'tc',
 			name: this.name,
 			dUnit: displayUnitName,
-			format: this.format,
+			format: format ? format : this.format,
 			v: this._value.jsonValue(displayUnit),
 			// nr: this._value.rowCount,
 			// nc: 1
@@ -744,16 +745,18 @@ class MMTableValue extends MMValue {
 	 * @method jsonValue
 	 * @override
 	 * @param {MMUnit[]} displayUnits
+	 * @param {String[]} formats
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
-	jsonValue(displayUnits) {
+	jsonValue(displayUnits, formats) {
 		let columns = [];
 		const nc =  this.columnCount;
 		for (let i = 0; i < nc; i++) {
 			const column = this.columns[i];
 			// const displayUnit = (displayUnits && i < displayUnits.length) ? displayUnits[i] : column.displayUnit;
 			const displayUnit = displayUnits ? displayUnits[i + 1] : null;
-			columns.push(column.jsonValue(displayUnit));
+			const format = formats ? formats[i + 1] : null;
+			columns.push(column.jsonValue(displayUnit, format));
 		}
 
 		return {

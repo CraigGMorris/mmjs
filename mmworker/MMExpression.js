@@ -310,9 +310,15 @@ class MMExpression extends MMTool {
 		let value = this.valueForRequestor();
 		let json = {}
 		if (value) {
-			let displayUnit = (value instanceof MMTableValue)  ? this.tableUnits : this.displayUnit;
-			if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, value.unitDimensions)) {
-				displayUnit = null;  // display unit is wrong type - ignore and use default
+			let displayUnit;
+			if (value instanceof MMTableValue) {
+				displayUnit = this.tableUnits;
+			}
+			else {
+				displayUnit = this.displayUnit;
+				if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, value.unitDimensions)) {
+					displayUnit = null;  // display unit is wrong type - ignore and use default
+				}
 			}
 			json = value.jsonValue(displayUnit);
 		}
