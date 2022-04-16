@@ -311,8 +311,8 @@ class MMDataTable extends MMTool {
 				undoaddrow:			'mmcmd:_tableUndoAddRow',
 				removecolumn: 	'mmcmd:_tableRemoveColumn',
 				removerows:			'mmcmd:_tableRemoveRows',
-				restorecolumn:	'mmcmd?tableRestoreColumn',
-				restorerows:		'mmcmd?tableRestoreRows',
+				restorecolumn:	'mmcmd:_tableRestoreColumn',
+				restorerows:		'mmcmd:_tableRestoreRows',
 				setcell:				'mmcmd:_tableSetCell',
 				movecolumn:			'mmcmd:_tableMoveColumn',
 			}[command];
