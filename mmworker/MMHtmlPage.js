@@ -51,20 +51,22 @@ class MMHtmlPage extends MMTool {
 			border-collapse: collapse;
 		}
 		td, th {
-			border: 1px solid #ddd;
+			border: 1px solid black;
 			padding: 4px;
 		}
 
-		tr:nth-child(even){background-color: #f2f2f2;}
+		tr:nth-child(odd){background-color: #f2f2f2;}
+		tr:nth-child(even){background-color: #ffffff;}
 		
 		tr:hover {background-color: #ddd;}
 		
 		th {
 			text-align: left;
-			background-color: #04AA6D;
-			color: white;
+			background-color: #e8e8ff;
+			color: black;
 		}
 		th.col0, td.col0 {
+			display: none; // comment this line out to see line numbers
 			width: 50px;
 		}
 	</style>
