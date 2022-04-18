@@ -65,6 +65,9 @@ export function ExpressionView(props) {
 					if (v[column] && v[column].format) {
 						setFormatString(v[column].format);
 					}
+					else {
+						setFormatString('');
+					}
 				}
 			}
 			else if (results.value.format) {
