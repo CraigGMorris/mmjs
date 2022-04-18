@@ -34,7 +34,7 @@
  * @member {String} name
  * @member {MMUnit} _displayUnit
  * @member {MMValue} _value
- * @member {String} _format
+ * @member {String} format
  */
 class MMTableValueColumn {
 	/** @method exceptionWith
@@ -546,8 +546,6 @@ class MMTableValueColumn {
 			dUnit: displayUnitName,
 			format: format ? format : this.format,
 			v: this._value.jsonValue(displayUnit),
-			// nr: this._value.rowCount,
-			// nc: 1
 		}
 	}
 }
@@ -727,7 +725,7 @@ class MMTableValue extends MMValue {
 	 * @returns {String}
 	 */
 	// eslint-disable-next-line no-unused-vars
-	stringForRowColumnUnit(rowNumber, columnNumber, outUnit) {
+	stringForRowColumnUnit(rowNumber, columnNumber, outUnit, format) {
 		const column = this.columns[columnNumber - 1];
 
 		if (!outUnit) {
@@ -737,7 +735,11 @@ class MMTableValue extends MMValue {
 			outUnit = column.value.defaultUnit;
 		}
 
-		return column.value.stringForRowColumnUnit(rowNumber, 1, outUnit);
+		if (!format) {
+			format = column.format;
+		}
+
+		return column.value.stringForRowColumnUnit(rowNumber, 1, outUnit, format);
 	}
 
 

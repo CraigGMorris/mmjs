@@ -116,6 +116,46 @@ class MMUnitSystem extends MMCommandParent {
 		return true;
 	}
 
+	/** @static format
+	 * @param {Number} v
+	 * @param {String} format
+	 * @return {String}  v formatted with format
+	 */
+	static format(v, format) {
+		if (format) {
+			const parts = format.split('.');	// split on decimal point, if there is one
+			let width = 0;
+			format = parts[parts.length - 1];
+			if (parts.length && parts[0].length) {
+				const widthField = parts[0].replace(/[^\d]+/,'');
+				if (widthField.length) {
+					width = parseInt(widthField);
+				}
+			}
+			let precision = parseInt(format);
+			if (isNaN(precision) || precision < 0 || precision > 36) {
+				precision = 8;
+			}
+			let s = ''
+			switch (format.slice(-1)) {  // last character should be format type
+				case 'f':
+					s = v.toFixed(precision);
+					break;
+				case 'e':
+					s = v.toExponential(precision);
+					break;
+				case 'x':
+					s = `${precision}r` + v.toString(precision);
+					break;
+			}
+			if (width > s.length) {
+				s = s.padStart(width);
+			}
+			return s;
+		}
+		return v.toPrecision(8);
+	}
+
 	/**
 	 * @constructor
 	 * @param {Object} session - MMSession - parent session
@@ -781,10 +821,14 @@ class MMUnit extends MMCommandObject {
 	 * @method stringForValue
 	 * display string for value converted to unit
 	 * @param {Number} value
+	 * @param {String} format (optional)
 	 * @returns {String}
 	 */
-	stringForValue(value) {	
+	stringForValue(value, format) {	
 		value = this.convertFromBase(value)
+		if (format) {
+			return MMUnitSystem.format(value, format);
+		}
 		if (value != 0.0 && (Math.abs(value) > 100000000.0 || Math.abs(value) < 0.01)) {
 			return value.toExponential(6).padStart(14, ' ');
 		}
@@ -797,10 +841,11 @@ class MMUnit extends MMCommandObject {
 	 * @method stringForValueWithUnit
 	 * the value converted to unit with unit name
 	 * @param {Number} value
+	 * @param {String} format (optional)
 	 * @returns {String}
 	 */
-	stringForValueWithUnit(value) {	
-		return `${this.stringForValue(value)} ${this.displayName}`;
+	stringForValueWithUnit(value, format) {	
+		return `${this.stringForValue(value, format)} ${this.displayName}`;
 	}
 }
 

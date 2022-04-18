@@ -3206,7 +3206,7 @@ class MMFormatFunction extends MMMultipleArgumentFunction {
 		const value = this.arguments[argNo++].value();
 		const format = this.arguments[argNo].value();
 		if (format instanceof MMStringValue && value instanceof MMNumberValue) {
-			return format.format(value, unit)
+			return value.format(format, unit)
 		}
 		return null;
 	}

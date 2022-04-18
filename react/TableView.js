@@ -412,7 +412,7 @@ const pointerMove = useCallback(e => {
 					const vIndex = (row + rowOrigin) * nColumns + column + columnOrigin;
 					if (value.v) {
 						v = vIndex < nValues ? value.v[vIndex] : '';
-						displayedV = formatValue(v);
+						displayedV = formatValue(v, value.format);
 					} else {
 						displayedV = '';
 					}

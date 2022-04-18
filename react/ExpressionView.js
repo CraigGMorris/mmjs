@@ -47,12 +47,33 @@ export function ExpressionView(props) {
 	const [stringDisplay, setStringDisplay] = useState();
 	const [selectedCell, setSelectedCell] = useState([0,0]);
 	const [editOptions, setEditOptions] = useState({});
+	const [formatString, setFormatString] = useState('');
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	useEffect(() => {
+		const results = updateResults.length ? updateResults[0].results : {};
+		if (results.value) {
+			if (results.value.t === 't') {
+				const column = selectedCell[1] - 1;
+				if (column >= 0) {
+					const v = results.value.v;
+					if (v[column] && v[column].format) {
+						setFormatString(v[column].format);
+					}
+				}
+			}
+			else if (results.value.format) {
+				setFormatString(results.value.format);
+			}
+		}
+	}, [props.viewInfo.updateResults, selectedCell])
+
+
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
@@ -90,6 +111,7 @@ export function ExpressionView(props) {
 		if (selectedCell[0] === 0 && selectedCell[1] > 0) {
 			const v = value.v[selectedCell[1] - 1].v;
 			unitType = v.unitType;
+			valueUnit = v.unit;
 		}
 	}
 	else {
@@ -194,10 +216,11 @@ export function ExpressionView(props) {
 				}
 
 				if (row === 0) {
-					if (isTable) {
-						setSelectedCell([row,column]);
-						setDisplay(ExpressionDisplay.unitPicker);
-					}
+					setSelectedCell([row,column]);
+					// if (isTable) {
+					// 	setSelectedCell([row,column]);
+					// 	setDisplay(ExpressionDisplay.unitPicker);
+					// }
 					return;					
 				}
 	
@@ -239,12 +262,43 @@ export function ExpressionView(props) {
 			}
 
 			let displayedUnit = '';
+			let formatInput = '';
 			if (unitType && valueUnit) {
 				displayedUnit = `${unitType}: ${valueUnit}`;
+				formatInput =e(
+					'input', {
+						id: 'expression__format-input',
+						placeholder: 'format',
+						value: formatString,
+						onChange: (event) => {
+								// keeps input field in sync
+								setFormatString(event.target.value);
+						},
+						onKeyDown: e => {
+							if (e.code == 'Enter') {
+								e.target.blur();
+							}
+						},
+						onBlur: () => {
+							// set the expression format
+							let cmd;
+							if (isTable) {
+								cmd = `${props.viewInfo.path} setcolumnformat ${selectedCell[1]} ${formatString}`
+							}
+							else {
+								cmd = `${props.viewInfo.path} set format ${formatString}`;
+							}
+							props.actions.doCommand(cmd, () => {
+								props.actions.updateView(props.viewInfo.stackIndex);
+							});
+						},		
+					}
+				);
 			}
 			else if (value.t === 's') {
 				displayedUnit = 'String';
 			}
+
 
 			displayComponent = e(
 				'div', {
@@ -345,16 +399,27 @@ export function ExpressionView(props) {
 					),
 				),
 				e(
-					// results unit line
 					'div', {
-						id: 'expression__units',
-						onClick: () => {
-							if (unitType) {
-								setDisplay(ExpressionDisplay.unitPicker);
-							}
-						}
+						id: 'expression__units-format',						
 					},
-					displayedUnit
+					e(
+						// results unit line
+						'div', {
+							id: 'expression__units',
+							onClick: () => {
+								if (unitType) {
+									setDisplay(ExpressionDisplay.unitPicker);
+								}
+							}
+						},
+						displayedUnit
+					),
+					e(
+						'div', {
+							id: 'expression__format',
+						},
+						formatInput,
+					),
 				),
 				e(
 					TableView, {

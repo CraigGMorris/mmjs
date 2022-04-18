@@ -503,12 +503,28 @@ a:hover {
 	height: calc(var(--info-height) - calc(var(--input--height) * 2));
 }
 
-#expression__units {
+#expression__units-format {
 	grid-area: out-units;
+	display: grid;
+	grid-template-columns: 1fr 50px;
+	/* align-self: center; */
+}
+
+#expression__format {
+	align-self: end;
+}
+
+#expression__format-input {
+	font-size: 10pt;
+	height: 22px;
+}
+
+#expression__units {
 	box-sizing: border-box;
 	padding-top: 2px;
 	color: var(--link--color);
 	cursor: pointer;
+	align-self: center;
 }
 
 #expression__units:hover {

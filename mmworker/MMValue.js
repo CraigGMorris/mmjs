@@ -327,7 +327,7 @@ class MMValue {
 			rv = '';
 		}
 		else if (this.valueCount == 1) {
-			rv = this.stringForRowColumnWithUnit(1, 1, this.defaultUnit);
+			rv = this.stringForRowColumnWithUnit(1, 1, this.displayUnit || this.defaultUnit, this.displayFormat).trim();
 		}
 		else {
 			const lines = [];
@@ -349,7 +349,7 @@ class MMValue {
 			for (let row = 1; row <= this.rowCount; row++) {
 				lines.push(`<tr class="row{$row}">\n\t\t<th class="col0">${row}</th>`)
 				for (let column = 1; column <= this.columnCount; column++) {
-					const v = this.stringForRowColumnUnit(row, column, this.defaultUnit);
+					const v = this.stringForRowColumnUnit(row, column, this.defaultUnit, this.displayFormat);
 					lines.push(`\t\t<td class="col${column}">${v}</td>`)
 				}
 				lines.push('\t</tr>');

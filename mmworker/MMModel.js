@@ -588,7 +588,7 @@ class MMModel extends MMTool {
 			if (tool instanceof MMExpression) {
 				toolInfo['formula'] = tool.formula.formula;
 				if (tool.cachedValue) {
-					const v = tool.cachedValue.stringWithUnit(tool.displayUnit);
+					const v = tool.cachedValue.stringWithUnit(tool.displayUnit, tool.format);
 					if (v) {
 						toolInfo['result'] = v;
 						toolInfo['resultType'] =
@@ -727,7 +727,7 @@ class MMModel extends MMTool {
 				if (tool.isInput) {
 					let value = tool.valueForRequestor();
 					if (value) {
-						value = value.stringWithUnit(tool.displayUnit);
+						value = value.stringWithUnit(tool.displayUnit, tool.format);
 					}
 					else {
 						value = '?';
@@ -741,7 +741,7 @@ class MMModel extends MMTool {
 				else if (tool.isOutput) {
 					let value = tool.valueForRequestor();
 					if (value) {
-						value = value.stringWithUnit(tool.displayUnit);
+						value = value.stringWithUnit(tool.displayUnit, tool.format);
 					}
 					else {
 						value = '?';
