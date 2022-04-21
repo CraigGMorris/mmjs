@@ -60,6 +60,7 @@ export function MatrixView(props) {
 	const [editFormula, setEditFormula] = useState(originInput ? originInput.input : '')
 	const [editOptions, setEditOptions] = useState({})
 	const [applyType, setApplyType] = useState('cell');
+	const [formatString, setFormatString] = useState('');
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -85,6 +86,17 @@ export function MatrixView(props) {
 		props.viewInfo.matrixViewState.currentCell = currentCell;
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	useEffect(() => {
+		const results = updateResults.length ? updateResults[0].results : {};
+		if (results.value && results.value.format) {
+			setFormatString(results.value.format);
+		}
+		else {
+			setFormatString('');
+		}
+	}, [props.viewInfo.updateResults])
+
 
 	if (updateResults.error) {
 		// use empty command just to defer popView
@@ -252,12 +264,6 @@ export function MatrixView(props) {
 					'div', {
 						id: 'matrix__unit-line',
 					},
-					e(
-						'div', {
-							id: 'matrix__current-cell-location',
-						},
-						`[${currentCell.join(', ')}]`,
-					),
 					e (
 						'div', {
 							id: 'matrix__output-unit',
@@ -266,6 +272,29 @@ export function MatrixView(props) {
 							}
 						},
 						`${unitType}: ${valueUnit}`,
+					),
+					e(
+						'input', {
+							id: 'matrix__format-input',
+							placeholder: 'format',
+							value: formatString,
+							onChange: (event) => {
+									// keeps input field in sync
+									setFormatString(event.target.value);
+							},
+							onKeyDown: e => {
+								if (e.code == 'Enter') {
+									e.target.blur();
+								}
+							},
+							onBlur: () => {
+								// set the expression format
+								const cmd = `${props.viewInfo.path} set format ${formatString}`;
+								props.actions.doCommand(cmd, () => {
+									props.actions.updateView(props.viewInfo.stackIndex);
+								});
+							},		
+						}
 					),
 				),
 				e(

@@ -271,6 +271,7 @@ class MMMatrix extends MMTool {
 	get properties() {
 		let d = super.properties;
 		d['displayUnitName'] = {type: MMPropertyType.string, readOnly: false};
+		d['format'] = {type: MMPropertyType.string, readOnly: false}; // for display
 		return d;
 	}
 
@@ -289,6 +290,18 @@ class MMMatrix extends MMTool {
 			}
 			this.displayUnit = unit;
 		}
+	}
+
+	get format() {
+		return this._format;
+	}
+
+	set format(format) {
+		this._format = format;
+		if (this.value) {
+			this.value.displayFormat = format;
+		}
+		this.refreshRequestors();
 	}
 
 	/**
@@ -376,6 +389,27 @@ class MMMatrix extends MMTool {
 	}
 
 	/**
+	 * @override refreshRequestors
+	 * essentially forgetCalculated without recalculating value
+	 * used for format change
+	 */
+	refreshRequestors() {
+		if (!this.forgetRecursionBlockIsOn) {
+			try {
+				this.forgetRecursionBlockIsOn = true;
+				for (const requestor of this.valueRequestors) {
+					requestor.forgetCalculated();
+				}
+				this.valueRequestors.clear();
+				super.forgetCalculated();
+			}
+			finally {
+				this.forgetRecursionBlockIsOn = false;
+			}
+		}
+	}
+
+	/**
 	 * @method inputSources
 	 * @override
 	 * @returns {Set} contains tools referenced by this tool
@@ -413,6 +447,7 @@ class MMMatrix extends MMTool {
 		o['CellInputs'] = cellInputs;
 		o['rowCount'] = this.rowCountFormula ? this.rowCountFormula.formula : '1';
 		o['columnCount'] = this.columnCountFormula ? this.columnCountFormula.formula : '1';
+		if (this.format) { o['format'] = this.format; }
 		return o;
 	}
 
@@ -445,6 +480,7 @@ class MMMatrix extends MMTool {
 
 		this.rowCountFormula.formula = saved.rowCount;
 		this.columnCountFormula.formula = saved.columnCount;
+		if (saved.format) { this.format = saved.format; }
 	}
 
 	/** initFromNumberString
@@ -624,6 +660,9 @@ class MMMatrix extends MMTool {
 			this.recursionCount = 0;
 			const dimensions = this.displayUnit ? this.displayUnit.dimensions : null;
 			this.value = new MMNumberValue(rowCount, columnCount, dimensions);
+			if (this.format) {
+				this.value.displayFormat = this.format;
+			}
 			this.knowns = [];
 
 			for (let row = 1; row <= rowCount; row++) {

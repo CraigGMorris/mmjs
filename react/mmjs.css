@@ -1042,8 +1042,13 @@ a:hover {
 #matrix__unit-line {
 	display: grid;
 	grid-area: out-units;
-	grid-template-columns: 1fr auto;
+	grid-template-columns: 1fr 50px;
 	padding-top: 3px;
+}
+
+#matrix__format-input {
+	font-size: 10pt;
+	height: 22px;
 }
 
 #matrix__output-unit {

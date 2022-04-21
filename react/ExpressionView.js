@@ -76,8 +76,6 @@ export function ExpressionView(props) {
 		}
 	}, [props.viewInfo.updateResults, selectedCell])
 
-
-
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
 	if (updateResults.error) {
@@ -268,7 +266,7 @@ export function ExpressionView(props) {
 			let formatInput = '';
 			if (unitType && valueUnit) {
 				displayedUnit = `${unitType}: ${valueUnit}`;
-				formatInput =e(
+				formatInput = e(
 					'input', {
 						id: 'expression__format-input',
 						placeholder: 'format',
