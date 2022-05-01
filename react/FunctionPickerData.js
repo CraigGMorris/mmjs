@@ -829,6 +829,13 @@
 						</p>`,
 					},
 					{
+						f: "{html v}",
+						desc: `<p>
+								Returns a string value containing <b>HTML</b> that can be used to display the value
+								of <b>v</b>.
+							</p>`,
+					},
+					{
 						f: "{join s, sep}",
 						desc: `<p>Joins the elements of string array <b>s</b> into a single string, with the elements separated by the
 								scalar string <b>sep</b>. If <b>s</b> has more than one column and more than one row, the result will be a

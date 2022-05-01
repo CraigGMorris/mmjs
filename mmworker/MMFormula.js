@@ -215,6 +215,7 @@ const MMFormulaFactory = (token, formula) => {
 		'eval': (f) => {return new MMEvalFunction(f)},
 		'evaljs': (f) => {return new MMEvalJSFunction(f)},
 		'getbit': (f) => {return new MMGetBitFunction(f)},
+		'html': (f) => {return new MMHtmlFunction(f)},
 		'int': (f) => {return new MMGenericSingleFunction(f, Math.trunc)},
 		'numeric': (f) => {return new MMNumericFunction(f)},
 		'rand': (f) => {return new MMRandFunction(f)},
@@ -3800,6 +3801,22 @@ class MMGetBitFunction extends MMMultipleArgumentFunction {
 	}
 }
 
+class MMHtmlFunction extends MMSingleValueFunction {
+	/**
+	 * @method value
+	 * @override
+	 * @returns {MMStringValue}
+	 */
+	value() {
+		let v = this.argument ? this.argument.value() : null;
+		if (v instanceof MMValue) {
+			const html = v.htmlValue();
+			if (html) {
+				return MMStringValue.scalarValue(html);
+			}
+		}
+	}
+}
 
 class MMRandFunction extends MMMultipleArgumentFunction {
 	value() {
