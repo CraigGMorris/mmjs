@@ -536,6 +536,22 @@ class MMModel extends MMTool {
 	}
 
 	/**
+	 * @method outputExpressions
+	 * @returns {Array}
+	 * returns the contained expressions marked as outputs
+	 */
+	outputExpressions() {
+		const outputs = [];
+		for (const key in this.children) {
+			const tool = this.children[key];
+			if (tool instanceof MMExpression && tool.isOutput) {
+				outputs.push(tool);
+			}
+		}
+		return outputs;
+	}
+
+	/**
 	 * @method inputSources
 	 * @override
 	 * @returns {Set} contains tools referenced by this tool
@@ -711,13 +727,90 @@ class MMModel extends MMTool {
 	}
 
 	/**
-	 * @method toolViewInfo
-	 * @param {MMCommand} command
-	 * command.results contains the info for tool info view
+	 * @method htmlValue
+	 * @returns {String}
 	 */
-	async toolViewInfo(command) {
-		await super.toolViewInfo(command);
-		this.session.selectedObject = '';
+	htmlValue(requestor, isMyNameSpace) {
+		const results = {};
+		this.expressionInfo(results, requestor);
+		const chunks = [];
+		chunks.push('		<div class="model-form">');
+		if (results.inputs.length) {
+			const keyPressed = this.name + '_keyPressed';
+			const changedInput = this.name + '_changedInput';
+			const pathPrefix = isMyNameSpace ? "" : this.name + '.'
+			chunks.push('		<script>');
+			chunks.push(`			const ${keyPressed} = (e) => {
+					if (e.key === 'Enter') {
+						e.target.blur();
+					}
+				}
+				const ${changedInput} = (e) => {
+					const value = e.target.value;
+					const inputId = e.target.id;
+					const inputName = inputId.substring(${this.name.length + 1});
+					mmpost([], {`);
+			chunks.push('					mm_cmd: `.' + pathPrefix + '${inputName}.formula set formula ${value}`,');
+			for (const output of results.outputs) {
+				const outputId = `${this.name}_${output.name}`;
+				chunks.push(`					${outputId}: "{html ${pathPrefix}${output.name}}",`);
+			}
+			chunks.push('					},(result) => {');
+			for (const output of results.outputs) {
+				const outputId = `${this.name}_${output.name}`;
+				chunks.push(`					document.getElementById("${outputId}").innerHTML=result.${outputId};`);
+			}
+			chunks.push(`				});`);
+			chunks.push('			}')
+			chunks.push('		</script>');
+			chunks.push('		<div class="model-form__inputs">')
+			chunks.push(`			<div class="model-form__title">${this.name} Inputs</div>`)
+			chunks.push('			<table>');
+			for (let input of results.inputs) {
+				chunks.push(`				<tr><td><label htmlfor="${this.name}_${input.name}">${input.name}</label></td>`);
+				chunks.push(`				<td><input id="${this.name}_${input.name}"
+				value="${input.formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event)"></td></tr>`);
+			}
+			chunks.push('			</table>')
+			chunks.push('		</div>');
+		}
+
+		if (results.outputs.length) {
+			chunks.push('<div class="model-form__outputs">')
+			chunks.push(`<div  class="model-form__title">${this.name} Outputs</div>`)
+			for (let output of results.outputs) {
+				const tool = this.children[output.name.toLowerCase()];
+				let value = tool.valueForRequestor(requestor);
+				if (value) {
+					const outputId = this.name + '_' + output.name;
+					if (value instanceof MMToolValue) {
+						value = value.values[0];
+						chunks.push(`<div class="model-form__output_tool">`);
+						chunks.push(`<div class="model-form__output_name">${output.name}</div>`);
+						chunks.push(`<div id="${outputId}" class="model-form__output_value">${value.htmlValue(requestor)}</div>`);
+						chunks.push('</div>');	
+					}
+					else if (value.valueCount <= 1) {
+						chunks.push(`<div class="model-form__output-row">`);
+						chunks.push(`<div class="model-form__output-name">${output.name}</div>`);
+						chunks.push(`<div id="${outputId}" class="model-form__output-value">${value.htmlValue(requestor)}</div>`);
+						chunks.push('</div>');	
+					}
+					else {
+						chunks.push(`<div class="model-form__output-table">`);
+						chunks.push(`<div class="model-form__output-name">${output.name}</div>`);
+						chunks.push(`<div id="${outputId}" class="model-form__output-value">${value.htmlValue(requestor)}</div>`);
+						chunks.push('</div>');	
+					}
+				}
+			}
+			chunks.push('</div>')
+		}
+		chunks.push('</div>')
+		return chunks.join('\n');
+	}
+
+	expressionInfo(results, requestor) {
 		const inputs = [];
 		const outputs = [];
 		const others = [];
@@ -725,7 +818,7 @@ class MMModel extends MMTool {
 			const tool = this.children[key];
 			if (tool.typeName === 'Expression') {
 				if (tool.isInput) {
-					let value = tool.valueForRequestor();
+					let value = tool.valueForRequestor(requestor);
 					if (value) {
 						value = value.stringWithUnit(tool.displayUnit, tool.format);
 					}
@@ -739,7 +832,7 @@ class MMModel extends MMTool {
 					})
 				}
 				else if (tool.isOutput) {
-					let value = tool.valueForRequestor();
+					let value = tool.valueForRequestor(requestor);
 					if (value) {
 						value = value.stringWithUnit(tool.displayUnit, tool.format);
 					}
@@ -786,10 +879,93 @@ class MMModel extends MMTool {
 			return 0;	
 		}
 
-		const results = command.results;
 		results.inputs = inputs.sort(positionSort);
 		results.outputs = outputs.sort(positionSort);
 		results.others = others.sort(positionSort);
+	}
+	
+	/**
+	 * @method toolViewInfo
+	 * @param {MMCommand} command
+	 * command.results contains the info for tool info view
+	 */
+	async toolViewInfo(command) {
+		await super.toolViewInfo(command);
+		this.session.selectedObject = '';
+		// const inputs = [];
+		// const outputs = [];
+		// const others = [];
+		// for (const key in this.children) {
+		// 	const tool = this.children[key];
+		// 	if (tool.typeName === 'Expression') {
+		// 		if (tool.isInput) {
+		// 			let value = tool.valueForRequestor();
+		// 			if (value) {
+		// 				value = value.stringWithUnit(tool.displayUnit, tool.format);
+		// 			}
+		// 			else {
+		// 				value = '?';
+		// 			}
+		// 			inputs.push({
+		// 				name: tool.name,
+		// 				formula: tool.formula.formula,
+		// 				value: value,
+		// 			})
+		// 		}
+		// 		else if (tool.isOutput) {
+		// 			let value = tool.valueForRequestor();
+		// 			if (value) {
+		// 				value = value.stringWithUnit(tool.displayUnit, tool.format);
+		// 			}
+		// 			else {
+		// 				value = '?';
+		// 			}
+		// 			outputs.push({
+		// 				name: tool.name,
+		// 				value: value,
+		// 			})
+		// 		}
+		// 		else {
+		// 			others.push({
+		// 				name: tool.name,
+		// 				type: tool.typeName,				
+		// 			})
+		// 		}
+		// 	}
+		// 	else {
+		// 		others.push({
+		// 			name: tool.name,
+		// 			type: tool.typeName,				
+		// 		});
+		// 	}
+		// }
+
+		// const positionSort = (a, b) => {
+		// 	// sort by position with left most first and  ties broken by
+		// 	// top most first
+		// 	const posA = this.childNamed(a.name).position;
+		// 	const posB = this.childNamed(b.name).position;
+		// 	if (posA.x < posB.x) {
+		// 		return -1
+		// 	}
+		// 	if (posA.x > posB.x) {
+		// 		return 1;
+		// 	}
+		// 	if (posA.y < posB.y) {
+		// 		return -1;
+		// 	}
+		// 	if (posA.y > posB.y) {
+		// 		return 1
+		// 	}
+		// 	return 0;	
+		// }
+
+		// const results = command.results;
+		// results.inputs = inputs.sort(positionSort);
+		// results.outputs = outputs.sort(positionSort);
+		// results.others = others.sort(positionSort);
+		const results = command.results;
+		this.expressionInfo(results);
 		if (this.importInfo) {
 			results.importSource = this.importInfo.sessionName;
 		}

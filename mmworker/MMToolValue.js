@@ -152,10 +152,10 @@ class MMToolValue extends MMValue {
 	 * @method htmlValue
 	 * @returns {String}
 	 */
-		htmlValue() {
+		htmlValue(requestor) {
 			if (this.valueCount === 1) {
 				const v = this._values[0];
-				const html = v.htmlValue();
+				const html = v.htmlValue(requestor);
 				if (html) {
 					return html;
 				}

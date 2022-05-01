@@ -40,58 +40,15 @@ class MMHtmlPage extends MMTool {
 	constructor(name, parentModel) {
 		super(name, parentModel, 'HtmlPage');
 		this.formula = new MMFormula('Formula', this);
-		this.formula.formula = `'
-<!-- Modify the body and any other part of this html to meet your needs -->
+		this.formula.formula = `'<!-- Html source - see help page -->	
 <html>
 	<head>
-	<style>
-		body {background-color: #EEFFEE; color: black;}
-		table {
-			width: 100%;
-			border-collapse: collapse;
-		}
-		td, th {
-			border: 1px solid black;
-			padding: 4px;
-		}
-
-		tr:nth-child(odd){background-color: #f2f2f2;}
-		tr:nth-child(even){background-color: #ffffff;}
-		
-		tr:hover {background-color: #ddd;}
-		
-		th {
-			text-align: left;
-			background-color: #e8e8ff;
-			color: black;
-		}
-		th.col0, td.col0 {
-			display: none; // comment this line out to see line numbers
-			width: 50px;
-		}
-	</style>
+		<link rel="stylesheet"
+			href="/examples/htmlpage.css"
+			type="text/css">
 	</head>
 	<body>
-		<p>
-			Replace this content in the source formula
-			with your own content.
-		</p>
-		<p>
-			You can use the &lt;mm&gt; tag to insert the results of a Math Minion formula. For instance
-		</p>
-		<p>
-			<b>&lt;mm&gt;{rand 3, 3}&lt;/mm&gt;</b>
-		</p>
-		<p>
-			is used below to insert a small matrix of random numbers.
-		</p>
-		<mm>{rand 3, 3}</mm>
-		<p>
-			Here a second <b>&lt;mm&gt;</b> tag inserts the current date.time (<b><mm>{fmt "12.4f", {now} + {timezone}, "date"}</mm></b>) into this sentence.
-		</p>
-		<p>
-			The HtmlPage also has a script function called <b>mmpost</b> that can do lots of interesting things. See the help for more information.
-		</p>
+Replace this content in the source formula with your own content.
 	</body>
 </html>`
 		this.tagFormulas = [];
@@ -185,7 +142,22 @@ class MMHtmlPage extends MMTool {
 		let sources = super.inputSources();
 		this.formula.addInputSourcesToSet(sources);	
 		for (let formula of this.tagFormulas) {
-			formula.addInputSourcesToSet(sources);
+			if (formula.formula) {
+				formula.addInputSourcesToSet(sources);
+			}
+			else {
+				// tag represents parent model
+				const inputs = this.parent.inputExpressions();
+				for (const input of inputs) {
+					sources.add(input);
+					input.addRequestor(this);
+				}
+				const outputs = this.parent.outputExpressions();
+				for (const output of outputs) {
+					sources.add(output);
+					output.addRequestor(this);
+				}
+			}
 		}
 		
 		return sources;
@@ -355,51 +327,15 @@ class MMHtmlPage extends MMTool {
 			}
 
 			const actions = {};
+			const requestResults = {};
 			if (message.requests) {
-				const requestResults = {};
 				for (let name of Object.keys(message.requests)) {
 					if (name.startsWith('mm_')) {
 						// save actions for below
 						actions[name.toLowerCase()] = message.requests[name];
 						// console.log(`action ${name}`)
 					}
-					else {
-						// evaluate the request formulas for inclusion in response.results
-						const formula = new MMFormula(`r_${name}`, this);
-						formula.formula = message.requests[name];
-						const mmResult = formula.value();
-						let reqResult;
-						if (!mmResult) {
-							reqResult = '';
-						}
-						else if (mmResult instanceof MMValue) {
-							const v = mmResult.values;
-							if (mmResult.valueCount === 1) {
-								reqResult = v[0];
-							}
-							else if (mmResult.rowCount > 1 && mmResult.columnCount > 1) {
-								reqResult = [];
-								const columnCount = mmResult.columnCount;
-								for (let r = 0; r < mmResult.rowCount; r++) {
-									const row = [];
-									reqResult.push(row);
-									for (let c = 0; c < columnCount; c++) {
-										row[c] = v[r*columnCount + c];
-									}
-								}
-							}
-							else if (mmResult.valueCount > 1) {
-								reqResult = [];
-								for (let r = 0; r < mmResult.rowCount; r++) {
-									reqResult[r] = v[r];
-								}
-							}	
-						}
-
-						requestResults[name] = reqResult;
-					}
 				}
-				response.results = requestResults;
 			}
 			if (!message.callBackNumber && Object.keys(actions).length === 0) {
 				response.update = true;
@@ -493,10 +429,10 @@ class MMHtmlPage extends MMTool {
 						const cmds = actions[action];
 						const results = await theMMSession.processor.processCommandString(cmds);
 						if (results) {
-							response.results = results
+							requestResults['_response'] = results
 						}
 						else {
-							response.results = '';
+							requestResults['_response'] = '';
 						}
 					}
 						break;
@@ -505,6 +441,46 @@ class MMHtmlPage extends MMTool {
 						break;
 				}
 			}
+
+			if (message.requests) {
+				for (let name of Object.keys(message.requests)) {
+					if (!name.startsWith('mm_')) {
+						// evaluate the request formulas for inclusion in response.results
+						const formula = new MMFormula(`r_${name}`, this);
+						formula.formula = message.requests[name];
+						const mmResult = formula.value();
+						let reqResult;
+						if (!mmResult) {
+							reqResult = '';
+						}
+						else if (mmResult instanceof MMValue) {
+							const v = mmResult.values;
+							if (mmResult.valueCount === 1) {
+								reqResult = v[0];
+							}
+							else if (mmResult.rowCount > 1 && mmResult.columnCount > 1) {
+								reqResult = [];
+								const columnCount = mmResult.columnCount;
+								for (let r = 0; r < mmResult.rowCount; r++) {
+									const row = [];
+									reqResult.push(row);
+									for (let c = 0; c < columnCount; c++) {
+										row[c] = v[r*columnCount + c];
+									}
+								}
+							}
+							else if (mmResult.valueCount > 1) {
+								reqResult = [];
+								for (let r = 0; r < mmResult.rowCount; r++) {
+									reqResult[r] = v[r];
+								}
+							}	
+						}
+						requestResults[name] = reqResult;
+					}
+				}
+			}
+			response.results = requestResults;
 
 			return response;
 		}
@@ -525,11 +501,12 @@ class MMHtmlPage extends MMTool {
 	/**
 	 * @method htmlForRequestor
 	 * @param {MMTool} requestor
+	 * @param {Boolean} skipMessageCode;
 	 * @returns {String} 
 	 */
-	htmlForRequestor(requestor) {
+	htmlForRequestor(requestor, skipMessageCode) {
 		// code inserted into the page to implement the mmpost function
-		const messageCode = `
+		const messageCode = skipMessageCode ? '' : `
 <script>
 window.onerror = function (e) {
 	alert('Error: ' + e);
@@ -602,9 +579,15 @@ const mminputs = (idNames) => {
 						tagFormula.nameSpace = this.parent; // make sure correct namespace
 						tagFormula.formula = match[0].substring(4, match[0].length - 5);
 						formulaNumber++;
-						const value = tagFormula.value();
-						if (value instanceof MMValue) {
-							chunks.push(value.htmlValue());
+						if (tagFormula.formula.length === 0) {
+							// if tag is empty assume parent model
+							chunks.push(this.parent.htmlValue(requestor, true));
+						}
+						else {
+							const value = tagFormula.value();
+							if (value instanceof MMValue) {
+								chunks.push(value.htmlValue(this));
+							}
 						}
 					}
 					chunks.push(processedHtml.substring(includeFrom));
@@ -618,6 +601,14 @@ const mminputs = (idNames) => {
 			this.addRequestor(requestor);
 		}
 		return this.processedHtml;
+	}
+
+	/**
+	 * @method htmlValue
+	 * @returns {String}
+	 */
+	htmlValue(requestor) {
+		return this.htmlForRequestor(requestor, true);
 	}
 
 	/**
