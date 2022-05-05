@@ -436,6 +436,10 @@ Replace this content in the source formula with your own content.
 						}
 					}
 						break;
+					case 'mm_undo': {
+						response.undo = actions[action];
+					}
+						break;
 					default:
 						this.setError('mmcmd:htmlBadAction', {action: action, path: this.getPath()});
 						break;
@@ -496,6 +500,9 @@ Replace this content in the source formula with your own content.
 	 */
 	async actionCommand(command) {
 		command.results = await this.action(command.args);
+		if (command.results.undo) {
+			command.undo = command.results.undo;
+		}
 	}
 
 	/**
