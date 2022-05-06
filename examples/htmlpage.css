@@ -1,4 +1,7 @@
-body {background-color: #EEFFEE; color: black;}
+body {
+	background-color: rgb(255, 253, 225) !important;
+	color: black;
+}
 table {
 	width: 100%;
 	border-collapse: collapse;
@@ -25,7 +28,6 @@ th.col0, td.col0 {
 
 .model-form {
 	margin-top: 10px;
-	background-color: rgb(255, 253, 225);
 }
 
 .model-form__title {
@@ -38,7 +40,7 @@ th.col0, td.col0 {
 
 .model-form__output-row {
 	display: grid;
-	grid-template-columns: 100px 1fr;
+	grid-template-columns: 112px 1fr;
 }
 .model-form__output-name {
 	width:100px;
@@ -53,4 +55,8 @@ th.col0, td.col0 {
 }
 .model-form__output-row, .model-form__output-tool, .model-form__output-table {
 	margin-top: 5px;
+}
+.model-form__output-tool {
+	background-color: white;
+	border: solid 1px black;
 }

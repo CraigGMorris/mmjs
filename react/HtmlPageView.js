@@ -153,7 +153,7 @@ export function HtmlPageView(props) {
 	else {
 		displayComponent = e(
 			'div', {
-				key: 'htmppage',
+				key: 'htmlpage',
 				id: 'htmlpage',
 			},
 			e(

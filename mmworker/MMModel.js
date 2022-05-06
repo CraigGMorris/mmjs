@@ -745,12 +745,13 @@ class MMModel extends MMTool {
 						e.target.blur();
 					}
 				}
-				const ${changedInput} = (e) => {
+				const ${changedInput} = (e, oldValue) => {
 					const value = e.target.value;
 					const inputId = e.target.id;
 					const inputName = inputId.substring(${this.name.length + 1});
 					mmpost([], {`);
 			chunks.push('					mm_cmd: `.' + pathPrefix + '${inputName}.formula set formula ${value}`,');
+			chunks.push('					mm_undo:`.' + pathPrefix + '${inputName}.formula set formula ${oldValue}`,');
 			for (const output of results.outputs) {
 				const outputId = `${this.name}_${output.name}`;
 				chunks.push(`					${outputId}: "{html ${pathPrefix}${output.name}}",`);
@@ -768,8 +769,9 @@ class MMModel extends MMTool {
 			chunks.push('			<table>');
 			for (let input of results.inputs) {
 				chunks.push(`				<tr><td><label htmlfor="${this.name}_${input.name}">${input.name}</label></td>`);
+				const formula = input.formula.replaceAll('"', '&quot;');
 				chunks.push(`				<td><input id="${this.name}_${input.name}"
-				value="${input.formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event)"></td></tr>`);
+				value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${input.formula}')"></td></tr>`);
 			}
 			chunks.push('			</table>')
 			chunks.push('		</div>');
@@ -785,8 +787,8 @@ class MMModel extends MMTool {
 					const outputId = this.name + '_' + output.name;
 					if (value instanceof MMToolValue) {
 						value = value.values[0];
-						chunks.push(`<div class="model-form__output_tool">`);
-						chunks.push(`<div class="model-form__output_name">${output.name}</div>`);
+						chunks.push(`<div class="model-form__output-tool">`);
+						chunks.push(`<div class="model-form__output-name">${output.name}</div>`);
 						chunks.push(`<div id="${outputId}" class="model-form__output_value">${value.htmlValue(requestor)}</div>`);
 						chunks.push('</div>');	
 					}
