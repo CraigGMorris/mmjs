@@ -48,7 +48,9 @@ class MMHtmlPage extends MMTool {
 			type="text/css">
 	</head>
 	<body>
-Replace this content in the source formula with your own content.
+		Replace this content in the source formula with your own content. The following tag
+		will show the inputs and outputs for the current model.
+		<mm></mm>
 	</body>
 </html>`
 		this.tagFormulas = [];
