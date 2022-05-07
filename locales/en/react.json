@@ -93,7 +93,7 @@
 	"matrixRowCountLabel": "# Rows",
 	"matrixColumnCountLabel": "# Cols",
 	"modelImportLabel": "Source Session",
-	"modelIndexToolLabel": "Index Tool",
+	"modelIndexToolLabel": "Default View",
 	"modelIndexToolTitle": "Name of tool to be shown automatically when model is displayed",
 	"modelInputsTitle": "Inputs",
 	"modelMakeLocal": "Make Local",

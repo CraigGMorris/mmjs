@@ -494,17 +494,32 @@ export function MMApp(props) {
 			const oldTop = infoStack.pop();
 			switch (oldTop.viewKey) {
 				case 'Model':
-					doCommand('/ popmodel', () => {
+					doCommand('/ popmodel', (cmds) => {
+						let rescale = false;
 						if (dgmStateStack.length) {
 							const dgmState = dgmStateStack.pop();
 							if (dgmState && diagramRef.current) {
 								diagramRef.current.setState(dgmState);
 							}
-							updateView(infoStack.length-1, false);
 						}
 						else {
-							updateView(infoStack.length-1, true);
+							rescale = true;
 						}
+						const indexTool = cmds && cmds[0] && cmds[0].results && cmds[0].results.indexTool;
+						if (indexTool) {
+							const path = cmds[0].results.path;
+							const newInfoState = {
+								title: indexTool,
+								path: path + '.' + indexTool,
+								modelPath: path,
+								stackIndex: infoStack.length,
+								updateCommands: '',			// commands used to update the view state
+								updateResults: [],
+								viewKey: cmds[0].results.indexToolType,
+							};
+							infoStack.push(newInfoState);
+						}
+						updateView(infoStack.length-1, rescale);
 					});
 					break;
 
