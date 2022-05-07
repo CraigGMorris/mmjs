@@ -44,7 +44,7 @@ class MMHtmlPage extends MMTool {
 <html>
 	<head>
 		<link rel="stylesheet"
-			href="/examples/htmlpage.css"
+			href="./examples/htmlpage.css"
 			type="text/css">
 	</head>
 	<body>
