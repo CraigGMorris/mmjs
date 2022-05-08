@@ -186,6 +186,11 @@ class MMExpression extends MMTool {
 						tv.columns[i-1].format = this.tableFormats[i];
 					}
 				}
+				for (let i in this.tableUnits) {
+					if (tv.columns[i-1]) {
+						tv.columns[i-1].displayUnit = this.tableUnits[i];
+					}
+				}
 			}
 			else if (this.cachedValue instanceof MMNumberValue) {
 				if (this.format) {
