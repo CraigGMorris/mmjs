@@ -769,9 +769,12 @@ class MMModel extends MMTool {
 			chunks.push('			<table>');
 			for (let input of results.inputs) {
 				chunks.push(`				<tr><td><label htmlfor="${this.name}_${input.name}">${input.name}</label></td>`);
-				const formula = input.formula.replaceAll('"', '&quot;');
+				let formula = input.formula.replaceAll('"', '&quot;');
+				if (formula.startsWith("'")) {
+					formula = '&quot;' + formula.substring(1) +'&quot;';
+				}
 				chunks.push(`				<td><input id="${this.name}_${input.name}"
-				value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${input.formula}')"></td></tr>`);
+				value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${formula}')"></td></tr>`);
 			}
 			chunks.push('			</table>')
 			chunks.push('		</div>');
