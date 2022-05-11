@@ -820,9 +820,9 @@ class MMModel extends MMTool {
 		chunks.push('		<div class="model-form">');
 		const keyPressed = this.name + '_keyPressed';
 		const changedInput = this.name + '_changedInput';
+		chunks.push('		<script>');
 		if (results.inputs.length) {
 			const pathPrefix = isMyNameSpace ? "" : this.name + '.'
-			chunks.push('		<script>');
 			chunks.push(`			const ${keyPressed} = (e) => {
 					if (e.key === 'Enter') {
 						e.target.blur();
@@ -846,15 +846,20 @@ class MMModel extends MMTool {
 			}
 			chunks.push(`				});`);
 			chunks.push('			}')
-			chunks.push('		</script>');
 		}
+		chunks.push('	onNameClick = (name) => {');
+		if (isMyNameSpace) {
+				chunks.push(`		mmpost([], {mm_push: name});`);
+			}
+		chunks.push('		}');
+		chunks.push('		</script>');
 		chunks.push('		<div class="model-form__objects">')
 		chunks.push(`			<div class="model-form__title">${this.name}</div>`)
 		for (let object of results.objects) {
 			if (object.type === 'input') {
 				const input = object;
 				chunks.push(`				<div class="model-form__input-row">`);
-				chunks.push(`				<div class="model-form__input-name">${input.name}</div>`);
+				chunks.push(`				<div class="model-form__input-name" onClick="onNameClick('${input.name}')">${input.name}</div>`);
 
 				let formula = input.formula.replaceAll('"', '&quot;');
 				if (formula.startsWith("'")) {
@@ -873,19 +878,19 @@ class MMModel extends MMTool {
 					if (value instanceof MMToolValue) {
 						value = value.values[0];
 						chunks.push(`<div class="model-form__output-tool">`);
-						chunks.push(`<div class="model-form__output-name">${output.name}</div>`);
+						chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
 						chunks.push(`<div id="${outputId}" class="model-form__output_value">${value.htmlValue(requestor)}</div>`);
 						chunks.push('</div>');	
 					}
 					else if (value.valueCount <= 1) {
 						chunks.push(`<div class="model-form__output-row">`);
-						chunks.push(`<div class="model-form__output-name">${output.name}</div>`);
+						chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
 						chunks.push(`<div id="${outputId}" class="model-form__output-value">${value.htmlValue(requestor)}</div>`);
 						chunks.push('</div>');	
 					}
 					else {
 						chunks.push(`<div class="model-form__output-table">`);
-						chunks.push(`<div class="model-form__output-name">${output.name}</div>`);
+						chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
 						chunks.push(`<div id="${outputId}" class="model-form__output-value">${value.htmlValue(requestor)}</div>`);
 						chunks.push('</div>');	
 					}
