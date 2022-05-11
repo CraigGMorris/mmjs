@@ -34,9 +34,23 @@ th.col0, td.col0 {
 	font-size: 12pt;
 	font-weight: bold;
 }
-.model-form__outputs {
-	margin-top: 10px;
+
+.model-form__input-row {
+	display: grid;
+	grid-template-columns: 112px 1fr;
+	background-color: #f2f2f2;
 }
+.model-form__input-name {
+	width:100px;
+	border: solid 1px black;
+	padding: 5px;
+}
+
+.model-form__input-row .model-form__input	{
+	border: solid 1px;
+	padding: 5px;
+}
+
 
 .model-form__output-row {
 	display: grid;
@@ -44,7 +58,7 @@ th.col0, td.col0 {
 }
 .model-form__output-name {
 	width:100px;
-	background-color: #f2f2f2;
+	background-color: #e8e8ff;
 	border: solid 1px black;
 	padding: 5px;
 }
@@ -53,7 +67,9 @@ th.col0, td.col0 {
 	border: solid 1px;
 	padding: 5px;
 }
-.model-form__output-row, .model-form__output-tool, .model-form__output-table {
+.model-form__input-row:hover, .model-form__output-value:hover {background-color: #ddd;}
+
+.model-form__output-row, .model-form__input-row, .model-form__output-tool, .model-form__output-table {
 	margin-top: 5px;
 }
 .model-form__output-tool {

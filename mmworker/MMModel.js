@@ -726,18 +726,101 @@ class MMModel extends MMTool {
 		theMMSession.popModel();
 	}
 
+	htmlInfo(requestor) {
+		const results = {};
+		const inputs = [];
+		const outputs = [];
+		const objects = [];
+		const others = [];
+		for (const key in this.children) {
+			const tool = this.children[key];
+			if (tool.typeName === 'Expression') {
+				if (tool.isInput) {
+					let value = tool.valueForRequestor(requestor);
+					if (value) {
+						value = value.stringWithUnit(tool.displayUnit, tool.format);
+					}
+					else {
+						value = '?';
+					}
+					const object = {
+						name: tool.name,
+						type: 'input',
+						formula: tool.formula.formula,
+						value: value,
+					};
+					inputs.push(object);
+					objects.push(object);
+				}
+				else if (tool.isOutput) {
+					let value = tool.valueForRequestor(requestor);
+					if (value) {
+						value = value.stringWithUnit(tool.displayUnit, tool.format);
+					}
+					else {
+						value = '?';
+					}
+					const object = {
+						name: tool.name,
+						type: 'output',
+						value: value,
+					};
+					outputs.push(object);
+					objects.push(object);
+				}
+				else {
+					others.push({
+						name: tool.name,
+						type: tool.typeName,				
+					})
+				}
+			}
+			else {
+				others.push({
+					name: tool.name,
+					type: tool.typeName,				
+				});
+			}
+		}
+
+		const positionSort = (a, b) => {
+			// sort by position with left most first and  ties broken by
+			// top most first
+			const posA = this.childNamed(a.name).position;
+			const posB = this.childNamed(b.name).position;
+			if (posA.x < posB.x) {
+				return -1
+			}
+			if (posA.x > posB.x) {
+				return 1;
+			}
+			if (posA.y < posB.y) {
+				return -1;
+			}
+			if (posA.y > posB.y) {
+				return 1
+			}
+			return 0;	
+		}
+
+		results.inputs = inputs.sort(positionSort);
+		results.outputs = outputs.sort(positionSort);
+		// results.others = others.sort(positionSort);
+		results.objects = objects.sort(positionSort);
+		return results;
+	}
+
 	/**
 	 * @method htmlValue
 	 * @returns {String}
 	 */
 	htmlValue(requestor, isMyNameSpace) {
-		const results = {};
-		this.expressionInfo(results, requestor);
+		const results = this.htmlInfo(requestor);
 		const chunks = [];
 		chunks.push('		<div class="model-form">');
+		const keyPressed = this.name + '_keyPressed';
+		const changedInput = this.name + '_changedInput';
 		if (results.inputs.length) {
-			const keyPressed = this.name + '_keyPressed';
-			const changedInput = this.name + '_changedInput';
 			const pathPrefix = isMyNameSpace ? "" : this.name + '.'
 			chunks.push('		<script>');
 			chunks.push(`			const ${keyPressed} = (e) => {
@@ -764,26 +847,25 @@ class MMModel extends MMTool {
 			chunks.push(`				});`);
 			chunks.push('			}')
 			chunks.push('		</script>');
-			chunks.push('		<div class="model-form__inputs">')
-			chunks.push(`			<div class="model-form__title">${this.name} Inputs</div>`)
-			chunks.push('			<table>');
-			for (let input of results.inputs) {
-				chunks.push(`				<tr><td><label htmlfor="${this.name}_${input.name}">${input.name}</label></td>`);
+		}
+		chunks.push('		<div class="model-form__objects">')
+		chunks.push(`			<div class="model-form__title">${this.name}</div>`)
+		for (let object of results.objects) {
+			if (object.type === 'input') {
+				const input = object;
+				chunks.push(`				<div class="model-form__input-row">`);
+				chunks.push(`				<div class="model-form__input-name">${input.name}</div>`);
+
 				let formula = input.formula.replaceAll('"', '&quot;');
 				if (formula.startsWith("'")) {
 					formula = '&quot;' + formula.substring(1) +'&quot;';
 				}
-				chunks.push(`				<td><input id="${this.name}_${input.name}"
-				value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${formula}')"></td></tr>`);
+				chunks.push(`				<div class="model-form__input"><input id="${this.name}_${input.name}"
+				value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${formula}')"></div>`);
+				chunks.push('		</div>');
 			}
-			chunks.push('			</table>')
-			chunks.push('		</div>');
-		}
-
-		if (results.outputs.length) {
-			chunks.push('<div class="model-form__outputs">')
-			chunks.push(`<div  class="model-form__title">${this.name} Outputs</div>`)
-			for (let output of results.outputs) {
+			else {
+				const output = object;
 				const tool = this.children[output.name.toLowerCase()];
 				let value = tool.valueForRequestor(requestor);
 				if (value) {
