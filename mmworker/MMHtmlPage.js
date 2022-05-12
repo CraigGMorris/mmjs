@@ -198,12 +198,9 @@ class MMHtmlPage extends MMTool {
 		const lcDescription = description.toLowerCase();
 		let value = null;
 		if (lcDescription === 'html') {
-			if (!this.processedHtml) {
-				this.htmlForRequestor(requestor);
-			}
-			if (this.processedHtml) {
-				this.addRequestor(requestor);
-				value = MMStringValue.scalarValue(this.processedHtml);
+			const html = this.htmlForRequestor(requestor);
+			if (html) {
+				value = MMStringValue.scalarValue(html);
 			}
 		}
 		else if (lcDescription.startsWith('block_')) {
@@ -515,6 +512,7 @@ class MMHtmlPage extends MMTool {
 	 */
 	htmlForRequestor(requestor, skipMessageCode) {
 		// code inserted into the page to implement the mmpost function
+		// console.log(`page ${this.name} skip ${skipMessageCode}`);
 		const messageCode = skipMessageCode ? '' : `
 <script>
 window.onerror = function (e) {
@@ -603,13 +601,13 @@ const mminputs = (idNames) => {
 					processedHtml = chunks.join('')
 				}
 
-				this.processedHtml = messageCode + processedHtml;
+				this.processedHtml = processedHtml;
 			}
 		}
 		if (this.processedHtml) {
 			this.addRequestor(requestor);
 		}
-		return this.processedHtml;
+		return messageCode + this.processedHtml;
 	}
 
 	/**
