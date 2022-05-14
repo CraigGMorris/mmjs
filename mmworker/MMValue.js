@@ -335,9 +335,14 @@ class MMValue {
 			if (this.defaultUnit && this.defaultUnit.name) {
 				unitName = this.defaultUnit.name;
 			}
+			const maxColumn = Math.min(200, this.columnCount);
+			const maxRow = Math.floor(Math.min(40000/maxColumn, this.rowCount));
+			if (maxRow < this.rowCount || maxColumn < this.columnCount) {
+				lines.push(`\n(${maxRow} x${maxColumn}) of (${this.rowCount} x${this.columnCount})`);
+			}
 			lines.push('\n<table>');
 			lines.push(`\t<tr class="row0">\n\t\t<th class="col0">${unitName}</th>`);
-			for (let column = 1; column <= this.columnCount; column++) {
+			for (let column = 1; column <= maxColumn; column++) {
 				let header = this.columnHeader(column);
 				const unitName = this.columnDisplayUnitName(column);
 				if (unitName) {
@@ -346,9 +351,9 @@ class MMValue {
 				lines.push(`\t\t<th class="col${column}">${header}</th>`);
 			}
 			lines.push('\t</tr>');
-			for (let row = 1; row <= this.rowCount; row++) {
+			for (let row = 1; row <= maxRow; row++) {
 				lines.push(`<tr class="row{$row}">\n\t\t<th class="col0">${row}</th>`)
-				for (let column = 1; column <= this.columnCount; column++) {
+				for (let column = 1; column <= maxColumn; column++) {
 					const v = this.stringForRowColumnUnit(row, column, this.defaultUnit, this.displayFormat);
 					lines.push(`\t\t<td class="col${column}">${v}</td>`)
 				}
