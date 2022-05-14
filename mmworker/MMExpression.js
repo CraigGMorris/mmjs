@@ -48,14 +48,12 @@ class MMExpression extends MMTool {
 		this.displayUnit = null;		// MMUnit - for number values
 		this.tableUnits = null;		// dictionary of optional table column display MMUnits 
 		this._isInput = false;			// boolean
-		this._isOutput = false;			// boolean
 	}
 
 	/** @override */
 	get properties() {
 		let d = super.properties;
 		d['isInput'] = {type: MMPropertyType.boolean, readOnly: false};
-		d['isOutput'] = {type: MMPropertyType.boolean, readOnly: false};
 		d['displayUnitName'] = {type: MMPropertyType.string, readOnly: false};  // for scalar displayUnit
 		d['format'] = {type: MMPropertyType.string, readOnly: false}; // for scalar display
 		return d;
@@ -79,14 +77,6 @@ class MMExpression extends MMTool {
 				this.formula.nameSpace = this.parent;
 			}
 		}
-	}
-	
-	get isOutput() {
-		return this._isOutput;
-	}
-
-	set isOutput(newValue) {
-		this._isOutput = (newValue) ? true : false;
 	}
 	
 	get displayUnitName() {
@@ -336,7 +326,6 @@ class MMExpression extends MMTool {
 		results['formulaName'] = 'formula';
 		results['formula'] = this.formula.formula;
 		results['isInput'] = this._isInput;
-		results['isOutput'] = this._isOutput;
 		results['value'] = this.jsonValue();
 		if (this._isInput && this.parent.parent) {
 			results['modelPath'] = this.parent.parent.getPath();
@@ -452,7 +441,6 @@ class MMExpression extends MMTool {
 		o['Type'] = 'Expression';
 		o['Formula'] = {'Formula': this.formula.formula};
 		if (this._isInput)			{ o['isInput'] = 'y'; }
-		if (this._isOutput)			{ o['isOutput'] = 'y'; }
 		if (this.displayUnit)		{ o['displayUnit'] = this.displayUnit.name; }
 		if (this.tableUnits) {
 			const units = {};
@@ -475,7 +463,6 @@ class MMExpression extends MMTool {
 		super.initFromSaved(saved);
 		this.formula.formula = saved.Formula.Formula;
 		this.isInput = (saved.isInput === 'y');
-		this.isOutput = (saved.isOutput === 'y');
 		if (saved.displayUnit) {
 			this.displayUnit = theMMSession.unitSystem.unitNamed(saved.displayUnit);
 		}

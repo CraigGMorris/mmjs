@@ -438,9 +438,8 @@ a:hover {
 	height: 100%;
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: var(--input--height) var(--input--height) var(--input--height) 1fr;
-	grid-template-areas: "options"
-		"formula"
+	grid-template-rows: var(--input--height) var(--input--height) 1fr;
+	grid-template-areas: "formula"
 		"out-units"
 		"display";
 	box-sizing: border-box;
@@ -1590,8 +1589,8 @@ a:hover {
 #tool-view__name-area {
 	grid-area: name-area;
 	display: grid;
-	grid-template-columns: 1fr 3em;
-	grid-template-areas: "name note-toggle";
+	grid-template-columns: 1fr 45px 45px 3em;
+	grid-template-areas: "name is-input is-output note-toggle";
 	grid-gap: 5px;
 	width: 100%;
 	height: var(--input--height);
@@ -1602,6 +1601,34 @@ a:hover {
 
 #tool-view__name {
 	grid-area: name;
+}
+
+#tool-view__in-out-boxes {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: "is-input is-output";
+}
+
+#tool-view__is-input {
+	display: grid;
+	grid-area: is-input;
+	grid-template-columns: 20px 1fr;
+}
+
+#tool-view__is-output {
+	display: grid;
+	grid-area: is-output;
+	grid-template-columns: 20px 1fr;
+}
+
+#tool-view__is-input-label, #tool-view__is-output-label {
+	font-size: 11pt;
+}
+
+#tool-view__is-input-checkbox, #tool-view__is-output-checkbox {
+	height: 10px;
+	width: 10px;
 }
 
 #tool-view__notes-toggle {

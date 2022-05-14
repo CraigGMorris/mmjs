@@ -1307,6 +1307,7 @@ class MMTool extends MMCommandParent {
 		this.session.nextToolLocation = this.session.unknownPosition;
 		this.isHidingInfo = false;
 		this.diagramNotes = false;
+		this._isOutput = false;
 	}
 
 	get properties() {
@@ -1315,6 +1316,7 @@ class MMTool extends MMCommandParent {
 		d['description'] = {type: MMPropertyType.string, readOnly: true};
 		d['notes'] = {type: MMPropertyType.string, readOnly: false};
 		d['diagramNotes'] = {type: MMPropertyType.boolean, readOnly: false};
+		d['isOutput'] = {type: MMPropertyType.boolean, readOnly: false};
 		return d;
 	}
 
@@ -1323,6 +1325,19 @@ class MMTool extends MMCommandParent {
 		return this.t(toolType.displayName);
 	}
 
+	get isOutput() {
+		return this._isOutput;
+	}
+
+	set isOutput(newValue) {
+		const oldValue = this._isOutput;
+		this._isOutput = (newValue) ? true : false;
+		if (oldValue !== this._isOutput) {
+			this.forgetCalculated();
+			this.parent.forgetCalculated();
+		}
+	}
+	
 	get description() {
 		if (this.notes) {
 			let maxLength = 50;
@@ -1405,6 +1420,7 @@ class MMTool extends MMCommandParent {
 			modelPath: parent.getPath(),
 			notes: this.notes,
 			diagramNotes: this.diagramNotes,
+			isOutput: this._isOutput,
 		}
 	}
 
@@ -1554,14 +1570,16 @@ class MMTool extends MMCommandParent {
 	 * @returns {Object} object that can be converted to json for save file
 	 */
 	saveObject() {
-		return {
+		const o =  {
 			name: this.name,
 			Notes: this.notes,
 			DiagramX: this.position.x,
 			DiagramY: this.position.y,
 			HideInfo: this.isHidingInfo ? 'y': 'n',
-			DiagramNotes: this.diagramNotes ? 'y' : 'n', 
+			DiagramNotes: this.diagramNotes ? 'y' : 'n',
 		};
+		if (this._isOutput)	{ o['isOutput'] = 'y'; }
+		return o;
 	}
 
 	/**
@@ -1586,5 +1604,6 @@ class MMTool extends MMCommandParent {
 		this.position = new MMPoint(saved.DiagramX, saved.DiagramY);
 		this.isHidingInfo = (saved.HideInfo === 'y');
 		this.diagramNotes = (saved.DiagramNotes === 'y');
+		this.isOutput = (saved.isOutput === 'y');
 	}
 }

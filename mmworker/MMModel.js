@@ -731,55 +731,46 @@ class MMModel extends MMTool {
 		const inputs = [];
 		const outputs = [];
 		const objects = [];
-		const others = [];
 		for (const key in this.children) {
 			const tool = this.children[key];
-			if (tool.typeName === 'Expression') {
-				if (tool.isInput) {
-					let value = tool.valueForRequestor(requestor);
-					if (value) {
-						value = value.stringWithUnit(tool.displayUnit, tool.format);
-					}
-					else {
-						value = '?';
-					}
-					const object = {
-						name: tool.name,
-						type: 'input',
-						formula: tool.formula.formula,
-						value: value,
-					};
-					inputs.push(object);
-					objects.push(object);
-				}
-				else if (tool.isOutput) {
-					let value = tool.valueForRequestor(requestor);
-					if (value) {
-						value = value.stringWithUnit(tool.displayUnit, tool.format);
-					}
-					else {
-						value = '?';
-					}
-					const object = {
-						name: tool.name,
-						type: 'output',
-						value: value,
-					};
-					outputs.push(object);
-					objects.push(object);
+			if (tool.isInput && tool.typeName === 'Expression') {
+				let value = tool.valueForRequestor(requestor);
+				if (value) {
+					value = value.stringWithUnit(tool.displayUnit, tool.format);
 				}
 				else {
-					others.push({
-						name: tool.name,
-						type: tool.typeName,				
-					})
+					value = '?';
 				}
-			}
-			else {
-				others.push({
+				const object = {
 					name: tool.name,
-					type: tool.typeName,				
-				});
+					type: 'input',
+					formula: tool.formula.formula,
+					value: value,
+				};
+				inputs.push(object);
+				objects.push(object);
+			}
+			if (tool.isOutput) {
+				let value;
+				if (tool.typeName === 'Expression') {
+					value = tool.valueDescribedBy('', requestor);
+					if (value) {
+						value = value.stringWithUnit(tool.displayUnit, tool.format);
+					}
+					else {
+						value = '?';
+					}
+				}
+				else {
+					value = tool;
+				}
+				const object = {
+					name: tool.name,
+					type: 'output',
+					value: value,
+				};
+				outputs.push(object);
+				objects.push(object);
 			}
 		}
 
@@ -872,7 +863,7 @@ class MMModel extends MMTool {
 			else {
 				const output = object;
 				const tool = this.children[output.name.toLowerCase()];
-				let value = tool.valueForRequestor(requestor);
+				let value = tool.valueDescribedBy('', requestor);
 				if (value) {
 					const outputId = this.name + '_' + output.name;
 					if (value instanceof MMToolValue) {
@@ -1046,6 +1037,25 @@ class MMModel extends MMTool {
 			value = super.valueDescribedBy(description, requestor);
 		}
 		return value;
+	}
+
+	/**
+	 * @override forgetCalculated
+	 */
+	forgetCalculated() {
+		if (!this.forgetRecursionBlockIsOn) {
+			this.forgetRecursionBlockIsOn = true;
+			try {
+				for (let requestor of this.valueRequestors) {
+					requestor.forgetCalculated();
+				}
+				this.valueRequestors.clear();
+				super.forgetCalculated();
+			}
+			finally {
+				this.forgetRecursionBlockIsOn = false;
+			}
+		}
 	}
 
 	/**

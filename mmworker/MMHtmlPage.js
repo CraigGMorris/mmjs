@@ -57,6 +57,7 @@ class MMHtmlPage extends MMTool {
 		this.inputs = null;
 		this.rawHtml = null;
 		this.processedHtml = null;
+		this.recursionBlockIsOn = false;
 	}
 
 	/**
@@ -149,15 +150,13 @@ class MMHtmlPage extends MMTool {
 			}
 			else {
 				// tag represents parent model
-				const inputs = this.parent.inputExpressions();
-				for (const input of inputs) {
-					sources.add(input);
-					input.addRequestor(this);
-				}
-				const outputs = this.parent.outputExpressions();
-				for (const output of outputs) {
-					sources.add(output);
-					output.addRequestor(this);
+				this.parent.addRequestor(this);
+				for (const childName in this.parent.children) {
+					const child = this.parent.children[childName];
+					if (child.isInput || child.isOutput) {
+						sources.add(child);
+						child.addRequestor(this);
+					}
 				}
 			}
 		}
@@ -176,11 +175,8 @@ class MMHtmlPage extends MMTool {
 			}
 			this.valueRequestors.clear();
 			super.forgetCalculated();
-			if (!this.retainCurrentHtml) {
-				this.processedHtml = null;
-				this.rawHtml = null;
-			}
-
+			this.processedHtml = null;
+			this.rawHtml = null;
 			this.forgetRecursionBlockIsOn = false;
 		}
 	}
@@ -513,6 +509,9 @@ class MMHtmlPage extends MMTool {
 	htmlForRequestor(requestor, skipMessageCode) {
 		// code inserted into the page to implement the mmpost function
 		// console.log(`page ${this.name} skip ${skipMessageCode}`);
+		if (this.recursionBlockIsOn) {
+			return '';
+		}
 		const messageCode = skipMessageCode ? '' : `
 <script>
 window.onerror = function (e) {
@@ -588,7 +587,13 @@ const mminputs = (idNames) => {
 						formulaNumber++;
 						if (tagFormula.formula.length === 0) {
 							// if tag is empty assume parent model
-							chunks.push(this.parent.htmlValue(requestor, true));
+							try {
+								this.recursionBlockIsOn = true;
+								chunks.push(this.parent.htmlValue(requestor, true));
+							}
+							finally {
+								this.recursionBlockIsOn = false;
+							}
 						}
 						else {
 							const value = tagFormula.value();

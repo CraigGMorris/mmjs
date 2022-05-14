@@ -328,77 +328,77 @@ export function ExpressionView(props) {
 						}
 					)
 				),
-				e(
-					'div', {
-						id: 'expression__options',
-					},
-					e(
-						// isInput and isOutput check boxes
-						'div', {
-							id: 'expression__in-out-boxes',
-						},
-						e(
-							// isInput check box
-							'div', {
-								id: 'expression__is-input',
-								className: 'checkbox-and-label',
-							},
-							e(
-								'label', {
-									id: 'expression__is-input-label',
-									className: 'checkbox__label',
-									htmlFor: 'expression__is-input-checkbox'
-								},
-								t('react:exprIsInput')
-							),
-							e(
-								'input', {
-									id: 'expression__is-input-checkbox',
-									className: 'checkbox__input',
-									type: 'checkbox',
-									checked: results.isInput,
-									onChange: () => {
-										// toggle the isInput property
-										const value = props.viewInfo.updateResults[0].results.isInput ? 'f' : 't';
-										props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, () => {
-											props.actions.updateView(props.viewInfo.stackIndex);
-										});						
-									}
-								},
-							),
-						),
-						e(
-							// isOutput check box
-							'div', {
-								id: 'expression__is-output',
-								className: 'checkbox-and-label',
-							},
-							e(
-								'label', {
-									id: 'expression__is-output-label',
-									className: 'checkbox__label',
-									htmlFor: 'expression__is-output-checkbox'
-								},
-								t('react:exprIsOutput'),
-							),
-							e(
-								'input', {
-									id: 'expression__is-output-checkbox',
-									className: 'checkbox__input',
-									type: 'checkbox',
-									checked: results.isOutput,
-									onChange: () => {
-										// toggle the isOutput property
-										const value = props.viewInfo.updateResults[0].results.isOutput ? 'f' : 't';
-										props.actions.doCommand(`${props.viewInfo.path} set isOutput ${value}`, () => {
-											props.actions.updateView(props.viewInfo.stackIndex);
-										});						
-									}
-								},
-							),	
-						),
-					),
-				),
+				// e(
+				// 	'div', {
+				// 		id: 'expression__options',
+				// 	},
+				// 	e(
+				// 		// isInput and isOutput check boxes
+				// 		'div', {
+				// 			id: 'expression__in-out-boxes',
+				// 		},
+				// 		e(
+				// 			// isInput check box
+				// 			'div', {
+				// 				id: 'expression__is-input',
+				// 				className: 'checkbox-and-label',
+				// 			},
+				// 			e(
+				// 				'label', {
+				// 					id: 'expression__is-input-label',
+				// 					className: 'checkbox__label',
+				// 					htmlFor: 'expression__is-input-checkbox'
+				// 				},
+				// 				t('react:exprIsInput')
+				// 			),
+				// 			e(
+				// 				'input', {
+				// 					id: 'expression__is-input-checkbox',
+				// 					className: 'checkbox__input',
+				// 					type: 'checkbox',
+				// 					checked: results.isInput,
+				// 					onChange: () => {
+				// 						// toggle the isInput property
+				// 						const value = props.viewInfo.updateResults[0].results.isInput ? 'f' : 't';
+				// 						props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, () => {
+				// 							props.actions.updateView(props.viewInfo.stackIndex);
+				// 						});						
+				// 					}
+				// 				},
+				// 			),
+				// 		),
+				// 		e(
+				// 			// isOutput check box
+				// 			'div', {
+				// 				id: 'expression__is-output',
+				// 				className: 'checkbox-and-label',
+				// 			},
+				// 			e(
+				// 				'label', {
+				// 					id: 'expression__is-output-label',
+				// 					className: 'checkbox__label',
+				// 					htmlFor: 'expression__is-output-checkbox'
+				// 				},
+				// 				t('react:exprIsOutput'),
+				// 			),
+				// 			e(
+				// 				'input', {
+				// 					id: 'expression__is-output-checkbox',
+				// 					className: 'checkbox__input',
+				// 					type: 'checkbox',
+				// 					checked: results.isOutput,
+				// 					onChange: () => {
+				// 						// toggle the isOutput property
+				// 						const value = props.viewInfo.updateResults[0].results.isOutput ? 'f' : 't';
+				// 						props.actions.doCommand(`${props.viewInfo.path} set isOutput ${value}`, () => {
+				// 							props.actions.updateView(props.viewInfo.stackIndex);
+				// 						});						
+				// 					}
+				// 				},
+				// 			),	
+				// 		),
+				// 	),
+				// ),
 				e(
 					'div', {
 						id: 'expression__units-format',						
@@ -428,7 +428,7 @@ export function ExpressionView(props) {
 						value: results.value,
 						actions: props.actions,
 						viewInfo: props.viewInfo,
-						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 4*nInputHeight - 14],
+						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 3*nInputHeight - 14],
 						currentCell: selectedCell[0] === 0 && selectedCell[1] === 0 ? null : selectedCell,
 						cellClick: cellClick,
 					}
@@ -441,6 +441,7 @@ export function ExpressionView(props) {
 	return e(
 		ToolView, {
 			id: 'tool-view',
+			isExpression: true,
 			displayComponent: displayComponent,
 			...props,
 		},

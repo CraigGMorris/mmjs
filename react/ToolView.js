@@ -40,9 +40,10 @@ export function ToolView(props) {
 	const [toolName, setToolName] = useState(name);
 	const [showNotes, setShowNotes] = useState(false);
 	const updateResults = props.viewInfo.updateResults;
-	const notes = updateResults.length ? updateResults[0].results.notes : '';	
+	const results = updateResults[0] ? updateResults[0].results : {};
+	const notes = updateResults.length ? results.notes : '';	
 	const [notesText, setNotesText] = useState(notes);
-	const diagramNotes = updateResults.length ? updateResults[0].results.diagramNotes : false;
+	const diagramNotes = updateResults.length ? results.diagramNotes : false;
 
 	const doRename = () => {
 		const path = props.viewInfo.path;
@@ -64,6 +65,38 @@ export function ToolView(props) {
 	}
 
 	let cmpStack = [];
+
+	const inputCheckBox = !props.isExpression ? '' : e(
+		// isInput check box
+		'div', {
+			id: 'tool-view__is-input',
+			className: 'checkbox-and-label',
+		},
+		e(
+			'label', {
+				id: 'tool-view__is-input-label',
+				className: 'checkbox__label',
+				htmlFor: 'tool-view__is-input-checkbox'
+			},
+			t('react:exprIsInput')
+		),
+		e(
+			'input', {
+				id: 'tool-view__is-input-checkbox',
+				className: 'checkbox__input',
+				type: 'checkbox',
+				checked: results.isInput,
+				onChange: () => {
+					// toggle the isInput property
+					const value = results.isInput ? 'f' : 't';
+					props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, () => {
+						props.actions.updateView(props.viewInfo.stackIndex);
+					});						
+				}
+			},
+		),
+	);
+
 	const nameArea = e(
 		'div', {
 			id: 'tool-view__name-area',
@@ -90,6 +123,37 @@ export function ToolView(props) {
 					doRename();
 					}
 				}
+		),
+		inputCheckBox,
+		e(
+			// isOutput check box
+			'div', {
+				id: 'tool-view__is-output',
+				className: 'checkbox-and-label',
+			},
+			e(
+				'label', {
+					id: 'tool-view__is-output-label',
+					className: 'checkbox__label',
+					htmlFor: 'tool-view__is-output-checkbox'
+				},
+				t('react:exprIsOutput'),
+			),
+			e(
+				'input', {
+					id: 'tool-view__is-output-checkbox',
+					className: 'checkbox__input',
+					type: 'checkbox',
+					checked: results.isOutput,
+					onChange: () => {
+						// toggle the isOutput property
+						const value = results.isOutput ? 'f' : 't';
+						props.actions.doCommand(`${props.viewInfo.path} set isOutput ${value}`, () => {
+							props.actions.updateView(props.viewInfo.stackIndex);
+						});						
+					}
+				},
+			),	
 		),
 		e(
 			'button', {
