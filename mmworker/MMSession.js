@@ -301,7 +301,7 @@ class MMPouchDBStorage {
  * @member {string} storePath - path to persistent storage
  * @member {MMPoint} unknownPosition
  * @member {MMPoint} nextToolLocation
- * @member {MMPouchDBStorage} pouchStorage
+ * @member {MMIndexedDBStorage} storage
  */
 // eslint-disable-next-line no-unused-vars
 class MMSession extends MMCommandParent {
@@ -315,9 +315,10 @@ class MMSession extends MMCommandParent {
 		super('session',  processor, 'MMSession');
 		// construct the unit system - it will add itself to my children
 		new MMUnitSystem(this);
-		this.storage = new MMPouchDBStorage();
+		this.storage = new MMIndexedDBStorage();
 		this.savedLastPathId = '(lastPath)';
 		this.savedLastNewsId = '(lastNews)';
+		this.savedStorageVersionId = '(storageVersion)';
 		this.lastNews = '20220324';
 		this.newSession();
 		this.couchError = null;
@@ -584,11 +585,12 @@ class MMSession extends MMCommandParent {
 		}
 	}
 
-	async importOldStorage(indexedDB) {
-		const paths = await indexedDB.listSessions();
+	async importOldStorage() {
+		const pouchDB = new MMPouchDBStorage()
+		const paths = await pouchDB.listSessions();
 		for (const path of paths) {
-			// console.log(`importing ${path}`);
-			const session = await indexedDB.load(path);
+			console.log(`importing ${path}`);
+			const session = await pouchDB.load(path);
 			await this.storage.save(path, session);
 		}
 	}
@@ -597,18 +599,23 @@ class MMSession extends MMCommandParent {
 	 * load the autosaved session from persistent storage
 	 */
 	async loadAutoSaved() {
-		const indexedDB = new MMIndexedDBStorage();
-		const sessionPaths = await this.storage.listSessions();
-		if (sessionPaths.length === 0) {
-			await this.importOldStorage(indexedDB);
+		const storageVersion = await this.storage.load(this.savedStorageVersionId);
+		console.log(`storage version ${storageVersion}`);
+		// const sessionPaths = await this.storage.listSessions();
+		// if (sessionPaths.length === 0) {
+		// 	await this.importOldStorage(indexedDB);
+		// }
+		if (!storageVersion) {
+			await this.importOldStorage();
+			await this.storage.save(this.savedStorageVersionId, '1');
 		}
-		this.remoteCouch = await indexedDB.load('(remoteCouch)');
-		this.couchDBSync();
+		// this.remoteCouch = await indexedDB.load('(remoteCouch)');
+		// this.couchDBSync();
 		try {
 			this.isLoadingCase = true;
 			this.newSession();
 			const lastNews = await this.storage.load(this.savedLastNewsId);
-			const lastPath = await indexedDB.load(this.savedLastPathId);
+			const lastPath = await this.storage.load(this.savedLastPathId);
 			const newsUrl = '../news/MM_News.txt';
 			if (
 				(lastNews && lastNews != this.lastNews) ||
@@ -894,11 +901,11 @@ class MMSession extends MMCommandParent {
 	async listSessionsCommand(command) {
 		const result = await this.storage.listSessions();
 		command.results = {paths: result, currentPath: this.storePath};
-		const indexedDB = new MMIndexedDBStorage();
-		const remote = await indexedDB.load('(remoteCouch)');
-		if (remote) {
-			command.results.remote = remote.split('@')[1];
-		}
+		// const indexedDB = new MMIndexedDBStorage();
+		// const remote = await indexedDB.load('(remoteCouch)');
+		// if (remote) {
+		// 	command.results.remote = remote.split('@')[1];
+		// }
 	}
 
 	/**
@@ -1156,11 +1163,11 @@ class MMSession extends MMCommandParent {
 	 * command.args should contain the url (including name and pw) of the couchDB to sync with
 	 * an empty argument will turn off syncing
 	 */
-	async remoteDBCommand(command) {
-		this.remoteCouch = command.args;
-		const indexedDB = new MMIndexedDBStorage();
-		await indexedDB.save('(remoteCouch)', this.remoteCouch);
-	}
+	// async remoteDBCommand(command) {
+	// 	this.remoteCouch = command.args;
+	// 	const indexedDB = new MMIndexedDBStorage();
+	// 	await indexedDB.save('(remoteCouch)', this.remoteCouch);
+	// }
 
 	/**
 	 * @method diagramInfo
