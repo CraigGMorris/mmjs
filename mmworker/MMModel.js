@@ -733,6 +733,9 @@ class MMModel extends MMTool {
 		const objects = [];
 		for (const key in this.children) {
 			const tool = this.children[key];
+			const object = {
+				name: tool.name,
+			};
 			if (tool.isInput && tool.typeName === 'Expression') {
 				let value = tool.valueForRequestor(requestor);
 				if (value) {
@@ -741,14 +744,10 @@ class MMModel extends MMTool {
 				else {
 					value = '?';
 				}
-				const object = {
-					name: tool.name,
-					type: 'input',
-					formula: tool.formula.formula,
-					value: value,
-				};
+				object.type = 'input';
+				object.formula = tool.formula.formula;
+				object.value = value;
 				inputs.push(object);
-				objects.push(object);
 			}
 			if (tool.isOutput) {
 				let value;
@@ -764,14 +763,11 @@ class MMModel extends MMTool {
 				else {
 					value = tool;
 				}
-				const object = {
-					name: tool.name,
-					type: 'output',
-					value: value,
-				};
+				object.type = 'output';
+				object.value = value;
 				outputs.push(object);
-				objects.push(object);
 			}
+			objects.push(object);
 		}
 
 		const positionSort = (a, b) => {
@@ -860,7 +856,7 @@ class MMModel extends MMTool {
 				value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${formula}')"></div>`);
 				chunks.push('		</div>');
 			}
-			else {
+			else if (object.type === 'output') {
 				const output = object;
 				const tool = this.children[output.name.toLowerCase()];
 				let value = tool.valueDescribedBy('', requestor);
@@ -886,8 +882,18 @@ class MMModel extends MMTool {
 						chunks.push('</div>');	
 					}
 				}
+				else {
+					chunks.push(`<div class="model-form__output-row">`);
+					chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
+					chunks.push(`<div class="model-form__output-value">?</div>`);
+					chunks.push('</div>');	
+				}
 			}
 			chunks.push('</div>')
+			const child = this.childNamed(object.name);
+			if (child.htmlNotes && child.notes) {
+				chunks.push(`<div class="model-form__notes">${child.notes}</div>`);
+			}	
 		}
 		chunks.push('</div>')
 		return chunks.join('\n');

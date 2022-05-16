@@ -1603,6 +1603,10 @@ a:hover {
 	grid-area: name;
 }
 
+#tool-view__name-input {
+	height: 24px;
+}
+
 #tool-view__in-out-boxes {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -1633,7 +1637,8 @@ a:hover {
 
 #tool-view__notes-toggle {
 	grid-area: note-toggle;
-	font-size: 8pt;
+	font-size: 10pt;
+	height: 24px;
 	text-align: center;
 	box-sizing: border-box;
 	cursor: pointer;
@@ -1657,9 +1662,10 @@ a:hover {
 #tool-view__notes-header {
 	grid-area: notes-header;
 	display: grid;
-	grid-template-columns: 1fr 6em;
-	grid-template-areas: "notes-title notes-diagram";
+	grid-template-columns: 1fr 6em 6em;
+	grid-template-areas: "notes-title notes-html notes-diagram";
 	padding-top: 5px;
+	grid-gap: 5px;
 }
 
 #tool-view__notes-title {
@@ -1668,6 +1674,13 @@ a:hover {
 
 #tool-view__diagram-notes-toggle {
 	grid-area: notes-diagram;
+}
+
+#tool-view__html-notes-toggle {
+	grid-area: notes-html;
+}
+
+.tool-view__show-notes-toggle {
 	font-size: 8pt;
 	text-align: center;
 	vertical-align: middle;

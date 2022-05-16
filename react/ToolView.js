@@ -44,6 +44,7 @@ export function ToolView(props) {
 	const notes = updateResults.length ? results.notes : '';	
 	const [notesText, setNotesText] = useState(notes);
 	const diagramNotes = updateResults.length ? results.diagramNotes : false;
+	const htmlNotes = updateResults.length ? results.htmlNotes : false;
 
 	const doRename = () => {
 		const path = props.viewInfo.path;
@@ -54,6 +55,12 @@ export function ToolView(props) {
 
 	const doSetNotes = (newNotes) => {
 		props.actions.doCommand(`__blob__${props.viewInfo.path} set notes__blob__${newNotes}`, () => {
+			props.actions.updateView(props.viewInfo.stackIndex);
+		});
+	}
+
+	const doSetHtmlNotes = (shouldShow) => {
+		props.actions.doCommand(`${props.viewInfo.path} set htmlNotes ${shouldShow ? 't' : 'f'}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 		});
 	}
@@ -162,12 +169,7 @@ export function ToolView(props) {
 					setShowNotes(!showNotes);
 				}
 			},
-			notesText && notesText.length ? (
-				showNotes ? t('react:toolViewHideNotesButton') : t('react:toolViewShowNotesButton')
-			) :
-			(
-				showNotes ? t('react:toolViewHideNotesButton') : t('react:toolViewAddNotesButton')
-			)
+			showNotes ? t('react:toolViewNotesDoneButton') : t('react:toolViewNotesButton')
 		)
 	);
 	cmpStack.push(nameArea);
@@ -189,13 +191,24 @@ export function ToolView(props) {
 				),
 				e(
 					'button', {
+						id: 'tool-view__html-notes-toggle',
+						class: 'tool-view__show-notes-toggle',
+						onClick: () => {
+							doSetHtmlNotes(!htmlNotes);
+						}
+					},
+					htmlNotes ? t('react:toolViewHideHtmlNotesButton') : t('react:toolViewShowHtmlNotesButton')		
+				),
+				e(
+					'button', {
 						id: 'tool-view__diagram-notes-toggle',
+						class: 'tool-view__show-notes-toggle',
 						onClick: () => {
 							doSetDiagramNotes(!diagramNotes);
 						}
 					},
 					diagramNotes ? t('react:toolViewHideDgmNotesButton') : t('react:toolViewShowDgmNotesButton')		
-				)	
+				),
 			),
 			e(
 				'textarea', {

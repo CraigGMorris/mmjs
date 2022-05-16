@@ -153,7 +153,7 @@ class MMHtmlPage extends MMTool {
 				this.parent.addRequestor(this);
 				for (const childName in this.parent.children) {
 					const child = this.parent.children[childName];
-					if (child.isInput || child.isOutput) {
+					if (child.isInput || child.isOutput || child.htmlNotes) {
 						sources.add(child);
 						child.addRequestor(this);
 					}

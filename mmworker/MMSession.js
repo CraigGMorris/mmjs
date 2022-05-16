@@ -1307,6 +1307,7 @@ class MMTool extends MMCommandParent {
 		this.session.nextToolLocation = this.session.unknownPosition;
 		this.isHidingInfo = false;
 		this.diagramNotes = false;
+		this._htmlNotes = false;
 		this._isOutput = false;
 	}
 
@@ -1316,6 +1317,7 @@ class MMTool extends MMCommandParent {
 		d['description'] = {type: MMPropertyType.string, readOnly: true};
 		d['notes'] = {type: MMPropertyType.string, readOnly: false};
 		d['diagramNotes'] = {type: MMPropertyType.boolean, readOnly: false};
+		d['htmlNotes'] = {type: MMPropertyType.boolean, readOnly: false};
 		d['isOutput'] = {type: MMPropertyType.boolean, readOnly: false};
 		return d;
 	}
@@ -1348,6 +1350,18 @@ class MMTool extends MMCommandParent {
 			}
 		}
 		return this.notes;
+	}
+
+	get htmlNotes() {
+		return this._htmlNotes;
+	}
+
+	set htmlNotes(show) {
+		const oldShow = this._htmlNotes;
+		this._htmlNotes = show;
+		if (oldShow !== show) {
+			this.forgetCalculated();
+		}
 	}
 
 	/** @override */
@@ -1420,6 +1434,7 @@ class MMTool extends MMCommandParent {
 			modelPath: parent.getPath(),
 			notes: this.notes,
 			diagramNotes: this.diagramNotes,
+			htmlNotes: this.htmlNotes,
 			isOutput: this._isOutput,
 		}
 	}
@@ -1577,6 +1592,7 @@ class MMTool extends MMCommandParent {
 			DiagramY: this.position.y,
 			HideInfo: this.isHidingInfo ? 'y': 'n',
 			DiagramNotes: this.diagramNotes ? 'y' : 'n',
+			HtmlNotes: this.htmlNotes ? 'y' : 'n',
 		};
 		if (this._isOutput)	{ o['isOutput'] = 'y'; }
 		return o;
@@ -1604,6 +1620,7 @@ class MMTool extends MMCommandParent {
 		this.position = new MMPoint(saved.DiagramX, saved.DiagramY);
 		this.isHidingInfo = (saved.HideInfo === 'y');
 		this.diagramNotes = (saved.DiagramNotes === 'y');
+		this.htmlNotes = (saved.HtmlNotes === 'y');
 		this.isOutput = (saved.isOutput === 'y');
 	}
 }

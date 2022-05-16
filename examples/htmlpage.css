@@ -33,6 +33,7 @@ th.col0, td.col0 {
 .model-form__title {
 	font-size: 12pt;
 	font-weight: bold;
+	margin-bottom: 10px;
 }
 
 .model-form__input-row {
@@ -75,4 +76,10 @@ th.col0, td.col0 {
 .model-form__output-tool {
 	background-color: white;
 	border: solid 1px black;
+}
+
+.model-form__notes {
+	padding-bottom: 5px;
+	white-space: pre-wrap;
+	margin-top: 0px;
 }
