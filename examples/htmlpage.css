@@ -58,6 +58,11 @@ th.col0, td.col0 {
 	grid-template-columns: 112px 1fr;
 }
 .model-form__output-name {
+	background-color: #e8e8ff;
+	border: solid 1px black;
+	padding: 5px;
+}
+.model-form__output-name2 {
 	width:100px;
 	background-color: #e8e8ff;
 	border: solid 1px black;

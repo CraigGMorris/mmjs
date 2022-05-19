@@ -812,7 +812,6 @@ class MMModel extends MMTool {
 		chunks.push('		}');
 		chunks.push('		</script>');
 		chunks.push('		<div class="model-form__objects">')
-		chunks.push(`			<div class="model-form__title">${this.name}</div>`)
 		for (let object of results.objects) {
 			if (object.htmlNotes && object.notes) {
 				chunks.push(`<div class="model-form__notes">${object.notes}</div>`);
@@ -844,7 +843,7 @@ class MMModel extends MMTool {
 					}
 					else if (value.valueCount <= 1) {
 						chunks.push(`<div class="model-form__output-row">`);
-						chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
+						chunks.push(`<div class="model-form__output-name2" onClick="onNameClick('${output.name}')">${output.name}</div>`);
 						chunks.push(`<div id="${outputId}" class="model-form__output-value">${value.htmlValue(requestor)}</div>`);
 						chunks.push('</div>');	
 					}
