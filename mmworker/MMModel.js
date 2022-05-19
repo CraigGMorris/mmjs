@@ -814,6 +814,9 @@ class MMModel extends MMTool {
 		chunks.push('		<div class="model-form__objects">')
 		chunks.push(`			<div class="model-form__title">${this.name}</div>`)
 		for (let object of results.objects) {
+			if (object.htmlNotes && object.notes) {
+				chunks.push(`<div class="model-form__notes">${object.notes}</div>`);
+			}	
 			if (object.isInput) {
 				const input = object;
 				chunks.push(`				<div class="model-form__input-row">`);
@@ -859,9 +862,6 @@ class MMModel extends MMTool {
 					chunks.push('</div>');	
 				}
 			}
-			if (object.htmlNotes && object.notes) {
-				chunks.push(`<div class="model-form__notes">${object.notes}</div>`);
-			}	
 		}
 		chunks.push('</div>')
 		return chunks.join('\n');
