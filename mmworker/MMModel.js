@@ -726,55 +726,27 @@ class MMModel extends MMTool {
 		theMMSession.popModel();
 	}
 
-	htmlInfo(requestor) {
+	htmlInfo() {
 		const results = {};
 		const inputs = [];
 		const outputs = [];
 		const objects = [];
 		for (const key in this.children) {
 			const tool = this.children[key];
-			const object = {
-				name: tool.name,
-			};
 			if (tool.isInput && tool.typeName === 'Expression') {
-				let value = tool.valueForRequestor(requestor);
-				if (value) {
-					value = value.stringWithUnit(tool.displayUnit, tool.format);
-				}
-				else {
-					value = '?';
-				}
-				object.type = 'input';
-				object.formula = tool.formula.formula;
-				object.value = value;
-				inputs.push(object);
+				inputs.push(tool);
 			}
 			if (tool.isOutput) {
-				let value;
-				if (tool.typeName === 'Expression') {
-					value = tool.valueDescribedBy('', requestor);
-					if (value) {
-						value = value.stringWithUnit(tool.displayUnit, tool.format);
-					}
-					else {
-						value = '?';
-					}
-				}
-				else {
-					value = tool;
-				}
-				object.type = 'output';
-				object.value = value;
-				outputs.push(object);
+					outputs.push(tool);
 			}
-			objects.push(object);
+			objects.push(tool);
 		}
 
 		const positionSort = (a, b) => {
 			// sort by position with left most first and  ties broken by
 			// top most first
-			const posA = this.childNamed(a.name).position;
-			const posB = this.childNamed(b.name).position;
+			const posA = a.position;
+			const posB = b.position;
 			if (posA.x < posB.x) {
 				return -1
 			}
@@ -792,7 +764,6 @@ class MMModel extends MMTool {
 
 		results.inputs = inputs.sort(positionSort);
 		results.outputs = outputs.sort(positionSort);
-		// results.others = others.sort(positionSort);
 		results.objects = objects.sort(positionSort);
 		return results;
 	}
@@ -843,12 +814,12 @@ class MMModel extends MMTool {
 		chunks.push('		<div class="model-form__objects">')
 		chunks.push(`			<div class="model-form__title">${this.name}</div>`)
 		for (let object of results.objects) {
-			if (object.type === 'input') {
+			if (object.isInput) {
 				const input = object;
 				chunks.push(`				<div class="model-form__input-row">`);
 				chunks.push(`				<div class="model-form__input-name" onClick="onNameClick('${input.name}')">${input.name}</div>`);
 
-				let formula = input.formula.replaceAll('"', '&quot;');
+				let formula = input.formula.formula.replaceAll('"', '&quot;');
 				if (formula.startsWith("'")) {
 					formula = '&quot;' + formula.substring(1) +'&quot;';
 				}
@@ -856,10 +827,9 @@ class MMModel extends MMTool {
 				value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${formula}')"></div>`);
 				chunks.push('		</div>');
 			}
-			else if (object.type === 'output') {
+			else if (object.isOutput) {
 				const output = object;
-				const tool = this.children[output.name.toLowerCase()];
-				let value = tool.valueDescribedBy('', requestor);
+				let value = output.valueDescribedBy('', requestor);
 				if (value) {
 					const outputId = this.name + '_' + output.name;
 					if (value instanceof MMToolValue) {
@@ -889,10 +859,8 @@ class MMModel extends MMTool {
 					chunks.push('</div>');	
 				}
 			}
-			chunks.push('</div>')
-			const child = this.childNamed(object.name);
-			if (child.htmlNotes && child.notes) {
-				chunks.push(`<div class="model-form__notes">${child.notes}</div>`);
+			if (object.htmlNotes && object.notes) {
+				chunks.push(`<div class="model-form__notes">${object.notes}</div>`);
 			}	
 		}
 		chunks.push('</div>')
