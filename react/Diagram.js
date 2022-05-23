@@ -63,7 +63,8 @@ const ContextMenuType = Object.freeze({
 	none: 'none',
 	background: 'bg',
 	tool: 'tool',
-	addTool: 'add',
+	addTool: 'addTool',
+	addDisplayTool: 'addDisplay',
 	selection: 'sel',
 });
 
@@ -941,15 +942,64 @@ export class Diagram extends React.Component {
 
 		let contextMenu;
 		if (this.state.showContext) {
+			const addTool = (type) => {
+				const position = this.state.showContext.info;
+				this.props.actions.doCommand(`${this.state.path} addtool ${type} ${position.x} ${position.y}`, (results) => {
+					this.setState({showContext: null});
+					const toolName = results[0].results;
+					if (type === 'Import') {
+						type = 'Model';
+					}
+					if (type === 'Model') {
+						this.props.actions.pushModel(toolName);
+					}
+					else {
+						this.props.actions.viewTool(toolName, type);
+					}
+				})
+				this.setState({showContext: null});
+			}
+
 			switch (this.state.showContext.type) {
 				case ContextMenuType.background: {
 					const menu = [
+						{
+							text: this.props.t('react:dgmButtonMenuBack'),
+							action: () => {
+								this.setState({
+									showContext: null
+								})
+							}
+						},
+						{
+							text: this.props.t('react:dgmButtonAddExpr'),
+							action: () => {
+								addTool('Expression');
+							}
+						},
+						{
+							text: this.props.t('react:dgmButtonAddModel'),
+							action: () => {
+								addTool('Model');
+							}
+						},
 						{
 							text: this.props.t('react:dgmButtonAddTool'),
 							action: () => {
 								this.setState({
 									showContext: {
 										type: ContextMenuType.addTool,
+										info: this.state.showContext.info,
+									}
+								})
+							}
+						},
+						{
+							text: this.props.t('react:dgmButtonAddDisplay'),
+							action: () => {
+								this.setState({
+									showContext: {
+										type: ContextMenuType.addDisplayTool,
 										info: this.state.showContext.info,
 									}
 								})
@@ -1076,33 +1126,20 @@ export class Diagram extends React.Component {
 					break;
 
 				case ContextMenuType.addTool: {
-					const addTool = (type) => {
-						const position = this.state.showContext.info;
-						this.props.actions.doCommand(`${this.state.path} addtool ${type} ${position.x} ${position.y}`, (results) => {
-							this.setState({showContext: null});
-							const toolName = results[0].results;
-							if (type === 'Import') {
-								type = 'Model';
-							}
-							if (type === 'Model') {
-								this.props.actions.pushModel(toolName);
-							}
-							else {
-								this.props.actions.viewTool(toolName, type);
-							}
-						})
-						this.setState({showContext: null});
-					}
-
 					contextMenu = e(
 						ContextMenu, {
 							key: 'add',
 							t: t,
 							menu: [
 								{
-									text: this.props.t('mmcmd:exprDisplayName'),
+									text: this.props.t('react:dgmButtonMenuBack'),
 									action: () => {
-										addTool('Expression');
+										this.setState({
+											showContext: {
+												type: ContextMenuType.background,
+												info: this.state.showContext.info,
+											}
+										})
 									}
 								},
 								{
@@ -1115,12 +1152,6 @@ export class Diagram extends React.Component {
 									text: this.props.t('mmcmd:matrixDisplayName'),
 									action: () => {
 										addTool('Matrix');
-									}
-								},
-								{
-									text: this.props.t('mmcmd:modelDisplayName'),
-									action: () => {
-										addTool('Model');
 									}
 								},
 								{
@@ -1148,18 +1179,6 @@ export class Diagram extends React.Component {
 									}
 								},
 								{
-									text: this.props.t('mmcmd:graphDisplayName'),
-									action: () => {
-										addTool('Graph');
-									}
-								},
-								{
-									text: this.props.t('mmcmd:htmlPageDisplayName'),
-									action: () => {
-										addTool('HtmlPage');
-									}
-								},
-								{
 									text: this.props.t('mmcmd:modelImportDisplayName'),
 									action: () => {
 										addTool('Import');
@@ -1171,7 +1190,48 @@ export class Diagram extends React.Component {
 				}
 					break;
 				
-				case ContextMenuType.selection: {
+					case ContextMenuType.addDisplayTool: {
+						contextMenu = e(
+							ContextMenu, {
+								key: 'adddisplay',
+								t: t,
+								menu: [
+									{
+										text: this.props.t('react:dgmButtonMenuBack'),
+										action: () => {
+											this.setState({
+												showContext: {
+													type: ContextMenuType.background,
+													info: this.state.showContext.info,
+												}
+											})
+										}
+									},
+									{
+										text: this.props.t('mmcmd:graphDisplayName'),
+										action: () => {
+											addTool('Graph');
+										}
+									},
+									{
+										text: this.props.t('mmcmd:htmlPageDisplayName'),
+										action: () => {
+											addTool('HtmlPage');
+										}
+									},
+									{
+										text: this.props.t('mmcmd:buttonDisplayName'),
+										action: () => {
+											addTool('Button');
+										}
+									},
+								]
+							}
+						)
+					}
+						break;
+
+					case ContextMenuType.selection: {
 					const copyTools = (deleteAfterCopy) => {
 						const sel = this.toolsInBox(this.state.selectionBox, this.state.tools);
 						const names = [];
@@ -1413,6 +1473,7 @@ class ToolIcon extends React.Component {
 			Optimizer: 'rgba(237,212,217,.8)',
 			Graph: 'rgba(224,247,247,.8)',
 			HtmlPage: 'rgba(217,204,230,.8)',
+			Button: 'rgba(239,239,255,.8)',	
 		}
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;

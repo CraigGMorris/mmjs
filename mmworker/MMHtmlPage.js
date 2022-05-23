@@ -27,6 +27,54 @@
 	MMDataTable:readonly
 */
 
+// code inserted into the page to implement the mmpost function
+const MMHtmlMessageCode = `
+<script>
+window.onerror = function (e) {
+	alert('Error: ' + e);
+};
+</script>
+<script> 
+var callBackNumber = 1;
+const callBacks = {}
+
+const handleMessage = (e) => {
+	const results = e.data;
+	if (results && results.callBackNumber) {
+		callBacks[results.callBackNumber](results.results);
+		delete callBacks[results.callBackNumber]
+	}
+}
+window.addEventListener('message', handleMessage);
+const mmpost = (inputs, requests, callBack) => {
+	if (Array.isArray(inputs)) {
+		inputs = mminputs(inputs);
+	}
+	const message = {
+		inputs: inputs
+	}
+	if (requests) {
+		message.requests = requests;
+	}
+	if (callBack) {
+		message.callBackNumber = callBackNumber;
+		callBacks[callBackNumber++] = callBack;
+	}
+	window.parent.postMessage('htmlPage' + JSON.stringify(message), '*');
+}
+const mminputs = (idNames) => {
+	const inputs = {};
+	for(let a of idNames) {
+		const e = document.getElementById(a);
+		if (e) {
+			inputs[a] = e.value;
+		}
+	}
+	return inputs;
+}
+</script>
+`
+
 /**
  * @class MMHtmlPage
  * @extends MMTool
@@ -507,57 +555,10 @@ class MMHtmlPage extends MMTool {
 	 * @returns {String} 
 	 */
 	htmlForRequestor(requestor, skipMessageCode) {
-		// code inserted into the page to implement the mmpost function
-		// console.log(`page ${this.name} skip ${skipMessageCode}`);
 		if (this.recursionBlockIsOn) {
 			return '';
 		}
-		const messageCode = skipMessageCode ? '' : `
-<script>
-window.onerror = function (e) {
-	alert('Error: ' + e);
-};
-</script>
-<script> 
-var callBackNumber = 1;
-const callBacks = {}
-
-const handleMessage = (e) => {
-	const results = e.data;
-	if (results && results.callBackNumber) {
-		callBacks[results.callBackNumber](results.results);
-		delete callBacks[results.callBackNumber]
-	}
-}
-window.addEventListener('message', handleMessage);
-const mmpost = (inputs, requests, callBack) => {
-	if (Array.isArray(inputs)) {
-		inputs = mminputs(inputs);
-	}
-	const message = {
-		inputs: inputs
-	}
-	if (requests) {
-		message.requests = requests;
-	}
-	if (callBack) {
-		message.callBackNumber = callBackNumber;
-		callBacks[callBackNumber++] = callBack;
-	}
-	window.parent.postMessage('htmlPage' + JSON.stringify(message), '*');
-}
-const mminputs = (idNames) => {
-	const inputs = {};
-	for(let a of idNames) {
-		const e = document.getElementById(a);
-		if (e) {
-			inputs[a] = e.value;
-		}
-	}
-	return inputs;
-}
-</script>
-`
+		const messageCode = skipMessageCode ? '' : MMHtmlMessageCode;
 		if (!this.processedHtml) {
 			if (!this.rawHtml) {
 				const htmlValue = this.formula.value();

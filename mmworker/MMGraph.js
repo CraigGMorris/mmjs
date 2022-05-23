@@ -1923,9 +1923,10 @@ class MMGraph extends MMTool {
 	 * @method htmlValue
 	 * @returns {String}
 	 */
-	htmlValue() {
+	htmlValue(requestor) {
 		const s = this.svgForDescription('svg');
 		if (s) {
+			this.addRequestor(requestor);
 			return s.values[0];
 		}
 	}

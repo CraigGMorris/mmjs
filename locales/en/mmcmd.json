@@ -4,6 +4,7 @@
 	"alert": "Alert",
 	"alertMessage": "{{msg}}",
 	"appendTableRowMismatch": "Can't append table values with different row counts",
+	"buttonDisplayName": "Button",
 	"calculating": "Calculating",
 	"concatColumnTypeMismatch": "Can't concat table values with different column types",
 	"concatTableColumnMismatch": "Can't concat table values with different column counts",

@@ -184,6 +184,43 @@ a:hover {
 	color: var(--link--color-hover);
 }
 
+#button__label_formula-row {
+	display: grid;
+	grid-template-columns: 60px 1fr;
+}
+
+.button__action_select-row {
+	margin-top: 5px;
+	margin-right: 10px;
+	display: grid;
+	grid-template-columns: 60px 1fr;
+}
+
+.button__action-label {
+	padding-right: 10px;
+	width: 100px;
+}
+
+.button__action_select {
+	width: 100%;
+}
+
+.button__target_select-row {
+	margin-top: 5px;
+	margin-right: 10px;
+	display: grid;
+	grid-template-columns: 60px 1fr;
+}
+
+.button__target-label {
+	padding-right: 10px;
+	width: 100px;
+}
+
+.button__target_select {
+	width: 100%;
+}
+
 .checkbox-and-label {
 	display: grid;
 	grid-template-columns: 50px 1fr;

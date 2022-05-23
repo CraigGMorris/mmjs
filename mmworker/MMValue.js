@@ -22,6 +22,7 @@
 	MMNumberValue:readonly
 	MMStringValue:readonly
 	theMMSession:readonly
+	MMTableValue:readonly
 */
 
 /**
@@ -326,7 +327,7 @@ class MMValue {
 		if (this.valueCount === 0) {
 			rv = '';
 		}
-		else if (this.valueCount == 1) {
+		else if (this.valueCount == 1 && !(this instanceof MMTableValue)) {
 			rv = this.stringForRowColumnWithUnit(1, 1, this.displayUnit || this.defaultUnit, this.displayFormat).trim();
 		}
 		else {

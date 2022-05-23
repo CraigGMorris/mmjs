@@ -40,6 +40,7 @@ importScripts(
   "MMStringValue.js",
   "MMTableValue.js",
   "MMToolValue.js",
+  "MMTool.js",
   'MMModel.js',
   "MMExpression.js",
   "MMMatrix.js",
@@ -51,6 +52,7 @@ importScripts(
   "MMOptimizer.js",
   "MMGraph.js",
   "MMHtmlPage.js",
+  "MMButton.js",
   // "pouchdb.min.js"
   "pouchdb.js"
 );

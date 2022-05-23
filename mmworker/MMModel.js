@@ -29,6 +29,7 @@
 	MMNumberValue:readonly
 	MMStringValue:readonly
 	MMTableValue:readonly
+	MMButton:readonly
 */
 
 /**
@@ -836,14 +837,19 @@ class MMModel extends MMTool {
 					const outputId = this.name + '_' + output.name;
 					if (value instanceof MMToolValue) {
 						value = value.values[0];
-						chunks.push(`<div class="model-form__output-tool">`);
-						chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
-						chunks.push(`<div id="${outputId}" class="model-form__output_value">${value.htmlValue(requestor)}</div>`);
-						chunks.push('</div>');	
+						if (value instanceof MMButton) {
+							chunks.push(value.htmlValue(requestor));
+						}
+						else {
+							chunks.push(`<div class="model-form__output-tool">`);
+							chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
+							chunks.push(`<div id="${outputId}" class="model-form__output_value">${value.htmlValue(requestor)}</div>`);
+							chunks.push('</div>');	
+						}
 					}
-					else if (value.valueCount <= 1) {
+					else if (value.valueCount <= 1 && !(value instanceof MMTableValue)) {
 						chunks.push(`<div class="model-form__output-row">`);
-						chunks.push(`<div class="model-form__output-name2" onClick="onNameClick('${output.name}')">${output.name}</div>`);
+						chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
 						chunks.push(`<div id="${outputId}" class="model-form__output-value">${value.htmlValue(requestor)}</div>`);
 						chunks.push('</div>');	
 					}
