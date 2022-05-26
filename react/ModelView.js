@@ -70,6 +70,60 @@ export function ModelView(props) {
 		return null;
 	}
 
+	const htmlAction = React.useCallback(e => {
+		if (!updateResults.error) {
+			const results = updateResults.length ? updateResults[0].results : {};
+			if (results.path) {
+				const source = e.source
+				const message = e.data.substring(8)
+				props.actions.doCommand(`__blob__${results.path} htmlaction__blob__${message}`, (results) => {
+					if (results && results[0] && results[0].results) {
+						const received = results[0].results;
+						if (received.results) {
+							source.postMessage(received, '*');
+						}
+						if (received.didLoad) {
+							if (received.resetInfo) {
+								props.actions.resetInfoStack('root', received.resetInfo);
+								props.actions.updateDiagram(true);
+							}
+						}
+						else if (received.view) {
+							// console.log(`view ${received.view.name} ${received.view.type}`);
+							props.actions.viewTool(received.view.name, received.view.type);
+							props.actions.updateDiagram();
+						}
+						else if (received.push) {
+							// console.log(`push ${received.push.name} ${received.push.type}`);
+							props.actions.pushTool(received.push.name, received.push.path, received.push.type);
+							props.actions.updateDiagram();
+						}
+						else if (received.update) {
+							// console.log('updating');
+							props.actions.updateView(props.viewInfo.stackIndex);
+						}
+						else {
+							props.actions.updateDiagram();
+						}
+						// setDisplay(HtmlPageDisplay.main);
+					}
+				});
+			}
+		}
+	}, [updateResults, props.actions, props.viewInfo.stackIndex]);
+
+	useEffect(() => {
+		const handleMessage = (e) => {
+			if (typeof e.data === "string" && e.data.startsWith('htmlPage')) {
+				htmlAction(e);
+			}
+		}
+		window.addEventListener('message', handleMessage);
+		return () => {
+			window.removeEventListener('message', handleMessage);
+		}
+	}, [htmlAction]);
+
 	const applyInputChanges = (formula, path) => {
 		props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
@@ -148,151 +202,8 @@ export function ModelView(props) {
 						)
 					)
 				}
-				if (results.inputs.length) {
-					fields.push(
-						e(
-							'div', {
-								id: 'model__inputs-title',
-								key: 'inputsTitle',
-							},
-							t('react:modelInputsTitle'),
-						)
-					);
-				}
-				let nameSpace = results.modelPath;
-				if (nameSpace) {
-					const inputPathParts = nameSpace.split('.');
-					if (inputPathParts.length > 2) {
-						nameSpace = nameSpace.replace(/\.[^\.]*$/,'')
-					}	
-				}
-				for (let input of results.inputs) {
-					const inputPath = `${results.path}.${input.name}.formula`;
-					const cmp = e(
-						'div', {
-							key: `input_${input.name}`,
-							className: 'model__input-field',
-						},
-						e(
-							'div', {
-								className: 'model__input-field-name',
-								onClick: () => {
-									props.actions.viewTool(input.name, 'Expression');
-								},
-							},
-							input.name,
-						),
-						e(
-							FormulaField, {
-								t: t,
-								actions: props.actions,
-								path: inputPath,
-								formula: input.formula || '',
-								viewInfo: props.viewInfo,
-								infoWidth: props.infoWidth,
-								editAction: (editOptions) => {
-									editOptions.path = inputPath;
-									editOptions.nameSpace = nameSpace;
-									setEditOptions(editOptions);
-									setDisplay(ModelDisplay.formulaEditor);
-								},
-								applyChanges: (formula) => {
-									applyInputChanges(formula, inputPath)
-								},	
-							}
-						),
-						e(
-							'div', {
-								className: 'model__input-field-value',
-								onClick: () => {
-									props.actions.viewTool(input.name, 'Expression');
-								},
-							},
-							'=> ',
-							input.value
-						)
-					);
-					fields.push(cmp);
-				}
-
-				if (results.outputs.length) {
-					fields.push(
-						e(
-							'div', {
-								id: 'model__outputs-title',
-								key: 'outputsTitle'
-							},
-							t('react:modelOutputsTitle'),
-						)
-					);
-				}
-
-				for (let output of results.outputs) {
-					const cmp = e(
-						'div', {
-							key: `output_${output.name}`,
-							className: 'model__output-field',
-							onClick: () => {
-								props.actions.viewTool(output.name, 'Expression');
-							},
-						},
-						e(
-							'div', {
-								className: 'model__output-field-name',
-							},
-							output.name,
-						),
-						e(
-							'div', {
-								className: 'model__output-field-value',
-							},
-							'=> ', output.value
-						)
-					);
-					fields.push(cmp);
-				}
-
-				if (results.others.length) {
-					fields.push(
-						e(
-							'div', {
-								id: 'model__others-title',
-								key: 'othersTitle'
-							},
-							t('react:modelOthersTitle'),
-						)
-					);
-				}
-				for (let other of results.others) {
-					const cmp = e(
-						'div', {
-							key: `other${other.name}`,
-							className: 'model__other-field',
-							onClick: () => {
-								if (other.type === 'Model') {
-									props.actions.pushModel(other.name)
-								}
-								else {
-									props.actions.viewTool(other.name, other.type);
-								}
-							},
-						},
-						e(
-							'div', {
-								className: 'model__other-field-type',
-							},
-							other.type, ': ',
-						),
-						e(
-							'div', {
-								className: 'model__other-field-name',
-							},
-							other.name
-						),
-					);
-					fields.push(cmp);
-				}
-				const indexToolInput = e(
+				
+					const indexToolInput = e(
 					'input', {
 						id: 'model__indextool-input',
 						value: indexToolName,
@@ -312,6 +223,16 @@ export function ModelView(props) {
 					}
 				)
 
+				fields.push(e(
+						// rendered html
+						'iframe', {
+							id: 'htmlpage__iframe',
+							srcDoc: results.html,
+							sandbox: 'allow-scripts allow-modals allow-popups',
+						},
+					)
+				);
+	
 				const indexToolFields = e(
 					'div', {
 						id: 'model__indextool-fields',

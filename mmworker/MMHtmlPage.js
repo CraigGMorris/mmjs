@@ -24,6 +24,7 @@
 	MMStringValue:readonly
 	MMNumberValue:readonly
 	theMMSession:readonly
+	MMModel:readonly
 	MMDataTable:readonly
 */
 
@@ -76,6 +77,367 @@ const mminputs = (idNames) => {
 `
 
 /**
+ * @class MMHtmlPageProcessor
+ */
+class MMHtmlPageProcessor {
+	constructor(parentTool) {
+		// formula have to have a tool as parent, so rudely paste them onto it
+		this.parent = parentTool
+		this.parent.tagFormulas = [];
+		this.inputs = null;
+		this.rawHtml = null;
+		this.processedHtml = null;
+		this.recursionBlockIsOn = false;
+	}
+
+	/**
+	 * @method saveObject
+	 * @override
+	 * @returns {Object} object that can be converted to json for save file
+	 */
+	saveObject(o) {
+		if (this.inputs) {
+			o.inputs = this.inputs;
+		}
+
+		const tagFormulas = this.parent.tagFormulas;
+		const formulaCount = tagFormulas.length;
+		for (let i = 0; i < formulaCount; i++) {
+			const formula = tagFormulas[i];
+			o[`f${i}`] = formula.formula;
+		}
+		return o;
+	}
+
+	/**
+	 * @method initFromSaved - initialize from stored object
+	 * @override
+	 * @param {Object} saved 
+	 */
+	initFromSaved(saved) {
+		this.inputs = saved.inputs;
+		let formulaNumber = 0;
+		let tagFormula;
+		const tagFormulas = this.parent.tagFormulas;
+		do {
+			const name = `f${formulaNumber}`;
+			tagFormula = saved[name];
+			if (tagFormula) {
+				const formula = new MMFormula('_' + name, this.parent);
+				formula.formula = tagFormula;
+				tagFormulas.push(formula);
+				formulaNumber++;
+			}
+		} while(tagFormula);
+	}
+	
+	/**
+	 * @method inputSources
+	 * @override
+	 * @returns {Set} contains tools referenced by this tool
+	 */
+	inputSources(sources) {
+		const tagFormulas = this.parent.tagFormulas;
+		for (let formula of tagFormulas) {
+			if (formula.formula) {
+				formula.addInputSourcesToSet(sources);
+			}
+			else {
+				// tag represents parent model
+				const parentModel = this.parent.parent;
+				for (const childName in parentModel.children) {
+					const child = parentModel.children[childName];
+					if (child.isInput || child.isOutput || child.htmlNotes) {
+						sources.add(child);
+						child.addRequestor(this.parent);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * @method clearCache
+	 */
+	clearCache() {
+		this.processedHtml = null;
+		this.rawHtml = null;
+	}
+
+	/**
+	 * @method action
+	 * @param {String} jsonMessage 
+	 * @returns {String}
+	 * Makes any inputs in the message available as parameters and
+	 * returns and returns and requested values in the response return
+	 * also performs action indicated in the requests with the mm_ keywords
+	 */
+	async action(jsonMessage) {
+		const response = {}
+		try {
+			const message = JSON.parse(jsonMessage);
+			if (message.callBackNumber) {
+				response.callBackNumber = message.callBackNumber;
+			}
+			if (message.inputs) {
+				let foundNewInput = false;
+				for (let inputName of Object.keys(message.inputs)) {
+					const lcInputName = inputName.toLowerCase()
+					const input = message.inputs[inputName];
+					const newValue = (isNaN(input) || isNaN(parseFloat(input))) ? input : parseFloat(input);
+					if (!this.inputs) {
+						this.inputs = {}
+					}
+					if (newValue != this.inputs[lcInputName]) {
+						this.inputs[lcInputName] = newValue;
+						foundNewInput = true;
+					}
+				}
+				if (foundNewInput) {
+					this.parent.forgetCalculated();
+				}
+			}
+
+			const actions = {};
+			const requestResults = {};
+			if (message.requests) {
+				for (let name of Object.keys(message.requests)) {
+					if (name.startsWith('mm_')) {
+						// save actions for below
+						actions[name.toLowerCase()] = message.requests[name];
+					}
+				}
+			}
+			if (!message.callBackNumber && Object.keys(actions).length === 0) {
+				response.update = true;
+			}
+
+			// now do any action requests
+			let parentModel = this.parent;
+			while (!(parentModel instanceof MMModel)) {
+				parentModel = parentModel.parent;
+			}
+			for (let action of Object.keys(actions)) {
+				switch (action) {
+					case 'mm_view': {
+						// pass back instruction to view to switch to different tool
+						const name = actions[action].toLowerCase();
+						const target = parentModel.children[name];
+						if (target) {
+							response.view = {name: actions[action], type: target.typeName};
+						}
+					}
+						break;
+					case 'mm_push': {
+						// pass back instruction to view to push another tool view over the html page view
+						const name = actions[action].toLowerCase();
+						const target = parentModel.children[name];
+						if (target) {
+							response.push = {name: actions[action], path: target.getPath(), type: target.typeName};
+						}
+					}
+						break;
+					case 'mm_addrow': {
+						// add a row to a specified data table
+						const name = actions[action].toLowerCase();
+						const target = parentModel.children[name];
+						if (target && target instanceof MMDataTable) {
+							target.addRow(0);
+						}
+					}
+						break;
+					case 'mm_deleterows': {
+						// delete specified rows from a data table
+						const actionValue = actions[action];
+						const rows = actionValue.rows;
+						const name = actionValue.table;
+						if (Array.isArray(rows) && name) {
+							const target = parentModel.children[name];
+							if (target) {
+								target.removeRows(rows);
+							}
+						}
+					}
+						break;
+					case 'mm_refresh': {
+						// recalculate the values for a specified tool
+						const name = actions[action].toLowerCase();
+						const target = parentModel.children[name];
+						if (target) {
+							target.forgetCalculated();
+						}
+					}
+						break;
+					case 'mm_update': {
+						// instruct the view to refresh the html page view
+						response.update = true;
+					}
+						break;
+					case 'mm_clear': {
+						// forget all previously defined parameters derived from page inputs
+						if (actions[action]) {
+							this.inputs = null;
+							this.forgetCalculated();
+						}
+					}
+						break;
+					case 'mm_load': {
+						// load a different session
+						const path = actions[action];
+						if (path) {
+							response.resetInfo = await theMMSession.loadSession(path);
+							response.didLoad = true;
+						}
+					}
+						break;
+					case 'mm_loadurl': {
+						// load a different session from a url
+						const path = actions[action];
+						if (path) {
+							response.resetInfo = await theMMSession.loadUrl(path);
+							response.didLoad = true;
+						}
+					}
+						break;
+					case 'mm_cmd': {
+						// have session execute a command(s)
+						const cmds = actions[action];
+						const results = await theMMSession.processor.processCommandString(cmds);
+						if (results) {
+							requestResults['_response'] = results
+						}
+						else {
+							requestResults['_response'] = '';
+						}
+					}
+						break;
+					case 'mm_undo': {
+						response.undo = actions[action];
+					}
+						break;
+					default:
+						this.setError('mmcmd:htmlBadAction', {action: action, path: this.parent.getPath()});
+						break;
+				}
+			}
+
+			if (message.requests) {
+				for (let name of Object.keys(message.requests)) {
+					if (!name.startsWith('mm_')) {
+						// evaluate the request formulas for inclusion in response.results
+						const formula = new MMFormula(`_r_${name}`, this.parent);
+						formula.formula = message.requests[name];
+						const mmResult = formula.value();
+						let reqResult;
+						if (!mmResult) {
+							reqResult = '';
+						}
+						else if (mmResult instanceof MMValue) {
+							const v = mmResult.values;
+							if (mmResult.valueCount === 1) {
+								reqResult = v[0];
+							}
+							else if (mmResult.rowCount > 1 && mmResult.columnCount > 1) {
+								reqResult = [];
+								const columnCount = mmResult.columnCount;
+								for (let r = 0; r < mmResult.rowCount; r++) {
+									const row = [];
+									reqResult.push(row);
+									for (let c = 0; c < columnCount; c++) {
+										row[c] = v[r*columnCount + c];
+									}
+								}
+							}
+							else if (mmResult.valueCount > 1) {
+								reqResult = [];
+								for (let r = 0; r < mmResult.rowCount; r++) {
+									reqResult[r] = v[r];
+								}
+							}	
+						}
+						requestResults[name] = reqResult;
+					}
+				}
+			}
+			response.results = requestResults;
+
+			return response;
+		}
+		catch(e) {
+			this.setError('mmcmd:htmlBadActionJson', {path: this.parent.getPath(), msg: e.message});
+			return '';
+		}
+	}
+
+	/**
+	 * @method htmlForRequestor
+	 * @param {MMTool} requestor
+	 * @param {Boolean} skipMessageCode;
+	 * @returns {String} 
+	 */
+	htmlForRequestor(requestor, skipMessageCode) {
+		if (this.recursionBlockIsOn) {
+			return '';
+		}
+		const messageCode = skipMessageCode ? '' : MMHtmlMessageCode;
+		if (!this.processedHtml) {
+			if (!this.rawHtml) {
+				this.parent.tagFormulas = [];
+				this.rawHtml = this.parent.rawHtml();
+			}
+			if (this.rawHtml) {
+				let regex = RegExp('<mm>.*?</mm>','msig');
+				let processedHtml = this.rawHtml;
+				let formulaNumber = 0;
+				while (regex.test(processedHtml)) {
+					regex.lastIndex = 0;
+					let chunks = [];
+					const matches = processedHtml.matchAll(regex);
+					let includeFrom = 0;
+					const tagFormulas = this.parent.tagFormulas;
+					for (const match of matches) {
+						chunks.push(processedHtml.substring(includeFrom, match.index));
+						includeFrom = match.index + match[0].length
+						if (formulaNumber >= tagFormulas.length) {
+							tagFormulas.push(new MMFormula(`_f${formulaNumber}`, this.parent)); 
+						}
+						const tagFormula = tagFormulas[formulaNumber];
+						tagFormula.nameSpace = this.parent.parent; // make sure correct namespace
+						tagFormula.formula = match[0].substring(4, match[0].length - 5);
+						formulaNumber++;
+						if (tagFormula.formula.length === 0) {
+							// if tag is empty assume parent model
+							const parentModel = this.parent.parent;
+							try {
+								this.recursionBlockIsOn = true;
+								chunks.push(parentModel.htmlValue(requestor, true));
+							}
+							finally {
+								this.recursionBlockIsOn = false;
+							}
+						}
+						else {
+							const value = tagFormula.value();
+							if (value instanceof MMValue) {
+								chunks.push(value.htmlValue(this));
+							}
+						}
+					}
+					chunks.push(processedHtml.substring(includeFrom));
+					processedHtml = chunks.join('')
+				}
+
+				this.processedHtml = processedHtml;
+			}
+		}
+		if (this.processedHtml) {
+			this.parent.addRequestor(requestor);
+		}
+		return messageCode + this.processedHtml;
+	}
+}
+
+/**
  * @class MMHtmlPage
  * @extends MMTool
  */
@@ -87,6 +449,7 @@ class MMHtmlPage extends MMTool {
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'HtmlPage');
+		this.htmlProcessor = new MMHtmlPageProcessor(this)
 		this.formula = new MMFormula('Formula', this);
 		this.formula.formula = `'<!-- Html source - see help page -->	
 <html>
@@ -101,11 +464,6 @@ class MMHtmlPage extends MMTool {
 		<mm></mm>
 	</body>
 </html>`
-		this.tagFormulas = [];
-		this.inputs = null;
-		this.rawHtml = null;
-		this.processedHtml = null;
-		this.recursionBlockIsOn = false;
 	}
 
 	/**
@@ -117,15 +475,7 @@ class MMHtmlPage extends MMTool {
 		let o = super.saveObject();
 		o.Type = 'HTML Form';
 		o['Formula'] = {Formula: this.formula.formula};
-		if (this.inputs) {
-			o.inputs = this.inputs;
-		}
-
-		const formulaCount = this.tagFormulas.length;
-		for (let i = 0; i < formulaCount; i++) {
-			const formula = this.tagFormulas[i];
-			o[`f${i}`] = formula.formula;
-		}
+		this.htmlProcessor.saveObject(o);
 		return o;
 	}
 
@@ -139,21 +489,7 @@ class MMHtmlPage extends MMTool {
 		try {
 			super.initFromSaved(saved);
 			this.formula.formula = saved.Formula.Formula;
-			this.inputs = saved.inputs;
-			let formulaNumber = 0;
-			let tagFormula;
-			do {
-				const name = `f${formulaNumber}`;
-				tagFormula = saved[name];
-				if (tagFormula) {
-					const formula = new MMFormula(name, this);
-					formula.formula = tagFormula;
-					this.tagFormulas.push(formula);
-					formulaNumber++;
-				}
-			} while(tagFormula);
-
-
+			this.htmlProcessor.initFromSaved(saved);
 		}
 		finally {
 			this.isLoadingCase = false;
@@ -191,24 +527,8 @@ class MMHtmlPage extends MMTool {
 	 */
 	inputSources() {
 		let sources = super.inputSources();
-		this.formula.addInputSourcesToSet(sources);	
-		for (let formula of this.tagFormulas) {
-			if (formula.formula) {
-				formula.addInputSourcesToSet(sources);
-			}
-			else {
-				// tag represents parent model
-				this.parent.addRequestor(this);
-				for (const childName in this.parent.children) {
-					const child = this.parent.children[childName];
-					if (child.isInput || child.isOutput || child.htmlNotes) {
-						sources.add(child);
-						child.addRequestor(this);
-					}
-				}
-			}
-		}
-		
+		this.formula.addInputSourcesToSet(sources);
+		this.htmlProcessor.inputSources(sources);		
 		return sources;
 	}
 
@@ -218,14 +538,17 @@ class MMHtmlPage extends MMTool {
 	forgetCalculated() {
 		if (!this.forgetRecursionBlockIsOn) {
 			this.forgetRecursionBlockIsOn = true;
-			for (let requestor of this.valueRequestors) {
-				requestor.forgetCalculated();
+			try {
+				for (let requestor of this.valueRequestors) {
+					requestor.forgetCalculated();
+				}
+				this.valueRequestors.clear();
+				this.htmlProcessor.clearCache();
+				super.forgetCalculated();
 			}
-			this.valueRequestors.clear();
-			super.forgetCalculated();
-			this.processedHtml = null;
-			this.rawHtml = null;
-			this.forgetRecursionBlockIsOn = false;
+			finally {
+				this.forgetRecursionBlockIsOn = false;
+			}
 		}
 	}
 
@@ -242,7 +565,7 @@ class MMHtmlPage extends MMTool {
 		const lcDescription = description.toLowerCase();
 		let value = null;
 		if (lcDescription === 'html') {
-			const html = this.htmlForRequestor(requestor);
+			const html = this.htmlProcessor.htmlForRequestor(requestor);
 			if (html) {
 				value = MMStringValue.scalarValue(html);
 			}
@@ -261,9 +584,9 @@ class MMHtmlPage extends MMTool {
 				}
 			}
 		}
-		else if (this.inputs) {
+		else if (this.htmlProcessor.inputs) {
 			// return values posted as inputs from the html view
-			const inputValue = this.inputs[lcDescription];
+			const inputValue = this.htmlProcessor.inputs[lcDescription];
 			if (inputValue != null) {
 				const valueType = typeof inputValue;
 				if (valueType === 'string') {
@@ -334,286 +657,27 @@ class MMHtmlPage extends MMTool {
 		}
 		return p;
 	}
-
-	/**
-	 * @method action
-	 * @param {String} jsonMessage 
-	 * @returns {String}
-	 * Makes any inputs in the message available as parameters and
-	 * returns and returns and requested values in the response return
-	 * also performs action indicated in the requests with the mm_ keywords
-	 */
-	async action(jsonMessage) {
-		const response = {}
-		try {
-			const message = JSON.parse(jsonMessage);
-			if (message.callBackNumber) {
-				response.callBackNumber = message.callBackNumber;
-			}
-			if (message.inputs) {
-				let foundNewInput = false;
-				for (let inputName of Object.keys(message.inputs)) {
-					const lcInputName = inputName.toLowerCase()
-					const input = message.inputs[inputName];
-					const newValue = (isNaN(input) || isNaN(parseFloat(input))) ? input : parseFloat(input);
-					if (!this.inputs) {
-						this.inputs = {}
-					}
-					if (newValue != this.inputs[lcInputName]) {
-						this.inputs[lcInputName] = newValue;
-						foundNewInput = true;
-					}
-				}
-				if (foundNewInput) {
-					this.forgetCalculated();
-				}
-			}
-
-			const actions = {};
-			const requestResults = {};
-			if (message.requests) {
-				for (let name of Object.keys(message.requests)) {
-					if (name.startsWith('mm_')) {
-						// save actions for below
-						actions[name.toLowerCase()] = message.requests[name];
-						// console.log(`action ${name}`)
-					}
-				}
-			}
-			if (!message.callBackNumber && Object.keys(actions).length === 0) {
-				response.update = true;
-			}
-
-			// now do any action requests
-			for (let action of Object.keys(actions)) {
-				switch (action) {
-					case 'mm_view': {
-						// pass back instruction to view to switch to different tool
-						const name = actions[action].toLowerCase();
-						const target = this.parent.children[name];
-						if (target) {
-							response.view = {name: actions[action], type: target.typeName};
-						}
-					}
-						break;
-					case 'mm_push': {
-						// pass back instruction to view to push another tool view over the html page view
-						const name = actions[action].toLowerCase();
-						const target = this.parent.children[name];
-						if (target) {
-							response.push = {name: actions[action], path: target.getPath(), type: target.typeName};
-						}
-					}
-						break;
-					case 'mm_addrow': {
-						// add a row to a specified data table
-						const name = actions[action].toLowerCase();
-						const target = this.parent.children[name];
-						if (target && target instanceof MMDataTable) {
-							target.addRow(0);
-						}
-					}
-						break;
-					case 'mm_deleterows': {
-						// delete specified rows from a data table
-						const actionValue = actions[action];
-						const rows = actionValue.rows;
-						const name = actionValue.table;
-						if (Array.isArray(rows) && name) {
-							const target = this.parent.children[name];
-							if (target) {
-								target.removeRows(rows);
-							}
-						}
-					}
-						break;
-					case 'mm_refresh': {
-						// recalculate the values for a specified tool
-						const name = actions[action].toLowerCase();
-						const target = this.parent.children[name];
-						if (target) {
-							target.forgetCalculated();
-						}
-					}
-						break;
-					case 'mm_update': {
-						// instruct the view to refresh the html page view
-						response.update = true;
-					}
-						break;
-					case 'mm_clear': {
-						// forget all previously defined parameters derived from page inputs
-						if (actions[action]) {
-							this.inputs = null;
-							this.forgetCalculated();
-						}
-					}
-						break;
-					case 'mm_load': {
-						// load a different session
-						const path = actions[action];
-						if (path) {
-							response.resetInfo = await theMMSession.loadSession(path);
-							response.didLoad = true;
-						}
-					}
-						break;
-					case 'mm_loadurl': {
-						// load a different session from a url
-						const path = actions[action];
-						if (path) {
-							response.resetInfo = await theMMSession.loadUrl(path);
-							response.didLoad = true;
-						}
-					}
-						break;
-					case 'mm_cmd': {
-						// have session execute a command(s)
-						const cmds = actions[action];
-						const results = await theMMSession.processor.processCommandString(cmds);
-						if (results) {
-							requestResults['_response'] = results
-						}
-						else {
-							requestResults['_response'] = '';
-						}
-					}
-						break;
-					case 'mm_undo': {
-						response.undo = actions[action];
-					}
-						break;
-					default:
-						this.setError('mmcmd:htmlBadAction', {action: action, path: this.getPath()});
-						break;
-				}
-			}
-
-			if (message.requests) {
-				for (let name of Object.keys(message.requests)) {
-					if (!name.startsWith('mm_')) {
-						// evaluate the request formulas for inclusion in response.results
-						const formula = new MMFormula(`r_${name}`, this);
-						formula.formula = message.requests[name];
-						const mmResult = formula.value();
-						let reqResult;
-						if (!mmResult) {
-							reqResult = '';
-						}
-						else if (mmResult instanceof MMValue) {
-							const v = mmResult.values;
-							if (mmResult.valueCount === 1) {
-								reqResult = v[0];
-							}
-							else if (mmResult.rowCount > 1 && mmResult.columnCount > 1) {
-								reqResult = [];
-								const columnCount = mmResult.columnCount;
-								for (let r = 0; r < mmResult.rowCount; r++) {
-									const row = [];
-									reqResult.push(row);
-									for (let c = 0; c < columnCount; c++) {
-										row[c] = v[r*columnCount + c];
-									}
-								}
-							}
-							else if (mmResult.valueCount > 1) {
-								reqResult = [];
-								for (let r = 0; r < mmResult.rowCount; r++) {
-									reqResult[r] = v[r];
-								}
-							}	
-						}
-						requestResults[name] = reqResult;
-					}
-				}
-			}
-			response.results = requestResults;
-
-			return response;
-		}
-		catch(e) {
-			this.setError('mmcmd:htmlBadActionJson', {path: this.getPath(), msg: e.message});
-			return '';
-		}
-	}
 	
 	/**
 	 * @method actionCommand
 	 * @param {MMCommand} command
 	 */
 	async actionCommand(command) {
-		command.results = await this.action(command.args);
+		command.results = await this.htmlProcessor.action(command.args);
 		if (command.results.undo) {
 			command.undo = command.results.undo;
 		}
 	}
 
 	/**
-	 * @method htmlForRequestor
-	 * @param {MMTool} requestor
-	 * @param {Boolean} skipMessageCode;
-	 * @returns {String} 
+	 * @method rawHtml
+	 * @returns {String}
 	 */
-	htmlForRequestor(requestor, skipMessageCode) {
-		if (this.recursionBlockIsOn) {
-			return '';
+	rawHtml() {
+		const htmlValue = this.formula.value();
+		if (htmlValue) {
+			return htmlValue.values[0];
 		}
-		const messageCode = skipMessageCode ? '' : MMHtmlMessageCode;
-		if (!this.processedHtml) {
-			if (!this.rawHtml) {
-				const htmlValue = this.formula.value();
-				this.tagFormulas = [];
-				if (htmlValue) {
-					this.rawHtml = htmlValue.values[0];
-				}
-			}
-			if (this.rawHtml) {
-				let regex = RegExp('<mm>.*?</mm>','msig');
-				let processedHtml = this.rawHtml;
-				let formulaNumber = 0;
-				while (regex.test(processedHtml)) {
-					regex.lastIndex = 0;
-					let chunks = [];
-					const matches = processedHtml.matchAll(regex);
-					let includeFrom = 0;
-					for (const match of matches) {
-						chunks.push(processedHtml.substring(includeFrom, match.index));
-						includeFrom = match.index + match[0].length
-						if (formulaNumber >= this.tagFormulas.length) {
-							this.tagFormulas.push(new MMFormula(`f${formulaNumber}`, this)); 
-						}
-						const tagFormula = this.tagFormulas[formulaNumber];
-						tagFormula.nameSpace = this.parent; // make sure correct namespace
-						tagFormula.formula = match[0].substring(4, match[0].length - 5);
-						formulaNumber++;
-						if (tagFormula.formula.length === 0) {
-							// if tag is empty assume parent model
-							try {
-								this.recursionBlockIsOn = true;
-								chunks.push(this.parent.htmlValue(requestor, true));
-							}
-							finally {
-								this.recursionBlockIsOn = false;
-							}
-						}
-						else {
-							const value = tagFormula.value();
-							if (value instanceof MMValue) {
-								chunks.push(value.htmlValue(this));
-							}
-						}
-					}
-					chunks.push(processedHtml.substring(includeFrom));
-					processedHtml = chunks.join('')
-				}
-
-				this.processedHtml = processedHtml;
-			}
-		}
-		if (this.processedHtml) {
-			this.addRequestor(requestor);
-		}
-		return messageCode + this.processedHtml;
 	}
 
 	/**
@@ -621,7 +685,7 @@ class MMHtmlPage extends MMTool {
 	 * @returns {String}
 	 */
 	htmlValue(requestor) {
-		return this.htmlForRequestor(requestor, true);
+		return this.htmlProcessor.htmlForRequestor(requestor, true);
 	}
 
 	/**
@@ -634,6 +698,6 @@ class MMHtmlPage extends MMTool {
 		await super.toolViewInfo(command);
 		const results = command.results;
 		results.formula = this.formula.formula;
-		results.html = this.htmlForRequestor();
+		results.html = this.htmlProcessor.htmlForRequestor();
 	}
 }

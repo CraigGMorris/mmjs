@@ -30,6 +30,7 @@
 	MMStringValue:readonly
 	MMTableValue:readonly
 	MMButton:readonly
+	MMHtmlPageProcessor:readonly
 */
 
 /**
@@ -83,6 +84,7 @@ class MMModel extends MMTool {
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Model');
+		this.htmlProcessor = new MMHtmlPageProcessor(this)
 		this.nextToolNumber = 1;
 		this.isMissingObject = false;
 	}
@@ -101,6 +103,7 @@ class MMModel extends MMTool {
 		verbs['import'] = this.importCommand;
 		verbs['makelocal'] = this.makeLocalCommand;
 		verbs['restoreimport'] = this.restoreImportCommand;
+		verbs['htmlaction'] = this.actionCommand;
 
 		return verbs;
 	}
@@ -299,6 +302,7 @@ class MMModel extends MMTool {
 			const json = JSON.stringify(savedTools);
 			command.undo = `__blob__${this.getPath()} restoretool__blob__${json}`;
 		}
+		this.htmlProcessor.clearCache();
 	}
 
 	/**
@@ -369,7 +373,7 @@ class MMModel extends MMTool {
 		}
 		const toolName = command.args;
 		const tool = this.childNamed(toolName);
-		if (tool) {
+		if (tool instanceof MMTool) {
 			const tableValue = tool.valueDescribedBy('table');
 			if (tableValue) {
 				command.results = MMReport.forToolValue(tool, tableValue, null, {isTableCopy: true});
@@ -660,6 +664,7 @@ class MMModel extends MMTool {
 			o.Objects = tools;
 		}
 
+		this.htmlProcessor.saveObject(o);
 		return o;
 	}
 
@@ -696,6 +701,7 @@ class MMModel extends MMTool {
 		if (saved.indexTool) {
 			this.indexTool = saved.indexTool;
 		}
+		this.htmlProcessor.initFromSaved(saved);
 	}
 
 	/**
@@ -734,6 +740,9 @@ class MMModel extends MMTool {
 		const objects = [];
 		for (const key in this.children) {
 			const tool = this.children[key];
+			if (!(tool instanceof MMTool)) {
+				continue;
+			}
 			if (tool.isInput && tool.typeName === 'Expression') {
 				inputs.push(tool);
 			}
@@ -795,12 +804,17 @@ class MMModel extends MMTool {
 			chunks.push('					mm_cmd: `.' + pathPrefix + '${inputName}.formula set formula ${value}`,');
 			chunks.push('					mm_undo:`.' + pathPrefix + '${inputName}.formula set formula ${oldValue}`,');
 			for (const output of results.outputs) {
-				const outputId = `${this.name}_${output.name}`;
+				const outputId = `o_${this.name}_${output.name}`;
 				chunks.push(`					${outputId}: "{html ${pathPrefix}${output.name}}",`);
 			}
 			chunks.push('					},(result) => {');
 			for (const output of results.outputs) {
-				const outputId = `${this.name}_${output.name}`;
+				console.log(`output ${output.name}`);
+				if (output instanceof MMButton) {
+					continue;
+				}
+				const outputId = `o_${this.name}_${output.name}`;
+				chunks.push(`console.log('${outputId}')`);
 				chunks.push(`					document.getElementById("${outputId}").innerHTML=result.${outputId};`);
 			}
 			chunks.push(`				});`);
@@ -830,11 +844,11 @@ class MMModel extends MMTool {
 				value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${formula}')"></div>`);
 				chunks.push('		</div>');
 			}
-			else if (object.isOutput) {
+			if (object.isOutput) {
 				const output = object;
 				let value = output.valueDescribedBy('', requestor);
 				if (value) {
-					const outputId = this.name + '_' + output.name;
+					const outputId = 'o_' + this.name + '_' + output.name;
 					if (value instanceof MMToolValue) {
 						value = value.values[0];
 						if (value instanceof MMButton) {
@@ -872,80 +886,26 @@ class MMModel extends MMTool {
 		return chunks.join('\n');
 	}
 
-	expressionInfo(results, requestor) {
-		const inputs = [];
-		const outputs = [];
-		const others = [];
-		for (const key in this.children) {
-			const tool = this.children[key];
-			if (tool.typeName === 'Expression') {
-				if (tool.isInput) {
-					let value = tool.valueForRequestor(requestor);
-					if (value) {
-						value = value.stringWithUnit(tool.displayUnit, tool.format);
-					}
-					else {
-						value = '?';
-					}
-					inputs.push({
-						name: tool.name,
-						formula: tool.formula.formula,
-						value: value,
-					})
-				}
-				else if (tool.isOutput) {
-					let value = tool.valueForRequestor(requestor);
-					if (value) {
-						value = value.stringWithUnit(tool.displayUnit, tool.format);
-					}
-					else {
-						value = '?';
-					}
-					outputs.push({
-						name: tool.name,
-						value: value,
-					})
-				}
-				else {
-					others.push({
-						name: tool.name,
-						type: tool.typeName,				
-					})
-				}
-			}
-			else {
-				others.push({
-					name: tool.name,
-					type: tool.typeName,				
-				});
-			}
+	/**
+	 * @method actionCommand
+	 * @param {MMCommand} command
+	 */
+	async actionCommand(command) {
+		command.results = await this.htmlProcessor.action(command.args);
+		await this.session.autoSaveSession();
+		if (command.results.undo) {
+			command.undo = command.results.undo;
 		}
-
-		const positionSort = (a, b) => {
-			// sort by position with left most first and  ties broken by
-			// top most first
-			const posA = this.childNamed(a.name).position;
-			const posB = this.childNamed(b.name).position;
-			if (posA.x < posB.x) {
-				return -1
-			}
-			if (posA.x > posB.x) {
-				return 1;
-			}
-			if (posA.y < posB.y) {
-				return -1;
-			}
-			if (posA.y > posB.y) {
-				return 1
-			}
-			return 0;	
-		}
-
-		results.inputs = inputs.sort(positionSort);
-		results.outputs = outputs.sort(positionSort);
-		results.others = others.sort(positionSort);
 	}
-	
+
+	/**
+	 * @method rawHtml
+	 * @returns {String}
+	 */
+	rawHtml() {
+		return this.htmlValue(null, true);
+	}
+
 	/**
 	 * @method toolViewInfo
 	 * @param {MMCommand} command
@@ -955,13 +915,23 @@ class MMModel extends MMTool {
 		await super.toolViewInfo(command);
 		this.session.selectedObject = '';
 		const results = command.results;
-		this.expressionInfo(results);
 		if (this.importInfo) {
 			results.importSource = this.importInfo.sessionName;
 		}
 		if (this.indexTool) {
 			results.indexTool = this.indexTool;
 		}
+		results.html = `
+		<html>
+			<head>
+				<link rel="stylesheet"
+					href="./examples/htmlpage.css"
+					type="text/css">
+			</head>
+			<body>
+				${this.htmlProcessor.htmlForRequestor()}
+			</body>
+		</html>`
 	}
 
 	/**
@@ -989,6 +959,7 @@ class MMModel extends MMTool {
 			}
 			command.undo = undoParts.join(' ');
 		}
+		this.htmlProcessor.clearCache();
 	}
 
 		/**
@@ -1012,6 +983,9 @@ class MMModel extends MMTool {
 		if (tool instanceof MMTool) {
 			value = tool.valueDescribedBy(restOfPath, requestor);
 		}
+		else if (description.toLowerCase() === 'html') {
+			return MMStringValue.scalarValue(this.htmlValue());
+		}
 		else {
 			value = super.valueDescribedBy(description, requestor);
 		}
@@ -1029,6 +1003,7 @@ class MMModel extends MMTool {
 					requestor.forgetCalculated();
 				}
 				this.valueRequestors.clear();
+				this.htmlProcessor.clearCache();
 				super.forgetCalculated();
 			}
 			finally {

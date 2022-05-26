@@ -26,6 +26,7 @@
 	MMFormula:readonly
 	MMToolTypes:readonly
 	MMPoint:readonly
+	MMModel:readonly
 */
 
 /**
@@ -246,7 +247,11 @@ class MMTool extends MMCommandParent {
 	/**
 	 * @virtual forgetCalculated
 	 */
-	forgetCalculated() {}
+	forgetCalculated() {
+		if (this.parent instanceof MMModel) {
+			this.parent.htmlProcessor.clearCache();
+		}
+	}
 
 	/**
 	 * @method forgetAllCalculations

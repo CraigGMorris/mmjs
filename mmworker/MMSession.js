@@ -597,11 +597,7 @@ class MMSession extends MMCommandParent {
 	 */
 	async loadAutoSaved() {
 		const storageVersion = await this.storage.load(this.savedStorageVersionId);
-		console.log(`storage version ${storageVersion}`);
-		// const sessionPaths = await this.storage.listSessions();
-		// if (sessionPaths.length === 0) {
-		// 	await this.importOldStorage(indexedDB);
-		// }
+		// console.log(`storage version ${storageVersion}`);
 		if (!storageVersion) {
 			await this.importOldStorage();
 			await this.storage.save(this.savedStorageVersionId, '1');
