@@ -809,12 +809,10 @@ class MMModel extends MMTool {
 			}
 			chunks.push('					},(result) => {');
 			for (const output of results.outputs) {
-				console.log(`output ${output.name}`);
 				if (output instanceof MMButton) {
 					continue;
 				}
 				const outputId = `o_${this.name}_${output.name}`;
-				chunks.push(`console.log('${outputId}')`);
 				chunks.push(`					document.getElementById("${outputId}").innerHTML=result.${outputId};`);
 			}
 			chunks.push(`				});`);
@@ -840,8 +838,12 @@ class MMModel extends MMTool {
 				if (formula.startsWith("'")) {
 					formula = '&quot;' + formula.substring(1) +'&quot;';
 				}
-				chunks.push(`				<div class="model-form__input"><input id="${this.name}_${input.name}"
-				value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${formula}')"></div>`);
+				if (formula.indexOf('\n') !== -1) {
+					chunks.push(`<div id="${this.name}_${input.name}" class="model-form__multiline-formula"  onClick="onNameClick('${input.name}')">${formula}</div>`);				}
+				else {
+					chunks.push(`				<div class="model-form__input"><input id="${this.name}_${input.name}"
+					value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${formula}')"></div>`);
+				}
 				chunks.push('		</div>');
 			}
 			if (object.isOutput) {
@@ -864,7 +866,7 @@ class MMModel extends MMTool {
 					else if (value.valueCount <= 1 && !(value instanceof MMTableValue)) {
 						chunks.push(`<div class="model-form__output-row">`);
 						chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
-						chunks.push(`<div id="${outputId}" class="model-form__output-value">${value.htmlValue(requestor)}</div>`);
+						chunks.push(`<div id="${outputId}" class="model-form__output-value model-form__1output-value">${value.htmlValue(requestor)}</div>`);
 						chunks.push('</div>');	
 					}
 					else {

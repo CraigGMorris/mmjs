@@ -47,30 +47,48 @@ th.col0, td.col0 {
 	padding: 5px;
 }
 
-.model-form__input-row .model-form__input	{
+.model-form__input	{
 	border: solid 1px;
 	padding: 5px;
 }
-
 
 .model-form__output-row {
 	display: grid;
 	grid-template-columns: 112px 1fr;
+	background-color: #e8e8ff;
+	border: solid 1px;
 }
 .model-form__output-name {
 	width:100px;
-	background-color: #e8e8ff;
 	border: solid 1px black;
 	padding: 5px;
 }
-.model-form__output-row .model-form__output-value	{
-	background-color: white;
-	border: solid 1px;
+.model-form__output-table, .model-form__output-tool {
+	margin-top: 5px;
+}
+.model-form__output-table .model-form__output-name {
+	background-color: #e8e8ff;
+}
+.model-form__output-tool .model-form__output-name {
+	background-color: #e8e8ff;
+}
+.model-form__output-row .model-form__output-name {
+	width:100px;
+	border: solid 1px black;
 	padding: 5px;
 }
-.model-form__input-row:hover, .model-form__output-value:hover {background-color: #ddd;}
-
-.model-form__output-row, .model-form__input-row, .model-form__output-tool, .model-form__output-table {
+.model-form__output-row .model-form__output-value {
+	white-space: pre-wrap;
+	border: solid 1px black;
+	padding: 5px;
+}
+.model-form__input-name:hover, .model-form__output-name:hover, .model-form__multiline-formula:hover {
+	cursor: pointer;
+}
+.model-form__output-value	{
+	background-color: white;
+}
+.model-form__output-row, .model-form__input-row {
 	margin-top: 5px;
 }
 .model-form__output-tool {
@@ -78,10 +96,16 @@ th.col0, td.col0 {
 	border: solid 1px black;
 }
 
-.model-form__notes {
-	padding-bottom: 5px;
+.model-form__multiline-formula {
 	white-space: pre-wrap;
-	margin-top: 0px;
+	border: solid 1px;
+	padding: 5px;
+}
+.model-form__input-row:hover, .model-form__output-row:hover {background-color: #ddd;}
+
+.model-form__notes {
+	white-space: pre-wrap;
+	margin-top: 10px;
 }
 
 .button-tool {
