@@ -541,22 +541,6 @@ class MMModel extends MMTool {
 	}
 
 	/**
-	 * @method outputExpressions
-	 * @returns {Array}
-	 * returns the contained expressions marked as outputs
-	 */
-	outputExpressions() {
-		const outputs = [];
-		for (const key in this.children) {
-			const tool = this.children[key];
-			if (tool instanceof MMExpression && tool.isOutput) {
-				outputs.push(tool);
-			}
-		}
-		return outputs;
-	}
-
-	/**
 	 * @method inputSources
 	 * @override
 	 * @returns {Set} contains tools referenced by this tool
@@ -743,7 +727,7 @@ class MMModel extends MMTool {
 			if (!(tool instanceof MMTool)) {
 				continue;
 			}
-			if (tool.isInput && tool.typeName === 'Expression') {
+			if (tool.showInput && tool.typeName === 'Expression') {
 				inputs.push(tool);
 			}
 			if (tool.isOutput) {
@@ -784,6 +768,7 @@ class MMModel extends MMTool {
 	 */
 	htmlValue(requestor, isMyNameSpace) {
 		const results = this.htmlInfo(requestor);
+		const onNameClick = `on${this.name}NameClick`;
 		const chunks = [];
 		chunks.push('		<div class="model-form">');
 		const keyPressed = this.name + '_keyPressed';
@@ -818,7 +803,7 @@ class MMModel extends MMTool {
 			chunks.push(`				});`);
 			chunks.push('			}')
 		}
-		chunks.push('	onNameClick = (name) => {');
+		chunks.push(`	${onNameClick} = (name) => {`);
 		if (isMyNameSpace) {
 				chunks.push(`		mmpost([], {mm_push: name});`);
 			}
@@ -829,17 +814,17 @@ class MMModel extends MMTool {
 			if (object.htmlNotes && object.notes) {
 				chunks.push(`<div class="model-form__notes">${object.notes}</div>`);
 			}	
-			if (object.isInput) {
+			if (object.showInput) {
 				const input = object;
 				chunks.push(`				<div class="model-form__input-row">`);
-				chunks.push(`				<div class="model-form__input-name" onClick="onNameClick('${input.name}')">${input.name}</div>`);
+				chunks.push(`				<div class="model-form__input-name" onClick="${onNameClick}('${input.name}')">${input.name}</div>`);
 
 				let formula = input.formula.formula.replaceAll('"', '&quot;');
 				if (formula.startsWith("'")) {
 					formula = '&quot;' + formula.substring(1) +'&quot;';
 				}
 				if (formula.indexOf('\n') !== -1) {
-					chunks.push(`<div id="${this.name}_${input.name}" class="model-form__multiline-formula"  onClick="onNameClick('${input.name}')">${formula}</div>`);				}
+					chunks.push(`<div id="${this.name}_${input.name}" class="model-form__multiline-formula"  onClick="${onNameClick}('${input.name}')">${formula}</div>`);				}
 				else {
 					chunks.push(`				<div class="model-form__input"><input id="${this.name}_${input.name}"
 					value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${formula}')"></div>`);
@@ -858,27 +843,27 @@ class MMModel extends MMTool {
 						}
 						else {
 							chunks.push(`<div class="model-form__output-tool">`);
-							chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
+							chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
 							chunks.push(`<div id="${outputId}" class="model-form__output_value">${value.htmlValue(requestor)}</div>`);
 							chunks.push('</div>');	
 						}
 					}
 					else if (value.valueCount <= 1 && !(value instanceof MMTableValue)) {
 						chunks.push(`<div class="model-form__output-row">`);
-						chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
+						chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
 						chunks.push(`<div id="${outputId}" class="model-form__output-value model-form__1output-value">${value.htmlValue(requestor)}</div>`);
 						chunks.push('</div>');	
 					}
 					else {
 						chunks.push(`<div class="model-form__output-table">`);
-						chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
+						chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
 						chunks.push(`<div id="${outputId}" class="model-form__output-value">${value.htmlValue(requestor)}</div>`);
 						chunks.push('</div>');	
 					}
 				}
 				else {
 					chunks.push(`<div class="model-form__output-row">`);
-					chunks.push(`<div class="model-form__output-name" onClick="onNameClick('${output.name}')">${output.name}</div>`);
+					chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
 					chunks.push(`<div class="model-form__output-value">?</div>`);
 					chunks.push('</div>');	
 				}

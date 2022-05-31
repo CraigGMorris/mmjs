@@ -73,36 +73,36 @@ export function ToolView(props) {
 
 	let cmpStack = [];
 
-	const inputCheckBox = !props.isExpression ? '' : e(
-		// isInput check box
-		'div', {
-			id: 'tool-view__is-input',
-			className: 'checkbox-and-label',
-		},
-		e(
-			'label', {
-				id: 'tool-view__is-input-label',
-				className: 'checkbox__label',
-				htmlFor: 'tool-view__is-input-checkbox'
-			},
-			t('react:exprIsInput')
-		),
-		e(
-			'input', {
-				id: 'tool-view__is-input-checkbox',
-				className: 'checkbox__input',
-				type: 'checkbox',
-				checked: results.isInput,
-				onChange: () => {
-					// toggle the isInput property
-					const value = results.isInput ? 'f' : 't';
-					props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, () => {
-						props.actions.updateView(props.viewInfo.stackIndex);
-					});						
-				}
-			},
-		),
-	);
+	// const inputCheckBox = !props.isExpression ? '' : e(
+	// 	// isInput check box
+	// 	'div', {
+	// 		id: 'tool-view__is-input',
+	// 		className: 'checkbox-and-label',
+	// 	},
+	// 	e(
+	// 		'label', {
+	// 			id: 'tool-view__is-input-label',
+	// 			className: 'checkbox__label',
+	// 			htmlFor: 'tool-view__is-input-checkbox'
+	// 		},
+	// 		t('react:exprIsInput')
+	// 	),
+	// 	e(
+	// 		'input', {
+	// 			id: 'tool-view__is-input-checkbox',
+	// 			className: 'checkbox__input',
+	// 			type: 'checkbox',
+	// 			checked: results.isInput,
+	// 			onChange: () => {
+	// 				// toggle the isInput property
+	// 				const value = results.isInput ? 'f' : 't';
+	// 				props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, () => {
+	// 					props.actions.updateView(props.viewInfo.stackIndex);
+	// 				});						
+	// 			}
+	// 		},
+	// 	),
+	// );
 
 	const nameArea = e(
 		'div', {
@@ -131,7 +131,7 @@ export function ToolView(props) {
 					}
 				}
 		),
-		inputCheckBox,
+		// inputCheckBox,
 		e(
 			// isOutput check box
 			'div', {

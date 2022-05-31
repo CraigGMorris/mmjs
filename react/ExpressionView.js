@@ -299,14 +299,83 @@ export function ExpressionView(props) {
 			else if (value.t === 's') {
 				displayedUnit = 'String';
 			}
-
-
 			displayComponent = e(
 				'div', {
 					// main vertical sections
 					id: 'expression',
 					key: 'expression'
 				},
+				e(
+					'div', {
+						id: 'expression__options',
+					},
+					e(
+						// isInput and isOutput check boxes
+						'div', {
+							id: 'expression__in-out-boxes',
+						},
+						e(
+							// isInput check box
+							'div', {
+								id: 'expression__is-input',
+								className: 'checkbox-and-label',
+							},
+							e(
+								'label', {
+									id: 'expression__is-input-label',
+									className: 'checkbox__label',
+									htmlFor: 'expression__is-input-checkbox'
+								},
+								t('react:exprIsInput')
+							),
+							e(
+								'input', {
+									id: 'expression__is-input-checkbox',
+									className: 'checkbox__input',
+									type: 'checkbox',
+									checked: results.isInput,
+									onChange: () => {
+										// toggle the isInput property
+										const value = props.viewInfo.updateResults[0].results.isInput ? 'f' : 't';
+										props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, () => {
+											props.actions.updateView(props.viewInfo.stackIndex);
+										});						
+									}
+								},
+							),
+						),
+						e(
+							// showInput check box
+							'div', {
+								id: 'expression__show-input',
+								className: 'checkbox-and-label',
+							},
+							e(
+								'label', {
+									id: 'expression__show-input-label',
+									className: 'checkbox__label',
+									htmlFor: 'expression__show-input-checkbox'
+								},
+								t('react:exprShowInput'),
+							),
+							e(
+								'input', {
+									id: 'expression__show-input-checkbox',
+									className: 'checkbox__input',
+									type: 'checkbox',
+									checked: results.showInput,
+									onChange: () => {
+										// toggle the isOutput property
+										const value = props.viewInfo.updateResults[0].results.showInput ? 'f' : 't';
+										props.actions.doCommand(`${props.viewInfo.path} set showInput ${value}`, () => {
+											props.actions.updateView(props.viewInfo.stackIndex);
+										});						
+									}
+								},
+							),	
+						),
+					),
+				),
 				e(
 					// formula field line
 					'div', {
@@ -328,77 +397,6 @@ export function ExpressionView(props) {
 						}
 					)
 				),
-				// e(
-				// 	'div', {
-				// 		id: 'expression__options',
-				// 	},
-				// 	e(
-				// 		// isInput and isOutput check boxes
-				// 		'div', {
-				// 			id: 'expression__in-out-boxes',
-				// 		},
-				// 		e(
-				// 			// isInput check box
-				// 			'div', {
-				// 				id: 'expression__is-input',
-				// 				className: 'checkbox-and-label',
-				// 			},
-				// 			e(
-				// 				'label', {
-				// 					id: 'expression__is-input-label',
-				// 					className: 'checkbox__label',
-				// 					htmlFor: 'expression__is-input-checkbox'
-				// 				},
-				// 				t('react:exprIsInput')
-				// 			),
-				// 			e(
-				// 				'input', {
-				// 					id: 'expression__is-input-checkbox',
-				// 					className: 'checkbox__input',
-				// 					type: 'checkbox',
-				// 					checked: results.isInput,
-				// 					onChange: () => {
-				// 						// toggle the isInput property
-				// 						const value = props.viewInfo.updateResults[0].results.isInput ? 'f' : 't';
-				// 						props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, () => {
-				// 							props.actions.updateView(props.viewInfo.stackIndex);
-				// 						});						
-				// 					}
-				// 				},
-				// 			),
-				// 		),
-				// 		e(
-				// 			// isOutput check box
-				// 			'div', {
-				// 				id: 'expression__is-output',
-				// 				className: 'checkbox-and-label',
-				// 			},
-				// 			e(
-				// 				'label', {
-				// 					id: 'expression__is-output-label',
-				// 					className: 'checkbox__label',
-				// 					htmlFor: 'expression__is-output-checkbox'
-				// 				},
-				// 				t('react:exprIsOutput'),
-				// 			),
-				// 			e(
-				// 				'input', {
-				// 					id: 'expression__is-output-checkbox',
-				// 					className: 'checkbox__input',
-				// 					type: 'checkbox',
-				// 					checked: results.isOutput,
-				// 					onChange: () => {
-				// 						// toggle the isOutput property
-				// 						const value = props.viewInfo.updateResults[0].results.isOutput ? 'f' : 't';
-				// 						props.actions.doCommand(`${props.viewInfo.path} set isOutput ${value}`, () => {
-				// 							props.actions.updateView(props.viewInfo.stackIndex);
-				// 						});						
-				// 					}
-				// 				},
-				// 			),	
-				// 		),
-				// 	),
-				// ),
 				e(
 					'div', {
 						id: 'expression__units-format',						

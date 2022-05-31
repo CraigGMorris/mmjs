@@ -54,6 +54,7 @@ class MMExpression extends MMTool {
 	get properties() {
 		let d = super.properties;
 		d['isInput'] = {type: MMPropertyType.boolean, readOnly: false};
+		d['showInput'] = {type: MMPropertyType.boolean, readOnly: false};
 		d['displayUnitName'] = {type: MMPropertyType.string, readOnly: false};  // for scalar displayUnit
 		d['format'] = {type: MMPropertyType.string, readOnly: false}; // for scalar display
 		return d;
@@ -79,6 +80,19 @@ class MMExpression extends MMTool {
 		}
 	}
 	
+	get showInput() {
+		return this._showInput;
+	}
+
+	set showInput(newValue) {
+		let newInput = (newValue) ? true : false;
+
+		if (newInput !== this._showInput ) {
+			this._showInput = newInput;
+			this.parent.forgetCalculated();
+		}
+	}
+
 	get displayUnitName() {
 		return (this.displayUnit) ? this.displayUnit.name : null;
 	}
@@ -323,6 +337,7 @@ class MMExpression extends MMTool {
 		results['formulaName'] = 'formula';
 		results['formula'] = this.formula.formula;
 		results['isInput'] = this._isInput;
+		results['showInput'] = this._showInput;
 		results['value'] = this.jsonValue();
 		if (this._isInput && this.parent.parent) {
 			results['modelPath'] = this.parent.parent.getPath();
@@ -438,6 +453,7 @@ class MMExpression extends MMTool {
 		o['Type'] = 'Expression';
 		o['Formula'] = {'Formula': this.formula.formula};
 		if (this._isInput)			{ o['isInput'] = 'y'; }
+		if (this._showInput)			{ o['showInput'] = 'y'; }
 		if (this.displayUnit)		{ o['displayUnit'] = this.displayUnit.name; }
 		if (this.tableUnits) {
 			const units = {};
@@ -460,6 +476,7 @@ class MMExpression extends MMTool {
 		super.initFromSaved(saved);
 		this.formula.formula = saved.Formula.Formula;
 		this.isInput = (saved.isInput === 'y');
+		this.showInput = (saved.showInput === 'y');
 		if (saved.displayUnit) {
 			this.displayUnit = theMMSession.unitSystem.unitNamed(saved.displayUnit);
 		}

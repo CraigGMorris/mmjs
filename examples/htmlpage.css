@@ -92,8 +92,9 @@ th.col0, td.col0 {
 	margin-top: 5px;
 }
 .model-form__output-tool {
-	background-color: white;
-	border: solid 1px black;
+	/* background-color: white; */
+	/* border: solid 1px black;
+	padding: 5px; */
 }
 
 .model-form__multiline-formula {
@@ -112,4 +113,8 @@ th.col0, td.col0 {
 	margin-top: 10px;
 	margin-bottom: 10px;
 	text-align: center;
+}
+
+.graph__svg {
+	background-color: white;
 }
