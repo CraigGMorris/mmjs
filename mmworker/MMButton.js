@@ -23,6 +23,7 @@
 	MMPropertyType:readonly
 	MMStringValue:readonly
 	MMDataTable:readonly
+	theMMSession:readonly
 */
 
 /**
@@ -238,7 +239,17 @@ ${label}
 					}
 				}
 			}
-			break;		
+			break;
+			case "load": {
+				const command = {};
+				await theMMSession.listSessionsCommand(command);
+				for (const targetName of command.results.paths) {
+					if (!targetName.startsWith('(')) {
+						targets.push(targetName);
+					}
+				}	
+			}
+			break;
 		}
 		results['targets'] = targets;
 	}

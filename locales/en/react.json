@@ -2,6 +2,7 @@
 	"buttonActionLabel": "Action",
 	"buttonAddRow": "Add Row to a DataTable",
 	"buttonLabelLabel": "Label",
+	"buttonLoadSession": "Load Session",
 	"buttonPushView": "Push View of Tool",
 	"buttonRefresh": "Refresh Tool",
 	"buttonTargetLabel": "Target",
