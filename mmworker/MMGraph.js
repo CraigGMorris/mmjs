@@ -222,10 +222,13 @@ class MMGraphAxis {
 				
 				let labelText = null;
 				if (labelValue != 0.0 && (Math.abs(labelValue) > 100000000.0 || Math.abs(labelValue) < 0.01)) {
-					labelText = labelValue.toFixed(7);
+					labelText = labelValue.toExponential(2);
+				}
+				else if (labelValue >= 1000000.0) {
+					labelText =  labelValue.toFixed(0);
 				}
 				else {
-					labelText = labelValue.toFixed(5);
+					labelText =  labelValue.toFixed(3);
 				}
 				
 				labelText = labelText.trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
@@ -1864,7 +1867,7 @@ class MMGraph extends MMTool {
 								lineColor = lineColors[colorNumber++ % nColors];
 								const path = [];
 								if (lineType === MMGraphLineType.dot || lineType === MMGraphLineType.barWithDot) {
-									path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="${lineColor}" opacity=${opacity}`);
+									path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="${lineColor}" opacity=${opacity} d="`);
 								}
 								else if (lineType !== MMGraphLineType.hidden) {
 									path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="none" opacity=${opacity} d="`);
@@ -2181,9 +2184,10 @@ class MMGraph extends MMTool {
 			if (axis && axis.lineType != undefined) {
 				const typeNames = ['line','scatter','bar','bar+dot', 'hidden'];
 				const newType = typeNames.indexOf(args[1]);
-				if (newType !== -1) {
+				if (newType !== -1 && newType !== axis.lineType) {
 					command.undo = `${this.getPath()} setlinetype ${args[0]} ${typeNames[axis.lineType]}`
 					axis.lineType = newType;
+					this.forgetCalculated();
 					return;
 				}
 			}
