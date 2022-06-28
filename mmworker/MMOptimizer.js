@@ -22,6 +22,9 @@
 	MMFormula:readonly
 	MMPropertyType:readonly
 	MMNumberValue:readonly
+	MMTableValue:readonly
+	MMTableValueColumn:readonly
+	MMStringValue:readonly
 */
 
 /**
@@ -282,13 +285,37 @@ class MMOptimizer extends MMTool {
 		}
 
 		if(lcDescription === 'x') {
-				const n = this._numberOfOutputs;
-				const v = new MMNumberValue(n, 1);
-				for (let i = 0; i < n; i++) {
-					v.values[i] = this.outputs[i];
-				}
-				return returnValue(v);
+			const n = this._numberOfOutputs;
+			const v = new MMNumberValue(n, 1);
+			for (let i = 0; i < n; i++) {
+				v.values[i] = this.outputs[i];
 			}
+			return returnValue(v);
+		}
+
+		if (lcDescription === 'table') {
+			const fx = this.fxFormula.value();
+			const names = ['fx'];
+			const values = [fx ? fx.stringWithUnit() : '---']
+			const outputs = Array.from(this.outputs);
+			const n = outputs.length;
+			for (let i = 0; i < n; i++) {
+				names.push(`x${i + 1}`);
+				values.push(outputs[i].toString());
+			}
+			const nameColumn = new MMTableValueColumn({
+				name: ' ',
+				value: MMStringValue.stringArrayValue(names)
+			})
+			const valueColumn = new MMTableValueColumn({
+				name: 'v',
+				value: MMStringValue.stringArrayValue(values)
+			})
+			const table = new MMTableValue({
+				columns: [nameColumn, valueColumn]
+			})
+			return returnValue(table);
+		}
 
 		const outputNumber = parseInt(lcDescription);
 		if (!isNaN(outputNumber) && outputNumber > 0 && outputNumber <= this._numberOfOutputs) {
@@ -327,10 +354,7 @@ class MMOptimizer extends MMTool {
 
 		const fx = this.fxFormula.value();
 		results['fx'] = fx ? fx.stringWithUnit() : '---';
-		const n = this.numberOfOutputs;
-		for (let i = 0; i < n; i++) {
-			results['outputs'] = Array.from(this.outputs);
-		}
+		results['outputs'] = Array.from(this.outputs);
 
 		results['isEnabled'] = this.isEnabled;
 		results['isOptimized'] = this.isOptimized;

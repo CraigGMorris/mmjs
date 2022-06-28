@@ -25,6 +25,9 @@
 	theMMSession:readonly
 	MMMath:readonly
 	MMCommandMessage:readonly
+	MMStringValue:readonly
+	MMTableValueColumn:readonly
+	MMTableValue:readonly
 */
 
 /**
@@ -595,7 +598,33 @@ class MMSolver extends MMTool {
 			this.solve();
 		}
 
-		if (lcDescription.startsWith('f')) {
+		if (lcDescription === 'table') {
+			const functionCount = this.functions.length;
+			const x = []
+			const fx = []
+			for (let i = 0; i < functionCount; i++) {
+				const func = this.functions[i];
+				const v = func.errorFormula.value();
+				const vX = this.valueDescribedBy(`${i+1}`);
+				x.push((vX instanceof MMNumberValue) ? vX.stringUsingUnit() : '---');
+				fx.push((v instanceof MMNumberValue) ? v.stringUsingUnit() : '---')
+			}
+			const sX = MMStringValue.stringArrayValue(x);
+			const sFx = MMStringValue.stringArrayValue(fx);
+			const xColumn = new MMTableValueColumn({
+				name: this.isConverged ? 'x (solved)' : 'x (unsolved)',
+				value: sX
+			})
+			const fxColumn = new MMTableValueColumn({
+				name: 'fx',
+				value: sFx
+			})
+	
+			this.addRequestor(requestor);
+			return new MMTableValue({columns: [xColumn, fxColumn]});
+	
+		}
+		else if (lcDescription.startsWith('f')) {
 			const n = parseInt(lcDescription.substring(1));
 			if (isNaN(n) || n < 1 || n > this.functions.length) {
 				return null;

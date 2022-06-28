@@ -326,9 +326,11 @@ class MMTool extends MMCommandParent {
 	 * @method htmlValue
 	 * @returns {String}
 	 */
-	htmlValue() {
-		return null;
+	htmlValue(requestor) {
+		const v = this.valueDescribedBy('table', requestor);
+		return v ? this.valueDescribedBy('table', requestor).htmlValue() : null;
 	}
+
 
 	/**
 	 * @method inputSources
