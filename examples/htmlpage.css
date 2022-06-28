@@ -26,6 +26,12 @@ th.col0, td.col0 {
 	width: 50px;
 }
 
+.menu-tool {
+	margin-top: 15px;
+	margin-right: 10px;
+	text-align: center;
+}
+
 .model-form {
 	margin-top: 10px;
 }

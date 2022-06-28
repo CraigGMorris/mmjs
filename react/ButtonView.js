@@ -39,7 +39,7 @@ const ButtonDisplay = Object.freeze({
  * info view for button tool
  */
 export function ButtonView(props) {
-	const [display, setDisplay] = useState(ButtonDisplay.input);
+	const [display, setDisplay] = useState(ButtonDisplay.main);
 	const [editOptions, setEditOptions] = useState({});
 
 	useEffect(() => {

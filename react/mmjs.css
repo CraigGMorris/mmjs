@@ -1109,6 +1109,23 @@ a:hover {
 	color: var(--link--color-hover);
 }
 
+#menu__options_formula-row {
+	display: grid;
+	grid-template-columns: 60px 1fr;
+}
+
+.menu__select-row {
+	text-align: center;
+	margin-top: 15px;
+	margin-right: 10px;
+}
+
+#menu__selected-value-row {
+	text-align: center;
+	margin-top: 15px;
+	margin-right: 10px;
+}
+
 #mmapp__wrapper--two-pane {
 	font-size: 1em;
 	width: 100%;

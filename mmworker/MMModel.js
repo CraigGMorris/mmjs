@@ -30,6 +30,7 @@
 	MMStringValue:readonly
 	MMTableValue:readonly
 	MMButton:readonly
+	MMMenu:readonly
 	MMHtmlPageProcessor:readonly
 */
 
@@ -838,7 +839,7 @@ class MMModel extends MMTool {
 					const outputId = 'o_' + this.name + '_' + output.name;
 					if (value instanceof MMToolValue) {
 						value = value.values[0];
-						if (value instanceof MMButton) {
+						if (value instanceof MMButton || value instanceof MMMenu) {
 							chunks.push(value.htmlValue(requestor));
 						}
 						else {

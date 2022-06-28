@@ -35,6 +35,7 @@ import {GraphView} from './GraphView.js';
 import {FormulaEditor} from './FormulaView.js';
 import {HtmlPageView} from './HtmlPageView.js';
 import {ButtonView} from './ButtonView.js';
+import {MenuView} from './MenuView.js';
 
 const e = React.createElement;
 const useState = React.useState;
@@ -149,6 +150,7 @@ export function MMApp(props) {
 		'Graph': GraphView,
 		'HtmlPage': HtmlPageView,
 		'Button' : ButtonView,
+		'Menu' : MenuView,
 	}
 
 	// information need to generate a console view component

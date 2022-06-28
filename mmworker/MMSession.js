@@ -33,6 +33,7 @@
 	MMGraph:readonly
 	MMHtmlPage:readonly
 	MMButton:readonly
+	MMMenu:readonly
 	PouchDB:readonly
 */
 
@@ -1276,5 +1277,9 @@ const MMToolTypes = {
 	"Button": {
 		factory: (name, parent) => {return new MMButton(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:buttonDisplayName'),
+	},
+	"Menu": {
+		factory: (name, parent) => {return new MMMenu(name, parent)},
+		displayName: new MMCommandMessage('mmcmd:menuDisplayName'),
 	},
 };

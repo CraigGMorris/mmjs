@@ -1225,6 +1225,12 @@ export class Diagram extends React.Component {
 											addTool('Button');
 										}
 									},
+									{
+										text: this.props.t('mmcmd:menuDisplayName'),
+										action: () => {
+											addTool('Menu');
+										}
+									},
 								]
 							}
 						)
@@ -1473,7 +1479,8 @@ class ToolIcon extends React.Component {
 			Optimizer: 'rgba(237,212,217,.8)',
 			Graph: 'rgba(224,247,247,.8)',
 			HtmlPage: 'rgba(217,204,230,.8)',
-			Button: 'rgba(239,239,255,.8)',	
+			Button: 'rgba(239,239,255,.8)',
+			Menu: 'rgba(255, 255, 255, .8)'
 		}
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;

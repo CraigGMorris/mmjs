@@ -142,6 +142,7 @@ class MMTool extends MMCommandParent {
 	parameters() {
 		let p = super.parameters();
 		p.push('notes');
+		p.push('html');
 		return p;
 	}
 	

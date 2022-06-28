@@ -648,7 +648,6 @@ class MMHtmlPage extends MMTool {
 	 */
 	parameters() {
 		let p = super.parameters();
-		p.push('html');
 		p.push('block_');
 		if (this.inputs) {
 			p = p.concat(Object.keys(this.inputs));
