@@ -102,11 +102,6 @@ th.col0, td.col0 {
 .model-form__output-row, .model-form__input-row {
 	margin-top: 5px;
 }
-.model-form__output-tool {
-	/* background-color: white; */
-	/* border: solid 1px black;
-	padding: 5px; */
-}
 
 .model-form__multiline-formula {
 	white-space: pre-wrap;
