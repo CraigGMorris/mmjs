@@ -26,6 +26,11 @@ th.col0, td.col0 {
 	width: 50px;
 }
 
+.formula {
+	color: navy;
+	font-weight: bold;
+}
+
 .menu-tool {
 	margin-top: 15px;
 	margin-right: 10px;
