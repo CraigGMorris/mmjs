@@ -104,6 +104,7 @@ export function ButtonView(props) {
 
 		actionOptions.push(actionOption('addrow', t('react:buttonAddRow')))
 		actionOptions.push(actionOption('push', t('react:buttonPushView')))
+		actionOptions.push(actionOption('view', t('react:buttonReplaceView')))
 		actionOptions.push(actionOption('refresh', t('react:buttonRefresh')))
 		actionOptions.push(actionOption('load',t('react:buttonLoadSession')))
 
