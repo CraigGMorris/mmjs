@@ -232,7 +232,6 @@ ${label}
 			}
 			break;
 			case 'refresh':
-			case 'view':
 			case 'push': {
 				for (const targetName in this.parent.children) {
 					if (targetName !== this.name) {
