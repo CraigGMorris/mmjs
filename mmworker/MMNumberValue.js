@@ -2137,6 +2137,9 @@ class MMNumberValue extends MMValue {
 	jsonValue(displayUnit, format) {
 		let rv = {}
 		if (!displayUnit) {
+			displayUnit = this.displayUnit;
+		}
+		if (!displayUnit) {
 			displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(this.unitDimensions);
 		}
 		if (displayUnit) {

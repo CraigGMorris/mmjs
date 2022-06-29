@@ -355,7 +355,8 @@ class MMExpression extends MMTool {
 				formats = this.tableFormats;
 			}
 			else {
-				displayUnit = this.displayUnit;
+				displayUnit = this.cachedValue.displayUnit;
+				formats = this.cachedValue.formatValue;
 				if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, value.unitDimensions)) {
 					displayUnit = null;  // display unit is wrong type - ignore and use default
 				}

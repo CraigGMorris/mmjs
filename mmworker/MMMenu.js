@@ -215,9 +215,8 @@ class MMMenu extends MMTool {
 			if (this._selected >= optionCount) {
 				this.selected = 0;
 			}
-			const optionLabels = options.valueForColumnNumber(1);
 			for (let optionNumber = 0; optionNumber < optionCount; optionNumber++) {
-				const value = optionLabels.values[optionNumber];
+				const value = options.stringForRowColumnUnit(optionNumber + 1, 1);
 				lines.push(`<option${optionNumber === this._selected ? ' selected' : ''}>${value}</option>`);
 			}
 		}
@@ -241,15 +240,13 @@ class MMMenu extends MMTool {
 		const optionValues = [];
 		const optionLabels = [];
 		if (options) {
-			const optionCount = options.rowCount;			
-			const valueColumnNumber = MMNumberValue.scalarValue(options.columnCount > 1 ? 2 : 1);
-			const labelColumnNumber = MMNumberValue.scalarValue(1);
+			const optionCount = options.rowCount;
+			const valueColumnNumber = options.columnCount > 1 ? 2 : 1;		
 			for (let optionNumber = 0; optionNumber < optionCount; optionNumber++) {
-				const rowNumber = MMNumberValue.scalarValue(optionNumber + 1);
-				const value = options.valueForIndexRowColumn(rowNumber, valueColumnNumber);
-				optionValues.push(value.values[0]);
-				const label =  options.valueForIndexRowColumn(rowNumber, labelColumnNumber);
-				optionLabels.push(label.values[0]);
+				const value = options.stringForRowColumnUnit(optionNumber + 1, valueColumnNumber);
+				optionValues.push(value);
+				const label =  options.stringForRowColumnUnit(optionNumber + 1, 1);
+				optionLabels.push(label);
 			}
 		}
 

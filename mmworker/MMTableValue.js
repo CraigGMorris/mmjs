@@ -691,7 +691,10 @@ class MMTableValue extends MMValue {
 				}
 			}
 			if (rvColumns.length === 1) {
-				return rvColumns[0].value.valueForIndexRowColumn(rowIndex, MMNumberValue.scalarValue(1));
+				const v = rvColumns[0].value.valueForIndexRowColumn(rowIndex, MMNumberValue.scalarValue(1));
+				v.displayUnit = rvColumns[0]._displayUnit;
+				v.formatValue = rvColumns[0].format;
+				return v;
 			}
 			else if (rvColumns.length > 1) {
 				return new MMTableValue({
