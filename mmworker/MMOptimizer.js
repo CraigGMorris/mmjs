@@ -354,7 +354,10 @@ class MMOptimizer extends MMTool {
 
 		const fx = this.fxFormula.value();
 		results['fx'] = fx ? fx.stringWithUnit() : '---';
-		results['outputs'] = Array.from(this.outputs);
+		const n = this.numberOfOutputs;
+		for (let i = 0; i < n; i++) {
+			results['outputs'] = Array.from(this.outputs);
+		}
 
 		results['isEnabled'] = this.isEnabled;
 		results['isOptimized'] = this.isOptimized;
