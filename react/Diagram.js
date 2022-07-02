@@ -964,7 +964,7 @@ export class Diagram extends React.Component {
 				case ContextMenuType.background: {
 					const menu = [
 						{
-							text: this.props.t('react:dgmButtonMenuBack'),
+							text: this.props.t('react:dgmButtonMenuClose'),
 							action: () => {
 								this.setState({
 									showContext: null

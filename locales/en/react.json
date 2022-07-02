@@ -54,6 +54,7 @@
 	"dgmButtonPaste": "Paste to Model",
 	"dgmButtonClipboard": "Show Clipboard",
 	"dgmButtonMenuBack": "Back",
+	"dgmButtonMenuClose": "Close",
 	"dgmImportWarning1": "Imported from session '{{source}}'",
 	"dgmImportWarning2": "Changes other than input values are not saved",
 	"dgmShowNotes": "Show Notes",
