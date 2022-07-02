@@ -369,8 +369,9 @@ a:hover {
 	overflow: auto;
 	grid-area: fields;
 	height: calc(var(--info-height) - 120px);
+	align-content: start;
 	display: grid;
-	grid-gap: 5px;
+	grid-gap: 10px 5px;
 }
 
 #datatable_edit-row-buttons {
