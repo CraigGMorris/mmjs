@@ -21,6 +21,7 @@ import {ToolView} from './ToolView.js';
 import {FormulaField, FormulaEditor} from './FormulaView.js';
 import {TableView} from './TableView.js';
 import {UnitPicker} from './UnitsView.js';
+import {MMFormatValue} from './MMApp.js';
 
 const e = React.createElement;
 const useState = React.useState;
@@ -384,7 +385,12 @@ function EditRowView(props) {
 					formulaString = "'" + v;
 				}
 				else if (typeof v === 'number') {
-					formulaString = `${v.toString().replace(/(\..*)(0+$)/,'$1')} ${column.dUnit}`;
+					if (column.isCalculated && column.format) {
+						formulaString = `${MMFormatValue(v, column.format)} ${column.dUnit}`;
+					}
+					else {
+						formulaString = `${v.toString().replace(/(\..*)(0+$)/,'$1')} ${column.dUnit}`;
+					}
 				}
 				const rowN = column.v.rowN ? column.v.rowN[displayedRow - 1] : displayedRow;
 				let valueField;
