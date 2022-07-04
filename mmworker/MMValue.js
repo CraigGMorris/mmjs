@@ -323,25 +323,31 @@ class MMValue {
 	 * @returns {String}
 	 */
 	htmlValue() {
+		let unit = this.displayUnit || this.defaultUnit;
 		let rv;
 		if (this.valueCount === 0) {
 			rv = '';
 		}
 		else if (this.valueCount == 1 && !(this instanceof MMTableValue)) {
-			rv = this.stringForRowColumnWithUnit(1, 1, this.displayUnit || this.defaultUnit, this.displayFormat).trim();
+			rv = this.stringForRowColumnWithUnit(1, 1, unit, this.displayFormat).trim();
 		}
 		else {
 			const lines = [];
 			let unitName = '&nbsp';
-			if (this.defaultUnit && this.defaultUnit.name) {
-				unitName = this.defaultUnit.name;
+			if (unit && unit.name && unit.name !== 'Fraction') {
+				unitName = unit.name;
 			}
 			const maxColumn = Math.min(200, this.columnCount);
 			const maxRow = Math.floor(Math.min(40000/maxColumn, this.rowCount));
 			if (maxRow < this.rowCount || maxColumn < this.columnCount) {
 				lines.push(`\n(${maxRow} x${maxColumn}) of (${this.rowCount} x${this.columnCount})`);
 			}
-			lines.push('\n<table>');
+			if (this instanceof MMTableValue) {
+				lines.push('\n<table class="tvalue">')
+			}
+			else {
+				lines.push('\n<table>');
+			}
 			lines.push(`\t<tr class="row0">\n\t\t<th class="col0">${unitName}</th>`);
 			for (let column = 1; column <= maxColumn; column++) {
 				let header = this.columnHeader(column);
@@ -355,7 +361,7 @@ class MMValue {
 			for (let row = 1; row <= maxRow; row++) {
 				lines.push(`<tr class="row{$row}">\n\t\t<th class="col0">${row}</th>`)
 				for (let column = 1; column <= maxColumn; column++) {
-					const v = this.stringForRowColumnUnit(row, column, this.defaultUnit, this.displayFormat);
+					const v = this.stringForRowColumnUnit(row, column, unit, this.displayFormat);
 					lines.push(`\t\t<td class="col${column}">${v}</td>`)
 				}
 				lines.push('\t</tr>');

@@ -749,6 +749,17 @@ class MMGraph extends MMTool {
 				return v;
 			}
 		};
+		// convenience function to deal with axis units
+		const returnAxisValue = (axis) => {
+			let v = axis.values;
+			if (v) {
+				if (axis.displayUnit && axis.displayUnit !== v.displayUnit) {
+					v = v.copyOf();
+					v.displayUnit = axis.displayUnit;
+				}
+			}
+			return returnValue(v);
+		}
 		
 		const is3d = this.xValues[0].zValue;
 		if (lcDescription.startsWith('x')) {
@@ -758,7 +769,7 @@ class MMGraph extends MMTool {
 			const xNumber = parseInt(lcDescription.substring(1));
 			if (xNumber > 0 && xNumber <= this.xValues.length) {
 				const xValue = this.xValues[xNumber - 1];
-				return returnValue(xValue.values);
+				return returnAxisValue(xValue);
 			}
 		}
 		else if (lcDescription.startsWith('y')) {
@@ -785,7 +796,7 @@ class MMGraph extends MMTool {
 				const xValue = this.xValues[xNumber - 1];
 				if (yNumber > 0 && yNumber <= xValue.numberOfYValues) {
 					const yValue = xValue.yForIndex(yNumber - 1);
-					return returnValue(yValue.values);
+					return returnAxisValue(yValue);
 				}
 			}
 		}
@@ -806,7 +817,7 @@ class MMGraph extends MMTool {
 			if (xNumber > 0 && xNumber <= this.xValues.length) {
 				const xValue = this.xValues[xNumber - 1];
 				if (zNumber === 1) {
-					return returnValue(xValue.zValue.values);
+					return returnAxisValue(xValue.zValue);
 				}
 			}
 		}
@@ -2224,6 +2235,7 @@ class MMGraph extends MMTool {
 					command.undo = `${this.getPath()} setUnit ${args[0]}`;
 				}
 				axis.displayUnit = unit;
+				this.forgetCalculated();
 				return;
 			}
 		}

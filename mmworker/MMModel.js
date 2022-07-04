@@ -801,7 +801,8 @@ class MMModel extends MMTool {
 					continue;
 				}
 				const outputId = `o_${this.name}_${output.name}`;
-				chunks.push(`					document.getElementById("${outputId}").innerHTML=result.${outputId};`);
+				chunks.push(`					if (result.${outputId} !== null) {`)
+				chunks.push(`						document.getElementById("${outputId}").innerHTML=result.${outputId};}`);
 			}
 			chunks.push(`				});`);
 			chunks.push('			}')
@@ -822,7 +823,10 @@ class MMModel extends MMTool {
 				chunks.push(`				<div class="model-form__input-row">`);
 				chunks.push(`				<div class="model-form__input-name" onClick="${onNameClick}('${input.name}')">${input.name}</div>`);
 
-				let formula = input.formula.formula.replaceAll('"', '&quot;');
+				let formula = '';
+				if (input.formula && input.formula.formula) {
+					formula = input.formula.formula.replaceAll('"', '&quot;');
+				}
 				if (formula.startsWith("'")) {
 					formula = '&quot;' + formula.substring(1) +'&quot;';
 				}
@@ -837,8 +841,8 @@ class MMModel extends MMTool {
 			if (object.isOutput) {
 				const output = object;
 				let value = output.valueDescribedBy('', requestor);
+				const outputId = 'o_' + this.name + '_' + output.name;
 				if (value) {
-					const outputId = 'o_' + this.name + '_' + output.name;
 					if (value instanceof MMToolValue) {
 						value = value.values[0];
 						if (value instanceof MMButton || value instanceof MMMenu) {
@@ -867,7 +871,7 @@ class MMModel extends MMTool {
 				else {
 					chunks.push(`<div class="model-form__output-row">`);
 					chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
-					chunks.push(`<div class="model-form__output-value">?</div>`);
+					chunks.push(`<div id="${outputId}" class="model-form__output-value"></div>`);
 					chunks.push('</div>');	
 				}
 			}

@@ -22,8 +22,12 @@ th {
 	color: black;
 }
 th.col0, td.col0 {
-	display: none;
+	/* display: none; */
 	width: 50px;
+}
+
+.tvalue .col0 {
+	display: none;
 }
 
 .formula {
@@ -103,6 +107,10 @@ th.col0, td.col0 {
 	margin-top: 5px;
 }
 
+.model-form__output-row, .model-form__output-tool {
+	margin-bottom: 10px;
+}
+
 .model-form__multiline-formula {
 	white-space: pre-wrap;
 	border: solid 1px;
@@ -113,6 +121,9 @@ th.col0, td.col0 {
 .model-form__notes {
 	white-space: pre-wrap;
 	margin-top: 10px;
+	border: solid 1px;
+	padding: 5px;
+	background-color: #f2f2f2;
 }
 
 .button-tool {

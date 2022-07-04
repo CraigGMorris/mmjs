@@ -98,6 +98,9 @@ class MMExpression extends MMTool {
 	}
 
 	set displayUnitName(unitName) {
+		if (this.displayUnit && this.displayUnit.name === unitName) {
+			return;
+		}
 		this.tableUnits = null;
 		if (!unitName) {
 			this.displayUnit = null;
@@ -109,6 +112,7 @@ class MMExpression extends MMTool {
 			}
 			this.displayUnit = unit;
 		}
+		this.forgetCalculated();
 	}
 
 	get format() {
@@ -197,12 +201,18 @@ class MMExpression extends MMTool {
 				}
 			}
 			else if (this.cachedValue instanceof MMNumberValue) {
-				if (this.format) {
-					this.cachedValue.displayFormat = this.format;
-				}
-				if (this.displayUnit) {
-					this.cachedValue.displayUnit = this.displayUnit;
-				}
+				if (
+					this.format && this.format !== this.cachedValue.displayFormat ||
+					this.displayUnit && this.displayUnit !== this.cachedValue.displayFormat
+				) {
+					this.cachedValue = this.cachedValue.copyOf();
+					if (this.format) {
+						this.cachedValue.displayFormat = this.format;
+					}
+					if (this.displayUnit) {
+						this.cachedValue.displayUnit = this.displayUnit;
+					}
+					}
 			}
 		}
 		if (requestor && this.cachedValue) {

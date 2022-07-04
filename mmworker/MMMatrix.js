@@ -281,14 +281,20 @@ class MMMatrix extends MMTool {
 
 	set displayUnitName(unitName) {
 		if (!unitName) {
-			this.displayUnit = null;
+			if (this.displayUnit) {
+				this.displayUnit = null;
+				this.refreshRequestors();
+			}
 		}
 		else {
-			const unit = theMMSession.unitSystem.unitNamed(unitName);
-			if (!unit) {
-				throw(this.t('mmunit:unknownUnit', {name: unitName}));
+			if (!this.displayUnit || this.displayUnit.name !== unitName) {
+				const unit = theMMSession.unitSystem.unitNamed(unitName);
+				if (!unit) {
+					throw(this.t('mmunit:unknownUnit', {name: unitName}));
+				}
+				this.displayUnit = unit;
+				this.refreshRequestors();
 			}
-			this.displayUnit = unit;
 		}
 	}
 
@@ -298,7 +304,7 @@ class MMMatrix extends MMTool {
 
 	set format(format) {
 		this._format = format;
-		if (this.value) {
+		if (this.value && this.value.displayFormat !== format) {
 			this.value.displayFormat = format;
 		}
 		this.refreshRequestors();
@@ -391,7 +397,7 @@ class MMMatrix extends MMTool {
 	/**
 	 * @override refreshRequestors
 	 * essentially forgetCalculated without recalculating value
-	 * used for format change
+	 * used for unit and format change
 	 */
 	refreshRequestors() {
 		if (!this.forgetRecursionBlockIsOn) {
@@ -801,6 +807,22 @@ class MMMatrix extends MMTool {
 	 */
 	valueDescribedBy(description, requestor) {
 		let rv = null;
+		// convenience function to deal with units and format
+		const returnValue = (v) => {
+			if (v) {
+				if (
+					(this.displayUnit && this.displayUnit !== v.displayUnit) ||
+					(this.format && this.format !== v.format)
+				)
+				{
+					v = v.copyOf();
+					v.displayUnit = this.displayUnit;
+					v.displayFormat = this.format;
+				}
+			}
+			return v;
+		}
+
 		const lcDescription = description ? description.toLowerCase() : '';
 		if (lcDescription === 'solved') {
 			if (!this.isCalculating && this.value) {
@@ -851,7 +873,7 @@ class MMMatrix extends MMTool {
 		}
 
 		if (!lcDescription) {
-			rv = this.value;
+			rv = returnValue(this.value);
 		}
 		else if (lcDescription === 'table') {
 			const a = [];
@@ -874,6 +896,7 @@ class MMMatrix extends MMTool {
 			if (rv === false) {
 				return super.valueDescribedBy(lcDescription, requestor);
 			}
+			rv = returnValue(rv);
 		}
 
 		if (rv) {
