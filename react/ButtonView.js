@@ -93,10 +93,10 @@ export function ButtonView(props) {
 		const actionOption = (action, label) => {
 			actionOptions.push(e(
 				'option', {
-					class: 'button__action-option',
+					className: 'button__action-option',
 					key: action,
 					value: action,
-					selected: action === results.action,
+					// selected: action === results.action,
 				},
 				label
 			));
@@ -109,11 +109,11 @@ export function ButtonView(props) {
 
 		const actionField = e(
 			'div',	 {
-				class: 'button__action_select-row',
+				className: 'button__action_select-row',
 			},
 			e(
 				'label', {
-					class: 'button__action-label',
+					className: 'button__action-label',
 					htmlFor: 'button__action_select',
 				},
 				t('react:buttonActionLabel')
@@ -129,7 +129,8 @@ export function ButtonView(props) {
 								props.actions.updateView(props.viewInfo.stackIndex);
 							})	
 						}
-					}
+					},
+					value: results.action,
 				},
 				actionOptions
 			),
@@ -141,21 +142,21 @@ export function ButtonView(props) {
 			for (const target of results.targets) {
 				targetOptions.push(e(
 					'option', {
-						class: 'button__target-option',
+						className: 'button__target-option',
 						key: target,
 						value: target,
-						selected: target === results.target,
+						// selected: target === results.target,
 					},
 					target
 				));
 			}
 			targetField = e(
 				'div',	 {
-					class: 'button__target_select-row',
+					className: 'button__target_select-row',
 				},
 				e(
 					'label', {
-						class: 'button__target-label',
+						className: 'button__target-label',
 						htmlFor: 'button__target_select',
 					},
 					t('react:buttonTargetLabel')
@@ -171,7 +172,8 @@ export function ButtonView(props) {
 									props.actions.updateView(props.viewInfo.stackIndex);
 								})	
 							}
-						}
+						},
+						value: results.target,
 					},
 					targetOptions
 				),

@@ -84,7 +84,7 @@ export function ModelView(props) {
 						}
 						if (received.didLoad) {
 							if (received.resetInfo) {
-								props.actions.resetInfoStack('root', received.resetInfo);
+								props.actions.resetInfoStack('root', received.resetInfo, props.viewInfo.stackIndex);
 								props.actions.updateDiagram(true);
 							}
 						}
@@ -229,6 +229,7 @@ export function ModelView(props) {
 							id: 'htmlpage__iframe',
 							srcDoc: results.html,
 							sandbox: 'allow-scripts allow-modals allow-popups',
+							key: 'iframe',
 						},
 					)
 				);

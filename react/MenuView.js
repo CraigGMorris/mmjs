@@ -96,14 +96,14 @@ export function MenuView(props) {
 		if (optionLabels) {
 			const optionValues = results.optionValues;
 			const optionCount = optionLabels.length
-			const selectedLabel = selected < optionCount ? optionLabels[selected] : '';
+			// const selectedLabel = selected < optionCount ? optionLabels[selected] : '';
 			const menuOption = (value, label) => {
 				menuOptions.push(e(
 					'option', {
-						class: 'menu__option',
+						className: 'menu__option',
 						key: label,
 						value: value,
-						selected: label === selectedLabel,
+						// selected: label === selectedLabel,
 					},
 					label
 				));
@@ -122,11 +122,12 @@ export function MenuView(props) {
 		}
 		const menuField = e(
 			'div',	 {
-				class: 'menu__select-row',
+				className: 'menu__select-row',
 			},
 			e(
 				'select', {
 					className: 'menu__select',
+					value: selected,
 					onChange: (e) => {
 						const newValue = e.target.selectedIndex;
 						if (newValue >= 0 && newValue !== selected) {

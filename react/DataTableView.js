@@ -446,7 +446,7 @@ function EditRowView(props) {
 							className: 'datatable__row-formula-field',
 							t: t,
 							viewInfo: props.viewInfo,
-							infoWidth: props.infoWidth,
+							infoWidth: String(props.infoWidth),
 							actions: props.actions,
 							formula: formulaString,
 							key: rowN, // need to ensure each formula field is unique when moving through rows

@@ -39,12 +39,23 @@ export function ToolView(props) {
 	name = pathParts[pathParts.length - 1];
 	const [toolName, setToolName] = useState(name);
 	const [showNotes, setShowNotes] = useState(false);
+	const [isDisplayed, setIsDisplayed] = useState(false);
 	const updateResults = props.viewInfo.updateResults;
 	const results = updateResults[0] ? updateResults[0].results : {};
 	const notes = updateResults.length ? results.notes : '';	
 	const [notesText, setNotesText] = useState(notes);
 	const diagramNotes = updateResults.length ? results.diagramNotes : false;
 	const htmlNotes = updateResults.length ? results.htmlNotes : false;
+
+	useEffect(() => {
+		const results = updateResults.length ? updateResults[0].results : {};
+		if (results.isOutput) {
+			setIsDisplayed(true);
+		}
+		else {
+			setIsDisplayed(false);
+		}
+	}, [props.viewInfo.updateResults]);
 
 	const doRename = () => {
 		const path = props.viewInfo.path;
@@ -151,7 +162,7 @@ export function ToolView(props) {
 					id: 'tool-view__is-output-checkbox',
 					className: 'checkbox__input',
 					type: 'checkbox',
-					checked: results.isOutput,
+					checked: isDisplayed,
 					onChange: () => {
 						// toggle the isOutput property
 						const value = results.isOutput ? 'f' : 't';

@@ -813,9 +813,12 @@ class MMModel extends MMTool {
 			}
 		chunks.push('		}');
 		chunks.push('		</script>');
+		if (this.htmlNotes && this.notes) {
+			chunks.push(`<div class="model-form__notes">${this.notes}</div>`);
+		}
 		chunks.push('		<div class="model-form__objects">')
 		for (let object of results.objects) {
-			if (object.htmlNotes && object.notes) {
+			if (object.htmlNotes && object.notes && !(object instanceof MMModel)) {
 				chunks.push(`<div class="model-form__notes">${object.notes}</div>`);
 			}	
 			if (object.showInput) {
@@ -845,8 +848,14 @@ class MMModel extends MMTool {
 				if (value) {
 					if (value instanceof MMToolValue) {
 						value = value.values[0];
-						if (value instanceof MMButton || value instanceof MMMenu) {
+						if (value instanceof MMButton /*|| value instanceof MMMenu*/) {
 							chunks.push(value.htmlValue(requestor));
+						}
+						else if (value instanceof MMMenu) {
+							chunks.push(`<div class="model-form__input-row">`);
+							chunks.push(`<div class="model-form__input-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
+							chunks.push(`<div id="${outputId}" class="model-form__input">${value.htmlValue(requestor)}</div>`);
+							chunks.push('</div>');	
 						}
 						else {
 							chunks.push(`<div class="model-form__output-tool">`);

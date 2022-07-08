@@ -115,7 +115,13 @@ class MMButton extends MMTool {
 	 */
 	inputSources() {
 		let sources = super.inputSources();
-		this.labelFormula.addInputSourcesToSet(sources);		
+		this.labelFormula.addInputSourcesToSet(sources);
+		if (this.action !== 'load' && this.target) {
+			const tool = this.parent.childNamed(this.target);
+			if (tool) {
+				sources.add(tool);
+			}
+		}	
 		return sources;
 	}
 
