@@ -301,7 +301,8 @@ class MMTool extends MMCommandParent {
 	 * @param {MMTool} requestor
 	 * @returns {MMValue}
 	 */
-	valueDescribedBy(description, requestor) {
+	valueDescribedBy(rawDescription, requestor) {
+		const description = rawDescription ? rawDescription.toLowerCase() : '';
 		if (!description || description === 'self') {
 			if (requestor) {
 				this.valueRequestors.add(requestor);
@@ -314,7 +315,7 @@ class MMTool extends MMCommandParent {
 			}
 			return MMStringValue.scalarValue(this.notes);
 		}
-		else if (description === 'myName') { // deprecated, but kept for old files
+		else if (description === 'myname') {
 			if (requestor) {
 				this.valueRequestors.add(requestor);
 			}
