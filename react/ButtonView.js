@@ -61,7 +61,17 @@ export function ButtonView(props) {
 	const results = updateResults.length ? updateResults[0].results : {};
 
 	const applyLabelChanges = () => {
-		const path = `${results.path}.label`;
+		const path = `${results.path}.labelFormula`;
+		return (formula) => {
+			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
+				props.actions.updateView(props.viewInfo.stackIndex);
+				setDisplay(ButtonDisplay.main);
+			});
+		}
+	}
+
+	const applyTargetChanges = () => {
+		const path = `${results.path}.targetFormula`;
 		return (formula) => {
 			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
@@ -136,49 +146,6 @@ export function ButtonView(props) {
 			),
 		)
 
-		let targetField;
-		if (results.targets) {
-			const targetOptions = [];
-			for (const target of results.targets) {
-				targetOptions.push(e(
-					'option', {
-						className: 'button__target-option',
-						key: target,
-						value: target,
-						// selected: target === results.target,
-					},
-					target
-				));
-			}
-			targetField = e(
-				'div',	 {
-					className: 'button__target_select-row',
-				},
-				e(
-					'label', {
-						className: 'button__target-label',
-						htmlFor: 'button__target_select',
-					},
-					t('react:buttonTargetLabel')
-				),
-				e(
-					'select', {
-						className: 'button__target_select',
-						onChange: (e) => {
-							const newValue = e.target.value;
-							if (newValue !== results.target) {
-								const path = props.viewInfo.path;
-								props.actions.doCommand(`${path} set target ${newValue}`,() => {
-									props.actions.updateView(props.viewInfo.stackIndex);
-								})	
-							}
-						},
-						value: results.target,
-					},
-					targetOptions
-				),
-			)
-		}
 		displayComponent = e(
 			'div', {
 				key: 'button',
@@ -201,7 +168,7 @@ export function ButtonView(props) {
 						id: 'button__label_formula',
 						t: t,
 						actions: props.actions,
-						path: `${results.path}.label`,
+						path: `${results.path}.labelFormula`,
 						formula: results.labelFormula || '',
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
@@ -214,8 +181,42 @@ export function ButtonView(props) {
 				),
 			),
 			actionField,
-			targetField,
-		)
+			e(
+				// label formula field line
+				'div', {
+					id: 'button__target_formula-row',
+				},
+				e(
+					'label', {
+						id: 'button__target_label',
+						htmlFor: 'button__target_formula'
+					},
+					t('react:buttonTargetLabel')
+				),
+				e(
+					FormulaField, {
+						id: 'button__target_formula',
+						t: t,
+						actions: props.actions,
+						path: `${results.path}.targetFormula`,
+						formula: results.targetFormula || '',
+						viewInfo: props.viewInfo,
+						infoWidth: props.infoWidth,
+						editAction: (editOptions) => {
+							setEditOptions(editOptions);
+							setDisplay(ButtonDisplay.formulaEditor);
+						},
+						applyChanges: applyTargetChanges(),
+					}
+				),
+			),
+			e(
+				'div', {
+					id: 'button__target_calculated',						
+				},
+				results.target,
+			),
+``	)
 	}
 
 	return e(

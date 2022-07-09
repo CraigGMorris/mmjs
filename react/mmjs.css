@@ -190,10 +190,10 @@ a:hover {
 }
 
 .button__action_select-row {
-	margin-top: 5px;
+	margin-top: 10px;
 	margin-right: 10px;
 	display: grid;
-	grid-template-columns: 60px 1fr;
+	grid-template-columns: 80px 1fr;
 }
 
 .button__action-label {
@@ -205,9 +205,8 @@ a:hover {
 	width: 100%;
 }
 
-.button__target_select-row {
-	margin-top: 5px;
-	margin-right: 10px;
+#button__target_formula-row {
+	margin-top: 10px;
 	display: grid;
 	grid-template-columns: 60px 1fr;
 }
@@ -217,8 +216,13 @@ a:hover {
 	width: 100px;
 }
 
-.button__target_select {
+.button__target_formula {
 	width: 100%;
+}
+
+#button__target_calculated {
+	margin-top: 10px;
+	margin-left: 80px;
 }
 
 .checkbox-and-label {

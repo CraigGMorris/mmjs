@@ -171,29 +171,21 @@ class MMMenu extends MMTool {
 					return selectedValue;
 				}
 				break;
-				case 'label':
-					if (this._selected !== null && this._selected >= 0) {
-						const labelValue = options.valueForIndexRowColumn(
-							MMNumberValue.scalarValue(this._selected + 1),
-							MMNumberValue.scalarValue(1)
-						);
-						if (labelValue) {
-							this.addRequestor(requestor)
-						}
-						return labelValue;
+			case 'label':
+				if (this._selected !== null && this._selected >= 0) {
+					const labelValue = options.valueForIndexRowColumn(
+						MMNumberValue.scalarValue(this._selected + 1),
+						MMNumberValue.scalarValue(1)
+					);
+					if (labelValue) {
+						this.addRequestor(requestor)
 					}
-					break;
-				case 'html': {
-				const value = this.htmlValue(requestor);
-				if (value) {
-					return MMStringValue.scalarValue(value);
+					return labelValue;
 				}
-			}
 				break;
 			default:
-				break;
-			}
-			return null;
+				return super.valueDescribedBy(description, requestor);
+		}
 	}
 	
 	/**

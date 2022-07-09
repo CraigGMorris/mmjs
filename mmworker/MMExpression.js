@@ -249,33 +249,29 @@ class MMExpression extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
+		let rv = null;	// return value
 		let value = this.valueForRequestor(requestor);
 		if (description) {
 			const lcDescription = description.toLowerCase();
 			switch (lcDescription) {
 				case 'hasvalue':
-					this.addRequestor(requestor);
 					if (value) {
-						value = MMNumberValue.scalarValue(1);
+						rv = MMNumberValue.scalarValue(1);
 					}
 					else {
-						value = MMNumberValue.scalarValue(0);
+						rv = MMNumberValue.scalarValue(0);
 					}
 					break;
 				case 'formula':
 					if (this.formula.formula) {
-						this.addRequestor(requestor);
-						value = MMStringValue.scalarValue(this.formula.formula);
-					}
-					else {
-						value = null;
+						rv = MMStringValue.scalarValue(this.formula.formula);
 					}
 					break;
 				case 'table':
 					if (!(value instanceof MMTableValue)) {
 						if (value instanceof MMToolValue) {
 							const tool = value._values[0];
-							value = tool.valueDescribedBy(description, requestor);
+							rv = tool.valueDescribedBy(description, requestor);
 						}
 						else {
 							const columnCount = value.columnCount;
@@ -296,7 +292,7 @@ class MMExpression extends MMTool {
 								});
 								columns.push(column);
 							}
-							value = new MMTableValue({columns: columns});
+							rv = new MMTableValue({columns: columns});
 						}
 					}
 					break;
@@ -304,22 +300,29 @@ class MMExpression extends MMTool {
 				default: {
 					if (value instanceof MMToolValue) {
 						let tool = value.valueAtRowColumn(1,1);
-						value = tool.valueDescribedBy(description, requestor);
+						rv = tool.valueDescribedBy(description, requestor);
 					}
 					else if (value instanceof MMTableValue) {
 						const column = value.columnNamed(description);
-						value = column ? column.value : null;
-						if (value && column && column.format) {
-							value.displayFormat = column.format;
+						rv = column ? column.value : null;
+						if (rv && column && column.format) {
+							rv.displayFormat = column.format;
 						}
 					}
-					if (!value) {
-						value = super.valueDescribedBy(description, requestor);
+					if (!rv) {
+						rv = super.valueDescribedBy(description, requestor);
 					}
 				}
 			}
 		}
-		return value;
+		else {
+			rv = value;
+		}
+
+		if (rv && requestor) {
+			this.addRequestor(requestor);
+		}
+		return rv;
 	}
 
 		/**

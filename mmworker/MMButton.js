@@ -22,8 +22,6 @@
 	MMFormula:readonly
 	MMPropertyType:readonly
 	MMStringValue:readonly
-	MMDataTable:readonly
-	theMMSession:readonly
 */
 
 /**
@@ -39,8 +37,8 @@ class MMButton extends MMTool {
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Button');
 		this._action = 'addrow';
-		this._target = '';
-		this.labelFormula = new MMFormula('label', this);
+		this.targetFormula = new MMFormula('targetFormula', this);
+		this.labelFormula = new MMFormula('labelFormula', this);
 		this.isLoadingCase = false;
 		this.isOutput = true;
 	}
@@ -54,8 +52,8 @@ class MMButton extends MMTool {
 		let o = super.saveObject();
 		o['Type'] = 'Button';
 		o['action'] = this.action;
-		o['target'] = this.target;
-		o['labelFormula'] = {Formula: this.labelFormula.formula}
+		o['targetFormula'] = {Formula: this.targetFormula.formula};
+		o['labelFormula'] = {Formula: this.labelFormula.formula};
 		return o;
 	}	
 
@@ -69,7 +67,12 @@ class MMButton extends MMTool {
 		try {
 			super.initFromSaved(saved);
 			this._action = saved.action;
-			this._target = saved.target;
+			if (saved.targetFormula) {
+				this.targetFormula.formula = saved.targetFormula.Formula;
+			}
+			else if (saved.target) {
+				this.targetFormula.formula = "'" + saved.target; // for older beta cases
+			}
 			this.labelFormula.formula = saved.labelFormula.Formula;
 		}
 		finally {
@@ -81,19 +84,7 @@ class MMButton extends MMTool {
 	get properties() {
 		let d = super.properties;
 		d['action'] = {type: MMPropertyType.string, readOnly: false};
-		d['target'] = {type: MMPropertyType.string, readOnly: false};
 		return d;
-	}
-
-	get target() {
-		return this._target;
-	}
-	
-	set target(newValue) {
-		if (this._target !== newValue) {
-			this._target = newValue;
-			this.forgetCalculated();
-		}
 	}
 
 	get action() {
@@ -103,7 +94,6 @@ class MMButton extends MMTool {
 	set action(newValue) {
 		if (this._action !== newValue) {
 			this._action = newValue;
-			this._target = '';
 			this.forgetCalculated();
 		}
 	}
@@ -116,12 +106,7 @@ class MMButton extends MMTool {
 	inputSources() {
 		let sources = super.inputSources();
 		this.labelFormula.addInputSourcesToSet(sources);
-		if (this.action !== 'load' && this.target) {
-			const tool = this.parent.childNamed(this.target);
-			if (tool) {
-				sources.add(tool);
-			}
-		}	
+		this.targetFormula.addInputSourcesToSet(sources);
 		return sources;
 	}
 
@@ -157,6 +142,7 @@ class MMButton extends MMTool {
 		let p = super.parameters();
 		p.push('action');
 		p.push('target');
+		p.push('label');
 
 		return p;
 	}
@@ -179,23 +165,25 @@ class MMButton extends MMTool {
 					return MMStringValue.scalarValue(this.action);
 				}
 				break;
-			case 'target':
-				if (this.target) {
+			case 'target': {
+				const targetValue = this.targetFormula.value();
+				if (targetValue) {
 					this.addRequestor(requestor);
-					return MMStringValue.scalarValue(this.target);
-				}
-				break;
-			case 'html': {
-				const value = this.htmlValue(requestor);
-				if (value) {
-					return MMStringValue.scalarValue(value);
+					return targetValue;
 				}
 			}
 				break;
-			default:
-				break;
+			case 'label': {
+				const labelValue = this.labelFormula.value();
+				if (labelValue) {
+					this.addRequestor(requestor);
+					return labelValue;
+				}
 			}
-			return null;
+				break;
+		default:
+			return super.valueDescribedBy(description, requestor);
+		}
 	}
 	
 	/**
@@ -206,10 +194,21 @@ class MMButton extends MMTool {
 		this.addRequestor(requestor);
 		const labelValue = this.labelFormula.value();
 		const label = labelValue ? labelValue.values[0] : '?';
-		return `<div  class="button-tool"><button id="button__${this.name}"
-onclick="mmpost([], {mm_${this.action}: '${this.target}', mm_update: true});">
-${label}
-</button></div>`
+		const targetValue = this.targetFormula.value();
+		if (targetValue instanceof MMStringValue) {
+			const target = targetValue ? targetValue.values[0] : '';
+			if (target) {
+				return `<div  class="button-tool"><button id="button__${this.name}"
+				onclick="mmpost([], {mm_${this.action}: '${target}', mm_update: true});">
+				${label}
+				</button></div>`
+			}
+		}
+		else {
+			return `<div  class="button-tool"><button id="button__${this.name}" disabled>
+				${label}
+				</button></div>`
+		}
 	}
 
 	/**
@@ -221,43 +220,22 @@ ${label}
 	async toolViewInfo(command) {
 		await super.toolViewInfo(command);
 		const results = command.results;
+		results['action'] = this.action;
+
 		results['labelFormulaName'] = 'labelFormula';
 		results['labelFormula'] = this.labelFormula.formula;
 		const labelValue = this.labelFormula.value();
 		results['label'] = labelValue ? labelValue.values[0] : '';
-		results['action'] = this.action;
-		results['target'] = this.target;
-		const targets = [''];
-		switch (this.action) {
-			case 'addrow': {
-				for (const targetName in this.parent.children) {
-					if (this.parent.children[targetName] instanceof MMDataTable) {
-						targets.push(targetName);
-					}
-				}
-			}
-			break;
-			case 'refresh':
-			case 'push': {
-				for (const targetName in this.parent.children) {
-					if (targetName !== this.name) {
-						targets.push(targetName);
-					}
-				}
-			}
-			break;
-			case "load": {
-				const command = {};
-				await theMMSession.listSessionsCommand(command);
-				for (const targetName of command.results.paths) {
-					if (!targetName.startsWith('(')) {
-						targets.push(targetName);
-					}
-				}	
-			}
-			break;
+
+		results['targetFormulaName'] = 'targetFormula';
+		results['targetFormula'] = this.targetFormula.formula;
+		const targetValue = this.targetFormula.value();
+		if (targetValue instanceof MMStringValue) {
+			results['target'] = targetValue ? `=> "${targetValue.values[0]}"` : '';
 		}
-		results['targets'] = targets;
+		else {
+			results['target'] = '=> "?"';
+		}
 	}
 
 	/**

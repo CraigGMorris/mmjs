@@ -303,25 +303,32 @@ class MMTool extends MMCommandParent {
 	 */
 	valueDescribedBy(rawDescription, requestor) {
 		const description = rawDescription ? rawDescription.toLowerCase() : '';
+		let rv = null;
 		if (!description || description === 'self') {
-			if (requestor) {
-				this.valueRequestors.add(requestor);
-			}
-			return MMToolValue.scalarValue(this);
+			rv =  MMToolValue.scalarValue(this);
 		}
-		else if (description === 'notes') {
-			if (requestor) {
-				this.valueRequestors.add(requestor);
+		else {
+			switch (description) {
+				case 'notes':
+					rv = MMStringValue.scalarValue(this.notes);
+					break;
+				case 'myname':
+					rv = MMStringValue.scalarValue(this.name);
+					break;
+				case 'html': {
+					const value = this.htmlValue(requestor);
+					if (value) {
+						rv = MMStringValue.scalarValue(value);
+					}
+				}
+					break;
 			}
-			return MMStringValue.scalarValue(this.notes);
 		}
-		else if (description === 'myname') {
-			if (requestor) {
+
+		if (rv && requestor) {
 				this.valueRequestors.add(requestor);
-			}
-			return MMStringValue.scalarValue(this.name);
 		}
-		return null;
+		return rv;
 	}
 
 	/**
