@@ -20,7 +20,6 @@
 /* global
 	MMTool:readonly
 	MMFormula:readonly
-	MMStringValue:readonly
 	MMNumberValue:readonly
 	MMPropertyType:readonly
 */
@@ -235,7 +234,7 @@ class MMMenu extends MMTool {
 			const optionCount = options.rowCount;
 			const valueColumnNumber = options.columnCount > 1 ? 2 : 1;		
 			for (let optionNumber = 0; optionNumber < optionCount; optionNumber++) {
-				const value = options.stringForRowColumnUnit(optionNumber + 1, valueColumnNumber);
+				const value = options.stringForRowColumnWithUnit(optionNumber + 1, valueColumnNumber);
 				optionValues.push(value);
 				const label =  options.stringForRowColumnUnit(optionNumber + 1, 1);
 				optionLabels.push(label);

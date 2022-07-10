@@ -203,7 +203,7 @@ export function ToolView(props) {
 				e(
 					'button', {
 						id: 'tool-view__html-notes-toggle',
-						class: 'tool-view__show-notes-toggle',
+						className: 'tool-view__show-notes-toggle',
 						onClick: () => {
 							doSetHtmlNotes(!htmlNotes);
 						}
@@ -213,7 +213,7 @@ export function ToolView(props) {
 				e(
 					'button', {
 						id: 'tool-view__diagram-notes-toggle',
-						class: 'tool-view__show-notes-toggle',
+						className: 'tool-view__show-notes-toggle',
 						onClick: () => {
 							doSetDiagramNotes(!diagramNotes);
 						}

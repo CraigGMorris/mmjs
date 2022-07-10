@@ -209,10 +209,13 @@ class MMExpression extends MMTool {
 					if (this.format) {
 						this.cachedValue.displayFormat = this.format;
 					}
-					if (this.displayUnit) {
+					if (this.displayUnit && MMUnitSystem.areDimensionsEqual(
+							this.displayUnit.dimensions,
+							this.cachedValue.unitDimensions))
+					{
 						this.cachedValue.displayUnit = this.displayUnit;
 					}
-					}
+				}
 			}
 		}
 		if (requestor && this.cachedValue) {

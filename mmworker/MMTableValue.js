@@ -725,6 +725,7 @@ class MMTableValue extends MMValue {
 	 * @param {Number} rowNumber
 	 * @param {Number} columnNumber
 	 * @param {MMUnit} outUnit
+	 * @param {String} format
 	 * @returns {String}
 	 */
 	// eslint-disable-next-line no-unused-vars
@@ -745,6 +746,31 @@ class MMTableValue extends MMValue {
 		return column.value.stringForRowColumnUnit(rowNumber, 1, outUnit, format);
 	}
 
+	/**
+	 * @method stringForRowColumnUnit
+	 * @param {Number} rowNumber
+	 * @param {Number} columnNumber
+	 * @param {MMUnit} outUnit
+	 * @param {String} format
+	 * @returns {String}
+	 */
+	// eslint-disable-next-line no-unused-vars
+	stringForRowColumnWithUnit(rowNumber, columnNumber, outUnit, format) {
+		const column = this.columns[columnNumber - 1];
+
+		if (!outUnit) {
+			outUnit = column.displayUnit;
+		}
+		if (!outUnit) {
+			outUnit = column.value.defaultUnit;
+		}
+
+		if (!format) {
+			format = column.format;
+		}
+
+		return column.value.stringForRowColumnWithUnit(rowNumber, 1, outUnit, format);
+	}
 
 	/**
 	 * @method jsonValue
