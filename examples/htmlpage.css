@@ -61,6 +61,10 @@ th.col0, td.col0 {
 	padding: 5px;
 }
 
+.model-form__input input {
+	width: calc(100% - 10px);
+}
+
 .model-form__output-row {
 	display: grid;
 	grid-template-columns: 112px 1fr;
