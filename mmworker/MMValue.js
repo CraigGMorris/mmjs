@@ -329,7 +329,7 @@ class MMValue {
 			rv = '';
 		}
 		else if (this.valueCount == 1 && !(this instanceof MMTableValue)) {
-			rv = this.stringForRowColumnWithUnit(1, 1, unit, this.displayFormat).trim();
+			rv = this.stringForRowColumnWithUnit(1, 1, unit, this.formatValue).trim();
 		}
 		else {
 			const lines = [];
@@ -361,7 +361,7 @@ class MMValue {
 			for (let row = 1; row <= maxRow; row++) {
 				lines.push(`<tr class="row{$row}">\n\t\t<th class="col0">${row}</th>`)
 				for (let column = 1; column <= maxColumn; column++) {
-					const v = this.stringForRowColumnUnit(row, column, unit, this.displayFormat);
+					const v = this.stringForRowColumnUnit(row, column, unit, this.formatValue);
 					lines.push(`\t\t<td class="col${column}">${v}</td>`)
 				}
 				lines.push('\t</tr>');
