@@ -36,14 +36,18 @@
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
-					Math Minion HTML pages provide a way to present customized input and result views.
+					Math Minion html pages provide a way to present customized input and result views.
 				</p>
 				<p>
 					As the name implies, HTML is used to format the view and javascript to manipulate
-					the inputs and results, so to make use of this tool some familiarity with HTML
-					and javascript is necessary. However if you aren't familiar with them, you can
-					pretty safely ignore HTML pages as they mainly just provide pretty interfaces to
-					existing calculations.
+					the inputs and results. Therefore to make full use of this tool some familiarity
+					with HTML and in some cases javascript is necessary, but quite a bit can be accomplished
+					with knowledge of just a few basic tags and using Math Minion shortcuts.
+				</p>
+				<p>
+					In most cases though, the ability to simply set flags enabling the display of tools and
+					tool notes on the <a href="model.html">model</a> information view will be sufficient and
+					html pages will not be necessary.
 				</p>
 				<p>
 					Input consists of a single formula that should return a string value containing
@@ -91,15 +95,26 @@
 				</p>
 				<p>
 					If the value isn't a scalar, then an HTML table will be inserted. The default HTML code
-					formula used for a new html page contains CSS definitions that aim to make the table
-					easier to read. These can of course be removed or modified to taste.
+					formula used for a new html page contains the same CSS definitions as used in the
+					<a href="model.html">model</a> information view. These aim to make the table
+					easier to read, but can of course be removed or modified to taste.
 				</p>
 				<p>
-					If the <b>&lt;mm&gt;</b> tag returns a <b>Graph</b> tool reference, the graph will be be
-					inserted (as SVG) into the page.
+					If the <b>&lt;mm&gt;</b> tag returns a tool reference, information about that will be
+					be inserted into the page. For instance if there is a <a href="graph.html">graft tool</a>
+					named <b>myPlot</b>, then 
+				</p>
+				<p class="formula">
+					&lt;mm&gt;myPlot&lt;/mm&gt;
 				</p>
 				<p>
-					The default formula also provides some examples of the use of the <b>&lt;mm&gt;</b> tag.
+					would insert the SVG (Scalable Vector Graphics) code needed to reproduce the graph. If the tool is itself
+					an html page tool, then it will be inserted in its entirety. A blank mm tag, i.e.
+					&lt;mm&gt;&lt;/mm&gt; will insert the entire information view for the model containing
+					the html page. In that case the html page itself should not have its display box checked.
+				</p>
+				<p>
+					For other tools, a representation of their results, often as a table, is inserted. 
 				</p>
 			</div>
 			<div id="mmpost" class="section">
@@ -131,7 +146,7 @@
 					</p>
 					<p>
 						For example the <b>onClick</b> handler for the <b>Calculate</b> button of the
-						BMI page looks like:
+						BMI page in this model looks like:
 					</p>
 					<p class="formula">
 						onClick="mmpost(['weight', 'height']);"
@@ -395,6 +410,14 @@
 					<p>
 						Then a parameter block_blockname will return all the code between the two comments.
 					</p>
+					<p>
+						As long as they don't match any of the above, then:
+					</p>
+					<ul>
+						<li><b>html</b> - a html code representation of the tool.</li>
+						<li><b>notes</b> - the notes for the tool</li>
+						<li><b>myname</b> - the name of the tool</li>	
+					</ul>
 				</div>
 			</div>
 		</div>

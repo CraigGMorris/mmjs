@@ -6,14 +6,14 @@
 		<script type="text/javascript" src="help.js"></script>
 		<script type="text/javascript">
 			window.onload = () => {
-				rtSetupHeading('Calculation Tools',{
+				rtSetupHeading('Tools',{
 					overview: 'The Tools',
 					addtool: 'Adding a Tool',
 					icons: 'Tool Icons',
 				});
 			};			
 		</script>	
-		<title>Calculation Tools</title>
+		<title>Tools</title>
 	</head>
 	
 	<body>
@@ -22,7 +22,7 @@
 			<div id="overview" class="section">
 				<h3>The Tools</h3>
 				<p>
-					The built in calculation tools are listed below. 
+					The built in calculation and display tools are listed below. 
 					To see the help page for a tool, just tap on its name.
 				</p>
 				<ul>
@@ -44,6 +44,15 @@
 						</p>
 					</li>
 					<li>
+						<b><a href="model.html">Model</a></b>
+						- a model is simply a container for other tools and is what is represented by the
+						diagram view.
+						<p>
+							All Math Minion sessions have at least one root model, but models can contain other
+							models, so a hierarchy of different models can be constructed.
+						</p>
+					</li>
+					<li>
 						<b><a href="datatable.html">Data Table</a></b>
 							- a data base like table with named fields (columns) of different types.
 					</li>
@@ -60,24 +69,20 @@
 						</p>
 					</li>
 					<li>
-						<b><a href="iterator.html">Iterator</a></b>
-						- Math Minion's ability to work with arrays and matrices means traditional
-						programming loops are usually not necessary, but if the need arises, this tool
-						provides a <b>for loop</b> type capability.
-					</li>
-					<li>
 						<b><a href="matrix.html">Matrix</a></b>
 						- while all Math Minion numerical values are in fact matrices, this tool allows
 						you to construct more complex entities, including cell formulas that refer to the
 						values of other cells.
 					</li>
 					<li>
-						<b><a href="model.html">Model</a></b>
-						- a model is simply a container for other tools and is what is represented by the
-						diagram view.
+						<b><a href="solver.html">Function Solver</a></b>
+						- attempts to find x values that satisfy one or more functions of the form:
+						</p>
+						<p class="formula">
+							f(x) = 0
+						</p>
 						<p>
-							All Math Minion sessions have at least one root model, but models can contain other
-							models, so a hierarchy of different models can be constructed.
+							where each x can be either a scalar or an array.
 						</p>
 					</li>
 					<li>
@@ -92,6 +97,12 @@
 						</p>
 					</li>
 					<li>
+						<b><a href="iterator.html">Iterator</a></b>
+						- Math Minion's ability to work with arrays and matrices means traditional
+						programming loops are usually not necessary, but if the need arises, this tool
+						provides a <b>for loop</b> type capability.
+					</li>
+					<li>
 						<b><a href="optimize.html">Optimizer</a></b>
 						-	given some function:
 						</p>
@@ -102,6 +113,10 @@
 						</p>
 					</li>
 					<li>
+						<b><a href="importedmodel.html">Imported Model</a></b>
+						- a <a href="model.html">model</a> that is imported from a different session.
+					</li>
+					<li>
 						<b><a href="graph.html">Graph</a></b>
 						- displays a 2D or 3D plot.
 					</li>
@@ -110,8 +125,12 @@
 						- used to create customized input and result views using HTML and javascript.
 					</li>
 					<li>
-						<b><a href="importedmodel.html">Imported Model</a></b>
-						- a <a href="model.html">model</a> that is imported from a different session.
+						<b><a href="button.html">Button</a></b>
+						- used to display a button on a model's or html page information view.
+					</li>
+					<li>
+						<b><a href="menu.html">Menu</a></b>
+						- used to display a menu on a model's or html page information view.
 					</li>
 				</ul>
 			</div>
@@ -119,11 +138,12 @@
 				<h3>Adding a Tool to the Model</h3>
 				<p>
 					To add a tool to the model, tap on the <a href="diagram.html">diagram</a>
-					background where you wish the upper left hand of the tool's icon to be placed. 
+					background where you wish the upper left hand of the tool's icon to be placed.
+					A menu box will appear. 
 				</p>
 				<p>
-					Select <b>Add Tool to Model</b> from the resulting <a href="diagram.html#bgmenu">menu</a>
-					and then select the type of tool you wish from the list presented.
+					Select <b>Expression</b> or <b>Model</b> to immediately add a tool of that type or
+					select a tool from the <b>Add Calculation Tool</b> or <b>Add Display Tools</b> submenus.
 				</p>
 			</div>
 			<div id="icons" class="section">

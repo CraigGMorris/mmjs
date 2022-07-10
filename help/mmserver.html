@@ -8,11 +8,10 @@
 			window.onload = () => {
 				rtSetupHeading('Running a MM Server',{
 					overview: 'Overview',
-					connecting: 'Connecting MM to CouchDB',
-					get: 'Getting or Accessing Couch',
-					restrictions: 'Browser Security Restrictions',
-					hosting: 'Hosting Scenarios',
-					needhelp: 'Need Help?',
+					getting: 'Getting the files',
+					simple: 'Simple Local Server',
+					no_net: 'Running Without Internet',
+					on_net: 'Hosting on Internet?',
 				});
 			};			
 		</script>	
@@ -20,44 +19,57 @@
 	</head>
 	<body>
 		<div id="page">
-			<div id="overview"></div>
 			<div id="heading"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
-					There can be a number of reasons for hosting your own copy of Math Minion. Perhaps you simply want to be able to access it when the Internet is not available or perhaps you want to play with the code.  Because of the security restrictions built into browsers, it will also be necessary if you wish to synchronize your sessions with a <a href="couchdb.html">CouchDB</a> database on your local area network.
+					There can be a number of reasons for hosting your own copy of Math Minion.
+					Perhaps you simply want to be able to access it when the Internet is not
+					available or perhaps you want to play with the code.
 				</p>
 				<p>
-					Since Math Minion only requires a web server to serve static files, setting this up can be pretty easy, particularly if it is just on your personal machine. Below are some thoughts on various scenarios
+					Since Math Minion only requires a web server to serve static files, setting
+					this up can be pretty easy, particularly if it is just on your personal machine.
 				</p>
 			</div>
-			<div class="section">
+			<div id="getting" class="section">
 				<h3>Getting the Files</h3>
 				<p>
-					Regardless of how you host Math Minion you will need a copy of the code. If you are familiar with git, you can clone the <a href="https://github.com/CraigGMorris/mmjs">repository</a> with the terminal command:
+					Regardless of how you host Math Minion you will need a copy of the code.
+					If you are familiar with git, you can clone the
+					<a href="https://github.com/CraigGMorris/mmjs">repository</a> with the
+					terminal command:
 				</p>
 				<p class=formula>
 					git clone https://github.com/CraigGMorris/mmjs.git
 				</p>
 				<p>
-					but you can also download a zip archive from github by going to the <a href="https://github.com/CraigGMorris/mmjs">GitHub repository</a> and clicking on the <b>Code</b> button. This will produce a menu with a <b>Download ZIP</b> option. Put the <b>mmjs</b> folder from the expanded version where wanted.
+					but you can also download a zip archive from github by going to the
+					<a href="https://github.com/CraigGMorris/mmjs">GitHub repository</a> and
+					clicking on the <b>Code</b> button. This will produce a menu with a
+					<b>Download ZIP</b> option. Put the <b>mmjs</b> folder from the expanded
+					version where wanted.
 				</p>
 			</div>
-			<div  class="section">
+			<div id="simple" class="section">
 				<h3>A Simple Local Server</h3>
 				<p>
-					Probably the easiest way to host Math Minion or your personal computer is with the <b>http.server</b> module of python, especially as you may well already have python installed.
+					Probably the easiest way to host Math Minion or your personal computer is
+					with the <b>http.server</b> module of python, especially as you may well
+					already have python installed.
 				</p>
 				<p>
-					If you don't already have python installed, you can download python3 from the <a href="https://www.python.org/downloads/">python.org download page</a>. Strangely MacOS comes with a now deprecated 2.7 version of python installed, but not python3.  This can still be used, but with a slightly different command as shown below.
+					If you don't already have python installed, you can download python3 from
+					the <a href="https://www.python.org/downloads/">python.org download page</a>.
 				</p>
 				<p>
-					With python3 or python installed, open a terminal window and change into the folder (mmjs) containing the source files and enter the command:
+					With python3 or python installed, open a terminal window and change into
+					the folder (mmjs) containing the source files and enter the command:
 				</p>
 				<p class="formula">
-					python3 -m http.server
+					python3 -m http.server 8000
 				</p>
-				<p>or</p>
+				<p>for python version 3 or</p>
 				<p class="formula">
 					python -m SimpleHTTPServer 8000
 				</p>
@@ -65,25 +77,37 @@
 					if you have a python 2 version.
 				</p>
 				<p>
-					This will start serving the files from that folder and if you go to your browser and enter the address:
+					This will start serving the files from that folder and if you go to your browser
+					and enter the address:
 				</p>
 				<p class="formula">
 					http://localhost:8000
 				</p>
 				<p>
-					you should see the Math Minion home page. Click on the <b>Run</b> link to launch the program.
+					you should see the Math Minion home page. Click on the <b>Run</b> link to launch
+					the program.
 				</p>
 				<p>
-					Other options include running a full featured web server like <a href="https://httpd.apache.org">Apache</a>, <a href="https://nginx.org/en">Nginx</a> or running a static server with <a href="https://nodejs.org/en/knowledge/HTTP/servers/how-to-serve-static-files/"">nodejs</a>.
+					Other options include running a full featured web server like
+					<a href="https://httpd.apache.org">Apache</a>,
+					<a href="https://nginx.org/en">Nginx</a> or running a static server with
+					<a href="https://nodejs.org/en/knowledge/HTTP/servers/how-to-serve-static-files/"">nodejs</a>.
 				</p>
 			</div>
-			<div class="section">
+			<div id= "no_net" class="section">
 				<h3>Running Without Internet</h3>
 				<p>
-					The standard version of Math Minion loads the libraries for the <a href="https://reactjs.org/">React</a> and the <a href="https://www.i18next.com/">i18next</a> frameworks from the net, so a small change is required if you wish to run without net access.
+					The standard version of Math Minion loads the libraries for the
+					<a href="https://reactjs.org/">React</a> and the
+					<a href="https://www.i18next.com/">i18next</a> frameworks from the net,
+					so a small change is required if you wish to run without net access.
 				</p>
 				<p>
-					The necessary files are included with the Math Minion code, so all that is needed is to edit the <b>run.html</b> file in the <b>mmjs</b> folder. Using your favourite text editor, you need to comment out the four <b>script</b> tags referencing <b>unpkg.com</b> and uncomment the four referencing <b>offline</b>. The result should look like:
+					The necessary files are included with the Math Minion code, so all that
+					is needed is to edit the <b>run.html</b> file in the <b>mmjs</b> folder.
+					Using your favourite text editor, you need to comment out the four
+					<b>script</b> tags referencing <b>unpkg.com</b> and uncomment the four
+					referencing <b>offline</b>. The result should look like:
 				</p>
 				<pre>
 &lt;!--
@@ -99,28 +123,44 @@
 &lt;script src="offline/react-dom.development.js" crossorigin&gt;&lt;/script&gt;
 				</pre>
 				<p>
-					Now loading this file from your local server should work even if the Internet is not available.
+					Now loading this file from your local server should work even if the Internet
+					is not available.
 				</p>
 			</div>
 			<div class="section">
 				<h3>Hosting MM on your LAN</h3>
 				<p>
-					If you run a local server as above and are connected to your home network, you can probably access Math Minion from other devices on the network. You will need to figure out the IP address your router assigns to the server machine and then browse to something like http://192.168.0.12:8000, where 192.168.0.12 is the assigned address.
+					If you run a local server as above and are connected to your home network,
+					you can probably access Math Minion from other devices on the network.
+					You will need to figure out the IP address your router assigns to the server
+					machine and then browse to something like http://192.168.0.12:8000,
+					where 192.168.0.12 is the assigned address.
 				</p>
 				<p>
-					I believe most routers will let you lock an IP address to a device's MAC (ethernet) address so it doesn't change on reboots etc. If you are running a firewall on the host machine, you may also have to adjust the its settings.
+					I believe most routers will let you lock an IP address to a device's
+					MAC (ethernet) address so it doesn't change on reboots etc. If you are
+					running a firewall on the host machine, you may also have to adjust its settings.
 				</p>
 				<p>
-					It doesn't require much of a computer host a static web server, so instead of your personal machine, you could also host the files on an older computer or even something like a <a href="https://www.raspberrypi.com">RaspberryPi</a>.
+					It doesn't require much of a computer host a static web server, so instead
+					of your personal machine, you could also host the files on an older computer
+					or even something like a <a href="https://www.raspberrypi.com">RaspberryPi</a>.
 				</p>
 			</div>
-			<div class="section">
+			<div id="on_net" class="section">
 				<h3>Hosting MM on the Internet</h3>
 				<p>
-					Running a site accessible from the Internet introduces more complications, such as acquiring a domain name and a TLS certificate as well as having a server that can be accessed from the Internet. Low traffic cloud servers are cheap and you can get free TLS certificates from <a href="https://letsencrypt.org">Let's Encrypt</a>, but the details of setting things up is beyond the scope of this article.
+					Running a site accessible from the Internet introduces more complications,
+					such as acquiring a domain name and a TLS certificate as well as having a
+					server that can be accessed from the Internet. Low traffic cloud servers
+					are cheap and you can get free TLS certificates from
+					<a href="https://letsencrypt.org">Let's Encrypt</a>, but the details of
+					setting things up is beyond the scope of this article.
 				</p>
 				<p>
-					If you do decide to try this and need help, feel free to <a href="https://www.redtree.com/contact.html">contact me</a>. I am hardly an expert, so there is no guarentee I will be able to help, but I will if I can.
+					If you do decide to try this and need help, feel free to
+					<a href="https://www.redtree.com/contact.html">contact me</a>. I am hardly
+					an expert, so there is no guarentee I will be able to help, but I will if I can.
 				</p>
 			</div>
 		</div>

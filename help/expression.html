@@ -9,11 +9,13 @@
 				rtSetupHeading('Expression',{
 					overview: 'Overview',
 					inputs: 'Inputs',
-					incheck: 'In Checkbox',
-					outcheck: 'Out Checkbox',
+					incheck: 'Model Input Checkbox',
+					displayin: 'Display Input Checkbox',
 					formula: 'Formula Field',
 					unit: 'Display Unit',
+					format: 'Format',
 					calculated: 'Calculated Value',
+					table: "Table Values",
 					parameters: 'Formula Parameters'
 				});
 			};			
@@ -64,33 +66,27 @@
 			<div id="inputs" class="section">
 				<h3>Inputs</h3>
 				<div class="subsection">
-					In addition to the name field and notes button, an expression has:
+					In addition to the standard name field, display check box and notes button, an expression
+					has:
 				</div>
 				<div id="incheck" class="subsection">
-					<h3>In Checkbox</h3>
+					<h3>Model Input Checkbox</h3>
 					<p>
 						When checked, this designates that the expression is considered to be an input for the
 						<a href="model.html">model</a> that contains it.
 					</p>
 					<p>
-						This means it will appear in the input section of the
-						<a href="model.html">information view</a> of the model's parent model.
-					</p>
-					<p>
-						Also any values it references will be from the parent model, rather than the model
+						This means any values it references will be from the parent model, rather than the model
 						that contains it (unless there is no parent model, because the expression is in
 						the root model).
 					</p>
 				</div>
-				<div id="outcheck" class="subsection">
-					<h3>Out Checkbox</h3>
+				<div id="displayin" class="subsection">
+					<h3>Display Input</h3>
 					<p>
-						When on, the value calculated by this expression will appear in the output section
-						of the <a href="model.html">information view</a> of the model that owns it.
-					</p>
-					<p>
-						Also this expression will be available as a parameter of the owning model that can be
-						accessed in <a href="formula.html">formulas</a>.
+						When on, an input field will appear on the <a href="model.html">information view</a>
+						of the model that owns it. allowing this expressions value to be set directly from that
+						view.
 					</p>
 				</div>
 				<div id="formula" class="subsection">
@@ -116,7 +112,7 @@
 					<p>
 						If you wish to display the value with a different unit, tap on the unit to open a 
 						<a href="formulaeditor.html#ubrowser">unit browser</a> where you can select a different one.
-						In the image above this has been done to display the results in <b>km</b>>, rather than the default
+						In the image above this has been done to display the results in <b>kph</b>, rather than the default
 						<b>m/s</b> of the <b>SI</b> <a href="units.html#sets">unit set</a> used by this session.
 					</p>
 					<p>
@@ -124,21 +120,26 @@
 						calculates, but merely how it is displayed. However the display unit must match
 						the type of the value calculated by the formula.
 					</p>
+				</div>
+				<div id="format" class="subsection">
 					<p>
-						If the result of evaluating the formula is a
-						<a href="minionvalue.html#table">table value</a>, then the unit field will normally
-						be blank and the unit browser will be disabled, since different columns might have
-						different units.
+						If the expression result is a number, then there will be a format field to the right
+						of the unit field. The format string is styled on C format string and typically is of
+						the form:
 					</p>
-					<img src="tablevalue.png" alt="Expression table value"/>
-					<p>
-						However if you tap on the column name header in the calculated value grid,
-						the <a href="formulaeditor.html#ubrowser">unit browser</a> will be displayed to
-						let you select a display unit for that column.
+					<p class="formula">
+						%12.4f
 					</p>
 					<p>
-						Note that the default unit for a table value is defined by the original table
-						definition.
+						which says the field should be 12 characters wide with 4 characters after the
+						decimal point in normal floating point format. In Math Minion, the percent sign is
+						optional.
+					</p>
+					<p>An <b>e</b> can be used instead
+						of the <b>f</b> for exponential format and you can even show numbers with an arbitrary
+						base between 2 and 36.  For instance a value could be represented in hex with
+						<b>14.16x</b>.  Note it is also permissable to omit the size number, i.e.
+						<b>.2f</b> would be fine and the number would just be right justified.
 					</p>
 				</div>
 				<div id="calculated" class="section">
@@ -158,6 +159,23 @@
 						button on this view will return to the main view.
 					</p>
 				</div>
+			</div>
+			<div id="table" class="subsection">
+				<h3>Table Values</h3>
+				<p>
+					If the result of evaluating the formula is a
+					<a href="minionvalue.html#table">table value</a>, then the unit and format fields
+					 will be absent since different columns might have different units.
+				</p>
+				<p>
+					However if you tap on the column name header in the calculated value grid, the unit
+					and format fields will reappear and apply to that column.
+				</p>
+				<img src="tablevalue.png" alt="Expression table value"/>
+				<p>
+					Note that the default unit for a table value is defined by the original table
+					definition.
+				</p>
 			</div>
 			<div id="parameters" class="section">
 				<h3>Formula Parameters</h3>
@@ -179,7 +197,10 @@
 					<li><b>table</b> - regardless of the result type, it will be returned as a table value.</li>
 					<li><b>hasValue</b> - returns 1 if a value can be calculated for the expression
 						formula or 0 if not.</li>
-				</ul>
+					<li><b>html</b> - a html code representation of the tool.</li>
+					<li><b>notes</b> - the notes for the tool</li>
+					<li><b>myname</b> - the name of the tool</li>
+					</ul>
 			</div>
 		</div>
 	</body>

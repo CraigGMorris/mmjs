@@ -98,7 +98,7 @@
 				<h3>Add Row</h3>
 				<p>
 					The <b>Add Row</b> button will add a new row to the bottom of the the table, with default
-					values set as defined by the column definition and open a
+					values set as defined by the column definition. It will also  open a
 					<a href="#roweditor">row editor</a> where you can modify those values.
 					The <b>Add Row</b> button is disabled if there isn't at least one column defined.
 				</p>
@@ -106,7 +106,7 @@
 			<div id="addcol" class="section">
 				<h3>Add Column</h3>
 				<p>
-					The <b>Add Column</b> will display the <a href="#coleditor">column definition editor</a> with
+					The <b>Add Column</b> button will display the <a href="#coleditor">column definition editor</a> with
 					some default values.  Change these as appropriate and tap the <b>Add Column</b> button in that
 					view to create a new column.
 				</p>
@@ -393,6 +393,10 @@ $.hours * clients.rate[
 						<b>14.16x</b>.  Note it is also permissable to omit the size number, i.e.
 						<b>.2f</b> would be fine and the number would just be right justified.
 					</p>
+					<p>
+						The columns in the examples here have formats appropriate for dates, hours
+						and dollars.
+					</p>
 				</div>
 			</div>
 			<div id="roweditor" class="section">
@@ -565,7 +569,10 @@ table,en
 					<li><b>table</b> - also returns a table value.</li>
 					<li><b>nrow</b> - number of rows in the table.</li>
 					<li><b>ncol</b> - number of columns in the table.</li>
-				</ul>
+					<li><b>html</b> - a html code representation of the tool.</li>
+					<li><b>notes</b> - the notes for the tool</li>
+					<li><b>myname</b> - the name of the tool</li>
+			</ul>
 			</div>
 		</div>
 	</body>

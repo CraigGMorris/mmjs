@@ -50,7 +50,7 @@
 						displaying root, this button won't appear.</li>
 					<li><b>A_Simple_Calc &#x2302;</b> - rescales and recenters diagram</li>
 					<li><b>+</b> - zoom in on the diagram</li>
-					<li><b>1</b> - zoom out on the diagram</li>
+					<li><b>-</b> - zoom out on the diagram</li>
 					<li><b>&#x21d4;</b> - you can drag this symbol to adjust the width of the information view
 						if it is present. However you can not make it narrower than the default.
 					</li>
@@ -83,7 +83,7 @@
 					<li>The user supplied name of the expression</li>
 					<li>The expression formula, often truncated to fit</li>
 					<li>
-						The calculated result of the formula.  Only a red question mark will appear here
+						The calculated result of the formula.  A red question mark will appear here
 						until the expression has been evaluated.  If the result isn't a scalar, only the
 						first value will be shown, along with the array dimensions.
 					</li>
@@ -177,17 +177,37 @@
 					Tapping once on the background will produce a pop up menu with the following options:
 				</p>
 				<div class="subsection">
-					<h3>Add Tool to Model</h3>
-					<p>
-						A menu of <a href="tools.html">tool types</a> will appear.
+					<h3>Close</h3>
+					<p>Just closes the menu. Tapping on the diagram background has the same effect.</p>
+				</div>
+				<div class="subsection">
+					<h3>Add Expression</h3>
+					<p>Immediately adds an expression to the model and shows it in the information view.
+						Whenever a tool is added, its icon's initial position will be where you clicked on the
+						diagram to open the menu.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Add Model</h3>
+					<p>Immediately adds a child model to the model and switches the diagram and information
+						view to it.
 					</p>
 					<p>
-						Select one to add a tool of that type to the diagram at the point where the
-						original tap was made.
+						Expressions and models are the most common tools and earn a place on the main menu. The
+						rest of the tools are listed in separate menus roughly divided into two categories based
+						on their function.
 					</p>
+				</div>
+				<div class="subsection">
+					<h3>Add Calculation Tool</h3>
 					<p>
-						The new tool will be selected and its <a href="infoview.html">information view</a>
-						presented.
+						A menu of <a href="tools.html">calculation tools</a> will appear.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Add Display Tool</h3>
+					<p>
+						A menu of <a href="tools.html">display tools</a> will appear.
 					</p>
 				</div>
 				<div class="subsection">
@@ -279,6 +299,12 @@
 					<p>
 						This can then be pasted back into a model to create a new data table, or exported to
 						some other application.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Show Notes</h3>
+					<p>
+						If the tool has notes they will be displayed in a pop up.
 					</p>
 				</div>
 			</div>

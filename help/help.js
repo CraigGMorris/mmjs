@@ -45,23 +45,26 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink subsection"><a href="formulaeditor.html#fbrowser">Function Browser</a></div>
 	<div class="contentlink"><a href="complex.html">Complex Numbers</a></div>
 	<div>&nbsp;</div>
-	<div class="contentlink"><a href="tools.html">Calculation Tools</a></div>
-	<div class="contentlink subsection"><a href="datatable.html">Data Table</a></div>
+	<div class="contentlink"><a href="tools.html">Tools</a></div>
 	<div class="contentlink subsection"><a href="expression.html">Expression</a></div>
+	<div class="contentlink subsection"><a href="model.html">Model</a></div>
+	<div>&nbsp;</div>
+	<div class="contentlink subsection"><a href="datatable.html">Data Table</a></div>
 	<div class="contentlink subsection"><a href="solver.html">Function Solver</a></div>
 	<div class="contentlink subsection"><a href="iterator.html">Iterator</a></div>
 	<div class="contentlink subsection"><a href="matrix.html">Matrix</a></div>
-	<div class="contentlink subsection"><a href="model.html">Model</a></div>
 	<div class="contentlink subsection"><a href="ode.html">Ordinary Differential Equations</a></div>
 	<div class="contentlink subsection"><a href="optimizer.html">Optimizer</a></div>
+	<div class="contentlink subsection"><a href="importedmodel.html">Imported Model</a></div>
+	<div>&nbsp;</div>
 	<div class="contentlink subsection"><a href="graph.html">Graph</a></div>
 	<div class="contentlink subsection"><a href="htmlpage.html">HTML Page</a></div>
-	<div class="contentlink subsection"><a href="importedmodel.html">Imported Model</a></div>
+	<div class="contentlink subsection"><a href="button.html">Button</a></div>
+	<div class="contentlink subsection"><a href="menu.html">Menu</a></div>
+	<div>&nbsp;</div>
 	<div class="contentlink subsection"><a href="notes.html">Tool Notes</a></div>
 	<div>&nbsp;</div>
-	<div class="contentlink"><a href="tools.html">Nerdy Stuff</a></div>
-	<div class="contentlink subsection"><a href="mmserver.html">Running a MM Server</a></div>
-	<div class="contentlink subsection"><a href="couchdb.html">CouchDB Integration</a></div>
+	<div class="contentlink"><a href="mmserver.html">Running a MM Server</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink"><a href="../index.html">MM Home Page</a></div>
 	`);

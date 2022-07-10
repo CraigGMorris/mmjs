@@ -20,35 +20,39 @@
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
-					Every <a href="tools.html">Math Minion tool</a> can have notes associated with it.
-					Beside the name field at the top of every tool
+					Any <a href="tools.html">Math Minion tool</a> can have notes associated with it.
+					To the right of the name and display fields at the top of every tool
 					<a href="infoview.html">information view</a> there is a button
-					labeled <b>Add Notes</b> or <b>Show Notes</b> if notes have already been added.
-					Tapping that will open the notes view.
+					labeled <b>Notes</b> that will open the notes view.
 				</p>
 				<img src="notesview.png" alt="Notes View">
 				<p>
-					You can enter any text you want into the large text area of the notes view.  Tapping on
-					the <b>Apply / Hide</b> button beside the name field will assign the changed notes to 
-					he tool and return to the normal <a href="infoview.html">information view</a>.
+					You can enter any text you want into the large text area at the bottom of the notes view.
+					Tapping on the <b>Done</b> button, which has now replaced the <b>Notes</b> button, will
+					assign the notes to the tool and return to the normal <a href="infoview.html">information
+					view</a>.
 				</p>
 				<p>
-					If you switch to another tool by tapping on the diagram without tapping either the
-					<b>Apply / Hide</b> button or the <b>Show on Diagram</b> button, any changes you have made will
-					be lost.
-				</p>
-				<p>
-					You can access the notes for any tool in a formula with the <b>notes</b> parameter.  For
-					example the formula:
-				</p>
-				<p class="formula">
-					velcocity.notes
-				</p>
-				<p>
-					would return a string value containing the notes for tool <b>velocity</b>.
+					If you switch to another tool by tapping on the diagram without tapping on either the
+					<b>Done</b> button or one of the buttons immediately below it, any changes you made to
+					the note text will be discarded.
 				</p>
 			</div>
-			<div class="section">
+			<div id="model" class="section">
+				<h3>Show in Model View</h3>
+				<p>
+					If you want the notes to appear in the <a href="model.html">Model's</a> information view,
+					tap on the <b>Show in Model Html</b> button. The button label will change to
+					<b>Hide in Model Html</b> and when you view the model's informaton view, the notes will
+					appear above the tool's display.  That assumes that the tool has its <b>Display</b> box set,
+					but even if isn't the note will still appear. 
+				</p>
+				<p>
+					This means you can add text to the view by just having a note displayed, without the tool
+					itself being displayed.
+				</p>
+			</div>
+			<div id="diagram" class="section">
 				<h3>Diagram Notes</h3>
 				<p>
 					If you wish to have your notes appear on the diagram, tap on the button labeled
@@ -59,7 +63,22 @@
 					Note that if the note is very long, it might be truncated on the diagram.
 				</p>
 				<p>If a tool has notes and they are not shown on the diagram, there will still
-					be the word <b>Notes</b> below the icon to indicate the tool has hidden notes.
+					be the word <b>Notes</b> below the icon to indicate the tool has hidden notes. Whether the
+					notes are displayed or just the <b>Notes</b> indicator, tapping on the top of the diagram
+					notes will display them in a pop up.
+				</p>
+			</div>
+			<div id="parameters" class="section">
+				<h3>Notes Parameter</h3>
+				<p>
+					You can access the notes for any tool in a formula with the <b>notes</b> parameter.  For
+					example the formula:
+				</p>
+				<p class="formula">
+					velcocity.notes
+				</p>
+				<p>
+					would return a string value containing the notes for tool <b>velocity</b>.
 				</p>
 			</div>
 		</div>
