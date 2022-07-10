@@ -39,23 +39,12 @@ export function ToolView(props) {
 	name = pathParts[pathParts.length - 1];
 	const [toolName, setToolName] = useState(name);
 	const [showNotes, setShowNotes] = useState(false);
-	const [isDisplayed, setIsDisplayed] = useState(false);
 	const updateResults = props.viewInfo.updateResults;
 	const results = updateResults[0] ? updateResults[0].results : {};
 	const notes = updateResults.length ? results.notes : '';	
 	const [notesText, setNotesText] = useState(notes);
 	const diagramNotes = updateResults.length ? results.diagramNotes : false;
 	const htmlNotes = updateResults.length ? results.htmlNotes : false;
-
-	useEffect(() => {
-		const results = updateResults.length ? updateResults[0].results : {};
-		if (results.isOutput) {
-			setIsDisplayed(true);
-		}
-		else {
-			setIsDisplayed(false);
-		}
-	}, [props.viewInfo.updateResults]);
 
 	const doRename = () => {
 		const path = props.viewInfo.path;
@@ -83,38 +72,6 @@ export function ToolView(props) {
 	}
 
 	let cmpStack = [];
-
-	// const inputCheckBox = !props.isExpression ? '' : e(
-	// 	// isInput check box
-	// 	'div', {
-	// 		id: 'tool-view__is-input',
-	// 		className: 'checkbox-and-label',
-	// 	},
-	// 	e(
-	// 		'label', {
-	// 			id: 'tool-view__is-input-label',
-	// 			className: 'checkbox__label',
-	// 			htmlFor: 'tool-view__is-input-checkbox'
-	// 		},
-	// 		t('react:exprIsInput')
-	// 	),
-	// 	e(
-	// 		'input', {
-	// 			id: 'tool-view__is-input-checkbox',
-	// 			className: 'checkbox__input',
-	// 			type: 'checkbox',
-	// 			checked: results.isInput,
-	// 			onChange: () => {
-	// 				// toggle the isInput property
-	// 				const value = results.isInput ? 'f' : 't';
-	// 				props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, () => {
-	// 					props.actions.updateView(props.viewInfo.stackIndex);
-	// 				});						
-	// 			}
-	// 		},
-	// 	),
-	// );
-
 	const nameArea = e(
 		'div', {
 			id: 'tool-view__name-area',
@@ -162,9 +119,11 @@ export function ToolView(props) {
 					id: 'tool-view__is-output-checkbox',
 					className: 'checkbox__input',
 					type: 'checkbox',
-					checked: isDisplayed,
-					onChange: () => {
+					checked: results.isOutput || false,
+					onChange: (event) => {
 						// toggle the isOutput property
+						event.stopPropagation();
+						event.preventDefault();					
 						const value = results.isOutput ? 'f' : 't';
 						props.actions.doCommand(`${props.viewInfo.path} set isOutput ${value}`, () => {
 							props.actions.updateView(props.viewInfo.stackIndex);

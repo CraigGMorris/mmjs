@@ -333,9 +333,11 @@ export function ExpressionView(props) {
 									id: 'expression__is-input-checkbox',
 									className: 'checkbox__input',
 									type: 'checkbox',
-									checked: results.isInput,
-									onChange: () => {
+									checked: results.isInput || false,
+									onChange: (event) => {
 										// toggle the isInput property
+										event.stopPropagation();
+										event.preventDefault();					
 										const value = props.viewInfo.updateResults[0].results.isInput ? 'f' : 't';
 										props.actions.doCommand(`${props.viewInfo.path} set isInput ${value}`, () => {
 											props.actions.updateView(props.viewInfo.stackIndex);
@@ -363,9 +365,11 @@ export function ExpressionView(props) {
 									id: 'expression__show-input-checkbox',
 									className: 'checkbox__input',
 									type: 'checkbox',
-									checked: results.showInput,
-									onChange: () => {
+									checked: results.showInput || false,
+									onChange: (event) => {
 										// toggle the isOutput property
+										event.stopPropagation();
+										event.preventDefault();					
 										const value = props.viewInfo.updateResults[0].results.showInput ? 'f' : 't';
 										props.actions.doCommand(`${props.viewInfo.path} set showInput ${value}`, () => {
 											props.actions.updateView(props.viewInfo.stackIndex);
