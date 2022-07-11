@@ -8,7 +8,7 @@
 		"squash = 1e8 N/acre",
 		"lp100km = 0.01 l/km"
 	],
-	"CaseName": "Getting Started Test2",
+	"CaseName": "Getting Started",
 	"DefaultUnitSet": "SI",
 	"SelectedObject": "",
 	"ModelPath": "/.root",
