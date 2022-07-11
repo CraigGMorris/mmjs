@@ -61,6 +61,7 @@ const mmpost = (inputs, requests, callBack) => {
 		message.callBackNumber = callBackNumber;
 		callBacks[callBackNumber++] = callBack;
 	}
+	message.scrollY = window.scrollY;
 	window.parent.postMessage('htmlPage' + JSON.stringify(message), '*');
 }
 const mminputs = (idNames) => {
@@ -234,6 +235,10 @@ class MMHtmlPageProcessor {
 						const target = parentModel.children[name];
 						if (target) {
 							response.push = {name: actions[action], path: target.getPath(), type: target.typeName};
+						}
+						if (message.scrollY) {
+							this.scrollViewToY = message.scrollY; // to allow same scroll on next view
+							this.clearCache();
 						}
 					}
 						break;
@@ -426,7 +431,20 @@ class MMHtmlPageProcessor {
 					chunks.push(processedHtml.substring(includeFrom));
 					processedHtml = chunks.join('')
 				}
-
+				if (this.scrollViewToY) {
+					processedHtml += `
+					<script>
+					const scrollToOptions = {
+						left: 0,
+						top: ${this.scrollViewToY},
+						behavior: 'auto'
+					}
+					window.scrollTo(scrollToOptions);
+					</script>		
+					`;
+					this.scrollViewToY = null;
+				}
+		
 				this.processedHtml = processedHtml;
 			}
 		}
