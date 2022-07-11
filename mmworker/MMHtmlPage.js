@@ -236,7 +236,7 @@ class MMHtmlPageProcessor {
 						if (target) {
 							response.push = {name: actions[action], path: target.getPath(), type: target.typeName};
 						}
-						if (message.scrollY) {
+						if (message.scrollY != null) {
 							this.scrollViewToY = message.scrollY; // to allow same scroll on next view
 							this.clearCache();
 						}
