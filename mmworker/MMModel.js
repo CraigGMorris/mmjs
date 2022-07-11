@@ -595,7 +595,7 @@ class MMModel extends MMTool {
 				toolInfo['formula'] = tool.formula.formula;
 				if (tool.cachedValue) {
 					const unit = tool.displayUnit || tool.cachedValue.displayUnit;
-					const format = tool.format || tool.cachedValue.formatValue;
+					const format = tool.format || tool.cachedValue.displayFormat;
 					const v = tool.cachedValue.stringWithUnit(unit, format);
 					if (v) {
 						toolInfo['result'] = v;

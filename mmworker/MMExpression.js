@@ -308,8 +308,13 @@ class MMExpression extends MMTool {
 					else if (value instanceof MMTableValue) {
 						const column = value.columnNamed(description);
 						rv = column ? column.value : null;
-						if (rv && column && column.format) {
-							rv.displayFormat = column.format;
+						if (rv && column) {
+							if (column.format) {
+								rv.displayFormat = column.format;
+							}
+							if (column.displayUnit) {
+								rv.displayUnit = column.displayUnit;
+							}
 						}
 					}
 					if (!rv) {
@@ -372,7 +377,7 @@ class MMExpression extends MMTool {
 			}
 			else {
 				displayUnit = this.displayUnit || this.cachedValue.displayUnit;
-				formats = this.cachedValue.formatValue;
+				formats = this.cachedValue.displayFormat;
 				if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, value.unitDimensions)) {
 					displayUnit = null;  // display unit is wrong type - ignore and use default
 				}
@@ -405,15 +410,19 @@ class MMExpression extends MMTool {
 				if (!this.tableUnits) {
 					this.tableUnits = {};
 				}
-				this.tableUnits[parts[0]] = unit;
-				this.displayUnit = null;
-				command.results = parts[1];
+				if (this.tableUnits[parts[0]] != unit) {
+					this.tableUnits[parts[0]] = unit;
+					this.displayUnit = null;
+					command.results = parts[1];
+					this.forgetCalculated();
+				}
 				return;
 			}
 		}
 		else if (this.tableUnits && this.tableUnits[parts[0]]) {
 			delete this.tableUnits[parts[0]];
 			command.results = '';
+			this.forgetCalculated();
 			return;
 		}
 		this.setError('mmcmd:_setColumnUnit', {});
