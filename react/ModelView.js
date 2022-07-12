@@ -84,7 +84,7 @@ export function ModelView(props) {
 						}
 						if (received.didLoad) {
 							if (received.resetInfo) {
-								props.actions.resetInfoStack('root', received.resetInfo, props.viewInfo.stackIndex);
+								props.actions.resetInfoStack('root', received.resetInfo);
 								props.actions.updateDiagram(true);
 							}
 						}

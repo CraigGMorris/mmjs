@@ -304,14 +304,13 @@ export function MMApp(props) {
 	}, [viewType]);
 
 	/** resetInfoStack
+	 * clears all views and optionally fills infoStack with new view state
+	 * - called when new case loaded
 	 * @param {string} rootName
 	 * @param {string} resetInfo - optional object containing modelStack,
-	 * @param {Number} currentStackIndex - used to force setting of update commands if 0
 	 * an array of model names to be pushed to the info stack and
 	 * an optional selectedTool containing information
 	 * for a tool in the top most model to be viewed immediately
-	 * clears all views and optionally fills infoStack with new view state
-	 * - called when new case loaded
 	 */
 	const resetInfoStack = useCallback((rootName, resetInfo, currentStackIndex) => {
 		let path = `/.${rootName}`;
@@ -358,12 +357,14 @@ export function MMApp(props) {
 				infoStack.push(infoState);		
 			}
 		}
-		setViewInfo(infoState);
-		if (currentStackIndex === 0) {
-			// hack to force reload of root model info
-			setUpdateCommands(0,
-				`${path} toolViewInfo`);
-		}
+		setViewInfo({
+			title: 'loading',
+			path: '',
+			stackIndex: 0,
+			updateCommands: '',
+			updateResults: [],
+			viewKey: 'Model',
+		})
 		while(dgmStateStack.pop());
 	},[]);
 
