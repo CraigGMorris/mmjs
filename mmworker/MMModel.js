@@ -88,6 +88,7 @@ class MMModel extends MMTool {
 		this.htmlProcessor = new MMHtmlPageProcessor(this)
 		this.nextToolNumber = 1;
 		this.isMissingObject = false;
+		this.lastDefaultUnitSetName = '';
 	}
 
 	/** @override */
@@ -924,6 +925,10 @@ class MMModel extends MMTool {
 		if (this.indexTool) {
 			results.indexTool = this.indexTool;
 		}
+		if (this.lastDefaultUnitSetName !== theMMSession.unitSystem.sets.defaultSetName) {
+			this.lastDefaultUnitSetName = theMMSession.unitSystem.sets.defaultSetName;
+			this.htmlProcessor.clearCache();
+		}
 		results.html = `
 		<html>
 			<head>
@@ -934,7 +939,7 @@ class MMModel extends MMTool {
 			<body>
 				${this.htmlProcessor.htmlForRequestor()}
 			</body>
-		</html>`
+		</html>`;
 	}
 
 	/**

@@ -318,7 +318,7 @@ export function MMApp(props) {
 			title: rootName,
 			path: path,
 			stackIndex: 0,
-			updateCommands: '',
+			updateCommands: `${path} toolViewInfo`,
 			updateResults: [],
 			viewKey: 'Model',
 		};
@@ -357,15 +357,9 @@ export function MMApp(props) {
 				infoStack.push(infoState);		
 			}
 		}
-		setViewInfo({
-			title: 'loading',
-			path: '',
-			stackIndex: 0,
-			updateCommands: '',
-			updateResults: [],
-			viewKey: 'Model',
-		})
+		setViewInfo(infoState);
 		while(dgmStateStack.pop());
+		updateView();
 	},[]);
 
 	/**

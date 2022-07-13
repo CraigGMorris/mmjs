@@ -89,6 +89,7 @@ class MMHtmlPageProcessor {
 		this.rawHtml = null;
 		this.processedHtml = null;
 		this.recursionBlockIsOn = false;
+		this.updateNumber = Math.random();
 	}
 
 	/**
@@ -392,7 +393,8 @@ class MMHtmlPageProcessor {
 			}
 			if (this.rawHtml) {
 				let regex = RegExp('<mm>.*?</mm>','msig');
-				let processedHtml = this.rawHtml;
+				let processedHtml = `<!--${this.updateNumber++}-->` + this.rawHtml;
+				// unique comment to ensure react updates view
 				let formulaNumber = 0;
 				while (regex.test(processedHtml)) {
 					regex.lastIndex = 0;
