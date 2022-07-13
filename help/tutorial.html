@@ -43,18 +43,22 @@
 			<div id="getstart" class="section">
 				<h3>Getting Started</h3>
 				<p>
-					When you first access Math Minion on a new server or from a new browser,
+					When you access Math Minion for the first time or on a new server or from a new browser,
 					the <a href="getstarted.html#getstart">Getting Started session</a> will
 					be loaded and if your browser window is wide enough. you will see something
 					like this:
 				</p>
 				<img src="tutorial/getstarted.png" alt="Getting Started">
 				<p>
-					On the left is a <a href="diagram.html">diagram</a> showing various
-					tools, while an <a href="infoview.html">information view</a> about the currently
-					selected <a href="tools.html">tool</a> is shown on the right.  In this case the
-					<a href="htmlpage.html">Html Page tool</a> named <b>Welcome</b> is selected and showing
-					greeting information in the <a href="infoview.html">information view</a>.
+					On the left is a <a href="diagram.html">diagram</a> showing the various
+					tools contained in the root model. A model is simply a collection of tools, possibly
+					including other models.
+				</p>
+				<p>
+					On the right is an <a href="infoview.html">information view</a> about the currently
+					selected <a href="tools.html">tool</a>, which in this case is the root model itself.
+					An results for tools contained by a model can be displayed on its information view
+					and in this case the HtmlPage named welcome is displayed. 
 				</p>
 				<p>
 					On a narrow device, like a phone, you probably will just see the
@@ -89,6 +93,7 @@
 					name field for the <b>root</b> <a href="model.html">model</a> and the
 					<a href="diagram.html">diagram</a> should be blank.
 				</p>
+				<img src="tutorial/blanksession.png" alt="Blank Session">
 			</div>
 			<div id="add" class="section">
 				<h3>Add Expressions</h3>
@@ -98,12 +103,7 @@
 				</p>
 				<img src="tutorial/dgmbgmenu.png" alt="Diagram background menu">
 				<p>
-					Tap on <b>Add Tool to Model</b> to get another menu, this time of available
-					tools:
-				</p>
-				<img src="tutorial/toolmenu.png" alt="Tool menu">
-				<p>
-					Tap on <b>Expression</b> to create an <a href="expression.html">expression tool</a>.
+					Tap on <b>Add Expression</b> to create an <a href="expression.html">expression tool</a>.
 					An icon will appear on the <a href="diagram.html">diagram</a> where you originally tapped:
 				</p>
 				<img src="tutorial/expricon.png" alt="Expression Icon">
@@ -154,7 +154,7 @@
 				</p>
 				<img src="tutorial/unitsview.png" alt="Units view">
 				<p>
-					Tap on <b>US</b> to select US units and then one the <b>&lt; square</b> button
+					Tap on <b>US</b> to select US units and then on the <b>&lt; square</b> button
 					at the upper left to return to the square expression. (Everything that is blue in
 					information views has a tappable action).
 				</p>
@@ -168,7 +168,7 @@
 				</p>
 				<p>
 					Okay, let's try something different. Click on the background again and select
-					<b>Add to Model</b> and <b>Expression</b> to create another expression. Name it
+					<b>Add Expression</b> to create another expression. Name it
 					<b>angles</b> and then tap on the <b>&#10530;</b> icon to the right of the
 					<a href="formulaeditor.html#fields">formula field</a>. This will bring up a
 					<a href="formulaeditor.html#editor">formula editor</a> which allows us to
@@ -231,7 +231,7 @@
 					values calculated.  Similarly all inputs are converted to SI base units immediately.
 				</p>
 				<p>
-					Now create another expression and name it <b>sin</b> and then tap on the <b>&#10530;</b>
+					Now create another expression and name it <b>sine</b> and then tap on the <b>&#10530;</b>
 					icon to the right of the its <a href="formulaeditor.html#fields">formula field</a>.
 				</p>
 				<p>
@@ -265,12 +265,12 @@
 					{sin angles}
 				</p>
 				<p>
-					Tap the <b>Apply</b> button to assign the formula to the <b>sin</b> expression. The
+					Tap the <b>Apply</b> button to assign the formula to the <b>sine</b> expression. The
 					information view should now look like this:
 				</p>
-				<img src="tutorial/sinangles.png" alt="Sin angles">
+				<img src="tutorial/sinangles.png" alt="Sine angles">
 				<p>
-					The sin of all the elements of the array calculated by the <b>angles</b> expression
+					The sine of all the elements of the array calculated by the <b>angles</b> expression
 					appear in the table at the bottom. In general Math Minion operators and functions work
 					on all elements of their arguments.
 				</p>
@@ -292,20 +292,21 @@
 				</p>
 				<p>
 					Note the line going from the corner of the <b>angles</b> expression to the center of one of the
-					vertical sides of the <b>sin</b> expression. This indicates that the <b>sin</b> expression
+					vertical sides of the <b>sine</b> expression. This indicates that the <b>sine</b> expression
 					is using the value of <b>angles</b> in its calculations.
 				</p>
 			</div>
 			<div id="plot" class="subsection">
 				<h3>Plotting Results</h3>
 				<p>
-					Tap on the <a href="diagram.html">diagram</a> background again and this time add a
-					<a href="graph.html">Graph</a>. The information view will look like this:
+					Tap on the <a href="diagram.html">diagram</a> background again and this time select 
+					<b>Add Display Tool</b> and then <a href="graph.html">Graph</a> from the resulting menu.
+					Rename it <b>Plot</b> and the information view will look like this:
 				</p>
 				<img src="tutorial/singraph1.png" alt="Empty graph information view">
 				<p>
 					Enter <b>angles</b> in the <b>x1</b> <a href="formulaeditor.html#fields">formula field</a>
-					and <b>sin</b> in the <b>y1_1</b> one. Note that the unit beside <b>angles</b> is
+					and <b>sine</b> in the <b>y1_1</b> one. Note that the unit beside <b>angles</b> is
 					<b>Fraction</b>. Tap on it and select <b>degree</b> from the
 					<a href="formulaeditor.html#ubrowser">unit browser</a> and <b>Apply</b> it.
 				</p>
@@ -322,7 +323,7 @@
 					0 degrees.
 				</p>
 				<p>
-					Go back to your diagram, which will now look something like this:
+					Go back to your diagram, which may now look something like this:
 				</p>
 				<img src="tutorial/diagram2.png" alt="Diagram">
 				<p>
@@ -333,7 +334,7 @@
 					0:72*10 degree
 				</p>
 				<p>
-					Hit return and then click on the graph icon <b>x1</b> and the correction should be visible:
+					Hit return and then click on the graph icon <b>Plot</b> and the correction should be visible:
 				</p>
 				<img src="tutorial/singraph3.png" alt="Sin plot">
 				<p>
@@ -354,10 +355,6 @@
 						Math Minion can do, so you might want
 						to go back to the <a href="getstarted.html#getstart">Getting Started session</a>
 						and browse through its examples and descriptions as well as other help pages.
-					</p>
-					<p>
-						A slightly more complex walk through is also
-						<a href="tut_ode.html">available</a>
 					</p>
 					<p>
 						If you get stuck or have and questions or comments, please don't hesitate to
