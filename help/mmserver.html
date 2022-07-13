@@ -97,33 +97,22 @@
 			<div id= "no_net" class="section">
 				<h3>Running Without Internet</h3>
 				<p>
-					The standard version of Math Minion loads the libraries for the
-					<a href="https://reactjs.org/">React</a> and the
-					<a href="https://www.i18next.com/">i18next</a> frameworks from the net,
-					so a small change is required if you wish to run without net access.
+					The standard version of Math Minion uses  <b>run.html</b>, which loads the
+					libraries for the <a href="https://reactjs.org/">React</a> and the
+					<a href="https://www.i18next.com/">i18next</a> frameworks from the Internet.
+					Thus it won't work without Internet access.
 				</p>
 				<p>
-					The necessary files are included with the Math Minion code, so all that
-					is needed is to edit the <b>run.html</b> file in the <b>mmjs</b> folder.
-					Using your favourite text editor, you need to comment out the four
-					<b>script</b> tags referencing <b>unpkg.com</b> and uncomment the four
-					referencing <b>offline</b>. The result should look like:
+					However this is just an efficiency thing and the necessary files are actually
+					included with the Math Minion code and are used with the <b>rund.html</b> file.
+					So simply run Math Minion with an address like the
+					following:
 				</p>
-				<pre>
-&lt;!--
-&lt;script src="https://unpkg.com/i18next/i18next.js"&gt;&lt;/script&gt;
-&lt;script src="https://unpkg.com/i18next-xhr-backend/i18nextXHRBackend.js"&gt;&lt;/script&gt;
-&lt;script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin&gt;&lt;/script&gt;
-&lt;script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin&gt;&lt;/script&gt;
---&gt;
-
-&lt;script src="offline/i18next.js"&gt;&lt;/script&gt;
-&lt;script src="offline/i18nextXHRBackend.js"&gt;&lt;/script&gt;
-&lt;script src="offline/react.development.js" crossorigin&gt;&lt;/script&gt;
-&lt;script src="offline/react-dom.development.js" crossorigin&gt;&lt;/script&gt;
-				</pre>
+				<p class="formula">
+					http://localhost:8000/rund.html
+				</p>
 				<p>
-					Now loading this file from your local server should work even if the Internet
+					from your local server and Math Minion should work even if the Internet
 					is not available.
 				</p>
 			</div>
