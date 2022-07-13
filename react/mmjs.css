@@ -1213,6 +1213,10 @@ a:hover {
 	padding: 5px;
 }
 
+#model__indextool-input {
+	height: 22px;
+}
+
 #model__outputs-title {
 	border-bottom: solid 2px;
 	border-top: solid 2px;
