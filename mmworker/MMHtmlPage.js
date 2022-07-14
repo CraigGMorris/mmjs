@@ -26,6 +26,7 @@
 	theMMSession:readonly
 	MMModel:readonly
 	MMDataTable:readonly
+	MMCommandMessage:readonly
 */
 
 // code inserted into the page to implement the mmpost function

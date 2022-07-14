@@ -115,7 +115,18 @@ class ErrorBoundary extends React.Component {
 				this.props.handleBoundraryError();
 //				this.setState({ hasError: false });
 			}
-      return e('h1', {}, 'Something went wrong');
+      return e(
+				'div', {},
+				e('h3', {}, 'Uh oh, something went wrong'),
+				e('span', {},
+					'Please ',
+					e('a', {
+						href: './help/somethingwrong.html',
+						target: '_blank',
+					}, 'click here'),
+					' for information on how to recover'
+				),
+			)
     }
 
     return this.props.children; 

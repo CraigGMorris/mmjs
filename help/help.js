@@ -65,6 +65,7 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink subsection"><a href="notes.html">Tool Notes</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink"><a href="mmserver.html">Running a MM Server</a></div>
+	<div class="contentlink"><a href="somethingwrong.html">Something Wrong</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink"><a href="../index.html">MM Home Page</a></div>
 	`);
