@@ -329,7 +329,12 @@ class MMValue {
 			rv = '';
 		}
 		else if (this.valueCount == 1 && !(this instanceof MMTableValue)) {
-			rv = this.stringForRowColumnWithUnit(1, 1, unit, this.displayFormat).trim();
+			try {
+				rv = this.stringForRowColumnWithUnit(1, 1, unit, this.displayFormat).trim();
+			}
+			catch(e) {
+				rv = '???';
+			}
 		}
 		else {
 			const lines = [];
@@ -361,8 +366,13 @@ class MMValue {
 			for (let row = 1; row <= maxRow; row++) {
 				lines.push(`<tr class="row{$row}">\n\t\t<th class="col0">${row}</th>`)
 				for (let column = 1; column <= maxColumn; column++) {
-					const v = this.stringForRowColumnUnit(row, column, unit, this.displayFormat);
-					lines.push(`\t\t<td class="col${column}">${v}</td>`)
+					try {
+						const v = this.stringForRowColumnUnit(row, column, unit, this.displayFormat);
+						lines.push(`\t\t<td class="col${column}">${v}</td>`)
+					}
+					catch(e) {
+						lines.push(`\t\t<td class="col${column}">???</td>`)
+					}
 				}
 				lines.push('\t</tr>');
 			}
