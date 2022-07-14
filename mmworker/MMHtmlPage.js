@@ -384,75 +384,86 @@ class MMHtmlPageProcessor {
 		if (this.recursionBlockIsOn) {
 			return '';
 		}
-		const messageCode = skipMessageCode ? '' : MMHtmlMessageCode;
-		if (!this.processedHtml) {
-			if (!this.rawHtml) {
-				this.parent.tagFormulas = [];
-				this.rawHtml = this.parent.rawHtml();
-			}
-			if (this.rawHtml) {
-				let regex = RegExp('<mm>.*?</mm>','msig');
-				let processedHtml = `<!--#${Math.random()}-->` + this.rawHtml;
-				// unique comment to ensure react updates view
-				let formulaNumber = 0;
-				while (regex.test(processedHtml)) {
-					regex.lastIndex = 0;
-					let chunks = [];
-					const matches = processedHtml.matchAll(regex);
-					let includeFrom = 0;
-					const tagFormulas = this.parent.tagFormulas;
-					for (const match of matches) {
-						chunks.push(processedHtml.substring(includeFrom, match.index));
-						includeFrom = match.index + match[0].length
-						if (formulaNumber >= tagFormulas.length) {
-							tagFormulas.push(new MMFormula(`_f${formulaNumber}`, this.parent)); 
-						}
-						const tagFormula = tagFormulas[formulaNumber];
-						tagFormula.nameSpace = this.parent.parent; // make sure correct namespace
-						tagFormula.formula = match[0].substring(4, match[0].length - 5);
-						formulaNumber++;
-						if (tagFormula.formula.length === 0) {
-							// if tag is empty assume parent model
-							const parentModel = this.parent.parent;
-							try {
-								this.recursionBlockIsOn = true;
-								chunks.push(parentModel.htmlValue(requestor, true));
-							}
-							finally {
-								this.recursionBlockIsOn = false;
-							}
-						}
-						else {
-							const value = tagFormula.value();
-							if (value instanceof MMValue) {
-								chunks.push(value.htmlValue(requestor));
-							}
-						}
-					}
-					chunks.push(processedHtml.substring(includeFrom));
-					processedHtml = chunks.join('')
+		try {
+			const messageCode = skipMessageCode ? '' : MMHtmlMessageCode;
+			if (!this.processedHtml) {
+				if (!this.rawHtml) {
+					this.parent.tagFormulas = [];
+					this.rawHtml = this.parent.rawHtml();
 				}
-				if (this.scrollViewToY) {
-					processedHtml += `
-					<script>
-					const scrollToOptions = {
-						left: 0,
-						top: ${this.scrollViewToY},
-						behavior: 'auto'
+				if (this.rawHtml) {
+					let regex = RegExp('<mm>.*?</mm>','msig');
+					let processedHtml = `<!--#${Math.random()}-->` + this.rawHtml;
+					// unique comment to ensure react updates view
+					let formulaNumber = 0;
+					while (regex.test(processedHtml)) {
+						regex.lastIndex = 0;
+						let chunks = [];
+						const matches = processedHtml.matchAll(regex);
+						let includeFrom = 0;
+						const tagFormulas = this.parent.tagFormulas;
+						for (const match of matches) {
+							chunks.push(processedHtml.substring(includeFrom, match.index));
+							includeFrom = match.index + match[0].length
+							if (formulaNumber >= tagFormulas.length) {
+								tagFormulas.push(new MMFormula(`_f${formulaNumber}`, this.parent)); 
+							}
+							const tagFormula = tagFormulas[formulaNumber];
+							tagFormula.nameSpace = this.parent.parent; // make sure correct namespace
+							tagFormula.formula = match[0].substring(4, match[0].length - 5);
+							formulaNumber++;
+							if (tagFormula.formula.length === 0) {
+								// if tag is empty assume parent model
+								const parentModel = this.parent.parent;
+								try {
+									this.recursionBlockIsOn = true;
+									chunks.push(parentModel.htmlValue(requestor, true));
+								}
+								finally {
+									this.recursionBlockIsOn = false;
+								}
+							}
+							else {
+								const value = tagFormula.value();
+								if (value instanceof MMValue) {
+									chunks.push(value.htmlValue(requestor));
+								}
+							}
+						}
+						chunks.push(processedHtml.substring(includeFrom));
+						processedHtml = chunks.join('')
 					}
-					window.scrollTo(scrollToOptions);
-					</script>		
-					`;
-					this.scrollViewToY = null;
+					if (this.scrollViewToY) {
+						processedHtml += `
+						<script>
+						const scrollToOptions = {
+							left: 0,
+							top: ${this.scrollViewToY},
+							behavior: 'auto'
+						}
+						window.scrollTo(scrollToOptions);
+						</script>		
+						`;
+						this.scrollViewToY = null;
+					}
+			
+					this.processedHtml = processedHtml;
 				}
-		
-				this.processedHtml = processedHtml;
 			}
+			if (this.processedHtml) {
+				this.parent.addRequestor(requestor);
+			}
+			return messageCode + this.processedHtml;
 		}
-		if (this.processedHtml) {
-			this.parent.addRequestor(requestor);
+		catch(e) {
+			if ((typeof e === 'string')) {
+				return `Error ${e.message}`
+			}
+			else if (e instanceof MMCommandMessage) {
+				this.parent.setError(e.msgKey, e.args);
+			}
+			return '<h3>Error occurred rendering page.</h3>';
 		}
-		return messageCode + this.processedHtml;
 	}
 }
 
