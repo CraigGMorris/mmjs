@@ -146,7 +146,7 @@ class MMMenu extends MMTool {
 	 */
 	valueDescribedBy(description, requestor) {
 		if (!description) {
-			return super.valueDescribedBy(description, requestor);
+			description = 'selected';
 		}
 		const lcDescription = description.toLowerCase();
 		const options = this.optionsFormula.value();

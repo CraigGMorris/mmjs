@@ -316,7 +316,11 @@ class MMHtmlPageProcessor {
 							requestResults['_response'] = '';
 						}
 					}
-						break;
+					if (message.scrollY != null) {
+						this.scrollViewToY = message.scrollY; // to allow same scroll on next view
+						this.clearCache();
+					}
+					break;
 					case 'mm_undo': {
 						response.undo = actions[action];
 					}
