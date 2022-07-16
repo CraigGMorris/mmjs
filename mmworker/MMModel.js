@@ -820,7 +820,7 @@ class MMModel extends MMTool {
 		chunks.push('		<div class="model-form__objects">')
 		for (let object of results.objects) {
 			if (object.htmlNotes && object.notes && !(object instanceof MMModel)) {
-				chunks.push(`<div class="model-form__notes">${object.notes}</div>`);
+				chunks.push(`<div class="model-form__notes" onClick="${onNameClick}('${object.name}')">${object.notes}</div>`);
 			}	
 			if (object.showInput) {
 				const input = object;
@@ -844,7 +844,13 @@ class MMModel extends MMTool {
 			}
 			if (object.isOutput) {
 				const output = object;
-				let value = output.valueDescribedBy('', requestor);
+				let value;
+				if (output instanceof MMMenu) {
+					value = output.valueDescribedBy('self')
+				}
+				else {
+					value = output.valueDescribedBy('', requestor);
+				}
 				const outputId = 'o_' + this.name + '_' + output.name;
 				if (value) {
 					if (value instanceof MMToolValue) {
