@@ -576,6 +576,7 @@ export function MMApp(props) {
 						else {
 							rescale = true;
 						}
+						updateView(infoStack.length-1, rescale);
 					});
 					break;
 
