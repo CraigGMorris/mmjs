@@ -23,6 +23,7 @@ import {FormulaField, FormulaEditor} from './FormulaView.js';
 const e = React.createElement;
 const useEffect = React.useEffect;
 const useState = React.useState;
+const useCallback = React.useCallback;
 
 /**
  * Enum for button page display types.
@@ -31,7 +32,8 @@ const useState = React.useState;
  */
 const ButtonDisplay = Object.freeze({
 	main: 0,
-	formulaEditor: 1
+	labelFormulaEditor: 1,
+	targetFormulaEditor: 2,
 });
 
 /**
@@ -50,6 +52,7 @@ export function ButtonView(props) {
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
+	const toolPath = props.viewInfo.path;
 
 	if (updateResults.error) {
 		// use empty command just to defer popView
@@ -60,28 +63,24 @@ export function ButtonView(props) {
 	}
 	const results = updateResults.length ? updateResults[0].results : {};
 
-	const applyLabelChanges = () => {
-		const path = `${results.path}.labelFormula`;
-		return (formula) => {
+	const applyLabelChanges = useCallback((formula) => {
+			const path = `${toolPath}.labelFormula`;
 			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(ButtonDisplay.main);
 			});
-		}
-	}
+		});
 
-	const applyTargetChanges = () => {
-		const path = `${results.path}.targetFormula`;
-		return (formula) => {
-			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
-				props.actions.updateView(props.viewInfo.stackIndex);
-				setDisplay(ButtonDisplay.main);
-			});
-		}
-	}
+	const applyTargetChanges = useCallback((formula) => {
+		const path = `${toolPath}.targetFormula`;
+		props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
+			props.actions.updateView(props.viewInfo.stackIndex);
+			setDisplay(ButtonDisplay.main);
+		});
+	});
 
 	let displayComponent;
-	if (display === ButtonDisplay.formulaEditor) {
+	if (display === ButtonDisplay.labelFormulaEditor) {
 		displayComponent = e(
 			FormulaEditor, {
 				id: 'button-label-formula-editor',
@@ -94,7 +93,24 @@ export function ButtonView(props) {
 				cancelAction: () => {
 					setDisplay(ButtonDisplay.main);
 				},
-				applyChanges: applyLabelChanges(),
+				applyChanges: applyLabelChanges,
+			}
+		);
+	}
+	else 	if (display === ButtonDisplay.targetFormulaEditor) {
+		displayComponent = e(
+			FormulaEditor, {
+				id: 'button-label-formula-editor',
+				key: 'editor',
+				t: t,
+				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
+				actions: props.actions,
+				editOptions: editOptions,
+				cancelAction: () => {
+					setDisplay(ButtonDisplay.main);
+				},
+				applyChanges: applyTargetChanges,
 			}
 		);
 	}
@@ -112,10 +128,12 @@ export function ButtonView(props) {
 			));
 		}
 
-		actionOptions.push(actionOption('addrow', t('react:buttonAddRow')))
-		actionOptions.push(actionOption('push', t('react:buttonPushView')))
-		actionOptions.push(actionOption('refresh', t('react:buttonRefresh')))
-		actionOptions.push(actionOption('load',t('react:buttonLoadSession')))
+		actionOptions.push(actionOption('addrow', t('react:buttonAddRow')));
+		actionOptions.push(actionOption('push', t('react:buttonPushView')));
+		actionOptions.push(actionOption('refresh', t('react:buttonRefresh')));
+		actionOptions.push(actionOption('load',t('react:buttonLoadSession')));
+		actionOptions.push(actionOption('loadurl',t('react:buttonLoadUrl')));
+		actionOptions.push(actionOption('cmd', t('react:buttonCommand')));
 
 		const actionField = e(
 			'div',	 {
@@ -174,9 +192,9 @@ export function ButtonView(props) {
 						infoWidth: props.infoWidth,
 						editAction: (editOptions) => {
 							setEditOptions(editOptions);
-							setDisplay(ButtonDisplay.formulaEditor);
+							setDisplay(ButtonDisplay.labelFormulaEditor);
 						},
-						applyChanges: applyLabelChanges(),
+						applyChanges: applyLabelChanges,
 					}
 				),
 			),
@@ -204,9 +222,9 @@ export function ButtonView(props) {
 						infoWidth: props.infoWidth,
 						editAction: (editOptions) => {
 							setEditOptions(editOptions);
-							setDisplay(ButtonDisplay.formulaEditor);
+							setDisplay(ButtonDisplay.targetFormulaEditor);
 						},
-						applyChanges: applyTargetChanges(),
+						applyChanges: applyTargetChanges,
 					}
 				),
 			),

@@ -1,8 +1,10 @@
 {
 	"buttonActionLabel": "Action",
 	"buttonAddRow": "Add Row to a DataTable",
+	"buttonCommand": "Console Command",
 	"buttonLabelLabel": "Label",
 	"buttonLoadSession": "Load Session",
+	"buttonLoadUrl": "Load Session Url",
 	"buttonPushView": "Push View of Tool",
 	"buttonRefresh": "Refresh Tool",
 	"buttonTargetLabel": "Target",

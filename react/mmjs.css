@@ -184,6 +184,10 @@ a:hover {
 	color: var(--link--color-hover);
 }
 
+#button {
+	overflow: hidden;
+}
+
 #button__label_formula-row {
 	display: grid;
 	grid-template-columns: 60px 1fr;
@@ -209,6 +213,7 @@ a:hover {
 	margin-top: 10px;
 	display: grid;
 	grid-template-columns: 60px 1fr;
+	width: 100%;
 }
 
 .button__target-label {
@@ -221,8 +226,10 @@ a:hover {
 }
 
 #button__target_calculated {
+	overflow-wrap: break-word;
+	padding-right: 5px;
 	margin-top: 10px;
-	margin-left: 80px;
+	/* margin-left: 10px; */
 }
 
 .checkbox-and-label {
