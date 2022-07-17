@@ -774,7 +774,12 @@ class MMModel extends MMTool {
 		const results = this.htmlInfo(requestor);
 		const onNameClick = `on${this.name}NameClick`;
 		const chunks = [];
-		chunks.push('		<div class="model-form">');
+		if (isMyNameSpace) {
+			chunks.push('		<div class="model-form">');
+		}
+		else {
+			chunks.push('		<div class="model-form model-form-nested">');
+		}
 		const keyPressed = this.name + '_keyPressed';
 		const changedInput = this.name + '_changedInput';
 		chunks.push('		<script>');

@@ -122,7 +122,19 @@ th.col0, td.col0 {
 	border: solid 1px;
 	padding: 5px;
 	background-color: #f2f2f2;
+	cursor: pointer;
 }
+
+.model-form-nested .model-form__input-name:hover,
+.model-form-nested .model-form__output-name:hover,
+.model-form-nested .model-form__multiline-formula:hover,
+.model-form-nested .model-form__notes {
+	cursor: auto;
+}
+
+/* .model-form-nested .model-form__output-name:hover {
+	cursor: auto;
+} */
 
 .button-tool {
 	margin-top: 10px;
