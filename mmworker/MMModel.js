@@ -819,12 +819,9 @@ class MMModel extends MMTool {
 			}
 		chunks.push('		}');
 		chunks.push('		</script>');
-		if (this.htmlNotes && this.notes) {
-			chunks.push(`<div class="model-form__notes">${this.notes}</div>`);
-		}
 		chunks.push('		<div class="model-form__objects">')
 		for (let object of results.objects) {
-			if (object.htmlNotes && object.notes && !(object instanceof MMModel)) {
+			if (object.htmlNotes && object.notes) {
 				chunks.push(`<div class="model-form__notes" onClick="${onNameClick}('${object.name}')">${object.notes}</div>`);
 			}	
 			if (object.showInput) {
