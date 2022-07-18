@@ -908,6 +908,9 @@ class MMModel extends MMTool {
 		if (command.results.undo) {
 			command.undo = command.results.undo;
 		}
+		if (command.results.error) {
+			command.error = command.results.error;
+		}
 	}
 
 	/**

@@ -311,6 +311,9 @@ class MMHtmlPageProcessor {
 						const results = await theMMSession.processor.processCommandString(cmds);
 						if (results) {
 							requestResults['_response'] = results
+							if (results[0] && results[0].error) {
+								response.error = results[0].error;
+							}
 						}
 						else {
 							requestResults['_response'] = '';
