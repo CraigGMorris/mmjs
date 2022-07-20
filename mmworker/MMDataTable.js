@@ -122,8 +122,10 @@ class MMDataTableColumn extends MMCommandObject {
 
 	set format(newValue) {
 		this._format = newValue;
-		this.columnValue.format = newValue;
-		this.forgetCalculated();
+		if (!theMMSession.isLoadingCase) {
+			this.columnValue.format = newValue;
+			this.forgetCalculated();
+		}
 	}
 
 	/**
