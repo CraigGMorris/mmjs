@@ -414,7 +414,6 @@ function EditRowView(props) {
 								key: item,
 								className: 'datatable__row-menu-option',
 								value: value,
-								selected: item == v,
 							},
 							item
 						));
@@ -425,6 +424,7 @@ function EditRowView(props) {
 					valueField = e(
 						'select', {
 							className: 'datatable__row-menu-select',
+							value: v,
 							onChange: (e) => {
 								const newValue = e.target.value;
 								if (newValue != v) {
