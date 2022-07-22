@@ -584,12 +584,13 @@ class MMModel extends MMTool {
 					requestors.push(source.name);
 				}
 			}
+			const notes = tool.notes ? tool.notes.replace(/<\/*\w+>/g,'') : '';
 			let toolInfo = {
 				toolTypeName: tool.className.substring(2),
 				name: tool.name,
 				position: tool.position,
 				requestors: requestors,
-				notes: tool.notes,
+				notes: notes,
 				diagramNotes: tool.diagramNotes,
 			}
 			if (tool instanceof MMExpression) {
