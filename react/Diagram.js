@@ -1595,19 +1595,26 @@ class ToolIcon extends React.Component {
 		if (info.notes && info.notes.length) {
 			if (info.diagramNotes) {
 				const lines = info.notes.split('\n');
-				let maxLineChars = 25;
+				let maxLineChars = 30;
 				let wrappedLines = [];
 				for (let line of lines) {
 					let words = line.split(' ');
 					let wrappedLineWords = [];
 					let wrappedLineLength = 0;
 					for (let word of words) {
-						wrappedLineWords.push(word);
-						wrappedLineLength += word.length + 1;
-						if (wrappedLineLength > maxLineChars) {
+						if (wrappedLineLength && wrappedLineLength + word.length >= maxLineChars) {
 							wrappedLines.push(wrappedLineWords.join(' '));
 							wrappedLineWords = [];
 							wrappedLineLength = 0;
+						}
+						if (word.length > maxLineChars) {
+							wrappedLines.push(word.substring(0, maxLineChars));
+							wrappedLineWords = [];
+							wrappedLineLength = 0;
+						}
+						else {
+							wrappedLineWords.push(word);
+							wrappedLineLength += word.length + 1;	
 						}
 					}
 					if (wrappedLineWords.length) {
