@@ -54,6 +54,7 @@ th.col0, td.col0 {
 	width:100px;
 	border: solid 1px black;
 	padding: 5px;
+	overflow: scroll;
 }
 
 .model-form__input	{
@@ -75,6 +76,7 @@ th.col0, td.col0 {
 	width:100px;
 	border: solid 1px black;
 	padding: 5px;
+	overflow: scroll;
 }
 .model-form__output-table, .model-form__output-tool {
 	margin-top: 5px;
