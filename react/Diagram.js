@@ -1282,6 +1282,14 @@ export class Diagram extends React.Component {
 							t: t,
 							menu: [
 								{
+									text: this.props.t('react:dgmButtonMenuClose'),
+									action: () => {
+										this.setState({
+											showContext: null
+										})
+									}
+								},
+								{
 									text: this.props.t('react:dgmButtonDeleteSel'),
 									action: deleteTools
 								},
