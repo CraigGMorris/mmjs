@@ -298,6 +298,9 @@ class MMExpression extends MMTool {
 							rv = new MMTableValue({columns: columns});
 						}
 					}
+					else {
+						rv = value;
+					}
 					break;
 
 				default: {
