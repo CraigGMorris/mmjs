@@ -813,7 +813,8 @@
 							<p><b>%12.4f</b></p>
 							<p>
 							which says the field should be 12 characters wide with 4 characters after the
-							decimal point in normal floating point format.  An <b>e</b> can be used instead
+							decimal point in normal floating point format. If <b>c</b> is used instead of <b>f</b>,
+							the numbers will have commas added.  An <b>e</b> can be used instead
 							of the <b>f</b> for exponential format and you can even show numbers with an arbitrary
 							base between 2 and 36.  For instance a value could be represented in hex with
 							<b>%14.16x</b>.  Note it is also permissable to omit the size number, i.e.

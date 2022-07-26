@@ -159,9 +159,14 @@ export function MMFormatValue(v, format) {
 				precision = 8;
 			}
 			let s = ''
-			switch (format.slice(-1)) {  // last character should be format type
+			const type = format.slice(-1)  // last character should be format type
+			switch (type) {
+				case 'c':
 				case 'f':
 					s = v.toFixed(precision);
+					if (type === 'c') {
+						s = s.replace(/(\d)(\d\d\d(\.|$))/, '$1,$2').replace(/(\d)(\d\d\d,)/, '$1,$2')
+					}
 					break;
 				case 'e':
 					s = v.toExponential(precision);
