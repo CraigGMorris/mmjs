@@ -4501,6 +4501,10 @@ class MMFormula extends MMCommandObject {
 						op = MMFormulaFactory(token.toLowerCase(), this);
 						if (op) {
 							let prevOp = operatorStack[operatorStack.length - 1];
+							if (!prevOp) {
+								this.syntaxError(this.t('mmcmd:formulaSyntaxError'));
+								return null;
+							}
 							while (!(prevOp instanceof MMParenthesisOperator) &&
 								!(prevOp instanceof MMFunctionOperator) &&
 								prevOp.precedence() >= op.precedence())
