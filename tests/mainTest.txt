@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "mainTest",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "Tolerance",
+	"SelectedObject": "errorCount",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
