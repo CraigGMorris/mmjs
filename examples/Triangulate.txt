@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "Triangulate Example",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
+	"SelectedObject": "root",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -16,64 +16,80 @@
 		"DiagramY": -12321,
 		"HideInfo": "n",
 		"DiagramNotes": "n",
+		"HtmlNotes": "n",
 		"Type": "Model",
 		"diagramScale": 1,
 		"Objects": [
 			{
 				"name": "r",
 				"Notes": "The column of range values is extracted from the transmitters list and transposed into a row array.",
-				"DiagramX": 50,
-				"DiagramY": 135,
+				"DiagramX": 45,
+				"DiagramY": 125,
 				"HideInfo": "y",
-				"DiagramNotes": "n",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose transmitters.r}"
-				}
+				},
+				"format": "10.1f"
 			},
 			{
 				"name": "x",
 				"Notes": "These are the x coordinates of the circles representing the range from each transmitter.\n\nThey are calculated by multiplying the r row array by cosine of theta, which is a column array.  This produces a matrix with one column for each transmitter and one row for each angle in theta.\n\nThe row array x0 is then added to offset each transmitters location.\n\nThis expression is only used for plotting.",
-				"DiagramX": 160,
-				"DiagramY": 35,
+				"DiagramX": 150,
+				"DiagramY": 215,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "r*{cos theta}+x0"
-				}
+				},
+				"showInput": "y",
+				"format": "10.2f"
 			},
 			{
 				"name": "theta",
 				"Notes": "Inorder to plot the range circles for each transmitter, this array of angles is created.",
-				"DiagramX": 50,
-				"DiagramY": 105,
+				"DiagramX": 150,
+				"DiagramY": 185,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "0:360*1\"degree\""
-				}
+				},
+				"showInput": "y",
+				"displayUnit": "degree",
+				"format": "10.1f"
 			},
 			{
 				"name": "y",
 				"Notes": "These are the y coordinates of the circles representing the range from each transmitter.\n\nThey are calculated by multiplying the r row array by sine of theta, which is a column array.  This produces a matrix with one column for each transmitter and one row for each angle in theta.\n\nThe row array y0 is then added to offset each transmitters location.\n\nThis expression is only used for plotting.",
-				"DiagramX": 160,
-				"DiagramY": 70,
+				"DiagramX": 150,
+				"DiagramY": 250,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "r*{sin theta}+y0"
-				}
+				},
+				"showInput": "y",
+				"format": "10.2f"
 			},
 			{
 				"name": "Position_Plot",
 				"Notes": "The circles representing the reported distances from each transmitter to the receiver are plotted in blue, while the optimized location is plotted as the green dot.",
-				"DiagramX": 250,
-				"DiagramY": 100,
+				"DiagramX": 245,
+				"DiagramY": 160,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Graph",
 				"X1": {
 					"v": "x",
@@ -100,39 +116,50 @@
 						"unit": "km",
 						"lineType": 1
 					}
-				}
+				},
+				"Selected": "0_0"
 			},
 			{
 				"name": "x0",
 				"Notes": "The column of x coordinates is extracted from the transmitters list and transposed into a row array.",
-				"DiagramX": 50,
-				"DiagramY": 170,
+				"DiagramX": 45,
+				"DiagramY": 175,
 				"HideInfo": "y",
-				"DiagramNotes": "n",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose transmitters.x}"
-				}
+				},
+				"showInput": "y",
+				"format": "10.1f"
 			},
 			{
 				"name": "y0",
 				"Notes": "The column of y coordinates is extracted from the transmitters list and transposed into a row array.",
-				"DiagramX": 50,
-				"DiagramY": 200,
+				"DiagramX": 45,
+				"DiagramY": 225,
 				"HideInfo": "y",
-				"DiagramNotes": "n",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose transmitters.y}"
-				}
+				},
+				"showInput": "y",
+				"format": "10.1f"
 			},
 			{
 				"name": "opt",
 				"Notes": "The optimizer has two outputs, corresponding to the x and y coordinates of the estimated receiver location.  These will be adjusted to minimize the sum of range errors.",
-				"DiagramX": 160,
-				"DiagramY": 100,
+				"DiagramX": 150,
+				"DiagramY": 35,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Optimizer",
 				"optFormula": {
 					"Formula": "{sum errors}"
@@ -141,8 +168,8 @@
 					"Formula": "2"
 				},
 				"outputs": [
-					5.48828393999406,
-					5.347915402664676
+					5.563012750931917,
+					5.616370151017301
 				],
 				"Enabled": true,
 				"Optimized": true
@@ -150,65 +177,82 @@
 			{
 				"name": "errors",
 				"Notes": "The errors are calculated as the squares of the differences between the reported transmitter range and the calculated distance between the transmitter and the estimated location.",
-				"DiagramX": 160,
-				"DiagramY": 130,
+				"DiagramX": 150,
+				"DiagramY": 65,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "(r - optR)^2"
-				}
+				},
+				"showInput": "y",
+				"format": "10.0f"
 			},
 			{
 				"name": "optR",
 				"Notes": "The Pythagorus relation\n\nr^2 = x^2 + y^2\n\nis used to calculate the distances between the transmitters and the location estimated by the optimizer.",
-				"DiagramX": 160,
-				"DiagramY": 220,
+				"DiagramX": 150,
+				"DiagramY": 155,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "((x0 - optX)^2 + (y0 - optY)^2)^0.5\n"
-				}
+				},
+				"showInput": "y",
+				"format": "10.2f"
 			},
 			{
 				"name": "optX",
 				"Notes": "This converts the first optimizer output value into a x coordinate in kilometers.\n\nThe initial estimate from the optimizer of [0,0], isn't very good and in more complex instances it might be wise to add an offset corresponding to a better estimate.  This isn't necessary in this case though.",
-				"DiagramX": 160,
-				"DiagramY": 160,
+				"DiagramX": 150,
+				"DiagramY": 95,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "opt.1 *1\"km\""
 				},
+				"showInput": "y",
 				"displayUnit": "km"
 			},
 			{
 				"name": "optY",
-				"Notes": "This converts the second optimizer output value into a y coordinate in kilometers.\n\nThe initial estimate from the optimizer of [0,0], isn't very good and in more complex instances it might be wise to add an offset corresponding to a better estimate.  This isn't necessary in this case though.",
-				"DiagramX": 160,
-				"DiagramY": 190,
+				"Notes": "This converts the second optimizer output value into a y coordinate in kilometers.",
+				"DiagramX": 150,
+				"DiagramY": 125,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "opt.2 *1\"km\""
 				},
+				"showInput": "y",
 				"displayUnit": "km"
 			},
 			{
 				"name": "transmitters",
 				"Notes": "This is a data table, which serves as a list of transmitters.  The columns represent the coordinates and distance to the receiver.",
 				"DiagramX": 45,
-				"DiagramY": 35,
+				"DiagramY": 65,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Data Table",
 				"Columns": [
 					{
 						"name": "x",
 						"displayUnit": "km",
+						"format": "10.2f",
 						"nValues": [
 							1500,
 							6600,
@@ -221,6 +265,7 @@
 					{
 						"name": "y",
 						"displayUnit": "km",
+						"format": "10.2f",
 						"nValues": [
 							4000,
 							8800,
@@ -233,16 +278,33 @@
 					{
 						"name": "r",
 						"displayUnit": "km",
+						"format": "10.2f",
 						"nValues": [
 							5000,
 							4000,
-							5000,
+							5500,
 							6000
 						],
 						"unitDimensions": "1 0 0 0 0 0 0",
 						"defaultValue": "0 km"
 					}
-				]
+				],
+				"Filter": {
+					"Formula": ""
+				}
+			},
+			{
+				"name": "Overview",
+				"Notes": "<b>Optimizer Example</b>\n\nThis example assumes that a receiver gets a signal from four different transmitters that gives an approximate distance to each transmitter.  An <b>Optimizer</b> tool is used to find the position of the receiver that most closely matches those distances.",
+				"DiagramX": 45,
+				"DiagramY": 35,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "'Just notes"
+				}
 			}
 		]
 	}

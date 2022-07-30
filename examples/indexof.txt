@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "indexof example",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "Overview",
+	"SelectedObject": "",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -15,6 +15,7 @@
 		"DiagramY": -12321,
 		"HideInfo": "n",
 		"DiagramNotes": "n",
+		"HtmlNotes": "n",
 		"Type": "Model",
 		"diagramScale": 1,
 		"Objects": [
@@ -22,9 +23,11 @@
 				"name": "Quotes",
 				"Notes": "A table of quotes for stock symbols.",
 				"DiagramX": 55,
-				"DiagramY": 285,
-				"HideInfo": "n",
+				"DiagramY": 250,
+				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Data Table",
 				"Columns": [
 					{
@@ -43,6 +46,7 @@
 					{
 						"name": "Date",
 						"displayUnit": "date",
+						"format": "10.0f",
 						"nValues": [
 							1370822400,
 							1370822400,
@@ -56,7 +60,8 @@
 					},
 					{
 						"name": "quote",
-						"displayUnit": "Fraction",
+						"displayUnit": "dollar",
+						"format": "10.2f",
 						"nValues": [
 							37,
 							42,
@@ -68,82 +73,105 @@
 						"unitDimensions": "0 0 0 0 0 0 0",
 						"defaultValue": "0"
 					}
-				]
+				],
+				"Filter": {
+					"Formula": ""
+				}
 			},
 			{
 				"name": "Companies",
 				"Notes": "A table with a column of names, a column of symbols and a column of share holdings.  The object is to look up names for each value of object quotes by matching against the symbol column.",
 				"DiagramX": 55,
-				"DiagramY": 325,
+				"DiagramY": 295,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{table {cc \"Name\", \"Symbol\", \"Shares\"},\n\t{cc \"Microsoft\", \"Coke\", \"Apple\"},\n\t{cc \"MSFT\", \"KO\", \"APPL\"},\n\t{cc 100, 150, 200}\n}"
-				}
-			},
-			{
-				"name": "i1",
-				"Notes": "See the overview for an explanation.",
-				"DiagramX": 140,
-				"DiagramY": 250,
-				"HideInfo": "y",
-				"DiagramNotes": "y",
-				"Type": "Expression",
-				"Formula": {
-					"Formula": "{indexof quotes.symbol, Companies.symbol}[0,1]"
-				}
-			},
-			{
-				"name": "i2",
-				"Notes": "To avoid getting an index out of range error for the 0 index in the 6th row, this if statement replaces any 0 values with 1.",
-				"DiagramX": 240,
-				"DiagramY": 250,
-				"HideInfo": "y",
-				"DiagramNotes": "y",
-				"Type": "Expression",
-				"Formula": {
-					"Formula": "{if i1, i1, 1}"
-				}
+				},
+				"showInput": "y",
+				"tableFormats": [
+					null,
+					null,
+					null,
+					"10.0f"
+				]
 			},
 			{
 				"name": "Names",
-				"Notes": "The names corresponding to the indexes matching Quotes.symbol in Companies.symbol are returned.  An if statement is used to return \"Unknown\" for any values of a that did not have a corresponding value in Companies.symbol.\n\nBecause Companies.symbol[i1] has to be computed before the if function is called, it would result in an index error due to the zero index in row 6.  Thus the need to create the i2 index.\n\nIf you were sure that there were no mismatches, i2 could have been dispensed with an the formula here would just be:\n\nCompanies.Name[i1]",
-				"DiagramX": 235,
+				"Notes": "The names corresponding to the indexes matching Quotes.symbol in Companies.symbol are returned.  An if statement is used to return \"Unknown\" for any values of a that did not have a corresponding value in Companies.symbol.\n\nBecause Companies.symbol[index1] has to be computed before the if function is called, it would result in an index error due to the zero index in row 6.  Thus the need to create the index2 index.\n\nIf you were sure that there were no mismatches, index2 could have been dispensed with an the formula here would just be:\n\nCompanies.Name[index1]",
+				"DiagramX": 160,
 				"DiagramY": 305,
 				"HideInfo": "y",
-				"DiagramNotes": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
-					"Formula": "{if i1, Companies.name[i2], \"Unknown\"}"
-				}
+					"Formula": "{if index1, Companies.name[index2], \"Unknown\"}"
+				},
+				"showInput": "y"
 			},
 			{
 				"name": "Holdings",
 				"Notes": "Here a new table is constructed using the companies names instead of symbols.  Also a market value of the holdings is calculated by using the number of shares from the Companies table, with a similar indexing as with Names.",
-				"DiagramX": 140,
-				"DiagramY": 340,
+				"DiagramX": 160,
+				"DiagramY": 335,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
-					"Formula": "{table {cc \"Name\", \"Date\", \"Price\", \"Value\"},\n\tNames,\n\tQuotes.date, Quotes.quote,\n\tQuotes.quote *  {if i1, Companies.Shares[i2], 0}\n}"
+					"Formula": "{table {cc \"Name\", \"Date\", \"Price\", \"Value\"},\n\tNames,\n\tQuotes.date,\n\tQuotes.quote,\n\tQuotes.quote * {if index1,\n\t\tCompanies.Shares[index2],\n\t\t0\n\t}\n}"
 				},
+				"showInput": "y",
 				"tableUnits": {
-					"2": "date"
-				}
+					"2": "date",
+					"3": "dollar",
+					"4": "dollar"
+				},
+				"tableFormats": [
+					null,
+					null,
+					"10.0f",
+					"10.2f",
+					"10.2f"
+				]
 			},
 			{
-				"name": "Overview",
-				"Notes": "Example Overview",
+				"name": "Index1",
+				"Notes": "The <b>indexof</b> function returns a matrix with two columns with the same number of rows as there are values in <b>Quotes.symbol</b>.\n\nThe first column contains the first row number in <b>Companies.symbol</b> which matches the value in <b>Quotes.symbol</b>.\n\nThus row 4 of <b>Quotes.symbol</b> contains <b>KO</b> and the first row in <b>Companies.symbol</b> that contains <b>KO</b> is row 2.\n\nThus row 4, column 1 in the returned value contains a 2.\n\nThe second column contains the column number of the first found value, but since we are only using single dimension arrays here, the values will all be 1, so the index [0,1] is added to the end to just return the first column.\n\nNote that since the 6th row of a contains <b>INTC</b>, which is not present in <b>Companies.Symbols</b>, a 0 is returned in row 6.",
 				"DiagramX": 55,
+				"DiagramY": 370,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{indexof quotes.symbol, Companies.symbol}[0,1]"
+				},
+				"showInput": "y",
+				"format": "10.0f"
+			},
+			{
+				"name": "index2",
+				"Notes": "To avoid getting an index out of range error for the 0 index in the 6th row, this if statement replaces any 0 values with 1.",
+				"DiagramX": 160,
 				"DiagramY": 250,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
-				"Type": "HTML Form",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Expression",
 				"Formula": {
-					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Overview</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tThe expression <b>i1</b> has the formula:\n\t\t</p>\n\t\t<p class=\"formula\">\n\t\t\t{indexof quotes.symbol, Companies.symbol}[0,1]\n\t\t</p>\n\t\t<p>\n\t\t\tThe indexof function returns a matrix with two columns with the same number of rows as there are values in <b>Quotes.symbol</b>. The first column contains the first row number in <b>Companies.symbol</b> which matches the value in <b>Quotes.symbol</b>.\n\t\t</p>\n\t\t<p>\n\t\t\tThus row 4 of <b>Quotes.symbol</b> contains <b>MFST</b> and the first row in <b>Companies.symbol</b> that contains <b>MSFT</b> is row 2.  Thus row 4, column 1 in the returned value contains a 2.\n\t\t</p>\n\t\t<p>\n\t\t\tThe second column contains the column number of the first found value, but since we are only using single dimension arrays here, the values will all be 1, so the index [0,1] is added to the end to just return the first column.\n\t\t</p>\n\t\t<p>\n\t\t\tNote that since the 6th row of a contains <b>INTC</b>, which is not present in <b>Companies.Symbols</b>, a 0 is returned in row 6.\n\n\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
-				}
+					"Formula": "{if index1, index1, 1}"
+				},
+				"showInput": "y",
+				"format": "10.0f"
 			}
 		]
 	}

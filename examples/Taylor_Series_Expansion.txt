@@ -7,15 +7,16 @@
 	"UserUnits": [],
 	"CaseName": "Taylor Series Expansion",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "taylorE",
+	"SelectedObject": "root",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
 		"Notes": "Tap here first...\n\nSeries expansion is a common mathematical tool for approximating functions that cannot be directly calculated.  This example will show how Math Minion's matrix object can be used to easily implement a series expansion, specifically a Taylor series to calculate e^x and sin(x).\n\nSee the notes for each of the objects.",
 		"DiagramX": -12321,
 		"DiagramY": -12321,
-		"HideInfo": "n",
+		"HideInfo": "y",
 		"DiagramNotes": "n",
+		"HtmlNotes": "n",
 		"Type": "Model",
 		"diagramScale": 1,
 		"Objects": [
@@ -23,26 +24,30 @@
 				"name": "x",
 				"Notes": "Just an arbitrary value for the functions to work on.",
 				"DiagramX": 100,
-				"DiagramY": -110,
+				"DiagramY": -125,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "2"
-				}
+				},
+				"showInput": "y"
 			},
 			{
 				"name": "taylorE",
-				"Notes": "An exponential function e^x can be represented by the Taylor series:\n\ne^x = sum from n=0 to infinity of:\n\n        x^n / n!\n\nThe terms of this summation, except for n=0, are represented in this matrix as a column calculated by the formula\n\nx^{row}/{factorial {row}}\n\nwhich is assigned to the column header cell of column 1.\n\nThe function {row} will return the number of each row and thus represents n starting from 1 rather than 0.  This means we still have to add the n=0 term, which is just 1, when we sum the terms.\n\nThe number of terms is set by setting the number or rows in the matrix.",
-				"DiagramX": -100,
-				"DiagramY": -105,
+				"Notes": "An exponential function e^x can be represented by the Taylor series:\n\ne^x = sum from n=0 to infinity of:\n\n        x^n / n!\n\nThe terms of this summation, except for n=0, are represented in this matrix as a column calculated by the formula\n\nx^{row}/{factorial {row}}\n\nwhich is assigned to the column header cell of column 1.\n\nThe function {row} will return the number of each row and thus represents n starting from 1 rather than 0.  This means we still have to add the n=0 term, which is just 1, when we sum the terms.\n\nThe number of terms is taken from the nTerms expression",
+				"DiagramX": -95,
+				"DiagramY": -90,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Matrix",
 				"CellInputs": {
 					"0_0": "x^{row}/{factorial {row}}"
 				},
-				"rowCount": "10",
+				"rowCount": "nTerms",
 				"columnCount": "1"
 			},
 			{
@@ -52,6 +57,8 @@
 				"DiagramY": -110,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Matrix",
 				"CellInputs": {
 					"0_0": "x^(2*{row}+1) * -1^{row}/{factorial 2*{row}+1}"
@@ -63,21 +70,26 @@
 				"name": "sumSine",
 				"Notes": "In this case the n=0 term is just x, which is added to the sum of their other terms calculated by taylorSine.",
 				"DiagramX": 195,
-				"DiagramY": -5,
+				"DiagramY": 10,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "x+{sum taylorSine}"
-				}
+				},
+				"showInput": "y"
 			},
 			{
 				"name": "sumE",
 				"Notes": "Using the sum function with TaylorE as the argument will sum all the terms of the expansion except for the n=0 term.\n\nThe value of this term is just 1, and it is added to the function for a formula:\n\n1+{sum taylorE}\n",
 				"DiagramX": 100,
-				"DiagramY": -65,
+				"DiagramY": -85,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "1+{sum taylorE}"
@@ -87,9 +99,11 @@
 				"name": "diffE",
 				"Notes": "Math Minion has an e to the x function, so we can easily check the accuracy of our approximation with the formula:\n\n{exp x} - sumE\n\nTry altering the number of terms in the expansion to see how that affects the accuracy.  This is done by just changing the number of rows in the TaylorE matrix object.",
 				"DiagramX": 100,
-				"DiagramY": 30,
+				"DiagramY": 15,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{exp x} - sumE"
@@ -99,9 +113,11 @@
 				"name": "diffSine",
 				"Notes": "Calculates the difference between the approximation and the built in sine function.",
 				"DiagramX": 195,
-				"DiagramY": 50,
+				"DiagramY": 65,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{sin x}-sumSine"
@@ -111,9 +127,11 @@
 				"name": "rowE",
 				"Notes": "In order to plot the convergence as the number of terms increase, the formula for the column in this matrix:\n\n1+{sum taylorE[1:{row}]}\n\nIs similar to the one for sumE, but it uses the range operator : and the index operators [] to sum the first n rows of taylorE.\n\nNote that the number of rows for this matrix is set to the formula:\n\n{nrows taylorE}\n\nso that it is always the same size as taylorE.\n",
 				"DiagramX": -5,
-				"DiagramY": -55,
+				"DiagramY": -65,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Matrix",
 				"CellInputs": {
 					"0_0": "0",
@@ -126,12 +144,14 @@
 				"name": "Plot",
 				"Notes": "This plots the sum to n of the taylorE terms, as calculated by rowE, versus n as calculated by the formula:\n\n1:{nrows taylorE}\n\nNote that term 0, which would be 1, is not plotted.\n",
 				"DiagramX": -10,
-				"DiagramY": 110,
+				"DiagramY": 95,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Graph",
 				"X1": {
-					"v": "1:{nrows taylorE}",
+					"v": "1:{nrows taylorE}'Rows",
 					"vmin": "",
 					"vmax": "",
 					"Y1": {
@@ -141,6 +161,20 @@
 						"lineType": 0
 					}
 				}
+			},
+			{
+				"name": "nTerms",
+				"Notes": "Number of terms in expansion",
+				"DiagramX": -95,
+				"DiagramY": -125,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "10"
+				},
+				"showInput": "y"
 			}
 		]
 	}

@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "Fanning Friction Factor",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
+	"SelectedObject": "root",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -16,6 +16,7 @@
 		"DiagramY": -12321,
 		"HideInfo": "n",
 		"DiagramNotes": "n",
+		"HtmlNotes": "n",
 		"Type": "Model",
 		"diagramScale": 1,
 		"Objects": [
@@ -26,6 +27,7 @@
 				"DiagramY": 180,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "edList[{min edcases.i, {nrows edlist}}]"
@@ -38,6 +40,7 @@
 				"DiagramY": 125,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "solver.1+1+1e-9"
@@ -50,6 +53,7 @@
 				"DiagramY": 100,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "-4*{log ed/3.7 + 1.256/(re*rootf)}"
@@ -62,6 +66,7 @@
 				"DiagramY": 140,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "10^(33:80/10)"
@@ -74,6 +79,7 @@
 				"DiagramY": 60,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "1/rootf"
@@ -86,6 +92,7 @@
 				"DiagramY": 20,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Equation Solver",
 				"f0": "lhs-rhs",
 				"c0": "{nrows Re}",
@@ -100,6 +107,7 @@
 				"DiagramY": 270,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{concat \n.05,.04,.03,.02,.015,.01,.008,.006,\n.004,.002,.001,.0008,.0006,.0004,\n.0002,.0001,.00005,.00001,\n.000005,.000001}"
@@ -111,6 +119,7 @@
 				"DiagramY": 165,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "rootf^2"
@@ -122,6 +131,7 @@
 				"DiagramY": 35,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[1]}"
@@ -133,6 +143,7 @@
 				"DiagramY": 15,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{log Re}"
@@ -140,11 +151,13 @@
 			},
 			{
 				"name": "Friction_Factors",
-				"Notes": "Tap the Y axis labels to step through the e/D lines.  A Y label of f_001 would indicate that colour is for the e/D = 0.001 line.",
-				"DiagramX": 545,
+				"Notes": "In the graph information view, tap the Y axis labels to step through the e/D lines.  A Y label of f_001 would indicate that colour is for the e/D = 0.001 line.",
+				"DiagramX": 560,
 				"DiagramY": 215,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
 				"Type": "Graph",
 				"X1": {
 					"v": "logRe",
@@ -290,9 +303,10 @@
 						"v": "OperatingF",
 						"vmin": "0",
 						"vmax": "0.02",
-						"lineType": 1
+						"lineType": 3
 					}
-				}
+				},
+				"Selected": "0_0"
 			},
 			{
 				"name": "f_000001",
@@ -300,6 +314,7 @@
 				"DiagramY": 415,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[20]}"
@@ -311,6 +326,7 @@
 				"DiagramY": 55,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[2]}"
@@ -322,6 +338,7 @@
 				"DiagramY": 75,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[3]}"
@@ -333,6 +350,7 @@
 				"DiagramY": 95,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[4]}"
@@ -344,6 +362,7 @@
 				"DiagramY": 115,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[5]}"
@@ -355,6 +374,7 @@
 				"DiagramY": 135,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[6]}"
@@ -366,6 +386,7 @@
 				"DiagramY": 155,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[7]}"
@@ -377,6 +398,7 @@
 				"DiagramY": 175,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[8]}"
@@ -388,6 +410,7 @@
 				"DiagramY": 195,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[9]}"
@@ -399,6 +422,7 @@
 				"DiagramY": 215,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[10]}"
@@ -410,6 +434,7 @@
 				"DiagramY": 235,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[11]}"
@@ -421,6 +446,7 @@
 				"DiagramY": 255,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[12]}"
@@ -432,6 +458,7 @@
 				"DiagramY": 275,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[13]}"
@@ -443,6 +470,7 @@
 				"DiagramY": 295,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[14]}"
@@ -454,6 +482,7 @@
 				"DiagramY": 315,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[15]}"
@@ -465,6 +494,7 @@
 				"DiagramY": 335,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[16]}"
@@ -476,6 +506,7 @@
 				"DiagramY": 355,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[17]}"
@@ -487,6 +518,7 @@
 				"DiagramY": 375,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[18]}"
@@ -498,6 +530,7 @@
 				"DiagramY": 395,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{transpose edcases.r2[19]}"
@@ -509,6 +542,7 @@
 				"DiagramY": 90,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{concat 3, {log 2100}}"
@@ -520,6 +554,7 @@
 				"DiagramY": 140,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{concat 0.016, 16/2100}"
@@ -527,25 +562,31 @@
 			},
 			{
 				"name": "OperatingF",
+				"Notes": "Displayed Operating Points",
 				"DiagramX": 550,
-				"DiagramY": 275,
+				"DiagramY": 280,
 				"HideInfo": "y",
-				"DiagramNotes": "n",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": ".007"
-				}
+				},
+				"showInput": "y"
 			},
 			{
 				"name": "OperatingRe",
+				"Notes": "",
 				"DiagramX": 550,
-				"DiagramY": 310,
+				"DiagramY": 315,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "{log 50000}"
-				}
+				},
+				"showInput": "y"
 			},
 			{
 				"name": "edcases",
@@ -554,6 +595,7 @@
 				"DiagramY": 215,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Iterator",
 				"whileFormula": {
 					"Formula": "{and\n  {le $.i, {nrows edList}},\n  f,\n  solver.solved\n}"
@@ -576,6 +618,20 @@
 					}
 				],
 				"AutoRun": "y"
+			},
+			{
+				"name": "Legend",
+				"Notes": "",
+				"DiagramX": 565,
+				"DiagramY": 345,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "Friction_Factors.legend[0,2:3]"
+				}
 			}
 		]
 	}
