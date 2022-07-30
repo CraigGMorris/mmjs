@@ -95,6 +95,7 @@ class MMIndexedDBStorage  {
 	 * @param {String} json - json representation of session
 	 */
 	async save(path, json) {
+		path = path.trim();
 		let storage = this;
 		await this.setup();
 		return new Promise((resolve, reject) =>  {
@@ -739,6 +740,7 @@ class MMSession extends MMCommandParent {
 	 * @param {string} newPath - the path for the copy
 	 */
 	async renameSession(oldPath, newPath) {
+		newPath = newPath.trim();
 		if (oldPath.endsWith('/')) {
 			if (!newPath.endsWith('/')) {
 				newPath += '/';
