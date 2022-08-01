@@ -102,19 +102,15 @@ export function MenuView(props) {
 	else {	// main display
 		let selectedValueField;
 		const menuOptions = [];
-		// const selected = results.selected;
-		// const optionLabels = results.optionLabels;
 		const optionCount = optionLabels.length
 		const selectedValue = (selected >= 0 && selected < optionCount) ? optionValues[selected] : '';
 		if (optionCount) {
-			// const optionValues = results.optionValues;
 			const menuOption = (value, label) => {
 				menuOptions.push(e(
 					'option', {
 						className: 'menu__option',
 						key: label,
 						value: value,
-						// selected: label === selectedLabel,
 					},
 					label
 				));
@@ -130,7 +126,6 @@ export function MenuView(props) {
 				id: 'menu__selected-value',
 			},
 			selectedValue
-			// selected < optionCount ? optionValues[selected] : ''
 		)
 
 		const menuField = e(
