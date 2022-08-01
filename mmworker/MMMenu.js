@@ -154,7 +154,7 @@ class MMMenu extends MMTool {
 			return null;
 		}
 		if (this._selected >= options.rowCount) {
-			this.selected = 0;
+			this.selected = options.rowCount ? 0 : -1;
 		}
 		switch (lcDescription) {
 			case 'selected':
@@ -204,7 +204,7 @@ class MMMenu extends MMTool {
 		if (options) {
 			const optionCount = options.rowCount;
 			if (this._selected >= optionCount) {
-				this.selected = 0;
+				this.selected = optionCount ? 0 : -1;
 			}
 			for (let optionNumber = 0; optionNumber < optionCount; optionNumber++) {
 				const value = options.stringForRowColumnUnit(optionNumber + 1, 1);

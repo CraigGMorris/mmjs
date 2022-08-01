@@ -41,12 +41,23 @@ const MenuDisplay = Object.freeze({
 export function MenuView(props) {
 	const [display, setDisplay] = useState(MenuDisplay.main);
 	const [editOptions, setEditOptions] = useState({});
+	const [optionLabels, setOptionLabels] = useState([]);
+	const [optionValues, setOptionValues] = useState([]);
+	const [selected, setSelected] = useState(-1);
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	useEffect(() => {
+		const updateResults = props.viewInfo.updateResults;
+		const results = updateResults.length ? updateResults[0].results : {};
+		setSelected(results.selected != null ? results.selected : -10);
+		setOptionLabels(results.optionLabels || []);
+		setOptionValues(results.optionValues || []);
+	}, props.viewInfo.updateResults);
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
@@ -91,12 +102,12 @@ export function MenuView(props) {
 	else {	// main display
 		let selectedValueField;
 		const menuOptions = [];
-		const selected = results.selected;
-		const optionLabels = results.optionLabels;
-		if (optionLabels) {
-			const optionValues = results.optionValues;
-			const optionCount = optionLabels.length
-			// const selectedLabel = selected < optionCount ? optionLabels[selected] : '';
+		// const selected = results.selected;
+		// const optionLabels = results.optionLabels;
+		const optionCount = optionLabels.length
+		const selectedValue = (selected >= 0 && selected < optionCount) ? optionValues[selected] : '';
+		if (optionCount) {
+			// const optionValues = results.optionValues;
 			const menuOption = (value, label) => {
 				menuOptions.push(e(
 					'option', {
@@ -112,14 +123,16 @@ export function MenuView(props) {
 			for (let i = 0; i < optionCount; i++) {
 				menuOptions.push(menuOption(optionValues[i], optionLabels[i]));
 			}
-
-			selectedValueField = e(
-				'span', {
-					id: 'menu__selected-value',
-				},
-				selected < optionCount ? optionValues[selected] : ''
-			)
 		}
+
+		selectedValueField = e(
+			'span', {
+				id: 'menu__selected-value',
+			},
+			selectedValue
+			// selected < optionCount ? optionValues[selected] : ''
+		)
+
 		const menuField = e(
 			'div',	 {
 				className: 'menu__select-row',
@@ -127,7 +140,7 @@ export function MenuView(props) {
 			e(
 				'select', {
 					className: 'menu__select',
-					value: selected,
+					value: selectedValue,
 					onChange: (e) => {
 						const newValue = e.target.selectedIndex;
 						if (newValue >= 0 && newValue !== selected) {
