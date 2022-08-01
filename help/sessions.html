@@ -96,8 +96,15 @@
 				</p>
 				<p>
 					This is handy both for transferring your whole library of sessions to a different device
-					or browser, but also for creating backups.  While the browser storage is persistant, having
-					a tangible backup file is a good idea.
+					or browser, but also for creating backups.  The browser database is persistant, but
+					only on a "best efforts" basis. If you haven't used it in a long while, or storage is
+					getting low, or if you clear cookies etc., the browser can delete it without saying
+					anything. In practice this rarely seems to happen if you are using the program regularly,
+					but having a backup file is a good idea.
+				</p>
+				<p>
+					Importing an export all file will result in a folder named root in your sessions listing.
+					See the folders section below for how to put things where you want them.
 				</p>
 			</div>
 			<div id="open" class="section">
@@ -127,6 +134,11 @@
 				<p>
 					To remove a session or folder from a folder, simply rename it to something that does not
 					contain a slash character.  To move it to another folder, just rename it appropriately.
+				</p>
+				<p>
+					If you rename a folder as just <b>/</b> then all its files and folders will be placed
+					in main folder. If there are any conflicts with the existing files or folders, the
+					existing ones will be placed in a folder called <b>copy-2</b>.
 				</p>
 			</div>
 			<div id="utility" class="section">
