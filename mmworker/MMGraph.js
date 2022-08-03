@@ -1941,7 +1941,7 @@ class MMGraph extends MMTool {
 		const s = this.svgForDescription('svg');
 		if (s) {
 			this.addRequestor(requestor);
-			return `<div class="graph__svg">${s.values[0]}</div>`;
+			return `<div class="graph__svg">${s.values[0]}</div>&nbsp;`;
 		}
 	}
 	
