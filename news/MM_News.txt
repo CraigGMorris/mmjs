@@ -7,8 +7,8 @@
 	"UserUnits": [],
 	"CaseName": "MM_News",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "News20220805",
-	"ModelPath": "/.root.News20220805",
+	"SelectedObject": "News20220802",
+	"ModelPath": "/.root.News20220802",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
@@ -1816,7 +1816,7 @@
 				]
 			},
 			{
-				"name": "News20220805",
+				"name": "News20220802",
 				"Notes": "<b>New Model Information Views</b>\n\nThe views for models have been completely redesigned, with the motivation being to provide a means of generating simple forms, reports etc., without needing any knowledge of HTML.\n\nIn that spirit, this article is just the view for this model and what you are reading right now its notes. In addition to the <b>Show on Diagram</b> button, the notes editor for a tool now has a <b>Show in Model HTML</b> button. Model notes are shown at the top of its own view.\n\n<i>Okay, I cheated a bit by including some very basic tags to highlight things. Notes can contain some simple HTML tags like these, but nothing too fancy.</i>\n\nAny tool in a model can be set to have its results shown on the model's view. This is done by checking the <b>Display</b> check box beside its name on the tool's view. What is displayed will depend on what type of tool it is.\n\nExpressions now have a check box labeled <b>Display Input</b>, which if checked will cause an input field to appear in the model view. This allows you to enter or edit an expression's formula right from the model view. This expression (<b>Weight</b>) has that box checked, so an input field for it will appear below. It does not have its <b>Display</b> box checked though, so the calculated value will not be shown. In this case that will normally just be an entered constant.\n\nThe <b>Energy</b> expression does have its <b>Display</b> box checked, so its result is displayed, but not its formula. It also has its notes shown.  You can set these in any combination and even have only the notes appear.\n\nRather than a lengthy explanation like this, a more normal use for notes would be something like:",
 				"DiagramX": 80,
 				"DiagramY": -145,
@@ -1917,7 +1917,7 @@
 					},
 					{
 						"name": "Miscellaneous",
-						"Notes": "<b>Miscellaneous</b>\n\nIf the unit is Fraction, it is no longer displayed in table value headers.\n\nRenamed Index Tool to Default View on the model information view.  However its utility is largely replaced by the new model view behaviour.\n\nGraph SVG was not honouring line type selection.\n\nLabel formats for graph SVG now match the interactive display.\n\nVarious fixes.\n\nIf you are unfortunate enough to encounter the <b>something went wrong</b> message that occurs Math Minion can't render a page (i.e. a bug), the output is a little politer,\nwith a link to some suggested recovery options.",
+						"Notes": "<b>Miscellaneous</b>\n\nIf the unit is Fraction, it is no longer displayed in table value headers.\n\nRenamed Index Tool to Default View on the model information view.  However its utility is largely replaced by the new model view behaviour.\n\nGraph SVG was not honouring line type selection.\n\nLabel formats for graph SVG now match the interactive display.\n\nMany of the examples listed in Getting Started were updated to make use of the new model view behaviour.\n\nVarious fixes.\n\nIf you are unfortunate enough to encounter the <b>something went wrong</b> message that occurs Math Minion can't render a page (i.e. a bug), the output is a little politer,\nwith a link to some suggested recovery options.",
 						"DiagramX": 245,
 						"DiagramY": -65,
 						"HideInfo": "n",
