@@ -1671,7 +1671,7 @@ a:hover {
 #tool-view__name-area {
 	grid-area: name-area;
 	display: grid;
-	grid-template-columns: 1fr 70px 3em;
+	grid-template-columns: 1fr 70px 4em;
 	grid-template-areas: "name is-output note-toggle";
 	grid-gap: 5px;
 	width: 100%;

@@ -26,6 +26,10 @@ th.col0, td.col0 {
 	width: 50px;
 }
 
+select, button {
+	font-size: 12pt;
+}
+
 .tvalue .col0 {
 	display: none;
 }
