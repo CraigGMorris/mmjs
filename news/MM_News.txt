@@ -1917,7 +1917,7 @@
 					},
 					{
 						"name": "Miscellaneous",
-						"Notes": "<b>Miscellaneous</b>\n\nIf the unit is Fraction, it is no longer displayed in table value headers.\n\nRenamed Index Tool to Default View on the model information view.  However its utility is largely replaced by the new model view behaviour.\n\nGraph SVG was not honouring line type selection.\n\nLabel formats for graph SVG now match the interactive display.\n\nMany of the examples listed in Getting Started were updated to make use of the new model view behaviour.\n\nVarious fixes.\n\nIf you are unfortunate enough to encounter the <b>something went wrong</b> message that occurs Math Minion can't render a page (i.e. a bug), the output is a little politer,\nwith a link to some suggested recovery options.",
+						"Notes": "<b>Miscellaneous</b>\n\nIf the unit is Fraction, it is no longer displayed in table value headers.\n\nRenamed Index Tool to Default View on the model information view.  However its utility is largely replaced by the new model view behaviour.\n\nGraph SVG was not honouring line type selection.\n\nLabel formats for graph SVG now match the interactive display.\n\nMany of the examples listed in Getting Started were updated to make use of the new model view behaviour.\n\nVarious fixes.\n\nIf you are unfortunate enough to encounter the <b>something went wrong</b> message that occurs when Math Minion can't render a page (i.e. a bug), the output is a little politer,\nwith a link to some suggested recovery options.",
 						"DiagramX": 245,
 						"DiagramY": -65,
 						"HideInfo": "n",
@@ -1930,7 +1930,7 @@
 					},
 					{
 						"name": "WeightColumn",
-						"Notes": "In this expression, the weight column is referenced from unit_format and the display unit and format from that expression are used here as well.",
+						"Notes": "In this expression, the weight column is referenced from units_format and the display unit and format from that expression are used here as well.",
 						"DiagramX": 170,
 						"DiagramY": -35,
 						"HideInfo": "y",
