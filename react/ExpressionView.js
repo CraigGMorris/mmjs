@@ -21,6 +21,7 @@ import {ToolView} from './ToolView.js';
 import {FormulaField, FormulaEditor} from './FormulaView.js';
 import {TableView} from './TableView.js';
 import {UnitPicker} from './UnitsView.js';
+import {MMFormatValue} from './MMApp.js';
 
 const e = React.createElement;
 const useState = React.useState;
@@ -218,26 +219,17 @@ export function ExpressionView(props) {
 
 				if (row === 0) {
 					setSelectedCell([row,column]);
-					// if (isTable) {
-					// 	setSelectedCell([row,column]);
-					// 	setDisplay(ExpressionDisplay.unitPicker);
-					// }
 					return;					
 				}
 	
-				// if (value && value.nr && value.nc) {
-				// 	row = Math.max(1, Math.min(row, value.nr));
-				// 	column = Math.max(1, Math.min(column, value.nc));
-				// }
-				// else {
-				// 	row = column = 1;
-				// }
-		
 				const formatValue = v => {
 					if (typeof v === 'string') {
 						return v;
 					}
 					else if (typeof v === 'number') {
+						if (formatString) {
+							return MMFormatValue(v, formatString);
+						}
 						return v.toPrecision(16);
 					}
 					else {
