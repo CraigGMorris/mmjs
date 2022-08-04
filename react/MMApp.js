@@ -171,6 +171,7 @@ export function MMFormatValue(v, format) {
 				case 'e':
 					s = v.toExponential(precision);
 					break;
+				case 'r':
 				case 'x':
 					s = `${precision}r` + v.toString(precision);
 					break;

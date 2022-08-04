@@ -4531,8 +4531,18 @@ class MMFormula extends MMCommandObject {
 						}
 						let scalarValue = filterFloat(token);
 						if (isNaN(scalarValue)) {
-							this.syntaxError(this.t('mmcmd:formulaInvalidNumber'));
-							return null;
+							let foundRadix = false;
+							if (token.length > 3 && token[2] === 'r') {
+								const radix = parseInt(token.substring(0,2));
+								if (radix >= 2 && radix <= 36 ) {
+									scalarValue = parseInt(token.substring(3), radix);
+									foundRadix = true;
+								}
+							}
+							if (!foundRadix) {
+								this.syntaxError(this.t('mmcmd:formulaInvalidNumber'));
+								return null;
+							}
 						}
 
 						// see if last operator was unary minus
