@@ -222,13 +222,13 @@ export function ExpressionView(props) {
 					return;					
 				}
 	
-				const formatValue = v => {
+				const formatValue = (v, format) => {
 					if (typeof v === 'string') {
 						return v;
 					}
 					else if (typeof v === 'number') {
-						if (formatString) {
-							return MMFormatValue(v, formatString);
+						if (format) {
+							return MMFormatValue(v, format);
 						}
 						return v.toPrecision(16);
 					}
@@ -242,12 +242,12 @@ export function ExpressionView(props) {
 					if (value.t === 't') {
 						const tableColumn = value.v[column - 1];
 						const v = tableColumn.v.v[row - 1];
-						return formatValue(v);
+						return formatValue(v, tableColumn.format);
 					}
 					else {
 						const vIndex = (row - 1) * value.nc + column - 1;
 						const v = (vIndex >= 0 && vIndex < value.nr * value.nc) ? value.v[vIndex] : '';
-						return formatValue(v);
+						return formatValue(v, formatString);
 					}
 				}
 				setStringDisplay(displayV(row, column));

@@ -122,6 +122,7 @@
 					</p>
 				</div>
 				<div id="format" class="subsection">
+					<h3>Format</h3>
 					<p>
 						If the expression result is a number, then there will be a format field to the right
 						of the unit field. The format string is styled on C format string and typically is of
@@ -135,10 +136,16 @@
 						decimal point in normal floating point format. In Math Minion, the percent sign is
 						optional.
 					</p>
-					<p>An <b>e</b> can be used instead
-						of the <b>f</b> for exponential format and you can even show numbers with an arbitrary
-						base between 2 and 36.  For instance a value could be represented in hex with
-						<b>14.16x</b>.  Note it is also permissable to omit the size number, i.e.
+					<p>
+						An <b>e</b> can be used instead of the <b>f</b> for exponential format.
+					</p>
+					<p>
+						 You can even show numbers with an arbitrary base between 2 and 36.
+						 For instance a value could be represented in hex with
+						<b>14.16r</b> (or the equivalent <b>14.16x</b>).
+					</p>
+					<p>
+						Note it is also permissable to omit the size number, i.e.
 						<b>.2f</b> would be fine and the number would just be right justified.
 					</p>
 				</div>
@@ -152,8 +159,11 @@
 					</p>
 					<p>
 						Tapping on a cell will show the contents of the cell in a large text area in a new
-						view. For a number value, this allows you to see greater precision as well as copy
-						the value to the clipboard.  For string values, which might be far larger than can
+						view. For a number value this allows you to copy the value to the clipboard and if
+						a format hasn't been assigned, it will be shown with high precision.
+					</p>
+					<p>
+						For string values, which might be far larger than can
 						be displayed in a cell, it allows you to see the whole string in a scrollable view
 						as well as copying all or part of it to the clipboard.  Tapping the <b>Done</b>
 						button on this view will return to the main view.
