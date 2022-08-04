@@ -2269,15 +2269,18 @@ class MMAppendFunction extends MMMultipleArgumentFunction {
 				argCount = this.arguments.length;
 				let columns = [];
 				while (argCount-- > 0) {
-					let table = this.arguments[argCount].value();
+					const arg = this.arguments[argCount];
+					let table = arg.value();
 					if (table instanceof MMTableValue) {
 						columns = columns.concat(table.columns);
 					}
 					else if (table instanceof MMNumberValue || table instanceof MMStringValue) {
+						const tableName = arg instanceof MMToolReferenceOperator ? arg.referencePath.replace(/\./g,'_') : '';
 						const nColumns = table.columnCount;
 						for (let n = 1; n <= nColumns; n++) {
+							const columnName = (tableName && n === 1) ? tableName : `${tableName}${columns.length + 1}`;
 							const column = new MMTableValueColumn({
-								name: `${columns.length + 1}`,
+								name: columnName,
 								displayUnit: table instanceof MMStringValue ? 'string' : null,
 								value: table.valueForColumnNumber(n)
 							});

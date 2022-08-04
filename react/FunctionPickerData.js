@@ -73,6 +73,18 @@
 			</p>
 			`
 	}
+
+	const appendDesc = {
+		f: "{append a, b}",
+		desc: `<p>
+				Creates a new object which contains all the columns of all the arguments.  All arguments must have
+				the same number of rows.
+			</p>
+			<p>
+				If all of the columns aren't the same type (numeric, string or table) or if numeric and
+				they have different unit dimensions, then a table value will be returned.
+			</p>`,
+	}
 	
 	const data = {
 		title: 'Formula Functions',
@@ -409,14 +421,7 @@
 			{
 				header: "Matrix functions",
 				functions: [
-					{
-						f: "{append a, b}",
-						desc: `<p>
-								Creates a new object which contains all the columns of all the arguments.  All arguments must have
-								the same number of rows and be of the same type (numeric, string or table).  If they are numeric,
-								they must all have the same unit dimensions.
-							</p>`,
-					},
+					appendDesc,
 					{
 						f: "{array r, c, i}",
 						desc: `<p>
@@ -727,14 +732,7 @@
 								the arguments.  The name and display unit for each column will be taken from the first argument.
 							</p>`,
 					},
-					{
-						f: "{append a, b}",
-						desc: `<p>
-								Creates a new object which contains all the columns of all the arguments.  All arguments must have the
-								same number of rows and be of the same type (numeric, string or table).  If they are numeric, they must
-								all have the same unit dimensions.
-							</p>`,
-					},
+					appendDesc,
 					{
 						f: "{groupsum t, c}",
 						desc: `<p>
