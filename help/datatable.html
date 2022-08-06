@@ -50,7 +50,7 @@
 				<p>
 					There is an exception though, in that you can create data table columns whose
 					values are calculated by a single formula. This is really just a display
-					convenience that makes it easy display some calculated results, usually involving
+					convenience that makes it easy to display some calculated results, usually involving
 					values from other columns, along side the data columns. For instance you might have
 					a calculated column displaying the result of adding other columns together.
 				</p>
@@ -59,7 +59,7 @@
 				<h3>Columns (Fields)</h3>
 				<p>
 					Unlike the <a href="matrix.html">matrix</a> tool, each column of a data table
-					has a name and columns can have a different unit types or can even contain textual
+					has a name and columns can have different unit types or can even contain textual
 					information.  In this way columns behave much like the fields of a database table,
 					with the rows being the records. Columns will normally be data columns, but it is
 					possible to define a calculated column if desired.
@@ -123,7 +123,7 @@
 					If a <a href="formula.html">formula</a> is supplied for the filter
 					<a href="formulaeditor.html#fields">formula field</a>, only the rows matching the filter
 					will be shown. The result of the formula should either be a string, as shown below, or a
-					boolean array the with rows to be shown being true. See the description of the arguments
+					boolean array the with the rows to be shown being true. See the description of the arguments
 					for the <b>select function</b> in the
 					<a href="formulaeditor.html#fbrowser">function browser</a> for more detail.
 				</p>
@@ -290,7 +290,7 @@
 					</p>
 					<p>
 						For instance if you wanted to add a column named <b>Next</b> where every
-						value was was one day greater than the <b>Date</b> column, the initial value
+						value was one day greater than the <b>Date</b> column, the initial value
 						formula could be:
 					</p>
 					<p class="formula">
@@ -377,7 +377,7 @@ $.hours * clients.rate[
 					<h3>Format</h3>
 					<p>
 						You can use this field to format numeric columns. The format string is styled on
-						C format string and typically is of the form:
+						C format strings and typically is of the form:
 					</p>
 					<p class="formula">
 						%12.4f
@@ -402,7 +402,7 @@ $.hours * clients.rate[
 			<div id="roweditor" class="section">
 				<h3>Row Editor</h3>
 				<p>
-					When add a row or you tap on any cell in a row, other than the row number, the 
+					When you add a row or tap on any cell in a row, other than the row number, the 
 					row editor with appear:
 				</p>
 				<img src="datatablerowedit.png" alt="Row editor">
@@ -433,7 +433,7 @@ $.hours * clients.rate[
 				<div class="subsection">
 					<h3>Delete</h3>
 					<p>
-						Deletes the displayed row and displayes the next one.
+						Deletes the displayed row and displays the next one.
 					</p>
 				</div>
 				<div class="subsection">

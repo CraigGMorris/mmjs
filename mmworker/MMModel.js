@@ -804,7 +804,7 @@ class MMModel extends MMTool {
 			}
 			chunks.push('					},(result) => {');
 			for (const output of results.outputs) {
-				if (output instanceof MMButton) {
+				if (output instanceof MMButton || output instanceof MMMenu) {
 					continue;
 				}
 				const outputId = `o_${this.name}_${output.name}`;
