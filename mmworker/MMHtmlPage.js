@@ -27,6 +27,8 @@
 	MMModel:readonly
 	MMDataTable:readonly
 	MMCommandMessage:readonly
+	MMExpression:readonly
+	MMToolValue:readonly
 */
 
 // code inserted into the page to implement the mmpost function
@@ -247,8 +249,19 @@ class MMHtmlPageProcessor {
 						// add a row to a specified data table
 						const name = actions[action].toLowerCase();
 						const target = parentModel.children[name];
-						if (target && target instanceof MMDataTable) {
-							target.addRow(0);
+						if (target) {
+							if (target instanceof MMDataTable) {
+								target.addRow(0);
+							}
+							else if (target instanceof MMExpression) {
+								const value = target.valueForRequestor();
+								if (value instanceof MMToolValue) {
+									const tool = value.valueAtRowColumn(1,1);
+									if (tool instanceof MMDataTable) {
+										tool.addRow(0);
+									}
+								}
+							}
 						}
 					}
 						break;
@@ -260,7 +273,18 @@ class MMHtmlPageProcessor {
 						if (Array.isArray(rows) && name) {
 							const target = parentModel.children[name];
 							if (target) {
-								target.removeRows(rows);
+								if (target instanceof MMDataTable) {
+									target.removeRows(rows)
+								}
+								else if (target instanceof MMExpression) {
+									const value = target.valueForRequestor();
+									if (value instanceof MMToolValue) {
+										const tool = value.valueAtRowColumn(1,1);
+										if (tool instanceof MMDataTable) {
+											tool.removeRows(rows)
+										}
+									}
+								}
 							}
 						}
 					}
