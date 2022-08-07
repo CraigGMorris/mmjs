@@ -936,7 +936,7 @@ class MMTableValue extends MMValue {
 		for (let selectorNumber = 0; selectorNumber < selectors.valueCount; selectorNumber++) {
 			let selectorValue = selectors.values[selectorNumber];
 			selectorValue = selectorValue.replace(/[^|&]+/g,'$&\n');
-			for (let selector of selectorValue.split('\n')) {
+			for (let selector of selectorValue.split(/[\n,]/)) {
 				selector = selector.trim();
 				if (!selector) {
 					continue;
@@ -950,7 +950,7 @@ class MMTableValue extends MMValue {
 				else if (selector[0] === '&') {
 					selector = selector.substring(1).trim();
 				}
-				const nameMatch = selector.match(/^[^!<=>]+/);
+				const nameMatch = selector.match(/^[^!<=>?]+/);
 				if (!nameMatch) { syntaxError(selectorValue); }
 				const columnName = nameMatch[0].trim();
 				const column = this.columnNamed(columnName);
@@ -1004,7 +1004,8 @@ class MMTableValue extends MMValue {
 					'<': (a, b) => {return a < b ? 1 : 0;},
 					'>': (a, b) => {return a > b ? 1 : 0;},
 					'<=': (a, b) => {return a <= b ? 1 : 0;},
-					'>=': (a, b) => {return a >= b ? 1 : 0;}
+					'>=': (a, b) => {return a >= b ? 1 : 0;},
+					'?': (a, b) => {return a.includes(b);}
 				}[opString];
 
 				for (let i = 0; i < this.rowCount; i++) {

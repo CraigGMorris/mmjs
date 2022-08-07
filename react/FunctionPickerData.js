@@ -39,15 +39,17 @@
 			<p class="formula">"column op value"</p>
 			<p>
 				where column is the name of the column if "from" is a table or the number of the column if it is a numeric or string
-				value. The "op" term is one of ("=", "!=", "&lt;", "&lt;=", "&gt;", "&gt;="). The "value" term is some value that will be
+				value. The "op" term is one of ("=", "!=", "&lt;", "&lt;=", "&gt;", "&gt;=", "?"). The "value" term is some value that will be
 				matched against each row of the column using the given operation.  The value isn't a formula, but can have a unit if
 				it is numeric. String comparisons are case insensitive and if the value is omitted it will match an
-				empty or blank filled string.
+				empty or blank filled string. The "?" operator means contains and only works with string values.
 			</p>
 			<p>
-				If the selector has more than one row, each result is "ANDed" with the previous result, unless the "column" term is
-				preceded by a "|" character, in which case an OR operation is performed with the previous result. An "&" character
-				can optionally be used for AND operations to make the formula more descriptive.
+				If the selector has more than one row, or multiple terms separated by a new line or comma,
+				each result while be "ANDed" with the previous result, unless the "column" term is
+				preceded by a "|" character. In that case an OR operation is performed with the previous
+				result. An "&" character can optionally be used for AND operations to make the formula
+				more descriptive.
 			</p>
 			<p>
 				Selector xamples might be:

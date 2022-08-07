@@ -3,13 +3,69 @@
 	"Version": 3,
 	"DetailWidth": 320,
 	"DeviceWidth": 1024,
-	"UserUnitSets": {},
+	"UserUnitSets": {
+		"US_2": {
+			"units": {
+				"Acceleration": "ft/s^2",
+				"Area": "ft^2",
+				"Capacitance": "uF",
+				"Density": "lb/ft^3",
+				"Dimensionless": "Fraction",
+				"DipoleMoment": "debye",
+				"ElectricCharge": "C",
+				"ElectricCurrent": "A",
+				"Energy": "btu",
+				"Force": "lbf",
+				"Frequency": "1/s",
+				"HeatFlux": "Btu/h-ft^2",
+				"HeatTransferCoeff": "Btu/h-ft^2-deltaF",
+				"Inductance": "Henry",
+				"IsoThermalCompressibility": "1/psia",
+				"JouleThomson": "deltaF/psia",
+				"KinematicViscosity": "centistoke",
+				"Length": "ft",
+				"LuminousIntensity": "cd",
+				"MagneticFlux": "Wb",
+				"Mass": "lb",
+				"MassEnthalpy": "Btu/lb",
+				"MassFlow": "lb/h",
+				"MassVolume": "ft^3/lb",
+				"MassSpecificHeat": "Btu/lb-deltaF",
+				"MolarConcentration": "lbmol/ft^3",
+				"MolarEnthalpy": "Btu/lbmol",
+				"MolarSpecificHeat": "Btu/lbmol-deltaF",
+				"MolarVolume": "ft^3/lbmol",
+				"MolecularWeight": "lb/lbmol",
+				"MoleFlow": "lbmol/h",
+				"Moles": "lbmol",
+				"Permeability": "lbmol/h-ft-psia",
+				"Power": "Btu/h",
+				"Pressure": "psia",
+				"Pressure/MolarVolume": "psia-lbmol/ft^3",
+				"ReactionRateCat": "lbmol/h-lb",
+				"ReactionRateVol": "lbmol/h-ft^3",
+				"Resistance": "Ohm",
+				"SolubilityParameter": "Btu^0.5/ft^1.5",
+				"SurfaceTension": "lbf/ft",
+				"Temperature": "degF",
+				"ThermalConductivity": "Btu/h-ft-deltaF",
+				"ThermalExpansion": "1/degR",
+				"Time": "h",
+				"UA": "Btu/h-deltaF",
+				"Velocity": "ft/s",
+				"Viscosity": "cp",
+				"Voltage": "volt",
+				"Volume": "ft^3",
+				"VolumetricFlow": "ft^3/h"
+			}
+		}
+	},
 	"UserUnits": [
 		"squash = 1e8 N/acre"
 	],
-	"CaseName": "Getting Started",
+	"CaseName": "Getting Started New",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "root",
+	"SelectedObject": "",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -2748,7 +2804,7 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{select hours,\n\t{cc\n\t\t\"project = coyote\",\n\t\t\"| project = accounting\"\n\t}\n}"
+											"Formula": "{select hours,\n\t\"project = coyote\n\t| project = accounting\"\n}"
 										},
 										"showInput": "y"
 									},
@@ -2778,15 +2834,15 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{select hours,\n\t{cc\n\t\t\"project = coyote\",\n\t\t\"| project = accounting\",\n\t\t\"date < 20120801 date\"\n\t}\n}"
+											"Formula": "{select hours,\n\t\"project = coyote,\n\t| project = accounting,\n\tdate < 20120801 date\"\n}"
 										},
 										"showInput": "y"
 									},
 									{
 										"name": "NumberbyString",
 										"Notes": "Select rows where column 2 values are less than 60",
-										"DiagramX": 50,
-										"DiagramY": 245,
+										"DiagramX": 135,
+										"DiagramY": 85,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -2801,8 +2857,8 @@
 									{
 										"name": "StringByString",
 										"Notes": "Select rows where column 1 (the only column) values are greater or equal to \"f\".",
-										"DiagramX": 50,
-										"DiagramY": 200,
+										"DiagramX": 135,
+										"DiagramY": 40,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -2824,7 +2880,7 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{select hours,\n\t{cc\n\t\t\"client = Fred\",\n\t\t\"project = accounting\"\n\t}\n}"
+											"Formula": "{select hours,\n\t\"client = Fred,\n\tproject = accounting\"\n}"
 										},
 										"showInput": "y"
 									},
@@ -2840,6 +2896,21 @@
 										"Formula": {
 											"Formula": ""
 										}
+									},
+									{
+										"name": "Contains",
+										"Notes": "The question mark operator can be used with string columns to mean contains. Here all projects that have \"ou\" in them are selected.",
+										"DiagramX": 50,
+										"DiagramY": 200,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{select hours,\n\t\"project ? ou,\n\thours > 3 h\"\n}"
+										},
+										"showInput": "y"
 									}
 								]
 							},
