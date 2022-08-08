@@ -295,6 +295,7 @@ class MMDataTable extends MMTool {
 			verbs['removerows'] = this.removeRowsCommand;
 			verbs['restorecolumn'] = this.restoreColumnCommand;
 			verbs['restorerows'] = this.restoreRowsCommand;
+			verbs['undorestorerows'] = this.undoRestoreRowsCommand;
 			verbs['setcell'] = this.setCellCommand;
 			verbs['movecolumn'] =this.moveColumnCommand;
 			return verbs;
@@ -904,13 +905,13 @@ class MMDataTable extends MMTool {
 	 * @param {MMCommand} command
 	 * command.args should be the the row number(s)
 	 */
-	removeRowsCommand(command) {
+	removeRowsCommand(command, ignoreFilter=false) {
 		const argParts = command.args.split(/\s/);
 		const rowNumbers = argParts.map(arg => {
 			const n = parseInt(arg);
 			return isNaN(n) ? 0 : n;
 		})
-		const oldInputs = this.removeRows(rowNumbers);
+		const oldInputs = this.removeRows(rowNumbers, ignoreFilter);
 		if (Object.keys(oldInputs).length) {
 			const inputsJson = JSON.stringify(oldInputs);
 			command.undo = `__blob__${this.getPath()} restorerows__blob__${inputsJson}`;
@@ -945,7 +946,16 @@ class MMDataTable extends MMTool {
 		const rowNumbers = Object.keys(inputs);
 		this.restoreRows(inputs);
 		command.results = {rowNumbers: rowNumbers}
-		command.undo = `${this.getPath()} removerows ${rowNumbers.join(' ')}`;
+		command.undo = `${this.getPath()} undorestorerows ${rowNumbers.join(' ')}`;
+	}
+
+	/**
+	 * @method undoRestoreRowsCommand
+	 * @param {MMCommand} command
+	 * command.args should be the the row number(s)
+	 */
+	undoRestoreRowsCommand(command) {
+		this.removeRowsCommand(command, true); // ignore filter
 	}
 
 	/**
