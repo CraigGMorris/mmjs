@@ -1184,7 +1184,12 @@ class MMSession extends MMCommandParent {
 	 * command.results contains name new current model
 	 */
 	async pushModelCommand(command) {
-		const model = this.currentModel.childNamed(command.args);
+		const names = command.args.toLowerCase().split('.');
+		let model = this.currentModel;
+		for (const name of names){
+			model = model.children[name];
+		}
+		// const model = this.currentModel.childNamed(command.args);
 		if (model instanceof MMModel) {
 			this.pushModel(model);
 			await this.autoSaveSession();

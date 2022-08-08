@@ -22,6 +22,7 @@
 	MMFormula:readonly
 	MMPropertyType:readonly
 	MMStringValue:readonly
+	theMMSession:readonly
 */
 
 /**
@@ -185,7 +186,7 @@ class MMButton extends MMTool {
 			return super.valueDescribedBy(description, requestor);
 		}
 	}
-	
+
 	/**
 	 * @method htmlValue
 	 * @returns {String}
@@ -196,8 +197,20 @@ class MMButton extends MMTool {
 		const label = labelValue ? labelValue.values[0] : '?';
 		const targetValue = this.targetFormula.value();
 		if (targetValue instanceof MMStringValue) {
-			const target = targetValue ? targetValue.values[0] : '';
+			let target = targetValue ? targetValue.values[0] : '';
 			if (target) {
+				if (this.action === 'addrow' || this.action === 'push') {
+					const pathParts = [target];
+					if (this.parent !== theMMSession.currentModel) {
+						pathParts.push(this.parent.name);
+						let parent = this.parent.parent;
+						while (parent !== theMMSession.currentModel) {
+							pathParts.push(parent.name);
+							parent = parent.parent;
+						}
+						target = pathParts.reverse().join('.');
+					}
+				}
 				return `<div  class="button-tool"><button id="button__${this.name}"
 				onclick="mmpost([], {mm_${this.action}: '${target}', mm_update: true});">
 				${label}

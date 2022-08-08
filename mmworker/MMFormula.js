@@ -4005,8 +4005,12 @@ class MMFormula extends MMCommandObject {
 			this._formula = newFormula;
 			this._resultOperator = null;
 			this.isInError = false;
-			this.parent.changedFormula(this);
 			this.parseFormula();
+			if (needToPop) {
+				theMMSession.popModel();
+				needToPop = false;
+			}
+			this.parent.changedFormula(this);
 		}
 		finally {
 			if (needToPop) {

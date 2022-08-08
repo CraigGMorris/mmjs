@@ -251,6 +251,9 @@ class MMTool extends MMCommandParent {
 	forgetCalculated() {
 		if (this.parent instanceof MMModel) {
 			this.parent.htmlProcessor.clearCache();
+			if (this.parent !== theMMSession.currentModel) {
+				theMMSession.currentModel.htmlProcessor.clearCache();
+			}
 		}
 	}
 

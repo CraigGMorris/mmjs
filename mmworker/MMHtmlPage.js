@@ -218,6 +218,14 @@ class MMHtmlPageProcessor {
 
 			// now do any action requests
 			let parentModel = this.parent;
+			const getTarget = (names) => {
+				names = names.toLowerCase().split('.');
+				let target = parentModel;
+				for (const name of names){
+					target = target.children[name];
+				}
+				return target;
+			}
 			while (!(parentModel instanceof MMModel)) {
 				parentModel = parentModel.parent;
 			}
@@ -225,8 +233,7 @@ class MMHtmlPageProcessor {
 				switch (action) {
 					case 'mm_view': {
 						// pass back instruction to view to switch to different tool
-						const name = actions[action].toLowerCase();
-						const target = parentModel.children[name];
+						const target = getTarget(actions[action])
 						if (target) {
 							response.view = {name: actions[action], type: target.typeName};
 						}
@@ -234,8 +241,7 @@ class MMHtmlPageProcessor {
 						break;
 					case 'mm_push': {
 						// pass back instruction to view to push another tool view over the html page view
-						const name = actions[action].toLowerCase();
-						const target = parentModel.children[name];
+						const target = getTarget(actions[action])
 						if (target) {
 							response.push = {name: actions[action], path: target.getPath(), type: target.typeName};
 						}
@@ -247,8 +253,7 @@ class MMHtmlPageProcessor {
 						break;
 					case 'mm_addrow': {
 						// add a row to a specified data table
-						const name = actions[action].toLowerCase();
-						const target = parentModel.children[name];
+						const target = getTarget(actions[action])
 						if (target) {
 							if (target instanceof MMDataTable) {
 								target.addRow(0);
@@ -271,7 +276,7 @@ class MMHtmlPageProcessor {
 						const rows = actionValue.rows;
 						const name = actionValue.table;
 						if (Array.isArray(rows) && name) {
-							const target = parentModel.children[name];
+							const target = getTarget(name);
 							if (target) {
 								if (target instanceof MMDataTable) {
 									target.removeRows(rows)
@@ -291,8 +296,7 @@ class MMHtmlPageProcessor {
 						break;
 					case 'mm_refresh': {
 						// recalculate the values for a specified tool
-						const name = actions[action].toLowerCase();
-						const target = parentModel.children[name];
+						const target = getTarget(actions[action])
 						if (target) {
 							target.forgetCalculated();
 						}
@@ -401,7 +405,7 @@ class MMHtmlPageProcessor {
 			return response;
 		}
 		catch(e) {
-			this.setError('mmcmd:htmlBadActionJson', {path: this.parent.getPath(), msg: e.message});
+			this.parent.setError('mmcmd:htmlBadActionJson', {path: this.parent.getPath(), msg: e.message});
 			return '';
 		}
 	}

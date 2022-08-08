@@ -784,8 +784,17 @@ class MMModel extends MMTool {
 		const keyPressed = this.name + '_keyPressed';
 		const changedInput = this.name + '_changedInput';
 		chunks.push('		<script>');
+		const pathParts = [];
+		if (this !== theMMSession.currentModel) {
+			pathParts.push(this.name);
+			let parent = this.parent;
+			while (parent !== theMMSession.currentModel) {
+				pathParts.push(parent.name);
+				parent = parent.parent;
+			}
+		}
+		const pathPrefix = pathParts.length ? pathParts.reverse().join('.') + '.' : '';
 		if (results.inputs.length) {
-			const pathPrefix = isMyNameSpace ? "" : this.name + '.'
 			chunks.push(`			const ${keyPressed} = (e) => {
 					if (e.key === 'Enter') {
 						e.target.blur();
@@ -815,9 +824,9 @@ class MMModel extends MMTool {
 			chunks.push('			}')
 		}
 		chunks.push(`	${onNameClick} = (name) => {`);
-		if (isMyNameSpace) {
-				chunks.push(`		mmpost([], {mm_push: name});`);
-			}
+		// if (isMyNameSpace) {
+				chunks.push(`		mmpost([], {mm_push: '${pathPrefix}'+name});`);
+			// }
 		chunks.push('		}');
 		chunks.push('		</script>');
 		chunks.push('		<div class="model-form__objects">')
@@ -840,7 +849,8 @@ class MMModel extends MMTool {
 				if (formula.indexOf('\n') !== -1) {
 					chunks.push(`<div id="${this.name}_${input.name}" class="model-form__multiline-formula"  onClick="${onNameClick}('${input.name}')">${formula}</div>`);				}
 				else {
-					chunks.push(`				<div class="model-form__input"><input id="${this.name}_${input.name}"
+					chunks.push(`				<div class="model-form__input">
+					<input id="${this.name}_${input.name}"
 					value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${formula}')"></div>`);
 				}
 				chunks.push('		</div>');
