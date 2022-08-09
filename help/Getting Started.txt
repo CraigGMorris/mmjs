@@ -63,7 +63,7 @@
 	"UserUnits": [
 		"squash = 1e8 N/acre"
 	],
-	"CaseName": "Getting Started New",
+	"CaseName": "Getting Started",
 	"DefaultUnitSet": "SI",
 	"SelectedObject": "",
 	"ModelPath": "/.root",
@@ -2886,7 +2886,7 @@
 									},
 									{
 										"name": "Overview",
-										"Notes": "<b>Select Function</b>\n\nThe select function can be used to choose certain rows of a table, thus creating a new table value. For instance the <b>Select</b> expression in this model uses the formula:\n\n   <b>{select hours, \"project = Coyote\"}</b>\n\nto find all the rows in the table value <b>hours</b> which have a value of \"Coyote\" in the project column.\n\nThe first parameter of the function is simply the table value, in this case from the expression <b>hours</b>.\n\nThe second parameter is a string of the form\n\n   <b>\"column op value\"</b>\n\nwhere <b>column</b> is the name of the table column and the <b>op</b> term is one of (<b>=, !=, <, <=, >, >=</b>). The <b>value</b> term is some value that will be matched against each row of the column using the given operation.  The value isn't a formula, but can have a unit if it is numeric. String comparisons are case insensitive and a missing value term will match a string made up zero or more blanks.\n\nIf the selector has more than one row, each result is \"ANDed\" with the previous result, unless the \"column\" term is preceded by a \"|\" character, in which case an OR operation is performed with the previous result. An \"&\" character can optionally be used for AND operations to make the formula more descriptive.\n\nInstead of a string value, the second parameter of select can be a column array with the same number of rows as the table.  All the rows of this argument which are nonzero will be selected from the source table and included in the result.\n\nThe expression <b>boolSelect</b> uses the formula:\n\n   <b>{select hours, {eq hours.project, \"Coyote\"}}</b>\n\nwhich will also select all the rows whose project column has a value of \"Coyote\", producing the same result as the <b>Select</b> expression.\n\nThe select command will also work on matrices of numbers and strings in the same way, with the column name being replaced by the column number.\n\nSee the various other expressions in this model for examples.",
+										"Notes": "<b>Select Function</b>\n\nThe select function can be used to choose certain rows of a table, thus creating a new table value. For instance the <b>Select</b> expression in this model uses the formula:\n\n   <b>{select hours, \"project = Coyote\"}</b>\n\nto find all the rows in the table value <b>hours</b> which have a value of \"Coyote\" in the project column.\n\nThe first parameter of the function is simply the table value, in this case from the expression <b>hours</b>.\n\nThe second parameter is a string of the form\n\n   <b>\"column op value\"</b>\n\nwhere <b>column</b> is the name of the table column and the <b>op</b> term is one of (<b>=, !=, <, <=, >, >=</b>). The <b>value</b> term is some value that will be matched against each row of the column using the given operation.  The value isn't a formula, but can have a unit if it is numeric. String comparisons are case insensitive and a missing value term will match a string made up zero or more blanks.\n\nIf the selector has more than one row, or multiple terms separated by a new line or comma, each result while be \"ANDed\" with the previous result, unless the \"column\" term is preceded by a \"|\" character. In that case an OR operation is performed with the previous result. An \"&\" character can optionally be used for AND operations to make the formula more descriptive.\n\nInstead of a string value, the second parameter of select can be a column array with the same number of rows as the table.  All the rows of this argument which are nonzero will be selected from the source table and included in the result.\n\nThe expression <b>boolSelect</b> uses the formula:\n\n   <b>{select hours, {eq hours.project, \"Coyote\"}}</b>\n\nwhich will also select all the rows whose project column has a value of \"Coyote\", producing the same result as the <b>Select</b> expression.\n\nThe select command will also work on matrices of numbers and strings in the same way, with the column name being replaced by the column number.\n\nSee the various other expressions in this model for examples.",
 										"DiagramX": -50,
 										"DiagramY": 40,
 										"HideInfo": "n",
@@ -16823,48 +16823,6 @@
 								}
 							},
 							{
-								"name": "CustomerTable",
-								"Notes": "A simple table with two columns with the first column containing customer names and second column having charge rates.",
-								"DiagramX": 45,
-								"DiagramY": 15,
-								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"HtmlNotes": "y",
-								"isOutput": "y",
-								"Type": "Data Table",
-								"Columns": [
-									{
-										"name": "Customer",
-										"displayUnit": "string",
-										"sValues": [
-											"Bill",
-											"John",
-											"Tom",
-											"Dick",
-											"Harry"
-										],
-										"defaultValue": "'Bill"
-									},
-									{
-										"name": "ChargeRate",
-										"displayUnit": "dollar/h",
-										"format": "10.2f",
-										"nValues": [
-											0.022222222222222223,
-											0.025,
-											0.020833333333333332,
-											0.02638888888888889,
-											0.027777777777777776
-										],
-										"unitDimensions": "0 0 -1 0 0 0 0",
-										"defaultValue": "80 dollar/h"
-									}
-								],
-								"Filter": {
-									"Formula": ""
-								}
-							},
-							{
 								"name": "Customer",
 								"Notes": "The <b>Customer</b> menu uses\n<b>CustomerTable</b> as its source of options.\n\nThe first column customer names  are what will appear in the menu.\n\nThe charge rate from second column that corresponds to the selected name will be the menu's selected value.",
 								"DiagramX": 45,
@@ -16907,6 +16865,48 @@
 								"Formula": {
 									"Formula": ""
 								}
+							},
+							{
+								"name": "CustomerTable",
+								"Notes": "A simple table with two columns with the first column containing customer names and second column having charge rates.",
+								"DiagramX": 45,
+								"DiagramY": 15,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "Customer",
+										"displayUnit": "string",
+										"sValues": [
+											"Bill",
+											"John",
+											"Tom",
+											"Dick",
+											"Harry"
+										],
+										"defaultValue": "'Bill"
+									},
+									{
+										"name": "ChargeRate",
+										"displayUnit": "dollar/h",
+										"format": "10.2f",
+										"nValues": [
+											0.022222222222222223,
+											0.025,
+											0.020833333333333332,
+											0.02638888888888889,
+											0.027777777777777776
+										],
+										"unitDimensions": "0 0 -1 0 0 0 0",
+										"defaultValue": "80 dollar/h"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
 							}
 						]
 					},
@@ -16943,7 +16943,7 @@
 				"Notes": "<b>Mileage</b> is a demonstration model with lots of notes.\n\nIt calculates and plots a table of mile per gallon versus litre per 100 km and km per litre.",
 				"DiagramX": 80,
 				"DiagramY": 90,
-				"HideInfo": "n",
+				"HideInfo": "y",
 				"DiagramNotes": "y",
 				"HtmlNotes": "y",
 				"Type": "Model",
