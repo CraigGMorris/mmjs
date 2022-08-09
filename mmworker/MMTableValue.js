@@ -985,6 +985,9 @@ class MMTableValue extends MMValue {
 					if (valueParts.length > 1) {
 						// assume unit
 						const unit = theMMSession.unitSystem.unitNamed(valueParts[1]);
+						if (!MMUnitSystem.areDimensionsEqual(unit.dimensions, columnValue.unitDimensions)) {
+							this.exceptionWith('mmcmd:tableSelectUnitMismatch', {term: selectorValue})
+						}
 						if (unit) {
 							findValue = unit.convertToBase(findValue);
 						}
@@ -992,6 +995,12 @@ class MMTableValue extends MMValue {
 							this.exceptionWith('mmunit:unknownUnit', {name: valueParts[1]});
 						}
 					}
+					else {
+						if (!MMUnitSystem.areDimensionsEqual(columnValue.unitDimensions)) {
+							this.exceptionWith('mmcmd:tableSelectUnitMismatch', {term: selectorValue})
+						}
+					}
+
 				}
 				else {
 					findValue = valueString.toLowerCase();

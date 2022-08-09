@@ -179,6 +179,7 @@
 	"tableNumberValueUnits": "All columns of a table must have the same units when attempting to convert to a number value",
 	"tableRowColumnError": "Invalid table row or column\n\nPath: {{path}}\nArgs: {{args}}",
 	"tableSelectSyntax": "Syntax error in select function term \"{{term}}\"",
+	"tableSelectUnitMismatch": "The column and value don't have the same unit types in select term {{term}}",
 	"tableSelectBadColumn": "Could not find column name {{name}} in table select function",
 	"tableSetCellError": "Error setting table cell\n\nPath: {{path}}\nArgs: {{args}}",
 	"tableTypeMismatch": "Data table error\n\nString/Number type mismatch for row {{row}} of column {{column}} of {{table}}",
