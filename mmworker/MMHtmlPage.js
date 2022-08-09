@@ -256,14 +256,20 @@ class MMHtmlPageProcessor {
 						const target = getTarget(actions[action])
 						if (target) {
 							if (target instanceof MMDataTable) {
-								target.addRow(0);
+								const rowNumber = target.addRow(0);
+								if (rowNumber) {
+									response.undo = `${target.getPath()} undoaddrow ${rowNumber}}`;
+								}
 							}
 							else if (target instanceof MMExpression) {
 								const value = target.valueForRequestor();
 								if (value instanceof MMToolValue) {
 									const tool = value.valueAtRowColumn(1,1);
 									if (tool instanceof MMDataTable) {
-										tool.addRow(0);
+										const rowNumber = tool.addRow(0);
+										if (rowNumber) {
+											response.undo = `${tool.getPath()} undoaddrow ${rowNumber}}`;
+										}
 									}
 								}
 							}
@@ -279,14 +285,22 @@ class MMHtmlPageProcessor {
 							const target = getTarget(name);
 							if (target) {
 								if (target instanceof MMDataTable) {
-									target.removeRows(rows)
+									const oldInputs = target.removeRows(rows);
+									if (Object.keys(oldInputs).length) {
+										const inputsJson = JSON.stringify(oldInputs);
+										response.undo = `__blob__${this.getPath()} restorerows__blob__${inputsJson}`;
+									}
 								}
 								else if (target instanceof MMExpression) {
 									const value = target.valueForRequestor();
 									if (value instanceof MMToolValue) {
 										const tool = value.valueAtRowColumn(1,1);
 										if (tool instanceof MMDataTable) {
-											tool.removeRows(rows)
+											const oldInputs = tool.removeRows(rows)
+											if (Object.keys(oldInputs).length) {
+												const inputsJson = JSON.stringify(oldInputs);
+												response.undo = `__blob__${this.getPath()} restorerows__blob__${inputsJson}`;
+											}
 										}
 									}
 								}

@@ -198,7 +198,9 @@ class MMMenu extends MMTool {
 		lines.push(`<select class="menu-select" id="menu__${this.name}"`);
 		lines.push(` onChange="
 			const newValue = document.getElementById('menu__${this.name}').selectedIndex;
-			mmpost([], {mm_cmd: '${this.getPath()} set selected ' + newValue, mm_update: true});
+			mmpost([], {mm_cmd: '${this.getPath()} set selected ' + newValue,
+			mm_undo: '${this.getPath()} set selected ' + ${this._selected},
+			mm_update: true});
 			">`);
 
 		if (options) {
