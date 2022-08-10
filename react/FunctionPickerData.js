@@ -1101,14 +1101,14 @@
 						f: "{sort x, n}",
 						desc: `Returns a sorted copy of x.
 						<p>If x is a table value it will be sorted on column number n.</p>
-						<p<If n is omitted, the first column is used.</p>`,
+						<p>If n is omitted, the first column is used. If n is negative, the sort is reversed</p>`,
 					},
 					{
 						f: "{isort x, n}",
 						desc: `Creates a column array of indexes, such that if they are used with
 						the index operator for x, the result would be a sorted copy of x 
 						<p>If x is a table value the sort will be on its column number n.</p>
-						<p>If n is omitted, the first column is used</p>`,
+						<p>If n is omitted, the first column is used.  If n is negative, the sort is reversed</p>`,
 					},
 					{
 						f: "{wfetch method, url, headers}",

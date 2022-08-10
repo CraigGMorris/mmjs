@@ -3863,27 +3863,40 @@ class MMISortFunction extends MMMultipleArgumentFunction {
 	value() {
 		const argCount = this.arguments.length;
 		this.v = this.arguments[argCount > 1 ? 1 : 0].value();
+		let columnNumber = 0;
+		let reversed = false;
+		if (argCount > 1 ) {
+			const columnValue = this.arguments[0].value();
+			if (columnValue instanceof MMNumberValue) {
+				columnNumber = columnValue.values[0];
+				if (columnNumber < 0) {
+					columnNumber = -columnNumber;
+					reversed = true;
+				}
+			}
+			if (columnNumber < 1 || columnNumber > this.v.columnCount) {
+				this.formula.setError('mmcmd:formulaSortBadColumn', {
+					path: this.formula.parent.getPath(),
+					formula: this.formula.truncatedFormula()
+				});
+				return null;
+			}
+			columnNumber--;
+		}
 		if (this.v instanceof MMNumberValue || this.v instanceof MMStringValue) {
-			return this.v.iSort();
+			const indices = this.v.iSort();
+			if (reversed) {
+				indices._values = indices._values.reverse();
+			}
+			return indices
 		}
 		else if (this.v instanceof MMTableValue) {
-			let columnNumber = 0;
-			if (argCount > 1 ) {
-				const columnValue = this.arguments[0].value();
-				if (columnValue instanceof MMNumberValue) {
-					columnNumber = columnValue.values[0];
-				}
-				if (columnNumber < 1 || columnNumber > this.v.columnCount) {
-					this.formula.setError('mmcmd:formulaSortBadColumn', {
-						path: this.formula.parent.getPath(),
-						formula: this.formula.truncatedFormula()
-					});
-					return null;
-				}
-				columnNumber--;
-			}
 			const column = this.v.columns[columnNumber];
-			return column.value.iSort();
+			const indices = column.value.iSort();
+			if (reversed) {
+				indices._values = indices._values.reverse();
+			}
+			return indices
 		}
 	}
 }
