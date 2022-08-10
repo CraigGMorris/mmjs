@@ -165,7 +165,8 @@ export function MMFormatValue(v, format) {
 				case 'f':
 					s = v.toFixed(precision);
 					if (type === 'c') {
-						s = s.replace(/(\d)(\d\d\d(\.|$))/, '$1,$2').replace(/(\d)(\d\d\d,)/, '$1,$2')
+						const [whole, decimals] = s.split('.');
+						s = whole.replace(/\B(?=(\d{3})+(?!\d))/g,',') + (decimals ? '.' + decimals : '');
 					}
 					break;
 				case 'e':
