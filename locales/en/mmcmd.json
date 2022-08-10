@@ -58,6 +58,7 @@
 	"formulaSelectColumns": "Select function selector can only have one column",
 	"formulaSelectBadColumn": "Select function column number ({{number}}) invalid",
 	"formulaSelectRowMismatch": "Select function selector has wrong number of rows",
+	"formulaSortBadColumn": "Invalid column number for sort\nin: {{path}}\nformula: {{formula}}",
 	"formulaSyntaxError": "Formula syntax Error\nin: {{path}}\nformula: {{formula}}",
 	"formulaTptestSizeMismatch": "Arguments to tptest must have the same number of values.",
 	"formulaTransformDimError": "Invalid argument dimensions in transform",

@@ -3855,53 +3855,44 @@ class MMRandFunction extends MMMultipleArgumentFunction {
 	}
 }
 
-class MMISortFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		if (v) {
-			return v.iSort();
-		}
+class MMISortFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 1);
 	}
 
-	operationOnString(v) {
-		if (v) {
-			return v.iSort();
+	value() {
+		const argCount = this.arguments.length;
+		this.v = this.arguments[argCount > 1 ? 1 : 0].value();
+		if (this.v instanceof MMNumberValue || this.v instanceof MMStringValue) {
+			return this.v.iSort();
 		}
-	}
-
-	operationOnTable(v) {
-		if (v && v.columnCount) {
-			const column = v.columns[0];
+		else if (this.v instanceof MMTableValue) {
+			let columnNumber = 0;
+			if (argCount > 1 ) {
+				const columnValue = this.arguments[0].value();
+				if (columnValue instanceof MMNumberValue) {
+					columnNumber = columnValue.values[0];
+				}
+				if (columnNumber < 1 || columnNumber > this.v.columnCount) {
+					this.formula.setError('mmcmd:formulaSortBadColumn', {
+						path: this.formula.parent.getPath(),
+						formula: this.formula.truncatedFormula()
+					});
+					return null;
+				}
+				columnNumber--;
+			}
+			const column = this.v.columns[columnNumber];
 			return column.value.iSort();
 		}
 	}
 }
 
-class MMSortFunction extends MMSingleValueFunction {
-	operationOn(v) {
-		if (v) {
-			const indices = v.iSort();
-			if (indices) {
-				return v.valueForIndexRowColumn(indices)
-			}
-		}
-	}
-
-	operationOnString(v) {
-		if (v) {
-			const indices = v.iSort();
-			if (indices) {
-				return v.valueForIndexRowColumn(indices)
-			}
-		}
-	}
-
-	operationOnTable(v) {
-		if (v && v.columnCount) {
-			const column = v.columns[0];
-			const indices = column.value.iSort();
-			if (indices) {
-				return v.valueForIndexRowColumn(indices)
-			}
+class MMSortFunction extends MMISortFunction {
+	value() {
+		const indices = super.value();
+		if (indices) {
+			return this.v.valueForIndexRowColumn(indices)
 		}
 	}
 }
