@@ -3457,51 +3457,6 @@
 								"diagramScale": 1,
 								"Objects": [
 									{
-										"name": "MakeTable",
-										"Notes": "The table function can be used to make a table value.\n\nThe first argument must be an array of names that will be used as the table column names.\n\nThe remaining parameters must all be arrays having the same number of rows.\n\nTheir columns will be used to make the columns of the new table value.\n\nIf the number of names in the first argument is not the same as the total number of columns in the rest of the arguments, the lessor is used and any extras ignored.",
-										"DiagramX": 30,
-										"DiagramY": 25,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"HtmlNotes": "y",
-										"isOutput": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table {cc \"one\", \"two\", \"three\"},\n\t{cc \"s1\", \"s2\", \"s3\", \"s4\"},\n\t1:4,\n\t{fmt \"n=%3.0f\", 1:4*10}\n}"
-										},
-										"showInput": "y"
-									},
-									{
-										"name": "MakeTable2",
-										"Notes": "The table function is used to make a table with two numeric columns with different unit types, as well as two string columns.",
-										"DiagramX": 115,
-										"DiagramY": 125,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"HtmlNotes": "y",
-										"isOutput": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table\n\t{cc \"Row\",\"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"Row\" + {fmt \"%3.0f\", 1:5},\n\t1:5 * 1\"m\",\n\t100:105 * 1\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t\t100:105 * 1\"kg\",\n\t\t\t\t\"lb\"\n\t\t\t}\n}"
-										},
-										"showInput": "y"
-									},
-									{
-										"name": "MakeTable3",
-										"Notes": "Another table, conformable to MakeTable2",
-										"DiagramX": 205,
-										"DiagramY": 25,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"HtmlNotes": "y",
-										"isOutput": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{table {cc\n\t\t\"Row\", \"Length\",\n\t\t\"Weight\",\"Pounds\"\n\t},\n\t\"No\" + {fmt \"%3.0f\", 11:15},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%f\",\n\t\t200:204 * 1\"kg\", \"lb\"\n\t}\n}"
-										},
-										"showInput": "y"
-									},
-									{
 										"name": "TableArithmetic",
 										"Notes": "The basic arithmetic operators can be used with tables, with the proviso that the units must conform.  Thus if you are adding or subtracting a scalar, then all the columns must have the same unit type as the scalar.\n\nNote that the first and third columns are strings and are just copied without change.",
 										"DiagramX": 115,
@@ -3519,8 +3474,8 @@
 									{
 										"name": "AddTables",
 										"Notes": "The two tables are added together.  They must have the same number of rows and columns and the columns must conform in type and unit type.\n\nNote that the first and last columns are strings and are just taken from the first argument, without modification.",
-										"DiagramX": 205,
-										"DiagramY": 85,
+										"DiagramX": 200,
+										"DiagramY": 110,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -3528,6 +3483,78 @@
 										"Type": "Expression",
 										"Formula": {
 											"Formula": "MakeTable2 + MakeTable3"
+										},
+										"showInput": "y",
+										"tableFormats": [
+											null,
+											null,
+											"10.1f",
+											"10.1f"
+										]
+									},
+									{
+										"name": "Alternate_Table",
+										"Notes": "Alternatively the first argument can be an array of names that will be used as the table column names.\n\nThe remaining parameters must all be arrays having the same number of rows.\n\nTheir columns will be used to make the columns of the new table value.\n\nIf the number of names in the first argument is not the same as the total number of columns in the rest of the arguments, the lessor is used and any extras ignored.\n\nThis table function produces the same result as the MakeTable expression.",
+										"DiagramX": 35,
+										"DiagramY": 125,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table {cc \"one\", \"two\", \"three\"},\n\t{cc \"s1\", \"s2\", \"s3\", \"s4\"},\n\t1:4,\n\t{fmt \"n=%3.0f\", 1:4*10}\n}"
+										},
+										"showInput": "y"
+									},
+									{
+										"name": "MakeTable",
+										"Notes": "The table function is used to make a table value and the supplied arguments can be in two forms.\n\nIn this case, the arguments are pairs of column names and column values, with the first column of each value being used as the table column. Values should all have the same number of rows.",
+										"DiagramX": 35,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table \"one\", {cc \"s1\", \"s2\", \"s3\", \"s4\"},\n\t \"two\", 1:4,\n\t\"three\", {fmt \"n=%3.0f\", 1:4*10}\n}"
+										},
+										"showInput": "y"
+									},
+									{
+										"name": "MakeTable2",
+										"Notes": "The table function is used to make a table with two numeric columns with different unit types, as well as two string columns.",
+										"DiagramX": 115,
+										"DiagramY": 130,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table\n\t\"Row\",\t\t\"Row\" + {fmt \"%3.0f\", 1:5},\n\t\"Length\",\t1:5 * 1\"m\",\n\t\"Weight\",\t100:105 * 1\"kg\",\n\t\"Pounds\",\t\"lb=\" + {fmt \".2f\",\n\t\t\t100:105 * 1\"kg\",\n\t\t\t\t\"lb\"\n\t\t\t}\n}"
+										},
+										"showInput": "y",
+										"tableFormats": [
+											null,
+											null,
+											"10.1f",
+											"10.1f"
+										]
+									},
+									{
+										"name": "MakeTable3",
+										"Notes": "Another table, conformable to MakeTable2.\n\nIt uses the alternate argument method, with the twist that the column names can be supplied by having the first argument being another table.",
+										"DiagramX": 200,
+										"DiagramY": 25,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table MakeTable2,\n\t\"No\" + {fmt \"%3.0f\", 11:15},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%.2f\",\n\t\t200:204 * 1\"kg\", \"lb\"\n\t}\n}"
 										},
 										"showInput": "y"
 									}

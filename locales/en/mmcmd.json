@@ -177,6 +177,7 @@
 	"tableCsvRowCountsDiffer": "Row counts aren't all the same in csv table {{path}}\n\ncolumn {{column}} {{ilength}} != {{rowcount}}",
 	"tableCsvUnexpectedString": "Unexpected string in csv table {{path}}\n\ntoken: {{token}}\ncolumn: {{column}}\nrow: {{row}}",
 	"tableCsvColumnCountsDiffer": "Different number of names and units in csv table {{path}}",
+	"tableNameNotString": "Invalid name argument in\n\n{{path}}\n{{formula}}",
 	"tableNumberValueUnits": "All columns of a table must have the same units when attempting to convert to a number value",
 	"tableRowColumnError": "Invalid table row or column\n\nPath: {{path}}\nArgs: {{args}}",
 	"tableSelectSyntax": "Syntax error in select function term \"{{term}}\"",

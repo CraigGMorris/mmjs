@@ -2917,7 +2917,7 @@ class MMPairedStudentTFunction extends MMMultipleArgumentFunction {
 
 class MMTableFunction extends MMMultipleArgumentFunction {
 	processArguments(operandStack) {
-		return super.processArguments(operandStack, 1);
+		return super.processArguments(operandStack, 2);
 	}
 
 	value() {
@@ -2926,19 +2926,34 @@ class MMTableFunction extends MMMultipleArgumentFunction {
 		let names = [];
 		let templateColumns;
 		let nameCount = 0;
+		let argIncrement = 1;
 		if (nameParam instanceof MMStringValue) {
-			if (argCount > 1) {
-				nameCount = nameParam.valueCount;
-				for (let  i = 0;  i < nameCount; i++) {
-					names.push(nameParam.valueAtCount(i));
+			nameCount = nameParam.valueCount;
+			if (nameCount === 1 && argCount > 2) {
+				// alternating names and columns
+				argIncrement = 2;
+				nameCount = 0;
+				for (let argNo = argCount - 1; argNo >= 0; argNo -= argIncrement) {
+					const arg = this.arguments[argNo];
+					const nameValue = arg.value();
+					if (nameValue instanceof MMStringValue) {
+						names.push(nameValue.valueAtCount(0));
+						nameCount++;
+					}
+					else {
+						this.formula.setError('mmcmd:tableNameNotString', {
+							formula: this.formula.truncatedFormula(),
+							path: this.formula.parent.getPath()
+						});
+						return null;
+					}
 				}
 			}
 			else {
-				// should be CSV
-				if (nameParam.valueCount) {
-					return new MMTableValue({csv: nameParam.valueAtCount(1)});
+				// column list followed by columns
+				for (let  i = 0;  i < nameCount; i++) {
+					names.push(nameParam.valueAtCount(i));
 				}
-				return null;
 			}
 		}
 		else if (nameParam instanceof MMTableValue) {
@@ -2955,7 +2970,7 @@ class MMTableFunction extends MMMultipleArgumentFunction {
 
 		let columns = []
 		let addColumnCount = 0;
-		for (let argNo = argCount - 2; argNo >= 0; argNo--) {
+		for (let argNo = argCount - 2; argNo >= 0; argNo -= argIncrement) {
 			const arg = this.arguments[argNo];
 			const v = arg.value();
 			if (v instanceof MMValue) {
