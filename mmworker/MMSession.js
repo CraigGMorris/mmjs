@@ -1091,15 +1091,21 @@ class MMSession extends MMCommandParent {
 			// assume session import
 			try {
 				new MMUnitSystem(this);  // clear any user units and sets
-				const returnValue = await this.initializeFromJson(json);
-				let storePath = rootPath + this.storePath;
-				let n = 2;
-				while (pathAlreadyUsed(storePath)) {
-					storePath = rootPath + this.storePath + `-${n++}`;
+				this.isLoadingCase = true;
+				try {
+					const returnValue = await this.initializeFromJson(json);
+					let storePath = rootPath + this.storePath;
+					let n = 2;
+					while (pathAlreadyUsed(storePath)) {
+						storePath = rootPath + this.storePath + `-${n++}`;
+					}
+					await this.saveSession(storePath);
+					returnValue.storePath = this.storePath;
+					command.results = returnValue;
+					}
+				finally {
+					this.isLoadingCase = false;
 				}
-				await this.saveSession(storePath);
-				returnValue.storePath = this.storePath;
-				command.results = returnValue;
 			}
 			catch(e) {
 				const msg = (typeof e === 'string') ? e : e.message;
