@@ -2974,7 +2974,9 @@ class MMTableFunction extends MMMultipleArgumentFunction {
 			const arg = this.arguments[argNo];
 			const v = arg.value();
 			if (v instanceof MMValue) {
-				for (let i = 0; i < v.columnCount && addColumnCount < nameCount; i++) {
+				// only take first column if using paired arguments
+				const maxColumns = argIncrement === 2 ? 1 : v.columnCount;
+				for (let i = 0; i < maxColumns && addColumnCount < nameCount; i++) {
 					const cValue = v.valueForColumnNumber(i + 1);
 					if (!(cValue instanceof  MMNumberValue) && !(cValue instanceof MMStringValue)) {
 						return null;
