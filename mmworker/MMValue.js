@@ -353,28 +353,55 @@ class MMValue {
 			else {
 				lines.push('\n<table>');
 			}
-			lines.push(`\t<tr class="row0">\n\t\t<th class="col0">${unitName}</th>`);
-			for (let column = 1; column <= maxColumn; column++) {
-				let header = this.columnHeader(column);
-				const unitName = this.columnDisplayUnitName(column);
-				if (unitName) {
-					header += `<br>${unitName}`
-				}
-				lines.push(`\t\t<th class="col${column}">${header}</th>`);
-			}
-			lines.push('\t</tr>');
-			for (let row = 1; row <= maxRow; row++) {
-				lines.push(`<tr class="row{$row}">\n\t\t<th class="col0">${row}</th>`)
-				for (let column = 1; column <= maxColumn; column++) {
-					try {
-						const v = this.stringForRowColumnUnit(row, column, unit, this.displayFormat);
-						lines.push(`\t\t<td class="col${column}">${v}</td>`)
-					}
-					catch(e) {
-						lines.push(`\t\t<td class="col${column}">???</td>`)
-					}
+			if (this.isTransposed) {
+				lines.push(`\t<tr class="row0">\n\t\t<th class="col0">${unitName}</th>`);
+				for (let row = 1; row <= maxRow; row++) {
+					lines.push(`\t<th class="col0">${row}</th>`)
 				}
 				lines.push('\t</tr>');
+				for (let column = 1; column <= maxColumn; column++) {
+					let header = this.columnHeader(column);
+					const unitName = this.columnDisplayUnitName(column);
+					if (unitName) {
+						header += `<br>${unitName}`
+					}
+					lines.push(`<tr class="row{$column}">`)
+					lines.push(`\t\t<th class="row0">${header}</th>`);
+					for (let row = 1; row <= maxRow; row++) {
+						try {
+							const v = this.stringForRowColumnUnit(row, column, unit, this.displayFormat);
+							lines.push(`\t\t<td class="col${row}">${v}</td>`)
+						}
+						catch(e) {
+							lines.push(`\t\t<td class="col${row}">???</td>`)
+						}
+					}
+				}
+			}
+			else {
+				lines.push(`\t<tr class="row0">\n\t\t<th class="col0">${unitName}</th>`);
+				for (let column = 1; column <= maxColumn; column++) {
+					let header = this.columnHeader(column);
+					const unitName = this.columnDisplayUnitName(column);
+					if (unitName) {
+						header += `<br>${unitName}`
+					}
+					lines.push(`\t\t<th class="col${column}">${header}</th>`);
+				}
+				lines.push('\t</tr>');
+				for (let row = 1; row <= maxRow; row++) {
+					lines.push(`<tr class="row{$row}">\n\t\t<th class="col0">${row}</th>`)
+					for (let column = 1; column <= maxColumn; column++) {
+						try {
+							const v = this.stringForRowColumnUnit(row, column, unit, this.displayFormat);
+							lines.push(`\t\t<td class="col${column}">${v}</td>`)
+						}
+						catch(e) {
+							lines.push(`\t\t<td class="col${column}">???</td>`)
+						}
+					}
+					lines.push('\t</tr>');
+				}
 			}
 			lines.push('</table>\n');
 			rv = lines.join('\n');

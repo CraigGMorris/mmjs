@@ -790,12 +790,16 @@ class MMTableValue extends MMValue {
 			columns.push(column.jsonValue(displayUnit, format));
 		}
 
-		return {
+		const returnValue = {
 			t: 't',
 			v: columns,
 			nr: this.rowCount,
 			nc: this.columnCount
 		}
+		if (this.isTransposed) {
+			returnValue.isTransposed = true;
+		}
+		return returnValue;
 	}
 
 	/**

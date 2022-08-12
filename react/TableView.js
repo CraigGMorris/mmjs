@@ -57,12 +57,20 @@ export function TableView(props) {
 
 	const cellHeight = 30;
 	const cellWidth = 120;
-	const rowLabelWidth = 50;
 
 	const value = props.value;
-	const nRows = value.nr ? value.nr : 0;
+	const isTransposed = value ? value.isTransposed : false;
+	const rowLabelWidth = isTransposed ? cellWidth : 50;
+
+	const nRows = isTransposed ? 
+		(value.nc ? value.nc : 0)
+		:
+		(value.nr ? value.nr : 0);
 	const [lastRow, setLastRow] = useState(nRows);
-	const nColumns = value.nc ? value.nc : 0;
+	const nColumns = isTransposed ? 
+	(value.nr ? value.nr : 0)
+	:
+	(value.nc ? value.nc : 0);
 	const nValues = nRows * nColumns;
 
 	const cellInputs = props.cellInputs;
@@ -77,7 +85,12 @@ export function TableView(props) {
 	useEffect(() => {
 		if (currentCell) {
 			const newOffset = {x: 0, y: 0};
-			const [cellRow, cellCol] = currentCell;
+			let [cellRow, cellCol] = currentCell;
+			if (isTransposed) {
+				const temp = cellRow;
+				cellRow = cellCol;
+				cellCol = temp;
+			}
 			if (cellCol > maxDisplayedCols) {
 				newOffset.x = (cellCol - maxDisplayedCols) * cellWidth;
 			}
@@ -94,9 +107,9 @@ export function TableView(props) {
 		// make sure at least one row and column appear
 		const maxY = props.viewBox[3];
 		const maxX = props.viewBox[2];
-		const nRows = Math.max(0,props.value.nr - maxY/cellHeight + 1);
-		const nColumns = Math.max(0,props.value.nc - maxX/cellWidth + 1);
-		if (tableViewOffset.x > nColumns*cellWidth || tableViewOffset.y > nRows*cellHeight) {
+		const nMaxRows = Math.max(0,nRows - maxY/cellHeight + 1);
+		const nMaxColumns = Math.max(0,nColumns - maxX/cellWidth + 1);
+		if (tableViewOffset.x > nMaxColumns*cellWidth || tableViewOffset.y > nMaxRows*cellHeight) {
 			setTableViewOffset({x: 0, y: 0});
 			setInitialOffset({x: 0, y: 0});		
 		}	
@@ -174,7 +187,12 @@ export function TableView(props) {
 		setDragType(TableViewDragType.none);
 		const panSum = Math.abs(dragOrigin.x - x) + Math.abs(dragOrigin.y - y);
 		if (panSum < 5 ) {
-			const [row, column] = xyToRowColumn(x, y);
+			let [row, column] = xyToRowColumn(x, y);
+			if (isTransposed) {
+				const temp = row;
+				row = column;
+				column = temp;
+			}
 			const t = new Date().getTime();
 			if (longPress && (t - pointerStartTime > 500)) {
 				longPress(row, column);
@@ -206,23 +224,23 @@ const pointerMove = useCallback(e => {
 			const maxX = viewBox[2];
 	
 			// make sure at least one row and column appear
-			const nRows = Math.max(0,value.nr - maxY/cellHeight + 1);
-			const nColumns = Math.max(0,value.nc - maxX/cellWidth + 1);	
-			offsetX = Math.min(offsetX, nColumns*cellWidth)
-			offsetY = Math.min(offsetY, nRows*cellHeight);
+			const nMaxRows = Math.max(0,nRows - maxY/cellHeight + 1);
+			const nMaxColumns = Math.max(0,nColumns- maxX/cellWidth + 1);	
+			offsetX = Math.min(offsetX, nMaxColumns*cellWidth)
+			offsetY = Math.min(offsetY, nMaxRows*cellHeight);
 			setTableViewOffset({x: offsetX, y: offsetY});
 		}
 
 		const fastPanX = (deltaX) => {
 			const maxX = viewBox[2];
-			const nColumns = value.nc;
+			//const nColumns = value.nc;
 			deltaX = (deltaX/(maxX - rowLabelWidth)) * nColumns * cellWidth * 2;
 			cellPan(deltaX, 0);
 		}
 
 		const fastPanY = (deltaY) => {
 			const maxY = viewBox[3];
-			const nRows = value.nr;
+			//const nRows = value.nr;
 			deltaY = (deltaY/(maxY - cellHeight)) * nRows * cellHeight * 2;
 			cellPan(0, deltaY);
 		}
@@ -277,10 +295,10 @@ const pointerMove = useCallback(e => {
 		const maxX = viewBox[2];
 
 		// make sure at least one row and column appear
-		const nRows = Math.max(0,value.nr - maxY/cellHeight + 1);
-		const nColumns = Math.max(0,value.nc - maxX/cellWidth + 1);	
-		offsetX = Math.min(offsetX, nColumns*cellWidth)
-		offsetY = Math.min(offsetY, nRows*cellHeight);
+		const nMaxRows = Math.max(0,nRows - maxY/cellHeight + 1);
+		const nMaxColumns = Math.max(0,nColumns - maxX/cellWidth + 1);	
+		offsetX = Math.min(offsetX, nMaxColumns*cellWidth)
+		offsetY = Math.min(offsetY, nMaxRows*cellHeight);
 		// console.log(`wheel x ${offsetX} y ${offsetY}`);
 		setTableViewOffset({x: offsetX, y: offsetY});
 		setInitialOffset({x: offsetX, y: offsetY});
@@ -326,20 +344,34 @@ const pointerMove = useCallback(e => {
 			const offsetRow = row + rowOrigin + 1;
 			const y = (row + 2) * cellHeight + rowOrigin*cellHeight - offset.y;
 
-			if ((selectedRows && selectedRows.has(offsetRow)) ||
-				(currentCell && currentCell[0] === offsetRow && currentCell[1] === offsetColumn))
-			{
-				colorClass = 'tableview__cell--selected';
-			}
-			else if (cellInputs && cellInputs[`${offsetRow}_${offsetColumn}`]) {
-				colorClass = 'tableview__cell--input';
+			if (isTransposed) {
+				// should never have selected rows or cell inputs, just current cell
+				if (currentCell && currentCell[0] === offsetColumn && currentCell[1] === offsetRow) {
+					colorClass = 'tableview__cell--selected';
+				} else {
+					colorClass = 'tableview__cell--' + ((row + rowOrigin) % 2 ? (
+						(column + columnOrigin) % 2 ? 'color1' : 'color2'
+					) : (
+						(column + columnOrigin) % 2 ? 'color3' : 'color1')
+					);
+				}
 			}
 			else {
-				colorClass = 'tableview__cell--' + ((row + rowOrigin) % 2 ? (
-					(column + columnOrigin) % 2 ? 'color1' : 'color2'
-				) : (
-					(column + columnOrigin) % 2 ? 'color3' : 'color1')
-				);
+				if ((selectedRows && selectedRows.has(offsetRow)) ||
+					(currentCell && currentCell[0] === offsetRow && currentCell[1] === offsetColumn))
+				{
+					colorClass = 'tableview__cell--selected';
+				}
+				else if (cellInputs && cellInputs[`${offsetRow}_${offsetColumn}`]) {
+					colorClass = 'tableview__cell--input';
+				}
+				else {
+					colorClass = 'tableview__cell--' + ((row + rowOrigin) % 2 ? (
+						(column + columnOrigin) % 2 ? 'color1' : 'color2'
+					) : (
+						(column + columnOrigin) % 2 ? 'color3' : 'color1')
+					);
+				}
 			}
 
 			const cellBox = e(
@@ -360,9 +392,20 @@ const pointerMove = useCallback(e => {
 				let  displayedV = '';
 				let v;
 				if (value.t === 't') {
-					const tableColumn = value.v[column + columnOrigin];
-					v = tableColumn.v.v[row + rowOrigin];
-					displayedV = formatValue(v, tableColumn.format);
+					if (isTransposed) {
+						if (value.v) {
+							const tableColumn = value.v[row + rowOrigin];
+							v = tableColumn.v.v[column + columnOrigin];
+							displayedV = formatValue(v, tableColumn.format);
+						} else {
+							displayedV = '';
+						}
+					}
+					else {
+						const tableColumn = value.v[column + columnOrigin];
+						v = tableColumn.v.v[row + rowOrigin];
+						displayedV = formatValue(v, tableColumn.format);
+					}
 				}
 				else {
 					const vIndex = (row + rowOrigin) * nColumns + column + columnOrigin;
@@ -388,17 +431,27 @@ const pointerMove = useCallback(e => {
 			}
 
 			if (column === 0) {
-				if (selectedRows && selectedRows.has(offsetRow)) {
-					colorClass = 'tableview__cell--selected';
-				}
-				else if	(!selectedRows && currentCell && currentCell[1] === 0 && currentCell[0] === offsetRow) {
-					colorClass = 'tableview__cell--selected';
-				}
-				else if (cellInputs && cellInputs[`${offsetRow}_0`]) {
-					colorClass = 'tableview__cell--input';
+				if (isTransposed) {
+					if (currentCell && currentCell[0] === 0 && currentCell[1] === offsetRow) {
+						colorClass = 'tableview__cell--selected';
+					}
+					else {
+						colorClass = 'tableview__cell--' + ((row + rowOrigin) % 2 ? 'color1' : 'color3');
+					}
 				}
 				else {
-					colorClass = 'tableview__cell--' + ((row + rowOrigin) % 2 ? 'color1' : 'color3');
+					if (selectedRows && selectedRows.has(offsetRow)) {
+						colorClass = 'tableview__cell--selected';
+					}
+					else if	(!selectedRows && currentCell && currentCell[1] === 0 && currentCell[0] === offsetRow) {
+						colorClass = 'tableview__cell--selected';
+					}
+					else if (cellInputs && cellInputs[`${offsetRow}_0`]) {
+						colorClass = 'tableview__cell--input';
+					}
+					else {
+						colorClass = 'tableview__cell--' + ((row + rowOrigin) % 2 ? 'color1' : 'color3');
+					}
 				}
 				const rowLabelBox = e(
 					'rect', {
@@ -411,26 +464,55 @@ const pointerMove = useCallback(e => {
 					}
 				);
 				cells.push(rowLabelBox);
-				const rowLabel = e(
-					'text', {
-						x: xTextPad,
-						y: y - cellHeight * 0.2,
-						key: `row${row}`
-					},
-					`${(row + rowOrigin + 1)}`
-				);
-				cells.push(rowLabel);
+				if (value.t === 't' && isTransposed) {
+					const tableColumn = value.v[row + rowOrigin];
+					const columnLabel = e(
+						'text', {
+							className: 'result-table__column-label',
+							x: xTextPad,
+							y: y - cellHeight * 0.5,
+							key: `col${column}`,
+						},
+						tableColumn.name
+					);
+					cells.push(columnLabel);
+					const unitLabel = e(
+						'text', {
+							className: 'result-table__column-label',
+							x: xTextPad,
+							y: y - cellHeight * 0.1,
+							key: `colUnit${column}`,
+						},
+						tableColumn.dUnit
+					);
+					cells.push(unitLabel);		
+				}
+				else {
+					const rowLabel = e(
+						'text', {
+							x: xTextPad,
+							y: y - cellHeight * 0.2,
+							key: `row${row}`
+						},
+						`${(row + rowOrigin + 1)}`
+					);
+					cells.push(rowLabel);
+				}
 			}
 		}
 
-		if (currentCell && currentCell[0] === 0 && currentCell[1] === offsetColumn) {
-			colorClass = 'tableview__cell--selected';
-		}
-		else if (cellInputs && cellInputs[`0_${offsetColumn}`]) {
-			colorClass = 'tableview__cell--input';
-		}
-		else {
+		if (isTransposed) {
 			colorClass = 'tableview__cell--' + ((column + columnOrigin) % 2 ? 'color1' : 'color2');
+		} else {
+			if (currentCell && currentCell[0] === 0 && currentCell[1] === offsetColumn) {
+				colorClass = 'tableview__cell--selected';
+			}
+			else if (cellInputs && cellInputs[`0_${offsetColumn}`]) {
+				colorClass = 'tableview__cell--input';
+			}
+			else {
+				colorClass = 'tableview__cell--' + ((column + columnOrigin) % 2 ? 'color1' : 'color2');
+			}
 		}
 
 		const columnLabelBox = e(
@@ -444,7 +526,7 @@ const pointerMove = useCallback(e => {
 			}
 		);
 		cells.push(columnLabelBox);
-		if (value.t === 't') {
+		if (value.t === 't' && !isTransposed) {
 			const tableColumn = value.v[column + columnOrigin];
 			const columnLabel = e(
 				'text', {

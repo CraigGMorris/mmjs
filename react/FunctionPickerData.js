@@ -87,6 +87,17 @@
 				they have different unit dimensions, then a table value will be returned.
 			</p>`,
 	}
+
+	const transposeDesc = {
+		f: "{transpose a}",
+		desc: `Returns the transposition of <b>a</b> (i.e. the rows and columns are reversed).
+			Can be abbreviated to just <b>tr</b>.
+			<p>
+				If <b>a</b> is a table value, then a table value will be returned that is displayed
+				with the columns being rows and rows being columns. This just for display and does not
+				affect how the value is referenced or how functions and operations act upon it.
+			</p>`
+	}
 	
 	const data = {
 		title: 'Formula Functions',
@@ -508,10 +519,7 @@
 						desc: `This function is only valid when used by a formula in the matrix object. Returns the row number for
 						the cell that is evaluating the function.`,
 					},
-					{
-						f: "{transpose a}",
-						desc: "Returns the transposition of <b>a</b> (i.e. the rows and columns are reversed).  Can be abbreviated to just <b>tr</b>.",
-					},
+					transposeDesc,
 				]
 			},
 			{
@@ -761,7 +769,8 @@
 								unique value.  String columns are ignored.
 							</p>`,
 					},
-					selectorDesc
+					selectorDesc,
+					transposeDesc,
 				]
 			},
 			{

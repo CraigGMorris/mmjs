@@ -3691,6 +3691,96 @@
 								"Filter": {
 									"Formula": ""
 								}
+							},
+							{
+								"name": "Transpose",
+								"Notes": "",
+								"DiagramX": 85,
+								"DiagramY": 5,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "Indices",
+										"Notes": "For instance, indices still refer to the untransposed value. This is the same result as what clients[3,2] would yield.",
+										"DiagramX": 10,
+										"DiagramY": -65,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "transposed[3,2]"
+										},
+										"showInput": "y"
+									},
+									{
+										"name": "Dot_Column",
+										"Notes": "Similarly you can still use column names to return corresponding column array.",
+										"DiagramX": 95,
+										"DiagramY": -135,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "transposed.name"
+										},
+										"showInput": "y"
+									},
+									{
+										"name": "Clients_Indicies",
+										"Notes": "",
+										"DiagramX": 10,
+										"DiagramY": -10,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "clients[3,2]"
+										},
+										"isInput": "y",
+										"showInput": "y"
+									},
+									{
+										"name": "Transposed",
+										"Notes": "The transpose function (shortcut tr) can be used to switch the display of the columns and rows.\n\nThis does not affect how the value is used otherwise.",
+										"DiagramX": 10,
+										"DiagramY": -135,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{tr clients}"
+										},
+										"isInput": "y",
+										"showInput": "y"
+									},
+									{
+										"name": "Double_Tr",
+										"Notes": "Using the transpose function on a transposed value, turns it off.",
+										"DiagramX": 95,
+										"DiagramY": -80,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{tr transposed}"
+										},
+										"showInput": "y"
+									}
+								]
 							}
 						]
 					}

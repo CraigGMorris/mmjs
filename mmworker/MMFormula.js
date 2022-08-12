@@ -2663,6 +2663,12 @@ class MMTransposeFunction extends MMSingleValueFunction {
 	operationOnString(v) {
 		return this.operationOn(v);
 	}
+
+	operationOnTable(v) {
+		const copy = new MMTableValue({columns: v.columns});
+		copy.isTransposed = !v.isTransposed;
+		return copy;
+	}
 }
 
 // statistical functions
