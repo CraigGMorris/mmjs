@@ -3694,12 +3694,12 @@
 							},
 							{
 								"name": "Transpose",
-								"Notes": "",
+								"Notes": "<b>Transposing</b>\nUsing the transpose function to switch columns and rows in the display.",
 								"DiagramX": 85,
 								"DiagramY": 5,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
-								"HtmlNotes": "n",
+								"HtmlNotes": "y",
 								"Type": "Model",
 								"diagramScale": 1,
 								"Objects": [
