@@ -31,6 +31,7 @@
 	MMTableValue:readonly
 	MMButton:readonly
 	MMMenu:readonly
+	MMGraph:readonly
 	MMHtmlPageProcessor:readonly
 */
 
@@ -865,6 +866,9 @@ class MMModel extends MMTool {
 					value = output.valueDescribedBy('', requestor);
 				}
 				const outputId = 'o_' + this.name + '_' + output.name;
+				const enableClick =  output instanceof MMGraph ?
+					` style="cursor:pointer;" onClick="${onNameClick}('${object.name}')"` : '';
+
 				if (value) {
 					if (value instanceof MMToolValue) {
 						value = value.values[0];
@@ -880,7 +884,7 @@ class MMModel extends MMTool {
 						else {
 							chunks.push(`<div class="model-form__output-tool">`);
 							chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
-							chunks.push(`<div id="${outputId}" class="model-form__output_value">${value.htmlValue(requestor)}</div>`);
+							chunks.push(`<div id="${outputId}" class="model-form__output_value"${enableClick}>${value.htmlValue(requestor)}</div>`);
 							chunks.push('</div>');	
 						}
 					}
