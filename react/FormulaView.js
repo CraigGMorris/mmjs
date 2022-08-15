@@ -349,7 +349,7 @@ function ValuePicker(props) {
 	}
 
 	let paramCmps = [];
-	for (let param of paramList) {
+	for (let param of paramList.sort()) {
 		const cmp = e(
 			'div', {
 				className: 'value-picker__param',
