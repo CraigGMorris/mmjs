@@ -510,7 +510,8 @@ class Plot2D extends React.Component {
 		else {
 			initialState = this.checkAxis(0,0,0,0);
 		}
-		initialState.scale = 1;
+		initialState.xScale = 1;
+		initialState.yScale = 1;
 		initialState.translate =  {x: 0, y: 0};
 		initialState.cursorPosition = null;
 		this.state = initialState;
@@ -580,20 +581,35 @@ class Plot2D extends React.Component {
 				const t = new Date().getTime();
 				if (t - this.pointerStartTime > 500) {
 					// reset to home
+					const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY})
+					let isScalingX = true;
+					let isScalingY = true;
+					if (svgPoint.y > this.height-40) {
+						isScalingY = false;
+					}
+					else if (svgPoint.x < 40) {
+						isScalingX = false;
+					}
+			
 					this.setState({
-						scale: 1.0,
-						translate: {x: 0, y: 0}
+						xScale: isScalingX ? 1.0 : this.state.xScale,
+						yScale: isScalingY ? 1.0 : this.state.yScale,
+						translate: (isScalingX && isScalingY) ? { x: 0, y: 0 } :
+						{
+							x: isScalingX ? 0 : this.state.translate.x, 
+							y: isScalingY ? 0 : this.state.translate.y
+						}
 					})
 				}
 				else {
-					const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY})
+					const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY});
 					if (svgPoint.y > this.height - 40) {
 						this.incrementXAxis();
 					}
 					else if (svgPoint.x < 40) {
 						this.incrementYAxis();
 					}
-					else if (svgPoint.y < 40 && svgPoint.x > 400) {
+					else if (svgPoint.y < 40 && svgPoint.x > this.width - 100) {
 						e.target.releasePointerCapture(e.pointerId);
 						this.node.removeEventListener('pointermove', this.onPointerMove);
 						this.node.removeEventListener('pointerup', this.onPointerUp);	
@@ -601,7 +617,8 @@ class Plot2D extends React.Component {
 						return;
 					}
 					else {
-						const scale = this.state.scale;
+						const xScale = this.state.xScale;
+						const yScale = this.state.yScale;
 						const translate = this.state.translate;
 						const axisX = this.props.info.xInfo[this.state.xAxisIndex];
 						const axisY = axisX.yInfo[this.state.yAxisIndex];
@@ -610,16 +627,16 @@ class Plot2D extends React.Component {
 						const xSpan = (axisX.maxLabel - axisX.minLabel)
 						const ySpan = (axisY.maxLabel - axisY.minLabel)
 
-						const xLabelTranslate = -xSpan * (translate.x / this.width) / scale;
-						const yLabelTranslate = ySpan * translate.y / height / scale;
+						const xLabelTranslate = -xSpan * (translate.x / this.width) / xScale;
+						const yLabelTranslate = ySpan * translate.y / height / yScale;
 
-						let xValue = (axisX.minLabel + xLabelTranslate) + xSpan * svgPoint.x / width / scale;
+						let xValue = (axisX.minLabel + xLabelTranslate) + xSpan * svgPoint.x / width / xScale;
 						const xIsDate = (axisX.unit === 'date' || axisX.unit === 'dated' || axisX.unit === 'datem');
 						if (xIsDate) {
 							xValue = convertDateValue(xValue, axisX.unit);
 						}
 
-						let yValue = (axisY.maxLabel + yLabelTranslate) - ySpan * svgPoint.y / height / scale;
+						let yValue = (axisY.maxLabel + yLabelTranslate) - ySpan * svgPoint.y / height / yScale;
 						const yIsDate = (axisY.unit === 'date' || axisY.unit === 'dated' || axisY.unit === 'datem');
 						if (yIsDate) {
 							yValue = convertDateValue(yValue, axisY.unit);
@@ -696,13 +713,15 @@ class Plot2D extends React.Component {
 			}
 
 			this.setState((state) => {
-				const newScale = Math.max(0.1, state.scale * ratio);
+				const newXScale = Math.max(0.1, state.xScale * ratio);
+				const newYScale = Math.max(0.1, state.yScale * ratio);
 				const newTranslate = {
-					x: state.translate.x + (this.width/2 - state.translate.x) * (1 - newScale/state.scale),
-					y: state.translate.y + (this.height/2 - state.translate.y) * (1 - newScale/state.scale)
+					x: state.translate.x + (this.width/2 - state.translate.x) * (1 - newXScale/state.xScale),
+					y: state.translate.y + (this.height/2 - state.translate.y) * (1 - newYScale/state.yScale)
 				}
 				return {
-					scale: newScale,
+					xScale: newXScale,
+					yScale: newYScale,
 					translate: newTranslate
 				}
 			})	
@@ -713,15 +732,27 @@ class Plot2D extends React.Component {
 		e.preventDefault();
 		e.stopPropagation();
 		const deltaY = e.deltaY;
+		const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY})
+		let isScalingX = true;
+		let isScalingY = true;
+		if (svgPoint.y > this.height-40) {
+			isScalingY = false;
+		}
+		else if (svgPoint.x < 40) {
+			isScalingX = false;
+		}
+
 		this.setState((state) => {
-			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 10*state.scale);
-			const newScale = Math.max(0.1, state.scale + rate / 100);
+			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 5*(state.xScale + state.yScale));
+			const newXScale = isScalingX ? Math.max(0.1, state.xScale + rate / 100) : state.xScale;
+			const newYScale =isScalingY ?  Math.max(0.1, state.yScale + rate / 100) : state.yScale;
 			const newTranslate = {
-				x: state.translate.x + (this.width/2 - state.translate.x) * (1 - newScale/state.scale),
-				y: state.translate.y + (this.height/2 - state.translate.y) * (1 - newScale/state.scale)
+				x: state.translate.x + (this.width/2 - state.translate.x) * (1 - newXScale/state.xScale),
+				y: state.translate.y + (this.height/2 - state.translate.y) * (1 - newYScale/state.yScale)
 			}
 			return {
-				scale: newScale,
+				xScale: newXScale,
+				yScale: newYScale,
 				translate: newTranslate
 			};
 		});
@@ -831,7 +862,8 @@ class Plot2D extends React.Component {
 		const info = this.props.info;
 		const xAxisIndex = this.state.xAxisIndex;
 		const yAxisIndex = this.state.yAxisIndex;
-		const scale = this.state.scale;
+		const xScale = this.state.xScale;
+		const yScale = this.state.yScale;
 		const translate = this.state.translate;
 
 		let axisX = info.xInfo[xAxisIndex];
@@ -889,7 +921,7 @@ class Plot2D extends React.Component {
 			const xLabelCount = 5;
 			let step = width / (xLabelCount - 1);
 			let labelStep = (axisX.maxLabel - axisX.minLabel) / (xLabelCount - 1);
-			const xLabelTranslate = (axisX.minLabel - axisX.maxLabel) * (translate.x / width) / scale;
+			const xLabelTranslate = (axisX.minLabel - axisX.maxLabel) * (translate.x / width) / xScale;
 			const xIsDate = (axisX.unit === 'date' || axisX.unit === 'dated' || axisX.unit === 'datem');
 
 			const gridFormat = (key, x1, x2, y1, y2) => {
@@ -923,7 +955,7 @@ class Plot2D extends React.Component {
 				else {
 					anchor = 'middle';
 				}
-				let labelValue = (axisX.minLabel + xLabelTranslate) + i * labelStep / scale;
+				let labelValue = (axisX.minLabel + xLabelTranslate) + i * labelStep / xScale;
 				if (xIsDate) {
 					labelValue = convertDateValue(labelValue, axisX.unit);
 				}
@@ -944,7 +976,7 @@ class Plot2D extends React.Component {
 			let y = axisX.yInfo[yAxisIndex];
 			const yLabelCount = 5;
 			labelStep = (y.maxLabel - y.minLabel) / (yLabelCount - 1);
-			const yLabelTranslate = (y.maxLabel - y.minLabel) * (translate.y / height) / scale;
+			const yLabelTranslate = (y.maxLabel - y.minLabel) * (translate.y / height) / yScale;
 
 			lineColor = lineColors[(yAxisIndex + colorStart) % nColors];
 			step = height / ( yLabelCount - 1);
@@ -952,7 +984,7 @@ class Plot2D extends React.Component {
 				const centerY = i * step;
 				yLabelElements.push(gridFormat(`${y.name}_${i}`, 0.0, width, centerY, centerY));
 				
-				const labelValue = (y.maxLabel + yLabelTranslate) - i * labelStep / scale;
+				const labelValue = (y.maxLabel + yLabelTranslate) - i * labelStep / yScale;
 				let yLabelText = labelText(labelValue);
 				if (i === 0) {
 					if (y.title ) {
@@ -1027,7 +1059,7 @@ class Plot2D extends React.Component {
 				const columnCount = x.columnCount || 1;
 				const rowCount = nPoints / columnCount;
 
-				const scaleForX = (minX === maxX) ? 0.1 : scale * width / (maxX - minX);
+				const scaleForX = (minX === maxX) ? 0.1 : xScale * width / (maxX - minX);
 
 				for (let lineNumber = 0; lineNumber < nLines; lineNumber++) {
 					const y = x.yInfo[lineNumber];
@@ -1041,7 +1073,7 @@ class Plot2D extends React.Component {
 						const n = Math.min(nPoints, yValues.length);
 						const minY = y.minValue;
 						const maxY = y.maxValue;
-						const scaleForY = (minY == maxY) ? 0.1 : scale * height / (maxY - minY);
+						const scaleForY = (minY == maxY) ? 0.1 : yScale * height / (maxY - minY);
 						
 						for (let col = 0; col < columnCount; col++) {
 							const lineClass = `graph__svg_line_${y.name}-${col}`;
@@ -1054,8 +1086,6 @@ class Plot2D extends React.Component {
 									const xPoint = xValues[pointCount];
 									const yPoint = yValues[pointCount];
 									
-									// const scaledY = (-(yPoint - minY) * scaleForY + height + translate.y).toFixed(5);
-									// const scaledY0 = (minY * scaleForY + height).toFixed(5);
 									const scaledY = ((maxY - yPoint) * scaleForY + translate.y).toFixed(5);
 									const scaledY0 = (maxY * scaleForY).toFixed(5);
 
