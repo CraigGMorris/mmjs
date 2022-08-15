@@ -745,10 +745,10 @@ class Plot2D extends React.Component {
 		this.setState((state) => {
 			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 5*(state.xScale + state.yScale));
 			const newXScale = isScalingX ? Math.max(0.1, state.xScale + rate / 100) : state.xScale;
-			const newYScale =isScalingY ?  Math.max(0.1, state.yScale + rate / 100) : state.yScale;
+			const newYScale = isScalingY ?  Math.max(0.1, state.yScale + rate / 100) : state.yScale;
 			const newTranslate = {
-				x: state.translate.x + (this.width/2 - state.translate.x) * (1 - newXScale/state.xScale),
-				y: state.translate.y + (this.height/2 - state.translate.y) * (1 - newYScale/state.yScale)
+				x: state.translate.x + (svgPoint.x - state.translate.x) * (1 - newXScale/state.xScale),
+				y: state.translate.y + (svgPoint.y - state.translate.y) * (1 - newYScale/state.yScale)
 			}
 			return {
 				xScale: newXScale,
