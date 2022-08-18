@@ -648,11 +648,10 @@ a:hover {
 #formula-editor__edit {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: var(--input--height) 1fr var(--input--height) 15px 100px;
+	grid-template-rows: var(--input--height) 1fr var(--input--height) 115px;
 	grid-template-areas: "toolbar"
 		"input"
 		"actions"
-		"previewunits"
 		"preview";
 	height: 100%;
 	box-sizing: border-box;
@@ -664,10 +663,19 @@ a:hover {
 	font-size: 15px;
 }
 
-#formula-editor__previewtable {
+#formula-editor__preview-table {
 	grid-area: preview;
 	height: 100px;
 	box-sizing: border-box;
+}
+
+#formula-editor__preview-param {
+	grid-area: preview;
+	height: 110px;
+	box-sizing: border-box;
+	overflow: auto;
+	color: var(--link--color);
+	cursor: pointer;
 }
 
 #formula-editor__toolbar {
