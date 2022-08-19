@@ -494,9 +494,6 @@ export function FormulaEditor(props) {
 					// legacy use returned trailing dot on values that had params themselves
 					const p = pRaw.replace('.','');
 					const pLower = p.toLowerCase();
-					// if (pLower === start) {
-					// 	continue;
-					// }
 					if (!start || pLower.startsWith(start)) {
 						eligible.push(p);
 					}
@@ -508,6 +505,25 @@ export function FormulaEditor(props) {
 				}
 			}
 		});	
+	}
+
+	const makeFunctionPreview = (start) => {
+		const data = functionPickerData();
+		const prefix = '{' + start;
+		const functions = new Set();
+		for (const header of data.sections) {
+			for (const func of header.functions) {
+				if (func.f.startsWith(prefix)) {
+					functions.add(func.f);
+				}
+			}
+		}
+		if (functions.size) {
+			setPreviewParam(Array.from(functions).sort());
+		}
+		else {
+			setPreviewParam(null);
+		}
 	}
 
 	useEffect(() => {
@@ -537,14 +553,30 @@ export function FormulaEditor(props) {
 				break;
 			}
 		}
+		const originalSelStart = selStart;
 		while (selStart >= 0 && targetValue[selStart].match(/\s/)) {
 			selStart--;
 		}
+		if (selStart < originalSelStart) {
+			// check to see if in function. if so restore a whitespace
+			let fCheck = selStart;
+			while (fCheck >= 0 && targetValue[fCheck].match(/\w/)) {
+				fCheck--;
+			}
+			if (fCheck >= 0 && targetValue[fCheck] === '{') {
+				selStart++; 
+			}
+		}
+
 		const prevChar = selStart >= 0 ? targetValue[selStart] : '';
 		const pathTokens = pathChars.reverse().join('').split('.');
 		const start = pathTokens.pop().toLowerCase();
 		const path = pathTokens.join('.');
 		// ensure the path is preceded by appropriate operator
+		if (prevChar === '{') {
+			makeFunctionPreview(start);
+			return;
+		}
 		if (prevChar && !prevChar.match(/[ \t+*:%(\/\-\^\[]/)) {
 			setPreviewParam(null);
 			return;
@@ -694,7 +726,7 @@ export function FormulaEditor(props) {
 			if (selStart === selEnd) {
 				// These single character operations are undoable
 				if (!event.shiftKey) {
-					if (previewParam && previewParam.length && selStart > 0 && text[selStart-1].match(/\w/)) {
+					if (previewParam && previewParam.length && selStart > 0 && text[selStart-1].match(/[{\w]/)) {
 						insertParam(previewParam[0]);
 					}
 					else {
