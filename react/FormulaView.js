@@ -932,12 +932,13 @@ export function FormulaEditor(props) {
 		const targetValue = editInputRef.current.value;
 		let selectionStart = editInputRef.current.selectionStart;
 		const selectionEnd = Math.max(selectionStart - 1, 0);
-		while (selectionStart >= 0) {
-			const prevChar = targetValue[--selectionStart];
-			if (!prevChar || prevChar.match(/[ \t+*:%.(\/\-\^\[]/)) {
-				break;
+		if (selectionStart !== 0) {
+			while (selectionStart >= 0) {
+				const prevChar = targetValue[--selectionStart];
+				if (!prevChar || prevChar.match(/[ \t+*:%.(\/\-\^\[]/)) {
+					break;
+				}			
 			}
-			
 		}
 		const valueEnd = value.substring(selectionEnd - selectionStart);
 		const firstPart = targetValue.substring(0, selectionEnd + 1);
