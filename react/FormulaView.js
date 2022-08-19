@@ -454,19 +454,16 @@ export function FormulaEditor(props) {
 //	const normalClose = React.useRef(false);
 
 	useEffect(() => {
-		console.log('useEffect start');
 		previewCurrent();
 		setPreviewingCurrent(true);
 	}, []);
 
 	const latestFormula = React.useRef(null);
   useEffect(() => {
-		console.log('useEffect formula');
     latestFormula.current = formula;
   }, [formula]);
 
 	useEffect(() => {
-		console.log('useEffect done');
 		return () => {
 			if (latestFormula.current !== props.editOptions.initialFormula) {
 				const formula = replaceSmartQuotes(latestFormula.current);
@@ -477,7 +474,6 @@ export function FormulaEditor(props) {
 	}, []);
 
 	useEffect(() => {
-		console.log('useEffect display');
 		if (display === FormulaDisplay.editor) {
 			editInputRef.current.focus();
 		}
@@ -485,7 +481,6 @@ export function FormulaEditor(props) {
 	}, [display]);
 
 	useEffect(() => {
-		console.log('useEffect selection');
 		editInputRef.current.setSelectionRange(selection[0], selection[1]);
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selection]);
@@ -520,7 +515,6 @@ export function FormulaEditor(props) {
 	}
 
 	useEffect(() => {
-		console.log('useEffect param');
 		const target = editInputRef.current;
 		let selStart = target.selectionStart;
 		const targetValue = target.value;
@@ -530,7 +524,7 @@ export function FormulaEditor(props) {
 			return;
 		}
 		const currentChar = targetValue[selStart-1]
-		if (currentChar && currentChar.match(/[\n\t,+*:%(\/\-\^\[]/)) {
+		if (currentChar && currentChar.match(/[,+*:%(\/\-\^\[]/)) {
 			// operator or paren or bracket etc - show all
 			makeParamPreview('','');
 			return;
@@ -546,6 +540,9 @@ export function FormulaEditor(props) {
 			else {
 				break;
 			}
+		}
+		while (selStart >= 0 && targetValue[selStart].match(/\s/)) {
+			selStart--;
 		}
 		const prevChar = selStart >= 0 ? targetValue[selStart] : '';
 		const pathTokens = pathChars.reverse().join('').split('.');
@@ -663,8 +660,14 @@ export function FormulaEditor(props) {
 					}
 					if (sel > lineStart) {
 						// Insert carriage return and indented text
-						document.execCommand('insertText', false, "\n" + text.substr(lineStart, sel-lineStart));
-
+						const insertPoint = selStart
+						const insertValue = "\n" + text.substr(lineStart, sel-lineStart);
+						const firstPart = text.substring(0, insertPoint);
+						const lastPart = text.substring(insertPoint);
+						setFormula(firstPart+insertValue+lastPart);
+						const newSelection = insertPoint + insertValue.length;
+						setSelection([newSelection, newSelection]);
+				
 						// Scroll caret visible
 						event.target.blur();
 						event.target.focus();
@@ -699,12 +702,23 @@ export function FormulaEditor(props) {
 						insertParam(previewParam[0]);
 					}
 					else {
-						document.execCommand('insertText', false, "\t");
+						const insertPoint = selStart
+						const insertValue = "\t";
+						const firstPart = text.substring(0, insertPoint);
+						const lastPart = text.substring(insertPoint);
+						setFormula(firstPart+insertValue+lastPart);
+						const newSelection = insertPoint + insertValue.length;
+						setSelection([newSelection, newSelection]);
 					}
 				}
 				else {
 					if (selStart > 0 && text[selStart-1] === '\t') {
-						document.execCommand('delete');
+						const firstPart = text.substring(0, selStart-1);
+						const lastPart = text.substring(selStart);
+						setFormula(firstPart+lastPart);
+						const newSelection = selStart - 1;
+						setSelection([newSelection, newSelection]);
+
 					}
 				}
 			}
@@ -750,7 +764,6 @@ export function FormulaEditor(props) {
 			event.preventDefault();
 			return;
 		}
-		console.log(`code=${event.code} key=${event.key} selStart=${event.target.selectionStart})`);
 	}
 
 	let previewComponent;
@@ -930,7 +943,7 @@ export function FormulaEditor(props) {
 		const firstPart = targetValue.substring(0, selectionEnd + 1);
 		const lastPart = targetValue.substring(selectionEnd + 1);
 
-		const newFormula = `${firstPart}${valueEnd}${lastPart}`;
+		const newFormula = firstPart + valueEnd + lastPart;
 		editInputRef.current.focus();
 		setFormula(newFormula);
 		const newSelection = selectionEnd + 1 + valueEnd.length;
