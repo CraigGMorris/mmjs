@@ -163,7 +163,7 @@ class MMModel extends MMTool {
 		for (const name in this.children) {
 			const child = this.children[name];
 			if (child instanceof MMTool) {
-				p.push(name + '.');
+				p.push(child.name + '.');
 			}
 		}
 		return p;

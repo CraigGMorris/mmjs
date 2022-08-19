@@ -490,18 +490,14 @@ export function FormulaEditor(props) {
 			if (results.length && results[0].results) {
 				const list = results[0].results.sort();
 				const eligible = [];
-				let top = '';
 				for (const pRaw of list) {
 					// legacy use returned trailing dot on values that had params themselves
 					const p = pRaw.replace('.','');
 					const pLower = p.toLowerCase();
-					if (pLower === start) {
-						continue;
-					}
+					// if (pLower === start) {
+					// 	continue;
+					// }
 					if (!start || pLower.startsWith(start)) {
-						if (!top) {
-							top = p;
-						}
 						eligible.push(p);
 					}
 				}
