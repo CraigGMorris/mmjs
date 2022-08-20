@@ -299,137 +299,6 @@ function FunctionPicker(props) {
 	)
 }
 
-function ValuePicker(props) {
-	const t = props.t;
-	const [paramList, setParamList] = useState([]);
-	const [selected, setSelected] = useState([]);
-	useEffect(() => {
-		const path = selected.join('');
-
-		if (selected.length === 0 || path.endsWith('.')) {
-			props.actions.doCommand(`${props.modelPath}.${path} get parameters`, (results) => {
-				if (results.length && results[0].results) {
-					setParamList(results[0].results);
-				}
-			});
-		}
-		else {
-			setParamList([]);
-		}
-	},[props.actions, props.modelPath, selected])
-
-	const selectParam = param => {
-		setSelected([...selected, param]);
-	}
-
-	const selectSelection = targetSelection => {
-		const newSelected = [];
-		for (let s of selected) {
-			newSelected.push(s);
-			if (s === targetSelection) {
-				break
-			}
-		}
-		setSelected(newSelected);
-	}
-
-	const selectedCmps = [];
-	for (let s of selected) {
-		const cmp = e(
-			'span', {
-				className: 'value-picker__selection',
-				key: s,
-				onClick: () => {
-					selectSelection(s)
-				},
-			},
-			s
-		)
-		selectedCmps.push(cmp);
-	}
-
-	let paramCmps = [];
-	for (let param of paramList.sort()) {
-		const cmp = e(
-			'div', {
-				className: 'value-picker__param',
-				key: param,
-				onClick: () => {
-					selectParam(param)
-				},
-			},
-			param
-		)
-		paramCmps.push(cmp);
-	}
-
-	return e(
-		'div', {
-			id: 'value-picker',
-		},
-		e(
-			'div', {
-				id: 'value-picker__path-list'
-			},
-			e(
-				'div', {
-					id: 'value-picker__path-header',
-				},
-				t('react:valuePickerPathHeader')
-			),
-			e(
-				'div', {
-					id: 'value-picker__buttons'
-				},
-				e(
-					'button', {
-						id: 'value-picker__buttons-clear',
-						onClick: () => {
-							setSelected([]);
-						}
-					},
-					t('react:valuePickerClearButton')
-				),
-				e(
-					'button', {
-						id: 'value-picker__buttons-cancel',
-						onClick: e => {
-							e.preventDefault();
-							props.cancel();
-						}
-					},
-					t('react:cancel'),
-				),
-				e(
-					'button', {
-						onClick: () => {
-							let path = selected.join('');
-							if (path.endsWith('.')) {
-								path = path.substring(0, path.length - 1);
-							}					
-							props.apply(path, 0);
-						}
-					},
-					t('react:valuePickerInsert'),
-				),
-			),
-			selectedCmps,
-		),
-		e(
-			'div', {
-				id: 'value-picker__param-list'
-			},
-			e(
-				'div', {
-					id: 'value-picker__param-header',
-				},
-				t('react:valuePickerParamHeader')
-			),
-			paramCmps,
-		)
-	);
-}
-
 export function FormulaEditor(props) {
 	let t = props.t;
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
@@ -875,7 +744,7 @@ export function FormulaEditor(props) {
 					id: 'formula-editor__previewtable',
 					value: previewValue,
 					viewInfo: props.viewInfo,
-					viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, 100],
+					viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, 140],
 				}
 			),
 		);
@@ -895,11 +764,19 @@ export function FormulaEditor(props) {
 			},
 			e(
 				'button', {
-					className: 'formula-editor__toolbar-values',
-					title: t('react:formulaEditorValuesHover'),
-					onClick: () => { pickerButtonClick(FormulaDisplay.values); }
+					id: 'formula-editor__cancel-button',
+					title: t('react:formulaEditorCancelKey'),
+					onClick: () => {
+						latestFormula.current = props.editOptions.initialFormula;
+						if (props.cancelAction) {
+							props.cancelAction();
+						}
+						else {
+							props.actions.popView();
+						}
+					}
 				},
-				'<v>'
+				t('react:cancel')
 			),
 			e(
 				'button', {
@@ -907,7 +784,7 @@ export function FormulaEditor(props) {
 					title: t('react:formulaEditorUnitsHover'),
 					onClick: () => { pickerButtonClick(FormulaDisplay.units); }
 				},
-				'"u"'
+				t('react:formulaEditorUnitsButton'),
 			),
 			e(
 				'button', {
@@ -915,7 +792,7 @@ export function FormulaEditor(props) {
 					title: t('react:formulaEditorFunctionsHover'),
 					onClick: () => { pickerButtonClick(FormulaDisplay.functiions); }
 				},
-				'{f}}'
+				t('react:formulaEditorFunctionsButton'),
 			),
 		),
 		e(
@@ -941,22 +818,6 @@ export function FormulaEditor(props) {
 			'div', {
 				id: 'formula-editor__actions',
 			},
-			e(
-				'button', {
-					id: 'formula-editor__cancel-button',
-					title: t('react:formulaEditorCancelKey'),
-					onClick: () => {
-						latestFormula.current = props.editOptions.initialFormula;
-						if (props.cancelAction) {
-							props.cancelAction();
-						}
-						else {
-							props.actions.popView();
-						}
-					}
-				},
-				t('react:cancel')
-			),
 			e(
 				'button', {
 					id: 'formula-editor__apply-button',
@@ -1065,20 +926,6 @@ export function FormulaEditor(props) {
 					apply: apply,
 				}
 			);			
-			break;
-
-		case FormulaDisplay.values:
-			displayComponent= e(
-				ValuePicker, {
-					t: props.t,
-					actions: props.actions,
-					modelPath: editOptions.nameSpace || props.viewInfo.modelPath,
-					cancel: () => {
-						setDisplay(FormulaDisplay.editor);
-					},
-					apply: apply,
-				}
-			);
 			break;
 	}
 

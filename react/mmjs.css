@@ -229,7 +229,6 @@ a:hover {
 	overflow-wrap: break-word;
 	padding-right: 5px;
 	margin-top: 10px;
-	/* margin-left: 10px; */
 }
 
 .checkbox-and-label {
@@ -567,7 +566,6 @@ a:hover {
 	grid-area: out-units;
 	display: grid;
 	grid-template-columns: 1fr 50px;
-	/* align-self: center; */
 }
 
 #expression__format {
@@ -648,7 +646,7 @@ a:hover {
 #formula-editor__edit {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: var(--input--height) 1fr var(--input--height) 115px;
+	grid-template-rows: var(--input--height) 1fr var(--input--height) 155px;
 	grid-template-areas: "toolbar"
 		"input"
 		"actions"
@@ -665,13 +663,13 @@ a:hover {
 
 #formula-editor__preview-table {
 	grid-area: preview;
-	height: 100px;
+	height: 140px;
 	box-sizing: border-box;
 }
 
 #formula-editor__preview-param {
 	grid-area: preview;
-	height: 110px;
+	height: 150px;
 	box-sizing: border-box;
 	overflow: auto;
 	color: var(--link--color);
@@ -680,7 +678,7 @@ a:hover {
 
 #formula-editor__preview-func-desc {
 	grid-area: preview;
-	height: 110px;
+	height: 150px;
 	box-sizing: border-box;
 	overflow: auto;
 }
@@ -690,11 +688,13 @@ a:hover {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	grid-template-rows: 1fr;
-	grid-gap: 2px;
+	grid-gap: 5px;
 }
 
 #formula-editor__toolbar button {
 	font-size: 10pt;
+	width: 100px;
+	justify-self: center;
 }
 
 .formula-editor__display {
@@ -704,20 +704,22 @@ a:hover {
 #formula-editor__actions {
 	display: grid;
 	grid-area: actions;
-	grid-template-columns: 1fr 1fr 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr;
 	grid-template-rows: 1fr;
-	grid-template-areas: "cancel preview current apply";
+	grid-template-areas: "preview current apply";
 	grid-gap: 5px;
 }
 
 #formula-editor__actions button {
 	font-size: 10pt;
-	width: 70px;
+	width: 100px;
 	justify-self: center;
 }
 
 #formula-editor__cancel-button {
-	grid-area: cancel;
+	font-size: 10pt;
+	width: 100px;
+	justify-self: center;
 }
 
 #formula-editor__apply-button {
@@ -935,7 +937,6 @@ a:hover {
 }
 
 #info-view {
-	/* height: 100%; */
 	grid-area: info;
 	padding-left: var(--info-view--padding);
 	padding-right: var(--info-view--padding);
@@ -1563,7 +1564,6 @@ a:hover {
 	border-bottom: solid 1px;
 	text-align: center;
 	color: green;
-	/* color:rgb(220, 140, 20) */
 }
 
 #solver__button-fields {
@@ -1785,10 +1785,6 @@ a:hover {
 	box-sizing: border-box;
 	cursor: pointer;
 }
-
-/* #tool-view__diagram-notes-toggle:hover {
-	color: var(--link--color-hover);
-} */
 
 #tool-view__notes-input {
 	grid-area: notes-input;
@@ -2189,32 +2185,6 @@ a:hover {
 
 #unit-picker__apply {
 	grid-area: apply;
-}
-
-#value-picker__buttons button {
-	margin: 5px;
-}
-
-.value-picker__param {
-	color: var(--link--color);
-	cursor: pointer;
-}
-
-.value-picker__param:hover {
-	color: var(--link--color-hover);
-}
-
-#value-picker__param-list {
-	text-align: center;
-	overflow: auto;
-	height: calc(var(--info-height) - 95px);
-}
-
-#value-picker__path-list {
-	border-bottom: solid 1px;
-	box-sizing: border-box;
-	padding: 3px;
-	text-align: center;
 }
 
 #worker__status-message {
