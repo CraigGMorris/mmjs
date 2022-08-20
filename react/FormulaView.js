@@ -373,6 +373,9 @@ export function FormulaEditor(props) {
 					setPreviewParam(null);
 				}
 			}
+			else {
+				setPreviewParam(null);
+			}
 		});	
 	}
 
