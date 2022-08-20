@@ -535,7 +535,30 @@ export function FormulaEditor(props) {
 			setPreviewParam(null);
 			return;
 		}
-		const currentChar = targetValue[selStart-1]
+
+		const currentChar = targetValue[selStart-1];
+		if (currentChar === '?') {
+			// maybe looking for function description
+			let selTemp = selStart - 2;
+			while(selTemp >= 0 && targetValue[selTemp].match(/[\s\w]/)) {
+				selTemp--;
+			}
+			if (selTemp >= 0 && targetValue[selTemp] === '{') {
+				// is function
+				const fName = targetValue.substring(selTemp + 1, selStart - 2).toLowerCase();
+				const data = functionPickerData();
+				// search for name
+				const re = new RegExp(`^\\{${fName}[ }]`);
+				for (const header of data.sections) {
+					for (const func of header.functions) {
+						if (func.f.match(re)) {
+							setPreviewParam([`<p><b>${func.f}</b></p>${func.desc}`]);
+							return;
+						}
+					}
+				}
+			}
+		}
 		if (currentChar && currentChar.match(/[,+*:%(\/\-\^\[]/)) {
 			// operator or paren or bracket etc - show all
 			makeParamPreview('','');
@@ -577,7 +600,7 @@ export function FormulaEditor(props) {
 			makeFunctionPreview(start);
 			return;
 		}
-		if (prevChar && !prevChar.match(/[ \t+*:%(\/\-\^\[]/)) {
+		if (prevChar && !prevChar.match(/[,\s+*:%(\/\-\^\[]/)) {
 			setPreviewParam(null);
 			return;
 		}
@@ -796,25 +819,36 @@ export function FormulaEditor(props) {
 
 	let previewComponent;
 	if (previewParam) {
-		const paramCmps = [];
-		for (const p of previewParam) {
-			paramCmps.push(e(
+		if (previewParam[0].startsWith('<')) {
+			// function description
+			previewComponent = e(
 				'div', {
-					className: 'formula-editor__value-preview-item',
-					onClick: () => {
-						insertParam(p);
-					},
-					key: p,
-				},
-				p
-			));
+					id: 'formula-editor__preview-func-desc',
+					dangerouslySetInnerHTML: {__html: previewParam[0]}
+				}
+			)
 		}
-		previewComponent = e(
-			'div', {
-				id: 'formula-editor__preview-param',
-			},
-			paramCmps
-		);
+		else {
+			const paramCmps = [];
+			for (const p of previewParam) {
+				paramCmps.push(e(
+					'div', {
+						className: 'formula-editor__value-preview-item',
+						onClick: () => {
+							insertParam(p);
+						},
+						key: p,
+					},
+					p
+				));
+			}
+			previewComponent = e(
+				'div', {
+					id: 'formula-editor__preview-param',
+				},
+				paramCmps
+			);
+		}
 	} else {
 		previewComponent = e(
 			'div', {
@@ -975,7 +1009,17 @@ export function FormulaEditor(props) {
 		const newFormula = firstPart + valueEnd + lastPart;
 		editInputRef.current.focus();
 		setFormula(newFormula);
-		const newSelection = selectionEnd + 1 + valueEnd.length;
+		let newSelection
+		if (value.startsWith('{')) {
+			// function - set before first argument
+			newSelection = selectionEnd;
+			while(newFormula[newSelection].match(/\w/)) { newSelection++; }
+			newSelection++;
+		}
+		else {
+			// parameter
+			newSelection = selectionEnd + 1 + valueEnd.length;
+		}
 		setSelection([newSelection, newSelection]);
 	}
 

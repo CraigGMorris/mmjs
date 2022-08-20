@@ -678,6 +678,13 @@ a:hover {
 	cursor: pointer;
 }
 
+#formula-editor__preview-func-desc {
+	grid-area: preview;
+	height: 110px;
+	box-sizing: border-box;
+	overflow: auto;
+}
+
 #formula-editor__toolbar {
 	grid-area: toolbar;
 	display: grid;
