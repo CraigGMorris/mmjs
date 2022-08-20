@@ -545,7 +545,7 @@ export function FormulaEditor(props) {
 			}
 			if (selTemp >= 0 && targetValue[selTemp] === '{') {
 				// is function
-				const fName = targetValue.substring(selTemp + 1, selStart - 2).toLowerCase();
+				const fName = targetValue.substring(selTemp + 1, selStart - 2).trim().toLowerCase();
 				const data = functionPickerData();
 				// search for name
 				const re = new RegExp(`^\\{${fName}[ }]`);
