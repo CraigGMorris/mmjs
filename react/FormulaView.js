@@ -46,12 +46,22 @@ const replaceSmartQuotes = (f) => {
 export function FormulaField(props) {
 	const [formula, setFormula] = useState(props.formula !== undefined ? props.formula : props.viewInfo.formula);
 	const [initialFormula, setInitialFormula] = useState('');
+	const [nameSpace, setNameSpace] = useState('');
 
 	useEffect(() => {
 		const f = props.formula !== undefined ? props.formula : props.viewInfo.formula;
 		setFormula(f);
 		setInitialFormula(f);
 	}, [props.formula]);
+
+	useEffect(() => {
+		const results = props.viewInfo.updateResults[0]
+		if (results && results.results) {
+			const modelPath = results.results.modelPath;
+			setNameSpace(modelPath);
+		}
+		
+	}, [props.viewInfo.updateResults]);
 
 	const fieldInputRef = React.useRef(null);
 
@@ -66,7 +76,7 @@ export function FormulaField(props) {
 	const editOptions = {
 		formula: formula,
 		initialFormula: initialFormula,
-		nameSpace: props.viewInfo.modelPath,
+		nameSpace: nameSpace,
 	};
 
 	return e(
