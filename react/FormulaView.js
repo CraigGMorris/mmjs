@@ -680,9 +680,8 @@ export function FormulaEditor(props) {
 				lines = lines.join('\n');
 
 				// Update the text area
-				event.target.value = text.substr(0, selStart) + lines + text.substr(selEnd);
-				event.target.selectionStart = selStart;
-				event.target.selectionEnd = selStart + lines.length; 
+				setFormula(text.substr(0, selStart) + lines + text.substr(selEnd));
+				setSelection([selStart, selStart + lines.length]);
 			}
 			event.preventDefault();
 			return;
