@@ -24,6 +24,17 @@
  */
 	// eslint-disable-next-line no-unused-vars
 	export function functionPickerData(language) {
+	const comparisonBoilerPlate = `
+	<p>
+		If <b>a</b> does not have the same number of elements as <b>b</b>, then the
+		smaller number must be divisible into the larger without a remainder and those
+		values will be duplicated appropriately to match with the larger number of values.
+	</p>
+	<p>
+		If <b>a</b> and <b>b</b> are tables, they must have the same number of rows and columns
+		and have the same column types.  A table of results will be returned using <b>a's</b>
+		column names.
+	</p>`;
 	const selectorDesc = {
 		f: "{select from, selector}",
 		desc: `<p>
@@ -332,45 +343,45 @@
 				functions: [
 					{
 						f: "{eq a, b}",
-						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the corresponding elements in the return value being <b>1</b> if the <b>a</b> value is equal to the <b>b</b> value or <b>0</b> if it is not.
-							<p>
-								If <b>a</b> does not have the same number of elements as <b>b</b>, then the smaller number must be divisible into the larger without a remainder and those values will be duplicated appropriately to match with the larger number of values.
-							</p>`,
+						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the
+						corresponding elements in the return value being <b>1</b> if the <b>a</b> value
+						is equal to the <b>b</b> value or <b>0</b> if it is not.
+						` + comparisonBoilerPlate,
 					},
 					{
 						f: "{ne a, b}",
-						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the corresponding elements in the return value being <b>1</b> if the <b>a</b> value is not equal to the <b>b</b> value or <b>0</b> if it is.
-							<p>
-								If <b>a</b> does not have the same number of elements as <b>b</b>, then the smaller number must be divisible into the larger without a remainder and those values will be duplicated appropriately to match with the larger number of values.
-							</p>`,
+						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the
+						corresponding elements in the return value being <b>1</b> if the <b>a</b> value
+						is not equal to the <b>b</b> value or <b>0</b> if it is.
+						` + comparisonBoilerPlate,
 					},
 					{
 						f: "{le a, b}",
-						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the corresponding elements in the return value being <b>1</b> if the <b>a</b> value is less than or equal to the <b>b</b> value or <b>0</b> if it is not.
-							<p>
-								If <b>a</b> does not have the same number of elements as <b>b</b>, then the smaller number must be divisible into the larger without a remainder and those values will be duplicated appropriately to match with the larger number of values.
-							</p>`,
+						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the
+						corresponding elements in the return value being <b>1</b> if the <b>a</b> value
+						is less than or equal to the <b>b</b> value or <b>0</b> if it is not.
+						` + comparisonBoilerPlate,
 					},
 					{
 						f: "{lt a, b}",
-						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the corresponding elements in the return value being <b>1</b> if the <b>a</b> value is less than the <b>b</b> value or <b>0</b> if it is not.
-							<p>
-								If <b>a</b> does not have the same number of elements as <b>b</b>, then the smaller number must be divisible into the larger without a remainder and those values will be duplicated appropriately to match with the larger number of values.
-							</p>`,
+						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the
+						corresponding elements in the return value being <b>1</b> if the <b>a</b> value
+						is less than the <b>b</b> value or <b>0</b> if it is not.
+						` + comparisonBoilerPlate,
 					},
 					{
 						f: "{ge a, b}",
-						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the corresponding elements in the return value being <b>1</b> if the <b>a</b> value is greater than or equal to the <b>b</b> value or <b>0</b> if it is not.
-							<p>
-								If <b>a</b> does not have the same number of elements as <b>b</b>, then the smaller number must be divisible into the larger without a remainder and those values will be duplicated appropriately to match with the larger number of values.
-							</p>`,
+						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the
+						corresponding elements in the return value being <b>1</b> if the <b>a</b> value
+						is greater than or equal to the <b>b</b> value or <b>0</b> if it is not.
+						` + comparisonBoilerPlate,
 					},
 					{
 						f: "{gt a, b}",
-						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the corresponding elements in the return value being <b>1</b> if the <b>a</b> value is greater than the <b>b</b> value or <b>0</b> if it is not.
-							<p>
-								If <b>a</b> does not have the same number of elements as <b>b</b>, then the smaller number must be divisible into the larger without a remainder and those values will be duplicated appropriately to match with the larger number of values.
-							</p>`,
+						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the
+						corresponding elements in the return value being <b>1</b> if the <b>a</b> value
+						is greater than the <b>b</b> value or <b>0</b> if it is not.
+						` + comparisonBoilerPlate,
 					},
 					{
 						f: "{and a, b}",
@@ -378,14 +389,20 @@
 								If the first argument is a <b>scalar</b> then:
 							</p>
 							<p>
-								Returns true (the value 1) if the first value (index 1,1) of every argument is non-zero.  If any element is unknown, then the result is unknown as well.
-								If a zero value is encountered, then the values for the remaining arguments (left to right) will not be evaluated.
+								Returns true (the value 1) if the first value (index 1,1) of every argument
+								is non-zero.  If any element is unknown, then the result is unknown as well.
+								If a zero value is encountered, then the values for the remaining arguments
+								(left to right) will not be evaluated.
 							</p>
 							<p>
 								If the first argument is <b>not a scalar</b> then:
 							</p>
 							<p>
-								All the arguments are evaluated and they must all have either the same number of elements as the first argument or be scalars.  The result will be a numeric value of the same size as the first argument, with each value set to 0.0 unless the comparable elements of all the arguments are nonzero. Scalar arguments will use their single value to compare with all element positions.
+								All the arguments are evaluated and they must all have either the same number
+								of elements as the first argument or be scalars.  The result will be a numeric
+								value of the same size as the first argument, with each value set to 0.0
+								unless the comparable elements of all the arguments are nonzero. Scalar
+								arguments will use their single value to compare with all element positions.
 							</p>`,
 					},
 					{
@@ -394,18 +411,26 @@
 								If the first argument is a <b>scalar</b> then:
 							</p>
 							<p>
-								Returns the value of the first argument whose first element (index 1,1) is non-zero.  If an element is encountered with an unknown value, then the result is unknown as well. In either case the remaining arguments are not evaluated.
+								Returns the value of the first argument whose first element (index 1,1) is
+								non-zero.  If an element is encountered with an unknown value, then the
+								result is unknown as well. In either case the remaining arguments are not
+								evaluated.
 							</p>
 							<p>
 								If the first argument is <b>not a scalar</b> then:
 							</p>
 							<p>
-								All the arguments are evaluated and they must all have either the same number of elements as the first argument or be scalars.  The result will be a numeric value of the same size as the first argument, with each value set to 1.0 unless the comparable elements of all the arguments are zero. Scalar arguments will use their single value to compare with all element positions.
+								All the arguments are evaluated and they must all have either the same number
+								of elements as the first argument or be scalars.  The result will be a numeric
+								value of the same size as the first argument, with each value set to 1.0 unless
+								the comparable elements of all the arguments are zero. Scalar arguments will
+								use their single value to compare with all element positions.
 							</p>`,
 					},
 					{
 						f: "{not a}",
-						desc: `Each element of the return value is <b>1</b> if the corresponding element of <b>a</b> is <b>0</b> otherwise it will be <b>1</b>.`,
+						desc: `Each element of the return value is <b>1</b> if the corresponding element
+						of <b>a</b> is <b>0</b> otherwise it will be <b>1</b>.`,
 					},
 					{
 						f: "{if a, b, c}",

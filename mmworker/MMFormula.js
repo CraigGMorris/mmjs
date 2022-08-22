@@ -1977,6 +1977,34 @@ class MMUnitlessComparisonFunction extends MMComparisonFunction {
 			rv.subtractUnitDimensions(v1.unitDimensions);
 			return rv
 		}
+		else if (v1 instanceof MMTableValue && v2 instanceof MMTableValue) {
+			if (v1.columnCount === v2.columnCount && v1.rowCount === v2.rowCount) {
+				const columns = [];
+				for (let n = 0; n < v1.columnCount; n++) {
+					const cv1 = v1.columns[n].value;
+					const cv2 = v2.columns[n].value;
+					let cResult;
+					if (cv1 instanceof MMNumberValue && cv2 instanceof MMNumberValue) {
+						cResult = cv1.processDyadic(cv2, MMDyadicUnitAction.equal, this.func);
+						// cRultes will have the unitdimensions of cv1 - remove them
+						cResult.subtractUnitDimensions(cv1.unitDimensions);
+					}
+					else if	(cv1 instanceof MMStringValue && cv2 instanceof MMStringValue) {
+						cResult =  cv1.processStringDyadic(cv2, this.func, true);
+					}
+					else {
+						return null;
+					}
+
+					columns.push(new MMTableValueColumn({
+						name: v1.columns[n].name,
+						value: cResult
+					}));			
+				}
+				return new MMTableValue({ columns: columns});
+			}
+			return null;
+		}
 		else {
 			return super.value();
 		}
