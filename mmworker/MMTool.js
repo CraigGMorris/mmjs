@@ -124,6 +124,7 @@ class MMTool extends MMCommandParent {
 		verbs['toolviewinfo'] = this.toolViewInfo;
 		verbs['value'] = this.valueJson;
 		verbs['fpreview'] = this.formulaPreview;
+		verbs['parampreview'] = this.parameterPreview;
 		return verbs;
 	}
 
@@ -229,6 +230,32 @@ class MMTool extends MMCommandParent {
 			}
 			this.removeChildNamed(formulaName);
 		}
+	}
+
+	/**
+	 * @method parameterPreview
+	 * @param {MMCommand} command
+	 * @returns {String} json value with preview parameters
+	 */
+	parameterPreview(command) {
+		const [path, start] = command.args.split(':');
+				
+		command.results = '';
+		const list = this.parameters();
+		if (path.length === 0) {
+			// this is owner of formula
+			list.shift(); list.shift(); // remove html and notes
+		}
+		const eligible = [];
+		for (const pRaw of list) {
+			// legacy use returned trailing dot on values that had params themselves
+			const p = pRaw.replace('.','');
+			const pLower = p.toLowerCase();
+			if (!start || pLower.startsWith(start)) {
+				eligible.push(p);
+			}
+		}
+		command.results = JSON.stringify(eligible.sort());
 	}
 
 	/**

@@ -364,28 +364,17 @@ export function FormulaEditor(props) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selection]);
 
-	const makeParamPreview = (path, start) => {
-		props.actions.doCommand(`${editOptions.nameSpace}.${path} get parameters`, (results) => {
+	const makeParamPreview = (path, start='') => {
+		console.log(`path ${path}`);
+		props.actions.doCommand(`${editOptions.nameSpace}.${path} parampreview ${path}:${start}`, (results) => {
 			if (results.length && results[0].results) {
-				const list = results[0].results.sort();
-				const eligible = [];
-				for (const pRaw of list) {
-					// legacy use returned trailing dot on values that had params themselves
-					const p = pRaw.replace('.','');
-					const pLower = p.toLowerCase();
-					if (!start || pLower.startsWith(start)) {
-						eligible.push(p);
-					}
-				}
+				const eligible = JSON.parse(results[0].results);
 				if (eligible.length) {
 					setPreviewParam(eligible);
-				} else {
-					setPreviewParam(null);
+					return;
 				}
 			}
-			else {
-				setPreviewParam(null);
-			}
+			setPreviewParam(null);
 		});	
 	}
 
@@ -867,6 +856,7 @@ export function FormulaEditor(props) {
 		const targetValue = editInputRef.current.value;
 		let selectionStart = editInputRef.current.selectionStart;
 		const selectionEnd = Math.max(selectionStart - 1, 0);
+		const parts = ['','',''];
 		if (selectionStart !== 0) {
 			while (selectionStart >= 0) {
 				const prevChar = targetValue[--selectionStart];
@@ -877,12 +867,16 @@ export function FormulaEditor(props) {
 					break;
 				}			
 			}
+			parts[0] = targetValue.substring(0, selectionEnd + 1);
+			parts[1] = value.substring(selectionEnd - selectionStart);
+			parts[2] = targetValue.substring(selectionEnd + 1);
 		}
-		const valueEnd = value.substring(selectionEnd - selectionStart);
-		const firstPart = targetValue.substring(0, selectionEnd + 1);
-		const lastPart = targetValue.substring(selectionEnd + 1);
+		else {
+			parts[1] = value;
+			parts[2] = targetValue;
+		}
 
-		const newFormula = firstPart + valueEnd + lastPart;
+		const newFormula = parts.join('');
 		editInputRef.current.focus();
 		setFormula(newFormula);
 		let newSelection
@@ -894,7 +888,7 @@ export function FormulaEditor(props) {
 		}
 		else {
 			// parameter
-			newSelection = selectionEnd + 1 + valueEnd.length;
+			newSelection = parts[0].length + parts[1].length;
 		}
 		setSelection([newSelection, newSelection]);
 	}
