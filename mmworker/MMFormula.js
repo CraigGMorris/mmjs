@@ -4465,7 +4465,7 @@ class MMFormula extends MMCommandObject {
 				workingFormula = workingFormula.replace(dotRegex, '$1[0,"$2"]');
 			}
 
-			let pattern = /"[\s\S]*?"|[=*/+\-^:%()'@{}#[\],]|[\w.$]+/g;
+			let pattern = /"[\s\S]*?"|`[\s\S]*?`|[=*/+\-^:%()'@{}#[\],]|[\w.$]+/g;
 			tokens = workingFormula.match(pattern);
 			let nTokens = tokens.length;
 			let startOp = new MMParenthesisOperator();
@@ -4486,6 +4486,12 @@ class MMFormula extends MMCommandObject {
 				}
 				else if (token.startsWith('"')) {
 					token = token.replace(/"/g, '');
+					let op = new MMConstantOperator(MMStringValue.scalarValue(token));
+					operandStack.push(op);
+					treatMinusAsUnary = false;
+				}
+				else if (token.startsWith('`')) {
+					token = token.replace(/`/g, '');
 					let op = new MMConstantOperator(MMStringValue.scalarValue(token));
 					operandStack.push(op);
 					treatMinusAsUnary = false;
