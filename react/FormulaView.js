@@ -211,7 +211,7 @@ function FunctionPicker(props) {
 							e(
 								'button', {
 									onClick: () => {
-										props.apply(f.f, -1);
+										props.apply(f.f);
 									}
 								},
 								t('react:funcPickerInsert'),
@@ -894,7 +894,7 @@ export function FormulaEditor(props) {
 	}
 
 
-	const apply = (value, cursorOffset) => {
+	const apply = (value) => {
 		const targetValue = editInputRef.current.value;
 		const selectionStart = editInputRef.current.selectionStart;
 		const selectionEnd = editInputRef.current.selectionEnd;
@@ -906,7 +906,16 @@ export function FormulaEditor(props) {
 		const newFormula = `${targetValue.substring(0, selectionStart)}${value}${targetValue.substring(selectionEnd)}`;
 		setFormula(newFormula);
 		setDisplay(FormulaDisplay.editor);
-		const newSelection = selectionStart + value.length + cursorOffset;
+		let newSelection;
+		if (value.startsWith('{')) {
+			// function - set before first argument
+			newSelection = selectionStart + 1;
+			while(newFormula[newSelection].match(/\w/)) { newSelection++; }
+			newSelection++;
+		}
+		else {
+			newSelection = selectionStart + value.length;
+		}
 		setSelection([newSelection, newSelection]);
 	}
 
