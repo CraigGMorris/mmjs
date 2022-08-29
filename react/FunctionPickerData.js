@@ -24,6 +24,17 @@
  */
 	// eslint-disable-next-line no-unused-vars
 	export function functionPickerData(language) {
+	const comparisonBoilerPlate = `
+	<p>
+		If <b>a</b> does not have the same number of elements as <b>b</b>, then the
+		smaller number must be divisible into the larger without a remainder and those
+		values will be duplicated appropriately to match with the larger number of values.
+	</p>
+	<p>
+		If <b>a</b> and <b>b</b> are tables, they must have the same number of rows and columns
+		and have the same column types.  A table of results will be returned using <b>a's</b>
+		column names.
+	</p>`;
 	const selectorDesc = {
 		f: "{select from, selector}",
 		desc: `<p>
@@ -62,15 +73,15 @@
 			`
 	}
 	const sumRowsDesc = {
-		f: "{sumrows x}",
+		f: "{sumrows <b>x</b>}",
 		desc: `<p>
-			Returns a column array with the summations of the values in each row of x.  If x is a
+			Returns a column array with the summations of the values in each row of <b>x</b>.  If <b>x</b> is a
 			table value, then all the numeric columns must have the same unit dimensions, but string
 				columns are simply ignored.
 			</p>
 			<p>
 				However if a second argument is given as a string, then that string is used as a column
-				name for the sums and a table value is returned. Also in this case if x is a table value,
+				name for the sums and a table value is returned. Also in this case if <b>x</b> is a table value,
 				any string columns are copied into the result as well.
 			</p>
 			`
@@ -89,9 +100,9 @@
 	}
 
 	const transposeDesc = {
-		f: "{transpose a}",
+		f: "{tr a}",
 		desc: `Returns the transposition of <b>a</b> (i.e. the rows and columns are reversed).
-			Can be abbreviated to just <b>tr</b>.
+			Short form of <b>transpose</b>.
 			<p>
 				If <b>a</b> is a table value, then a table value will be returned that is displayed
 				with the columns being rows and rows being columns. This just for display and does not
@@ -116,15 +127,15 @@
 				functions: [
 					{
 						f: "{log x}",
-						desc: "Returns the base 10 logarithm of the value(s) in x",
+						desc: "Returns the base 10 logarithm of the value(s) in <b>x</b>",
 					},
 					{
 						f: "{ln x}",
-						desc: "Returns the natural logarithm of the value(s) in x",
+						desc: "Returns the natural logarithm of the value(s) in <b>x</b>",
 					},
 					{
 						f: "{exp x}",
-						desc: "Returns e to the value(s) in x, or in other words the natural anti-logarithm.",
+						desc: "Returns e to the value(s) in <b>x</b>, or in other words the natural anti-logarithm.",
 					},
 				]
 			},
@@ -133,27 +144,27 @@
 				functions: [
 					{
 						f: "{sin x}",
-						desc: "Returns the sine of the value(s) in x, where x is in radians.",
+						desc: "Returns the sine of the value(s) in <b>x</b>, where <b>x</b> is in radians.",
 					},
 					{
 						f: "{cos x}",
-						desc: "Returns the cosine of the value(s) in x, where x is in radians.",
+						desc: "Returns the cosine of the value(s) in <b>x</b>, where <b>x</b> is in radians.",
 					},
 					{
 						f: "{tan x}",
-						desc: "Returns the tangent of the value(s) in x, where x is in radians.",
+						desc: "Returns the tangent of the value(s) in <b>x</b>, where <b>x</b> is in radians.",
 					},
 					{
 						f: "{asin x}",
-						desc: "Returns the arcsine of the value(s) in x. The returned values are in radians.",
+						desc: "Returns the arcsine of the value(s) in <b>x</b>. The returned values are in radians.",
 					},
 					{
 						f: "{acos x}",
-						desc: "Returns the arccosine of the value(s) in x. The returned values are in radians.",
+						desc: "Returns the arccosine of the value(s) in <b>x</b>. The returned values are in radians.",
 					},
 					{
 						f: "{atan x}",
-						desc: "Returns the arctangent of the value(s) in x. The returned values are in radians.",
+						desc: "Returns the arctangent of the value(s) in <b>x</b>. The returned values are in radians.",
 					},
 					{
 						f: "{pi}",
@@ -162,7 +173,7 @@
 					{
 						f: "{polar x, y}",
 						desc: `<p>
-								Returns a table value with the first column <b>r</b> being the radius and the second <b>a</b> being the angle of x and y converted to polar coordinates.</p>
+								Returns a table value with the first column <b>r</b> being the radius and the second <b>a</b> being the angle of <b>x</b> and <b>y</b> converted to polar coordinates.</p>
 							<p>
 								If only a single argument is given, its must have two columns and the first will be assumed to be <b>x</b> and the second <b>y</b>.
 							</p>`,
@@ -182,27 +193,27 @@
 				functions: [
 					{
 						f: "{sinh x}",
-						desc: "Returns the hyperbolic sine of the value(s) in x.",
+						desc: "Returns the hyperbolic sine of the value(s) in <b>x</b>.",
 					},
 					{
 						f: "{cosh x}",
-						desc: "Returns the hyperbolic cosine of the value(s) in x.",
+						desc: "Returns the hyperbolic cosine of the value(s) in <b>x</b>.",
 					},
 					{
 						f: "{tanh x}",
-						desc: "Returns the hyperbolic tangent of the value(s) in x.",
+						desc: "Returns the hyperbolic tangent of the value(s) in <b>x</b>.",
 					},
 					{
 						f: "{asinh x}",
-						desc: "Returns the principle value of the inverse hyperbolic sine of the value(s) in x.",
+						desc: "Returns the principle value of the inverse hyperbolic sine of the value(s) in <b>x</b>.",
 					},
 					{
 						f: "{acosh x}",
-						desc: "Returns the principle value of the inverse hyperbolic cosine of the value(s) in x.",
+						desc: "Returns the principle value of the inverse hyperbolic cosine of the value(s) in <b>x</b>.",
 					},
 					{
 						f: "{atanh x}",
-						desc: "Returns the principle value of the inverse hyperbolic tangent of the value(s) in x.",
+						desc: "Returns the principle value of the inverse hyperbolic tangent of the value(s) in <b>x</b>.",
 					},
 				]
 			},
@@ -229,63 +240,63 @@
 					},
 					{
 						f: "{cabs z}",
-						desc: "Returns the absolute value of the complex value z.  The result is a real number.",
+						desc: "Returns the absolute value of the complex value <b>z</b>.  The result is a real number.",
 					},
 					{
 						f: "{cln z}",
-						desc: "Returns the complex natural logarithm of the complex value z.",
+						desc: "Returns the complex natural logarithm of the complex value <b>z</b>.",
 					},
 					{
 						f: "{cexp z}",
-						desc: "Returns the complex value result of raising e to the complex value z, or in other words the natural anti-logarithm.",
+						desc: "Returns the complex value result of raising e to the complex value <b>z</b>, or in other words the natural anti-logarithm.",
 					},
 					{
 						f: "{csin z}",
-						desc: "Returns the sine of the complex value z.",
+						desc: "Returns the sine of the complex value <b>z</b>.",
 					},
 					{
 						f: "{ccos z}",
-						desc: "Returns the cosine of the complex value z.",
+						desc: "Returns the cosine of the complex value <b>z</b>.",
 					},
 					{
 						f: "{ctan z}",
-						desc: "Returns the tangent of the complex value z.",
+						desc: "Returns the tangent of the complex value <b>z</b>.",
 					},
 					{
 						f: "{casin z}",
-						desc: "Returns the arcsine of the complex value z.",
+						desc: "Returns the arcsine of the complex value <b>z</b>.",
 					},
 					{
 						f: "{cacos z}",
-						desc: "Returns the arccosine of the complex value z.",
+						desc: "Returns the arccosine of the complex value <b>z</b>.",
 					},
 					{
 						f: "{catan z}",
-						desc: "Returns the arctangent of the complex value z.",
+						desc: "Returns the arctangent of the complex value <b>z</b>.",
 					},
 					{
 						f: "{csinh z}",
-						desc: "Returns the hyperbolic sine of the complex value z.",
+						desc: "Returns the hyperbolic sine of the complex value <b>z</b>.",
 					},
 					{
 						f: "{ccosh z}",
-						desc: "Returns the hyperbolic cosine of the complex value z.",
+						desc: "Returns the hyperbolic cosine of the complex value <b>z</b>.",
 					},
 					{
 						f: "{ctanh z}",
-						desc: "Returns the hyperbolic tangent of the complex value z.",
+						desc: "Returns the hyperbolic tangent of the complex value <b>z</b>.",
 					},
 					{
 						f: "{casinh z}",
-						desc: "Returns the inverse hyperbolic sine of the complex value z.",
+						desc: "Returns the inverse hyperbolic sine of the complex value <b>z</b>.",
 					},
 					{
 						f: "{cacosh z}",
-						desc: "Returns theinverse hyperbolic cosine of the complex value z.",
+						desc: "Returns theinverse hyperbolic cosine of the complex value <b>z</b>.",
 					},
 					{
 						f: "{catanh z}",
-						desc: "Returns the inverse hyperbolic tangent of the complex value z.",
+						desc: "Returns the inverse hyperbolic tangent of the complex value <b>z</b>.",
 					},
 				]
 			},
@@ -294,36 +305,36 @@
 				functions: [
 					{
 						f: "{max x}",
-						desc: "Returns the maximum of the values in x.  If additional arguments are supplied, the maximum value of all their elements is returned.",
+						desc: "Returns the maximum of the values in <b>x</b>.  If additional arguments are supplied, the maximum value of all their elements is returned.",
 					},
 					{
 						f: "{min x}",
-						desc: "Returns the minimum of the values in x. If additional arguments are supplied, the minimum value of all their elements is returned.",
+						desc: "Returns the minimum of the values in <b>x</b>. If additional arguments are supplied, the minimum value of all their elements is returned.",
 					},
 					{
 						f: "{maxrows x}",
-						desc: "Returns a column array with the maximums of the values in each row of x.  If x is a table value, then all the numeric columns must have the same unit dimensions, but string columns are simply ignored.",
+						desc: "Returns a column array with the maximums of the values in each row of <b>x</b>.  If <b>x</b> is a table value, then all the numeric columns must have the same unit dimensions, but string columns are simply ignored.",
 					},
 					{
 						f: "{maxcols x}",
-						desc: "Returns a row array with the maximums of the values in each column of x.  String columns in table values are ignored.",
+						desc: "Returns a row array with the maximums of the values in each column of <b>x</b>.  String columns in table values are ignored.",
 					},
 					{
 						f: "{minrows x}",
-						desc: "Returns a column array with the minimums of the values in each row of x.  If x is a table value, then all the numeric columns must have the same unit dimensions, but string columns are simply ignored.",
+						desc: "Returns a column array with the minimums of the values in each row of <b>x</b>.  If <b>x</b> is a table value, then all the numeric columns must have the same unit dimensions, but string columns are simply ignored.",
 					},
 					{
 						f: "{mincols x}",
-						desc: "Returns a row array with the minimums of the values in each column of x.  String columns in table values are ignored.",
+						desc: "Returns a row array with the minimums of the values in each column of <b>x</b>.  String columns in table values are ignored.",
 					},
 					{
 						f: "{sum x}",
-						desc: "Returns the summation of the values in x. If x is a table value, then all numeric columns must have the same dimensions.  String columns are ignored.",
+						desc: "Returns the summation of the values in <b>x</b>. If <b>x</b> is a table value, then all numeric columns must have the same dimensions.  String columns are ignored.",
 					},
 					sumRowsDesc,
 					{
 						f: "{sumcols x}",
-						desc: "Returns a row array with the summations of the values in each column of x.  String columns in table values are ignored.",
+						desc: "Returns a row array with the summations of the values in each column of <b>x</b>.  String columns in table values are ignored.",
 					},
 				]
 			},
@@ -332,45 +343,45 @@
 				functions: [
 					{
 						f: "{eq a, b}",
-						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the corresponding elements in the return value being <b>1</b> if the <b>a</b> value is equal to the <b>b</b> value or <b>0</b> if it is not.
-							<p>
-								If <b>a</b> does not have the same number of elements as <b>b</b>, then the smaller number must be divisible into the larger without a remainder and those values will be duplicated appropriately to match with the larger number of values.
-							</p>`,
+						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the
+						corresponding elements in the return value being <b>1</b> if the <b>a</b> value
+						is equal to the <b>b</b> value or <b>0</b> if it is not.
+						` + comparisonBoilerPlate,
 					},
 					{
 						f: "{ne a, b}",
-						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the corresponding elements in the return value being <b>1</b> if the <b>a</b> value is not equal to the <b>b</b> value or <b>0</b> if it is.
-							<p>
-								If <b>a</b> does not have the same number of elements as <b>b</b>, then the smaller number must be divisible into the larger without a remainder and those values will be duplicated appropriately to match with the larger number of values.
-							</p>`,
+						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the
+						corresponding elements in the return value being <b>1</b> if the <b>a</b> value
+						is not equal to the <b>b</b> value or <b>0</b> if it is.
+						` + comparisonBoilerPlate,
 					},
 					{
 						f: "{le a, b}",
-						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the corresponding elements in the return value being <b>1</b> if the <b>a</b> value is less than or equal to the <b>b</b> value or <b>0</b> if it is not.
-							<p>
-								If <b>a</b> does not have the same number of elements as <b>b</b>, then the smaller number must be divisible into the larger without a remainder and those values will be duplicated appropriately to match with the larger number of values.
-							</p>`,
+						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the
+						corresponding elements in the return value being <b>1</b> if the <b>a</b> value
+						is less than or equal to the <b>b</b> value or <b>0</b> if it is not.
+						` + comparisonBoilerPlate,
 					},
 					{
 						f: "{lt a, b}",
-						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the corresponding elements in the return value being <b>1</b> if the <b>a</b> value is less than the <b>b</b> value or <b>0</b> if it is not.
-							<p>
-								If <b>a</b> does not have the same number of elements as <b>b</b>, then the smaller number must be divisible into the larger without a remainder and those values will be duplicated appropriately to match with the larger number of values.
-							</p>`,
+						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the
+						corresponding elements in the return value being <b>1</b> if the <b>a</b> value
+						is less than the <b>b</b> value or <b>0</b> if it is not.
+						` + comparisonBoilerPlate,
 					},
 					{
 						f: "{ge a, b}",
-						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the corresponding elements in the return value being <b>1</b> if the <b>a</b> value is greater than or equal to the <b>b</b> value or <b>0</b> if it is not.
-							<p>
-								If <b>a</b> does not have the same number of elements as <b>b</b>, then the smaller number must be divisible into the larger without a remainder and those values will be duplicated appropriately to match with the larger number of values.
-							</p>`,
+						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the
+						corresponding elements in the return value being <b>1</b> if the <b>a</b> value
+						is greater than or equal to the <b>b</b> value or <b>0</b> if it is not.
+						` + comparisonBoilerPlate,
 					},
 					{
 						f: "{gt a, b}",
-						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the corresponding elements in the return value being <b>1</b> if the <b>a</b> value is greater than the <b>b</b> value or <b>0</b> if it is not.
-							<p>
-								If <b>a</b> does not have the same number of elements as <b>b</b>, then the smaller number must be divisible into the larger without a remainder and those values will be duplicated appropriately to match with the larger number of values.
-							</p>`,
+						desc: `Returns an element wise comparison of <b>a</b> and <b>b</b> with the
+						corresponding elements in the return value being <b>1</b> if the <b>a</b> value
+						is greater than the <b>b</b> value or <b>0</b> if it is not.
+						` + comparisonBoilerPlate,
 					},
 					{
 						f: "{and a, b}",
@@ -378,14 +389,20 @@
 								If the first argument is a <b>scalar</b> then:
 							</p>
 							<p>
-								Returns true (the value 1) if the first value (index 1,1) of every argument is non-zero.  If any element is unknown, then the result is unknown as well.
-								If a zero value is encountered, then the values for the remaining arguments (left to right) will not be evaluated.
+								Returns true (the value 1) if the first value (index 1,1) of every argument
+								is non-zero.  If any element is unknown, then the result is unknown as well.
+								If a zero value is encountered, then the values for the remaining arguments
+								(left to right) will not be evaluated.
 							</p>
 							<p>
 								If the first argument is <b>not a scalar</b> then:
 							</p>
 							<p>
-								All the arguments are evaluated and they must all have either the same number of elements as the first argument or be scalars.  The result will be a numeric value of the same size as the first argument, with each value set to 0.0 unless the comparable elements of all the arguments are nonzero. Scalar arguments will use their single value to compare with all element positions.
+								All the arguments are evaluated and they must all have either the same number
+								of elements as the first argument or be scalars.  The result will be a numeric
+								value of the same size as the first argument, with each value set to 0.0
+								unless the comparable elements of all the arguments are nonzero. Scalar
+								arguments will use their single value to compare with all element positions.
 							</p>`,
 					},
 					{
@@ -394,18 +411,26 @@
 								If the first argument is a <b>scalar</b> then:
 							</p>
 							<p>
-								Returns the value of the first argument whose first element (index 1,1) is non-zero.  If an element is encountered with an unknown value, then the result is unknown as well. In either case the remaining arguments are not evaluated.
+								Returns the value of the first argument whose first element (index 1,1) is
+								non-zero.  If an element is encountered with an unknown value, then the
+								result is unknown as well. In either case the remaining arguments are not
+								evaluated.
 							</p>
 							<p>
 								If the first argument is <b>not a scalar</b> then:
 							</p>
 							<p>
-								All the arguments are evaluated and they must all have either the same number of elements as the first argument or be scalars.  The result will be a numeric value of the same size as the first argument, with each value set to 1.0 unless the comparable elements of all the arguments are zero. Scalar arguments will use their single value to compare with all element positions.
+								All the arguments are evaluated and they must all have either the same number
+								of elements as the first argument or be scalars.  The result will be a numeric
+								value of the same size as the first argument, with each value set to 1.0 unless
+								the comparable elements of all the arguments are zero. Scalar arguments will
+								use their single value to compare with all element positions.
 							</p>`,
 					},
 					{
 						f: "{not a}",
-						desc: `Each element of the return value is <b>1</b> if the corresponding element of <b>a</b> is <b>0</b> otherwise it will be <b>1</b>.`,
+						desc: `Each element of the return value is <b>1</b> if the corresponding element
+						of <b>a</b> is <b>0</b> otherwise it will be <b>1</b>.`,
 					},
 					{
 						f: "{if a, b, c}",
@@ -457,7 +482,7 @@
 							the cell that is evaluating the function.`,
 					},
 					{
-						f: "{concat a, b}",
+						f: "{cc a, b}",
 						desc: `<p>
 								Returns a column array with all of the values of the arguments concatenated together.  Matrices are first converted to arrays on a row by row basis.
 								See the redim function if you wish to convert the result back into a matrix.
@@ -466,7 +491,7 @@
 								When the arguments to concat are table values, all arguments must have the same number and type of columns.  In the resulting table each column will be the concatenation of the respective columns of the arguments.  The name and display unit for each column will be taken from the first argument.
 							</p>
 							<p>
-								Can be abbreviated to just <b>cc</b>.
+								Short form of  <b>concat</b>.
 							</p>`,
 					},
 					{
@@ -503,11 +528,11 @@
 					},
 					{
 						f: "{ncols x}",
-						desc: "Returns the number of columns in x",
+						desc: "Returns the number of columns in <b>x</b>",
 					},
 					{
 						f: "{nrows x}",
-						desc: "Returns the number of rows in x",
+						desc: "Returns the number of rows in <b>x</b>",
 					},
 					{
 						f: "{redim a, ncols}",
@@ -526,37 +551,37 @@
 				header: "Statistical functions",
 				functions: [
 					{
-						f: "{average x, t}",
-						desc: `<p>
-								Returns the average of the values of <b>x</b>.  If the second parameter is 0 or missing, this will be the
-								scalar average of all the values of x.  If it is 1, then the result is a column vector whose values will be
-								the averages of each row of x.  If it is 2, then it will be a row vector of averages of the columns of x.
+						f: "{average x, by}",
+						desc: `Returns the average of the values of <b>x</b>.
+								<p>If the second parameter is 0 or missing, this will be the
+								scalar average of all the values of <b>x</b>.  If it is 1, then the result is a column vector whose values will be
+								the averages of each row of <b>x</b>.  If it is 2, then it will be a row vector of averages of the columns of <b>x</b>.
 							</p>`,
 					},
 					{
 						f: "{median x, t}",
 						desc: `<p>
 								Returns the median of the values of <b>x</b>.  If the second parameter is 0 or missing, this will be the
-								scalar median of all the values of x.  If it is 1, then the result is a column vector whose values will be
-								the medians of each row of x.  If it is 2, then it will be a row vector of medians of the columns of x.
+								scalar median of all the values of <b>x</b>.  If it is 1, then the result is a column vector whose values will be
+								the medians of each row of <b>x</b>.  If it is 2, then it will be a row vector of medians of the columns of <b>x</b>.
 							</p>`,
 					},
 					{
 						f: "{geomean x, t}",
 						desc: `<p>
 								Returns the geometric mean of the values of <b>x</b>.  If the second parameter is 0 or missing, this will
-								be the scalar geometric mean of all the values of x.  If it is 1, then the result is a column vector whos
-								values will be the geometric means of each row of x.  If it is 2, then it will be a row vector of geometric
-								means of the columns of x.
+								be the scalar geometric mean of all the values of <b>x</b>.  If it is 1, then the result is a column vector whos
+								values will be the geometric means of each row of <b>x</b>.  If it is 2, then it will be a row vector of geometric
+								means of the columns of <b>x</b>.
 							</p>`,
 					},
 					{
 						f: "{harmmean x, t}",
 						desc: `<p>
 								Returns the harmonic mean of the values of <b>x</b>.  If the second parameter is 0 or missing, this will be
-								the scalar harmonic mean of all the values of x.  If it is 1, then the result is a column vector whose values
-								will be the harmonic means of each row of x.  If it is 2, then it will be a row vector of harmonic means of
-								the columns of x.
+								the scalar harmonic mean of all the values of <b>x</b>.  If it is 1, then the result is a column vector whose values
+								will be the harmonic means of each row of <b>x</b>.  If it is 2, then it will be a row vector of harmonic means of
+								the columns of <b>x</b>.
 							</p>`,
 					},
 					{
@@ -566,14 +591,14 @@
 								of the unit type of <b>x</b>.  The square root of this is the standard deviation.
 							</p>
 							<p>
-								If the second parameter is 0 or missing, this will be the scalar variance of all the values of x.  If it is 1,
-								then the result is a column vector whose values will be the variance of each row of x.  If it is 2, then it
-								will be a row vector of variance of the columns of x.
+								If the second parameter is 0 or missing, this will be the scalar variance of all the values of <b>x</b>.  If it is 1,
+								then the result is a column vector whose values will be the variance of each row of <b>x</b>.  If it is 2, then it
+								will be a row vector of variance of the columns of <b>x</b>.
 							</p>`,
 					},
 					{
 						f: "{factorial x}",
-						desc: `Returns a unitless matrix the same size as x, but with each element replaced the factorial of its value.  If
+						desc: `Returns a unitless matrix the same size as <b>x</b>, but with each element replaced the factorial of its value.  If
 						the value is not an integer, it will be rounded to the nearest integer and if the value is negative, it will be
 						replaced with 1.  Note that values greater than 170 will result in an "inf" value since the result would be greater
 						than the largest floating point value for the device.`,
@@ -581,8 +606,8 @@
 					{
 						f: "{lngamma x}",
 						desc: `<p>
-								Returns the natural logarithm of the gamma function for x, where x > 0.  Note that where x is an integer,
-								then gamma x is equal to (x - 1)!.  Thus for calculations that involve division of large factorials that
+								Returns the natural logarithm of the gamma function for <b>x</b>, where x > 0.  Note that where <b>x</b> is an integer,
+								then gamma <b>x</b> is equal to (x - 1)!.  Thus for calculations that involve division of large factorials that
 								might overflow, subtracting the ln gamma values might be a better alternative.
 							</p>`,
 					},
@@ -676,8 +701,8 @@
 				functions: [
 					{
 						f: "{table n, c}",
-						desc: `Creates a table value whose column names are the elements of n and values are taken from the
-								columns of c and additional parameters. If n is a table value, then its column names are used
+						desc: `Creates a table value whose column names are the elements of <b>n</b> and values are taken from the
+								columns of c and additional parameters. If <b>n</b> is a table value, then its column names are used
 								<p>Alternatively pairs of names and values can be used as in</p>
 								<p>{table "First", x1, "Second", x2}</p>
 								<p>and so forth.</p>
@@ -688,43 +713,43 @@
 					},
 					{
 						f: "{nrows x}",
-						desc: "Returns the number of rows in x",
+						desc: "Returns the number of rows in <b>x</b>",
 					},
 					{
 						f: "{ncols x}",
-						desc: "Returns the number of columns in x",
+						desc: "Returns the number of columns in <b>x</b>",
 					},
 					{
 						f: "{colnames x}",
-						desc: "Returns an array consisting of the column names of table x",
+						desc: "Returns an array consisting of the column names of table <b>x</b>",
 					},
 					{
 						f: "{maxrows x}",
-						desc: `Returns a column array with the maximums of the values in each row of x.  If x is a table value,
+						desc: `Returns a column array with the maximums of the values in each row of <b>x</b>.  If <b>x</b> is a table value,
 						then all the numeric columns must have the same unit dimensions, but string columns are simply copied.`,
 					},
 					{
 						f: "{maxcols x}",
-						desc: "Returns a row array with the maximums of the values in each column of x.  String columns in table values are ignored.",
+						desc: "Returns a row array with the maximums of the values in each column of <b>x</b>.  String columns in table values are ignored.",
 					},
 					{
 						f: "{minrows x}",
-						desc: `Returns a column array with the minimums of the values in each row of x.  If x is a table value, then
+						desc: `Returns a column array with the minimums of the values in each row of <b>x</b>.  If <b>x</b> is a table value, then
 						all the numeric columns must have the same unit dimensions, but string columns are simply copied.`,
 					},
 					{
 						f: "{mincols x}",
-						desc: "Returns a row array with the minimums of the values in each column of x.  String columns in table values are ignored.",
+						desc: "Returns a row array with the minimums of the values in each column of <b>x</b>.  String columns in table values are ignored.",
 					},
 					{
 						f: "{sum x}",
-						desc: `Returns the summation of the values in x. If x is a table value, then all numeric columns must have the
+						desc: `Returns the summation of the values in <b>x</b>. If <b>x</b> is a table value, then all numeric columns must have the
 						same dimensions.  String columns are ignored.`,
 					},
 					sumRowsDesc,
 					{
 						f: "{sumcols x}",
-						desc: "Returns a row array with the summations of the values in each column of x.  String columns in table values are ignored.",
+						desc: "Returns a row array with the summations of the values in each column of <b>x</b>.  String columns in table values are ignored.",
 					},
 					{
 						f: "{concat a, b}",
@@ -795,7 +820,7 @@
 								then a zeroes are returned.
 							</p>
 							<p>
-								If <b>x</b> is not a scalar, then the process is repeated for each value of x, with the result being
+								If <b>x</b> is not a scalar, then the process is repeated for each value of <b>x</b>, with the result being
 								in the corresponding row of the returned value.
 							</p>`,
 					},
@@ -830,7 +855,7 @@
 							</p>
 							<p>
 							If the third parameter, u, is used, it must be the name of a unit compatible
-							with the unit type of x.
+							with the unit type of <b>x</b>.
 							<br><br>
 							Thus function <br><b>{fmt "%12.2f", 12.1234}</b><br>would return
 							<br><b>12.12</b><br>,
@@ -974,7 +999,7 @@
 			{
 				header: "3D Transform functions",
 				comment: `<i>These functions implement 3D graphical transformations, based on 4x4 transformation matrices.
-					All assume the y axis is vertical, the x horizontal and z positive out of the screen.</i>`,
+					All assume the <b>y</b> axis is vertical, the <b>x</b> horizontal and <b>z</b> positive out of the screen.</i>`,
 				functions: [
 					{
 						f: "{translate xyz}",
@@ -988,15 +1013,15 @@
 					},
 					{
 						f: "{roll angle}",
-						desc: `Creates a 4x4 transformation matrix for rotations of angle radians around the z axis.`,
+						desc: `Creates a 4x4 transformation matrix for rotations of angle radians around the <b>z</b> axis.`,
 					},
 					{
 						f: "{pitch angle}",
-						desc: `	Creates a 4x4 transformation matrix for rotation of angle radians around the x axis.`,
+						desc: `	Creates a 4x4 transformation matrix for rotation of angle radians around the <b>x</b> axis.`,
 					},
 					{
 						f: "{yaw angle}",
-						desc: `Creates a 4x4 transformation matrix for rotation of angle radians around the y axis.`,
+						desc: `Creates a 4x4 transformation matrix for rotation of angle radians around the <b>y</b> axis.`,
 					},
 					{
 						f: "{transform trans, coords}",
@@ -1014,7 +1039,7 @@
 				functions: [
 					{
 						f: "{abs x}",
-						desc: "Returns the absolute value(s) of x",
+						desc: "Returns the absolute value(s) of <b>x</b>",
 					},
 					{
 						f: "{alert m}",
@@ -1062,25 +1087,25 @@
 					},
 					{
 						f: "{getbit n, x}",
-						desc: `Returns the bit at bit position n of a numeric value x, where a n of 1 would be
+						desc: `Returns the bit at bit position <b>n</b> of a numeric value <b>x</b>, where a <b>n</b> of 1 would be
 							the least significant bit. The bit number does not have to be a scalar and the returned
-							value will have one column for each bit number value and a row for each value of x`
+							value will have one column for each bit number value and a row for each value of <b>x</b>`
 					},
 					{
 						f: "{int x}",
-						desc: "Returns integer portion of x",
+						desc: "Returns integer portion of <b>x</b>",
 					},
 					{
 						f: "{numeric x}",
 						desc: `<p>
-								Returns a numeric matrix value of x.  If x is already numeric it is simply returned.
+								Returns a numeric matrix value of <b>x</b>.  If <b>x</b> is already numeric it is simply returned.
 							</p>
 							<p>
-								If x is string value, then an attempt is made to interpret its values as numbers and if that isn't
+								If <b>x</b> is string value, then an attempt is made to interpret its values as numbers and if that isn't
 								possible, a zero is used in its place.
 							</p>
 							<p>
-								If x is a table value, then all of the columns must be of the same unit dimensions.  String columns are ignored.
+								If <b>x</b> is a table value, then all of the columns must be of the same unit dimensions.  String columns are ignored.
 							</p>`,
 					},
 					{
@@ -1096,27 +1121,27 @@
 					},
 					{
 						f: '{round x}',
-						desc: `returns the nearest whole number of x. Thus an x value of
-						{cc -3.49, -3.5, 3.49, 3.5} would return -3, -4, -4, 3, 4, 4. The x value must have a
+						desc: `returns the nearest whole number of <b>x</b>. Thus an <b>x</b> value of
+						{cc -3.49, -3.5, 3.49, 3.5} would return -3, -4, -4, 3, 4, 4. The <b>x</b> value must have a
 						dimensionless unit type`
 					},
 					{
 						f: "{sign x}",
-						desc: `Returns a unitless matrix the same size as x, but with each element replaced with 1 if the x
+						desc: `Returns a unitless matrix the same size as <b>x</b>, but with each element replaced with 1 if the x
 						element is greater or equal to 0 and -1 if the element is negative.`,
 					},
 					{
 						f: "{sort x, n}",
-						desc: `Returns a sorted copy of x.
-						<p>If x is a table value it will be sorted on column number n.</p>
-						<p>If n is omitted, the first column is used. If n is negative, the sort is reversed</p>`,
+						desc: `Returns a sorted copy of <b>x</b>.
+						<p>If <b>x</b> is a table value it will be sorted on column number <b>n</b>.</p>
+						<p>If <b>n</b> is omitted, the first column is used. If <b>n</b> is negative, the sort is reversed</p>`,
 					},
 					{
 						f: "{isort x, n}",
 						desc: `Creates a column array of indexes, such that if they are used with
-						the index operator for x, the result would be a sorted copy of x 
-						<p>If x is a table value the sort will be on its column number n.</p>
-						<p>If n is omitted, the first column is used.  If n is negative, the sort is reversed</p>`,
+						the index operator for <b>x</b>, the result would be a sorted copy of <b>x</b> 
+						<p>If <b>x</b> is a table value the sort will be on its column number <b>n</b>.</p>
+						<p>If <b>n</b> is omitted, the first column is used.  If <b>n</b> is negative, the sort is reversed</p>`,
 					},
 					{
 						f: "{wfetch method, url, headers}",

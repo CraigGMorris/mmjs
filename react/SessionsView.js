@@ -336,7 +336,7 @@ export class SessionsView extends React.Component {
 								await this.props.actions.doCommand(
 									`/ new`,
 									() => {
-										this.props.actions.resetInfoStack('root');
+										this.props.actions.resetInfoStack('root', {new: true});
 										this.props.updateDiagram(true);
 									}
 								);

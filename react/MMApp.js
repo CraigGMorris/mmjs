@@ -374,6 +374,9 @@ export function MMApp(props) {
 				};
 				infoStack.push(infoState);		
 			}
+			if (resetInfo.new && !allow2Pane) { 
+				setViewType(ViewType.diagram);
+			}
 		}
 		setViewInfo(infoState);
 		while(dgmStateStack.pop());

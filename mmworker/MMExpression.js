@@ -175,6 +175,12 @@ class MMExpression extends MMTool {
 		p.push('table.');
 		p.push('hasValue');
 		p.push('formula');
+		const v = this.valueForRequestor();
+		if (v instanceof MMTableValue) {
+			for (const column of v.columns) {
+				p.push(column.name);
+			}
+		}
 		return p;
 	}
 
