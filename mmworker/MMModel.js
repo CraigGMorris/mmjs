@@ -107,6 +107,7 @@ class MMModel extends MMTool {
 		verbs['makelocal'] = this.makeLocalCommand;
 		verbs['restoreimport'] = this.restoreImportCommand;
 		verbs['htmlaction'] = this.actionCommand;
+		verbs['test'] = this.testCommand;
 
 		return verbs;
 	}
@@ -166,6 +167,7 @@ class MMModel extends MMTool {
 				p.push(child.name + '.');
 			}
 		}
+		p.push('_toolnames');
 		return p;
 	}
 
@@ -364,6 +366,161 @@ class MMModel extends MMTool {
 		command.results = json;
 	}
 
+	contentsFromJsonObject(obj) {
+		const makeExpression = (name) => {
+			const toolType = MMToolTypes["Expression"];
+			return toolType.factory(name, this);
+		}
+
+		const makeModel = (name, contents) => {
+			const toolType = MMToolTypes["Model"];
+			const model = toolType.factory(name, this);
+			model.contentsFromJsonObject(contents);
+			return model;
+		}
+
+		const autoPosition = (tool) => {
+			let maxX = 10, maxY = 10;
+			for (const key in this.children) {
+				const tool = this.children[key];
+				if (tool instanceof MMTool) {
+					if (tool.position.y > maxY) {
+						maxY = tool.position.y;
+						maxX = tool.position.x;
+					}
+					else if (tool.position.y == maxY && tool.position.x > maxX) {
+						maxX = tool.position.x;
+					}
+				}
+			}	
+			tool.position = {x: maxX, y: maxY + 30};
+		}
+	
+
+		for (const childName of Object.keys(obj)) {
+			const child = obj[childName];
+			if (typeof(child) === 'string') {
+				const expr = makeExpression(childName);
+				if (expr) {
+					autoPosition(expr);
+					expr.formula.formula = "'" + child;
+				}		
+			}
+			else if (typeof(child) === 'number') {
+				const expr = makeExpression(childName);
+				if (expr) {
+					autoPosition(expr);
+					expr.formula.formula = child.toString();
+				}		
+			}
+			else if (child instanceof Array && child.length) {
+				const first = child[0];
+				const parts = [];
+				if (typeof(first) === 'string') {
+					parts.push('{cc `' + first + '`');
+					for (let i = 1; i < child.length; i++) {
+						parts.push(',`'+ child[i] + '`');
+					}
+					parts.push('}')
+					const expr = makeExpression(childName);
+					if (expr) {
+						autoPosition(expr);
+						expr.formula.formula = parts.join('');
+					}
+				}
+				else if (typeof(first) === 'number') {
+					parts.push('{cc `' + first.toString() + '`');
+					for (let i = 1; i < child.length; i++) {
+						parts.push(',`'+ child[i].toString() + '`');
+					}
+					parts.push('}')
+					const expr = makeExpression(childName);
+					if (expr) {
+						autoPosition(expr);
+						expr.formula.formula = parts.join('');
+					}
+				}
+				else {
+					// Array of objects - use first as template to make a table with
+					// each of its children being a column. If one of them isn't a scalar
+					// string or number, then just create an expression with json string
+					const columnValues = [];
+					let dataOkay = true;
+					for (const columnName of Object.keys(first)) {
+						const columnFirst = first[columnName];
+						if (typeof(columnFirst) === 'string') {
+							columnValues.push({name: columnName, type: 'string', values: []});
+						}
+						else if (typeof(columnFirst) === 'number') {
+							columnValues.push({name: columnName, type: 'number', values: []});
+						}
+						else {
+							dataOkay = false;
+							break;
+						}
+					}
+					for (let i = 0; dataOkay && i < child.length; i++) {
+						const element = child[i];
+						for (let j = 0; dataOkay && j < columnValues.length; j++) {
+							const columnValue = columnValues[j];
+							const value = element[columnValue.name];
+							if (typeof(value) === columnValue.type) {
+								columnValue.values.push(value);
+							}
+							else {
+								dataOkay = false;
+							}
+						} 
+					}
+					if (dataOkay) {
+						const toolType = MMToolTypes["DataTable"];
+						const table = toolType.factory(childName, this);
+						autoPosition(table);
+
+						// add columns
+						for (const v of columnValues) {
+							const options = {
+								name: v.name,
+							};
+							if (v.type === 'string') {
+								options.displayUnit = 'string';
+								options.defaultValue = '""';
+							}
+							else {
+								options.defaultValue = '"0"';
+							}
+							table.addColumn(JSON.stringify(options));
+						}
+
+						// add rows
+						for (const rowValue of child) {
+							table.addRow(0, rowValue);
+						}
+					}
+					else {
+						const expr = makeExpression(childName);
+						if (expr) {
+							autoPosition(expr);
+							expr.formula.formula = "'" + JSON.stringify(child, null, '\t');
+						}				
+					}
+				}
+			}
+			else if (typeof(child) === 'object') {
+				const model = makeModel(childName, child);
+				if (model) {
+					autoPosition(model);
+				}
+			}
+		}
+	}
+
+	// testing method - place to easily try things out
+	async testCommand(command) {
+		let results = ['test function for model']
+		command.results = results;
+	}
+
 	/** @method copyAsTableCommand
 	 * returns text representation of tools table value
 	 * @param {MMCommand} command
@@ -491,13 +648,25 @@ class MMModel extends MMTool {
 								tool = saved.RootModel;
 								tool.name = name;
 							}
-							else if (saved.name) {
-								// just a single tool - probably copied from app based minion
-								name = saved.name;
-								tool = saved;
-							}
+							// else if (saved.name) {
+							// 	// just a single tool - probably copied from app based minion
+							// 	name = saved.name;
+							// 	tool = saved;
+							// }
 							else {
-								return; // invalid object
+								// try making model from json
+								const toolType = MMToolTypes["Model"];
+								let name = `x${this.nextToolNumber++}`;
+								while ( this.childNamed(name) ) {
+									name = `x${this.nextToolNumber++}`;
+								}	
+								let model = toolType.factory(name, this);
+								if (model) {
+									model.position = new MMPoint(originX, originY);
+									model.contentsFromJsonObject(saved);
+								}
+								return;
+								// return; // invalid object
 							}
 							tool.DiagramX = originX;
 							tool.DiagramY = originY;
@@ -1019,6 +1188,18 @@ class MMModel extends MMTool {
 		}
 		else if (description.toLowerCase() === 'html') {
 			return MMStringValue.scalarValue(this.htmlValue());
+		}
+		else if (description.toLowerCase() === '_toolnames') {
+			const names = [];
+			for (const name in this.children) {
+				const child = this.children[name];
+				if (child instanceof MMTool) {
+					names.push(child.name);
+				}
+			}
+			if (names.length) {
+				value = MMStringValue.stringArrayValue(names);
+			}
 		}
 		else {
 			value = super.valueDescribedBy(description, requestor);
