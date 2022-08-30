@@ -22,6 +22,7 @@
 	MMFormula:readonly
 	MMPropertyType:readonly
 	MMNumberValue:readonly
+	MMStringValue:readonly
 	MMTableValueColumn:readonly
 	MMTableValue:readonly
 */
@@ -247,7 +248,13 @@ class MMIterator extends MMTool {
 			if (aLength) {
 				const first = a[0];
 				const firstLength = first.valueCount;
-				const ov = new MMNumberValue(aLength, firstLength, first.unitDimensions);
+				let ov;
+				if (first instanceof MMNumberValue) {
+					ov = new MMNumberValue(aLength, firstLength, first.unitDimensions);
+				}
+				else if (first instanceof MMStringValue) {
+					ov = new MMStringValue(aLength, firstLength);
+				}
 				for (let row = 0; row < aLength; row++) {
 					const v = a[row];
 					if (v.valueCount !== firstLength) {
@@ -310,16 +317,26 @@ class MMIterator extends MMTool {
 				if (v.columnCount > 1) {
 					for (let cNumber = 1; cNumber <= v.columnCount; cNumber++) {
 						const name = columnName + `_${cNumber}`;
-						const column = new MMTableValueColumn({
-							name: name, displayUnit: v.defaultUnit.name, value: v.valueForColumnNumber(cNumber)
-						});
+						const options = {
+							name: name,
+							value: v.valueForColumnNumber(cNumber)
+						}
+						if (v.defaultUnit) {
+							options.displayUnit = v.defaultUnit.name;
+						} 
+						const column = new MMTableValueColumn(options);
 						columns.push(column);
 					}
 				}
 				else {
-					const column = new MMTableValueColumn({
-						name: columnName, displayUnit: v.defaultUnit.name, value: v
-					});
+					const options = {
+						name: columnName,
+						value: v
+					}
+					if (v.defaultUnit) {
+						options.displayUnit = v.defaultUnit.name;
+					} 
+				const column = new MMTableValueColumn(options);
 					columns.push(column);
 				}
 			}
