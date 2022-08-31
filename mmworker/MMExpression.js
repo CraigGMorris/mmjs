@@ -369,7 +369,7 @@ class MMExpression extends MMTool {
 		results['isInput'] = this._isInput;
 		results['showInput'] = this._showInput;
 		results['value'] = this.jsonValue();
-		if (this._isInput && this.parent.parent) {
+		if (this._isInput && this.parent.parent && this.parent.parent instanceof MMModel) {
 			results['modelPath'] = this.parent.parent.getPath();
 		}
 	}
