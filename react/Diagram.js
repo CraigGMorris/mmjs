@@ -144,9 +144,7 @@ export class Diagram extends React.Component {
 							const widthScale = (box.width -30) / ( maxX - minX );
 							const heightScale = (box.height - 40) / ( maxY - minY);
 							let scale =  ( widthScale < heightScale ) ? widthScale : heightScale;
-							if ( scale > 3.0 ) {
-								scale = 3.0;
-							}
+							scale = Math.min(5.0, Math.max(0.2, scale));
 							newState['scale'] = scale;
 							const yOffset = modelInfo.import != null ? 100 : 40; 
 							newState['translate'] = {x: -minX + 30.0 / scale, y: -minY + yOffset /scale};
@@ -578,7 +576,7 @@ export class Diagram extends React.Component {
 			const clientY = (eCache[0].y + eCache[1].y) / 2;
 
 			this.setState((state) => {
-				const newScale = Math.max(0.1, state.scale * ratio);
+				const newScale = Math.min(5.0, Math.max(0.2, state.scale * ratio));
 				const newTranslate = {
 					x: clientX/newScale - clientX/state.scale + state.translate.x,
 					y: clientY/newScale - clientY/state.scale + state.translate.y
@@ -603,7 +601,7 @@ export class Diagram extends React.Component {
 		const pageY = e.pageY;
 		this.setState((state) => {
 			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 10*state.scale);
-			const newScale = Math.max(0.1, state.scale - rate / 100);
+			const newScale = Math.min(5.0, Math.max(0.2, state.scale - rate / 100));
 			const newTranslate = {
 				x: pageX/newScale - pageX/state.scale + state.translate.x,
 				y: pageY/newScale - pageY/state.scale + state.translate.y
