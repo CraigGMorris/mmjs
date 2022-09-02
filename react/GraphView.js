@@ -713,8 +713,8 @@ class Plot2D extends React.Component {
 			}
 
 			this.setState((state) => {
-				const newXScale = Math.max(0.1, state.xScale * ratio);
-				const newYScale = Math.max(0.1, state.yScale * ratio);
+				const newXScale = Math.max(0.01, state.xScale * ratio);
+				const newYScale = Math.max(0.01, state.yScale * ratio);
 				const newTranslate = {
 					x: state.translate.x + (this.width/2 - state.translate.x) * (1 - newXScale/state.xScale),
 					y: state.translate.y + (this.height/2 - state.translate.y) * (1 - newYScale/state.yScale)
@@ -744,8 +744,8 @@ class Plot2D extends React.Component {
 
 		this.setState((state) => {
 			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 5*(state.xScale + state.yScale));
-			const newXScale = isScalingX ? Math.max(0.1, state.xScale + rate / 100) : state.xScale;
-			const newYScale = isScalingY ?  Math.max(0.1, state.yScale + rate / 100) : state.yScale;
+			const newXScale = isScalingX ? Math.max(0.01, state.xScale + rate / 100) : state.xScale;
+			const newYScale = isScalingY ?  Math.max(0.01, state.yScale + rate / 100) : state.yScale;
 			const newTranslate = {
 				x: state.translate.x + (svgPoint.x - state.translate.x) * (1 - newXScale/state.xScale),
 				y: state.translate.y + (svgPoint.y - state.translate.y) * (1 - newYScale/state.yScale)
@@ -1392,7 +1392,7 @@ class Plot3D extends React.Component {
 			}
 
 			this.setState((state) => {
-				const newScale = Math.max(0.1, state.pinchScale * ratio);
+				const newScale = Math.max(0.01, state.pinchScale * ratio);
 				return {
 					pinchScale: newScale,
 				}
@@ -1406,7 +1406,7 @@ class Plot3D extends React.Component {
 		const deltaY = e.deltaY;
 		this.setState((state) => {
 			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 10*state.pinchScale);
-			const newScale = Math.max(0.1, state.pinchScale + rate/100);
+			const newScale = Math.max(0.01, state.pinchScale + rate/100);
 			return {
 				pinchScale: newScale,
 			};
