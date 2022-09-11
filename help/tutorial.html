@@ -197,7 +197,7 @@
 				</p>
 				<img src="tutorial/formulaedit3.png" alt="Edited formula">
 				<p>
-					and tap on the <b>"u"</b> button to bring up the
+					and tap on the <b>Units</b> button to bring up the
 					<a href="formulaeditor.html#ubrowser">unit browser</a>. Tap on
 					<b>Dimensionless</b> in the left hand column and then <b>degree</b> in the right
 					column, which should give you this:
@@ -235,35 +235,71 @@
 					icon to the right of the its <a href="formulaeditor.html#fields">formula field</a>.
 				</p>
 				<p>
-					In the resulting <a href="formulaeditor.html#editor">formula editor</a> tap on the
-					<b>{f}</b> button to open a <a href="formulaeditor.html#fbrowser">function browser</a>,
-					which will let you browse through all the functions available for use in
-					<a href="formula.html">formulas</a>.
+					In the resulting <a href="formulaeditor.html#editor">formula editor</a>, if you enter
+					<b>{s</b> in the text editor, you should see something like this:
 				</p>
+				<img src="tutorial/formulaedit5.png" alt="Function preview">
 				<p>
-					They are presented in groups like log functions, trig functions etc., which expand to
-					show the actual functions when you tap on them. Tap on the
-					<b>Trigonometric math functions</b> row and then on <b>{sin x}</b> in the list that is revealed.
-					You should see a description of the function and an <b>Insert</b> button.
+					The preview area now shows all the functions that start with <b>s</b>. If you were to type
+					additional characters, the list would be shortened appropriately, but just tap on
 				</p>
-				<img src="tutorial/fbrowser.png" alt="Function browser">
+				<p class="formula">{sin x}</p>
 				<p>
-					Tap on the <b>Insert</b> button and you will be returned to the function editor with
-					the function inserted and the cursor following the last parameter, which in this case
-					is the single <b>x</b> parameter.
+					to insert the function into your formula to give you this.
 				</p>
-				<img src="tutorial/sinx.png" alt="Sin x">
+				<img src="tutorial/formulaedit6.png" alt="formula inserted">
 				<p>
 					Math Minion functions are always enclosed in curly braces <b>{...}</b>, with the name of
 					the function immediately following the opening brace.  The parameters, if any, follow as
 					a comma separated list followed by the closing brace.
 				</p>
 				<p>
-					Backspace over the <b>x</b> and replace it with <b>angles</b> so the formula is
+					Inserting a function with the function preview or function browser will place the cursor
+					before the first argument. You will almost always have to replace the arguments, but they
+					are included as reminders. If you type a <b>?</b> in front of the first argument, the
+					preview area will show a brief description of the function:
+				</p>
+				<img src="tutorial/formulaedit7.png" alt="preview function description">
+				<p>
+					Remove both the <b>?</b> and the <b>x</b> and you will get the following:
+				</p>
+				<img src="tutorial/formulaedit8.png" alt="parameter preview">
+				<p>
+					The preview area now displays all the available tool names. Typing will reduce the list
+					appropriately, so typing an a will reduce the list to just <b>angles</b>. Hitting
+					<b>Tab</b> after you have entered one or more characters will insert the name at the top
+					of the list into the formula or you can just tap on one of the names in the list. Do either
+					so the formula reads:
 				</p>
 				<p class="formula">
 					{sin angles}
 				</p>
+				<p>	
+					The function preview is handy when you have an idea of what function you want, but you
+					will sometimes want to browse through the functions and their descriptions to see what
+					is available.
+				</p>
+				<p>
+					Tap on the
+					<b>Functions</b> button to open a
+					<a href="formulaeditor.html#fbrowser">function browser</a>.
+				</p>
+				<p>
+					The functions are presented in groups like log functions, trig functions etc.,
+					which expand to show the actual functions when you tap on them.
+				</p>
+				<p>
+						For instance, tap on <b>Trigonometric math functions</b> row and then on
+						<b>{sin x}</b> in the list that is revealed. You should see the description of
+						the function and an <b>Insert</b> button.
+				</p>
+				<img src="tutorial/fbrowser.png" alt="Function browser">
+				<p>
+					Tapping on the <b>Insert</b> button would return you to the function editor with
+					the function inserted, but as we already have the function in our formula, just tap
+					the <b>Cancel</b> button.
+				</p>
+				<img src="tutorial/formulaedit9.png" alt="final sine formula">
 				<p>
 					Tap the <b>Apply</b> button to assign the formula to the <b>sine</b> expression. The
 					information view should now look like this:
@@ -336,7 +372,22 @@
 				<p>
 					Hit return and then click on the graph icon <b>Plot</b> and the correction should be visible:
 				</p>
-				<img src="tutorial/singraph3.png" alt="Sin plot">
+				<img src="tutorial/singraph3.png" alt="Sine plot">
+				<p>
+					Add one last expression named <b>table</b> and enter the its function editor. Type a
+					<b>p</b>, which will reduce the preview list to just <b>plot</b>. Now type a dot and you will
+					see:
+				</p>
+				<img src="tutorial/formulaedit10.png" alt="plot parameter preview">
+				<p>
+					The preview area now shows all the parameters available from the graph tool <b>Plot</b>.
+					There are quite a few, but typing a <b>t</b> should reduce the list to just <b>table</b>
+					and <b>table1</b>. Tap <b>table</b> and apply the formula to get:
+				</p>
+				<img src="tutorial/plottable.png" alt="plot table">
+				<p>
+					which represents the lines of the plot as a table value.
+				</p>
 				<p>
 					To finish up, tap on the <b>Sessions</b> button at the bottom of the information view and then
 					on the <b>Save</b> button. A dialog will appear asking for a name to save the session as:

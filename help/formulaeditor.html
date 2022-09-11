@@ -9,7 +9,9 @@
 				rtSetupHeading('Formula Editor',{
 					fields: 'Formula Fields',
 					editor: 'Formula Editor',
-					vbrowser: 'Value Browser',
+					preview: 'Previews and Completions',
+					spacing: 'Multiple Lines and Tabs',
+					buttons: "Buttons",
 					ubrowser: 'Unit Browser',
 					fbrowser: 'Function Browser',
 				});
@@ -52,68 +54,103 @@
 					entered or modified, along with a number of buttons and a preview area.
 				</p>
 				<img src="formulaedit.png" alt="formula editor"/>
-				<p>
-					When the formula editor appears, the current formula, if any, will appear in the text area
-					with any cursor position or selection from the formula field maintained. The preview area
-					will show the result of evaluating this formula.
-				</p>
-				<p>
-					As you enter or edit the formula, you can tap the <b>Preview Button</b> or type shift-enter
-					to evaluate the current formula in the preview area. If you select only a part of the formula
-					before previewing, only the selected portion will be evaluated. This is a handy way to debug
-					complicated formulas.
-				</p>
-				<p>
-					Tapping the <b>Current</b> button or type alt-enter (option-enter on a Mac), will once again
-					preview the original formula.
-				</p>
-				<p>
-					In more complex formulas and with some functions, it is common to space the formula out
-					over multiple lines and use tabs to improve the readability. There are a couple of features
-					to assist with this.
-				</p>
-				<p>
-					When you add a new line to an already indented line, the editor will automatically match
-					the indentation.
-				</p>
-				<p>
-					You can increase or decrease the indentation of by selecting multiple lines and then typing
-					<b>tab</b> or <b>shift-tab</b> respectively.
-				</p>
-				<p>
-					The <b>Cancel</b> button (escape key) will exit the formula editor without
-					saving any of the changes. The <b>Apply</b> button <b>(shift-enter)</b> will exit the
-					formula editor and any exit other than cancelling will assign the changes to the formula.
-				</p>
-				<p>
-					The top three buttons open helper views where you can select elements to be inserted into
-					the formula:
-				</p>
-				<div id="vbrowser" class="subsection">
-					<h3>&lt;v&gt; - Value Browser (shift-ctrl-v)</h3>
-					<p>	
-						Shows the available tools and parameters that you can insert into the formula. When
-						first invoked, the available parameters will be the tools in the current model or in the
-						case of the formula belonging to an input expression, the parent
-						<a href="model.html">model</a>.
+				<div id="preview" class="section">
+					<h3>Previews &amp; Completions</h3>
+					<p>
+						When the formula editor appears, the current formula, if any, will appear in the text area
+						with any cursor position or selection from the formula field maintained. What appears in
+						the preview area will depend on the cursor position and the formula.
 					</p>
 					<p>
-						If you select a <a href="model.html">model</a>, then its name will appear below the
-						buttons and the available parameters will be its tools.  When you select another type
-						of tool, the available parameters for that tool will appear.  For instance
-						the <a href="matrix.html">matrix tool</a> has parameters for the number of columns or rows it
-						has.
+						If the cursor is in a position where it appears a reference to another tool might be
+						appropriate, as in the case above where the formula is blank, then a list of available
+						tools appears in the preview area. In this case, the expression has been created in the
+						tools.models.circle model of the Getting Started session and the values represent its tools.
 					</p>
 					<p>
-						In the example below, the first selection was the <a href="model.html">model</a> named
-						"circle", which contains an <a href="expression.html">expression</a> named "area".
-						When area was in turn selected, it was added to the expression below the buttons.
-						Tapping on <b>Insert</b> at this point would insert "circle.area" into the formula.
+						If there are characters in front of the cursor, the list will be reduced to items starting
+						with those characters.
 					</p>
-					<img src="valuebrowser.png" alt="value browser"/>
+					<img src="formulaedit2.png" alt="reduced parameter preview"/>
+					<p>
+						Tapping on a element in the preview area will insert it into the formula. You can also type
+						a tab character or a period to insert the top element of the list, as long as at least one
+						character has already been typed.
+					</p>
+					<p>
+						If the cursor is preceded by a brace, <b>{</b>, then all the available functions are listed
+						in the preview area, with the list being reduced as additional characters are entered.
+					</p>
+					<img src="formulaedit3.png" alt="function preview"/>
+					<p>
+						Tapping on an element of the preview list, or typing a tab character, will insert the
+						function in the formula and place the cursor before the first argument.
+					</p>
+					<img src="formulaedit4.png" alt="inserted function"/>
+					<p>
+						If the cursor is preceded by a ?, white space and the function name, then a brief
+						description of the function and its arguments will appear in the preview area.
+					</p>
+					<img src="formulaedit5.png" alt="function description"/>
+					<p>
+						If the cursor is preceded by a value name and a dot, then the available parameters
+						for that value are listed in the preview area.
+					</p>
+					<img src="formulaedit6.png" alt="dot parameter preview"/>
+					<p>
+						If the cursor isn't preceded by something where a suggestion in appropriate, then the
+						preview area will show the last previewed calculation value. Initially this will be the
+						value of the original formula before editing. 
+					</p>
+					<img src="formulaedit7.png" alt="area va;ue preview"/>
+					<p>
+						Here the cursor is at the end of the formula for area in that circle model and a value
+						reference or function call would not be appropriate.
+					</p>
+					<p>
+						As you enter or edit the formula, you can tap the Preview Button or type ctrl-enter to
+						evaluate the current (edited) formula in the preview area regardless of the cursor position.
+						If you select only a part of the formula before previewing, only the selected portion
+						will be evaluated. This is a handy way to debug complicated formulas.
+					</p>
+					<p>
+						Tapping the <b>Current</b> button or type alt-enter (option-enter on a Mac), will
+						preview the original unedited formula.
+					</p>
 				</div>
-				<div id="ubrowser" class="subsection">
-					<h3>"u" - Unit Browser (ctrl-u)</h3>
+				<div id="spacing" class="section">
+					<h3>Multiple Lines and Tabs</h3>
+					<p>
+						In more complex formulas and with some functions, it is common to space the formula out
+						over multiple lines and use tabs to improve the readability. There are a couple of features
+						to assist with this.
+					</p>
+					<p>
+						When you add a new line to an already indented line, the editor will automatically match
+						the indentation.
+					</p>
+					<p>
+						You can increase or decrease the indentation of by selecting multiple lines and then typing
+						<b>tab</b> or <b>shift-tab</b> respectively.
+					</p>
+				</div>
+				<div id="buttons" class="section">
+					<h3>Buttons</h3>
+					<p>
+						There are a number of buttons in addition to <b>Preview</b> and <b>Current</b>.
+					</p>
+					<p>
+						The <b>Cancel</b> button (escape key) will exit the formula editor without
+						saving any of the changes. The <b>Apply</b> button <b>(shift-enter)</b> will exit the
+						formula editor and any exit other than cancelling will assign the changes to the formula.
+					</p>
+					<p>
+						The <b>Units</b> and <b>Functions</b> buttons open browsers for conversion units and
+						functions respectively.
+					</p>
+				</div>
+				<div id="ubrowser" class="section">
+					<h3>Units Browser (ctrl-u)</h3>
 					<p>	
 						Presents a view where you can select from the available <a href="units.html">units</a>.
 						The left pane contains the defined types and selecting one of those will fill the right
@@ -147,12 +184,13 @@
 						<a href="graph.html">graphs</a>.						
 					</p>
 				</div>
-				<div id="fbrowser" class="subsection">
-					<h3>{f} - Function Browser - (ctrl-f)</h3>
-					<p>	
-						Presents a view where you can browse the available built in Math Minion functions.
-						As you can see in the image below, it has what are hopefully pretty clear
-						instructions on how to use it.
+				<div id="fbrowser" class="section">
+					<h3>Function Browser - (ctrl-f)</h3>
+					<p>
+						While the preview area is handy for entering functions, sometimes you will want
+						to browse the functions and descriptions by category to see what is available. 
+						This is what the function browser does and as you can see in the image below,
+						it has what are hopefully pretty clear instructions on how to use it.
 					</p>
 					<p>
 						In this case the section for trigonometric functions has been selected and then the

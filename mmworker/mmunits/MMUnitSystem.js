@@ -150,6 +150,7 @@ class MMUnitSystem extends MMCommandParent {
 				case 'e':
 					s = v.toExponential(precision);
 					break;
+				case 'r':
 				case 'x':
 					s = `${precision}r` + v.toString(precision);
 					break;
