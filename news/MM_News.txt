@@ -7,8 +7,8 @@
 	"UserUnits": [],
 	"CaseName": "MM_News",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "News20220802",
-	"ModelPath": "/.root.News20220802",
+	"SelectedObject": "root",
+	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
@@ -22,20 +22,20 @@
 		"Objects": [
 			{
 				"name": "Older_Articles",
-				"Notes": "Click on the icon above for previous news articles",
+				"Notes": "<b>Click here for previous news articles</b>",
 				"DiagramX": 80,
 				"DiagramY": -115,
 				"HideInfo": "n",
-				"DiagramNotes": "y",
-				"HtmlNotes": "n",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
 				"Type": "Model",
 				"diagramScale": 1,
 				"Objects": [
 					{
 						"name": "News_20211010",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": -40,
+						"DiagramX": 180,
+						"DiagramY": -165,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -341,8 +341,8 @@
 					{
 						"name": "News_20210910",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": -15,
+						"DiagramX": 180,
+						"DiagramY": -140,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -719,8 +719,8 @@
 					{
 						"name": "News_20210703",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": 10,
+						"DiagramX": 180,
+						"DiagramY": -115,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -746,8 +746,8 @@
 					{
 						"name": "News_20210621",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": 35,
+						"DiagramX": 180,
+						"DiagramY": -90,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -774,7 +774,7 @@
 						"name": "News_20211207",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -65,
+						"DiagramY": -35,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -787,7 +787,7 @@
 						"name": "News_20220121",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -90,
+						"DiagramY": -60,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1358,7 +1358,7 @@
 						"name": "News_20220226",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -115,
+						"DiagramY": -85,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1737,7 +1737,7 @@
 						"name": "News_20220324",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -140,
+						"DiagramY": -110,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1810,116 +1810,329 @@
 						"isOutput": "y",
 						"Type": "HTML Form",
 						"Formula": {
-							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.link {color: blue;}\n\t\t\t.date {\n\t\t\t\tfont-size: 14pt;\n\t\t\t\tcolor: blue;\n\t\t\t}\n\t\t\t.article {\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n \t\t\t}\n\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>Math Minion News Articles</h3>\n\t\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220324'});\">2022-03-24 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Graph changes</li>\n\t\t\t\t<li>Html page tool changes</li>\n\t\t\t\t<li>A couple of new functions</li>\n\t\t\t\t<li>Result colouring for expression icons</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220226'});\">2022-02-26 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Added a filter field to the <a href=\"help/datatable.html#infoview\" target=\"_blank\">Data Table view</a></li>\n\t\t\t\t<li>Data table columns can now be presented as <a href=\"help/datatable.html#coleditor\" target=\"_blank\">menus</a></li>\n\t\t\t\t<li>Html pages can now issue <a href=\"help/htmlpage.html#cmd\" target=\"_blank\">commands</a> directly to the calculation engine.</li>\n\t\t\t\t<li>Miscellaneous changes and fixes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220121'});\">2022-01-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>It is now possible to add calculated columns to data tables.</li>\n\t\t\t\t<li>Data table rows can now be edited and browsed in a new\n\t\t\t\t<a href=\"help/datatable.html#roweditor\" target=\"_blank\">row editor</a></li>\n\t\t\t\t<li>Enhancements to the Htmlpage tool.</li>\n\t\t\t\t<li>Added notes as a formula parameter to all tools.</li>\n\t\t\t\t<li>Added an import button to the clipboard view.</li>\n\t\t\t\t<li>Added scroll wheel (two finger trackpad drag) scrolling for table views.</li>\n\t\t\t\t<li>Improvements to the append, select, sumcols, mincols, and maxcols functions</li>\n\t\t\t\t<li>Added <b>dollar</b> as a dimensionless unit</li>\n\t\t\t\t<li>Miscellaneous other fixes and changes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211207'});\">2021-12-07 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Changes to Session Storage</li>\n\t\t\t\t<li><a href=\"help/couchdb.html\" target=\"_blank\">CouchDB Integration</a></li>\n\t\t\t\t<li><a href=\"help/mmserver.html\" target=\"_blank\">Running a MM Server</a></li>\n\t\t\t\t<li>MM App Removed from App Store</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211010'});\">2021-10-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Yet Another News Iteration</li>\n\t\t\t\t<li>HTML Page Fixes and Upgrades</li>\n\t\t\t\t<li>Printing and PDFs</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210910'});\">2021-09-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Select Function Features</li>\n\t\t\t\t<li>Table Value Enhancements</li>\n\t\t\t\t<li>Miscellaneous Fixes etc.</li>\n\t\t\t\t<li>Coolprop molar density flashes</li>\n\t\t\t\t<li>Updated Getting Started</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210703'});\">2021-07-03 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>CoolMM - Math Minion + Coolprop</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210621'});\">2021-06-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New News</li>\n\t\t\t\t<li>Server Address Changes (Again)</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Feedback</h3>\n\t\t\t<p>\n\t\t\t\tAs always, any and all feedback or questions are encouraged and appreciated.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.link {color: blue;}\n\t\t\t.date {\n\t\t\t\tfont-size: 14pt;\n\t\t\t\tcolor: blue;\n\t\t\t}\n\t\t\t.article {\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n \t\t\t}\n\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>Math Minion News Articles</h3>\n\t\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Aug_2022_News'});\">August 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Model View</li>\n\t\t\t\t<li>New Display Tools (Menu and Button)</li>\n\t\t\t\t<li>Formatting Improvements</li>\n\t\t\t\t<li>Videos</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220324'});\">2022-03-24 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Graph changes</li>\n\t\t\t\t<li>Html page tool changes</li>\n\t\t\t\t<li>A couple of new functions</li>\n\t\t\t\t<li>Result colouring for expression icons</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220226'});\">2022-02-26 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Added a filter field to the <a href=\"help/datatable.html#infoview\" target=\"_blank\">Data Table view</a></li>\n\t\t\t\t<li>Data table columns can now be presented as <a href=\"help/datatable.html#coleditor\" target=\"_blank\">menus</a></li>\n\t\t\t\t<li>Html pages can now issue <a href=\"help/htmlpage.html#cmd\" target=\"_blank\">commands</a> directly to the calculation engine.</li>\n\t\t\t\t<li>Miscellaneous changes and fixes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220121'});\">2022-01-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>It is now possible to add calculated columns to data tables.</li>\n\t\t\t\t<li>Data table rows can now be edited and browsed in a new\n\t\t\t\t<a href=\"help/datatable.html#roweditor\" target=\"_blank\">row editor</a></li>\n\t\t\t\t<li>Enhancements to the Htmlpage tool.</li>\n\t\t\t\t<li>Added notes as a formula parameter to all tools.</li>\n\t\t\t\t<li>Added an import button to the clipboard view.</li>\n\t\t\t\t<li>Added scroll wheel (two finger trackpad drag) scrolling for table views.</li>\n\t\t\t\t<li>Improvements to the append, select, sumcols, mincols, and maxcols functions</li>\n\t\t\t\t<li>Added <b>dollar</b> as a dimensionless unit</li>\n\t\t\t\t<li>Miscellaneous other fixes and changes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211207'});\">2021-12-07 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Changes to Session Storage</li>\n\t\t\t\t<li><a href=\"help/couchdb.html\" target=\"_blank\">CouchDB Integration</a></li>\n\t\t\t\t<li><a href=\"help/mmserver.html\" target=\"_blank\">Running a MM Server</a></li>\n\t\t\t\t<li>MM App Removed from App Store</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211010'});\">2021-10-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Yet Another News Iteration</li>\n\t\t\t\t<li>HTML Page Fixes and Upgrades</li>\n\t\t\t\t<li>Printing and PDFs</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210910'});\">2021-09-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Select Function Features</li>\n\t\t\t\t<li>Table Value Enhancements</li>\n\t\t\t\t<li>Miscellaneous Fixes etc.</li>\n\t\t\t\t<li>Coolprop molar density flashes</li>\n\t\t\t\t<li>Updated Getting Started</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210703'});\">2021-07-03 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>CoolMM - Math Minion + Coolprop</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210621'});\">2021-06-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New News</li>\n\t\t\t\t<li>Server Address Changes (Again)</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Feedback</h3>\n\t\t\t<p>\n\t\t\t\tAs always, any and all feedback or questions are encouraged and appreciated.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
 						}
+					},
+					{
+						"name": "Aug_2022_News",
+						"Notes": "<b>New Model Information Views</b>\n\nThe views for models have been completely redesigned, with the motivation being to provide a means of generating simple forms, reports etc., without needing any knowledge of HTML.\n\nIn that spirit, this article is just the view for this model and what you are reading right now its notes. In addition to the <b>Show on Diagram</b> button, the notes editor for a tool now has a <b>Show in Model HTML</b> button. Model notes are shown at the top of its own view.\n\n<i>Okay, I cheated a bit by including some very basic tags to highlight things. Notes can contain some simple HTML tags like these, but nothing too fancy.</i>\n\nAny tool in a model can be set to have its results shown on the model's view. This is done by checking the <b>Display</b> check box beside its name on the tool's view. What is displayed will depend on what type of tool it is.\n\nExpressions now have a check box labeled <b>Display Input</b>, which if checked will cause an input field to appear in the model view. This allows you to enter or edit an expression's formula right from the model view. This expression (<b>Weight</b>) has that box checked, so an input field for it will appear below. It does not have its <b>Display</b> box checked though, so the calculated value will not be shown. In this case that will normally just be an entered constant.\n\nThe <b>Energy</b> expression does have its <b>Display</b> box checked, so its result is displayed, but not its formula. It also has its notes shown.  You can set these in any combination and even have only the notes appear.\n\nRather than a lengthy explanation like this, a more normal use for notes would be something like:",
+						"DiagramX": 85,
+						"DiagramY": -140,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "Weight",
+								"Notes": "<b>New Model Information Views</b>\n\nThe views for models have been completely redesigned, with the motivation being to provide a means of generating simple forms, reports etc., without needing any knowledge of HTML.\n\nIn that spirit, this article is just the view for this model and what you are reading right now are the notes for expression <b>Weight</b>.\n\nIn addition to the <b>Show on Diagram</b> button, the notes editor for a tool now has a <b>Show in Model HTML</b> button.\n\n<i>Okay, I cheated a bit by including some very basic tags to highlight things. Notes can contain some simple HTML tags like these, but nothing too fancy.</i>\n\nAny tool in a model can be set to have its results shown on the model's view. This is done by checking the <b>Display</b> check box beside its name on the tool's view. What is displayed will depend on what type of tool it is.\n\nExpressions now have a check box labeled <b>Display Input</b>, which if checked will cause an input field to appear in the model view. This allows you to enter or edit an expression's formula right from the model view. This expression (<b>Weight</b>) has that box checked, so an input field for it will appear below. It does not have its <b>Display</b> box checked though, so the calculated value will not be shown. In this case that will normally just be an entered constant.\n\nThe <b>Energy</b> expression does have its <b>Display</b> box checked, so its result is displayed, but not its formula. It also has its notes shown.  You can set these in any combination and even have only the notes appear.\n\nRather than a lengthy explanation like this, a more normal use for notes would be something like:\n\nEnter your weight:",
+								"DiagramX": 95,
+								"DiagramY": -65,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "80 kg"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "Energy",
+								"Notes": "Your explosive potential if your mass was completely converted to energy, as per Einstein's E = mc^2",
+								"DiagramX": 95,
+								"DiagramY": -30,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "weight * 1 \"lightc\"^2"
+								},
+								"displayUnit": "megatontnt"
+							},
+							{
+								"name": "Push_View",
+								"Notes": "",
+								"DiagramX": 95,
+								"DiagramY": 60,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Button",
+								"action": "push",
+								"targetFormula": {
+									"Formula": "Select"
+								},
+								"labelFormula": {
+									"Formula": "\"Show \" + Select"
+								}
+							},
+							{
+								"name": "Select",
+								"Notes": "<b>Display Tools</b>\n\nTwo new tools have been added for use in model (or html page) displays. These are <b>Menu</b> and <b>Button</b>.\n\nTo accommodate these, the menu that pops up when you tap on the diagram background has been rearranged. The common <b>Expression</b> and <b>Model</b> tools now have <b>Add</b> buttons right on the top level menu and the other tools are divided between <b>Add Calculation Tool</b> and <b>Add Display Tool</b> sub menus.\n\nThe <b>Graph</b> and <b>HtmlPage</b> join the <b>Button</b> and <b>Menu</b> on the display tool menu.\n\nThe <b>menu tool</b> lets you present a number of options in a drop down menu. If the formula for the options returns a single column, those values will be used as both the option label and value, as is done in the menu below.\n\nIf there are two columns, then the first is used for the labels and the second as the values for the selection.\n\nThe <b>button tool</b> can:\n\n  - Add a row to a data table\n  - Push a tool's view\n  - Refresh a tool\n  - Load a different session\n  - Load a session from the server using a URL\n  - Apply a console like command (advanced only)\n\nBelow select either Weight or Energy from the menu and then press the button to push a view of that expression.",
+								"DiagramX": 95,
+								"DiagramY": 30,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Menu",
+								"optionsFormula": {
+									"Formula": "{cc \"Weight\", \"Energy\"}"
+								},
+								"selected": 0
+							},
+							{
+								"name": "Name_boxes",
+								"Notes": "Tapping on a tool's name box or notes in the model view will push the information view for that tool. Tap the back button (upper left) to return to the model view.\n\nNote that only the note is displayed for this expression.",
+								"DiagramX": 95,
+								"DiagramY": 0,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "No_Couchdb",
+								"Notes": "<b>CouchDB</b>\n\nI decided to remove the CouchDB support as it created limits on session sizes and I doubt anyone but me was using it.",
+								"DiagramX": 170,
+								"DiagramY": 60,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "Miscellaneous",
+								"Notes": "<b>Miscellaneous</b>\n\nIf the unit is Fraction, it is no longer displayed in table value headers.\n\nRenamed Index Tool to Default View on the model information view.  However its utility is largely replaced by the new model view behaviour.\n\nGraph SVG was not honouring line type selection.\n\nLabel formats for graph SVG now match the interactive display.\n\nMany of the examples listed in Getting Started were updated to make use of the new model view behaviour.\n\nVarious fixes.\n\nIf you are unfortunate enough to encounter the <b>something went wrong</b> message that occurs when Math Minion can't render a page (i.e. a bug), the output is a little politer,\nwith a link to some suggested recovery options.",
+								"DiagramX": 245,
+								"DiagramY": -65,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "WeightColumn",
+								"Notes": "In this expression, the weight column is referenced from units_format and the display unit and format from that expression are used here as well.",
+								"DiagramX": 170,
+								"DiagramY": -35,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "units_Format.weight"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "Units_Format",
+								"Notes": "<b>Formatting</b>\n\nYou can now set the format for numeric expressions.\n\nWhen the display unit and/or format are set for calculated values, they are used when those values are referenced elsewhere, like in this view.\n\nAs always the display unit and format do not affect the calculation in any way.\n\nBelow the unit_format expression is given a table value. Note that multiline formulas cannot be edited directly in the model view. You have to tap the expression name box (or notes) and edit it from the expression view.\n\nIn the expression view, units and formats are assigned for displaying the columns. Tap on the column headers to see the definitions. These definitions are honoured in the model view.",
+								"DiagramX": 170,
+								"DiagramY": -65,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{table {cc \"Date\", \"Weight\", \"Charge\"}\n\t{cc 20220707 date,\n\t\t20220801 date,\n\t\t20230901 date\n\t},\n\t101:103 * 1 kg,\n\t{cc 10 dollar, 30 dollar, 100 dollar}\n}"
+								},
+								"showInput": "y",
+								"tableUnits": {
+									"1": "date",
+									"2": "lb",
+									"3": "dollar"
+								},
+								"tableFormats": [
+									null,
+									"10.0f",
+									"10.1f",
+									"10.2f"
+								]
+							},
+							{
+								"name": "NewGetStarted",
+								"Notes": "<b>Revised Getting Started Session</b>\n\nThe Getting Started session has been extensively revised for the new features and makes extensive use of them.\n\nPlease be sure and load a fresh copy by tapping the button below.\n\n<b>Note</b> this will replace your current Getting Started session, so if for some reason you have made changes to it you want to keep, duplicate it first.",
+								"DiagramX": 245,
+								"DiagramY": -35,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Button",
+								"action": "loadurl",
+								"targetFormula": {
+									"Formula": "'../help/Getting Started.txt"
+								},
+								"labelFormula": {
+									"Formula": "'New Getting Started"
+								}
+							},
+							{
+								"name": "Comma_Format",
+								"Notes": "<b>Comma Format</b>\n\nThere is now a <b>c</b> format specifier that works just like the fixed point <b>f</b>, but adds commas afterwards.\n\nShown here are some random numbers with a <b>14.2c</b> format",
+								"DiagramX": 170,
+								"DiagramY": 0,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "({rand 10,1} - 0.5)*2*10^0:9"
+								},
+								"format": "14.2c"
+							},
+							{
+								"name": "Videos",
+								"Notes": "<b>Videos</b>\n\nI have created some introductory screencast videos that can be accessed from the help or by <span onClick=\"event.stopPropagation();\"><a href=\"../help/videos.html\" target=\"_blank\">clicking here</a></span>.",
+								"DiagramX": 170,
+								"DiagramY": 30,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "Feedback",
+								"Notes": "<b>Feedback</b>\n\nAs always, any and all <span onClick=\"event.stopPropagation()\"><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">feedback</a></span> is not only encouraged, but awaited wistfully. \n\nCraig",
+								"DiagramX": 245,
+								"DiagramY": 0,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": ""
+								}
+							}
+						]
 					}
 				]
 			},
 			{
-				"name": "News20220802",
-				"Notes": "<b>New Model Information Views</b>\n\nThe views for models have been completely redesigned, with the motivation being to provide a means of generating simple forms, reports etc., without needing any knowledge of HTML.\n\nIn that spirit, this article is just the view for this model and what you are reading right now its notes. In addition to the <b>Show on Diagram</b> button, the notes editor for a tool now has a <b>Show in Model HTML</b> button. Model notes are shown at the top of its own view.\n\n<i>Okay, I cheated a bit by including some very basic tags to highlight things. Notes can contain some simple HTML tags like these, but nothing too fancy.</i>\n\nAny tool in a model can be set to have its results shown on the model's view. This is done by checking the <b>Display</b> check box beside its name on the tool's view. What is displayed will depend on what type of tool it is.\n\nExpressions now have a check box labeled <b>Display Input</b>, which if checked will cause an input field to appear in the model view. This allows you to enter or edit an expression's formula right from the model view. This expression (<b>Weight</b>) has that box checked, so an input field for it will appear below. It does not have its <b>Display</b> box checked though, so the calculated value will not be shown. In this case that will normally just be an entered constant.\n\nThe <b>Energy</b> expression does have its <b>Display</b> box checked, so its result is displayed, but not its formula. It also has its notes shown.  You can set these in any combination and even have only the notes appear.\n\nRather than a lengthy explanation like this, a more normal use for notes would be something like:",
+				"name": "Sept_2022_News",
+				"Notes": "",
 				"DiagramX": 80,
-				"DiagramY": -145,
-				"HideInfo": "n",
+				"DiagramY": -140,
+				"HideInfo": "y",
 				"DiagramNotes": "n",
-				"HtmlNotes": "y",
+				"HtmlNotes": "n",
 				"isOutput": "y",
 				"Type": "Model",
 				"diagramScale": 1,
 				"Objects": [
 					{
-						"name": "Weight",
-						"Notes": "<b>New Model Information Views</b>\n\nThe views for models have been completely redesigned, with the motivation being to provide a means of generating simple forms, reports etc., without needing any knowledge of HTML.\n\nIn that spirit, this article is just the view for this model and what you are reading right now are the notes for expression <b>Weight</b>.\n\nIn addition to the <b>Show on Diagram</b> button, the notes editor for a tool now has a <b>Show in Model HTML</b> button.\n\n<i>Okay, I cheated a bit by including some very basic tags to highlight things. Notes can contain some simple HTML tags like these, but nothing too fancy.</i>\n\nAny tool in a model can be set to have its results shown on the model's view. This is done by checking the <b>Display</b> check box beside its name on the tool's view. What is displayed will depend on what type of tool it is.\n\nExpressions now have a check box labeled <b>Display Input</b>, which if checked will cause an input field to appear in the model view. This allows you to enter or edit an expression's formula right from the model view. This expression (<b>Weight</b>) has that box checked, so an input field for it will appear below. It does not have its <b>Display</b> box checked though, so the calculated value will not be shown. In this case that will normally just be an entered constant.\n\nThe <b>Energy</b> expression does have its <b>Display</b> box checked, so its result is displayed, but not its formula. It also has its notes shown.  You can set these in any combination and even have only the notes appear.\n\nRather than a lengthy explanation like this, a more normal use for notes would be something like:\n\nEnter your weight:",
-						"DiagramX": 95,
-						"DiagramY": -65,
+						"name": "radix",
+						"Notes": "<b>Number Bases in Formulas</b>\n\nConstants with a base different from 10 can now be used in formulas using a radix expression similar to the output of the <b>x</b> format.\n\nHere ten is multiplied by ten where the second value is given in octal using the radix format.\n\nThe base must be a two digit number, followed by 'r' followed by the value.\n\nOutput is hex format. For consistency, <b>r</b> can be used instead of <b>x</b> in output formats as well.",
+						"DiagramX": 130,
+						"DiagramY": -15,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "80 kg"
+							"Formula": "10 * 08r12"
+						},
+						"showInput": "y",
+						"format": "14.16r"
+					},
+					{
+						"name": "Clients",
+						"Notes": "<b>\"Contains\" Select Operator</b>\n\nWhen the select function is used with a string argument, you can now use a <b>?</b> operator to mean \"contains\".\n\nHere all records that have names containing an <b>ar</b> (case insensitive) are chosen.\n\nThis applies to the filter field in DataTables too.",
+						"DiagramX": 210,
+						"DiagramY": -130,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Data Table",
+						"Columns": [
+							{
+								"name": "Name",
+								"displayUnit": "string",
+								"sValues": [
+									"Arnold",
+									"Fred",
+									"Acme",
+									"Pear"
+								],
+								"defaultValue": ""
+							},
+							{
+								"name": "Rate",
+								"displayUnit": "dollar/h",
+								"format": "10.2f",
+								"nValues": [
+									0.03333333333333333,
+									0.027777777777777776,
+									0.04861111111111111,
+									0.03888888888888889
+								],
+								"unitDimensions": "0 0 -1 0 0 0 0",
+								"defaultValue": "0 1/s"
+							}
+						],
+						"Filter": {
+							"Formula": ""
+						}
+					},
+					{
+						"name": "Cities",
+						"Notes": "<b>Table Function Arguments</b>\n\nYou now have the option of using name, column pairs as arguments to the table function.\n\nThe original method of having an array of names followed by the column values continues to work as before.",
+						"DiagramX": 210,
+						"DiagramY": -10,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{table\n\t\"City\", {cc \n\t\t\"London\",\n\t\t\"Paris\",\n\t\t\"Rome\",\n\t\t\"Berlin\"\n\t},\n\t\"Country\", {cc\n\t\t\"UK\",\n\t\t\"FR\",\n\t\t\"IT\",\n\t\t\"DE\"\n\t}\n}"
 						},
 						"showInput": "y"
 					},
 					{
-						"name": "Energy",
-						"Notes": "Your explosive potential if your mass was completely converted to energy, as per Einstein's E = mc^2",
-						"DiagramX": 95,
-						"DiagramY": -30,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "weight * 1 \"lightc\"^2"
-						},
-						"displayUnit": "megatontnt"
-					},
-					{
-						"name": "Push_View",
+						"name": "Append",
 						"Notes": "",
-						"DiagramX": 95,
-						"DiagramY": 60,
+						"DiagramX": 295,
+						"DiagramY": -130,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
-						"HtmlNotes": "y",
+						"HtmlNotes": "n",
 						"isOutput": "y",
-						"Type": "Button",
-						"action": "push",
-						"targetFormula": {
-							"Formula": "Select"
-						},
-						"labelFormula": {
-							"Formula": "\"Show \" + Select"
-						}
-					},
-					{
-						"name": "Select",
-						"Notes": "<b>Display Tools</b>\n\nTwo new tools have been added for use in model (or html page) displays. These are <b>Menu</b> and <b>Button</b>.\n\nTo accommodate these, the menu that pops up when you tap on the diagram background has been rearranged. The common <b>Expression</b> and <b>Model</b> tools now have <b>Add</b> buttons right on the top level menu and the other tools are divided between <b>Add Calculation Tool</b> and <b>Add Display Tool</b> sub menus.\n\nThe <b>Graph</b> and <b>HtmlPage</b> join the <b>Button</b> and <b>Menu</b> on the display tool menu.\n\nThe <b>menu tool</b> lets you present a number of options in a drop down menu. If the formula for the options returns a single column, those values will be used as both the option label and value, as is done in the menu below.\n\nIf there are two columns, then the first is used for the labels and the second as the values for the selection.\n\nThe <b>button tool</b> can:\n\n  - Add a row to a data table\n  - Push a tool's view\n  - Refresh a tool\n  - Load a different session\n  - Load a session from the server using a URL\n  - Apply a console like command (advanced only)\n\nBelow select either Weight or Energy from the menu and then press the button to push a view of that expression.",
-						"DiagramX": 95,
-						"DiagramY": 30,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Menu",
-						"optionsFormula": {
-							"Formula": "{cc \"Weight\", \"Energy\"}"
-						},
-						"selected": 0
-					},
-					{
-						"name": "Name_boxes",
-						"Notes": "Tapping on a tool's name box or notes in the model view will push the information view for that tool. Tap the back button (upper left) to return to the model view.\n\nNote that only the note is displayed for this expression.",
-						"DiagramX": 95,
-						"DiagramY": 0,
-						"HideInfo": "n",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": ""
-						}
-					},
-					{
-						"name": "No_Couchdb",
-						"Notes": "<b>CouchDB</b>\n\nI decided to remove the CouchDB support as it created limits on session sizes and I doubt anyone but me was using it.",
-						"DiagramX": 170,
-						"DiagramY": 60,
-						"HideInfo": "n",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": ""
-						}
+							"Formula": "{append cities, Language}"
+						},
+						"showInput": "y"
 					},
 					{
 						"name": "Miscellaneous",
-						"Notes": "<b>Miscellaneous</b>\n\nIf the unit is Fraction, it is no longer displayed in table value headers.\n\nRenamed Index Tool to Default View on the model information view.  However its utility is largely replaced by the new model view behaviour.\n\nGraph SVG was not honouring line type selection.\n\nLabel formats for graph SVG now match the interactive display.\n\nMany of the examples listed in Getting Started were updated to make use of the new model view behaviour.\n\nVarious fixes.\n\nIf you are unfortunate enough to encounter the <b>something went wrong</b> message that occurs when Math Minion can't render a page (i.e. a bug), the output is a little politer,\nwith a link to some suggested recovery options.",
-						"DiagramX": 245,
-						"DiagramY": -65,
+						"Notes": "<b>Miscellaneous Other Changes</b>\n\nThe cell view for an expression now honours the format if there is one.\n\nThe <b>addrow</b> or <a>deleterows</b> html actions can now can now have targets that are expressions which have datatable tool values.\n\nImplemented undo/redo for html addrow and deleterows actions. Also for MMMenu.\n\nAdded an error if select terms do not have matching units.\n\nCreating new session on narrow device now shows the diagram rather than an empty model view.\n\nFix to menu in model view, which wasn't updating properly.\n\nIf the graph SVG was the last thing on a model view, then the select all and print trick would not show the curves on the graph.\n\nFixed a problem with redoing undone delete in datatable when a filter was active.\n\nFix to comma format.\n\nIterator wasn't handling recorded string values.",
+						"DiagramX": 295,
+						"DiagramY": -5,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -1929,104 +2142,212 @@
 						}
 					},
 					{
-						"name": "WeightColumn",
-						"Notes": "In this expression, the weight column is referenced from units_format and the display unit and format from that expression are used here as well.",
-						"DiagramX": 170,
-						"DiagramY": -35,
+						"name": "Table_Column_Sort",
+						"Notes": "<b>Sorting on Columns</b>\n\nPreviously the sort function used the first column as the sort criteria if its argument was a table value.\n\nThis is still the default, but if a column number is now given as a second argument, the sort will use that column to sort on.\n\nIf the argument is negative, the sort will be reversed.",
+						"DiagramX": 210,
+						"DiagramY": -40,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "units_Format.weight"
+							"Formula": "{sort clients, -2}"
 						},
 						"showInput": "y"
 					},
 					{
-						"name": "Units_Format",
-						"Notes": "<b>Formatting</b>\n\nYou can now set the format for numeric expressions.\n\nWhen the display unit and/or format are set for calculated values, they are used when those values are referenced elsewhere, like in this view.\n\nAs always the display unit and format do not affect the calculation in any way.\n\nBelow the unit_format expression is given a table value. Note that multiline formulas cannot be edited directly in the model view. You have to tap the expression name box (or notes) and edit it from the expression view.\n\nIn the expression view, units and formats are assigned for displaying the columns. Tap on the column headers to see the definitions. These definitions are honoured in the model view.",
-						"DiagramX": 170,
-						"DiagramY": -65,
+						"name": "TableTranspose",
+						"Notes": "<b>Transposing Table Values</b>\n\nThe transpose function (<b>tr</b>) can now be used with table values, but it only affects the display of the value.",
+						"DiagramX": 295,
+						"DiagramY": -100,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "{table {cc \"Date\", \"Weight\", \"Charge\"}\n\t{cc 20220707 date,\n\t\t20220801 date,\n\t\t20230901 date\n\t},\n\t101:103 * 1 kg,\n\t{cc 10 dollar, 30 dollar, 100 dollar}\n}"
+							"Formula": "{tr append}"
+						},
+						"showInput": "y"
+					},
+					{
+						"name": "TransposedRow",
+						"Notes": "<b>Transposed Value Unchanged</b>\n\nTransposing a table does not change how the result is accessed.",
+						"DiagramX": 295,
+						"DiagramY": -70,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "TableTranspose[1]"
+						},
+						"showInput": "y"
+					},
+					{
+						"name": "angles",
+						"Notes": "",
+						"DiagramX": 130,
+						"DiagramY": -70,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "1:72 * 10 degree"
+						}
+					},
+					{
+						"name": "SelectTerms",
+						"Notes": "<b>Multiple Select Terms</b>\n\nYou can now use commas to separate terms, rather than having to have an array of terms.",
+						"DiagramX": 210,
+						"DiagramY": -70,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{select clients,\n\t\"name ? ar, rate > 130 dollar/h\"\n}"
 						},
 						"showInput": "y",
-						"tableUnits": {
-							"1": "date",
-							"2": "lb",
-							"3": "dollar"
-						},
 						"tableFormats": [
 							null,
-							"10.0f",
-							"10.1f",
+							null,
 							"10.2f"
 						]
 					},
 					{
-						"name": "NewGetStarted",
-						"Notes": "<b>Revised Getting Started Session</b>\n\nThe Getting Started session has been extensively revised for the new features and makes extensive use of them.\n\nPlease be sure and load a fresh copy by tapping the button below.\n\n<b>Note</b> this will replace your current Getting Started session, so if for some reason you have made changes to it you want to keep, duplicate it first.",
-						"DiagramX": 245,
+						"name": "Select_Contains",
+						"Notes": "",
+						"DiagramX": 210,
+						"DiagramY": -100,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{select clients, \"name ? ar\"}"
+						},
+						"showInput": "y",
+						"tableFormats": [
+							null,
+							null,
+							"10.2f"
+						]
+					},
+					{
+						"name": "Axis_Scaling",
+						"Notes": "<b>Graph Axis Zooming</b>\n\nIf you zoom a 2D graph in or out over the X or Y axis, then only that axis will be scaled.\n\nAlso a long tap on an axis just rescales that axis.\n\nThe graph also now allows 10 times more zooming out.\n\nYou can try it out on this graph using another new feature, which is tapping on a graph in the model view now pushes that graph's view.",
+						"DiagramX": 130,
+						"DiagramY": -100,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Graph",
+						"X1": {
+							"v": "angles",
+							"vmin": "",
+							"vmax": "",
+							"unit": "degree",
+							"Y1": {
+								"v": "{sin angles}",
+								"vmin": "",
+								"vmax": "",
+								"lineType": 0
+							}
+						}
+					},
+					{
+						"name": "Completions",
+						"Notes": "<b>MM News for Sept 2022</b>\n\nA number of goodies have been added and bugs fixed in the last month or so, beginning with:\n\n<b>Formula Editor Completions</b>\n\nThe formula editor has had a significant upgrade, with suggested tool names, tool parameters and functions now appearing in the preview area.\n\nWhat appears depends on what is in front of the cursor,\n\nWhere a value would be expected, the tools of the model will be listed.  As you enter characters, the list will be filtered to just those starting with those characters.\n\nTapping on an entry will add it to the formula.\n\nIf at least the first character of the value has been entered, then entering a tab character will complete it using the top value in the list.\n\nEntering a dot will do the same and add the dot as well.\n\nIf a value followed by a dot precedes the cursor, then the preview will be of the parameters for that value.\n\nIf a curly brace precedes the cursor, then all the Math Minion functions will be displayed. Again the list will be filtered as you type.\n\nWhen a function is inserted, the cursor is moved to before the first argument.\n\nIf the cursor is preceded by a function name and a space, then entering a question mark will result in a description of the function and its arguments being displayed.\n\nThe units and function browsers remain, with rearranged and relabeled buttons, but the value picker was no longer relevant and has been removed. \n\nTry it on the rather random function here or any other formula.",
+						"DiagramX": 130,
+						"DiagramY": -130,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{replace ?\"e\", \"XYZ\", clients.name}"
+						},
+						"showInput": "y"
+					},
+					{
+						"name": "Table_Compare",
+						"Notes": "<b>Table Comparisons</b>\n\nComparison functions now work with compatible tables.",
+						"DiagramX": 295,
 						"DiagramY": -35,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
 						"isOutput": "y",
-						"Type": "Button",
-						"action": "loadurl",
-						"targetFormula": {
-							"Formula": "'../help/Getting Started.txt"
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{eq cities, append[0,1:2]}"
 						},
-						"labelFormula": {
-							"Formula": "'New Getting Started"
-						}
+						"showInput": "y"
 					},
 					{
-						"name": "Comma_Format",
-						"Notes": "<b>Comma Format</b>\n\nThere is now a <b>c</b> format specifier that works just like the fixed point <b>f</b>, but adds commas afterwards.\n\nShown here are some random numbers with a <b>14.2c</b> format",
-						"DiagramX": 170,
-						"DiagramY": 0,
+						"name": "Language",
+						"Notes": "<b>Column Names and Append</b>\n\nIf returning a table, the append function tries to give column names even when the arguments aren't all tables.\n\nBelow an array of strings called Language is appended to the cities table.",
+						"DiagramX": 210,
+						"DiagramY": 20,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "({rand 10,1} - 0.5)*2*10^0:9"
+							"Formula": "{cc \"English\", \"French\", \"Italian\", \"German\"}"
+						}
+					},
+					{
+						"name": "Backtick",
+						"Notes": "<b>Backtick Quoting</b>\n\nThe back tick character (at the upper left of my keyboard) can now be used in the same way as the double quote character.\n\nThis allows strings containing single and double quotes to be more easily constructed.",
+						"DiagramX": 130,
+						"DiagramY": -45,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "`\"double quoted\" and 'single quoted'`"
 						},
-						"format": "14.2c"
+						"showInput": "y"
 					},
 					{
-						"name": "Videos",
-						"Notes": "<b>Videos</b>\n\nI have created some introductory screencast videos that can be accessed from the help or by <span onClick=\"event.stopPropagation();\"><a href=\"../help/videos.html\" target=\"_blank\">clicking here</a></span>.",
-						"DiagramX": 170,
-						"DiagramY": 30,
+						"name": "ChildModel",
+						"Notes": "<b>Nested Model Views</b>\n\nPreviously clicking on a tool in a model view didn't display the tool's view if it was in a child model's view.\n\nThis now works, so clicking on View_Me below will display its view even though it is in a child model.",
+						"DiagramX": 130,
+						"DiagramY": 15,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": ""
-						}
-					},
-					{
-						"name": "Feedback",
-						"Notes": "<b>Feedback</b>\n\nAs always, any and all <span onClick=\"event.stopPropagation()\"><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">feedback</a></span> is not only encouraged, but awaited wistfully. \n\nCraig",
-						"DiagramX": 245,
-						"DiagramY": 0,
-						"HideInfo": "n",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": ""
-						}
+						"isOutput": "y",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "View_Me",
+								"Notes": "",
+								"DiagramX": 70,
+								"DiagramY": -150,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "'A little ditty"
+								}
+							}
+						]
 					}
 				]
 			}
