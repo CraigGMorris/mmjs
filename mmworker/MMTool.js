@@ -86,11 +86,13 @@ class MMTool extends MMCommandParent {
 	}
 
 	set isOutput(newValue) {
-		const oldValue = this._isOutput;
-		this._isOutput = (newValue) ? true : false;
-		if (oldValue !== this._isOutput) {
-			this.forgetCalculated();
-			this.parent.forgetCalculated();
+		if (this.parent instanceof MMTool) {
+			const oldValue = this._isOutput;
+			this._isOutput = (newValue) ? true : false;
+			if (oldValue !== this._isOutput) {
+				this.forgetCalculated();
+				this.parent.forgetCalculated();
+			}
 		}
 	}
 	
