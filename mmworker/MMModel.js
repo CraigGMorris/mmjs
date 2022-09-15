@@ -167,7 +167,9 @@ class MMModel extends MMTool {
 				p.push(child.name + '.');
 			}
 		}
-		p.push('_toolnames');
+		if (!this.children.toolnames) {
+			p.push('toolnames');
+		}
 		return p;
 	}
 
@@ -380,20 +382,19 @@ class MMModel extends MMTool {
 		}
 
 		const autoPosition = (tool) => {
-			let maxX = 10, maxY = 10;
-			for (const key in this.children) {
-				const tool = this.children[key];
-				if (tool instanceof MMTool) {
-					if (tool.position.y > maxY) {
-						maxY = tool.position.y;
-						maxX = tool.position.x;
-					}
-					else if (tool.position.y == maxY && tool.position.x > maxX) {
-						maxX = tool.position.x;
-					}
+			const n = Object.keys(this.children).length - 1;
+			if (n === 0) {
+				tool.position = {x: 10, y: 10}
+			}
+			else {
+				const toolsPerRow = 10;
+				const row = (n / toolsPerRow - 0.5).toFixed();
+				const column = n % toolsPerRow;
+				tool.position = {
+					x: 10 + column * 70,
+					y: 10 + row * 30
 				}
-			}	
-			tool.position = {x: maxX, y: maxY + 30};
+			}
 		}
 	
 
@@ -506,7 +507,7 @@ class MMModel extends MMTool {
 					}
 				}
 			}
-			else if (typeof(child) === 'object') {
+			else if (child && typeof(child) === 'object') {
 				const model = makeModel(childName, child);
 				if (model) {
 					autoPosition(model);
@@ -1189,7 +1190,7 @@ class MMModel extends MMTool {
 		else if (description.toLowerCase() === 'html') {
 			return MMStringValue.scalarValue(this.htmlValue());
 		}
-		else if (description.toLowerCase() === '_toolnames') {
+		else if (description.toLowerCase() === 'toolnames') {
 			const names = [];
 			for (const name in this.children) {
 				const child = this.children[name];
