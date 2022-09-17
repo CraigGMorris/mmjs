@@ -127,6 +127,8 @@ const MMFormulaFactory = (token, formula) => {
 		'not': (f) => {return new MMNotFunction(f)},
 		'and': (f) => {return new MMAndFunction(f)},
 		'or': (f) => {return new MMOrFunction(f)},
+		'isnan': (f) => {return new MMIsNanFunction(f)},
+
 
 		// matrix functions
 		'append': (f) => {return new MMAppendFunction(f)},
@@ -2219,7 +2221,33 @@ class MMNotFunction extends MMSingleValueFunction {
 	}
 
 	operationOnTable(v) {
-		return v ? 1 : 0;
+		return MMNumberValue.scalarValue(v ? 0 : 1);
+	}
+}
+
+class MMIsNanFunction extends MMSingleValueFunction {
+	operationOn(v) {
+		if (v) {
+			return v.genericMonadic((n) => {
+				return isNaN(n) ? 1 : 0;
+			});
+		}
+	}
+
+	operationOnString(v) {
+		if (v) {
+			const rv = new MMNumberValue(v.rowCount, v.columnCount);
+			rv._values = v._values.map(() => {
+				return 0;
+			});
+			return rv;
+		}
+	}
+
+	operationOnTable(v) {
+		if (v) {
+			return MMNumberValue.scalarValue(0);
+		}
 	}
 }
 

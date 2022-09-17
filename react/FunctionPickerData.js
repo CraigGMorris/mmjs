@@ -433,6 +433,11 @@
 						of <b>a</b> is <b>0</b> otherwise it will be <b>1</b>.`,
 					},
 					{
+						f: "{isnan a}",
+						desc: `Each element of the return value is <b>1</b> if the corresponding element
+						of <b>a</b> is a NaN (not a number - usually an arithmetic error).`,
+					},
+					{
 						f: "{if a, b, c}",
 						desc: `If the value of <b>a</b> is unknown or a <b>scalar</b>:
 							<ul>
