@@ -3600,7 +3600,42 @@ class MMEvalFunction extends MMSingleValueFunction {
 	}
 
 	operationOnString(s) {
-		if (s.valueCount) {
+		if (s.valueCount > 1) {
+			this.evalFormula.formula = s._values[0];
+			this.evalFormula._nameSpace = theMMSession.currentModel;
+			const first = this.evalFormula.value();
+			let result;
+			if (first instanceof MMNumberValue) {
+				result = new MMNumberValue(s.rowCount, s.columnCount, first.unitDimensions);
+			}
+			else if (first instanceof MMStringValue) {
+				result = new MMStringValue(s.rowCount, s.columnCount);
+			}
+			result.values[0] = first.values[0];
+			for (let i = 1; i < s.valueCount; i++) {
+				this.evalFormula.formula = s._values[i];
+				const v = this.evalFormula.value();
+				if (v) {
+					if (Object.getPrototypeOf(v) != Object.getPrototypeOf(first)) {
+						v.exceptionWith('mmcmd:evalTypeMismatch');
+					}
+					if (v instanceof MMNumberValue) {
+							first.checkUnitDimensionsAreEqualTo(v.unitDimensions);
+					}
+					result.values[i] = v.values[0];
+				}
+				else {
+					if (first instanceof MMStringValue) {
+						result.values[i] = '???';
+					}
+					else {
+						result.values[i] = NaN;
+					}
+				}
+			}
+			return result;
+		}
+		else if (s.valueCount) {
 			this.evalFormula.formula = s._values[0];
 			return this.evalFormula.value();
 		}
