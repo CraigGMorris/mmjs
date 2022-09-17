@@ -414,7 +414,10 @@ class MMModel extends MMTool {
 					expr.formula.formula = child.toString();
 				}		
 			}
-			else if (child instanceof Array && child.length) {
+			else if (child instanceof Array ) {
+				if (child.length === 0) {
+					continue;
+				}
 				const first = child[0];
 				const parts = [];
 				if (typeof(first) === 'string') {
