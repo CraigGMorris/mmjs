@@ -19,6 +19,8 @@
 
 /* global
 	MMValue:readonly
+	MMNumberValue:readonly
+	MMStringValue:readonly
 */
 
 /**
@@ -32,17 +34,27 @@ class MMToolValue extends MMValue {
 	 * @param {Number} rowCount
 	 * @param {Number} columnCount
 	*/
-	constructor() {
-		super(1, 1); // tool values are always scalar
-		this._values = new Array(1);
+	constructor(rowCount, columnCount) {
+		super(rowCount, columnCount); // tool values are always scalar
+		this._values = new Array(this.valueCount);
+	}
+
+	/** @static toolArrayValue
+	 * creates a MMToolValue from an array of tools
+	 * @param {MMTool[]} values
+	 */
+	static toolArrayValue(values) {
+		let newValue = new MMToolValue(values.length, 1);
+		newValue._values = Array.from(values);
+		return newValue;
 	}
 
 	/** @method copyOf
 	 * @returns {MMValue}  - a copy of this instance
 	 */
 	copyOf() {
-		let newValue = new MMToolValue();
-		newValue._values[0] = this._values[0];
+		let newValue = new MMToolValue(this.rowCount, this.columnCount);
+		newValue._values = Array.from(this._values);
 		return newValue;
 	}
 
@@ -56,7 +68,7 @@ class MMToolValue extends MMValue {
 	 * @returns {MMToolValue}
 	 */
 	static scalarValue(value) {
-		let newValue = new MMToolValue();
+		let newValue = new MMToolValue(1,1);
 		newValue._values[0] = value;
 		return newValue;
 	}
@@ -119,6 +131,24 @@ class MMToolValue extends MMValue {
 	}
 
 	/**
+	 * @method setValueAtCount
+	 * @param {MMTool} value
+	 * @param {Number} count
+	 */
+		setValueAtCount(value, count) {
+			this._values[count] = value || '';
+		}
+	
+		/**
+		 * @method valueAtCount
+		 * @param {Number} count 
+		 * @returns {MMTool}
+		 */
+		valueAtCount(count) {
+			return (count < this.valueCount) ? this._values[count] : '';
+		}	
+
+	/**
 	 * @method stringWithUnit
 	 * @param {MMUnit} unit - optional
 	 * @returns {String} 
@@ -152,17 +182,89 @@ class MMToolValue extends MMValue {
 	 * @method htmlValue
 	 * @returns {String}
 	 */
-		htmlValue(requestor) {
-			if (this.valueCount === 1) {
-				const v = this._values[0];
-				const html = v.htmlValue(requestor);
-				if (html) {
-					return html;
+	htmlValue(requestor) {
+		if (this.valueCount === 1) {
+			const v = this._values[0];
+			const html = v.htmlValue(requestor);
+			if (html) {
+				return html;
+			}
+			else {
+				return v.typeName + ': ' + v.name;
+			}
+		}
+		return super.htmlValue()
+	}
+
+	/**
+	 * @method concat
+	 * @param  {MMToolValue} other
+	 * @return MMToolValue
+	 * overriden to concatanate two arrays into one
+	 */
+	concat(other) {
+		let rv;
+		if (other instanceof MMToolValue) {
+			let valueCount = this.valueCount + other.valueCount;
+			rv = new MMToolValue(valueCount, 1);
+			valueCount = 1;
+			for (let i = 0; i < this.valueCount; i++) {
+				rv.setValue(this.valueAtCount(i), valueCount++, 1);
+			}
+			for (let i = 0; i < other.valueCount; i++) {
+				rv.setValue(other.valueAtCount(i), valueCount++, 1);
+			}
+		}
+		return rv;
+	}
+
+	/**
+	 * @param {String} description
+	 * @param {MMTool} requestor
+	 * @returns {MMValue}
+	 */
+	valueDescribedBy(description, requestor) {
+		let rv = null;	// return value
+		if (this.valueCount === 1) {
+			const tool = this.valueAtRowColumn(1,1);
+			if (tool) {
+				rv = tool.valueDescribedBy(description, requestor);
+			}
+		}
+		else if (this.valueCount > 1) {
+			const firstTool = this.valueAtRowColumn(1,1);
+			if (firstTool) {
+				const firstValue = firstTool.valueDescribedBy(description, requestor);
+				if (firstValue instanceof MMNumberValue) {
+					rv = new MMNumberValue(this.rowCount, this.columnCount, firstValue.unitDimensions);
+				}
+				else if (firstValue instanceof MMStringValue) {
+					rv = new MMStringValue(this.rowCount, this.columnCount);
 				}
 				else {
-					return v.typeName + ': ' + v.name;
+					return null;
+				}
+				rv.setValueAtCount(firstValue.valueAtCount(0), 0);
+				for (let i = 1; i < this.valueCount; i++) {
+					const tool = this.valueAtCount(i);
+					if (!tool) {
+						return null;
+					}
+					const value = tool.valueDescribedBy(description, requestor);
+					if (!value || Object.getPrototypeOf(value).constructor !== Object.getPrototypeOf(firstValue).constructor) {
+						if (firstValue instanceof MMNumberValue) {
+							rv.setValueAtCount(NaN, i);
+						}
+						else {
+							rv.setValueAtCount('???', i);
+						}
+					}
+					else {
+						rv.setValueAtCount(value.valueAtCount(0), i);
+					}
 				}
 			}
-			return super.htmlValue()
 		}
+		return rv
+	}
 }

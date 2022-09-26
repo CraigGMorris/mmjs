@@ -814,14 +814,63 @@ class MMIndexOperator extends MMFormulaOperator {
 	value() {
 		const sourceValue = this.sourceArgument.value();
 		if (sourceValue instanceof MMToolValue) {
-			const rowValue = this.rowArgument.value();
+			let rowValue = this.rowArgument.value();
+			if (rowValue instanceof MMNumberValue && rowValue.valueAtRowColumn(1,1) === 0) {
+				// to handle x[n].name, which gets transformed into
+				// x[n][0,"name"] in formulaParser
+				rowValue = this.columnArgument.value();
+			}
 			if (rowValue instanceof MMStringValue) {
-				const tool = sourceValue.valueAtRowColumn(1, 1);
-				const valueDescription = rowValue.valueAtRowColumn(1, 1);
-				return tool.valueDescribedBy(valueDescription, this.formula.owner);
+				if (rowValue.valueCount === 1 && sourceValue.valueCount === 1) {
+					const tool = sourceValue.valueAtRowColumn(1, 1);
+					const valueDescription = rowValue.valueAtRowColumn(1, 1);
+					return tool.valueDescribedBy(valueDescription, this.formula.owner);
+				}
+				else {
+					let rv;
+					const firstTool = sourceValue.valueAtRowColumn(1, 1);
+					const firstDescription = rowValue.valueAtRowColumn(1, 1);
+					const firstValue = firstTool.valueDescribedBy(firstDescription, this.formula.owner);
+					const rowCount = sourceValue.valueCount;
+					const columnCount = rowValue.valueCount;
+					if (firstValue instanceof MMNumberValue) {
+						rv = new MMNumberValue(rowCount, columnCount, firstValue.unitDimensions);
+					}
+					else if (firstValue instanceof MMStringValue) {
+						rv = new MMStringValue(rowCount, columnCount);
+					}
+					else if (firstValue instanceof MMToolValue) {
+						rv = new MMToolValue(rowCount, columnCount);
+					}
+					else {
+						return null;
+					}
+					for (let row = 0; row < sourceValue.valueCount; row++) {
+						const tool = sourceValue.valueAtCount(row);
+						if (!tool) {
+							return null;
+						}
+						for (let col = 0; col < rowValue.valueCount; col++) {
+							const description = rowValue.valueAtCount(col);
+							const value = tool.valueDescribedBy(description, this.formula.owner);
+							if (!value || Object.getPrototypeOf(value).constructor !== Object.getPrototypeOf(firstValue).constructor) {
+								if (firstValue instanceof MMNumberValue) {
+									rv.setValue(NaN, row + 1, col + 1);
+								}
+								else {
+									rv.setValue('???', row + 1, col + 1);
+								}
+							}
+							else {
+								rv.setValue(value.valueAtCount(0), row + 1, col + 1);
+							}
+						}
+					}
+					return rv;
+				}
 			}
 		}
-		else if (sourceValue instanceof MMValue) {
+		if (sourceValue instanceof MMValue) {
 			const rowValue = this.rowArgument ? this.rowArgument.value() : null;
 			const columnValue = this.columnArgument ? this.columnArgument.value() : null;
 			return sourceValue.valueForIndexRowColumn(rowValue, columnValue);

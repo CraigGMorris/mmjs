@@ -170,6 +170,9 @@ class MMModel extends MMTool {
 		if (!this.children.toolnames) {
 			p.push('toolnames');
 		}
+		if (!this.children.tools) {
+			p.push('tools');
+		}
 		return p;
 	}
 
@@ -1190,10 +1193,10 @@ class MMModel extends MMTool {
 		if (tool instanceof MMTool) {
 			value = tool.valueDescribedBy(restOfPath, requestor);
 		}
-		else if (description.toLowerCase() === 'html') {
+		else if (toolName === 'html') {
 			return MMStringValue.scalarValue(this.htmlValue());
 		}
-		else if (description.toLowerCase() === 'toolnames') {
+		else if (toolName === 'toolnames') {
 			const names = [];
 			for (const name in this.children) {
 				const child = this.children[name];
@@ -1203,6 +1206,21 @@ class MMModel extends MMTool {
 			}
 			if (names.length) {
 				value = MMStringValue.stringArrayValue(names);
+			}
+		}
+		else if (toolName === 'tools') {
+			const tools = [];
+			for (const name in this.children) {
+				const tool = this.children[name];
+				if (tool instanceof MMTool) {
+					tools.push(tool);
+				}
+			}
+			if (tools.length) {
+				value = MMToolValue.toolArrayValue(tools);
+				if (restOfPath && restOfPath.length) {
+					value = value.valueDescribedBy(restOfPath, requestor);
+				}
 			}
 		}
 		else {

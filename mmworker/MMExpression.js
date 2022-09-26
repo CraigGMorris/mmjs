@@ -311,8 +311,7 @@ class MMExpression extends MMTool {
 
 				default: {
 					if (value instanceof MMToolValue) {
-						let tool = value.valueAtRowColumn(1,1);
-						rv = tool.valueDescribedBy(description, requestor);
+						rv = value.valueDescribedBy(description, requestor);
 					}
 					else if (value instanceof MMTableValue) {
 						const column = value.columnNamed(description);
