@@ -960,6 +960,7 @@ class MMModel extends MMTool {
 		}
 		const keyPressed = this.name + '_keyPressed';
 		const changedInput = this.name + '_changedInput';
+		let isAnyOutput = false;
 		chunks.push('		<script>');
 		const pathParts = [];
 		if (this !== theMMSession.currentModel) {
@@ -972,6 +973,7 @@ class MMModel extends MMTool {
 		}
 		const pathPrefix = pathParts.length ? pathParts.reverse().join('.') + '.' : '';
 		if (results.inputs.length) {
+			isAnyOutput = true;
 			chunks.push(`			const ${keyPressed} = (e) => {
 					if (e.key === 'Enter') {
 						e.target.blur();
@@ -985,6 +987,7 @@ class MMModel extends MMTool {
 			chunks.push('					mm_cmd: `.' + pathPrefix + '${inputName}.formula set formula ${value}`,');
 			chunks.push('					mm_undo:`.' + pathPrefix + '${inputName}.formula set formula ${oldValue}`,');
 			for (const output of results.outputs) {
+				isAnyOutput = true;
 				const outputId = `o_${this.name}_${output.name}`;
 				chunks.push(`					${outputId}: "{html ${pathPrefix}${output.name}}",`);
 			}
@@ -1001,17 +1004,17 @@ class MMModel extends MMTool {
 			chunks.push('			}')
 		}
 		chunks.push(`	${onNameClick} = (name) => {`);
-		// if (isMyNameSpace) {
-				chunks.push(`		mmpost([], {mm_push: '${pathPrefix}'+name});`);
-			// }
+		chunks.push(`		mmpost([], {mm_push: '${pathPrefix}'+name});`);
 		chunks.push('		}');
 		chunks.push('		</script>');
 		chunks.push('		<div class="model-form__objects">')
 		for (let object of results.objects) {
 			if (object.htmlNotes && object.notes) {
+				isAnyOutput = true;
 				chunks.push(`<div class="model-form__notes" onClick="${onNameClick}('${object.name}')">${object.notes}</div>`);
 			}	
 			if (object.showInput) {
+				isAnyOutput = true;
 				const input = object;
 				chunks.push(`				<div class="model-form__input-row">`);
 				chunks.push(`				<div class="model-form__input-name" onClick="${onNameClick}('${input.name}')">${input.name}</div>`);
@@ -1033,6 +1036,7 @@ class MMModel extends MMTool {
 				chunks.push('		</div>');
 			}
 			if (object.isOutput) {
+				isAnyOutput = true;
 				const output = object;
 				let value;
 				if (output instanceof MMMenu) {
@@ -1084,6 +1088,14 @@ class MMModel extends MMTool {
 					chunks.push('</div>');	
 				}
 			}
+		}
+
+		if (!isAnyOutput) {
+			chunks.push('<div class="model-form__default">');
+			for (const object of results.objects) {
+				chunks.push(`<div class="model-form__default-name" onClick="${onNameClick}('${object.name}')">${object.typeName}: ${object.name}</div>`);
+			}
+			chunks.push('</div>');
 		}
 		chunks.push('</div>')
 		return chunks.join('\n');
