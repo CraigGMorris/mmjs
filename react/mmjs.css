@@ -436,7 +436,7 @@ a:hover {
 	grid-template-columns: 40px 1fr;
 }
 
-.diagram__import-warning {
+.diagram__import-warning, .diagram__maxicons_warning {
 	fill: red;
 	stroke: red;
 }
