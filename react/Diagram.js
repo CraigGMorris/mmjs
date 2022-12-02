@@ -80,6 +80,8 @@ export class Diagram extends React.Component {
 		this.panSum = 0;
 		this.eventCache = [];
 		this.pinch = 0;
+		this.maxIcons = 300;
+
 		const savedState = props.dgmStateStack.pop();
 		if (savedState) {
 			// if the diagram is being reconstructed after an expand, use the pushed state
@@ -128,7 +130,11 @@ export class Diagram extends React.Component {
 						let maxY = -1.e6;
 						let minX = 1.e6;
 						let minY = 1.e6;
+						let iconCount = 0;
 						for (const toolName in modelInfo.tools) {
+							if (iconCount++ >= this.maxIcons) {
+								break;
+							}
 							const toolInfo  = modelInfo.tools[toolName];
 							const position = toolInfo.position;
 							maxX = (position.x > maxX ) ? position.x : maxX;
@@ -146,7 +152,7 @@ export class Diagram extends React.Component {
 							let scale =  ( widthScale < heightScale ) ? widthScale : heightScale;
 							scale = Math.min(3.0, Math.max(0.2, scale));
 							newState['scale'] = scale;
-							const yOffset = modelInfo.import != null ? 100 : 40; 
+							const yOffset = modelInfo.import != null ? 100 : 45; 
 							newState['translate'] = {x: -minX + 30.0 / scale, y: -minY + yOffset /scale};
 						}
 					}
@@ -623,7 +629,12 @@ export class Diagram extends React.Component {
 		const ty = this.state.translate.y;
 		let toolList = [];
 		let connectList = [];
+		let iconCount = 0;
 		for (const toolName in tools) {
+			if (iconCount++ >= this.maxIcons) {
+				break;
+			}
+
 			const toolInfo  = tools[toolName];
 			let highlight = false;
 			if (this.state.dragSelection && this.state.dragSelection.has(toolInfo.name)) {
@@ -825,6 +836,20 @@ export class Diagram extends React.Component {
 		}
 
 		let textList = [];
+		const toolCount = tools ? Object.keys(tools).length : 0;
+		if (toolCount > this.maxIcons) {
+			textList.push(
+				e(
+					'text', {
+						className: 'diagram__maxicons_warning',
+						key: 'maxicons',
+						x: (this.props.diagramBox.width - (this.props.isTwoPane ? 180 : 130))/2,
+						y: 40,
+					},
+					this.props.t('react:dgmMaxIconsWarnign', {max: this.maxIcons, count: toolCount})
+				)
+			)
+		}
 		if (this.state.path) {
 			const pathParts = this.state.path.split('.');
 			const nameHeaderX = (this.props.diagramBox.width - (this.props.isTwoPane ? 180 : 130))/2;
