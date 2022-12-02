@@ -59,6 +59,7 @@
 	"dgmButtonMenuClose": "Close",
 	"dgmImportWarning1": "Imported from session '{{source}}'",
 	"dgmImportWarning2": "Changes other than input values are not saved",
+	"dgmMaxIconsWarnign": "Only {{max}} of {{count}} shown",
 	"dgmShowNotes": "Show Notes",
 	"dgmToolHasNote": "Notes",
 	"exprIsInput": "Model Input",
