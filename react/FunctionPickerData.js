@@ -73,7 +73,7 @@
 			`
 	}
 	const sumRowsDesc = {
-		f: "{sumrows <b>x</b>}",
+		f: "{sumrows x}",
 		desc: `<p>
 			Returns a column array with the summations of the values in each row of <b>x</b>.  If <b>x</b> is a
 			table value, then all the numeric columns must have the same unit dimensions, but string
