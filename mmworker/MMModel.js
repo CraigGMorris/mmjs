@@ -587,6 +587,7 @@ class MMModel extends MMTool {
 				}
 				else if (json.startsWith('table')) {
 					// starts with word table - assume table csv
+					const tableValue = new MMTableValue({csv: json});
 					let toolType = MMToolTypes["DataTable"];
 					if(!toolType) {
 						throw(this.t('mmcmd:modelInvalidToolType', {name: "Unknown", typeName: "DataTable"}));
@@ -598,7 +599,7 @@ class MMModel extends MMTool {
 					let newTool = toolType.factory(name, this);
 					if (newTool) {
 						newTool.position = new MMPoint(originX, originY);
-						newTool.initFromCsv(json);
+						newTool.initFromTableValue(tableValue);
 						command.results = true;
 					}
 				}

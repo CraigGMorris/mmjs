@@ -563,14 +563,14 @@ class MMTableValue extends MMValue {
 	 * can optionally have a rowNumbers MMNumberValue containing the rows from columns to include
 	 */
 	constructor(context) {
-		if (context.columns) {
-			const initWithColumns = (columns) => {
-				this.columns = Array.from(columns)  // create copy
-				this._nameDictionary = {};
-				for (const column of this.columns) {
-					this._nameDictionary[column.lowerCaseName] = column;
-				}
+		const initWithColumns = (columns) => {
+			this.columns = Array.from(columns)  // create copy
+			this._nameDictionary = {};
+			for (const column of this.columns) {
+				this._nameDictionary[column.lowerCaseName] = column;
 			}
+		}
+		if (context.columns) {
 			const columns = context.columns;
 			const nColumns = columns ? columns.length : 0;
 			if (context.rowNumbers) {
@@ -593,6 +593,151 @@ class MMTableValue extends MMValue {
 				super(nRows, nColumns);
 				initWithColumns(columns);
 			}
+		}
+		else if (context.csv) {
+			/*
+				csv - with three definition lines at top
+
+				table,en   where the character after table is
+				the csv separator and en is the language code
+
+				name1","name2" ... column names using csv separator
+
+				"Fraction","Fraction" ... column display unitss using csv separator
+			*/
+			const csv = context.csv;
+			let i = 0;
+			let line;
+			let re = new RegExp('.*?\\n');
+			const exceptionWith = (key, args) => {
+				let msg = new MMCommandMessage(key, args);
+				throw(msg);
+			}
+		
+			const getLine = (i, re) => {
+				let match = csv.substring(i).match(re);
+				if (!match) {
+					exceptionWith('mmcmd:tableBadCsvHeader', {path: context.path});
+				}
+				let line = match[0];
+				i += match.index + line.length;
+				return [i, line];
+			}
+			[i, line] = getLine(i, re);
+			if (!line) {
+				exceptionWith('mmcmd:tableBadCsvHeader', {path: context.path});
+			}
+			let csvSeparator = ',';
+			let locale = 'en';
+			if (line.length >= 7) {
+				csvSeparator = line[5];
+				locale = line.substring(6).trim();
+			}
+			let n = 1.1;
+			const decimalSeparator = n.toLocaleString(locale).substring(1,2);
+	
+			[i, line] = getLine(i, re);
+			if (!line) {
+				exceptionWith('mmcmd:tableBadCsvHeader', {path: context.path});
+			}
+			const columnNames = line.trim().split(csvSeparator);
+	
+			[i, line] = getLine(i, re);
+			if (!line) {
+				exceptionWith('mmcmd:tableBadCsvHeader',  {path: context.path});
+			}
+			const unitNames = line.trim().split(csvSeparator);
+	
+			if (unitNames.length !== columnNames.length) {
+				exceptionWith('mmcmd:tableCsvColumnCountsDiffer',  {path: context.path});
+			}
+	
+			const columns = [];
+			const columnData = [];
+			const csvColumnCount = columnNames.length;
+			const uniqueNames = new Set();
+			const includeColumn = [];
+			if (csvColumnCount === 0) {
+				super(0,0);
+				return;
+			}
+			for (let i = 0; i < csvColumnCount; i++) {
+				let columnName = columnNames[i];
+				columnName = columnName.substring(1,columnName.length -1);  // strip off the quotes
+				let unitName = unitNames[i];
+				unitName = unitName.substring(1,unitName.length -1);  // strip off the quotes
+				if (!uniqueNames.has(columnName)) {
+					const column = new MMTableValueColumn({
+						name: columnName,
+						displayUnit: unitName
+					});
+					columns.push(column);
+					columnData.push([]);
+					uniqueNames.add(columnName);
+					includeColumn.push(true);
+				}
+				else {
+					includeColumn.push(false);
+				}
+			}
+			const columnCount = uniqueNames.size;
+	
+			re = new RegExp('".*?"|[^' + csvSeparator + '"\\n]*','ms');
+			let match = csv.substring(i).match(re);
+			let columnNumber = 0;
+			let csvColumnNumber = 0;
+			const csvLength = csv.length;
+			while (match && i <= csvLength) {
+				let token = match[0];
+				i += match.index + token.length;
+				if (includeColumn[csvColumnNumber]) {
+					const column = columns[columnNumber];
+	
+					if (token.startsWith('"')) {
+						token = token.substring(1,token.length - 1); // strip quotes
+					}					
+					if (column.isString) {
+						columnData[columnNumber].push(token);
+					}
+					else {
+						if (token.length) {
+							if (decimalSeparator !== '.') {
+								token = token.replace(decimalSeparator, '.');
+							}
+							else {
+								token = token.replace(/,/g, '');
+							}
+						}
+						else {
+							token = 0;
+						}
+						columnData[columnNumber].push(token);
+					}
+					columnNumber = (columnNumber + 1) % columnCount;
+				}
+				csvColumnNumber = (csvColumnNumber + 1) % csvColumnCount;
+				i++;
+				match = csv.substring(i).match(re);
+			}
+	
+			let rowCount = columnData[0].length;
+			for (let i = 1; i < columnCount; i++) {
+				if (columnData[i].length !== rowCount) {
+					theMMSession.setWarning('mmcmd:tableCsvRowCountsDiffer', {
+						path: context.path,
+						column: i,
+						ilength: columnData[i].length,
+						rowcount: rowCount
+					});
+					rowCount = Math.min(columnData[i].length, rowCount);
+				}
+			}
+			for (let i = 0; i < columnCount; i++) {
+				columns[i].updateFromStringArray(columnData[i]);
+			}
+			super(rowCount, columnCount);
+			initWithColumns(columns);
+
 		}
 		else {
 			super(0,0);

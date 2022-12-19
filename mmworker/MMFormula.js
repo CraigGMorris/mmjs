@@ -3028,7 +3028,7 @@ class MMPairedStudentTFunction extends MMMultipleArgumentFunction {
 
 class MMTableFunction extends MMMultipleArgumentFunction {
 	processArguments(operandStack) {
-		return super.processArguments(operandStack, 2);
+		return super.processArguments(operandStack, 1);
 	}
 
 	value() {
@@ -3040,6 +3040,15 @@ class MMTableFunction extends MMMultipleArgumentFunction {
 		let argIncrement = 1;
 		if (nameParam instanceof MMStringValue) {
 			nameCount = nameParam.valueCount;
+			if (argCount === 1) {
+				const csvValue = nameParam.values[0];
+				if (nameCount === 1 && csvValue && csvValue.startsWith('table')) {
+					return new MMTableValue({csv: csvValue, path: this.formula.parent.getPath()});
+				}
+				else {
+					return null;
+				}
+			}
 			if (nameCount === 1 && argCount > 2) {
 				// alternating names and columns
 				argIncrement = 2;

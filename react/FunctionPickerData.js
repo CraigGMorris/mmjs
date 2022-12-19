@@ -707,13 +707,18 @@
 					{
 						f: "{table n, c}",
 						desc: `Creates a table value whose column names are the elements of <b>n</b> and values are taken from the
-								columns of c and additional parameters. If <b>n</b> is a table value, then its column names are used
-								<p>Alternatively pairs of names and values can be used as in</p>
-								<p>{table "First", x1, "Second", x2}</p>
-								<p>and so forth.</p>
-								<p> In either case, the value arguments should all have the same number of rows.
-								If there are fewer names than values or vice versa,
-								the lessor number is used and the extras are ignored.
+							columns of c and additional parameters. If <b>n</b> is a table value, then its column names are used
+							<p>Alternatively pairs of names and values can be used as in</p>
+							<p>{table "First", x1, "Second", x2}</p>
+							<p>and so forth.</p>
+							<p> In either case, the value arguments should all have the same number of rows.
+							If there are fewer names than values or vice versa,
+							the lessor number is used and the extras are ignored.
+							</p>
+							<p>Finally if there is only a single string argument starting with the
+							word "table", then the argument is assumed to be CSV data of the
+							form described in the Data Table help and a table value is constructed
+							from it.
 							</p>`,
 					},
 					{

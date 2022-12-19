@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "mainTest",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "Tolerance",
+	"SelectedObject": "errorCount",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -17728,14 +17728,69 @@
 										"name": "errorCount",
 										"Notes": "",
 										"DiagramX": 170,
-										"DiagramY": 505,
+										"DiagramY": 535,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"HtmlNotes": "n",
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "fColumnError +\nfColumnsError +\nnameError"
+											"Formula": "fColumnError +\nfColumnsError +\nnameError +\n{int csvError * 1e10}"
+										}
+									},
+									{
+										"name": "csv",
+										"Notes": "",
+										"DiagramX": 80,
+										"DiagramY": 465,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "'table,en\n\"Date\",\"MinT\",\"MaxT\",\"mmRain\"\n\"s\",\"degC\",\"degC\",\"mm\"\n1670616000,-3.7,3.2,18.7\n1670702400,0.9,2.5,32.9\n1670788800,-0.2,7.4,3.1"
+										}
+									},
+									{
+										"name": "fromCsv",
+										"Notes": "",
+										"DiagramX": 80,
+										"DiagramY": 495,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table csv}"
+										},
+										"tableUnits": {
+											"1": "date"
+										}
+									},
+									{
+										"name": "csvSum",
+										"Notes": "",
+										"DiagramX": 80,
+										"DiagramY": 520,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{sumcols fromCsv[0,2:4]}"
+										}
+									},
+									{
+										"name": "csvError",
+										"Notes": "",
+										"DiagramX": 170,
+										"DiagramY": 510,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "(csvsum.MinT - 543.3 degC) / 1 deltaC +\n(csvsum.MaxT - 559.4 degC) / 1 deltaC +\n(csvsum.mmRain - 54.7 mm) / 1 mm"
 										}
 									}
 								]
