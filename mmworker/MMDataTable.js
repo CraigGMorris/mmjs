@@ -56,6 +56,7 @@ class MMDataTableColumn extends MMCommandObject {
 		if (!this.isCalculated) {
 			this._columnValue = new MMTableValueColumn({
 				name: options.name,
+				value: options.value,
 				displayUnit: displayUnitName,
 				format: this.format,
 			});
@@ -1042,130 +1043,23 @@ class MMDataTable extends MMTool {
 		}
 	}
 
-	/** @method initFromCsv
-	 * @param {String} csv - with three definition lines at top
-	 * table en   where en is language code
-	 * "name1","name2" ... column names
-	 * "Fraction","Fraction" ... column display units
+	/**
+	 * @method initFromTableValue
+	 * @param {MMTableValue} tableValue 
 	 */
-	initFromCsv(csv) {
-		let i = 0;
-		let line;
-		let re = new RegExp('.*?\\n');
-		const getLine = (i, re) => {
-			let match = csv.substring(i).match(re);
-			if (!match) {
-				this.setError('mmcmd:tableBadCsvHeader', {path: this.getPath()});
-				return [null, null];
-			}
-			let line = match[0];
-			i += match.index + line.length;
-			return [i, line];
-		}
-		[i, line] = getLine(i, re);
-		if (!line) { return; }
-		let csvSeparator = ',';
-		let locale = 'en';
-		if (line.length >= 7) {
-			csvSeparator = line[5];
-			locale = line.substring(6).trim();
-		}
-		let n = 1.1;
-		const decimalSeparator = n.toLocaleString(locale).substring(1,2);
-
-		[i, line] = getLine(i, re);
-		if (!line) {return;}
-		const columnNames = line.trim().split(csvSeparator);
-
-		[i, line] = getLine(i, re);
-		if (!line) {return;}
-		const unitNames = line.trim().split(csvSeparator);
-
-		if (unitNames.length !== columnNames.length) {
-			this.setError('mmcmd:tableCsvColumnCountsDiffer', {path: this.getPath()});
-			return;
-		}
-
-		const columns = this.columnArray;
-		const columnData = [];
-		const csvColumnCount = columnNames.length;
-		const uniqueNames = new Set();
-		const includeColumn = [];
-		if (csvColumnCount === 0) {return;}
-		for (let i = 0; i < csvColumnCount; i++) {
-			let columnName = columnNames[i];
-			columnName = columnName.substring(1,columnName.length -1);  // strip off the quotes
-			let unitName = unitNames[i];
-			unitName = unitName.substring(1,unitName.length -1);  // strip off the quotes
-			if (!uniqueNames.has(columnName)) {
-				const column = new MMDataTableColumn(this, {
-					name: columnName,
-					displayUnit: unitName
-				});
-				columns.push(column);
-				columnData.push([]);
-				uniqueNames.add(columnName);
-				includeColumn.push(true);
-			}
-			else {
-				includeColumn.push(false);
-			}
-		}
-		const columnCount = uniqueNames.size;
-
-		re = new RegExp('".*?"|[^' + csvSeparator + '"\\n]*','ms');
-		let match = csv.substring(i).match(re);
-		let columnNumber = 0;
-		let csvColumnNumber = 0;
-		const csvLength = csv.length;
-		while (match && i <= csvLength) {
-			let token = match[0];
-			i += match.index + token.length;
-			if (includeColumn[csvColumnNumber]) {
-				const column = columns[columnNumber];
-
-				if (token.startsWith('"')) {
-					token = token.substring(1,token.length - 1); // strip quotes
-				}					
-				if (column.columnValue.isString) {
-					columnData[columnNumber].push(token);
-				}
-				else {
-					if (token.length) {
-						if (decimalSeparator !== '.') {
-							token = token.replace(decimalSeparator, '.');
-						}
-						else {
-							token = token.replace(/,/g, '');
-						}
-					}
-					else {
-						token = 0;
-					}
-					columnData[columnNumber].push(token);
-				}
-				columnNumber = (columnNumber + 1) % columnCount;
-			}
-			csvColumnNumber = (csvColumnNumber + 1) % csvColumnCount;
-			i++;
-			match = csv.substring(i).match(re);
-		}
-
-		let rowCount = columnData[0].length;
-		for (let i = 1; i < columnCount; i++) {
-			if (columnData[i].length !== rowCount) {
-				this.setWarning('mmcmd:tableCsvRowCountsDiffer', {
-					path: this.getPath(),
-					column: i,
-					ilength: columnData[i].length,
-					rowcount: rowCount
-				});
-				rowCount = Math.min(columnData[i].length, rowCount);
-			}
-		}
-		this.rowCount = rowCount;
-		for (let i = 0; i < columnCount; i++) {
-			columns[i].columnValue.updateFromStringArray(columnData[i]);
+	initFromTableValue(tableValue) {
+		const nColumns = tableValue.columnCount;
+		this.rowCount = tableValue.rowCount;
+		for (let i = 0; i < nColumns; i++) {
+			const valueColumn = tableValue.columns[i];
+			const value = valueColumn.value ? valueColumn.value.copyOf() : null;
+			const dataColumn = new MMDataTableColumn(this, {
+				name: valueColumn.name,
+				value: value,
+				displayUnit: valueColumn.displayUnit,
+				format: valueColumn.format,
+			});
+			this.columnArray.push(dataColumn);
 		}
 	}
 
