@@ -507,7 +507,7 @@ class MMHtmlPageProcessor {
 		}
 		catch(e) {
 			if ((typeof e === 'string')) {
-				return `Error ${e.message}`
+				return `Error ${e}`
 			}
 			else if (e instanceof MMCommandMessage) {
 				this.parent.setError(e.msgKey, e.args);
