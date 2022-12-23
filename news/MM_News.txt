@@ -2499,7 +2499,7 @@
 					},
 					{
 						"name": "aModel",
-						"Notes": "<b>Default Model View</b>\nIf none of the tools in a model have any display flag set, the information view for the model will now display a list of all the tools in the model, rather than just being left blank.",
+						"Notes": "<b>Default Model View</b>\nIf none of the tools in a model are explicitly displayed, the information view for the model will now display a list of all the tools in the model, rather than just being left blank.",
 						"DiagramX": 90,
 						"DiagramY": 0,
 						"HideInfo": "n",
@@ -2590,7 +2590,7 @@
 							},
 							{
 								"name": "rawCSV",
-								"Notes": "<b>Retrieving Local Files</b>\n\nAs an aside, the wfetch function is used to retrieve some text CSV from the server. In this case the file is in the examples folder that is part of the Math Minion project.\n\nCross origin resource sharing restrictions, known as CORS, prevent fetching files from servers other the one serving the Math Minion code in most cases, but if you run a Math Minion server your own machine, you can access files from the Math Minion folder tree.\n\nI use a folder named \"local\" on my personal machine where I place files I want to access from Math Minion, such as data from my weather station. This data is in turn updated by Python and shell scripts.\n\nThe \"local\" folder is gitignored in the distribution.",
+								"Notes": "<b>Retrieving Local Files</b>\n\nAs an aside, the wfetch function is used to retrieve some text CSV from the server. In this case the file is in the examples folder that is part of the Math Minion project.\n\nCross origin resource sharing restrictions, known as CORS, prevent fetching files from servers other the one serving the Math Minion code in most cases, but if you run a Math Minion server on your own machine, you can access files from the Math Minion folder tree.\n\nI use a folder named \"local\" on my personal machine where I place files I want to access from Math Minion, such as data from my weather station. This data is in turn updated by Python and shell scripts.\n\nThe \"local\" folder is gitignored in the distribution.",
 								"DiagramX": -55,
 								"DiagramY": -25,
 								"HideInfo": "y",
@@ -2622,7 +2622,7 @@
 					},
 					{
 						"name": "Other_Changes",
-						"Notes": "<b>Other Changes</b>\n\n- Added a check to prevent the root model having its display flag set.\n\n- The number of icons displayed on the diagram is now limited to 300. If there are more tools than that in a model, a warning will appear at the top of the diagram. This is to avoid slow operation if you paste JSON that creates a huge number of tool.\n\n- Minor help and format fixes.",
+						"Notes": "<b>Other Changes</b>\n\n- Added a check to prevent the root model having its display flag set.\n\n- The number of icons displayed on the diagram is now limited to 300. If there are more tools than that in a model, a warning will appear at the top of the diagram. This is to avoid slow operation if you paste JSON that creates a huge number of tools.\n\n- Minor help and format fixes.",
 						"DiagramX": 195,
 						"DiagramY": 0,
 						"HideInfo": "n",
