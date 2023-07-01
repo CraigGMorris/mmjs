@@ -365,7 +365,6 @@ export function FormulaEditor(props) {
 	}, [selection]);
 
 	const makeParamPreview = (path, start='') => {
-		console.log(`path ${path}`);
 		props.actions.doCommand(`${editOptions.nameSpace}.${path} parampreview ${path}:${start}`, (results) => {
 			if (results.length && results[0].results) {
 				const eligible = JSON.parse(results[0].results);

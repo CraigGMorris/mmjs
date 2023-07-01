@@ -1052,21 +1052,30 @@ class MMModel extends MMTool {
 
 				if (value) {
 					if (value instanceof MMToolValue) {
-						value = value.values[0];
-						if (value instanceof MMButton /*|| value instanceof MMMenu*/) {
-							chunks.push(value.htmlValue(requestor));
-						}
-						else if (value instanceof MMMenu) {
-							chunks.push(`<div class="model-form__input-row">`);
-							chunks.push(`<div class="model-form__input-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
-							chunks.push(`<div id="${outputId}" class="model-form__input">${value.htmlValue(requestor)}</div>`);
-							chunks.push('</div>');	
-						}
-						else {
-							chunks.push(`<div class="model-form__output-tool">`);
-							chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
-							chunks.push(`<div id="${outputId}" class="model-form__output_value"${enableClick}>${value.htmlValue(requestor)}</div>`);
-							chunks.push('</div>');	
+						const nValues = value.valueCount;
+						let headerDone = false;
+						for (let i = 0; i < nValues; i++) {
+							const toolValue = value.values[i];
+							if (toolValue instanceof MMButton) {
+								chunks.push(toolValue.htmlValue(requestor));
+							}
+							else if (toolValue instanceof MMMenu) {
+								chunks.push(`<div class="model-form__input-row">`);
+								chunks.push(`<div class="model-form__input-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
+								chunks.push(`<div id="${outputId}" class="model-form__input">${toolValue.htmlValue(requestor)}</div>`);
+								chunks.push('</div>');	
+							}
+							else {
+								if (!headerDone) {
+									chunks.push(`<div class="model-form__output-tool">`);
+									chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
+								}
+								chunks.push(`<div id="${outputId}" class="model-form__output_value"${enableClick}>${toolValue.htmlValue(requestor)}</div>`);
+								if (!headerDone) {
+									chunks.push('</div>');	
+									headerDone = true;
+								}
+							}
 						}
 					}
 					else if (value.valueCount <= 1 && !(value instanceof MMTableValue)) {
@@ -1144,17 +1153,7 @@ class MMModel extends MMTool {
 			this.lastDefaultUnitSetName = theMMSession.unitSystem.sets.defaultSetName;
 			this.htmlProcessor.clearCache();
 		}
-		results.html = `
-		<html>
-			<head>
-				<link rel="stylesheet"
-					href="./examples/htmlpage.css"
-					type="text/css">
-			</head>
-			<body>
-				${this.htmlProcessor.htmlForRequestor()}
-			</body>
-		</html>`;
+		results.html = this.htmlProcessor.htmlForRequestor();
 	}
 
 	/**

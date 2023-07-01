@@ -13,7 +13,11 @@ const showMenu = (menuName) => {
 function rtSetupHeading(title, sections) {
 	const heading = document.getElementById('heading');
 	const lines = [];
-	lines.push(`<div id="title">${title}</div>`);
+	lines.push(`<div id="title">
+		<span onClick="history.back();">&lt;</span>
+		${title}
+		<span onClick="history.forward();">&gt;</span>
+		</div>`);
 	lines.push(`<div id="contentstoggle" onClick="showMenu('contentsmenu')">Help Contents</div>`);
 	lines.push(`<div id="sectiontoggle" onClick="showMenu('sectionmenu')">Section Menu</div>`);
 	lines.push('<div id="sectionmenu" hidden="true">');

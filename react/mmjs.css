@@ -1550,6 +1550,39 @@ a:hover {
 	width: 100%;
 }
 
+#sessions__prompt-wrapper {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr;
+	grid-template-areas: "prompt prompt"
+		"input input"
+		"cancel apply";
+
+	width: 300px;
+	margin: 0 auto;
+	grid-row-gap: 15px;
+
+}
+
+#sessions__menu-prompt {
+	grid-area: prompt;
+	margin-top: 10px
+}
+
+#sessions__prompt-input {
+	grid-area: input;
+}
+
+#sessions__prompt-cancel {
+	grid-area: cancel;
+	width: 100px;
+}
+
+#sessions__prompt-apply {
+	grid-area: apply;
+	width: 100px;
+}
+
 .sessions__entry {
 	display: grid;
 	grid-template-columns: 1fr 30px;
