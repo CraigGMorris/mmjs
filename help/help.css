@@ -114,6 +114,10 @@ body {
 		margin: 0 .5em .5em 0;
 	}
 
+	.clickable {
+		cursor: pointer;
+	}
+
 	#page {
 		max-width: 600px;
 		min-height: 600px;
@@ -138,6 +142,9 @@ body {
 
 	#title {
 		grid-area: title;
+		display: grid;
+		grid-template-columns: 30px 1fr 30px 30px;
+		grid-template-rows: 30px;
 		font-size: larger;
 		padding-bottom: 5px;
 		color: #040;

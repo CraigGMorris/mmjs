@@ -12,14 +12,32 @@ const showMenu = (menuName) => {
 // eslint-disable-next-line no-unused-vars
 function rtSetupHeading(title, sections) {
 	const heading = document.getElementById('heading');
+	console.log(history.length);
+	if (!history.state  &&  typeof(history.replaceState) == "function") {
+		history.replaceState({ page: history.length, href: location.href }, "foo");
+	}
+	console.log(history.state);
+	const pageNumber = history.state.page;
+
 	const lines = [];
-	lines.push(`<div id="title">
-		<span onClick="history.back();">&lt;</span>
-		${title}
-		<span onClick="history.forward();">&gt;</span>
+	lines.push(`<div id="title">`);
+	if (pageNumber !== 1) {
+		lines.push('<span class="clickable" onClick="history.back();" title="Back">&lt;</span>')
+	}
+	else {
+		lines.push('<span>&nbsp;</span>');
+	}
+	lines.push(title);
+	if (pageNumber !== history.length) {
+		lines.push('<span class="clickable" onClick="history.forward();" title="Forward">&gt;</span>');
+	}
+	else {
+		lines.push('<span>&nbsp;</span>');
+	}
+	lines.push(`<span class="clickable" onClick="window.close();" title="Close">X</span>
 		</div>`);
-	lines.push(`<div id="contentstoggle" onClick="showMenu('contentsmenu')">Help Contents</div>`);
-	lines.push(`<div id="sectiontoggle" onClick="showMenu('sectionmenu')">Section Menu</div>`);
+	lines.push(`<div class="clickable" id="contentstoggle" onClick="showMenu('contentsmenu')">Help Contents</div>`);
+	lines.push(`<div class="clickable" id="sectiontoggle" onClick="showMenu('sectionmenu')">Section Menu</div>`);
 	lines.push('<div id="sectionmenu" hidden="true">');
 	for (const url of Object.keys(sections)) {
 		lines.push('<div class="sectionlink">')
