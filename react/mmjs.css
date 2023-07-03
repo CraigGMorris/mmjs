@@ -1589,6 +1589,10 @@ a:hover {
 	cursor: pointer;
 }
 
+.sessions__folder-name:hover, .sessions__entry-menu:hover {
+	background-color: var(--button--active-color);
+}
+
 .sessions__folder-name {
 	color: var(--link--color-hover);
 }
@@ -2190,6 +2194,10 @@ a:hover {
 
 .unit-picker__type-name, .unit-picker__unit-name {
 	cursor: pointer;
+}
+
+.unit-picker__type-name:hover, .unit-picker__unit-name:hover {
+	background-color: var(--button--active-color);
 }
 
 #unit-picker__list-units {
