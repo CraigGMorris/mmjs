@@ -1586,6 +1586,7 @@ a:hover {
 .sessions__entry {
 	display: grid;
 	grid-template-columns: 1fr 30px;
+	cursor: pointer;
 }
 
 .sessions__folder-name {
@@ -2185,6 +2186,10 @@ a:hover {
 	box-sizing: border-box;
 	height: calc(var(--info-height) - (3.5 * var(--input--height)));
 	white-space: nowrap;
+}
+
+.unit-picker__type-name, .unit-picker__unit-name {
+	cursor: pointer;
 }
 
 #unit-picker__list-units {
