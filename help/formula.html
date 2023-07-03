@@ -66,25 +66,18 @@
 					A number can be followed by a <a href="units.html">conversion unit</a>:
 				</p>
 				<p class="formula">
-					123.45 km
+					123.45 km/h
 				</p>
 				<p>
-					If the formula consists of more than just number and a unit and the unit contains a
-					<b>-</b>, <b>/</b> or <b>^</b> symbol, then the unit must be in double quotes.
+					The unit must be separated from the number by a space and must only contain unit
+					names and the operators <b>-</b>, <b>/</b> and <b>^</b>. There can only be a
+					single <b>/</b>. Thus the following are all valid;
 				</p>
-				<div class="subsection" data-collapsed="false">
-					<h3>Not Okay</h3>
-					<div class="formula">
-						123.45 km/h * 12 min
-					</div>
-				</div>
-				<div class="subsection" data-collapsed="false">
-					<h3>Okay</h3>
-					<div class="formula">
-						123.45 "km/h" * 12 min<br>
-						123.45 km / 12 min<br>
-						123.45 km/h
-					</div>
+				<div class="formula">
+					123 m/s^2 ' an acceleration<br>
+					123 kj ' energy<br>
+					123 n-km ' also 123 kJ<br>
+					123000 kg-m^2/s^2 ' also 123 kJ
 				</div>
 				<p>
 					When you are editing a formula, you can request a unit browser to help you select
