@@ -1423,6 +1423,8 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addUnit("darcy","1 2 0 0 0 0 0 0 9.869233e-13",true);
 		this.addUnit("hectare","1 2 0 0 0 0 0 0 1.000000e+04",true);
 		this.addUnit("lp100km","1 2 0 0 0 0 0 0 1.000000e-08",true);
+
+		this.addUnit("g0","1 1 0 -2 0 0 0 0 9.80665e+00",true);
 	
 		this.addUnit("debye","1 1 0 1 1 0 0 0 3.335640e-30",true);
 	
