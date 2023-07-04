@@ -786,7 +786,7 @@ a:hover {
 }
 
 .f-picker__section-header:hover {
-	color: var(--link--color-hover);
+	background-color: var(--button--active-color);
 }
 
 .f-picker__comment {
@@ -805,7 +805,7 @@ a:hover {
 }
 
 .f-picker__f-def:hover {
-	color: var(--link--color-hover);
+	background-color: var(--button--active-color);
 }
 
 #f-picker__f-desc {
@@ -1589,7 +1589,7 @@ a:hover {
 	cursor: pointer;
 }
 
-.sessions__folder-name:hover, .sessions__entry-menu:hover {
+.sessions__folder-name:hover, .sessions__entry-menu:hover, .sessions__entry-name:hover {
 	background-color: var(--button--active-color);
 }
 
@@ -1888,7 +1888,7 @@ a:hover {
 }
 
 .units__label:hover {
-	color: var(--link--color-hover);
+	background-color: var(--button--active-color);
 }
 
 #user-units {
