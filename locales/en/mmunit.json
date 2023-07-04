@@ -27,6 +27,7 @@
 	"_cloneset": "usage: clone setName\nreturns new set name",
 	"_listsets": "usage: lists\nreturns list of unit sets",
 	"_listtypes": "usage: listtypes\nreturns all the types defined in the set",
+	"_listunits": "usage: listunits\nreturns all known units",
 	"_listuserunits": "usage: listuserunits\nreturns user added units",
 	"_removeuserunit": "usage: remove unitName\nremoves user added unit named unitName",
 	"_removeset": "usage: remove setName",

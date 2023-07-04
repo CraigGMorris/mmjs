@@ -377,6 +377,31 @@ export function FormulaEditor(props) {
 		});	
 	}
 
+	const makeUnitPreview = (prefix) => {
+		props.actions.doCommand('/unitsys.units list', (results) => {
+			if (results.length && results[0].results) {
+				const units = results[0].results;
+				let eligible = [];
+				if (prefix) {
+					for (const unit of units) {
+						if (unit.toLowerCase().startsWith(prefix.toLowerCase())) {
+							eligible.push(unit);
+						}
+					}
+				}
+				else {
+					eligible = units;
+				}
+				console.log(eligible);
+				if (eligible.length) {
+					setPreviewParam(eligible);
+					return;
+				}
+			}
+			setPreviewParam(null);
+		});	
+	}
+
 	const makeFunctionPreview = (start) => {
 		const data = functionPickerData();
 		const prefix = '{' + start;
@@ -407,6 +432,29 @@ export function FormulaEditor(props) {
 		}
 
 		const currentChar = targetValue[selStart-1];
+
+		// see if in conversion unit
+		if (targetValue.length) {
+			const unitRegex = /[\w^/-]+/;
+			let selTemp = selStart - 1;
+			while (selTemp >= 0 && targetValue[selTemp].match(unitRegex)) {
+				selTemp--;
+			}
+			if (selTemp >= 0 && targetValue[selTemp] === ' ') {
+				selTemp--;
+				if (selTemp >= 0 && targetValue[selTemp].match(/[\d.]/)) {
+					// probably in unit
+					let selTemp = selStart - 1;
+					while (selTemp >= 0 && targetValue[selTemp].match(/[\w]/)) {
+						selTemp--;
+					}
+							const prefix = targetValue.substring(selTemp+1, selStart);
+					makeUnitPreview(prefix);
+					return;
+				}
+			}
+		}
+		
 		if (currentChar === '?') {
 			// maybe looking for function description
 			let selTemp = selStart - 2;
