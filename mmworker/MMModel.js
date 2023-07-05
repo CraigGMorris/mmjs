@@ -230,10 +230,12 @@ class MMModel extends MMTool {
 		}
 
 		if (!name) {
-			name = `x${this.nextToolNumber++}`;
+			const baseName = (typeName === 'Expression') ? 'x' : typeName;
+			let n = 2;
+			name = baseName + '1';
 			while ( this.childNamed(name) ) {
-				name = `x${this.nextToolNumber++}`;
-			}	
+				name = `${baseName}${n++}`;
+			}
 		}
 		let isImport = false;
 		if (typeName === 'Import') {
