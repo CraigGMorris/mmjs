@@ -1,9 +1,148 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
+}
+
+const isMac = process.platform === 'darwin';
+
+const createMenu = () => {
+  const template = [
+    // { role: 'appMenu' }
+    ...(isMac
+      ? [{
+          label: app.name,
+          submenu: [
+            { role: 'about' },
+            { type: 'separator' },
+            { role: 'services' },
+            { type: 'separator' },
+            { role: 'hide' },
+            { role: 'hideOthers' },
+            { role: 'unhide' },
+            { type: 'separator' },
+            { role: 'quit' }
+          ]
+        }]
+      : []),
+    // { role: 'fileMenu' }
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'New Window',
+          click: async () => {
+            const newWindow = new BrowserWindow({
+              width: 800,
+              height: 600,
+              webPreferences: {
+                preload: path.join(__dirname, 'preload.js'),
+              },
+            });
+            newWindow.loadFile(path.join(__dirname, 'rund.html'));
+          }
+        },
+        {
+          label: 'Print',
+          click: async () => {
+            let win = BrowserWindow.getFocusedWindow();
+            // let win = BrowserWindow.getAllWindows()[0];
+            const options = {};
+            win.webContents.print(options, (success, failureReason) => {
+                if (!success) console.log(failureReason);
+                  console.log('Print Initiated');
+            });
+          }
+        },
+        isMac ? { role: 'close' } : { role: 'quit' },
+      ]
+    },
+    // { role: 'editMenu' }
+    {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        ...(isMac
+          ? [
+              { role: 'delete' },
+              { role: 'selectAll' },
+              { type: 'separator' },
+              {
+                label: 'Speech',
+                submenu: [
+                  { role: 'startSpeaking' },
+                  { role: 'stopSpeaking' }
+                ]
+              }
+            ]
+          : [
+              { role: 'delete' },
+              { type: 'separator' },
+              { role: 'selectAll' }
+            ])
+      ]
+    },
+    // { role: 'viewMenu' }
+    {
+      label: 'View',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { role: 'toggleDevTools' },
+        { type: 'separator' },
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' }
+      ]
+    },
+    // { role: 'windowMenu' }
+    {
+      label: 'Window',
+      submenu: [
+        { role: 'minimize' },
+        { role: 'zoom' },
+        ...(isMac
+          ? [
+              { type: 'separator' },
+              { role: 'front' },
+              // { type: 'separator' },
+              // { role: 'window' }
+            ]
+          : [
+              { role: 'close' }
+            ])
+      ]
+    },
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'Get Started',
+          click: async () => {
+            const helpWindow = new BrowserWindow({
+              width: 800,
+              height: 600,
+              webPreferences: {
+                preload: path.join(__dirname, 'preload.js'),
+              },
+            });
+            helpWindow.loadFile(path.join(__dirname, 'help/getstarted.html'));
+          }
+        }
+      ]
+    }
+  ] 
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
 }
 
 const createWindow = () => {
@@ -48,6 +187,7 @@ const createWindow = () => {
     });
   });
 
+  createMenu();
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'rund.html'));
 
@@ -65,7 +205,7 @@ app.on('ready', createWindow);
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+  if (!isMac) {
     app.quit();
   }
 });
