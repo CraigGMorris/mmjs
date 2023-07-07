@@ -510,6 +510,7 @@ class MMHtmlPageProcessor {
 			body {
 				background-color: rgb(255, 253, 225) !important;
 				color: black;
+				-webkit-print-color-adjust: exact;
 			}
 			table {
 				width: 100%;
@@ -557,6 +558,19 @@ class MMHtmlPageProcessor {
 				font-weight: bold;
 				margin-bottom: 10px;
 			}
+			.model-form__print {
+				float: right;
+				position: sticky;
+				top: 10px;
+				margin-right: 10px;
+				cursor: pointer;
+			}
+			
+			@media print {
+				.model-form__print {
+					visibility: hidden;
+				}
+			}
 			.model-form__default-name {
 				border-bottom: solid 1px black;
 				padding: 5px;
@@ -566,6 +580,7 @@ class MMHtmlPageProcessor {
 				display: grid;
 				grid-template-columns: 112px 1fr;
 				background-color: #f2f2f2;
+				width: 100%;
 			}
 			.model-form__input-name {
 				width:100px;

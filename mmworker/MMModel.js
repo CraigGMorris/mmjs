@@ -1011,6 +1011,9 @@ class MMModel extends MMTool {
 		chunks.push('		}');
 		chunks.push('		</script>');
 		chunks.push('		<div class="model-form__objects">')
+		if (isMyNameSpace) {
+			chunks.push('	  <div class="model-form__print" onClick="window.print();">&nbsp;🖨️</div>')
+		}
 		for (let object of results.objects) {
 			if (object.htmlNotes && object.notes) {
 				isAnyOutput = true;
