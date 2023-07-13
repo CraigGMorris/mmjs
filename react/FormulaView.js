@@ -63,6 +63,48 @@ export function FormulaField(props) {
 		
 	}, [props.viewInfo.updateResults]);
 
+	// const componentWillUnmount = React.useRef(false)
+
+	// // This is componentWillUnmount
+	// useEffect(() => {
+	// 		return () => {
+	// 				componentWillUnmount.current = true
+	// 		}
+	// }, []);
+
+	// useEffect(() => {
+	// 	return () => {
+	// 		if (componentWillUnmount.current) {
+	// 			const newF = replaceSmartQuotes(formula);
+	// 			if (newF !== initialFormula) { // only apply if changed
+	// 				const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
+	// 				f(newF);
+	// 			}
+	// 		}
+	// 	}
+	// }, [formula, initialFormula])
+
+	const latestFormula = React.useRef(null);
+  useEffect(() => {
+    latestFormula.current = formula;
+  }, [formula]);
+	const latestInitial = React.useRef(null);
+  useEffect(() => {
+    latestInitial.current = initialFormula;
+  }, [initialFormula]);
+
+	const isSwitchingToEditor = React.useRef(false);
+
+	useEffect(() => {
+		return () => {
+			if (!isSwitchingToEditor && latestFormula.current !== latestInitial.current) {
+				const fNew = replaceSmartQuotes(latestFormula.current);
+				const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
+				f(fNew);
+			}
+		};
+	}, []);
+
 	const fieldInputRef = React.useRef(null);
 
 	const applyChanges = (formula) => {
@@ -107,6 +149,7 @@ export function FormulaField(props) {
 							editOptions.selectionStart = Math.max(0, selStart);
 							let selEnd = fieldInputRef.current.selectionEnd;
 							editOptions.selectionEnd = Math.max(selStart, selEnd);
+							isSwitchingToEditor.current = true;
 							if (props.editAction) {
 								props.editAction(editOptions);
 							}
@@ -392,7 +435,6 @@ export function FormulaEditor(props) {
 				else {
 					eligible = units;
 				}
-				console.log(eligible);
 				if (eligible.length) {
 					setPreviewParam(eligible);
 					return;

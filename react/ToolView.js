@@ -59,6 +59,19 @@ export function ToolView(props) {
 		});
 	}
 
+	const latestNotes = React.useRef(null);
+  useEffect(() => {
+    latestNotes.current = notesText;
+  }, [notesText]);
+
+	useEffect(() => {
+		return () => {
+			if (latestNotes.current !== notesText) {
+				doSetNotes(latestNotes.current);
+			}
+		};
+	}, []);
+
 	const doSetHtmlNotes = (shouldShow) => {
 		props.actions.doCommand(`${props.viewInfo.path} set htmlNotes ${shouldShow ? 't' : 'f'}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
