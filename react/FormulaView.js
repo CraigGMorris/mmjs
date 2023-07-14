@@ -63,27 +63,6 @@ export function FormulaField(props) {
 		
 	}, [props.viewInfo.updateResults]);
 
-	// const componentWillUnmount = React.useRef(false)
-
-	// // This is componentWillUnmount
-	// useEffect(() => {
-	// 		return () => {
-	// 				componentWillUnmount.current = true
-	// 		}
-	// }, []);
-
-	// useEffect(() => {
-	// 	return () => {
-	// 		if (componentWillUnmount.current) {
-	// 			const newF = replaceSmartQuotes(formula);
-	// 			if (newF !== initialFormula) { // only apply if changed
-	// 				const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
-	// 				f(newF);
-	// 			}
-	// 		}
-	// 	}
-	// }, [formula, initialFormula])
-
 	const latestFormula = React.useRef(null);
   useEffect(() => {
     latestFormula.current = formula;
@@ -97,7 +76,7 @@ export function FormulaField(props) {
 
 	useEffect(() => {
 		return () => {
-			if (!isSwitchingToEditor && latestFormula.current !== latestInitial.current) {
+			if (!isSwitchingToEditor.current && latestFormula.current !== latestInitial.current) {
 				const fNew = replaceSmartQuotes(latestFormula.current);
 				const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
 				f(fNew);
@@ -124,9 +103,6 @@ export function FormulaField(props) {
 	return e(
 		'div', {
 			className: 'formula-input-field',
-			onBlur: e => {
-				applyChanges(formula);
-			},
 		},
 		e(
 			'input', {
@@ -153,13 +129,12 @@ export function FormulaField(props) {
 							if (props.editAction) {
 								props.editAction(editOptions);
 							}
-								return;
+							return;
 						}
 						else {
 							// watches for Enter and applys changes when it see it
 							e.preventDefault();
-							// since a blur will apply changes, just do that so two applychanges aren't done
-							fieldInputRef.current.blur();
+							applyChanges(formula);							fieldInputRef.current.blur();
 							return;
 						}
 					}
@@ -206,6 +181,7 @@ export function FormulaField(props) {
 					let selEnd = fieldInputRef.current.selectionEnd;
 					editOptions.selectionEnd = Math.max(selStart, selEnd);
 					if (props.editAction) {
+						isSwitchingToEditor.current = true;
 						props.editAction(editOptions);
 					}
 				},
@@ -408,16 +384,18 @@ export function FormulaEditor(props) {
 	}, [selection]);
 
 	const makeParamPreview = (path, start='') => {
-		props.actions.doCommand(`${editOptions.nameSpace}.${path} parampreview ${path}:${start}`, (results) => {
-			if (results.length && results[0].results) {
-				const eligible = JSON.parse(results[0].results);
-				if (eligible.length) {
-					setPreviewParam(eligible);
-					return;
+		if (editOptions.nameSpace) {
+			props.actions.doCommand(`${editOptions.nameSpace}.${path} parampreview ${path}:${start}`, (results) => {
+				if (results.length && results[0].results) {
+					const eligible = JSON.parse(results[0].results);
+					if (eligible.length) {
+						setPreviewParam(eligible);
+						return;
+					}
 				}
-			}
-			setPreviewParam(null);
-		});	
+				setPreviewParam(null);
+			});
+		}
 	}
 
 	const makeUnitPreview = (prefix) => {
