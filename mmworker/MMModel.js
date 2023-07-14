@@ -252,34 +252,29 @@ class MMModel extends MMTool {
 				newTool.position = position;
 			}
 			else {
-				let minX = 10000000, maxX = -10000000, maxY = -10000000;
 				if (Object.keys(this.children).length === 1) {
 					// no previous tools
 					newTool.position = {x: 10, y: 10}
 				}
 				else {
+					// position newTool under right most tools
+					let maxX = -10000000, maxY = -10000000;
 					for (const key in this.children) {
 						const tool = this.children[key];
-						if (tool !== newTool) {
-						if (tool instanceof MMTool) {
-								minX = Math.min(minX, tool.position.x);
-								if (tool.position.y > maxY) {
-									maxY = tool.position.y;
-									maxX = tool.position.x;
-								}
-								else if (tool.position.y == maxY && tool.position.x > maxX) {
-									maxX = tool.position.x;
-								}
-							}
+						if (tool instanceof MMTool && tool !== newTool) {
+							maxX = Math.max(maxX, tool.position.x);
 						}
 					}
 
-					if (maxX < 500) {
-						newTool.position = {x: maxX + 70, y: maxY};
+					for (const key in this.children) {
+						const tool = this.children[key];
+						if (tool instanceof MMTool && tool !== newTool) {
+							if (tool.position.x === maxX) {
+								maxY = Math.max(maxY, tool.position.y);
+							}
+						}
 					}
-					else {
-						newTool.position = {x: minX, y: maxY + 30};
-					}
+					newTool.position = {x: maxX, y: maxY + 30};
 				}
 			}
 			if (isImport) {
