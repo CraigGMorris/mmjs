@@ -33,8 +33,7 @@ const useEffect = React.useEffect;
 const FormulaDisplay = Object.freeze({
 	editor: 0,
 	units: 1,
-	functiions: 2,
-	values: 3
+	functiions: 2
 });
 
 const replaceSmartQuotes = (f) => {
@@ -608,10 +607,7 @@ export function FormulaEditor(props) {
 		if (event.code.startsWith('Arrow')) {
 			setEventHitCount(eventHitCount+1);
 		}
-		if (event.key === 'V' && event.ctrlKey) {
-			pickerButtonClick(FormulaDisplay.values);
-		}
-		else if (event.key === 'u' && event.ctrlKey) {
+		if (event.key === 'u' && event.ctrlKey) {
 			pickerButtonClick(FormulaDisplay.units);
 		}
 		else if (event.key === 'f' && event.ctrlKey) {
