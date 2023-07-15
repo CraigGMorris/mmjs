@@ -29,10 +29,12 @@ const useEffect = React.useEffect;
 export function ToolView(props) {
 	const t = props.t;
 	let name;
+	const initialNotes = React.useRef('');
 	useEffect(() => {
 		const updateResults = props.viewInfo.updateResults;
 		const notes = updateResults.length ? updateResults[0].results.notes : '';		
 		setNotesText(notes);
+		initialNotes.current = notes;
 	}, [props.viewInfo.updateResults]);
 
 	const pathParts = props.viewInfo.path.split('.');
@@ -66,7 +68,7 @@ export function ToolView(props) {
 
 	useEffect(() => {
 		return () => {
-			if (latestNotes.current !== notesText) {
+			if (latestNotes.current !== initialNotes.current) {
 				doSetNotes(latestNotes.current);
 			}
 		};
