@@ -113,6 +113,9 @@ export function FormulaField(props) {
 	return e(
 		'div', {
 			className: 'formula-input-field',
+			onBlur: e => {
+				applyChanges(formula);
+			},
 		},
 		e(
 			'input', {
@@ -145,7 +148,7 @@ export function FormulaField(props) {
 							// watches for Enter and applys changes when it see it
 							e.preventDefault();
 							applyChanges(formula);
-							fieldInputRef.current.blur();
+							// fieldInputRef.current.blur();
 							return;
 						}
 					}
