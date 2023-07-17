@@ -918,6 +918,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				'button', {
 					id:'info-tools__expand-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					onClick: () => {
 						switch (viewType) {
 							case ViewType.twoPanes:
@@ -941,6 +942,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 			e('button', {
 				id:'info-tools__undo-button',
 				className: 'info-tools__button',
+				tabIndex: -1,
 				disabled: !undoStack.length,
 				onClick: () => {
 					let undo = undoStack.pop();
@@ -964,6 +966,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					'button', {
 					id:'info-tools__redo-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					disabled: !redoStack.length,
 					onClick: () => {
 						let redo = redoStack.pop();
@@ -987,6 +990,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				'button', {
 					id:'info-tools__unit-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					disabled: viewKeys.has('units'),
 					onClick: () => {
 						pushView('units', 'react:unitsTitle');
@@ -998,6 +1002,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				'button', {
 					id:'info-tools__console-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					disabled: viewKeys.has('console'),
 					onClick: () => {
 						pushConsole();
@@ -1009,6 +1014,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					'button', {
 					id:'info-tools__sessions-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					disabled: viewKeys.has('sessions'),
 					onClick: () => {
 						pushView('sessions', 'react:sessionsTitle', {rootFolder: ''});

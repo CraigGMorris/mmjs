@@ -362,6 +362,7 @@ export function GraphView(props) {
 				e(
 					'button', {
 						id: 'graph__addx-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addaxis x`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);
@@ -373,6 +374,7 @@ export function GraphView(props) {
 				e(
 					'button', {
 						id: 'graph__addy-button',
+						tabIndex: -1,
 						disabled: !results.enableY,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addaxis y`, () => {
@@ -385,6 +387,7 @@ export function GraphView(props) {
 				e(
 					'button', {
 						id: 'graph__addz-button',
+						tabIndex: -1,
 						disabled: !results.enableZ,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addaxis z`, () => {
@@ -397,6 +400,7 @@ export function GraphView(props) {
 				e(
 					'button', {
 						id: 'graph__plot-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} plotInfo`, (infoResults) => {
 								setPlotInfo(infoResults[0].results);

@@ -283,6 +283,7 @@ export function MatrixView(props) {
 					e(
 						'input', {
 							id: 'matrix__format-input',
+							tabIndex: -1,
 							placeholder: 'format',
 							value: formatString,
 							onChange: (event) => {

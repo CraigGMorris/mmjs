@@ -195,6 +195,10 @@ class MMTool extends MMCommandParent {
 			htmlNotes: this.htmlNotes,
 			isOutput: this._isOutput,
 		}
+		if (this.justAdded) {
+			delete this.justAdded;
+			command.results.justAdded = true;
+		}
 	}
 
 	/**

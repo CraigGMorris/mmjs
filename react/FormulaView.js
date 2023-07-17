@@ -46,6 +46,17 @@ export function FormulaField(props) {
 	const [formula, setFormula] = useState(props.formula !== undefined ? props.formula : props.viewInfo.formula);
 	const [initialFormula, setInitialFormula] = useState('');
 	const [nameSpace, setNameSpace] = useState('');
+	const [renameTo, setRenameTo] = useState('');
+
+	useEffect(() => {
+		if (props.formula === '' &&
+			props.viewInfo &&
+			props.viewInfo.viewKey === 'Expression' &&
+			fieldInputRef.current)
+		{
+			fieldInputRef.current.focus();
+		}
+	}, []);
 
 	useEffect(() => {
 		const f = props.formula !== undefined ? props.formula : props.viewInfo.formula;
@@ -133,7 +144,8 @@ export function FormulaField(props) {
 						else {
 							// watches for Enter and applys changes when it see it
 							e.preventDefault();
-							applyChanges(formula);							fieldInputRef.current.blur();
+							applyChanges(formula);
+							fieldInputRef.current.blur();
 							return;
 						}
 					}

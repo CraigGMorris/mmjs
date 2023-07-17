@@ -29,6 +29,21 @@ const useEffect = React.useEffect;
 export function ToolView(props) {
 	const t = props.t;
 	let name;
+	const nameRef = React.useRef();
+	useEffect(() => {
+		// if the tool was just added focus on name and select it
+		if (nameRef.current) {
+			const updateResults = props.viewInfo.updateResults;
+			if (updateResults && updateResults.length) {
+				const results = updateResults[0].results;
+				console.log(`${props.viewInfo.path} ${results.justAdded}`);
+				if (results && results.justAdded) {
+					nameRef.current.focus()
+					nameRef.current.selectionStart = 0;
+				}
+			}
+		}
+	}, []);
 	const initialNotes = React.useRef('');
 	useEffect(() => {
 		const updateResults = props.viewInfo.updateResults;
@@ -95,6 +110,8 @@ export function ToolView(props) {
 		e(
 			'input', {
 				id: 'tool-view__name-input',
+				ref: nameRef,
+				tabIndex: 0,
 				value: toolName || '',
 				placeholder: t('react:toolNamePlaceHolder'),
 				onChange: (event) => {
@@ -132,6 +149,7 @@ export function ToolView(props) {
 			e(
 				'input', {
 					id: 'tool-view__is-output-checkbox',
+					tabIndex: -1,
 					className: 'checkbox__input',
 					type: 'checkbox',
 					checked: results.isOutput || false,
@@ -150,6 +168,7 @@ export function ToolView(props) {
 		e(
 			'button', {
 				id: 'tool-view__notes-toggle',
+				tabIndex: -1,
 				onClick: () => {
 					setShowNotes(!showNotes);
 				}

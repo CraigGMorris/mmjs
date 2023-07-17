@@ -261,6 +261,7 @@ export function ExpressionView(props) {
 				formatInput = e(
 					'input', {
 						id: 'expression__format-input',
+						tabIndex: -1,
 						placeholder: 'format',
 						value: formatString,
 						onChange: (event) => {
@@ -324,6 +325,7 @@ export function ExpressionView(props) {
 								'input', {
 									id: 'expression__is-input-checkbox',
 									className: 'checkbox__input',
+									tabIndex: -1,
 									type: 'checkbox',
 									checked: results.isInput || false,
 									onChange: (event) => {
@@ -356,6 +358,7 @@ export function ExpressionView(props) {
 								'input', {
 									id: 'expression__show-input-checkbox',
 									className: 'checkbox__input',
+									tabIndex: -1,
 									type: 'checkbox',
 									checked: results.showInput || false,
 									onChange: (event) => {

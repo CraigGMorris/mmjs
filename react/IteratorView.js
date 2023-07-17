@@ -191,6 +191,7 @@ export function IteratorView(props) {
 						'input', {
 							id: 'iter__autorun-checkbox',
 							className: 'checkbox__input',
+							tabIndex: -1,
 							type: 'checkbox',
 							checked: results.shouldAutoRun,
 							onChange: () => {
@@ -206,6 +207,7 @@ export function IteratorView(props) {
 				e(
 					'button', {
 						id: 'iter__addrecord-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addrecorded`, () => {
 								setFormulaIndex(formulaCount);
