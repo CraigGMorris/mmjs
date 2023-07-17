@@ -373,6 +373,21 @@ export function ExpressionView(props) {
 								},
 							),	
 						),
+						e(
+							'div', {
+								id: 'expression__add-new',
+								onClick: (e) => {
+									props.actions.doCommand('addTool Expression',(results) => {
+										if (results && results.length) {
+											const name = results[0].results;
+											props.actions.viewTool(name, 'Expression');			
+										}
+										props.actions.updateDiagram()
+									});
+								}
+							},
+							'+Exp'
+						),
 					),
 				),
 				e(

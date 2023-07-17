@@ -520,9 +520,9 @@ a:hover {
 
 #expression__in-out-boxes {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 1fr 1fr 40px;
 	grid-template-rows: 1fr;
-	grid-template-areas: "is-input show-input";
+	grid-template-areas: "is-input show-input add-new";
 }
 
 #expression__is-input {
@@ -533,6 +533,12 @@ a:hover {
 #expression__show-input {
 	grid-area: show-input;
 	grid-template-columns: 30px 1fr
+}
+
+#expression__add-new {
+	grid-area: add-new;
+	color: var(--link--color);
+	cursor: pointer;
 }
 
 #expression__is-input-label, #expression__show-input-label {
