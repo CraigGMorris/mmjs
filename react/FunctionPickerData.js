@@ -219,7 +219,7 @@
 			},
 			{
 				header: "Complex Number functions",
-				comment: `<i>Please see the <a href="complex.html">Complex Number</a> help page for more information on complex
+				comment: `<i>Please see the <a href="./help/complex.html" target="_blank">Complex Number</a> help page for more information on complex
 					number handling in Math Minion.</i>`,
 				functions: [
 					{
