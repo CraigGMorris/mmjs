@@ -48,10 +48,11 @@ export function FormulaField(props) {
 	const [nameSpace, setNameSpace] = useState('');
 	const [renameTo, setRenameTo] = useState('');
 
+	const isExpression = props.viewInfo.viewKey === 'Expression';
 	useEffect(() => {
 		if (props.formula === '' &&
 			props.viewInfo &&
-			props.viewInfo.viewKey === 'Expression' &&
+			isExpression &&
 			fieldInputRef.current)
 		{
 			fieldInputRef.current.focus();
