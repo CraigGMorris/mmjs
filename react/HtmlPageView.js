@@ -91,6 +91,11 @@ export function HtmlPageView(props) {
 							// console.log('updating');
 							props.actions.updateView(props.viewInfo.stackIndex);
 						}
+						else if (received.viewurl) {
+							const page = received.viewurl.name;
+							window.open(page);
+							//window.open(`help/${page.toLowerCase()}.html`,'MM Help');
+						}
 						else {
 							props.actions.updateDiagram();
 						}

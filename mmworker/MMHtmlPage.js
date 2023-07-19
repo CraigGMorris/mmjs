@@ -239,6 +239,10 @@ class MMHtmlPageProcessor {
 						}
 					}
 						break;
+					case 'mm_viewurl': {
+						response.viewurl = {name: actions[action]};
+					}
+						break;
 					case 'mm_push': {
 						// pass back instruction to view to push another tool view over the html page view
 						const target = getTarget(actions[action])
