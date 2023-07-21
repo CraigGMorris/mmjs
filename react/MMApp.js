@@ -254,6 +254,7 @@ export function MMApp(props) {
 			const docElement = document.documentElement;
 			const newDocHeight = docElement.clientHeight - 16;
 			const newDocWidth = docElement.clientWidth - 16;
+			const rightPercent = rightPaneWidth/docWidth;
 			setDocHeight(newDocHeight);
 			setDocWidth(newDocWidth);
 			document.body.style.height = `${newDocHeight}px`;
@@ -263,13 +264,22 @@ export function MMApp(props) {
 			if (viewType !== ViewType.info) {
 				setViewType(twoPane ? ViewType.twoPanes : ViewType.diagram);
 			}
+			if(twoPane && rightPaneWidth !== 320) {
+				const newRPWidth = newDocWidth * rightPercent;
+				if (newRPWidth > 320) {
+					setRightPaneWidth(newRPWidth);
+				}
+				else {
+					setRightPaneWidth(320);
+				}
+			}
 		};
 		setSize();
 		window.addEventListener('resize', setSize);
 		return () => {
 			window.removeEventListener('resize', setSize);
 		}
-	}, [viewType]);
+	}, [viewType, rightPaneWidth]);
 
 	useEffect(() => {
 		if (!autoLoadComplete) {

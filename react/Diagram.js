@@ -936,6 +936,7 @@ export class Diagram extends React.Component {
 						y: 30,
 						setRightPaneWidth: this.props.setRightPaneWidth,
 						rightPaneWidth: this.props.rightPaneWidth,
+						diagramWidth: this.props.diagramBox.width,
 					})
 				);
 			}
@@ -1961,8 +1962,6 @@ class Divider extends React.Component {
 		this.onPointerDown = this.onPointerDown.bind(this);
 		this.onPointerUp = this.onPointerUp.bind(this);
 		this.onPointerMove = this.onPointerMove.bind(this);
-		this.setRightPaneWidth = props.setRightPaneWidth;
-		this.rightPaneWidth = props.rightPaneWidth;
 	}
 
 	onPointerDown(e) {
@@ -1976,10 +1975,15 @@ class Divider extends React.Component {
 		if (this.dividerPointer) {
 			e.stopPropagation();
 			e.preventDefault();
-			const newX = this.rightPaneWidth + this.dividerPointer - e.clientX;
-			if (newX > 320) {
-				this.rightPaneWidth = newX;
-				this.setRightPaneWidth(newX);
+			const change = this.dividerPointer - e.clientX;
+			const newX = this.props.rightPaneWidth + change;
+			const newDiagramWidth = this.props.diagramWidth - change;
+			if (newX < 320) {
+				this.props.setRightPaneWidth(320);
+				this.dividerPointer = e.clientX;
+			}
+			else if (newX > 320 && newDiagramWidth > 50) {
+				this.props.setRightPaneWidth(newX);
 				this.dividerPointer = e.clientX;
 			}
 		}		
