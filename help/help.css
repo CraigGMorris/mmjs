@@ -128,16 +128,26 @@ body {
 	}
 
 	#heading {
+		position: sticky;
+		top: 0;
+		background-color: rgb(255, 253, 225);
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1ft 1fr 1fr;
-		grid-template-areas: "title title"
-			"sectiontoggle contents"
-			"sectionmenu contentsmenu";
+		grid-template-rows: 30px;
+		grid-template-areas: "title title";
 		grid-gap: 5px;
-		border-bottom: solid 1px black;
 		padding-bottom: 5px;
-		margin-bottom: 10px;
+	}
+
+	#menubody {
+		width: 100%;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 25px 1fr;
+		grid-template-areas: "sectiontoggle contents"
+		"sectionmenu contentsmenu";
+		padding-bottom: 5px;
+		border-bottom: solid 1px black;
 	}
 
 	#title {

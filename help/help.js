@@ -12,14 +12,13 @@ const showMenu = (menuName) => {
 // eslint-disable-next-line no-unused-vars
 function rtSetupHeading(title, sections) {
 	const heading = document.getElementById('heading');
-	console.log(history.length);
 	if (!history.state  &&  typeof(history.replaceState) == "function") {
 		history.replaceState({ page: history.length, href: location.href }, "foo");
 	}
-	console.log(history.state);
 	const pageNumber = history.state.page;
 
 	const lines = [];
+	const menuLines = [];
 	lines.push(`<div id="title">`);
 	if (pageNumber !== 1) {
 		lines.push('<span class="clickable" onClick="history.back();" title="Back">&lt;</span>')
@@ -36,17 +35,23 @@ function rtSetupHeading(title, sections) {
 	}
 	lines.push(`<span class="clickable" onClick="window.close();" title="Close">X</span>
 		</div>`);
-	lines.push(`<div class="clickable" id="contentstoggle" onClick="showMenu('contentsmenu')">Help Contents</div>`);
-	lines.push(`<div class="clickable" id="sectiontoggle" onClick="showMenu('sectionmenu')">Section Menu</div>`);
-	lines.push('<div id="sectionmenu" hidden="true">');
+	menuLines.push('</div>');
+	heading.innerHTML = lines.join('\n');
+
+
+	menuLines.push(`<div class="clickable" id="contentstoggle" onClick="showMenu('contentsmenu')">Help Contents</div>`);
+	menuLines.push(`<div class="clickable" id="sectiontoggle" onClick="showMenu('sectionmenu')">Section Menu</div>`);
+	menuLines.push('</div>')
+	
+	menuLines.push('<div id="sectionmenu" hidden="true">');
 	for (const url of Object.keys(sections)) {
-		lines.push('<div class="sectionlink">')
-		lines.push(`<a href="#${url}" class="sectionlink">${sections[url]}</a>`);
-		lines.push('</div>')
+		menuLines.push('<div class="sectionlink">')
+		menuLines.push(`<a href="#${url}" class="sectionlink">${sections[url]}</a>`);
+		menuLines.push('</div>')
 	}
-	lines.push('</div>');
-	lines.push('<div id="contentsmenu" hidden="true">');
-	lines.push(`
+	menuLines.push('</div>')
+	menuLines.push('<div id="contentsmenu" hidden="true">');
+	menuLines.push(`
 	<div class="contentlink"><a href="getstarted.html">Getting Started</a></div>
 	<div class="contentlink"><a href="videos.html">Videos</a></div>
 	<div class="contentlink"><a href="tutorial.html">Tutorial</a></div>
@@ -92,6 +97,6 @@ function rtSetupHeading(title, sections) {
 	<div>&nbsp;</div>
 	<div class="contentlink"><a href="../index.html">MM Home Page</a></div>
 	`);
-	lines.push('</div>');
-	heading.innerHTML = lines.join('\n');
+	menuLines.push('</div>');
+	document.getElementById('menubody').innerHTML = menuLines.join('\n');
 }
