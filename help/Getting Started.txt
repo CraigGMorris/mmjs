@@ -9,7 +9,7 @@
 	],
 	"CaseName": "Getting Started",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
+	"SelectedObject": "root",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -239,7 +239,7 @@
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "{table {cc \"Times\", \"Velocity\"}\n\tAddTimes,\n\tVelocity\n}"
+							"Formula": "{table\n\t\"Times\", AddTimes,\n\t\"Velocity\", Velocity\n}"
 						},
 						"showInput": "y",
 						"tableUnits": {
@@ -288,7 +288,7 @@
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "2 * 35786 \"km\"/ 1\"lightc\""
+							"Formula": "2 * 35786 km / 1 lightc"
 						},
 						"showInput": "y",
 						"displayUnit": "s"
@@ -734,7 +734,7 @@
 						"Notes": "<b>Functions</b>\nBasic use of functions.",
 						"DiagramX": -75,
 						"DiagramY": 25,
-						"HideInfo": "n",
+						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
 						"Type": "Model",
@@ -751,13 +751,13 @@
 								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{ln 1.5 * 1:5}"
+									"Formula": "{ln 1.3 * 1:5}"
 								},
 								"showInput": "y"
 							},
 							{
 								"name": "Overview",
-								"Notes": "<b>Functions</b>\n\nA function call in Math Minion consists of an opening curly brace \"<b>{</b>\" immediately followed by the function name, followed by a space and a comma separated list of parameters as appropriate and finally a closing curly brace \"<b>}</b>\".\n\nWhen used with arrays and matrices, the function is applied to each element of the parameter(s) in turn, except for some matrix specific functions, like \"dot\", \"invert\", \"transpose\", etc.\n\nWhen entering a formula, use the <b>{f}</b> button in the function editor to see a list of available functions.\n\nThere is additional information on functions in the other models in the <b>Formulas</b> model.",
+								"Notes": "<b>Functions</b>\n\nA function call in Math Minion consists of an opening curly brace \"<b>{</b>\" immediately followed by the function name, followed by a space and a comma separated list of parameters as appropriate and finally a closing curly brace \"<b>}</b>\".\n\nWhen used with arrays and matrices, the function is applied to each element of the parameter(s) in turn, except for some matrix specific functions, like \"dot\", \"invert\", \"transpose\", etc.\n\nWhen entering a formula, use the <b>Functions</b> button in the function editor to see a list of available functions.\n\nThere is additional information on functions in the other models in the <b>Formulas</b> model.",
 								"DiagramX": 45,
 								"DiagramY": 25,
 								"HideInfo": "n",
@@ -794,7 +794,7 @@
 								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{split \"Tom,Dick,Harry\", \",\"}"
+									"Formula": "{split \"Tom Dick Harry\", \" \"}"
 								},
 								"showInput": "y"
 							}
@@ -1119,7 +1119,7 @@
 								"Notes": "Array_Function: The array function is used to create an array or matrix.",
 								"DiagramX": 20,
 								"DiagramY": 60,
-								"HideInfo": "n",
+								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"HtmlNotes": "y",
 								"Type": "Model",
@@ -1151,7 +1151,7 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{array 5, 2}"
+											"Formula": "{array 5, 2:3}"
 										},
 										"showInput": "y"
 									}
@@ -1628,7 +1628,7 @@
 								"Notes": "<b>Format</b>\nFormatting numbers",
 								"DiagramX": 105,
 								"DiagramY": 0,
-								"HideInfo": "n",
+								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"HtmlNotes": "y",
 								"Type": "Model",
@@ -1636,7 +1636,7 @@
 								"Objects": [
 									{
 										"name": "Format",
-										"Notes": "A number can be formatted using the fmt function.\n\nThe first first parameter should be a string containing a C style number format specification, such as \"%12.2f\", which designates a field 12 characters wide, with two decimal places in floating point format.\n\nTable cells are 14 characters wide, so this leaves two spaces to the right of the value.\n\nNote you can replace the f with a c to have commas included as in 1,234,567.89.\n\nNote that numbers in Math Minion are always real numbers, not integers.",
+										"Notes": "A number can be formatted using the fmt function.\n\nThe first first parameter should be a string containing a number format specification, such as \"12.2f\", which designates a field 12 characters wide, with two decimal places in floating point format.\n\nTable cells are 14 characters wide, so this leaves two spaces to the right of the value.\n\nNote that numbers in Math Minion are always real numbers, not integers.",
 										"DiagramX": 15,
 										"DiagramY": 15,
 										"HideInfo": "y",
@@ -1645,13 +1645,13 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{fmt \"%12.2f\", 12.1234}"
+											"Formula": "{fmt \"12.2f\", 12.1234}"
 										},
 										"showInput": "y"
 									},
 									{
 										"name": "Format_Unit",
-										"Notes": "An optional third parameter can be supplied to the fmt function and if present, it should be a string that is the name of the unit that should be used for the number.\n\nThis unit must be of the same unit type as the number being formatted.\n\nIn this case the number is dimensionless and a percentage unit is requested.",
+										"Notes": "An optional third parameter can be supplied to the fmt function and if present, it should be a string that is the name of the unit to be used for the number.\n\nThis unit must be of the same unit type as the number being formatted.\n\nIn this case the number is dimensionless and a percentage unit is requested.",
 										"DiagramX": 110,
 										"DiagramY": 15,
 										"HideInfo": "y",
@@ -1660,7 +1660,7 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{fmt \"%12.2f\", 12.1234, \"%\"}"
+											"Formula": "{fmt \"12.2f\", 12.1234, \"%\"}"
 										},
 										"showInput": "y"
 									},
@@ -1670,7 +1670,7 @@
 										"DiagramX": 110,
 										"DiagramY": 130,
 										"HideInfo": "y",
-										"DiagramNotes": "n",
+										"DiagramNotes": "y",
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Expression",
@@ -1679,6 +1679,36 @@
 										},
 										"showInput": "y",
 										"format": "12.2f"
+									},
+									{
+										"name": "CommaFormat",
+										"Notes": "You can replace the f with a c to have commas included.",
+										"DiagramX": 15,
+										"DiagramY": 165,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{fmt `12.2c`, 12345678.1234}"
+										},
+										"showInput": "y"
+									},
+									{
+										"name": "ExpFormat",
+										"Notes": "Or use an 'e' specifier for exponential format.",
+										"DiagramX": 15,
+										"DiagramY": 205,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{fmt \"12.6e\", 12345678.1234}"
+										},
+										"showInput": "y"
 									}
 								]
 							},
@@ -1694,21 +1724,6 @@
 								"diagramScale": 1,
 								"Objects": [
 									{
-										"name": "Arrays",
-										"Notes": "String arrays are allowed.",
-										"DiagramX": 15,
-										"DiagramY": 20,
-										"HideInfo": "y",
-										"DiagramNotes": "y",
-										"HtmlNotes": "y",
-										"isOutput": "y",
-										"Type": "Expression",
-										"Formula": {
-											"Formula": "{cc \"tom\", \"dick\", \"harry\"}"
-										},
-										"showInput": "y"
-									},
-									{
 										"name": "length",
 										"Notes": "The strlen function returns the length of the elements of a string value.",
 										"DiagramX": 15,
@@ -1719,7 +1734,7 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{strlen Arrays}"
+											"Formula": "{strlen Names}"
 										},
 										"showInput": "y",
 										"format": "8.0f"
@@ -1735,7 +1750,7 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{uppercase Arrays}"
+											"Formula": "{uppercase Names}"
 										},
 										"showInput": "y"
 									},
@@ -1750,7 +1765,7 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{join Arrays, \" and \"}"
+											"Formula": "{join Names, \" and \"}"
 										},
 										"showInput": "y"
 									},
@@ -1781,6 +1796,21 @@
 										"Type": "Expression",
 										"Formula": {
 											"Formula": "{split join, \" \"}"
+										},
+										"showInput": "y"
+									},
+									{
+										"name": "Names",
+										"Notes": "String arrays are allowed.",
+										"DiagramX": 15,
+										"DiagramY": 20,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cc \"tom\", \"dick\", \"harry\"}"
 										},
 										"showInput": "y"
 									}
@@ -1823,7 +1853,7 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "\"%9.\" + {fmt \"%1.0f\", 1:3} + \"f\""
+											"Formula": "\"9.\" + {fmt \"1.0f\", 1:3} + \"f\""
 										},
 										"showInput": "y"
 									},
@@ -1838,13 +1868,13 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{transpose\n\t{concat \n\t\t\"%10.2f\", \n\t\t\"%10.3f\"\n\t}\n}"
+											"Formula": "{transpose\n\t{concat \n\t\t\"10.2f\", \n\t\t\"10.3f\"\n\t}\n}"
 										},
 										"showInput": "y"
 									},
 									{
 										"name": "formattedMatrix",
-										"Notes": "Here multFmt, the fabricated column array of format strings, is applied to a matrix of numbers.\n\nSince there are fewer format rows than number rows, the format array is repeated as necessary in the same way that matrix operations work with numbers.",
+										"Notes": "Here multFmt, the fabricated column array of format strings, is applied to a matrix of numbers.\n\nSince there are fewer format rows than number rows, the format array is repeated as necessary in the same way that matrix operations work with numbers.\n\nTap on this note to view the expression result with the leading spaces. The html representation of the model view will strip them out.",
 										"DiagramX": 105,
 										"DiagramY": 25,
 										"HideInfo": "y",
@@ -1859,7 +1889,7 @@
 									},
 									{
 										"name": "formattedColumns",
-										"Notes": "When the row format is used with the number matrix, the individual columns are formatted appropriately.\n",
+										"Notes": "When the row format is used with the number matrix, the individual columns are formatted appropriately.",
 										"DiagramX": 105,
 										"DiagramY": 120,
 										"HideInfo": "y",
@@ -1975,7 +2005,8 @@
 										"Type": "Expression",
 										"Formula": {
 											"Formula": "{replace \"\\d\", \"x\", formattedColumns} "
-										}
+										},
+										"showInput": "y"
 									},
 									{
 										"name": "JoinJoin",
@@ -2225,7 +2256,7 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{if\t{concat \"a\",\"b\",\"\",\"d\"},\n\t{concat 1, 2, 3, 4},\n\t{concat 11, 12, 13, 14}\n}"
+											"Formula": "{if\t{cc \"a\",\"b\",\"\",\"d\"},\n\t{cc 1, 2, 3, 4},\n\t{cc 11, 12, 13, 14}\n}"
 										},
 										"showInput": "y",
 										"format": "8.0f"
@@ -2246,6 +2277,21 @@
 										"showInput": "y"
 									}
 								]
+							},
+							{
+								"name": "backTick",
+								"Notes": "You can also define a string using backtick characters, which is handy if the string itself contains double quotes.",
+								"DiagramX": 30,
+								"DiagramY": -25,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "`A string containing \"double quotes\"`"
+								},
+								"showInput": "y"
 							}
 						]
 					},
@@ -2447,7 +2493,7 @@
 							},
 							{
 								"name": "Reference",
-								"Notes": "The expression references <b>subModel</b> in <b>aModel</b>\n\nThe result can be used as if it were the model itself.\n\nAlso the view of the <b>subModel</b> is displayed here, but you can't click on the name or note for <b>twoPi</b> to view it, since it isn't in this model.",
+								"Notes": "The expression references <b>subModel</b> in <b>aModel</b>\n\nThe result can be used as if it were the model itself.\n\nThe view of <b>subModel</b> is displayed here and if you click on the name or note for <b>twoPi</b> to view it, you will see the title on the resulting view is aModel.subModel.twoPi",
 								"DiagramX": 15,
 								"DiagramY": 65,
 								"HideInfo": "y",
@@ -2520,7 +2566,7 @@
 							},
 							{
 								"name": "Dereference",
-								"Notes": "The table parameter can be used to get the expression value as a table.  The numeric function is used to change it back into a number value.\n\nI'm not sure when you would ever use this.",
+								"Notes": "Here the reference is used to get the notes for direct.",
 								"DiagramX": 105,
 								"DiagramY": 80,
 								"HideInfo": "y",
@@ -2529,7 +2575,7 @@
 								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "{numeric Expression_Ref.table} / 2"
+									"Formula": "Expression_Ref.notes"
 								},
 								"showInput": "y"
 							}
@@ -2537,7 +2583,7 @@
 					},
 					{
 						"name": "Overview",
-						"Notes": "<b>Formulas</b>\n\nAt the heart of Math Minion calculations are the formulas that express the relationships between various objects.\n\nThey can be as simple as a scalar constant, or <b>2 + 2</b>, but if the need arises, they can be complicated expressions involving functions and conditions.\n\nTap on the icons for the models on the below on the diagram to explore the different features of formulas.\n\nFormulas are displayed in blue text in fields preceded by and equals sign (<b>=</b>) and followed by an expland character <b>⤢</b>. Tapping on the expand character will open a formula editor.  See the help for more information on its features.",
+						"Notes": "<b>Formulas</b>\n\nAt the heart of Math Minion calculations are the formulas that express the relationships between various objects.\n\nThey can be as simple as a scalar constant, or <b>2 + 2</b>, but if the need arises, they can be complicated expressions involving functions and conditions.\n\nTap on the icons for the models below or on the diagram to explore the different features of formulas.\n\nFormulas are displayed in blue text in fields preceded by and equals sign (<b>=</b>) and followed by an expland character <b>⤢</b>. Tapping on the expand character will open a formula editor.  See the help for more information on its features.",
 						"DiagramX": -75,
 						"DiagramY": -65,
 						"HideInfo": "n",
@@ -2994,7 +3040,7 @@
 									},
 									{
 										"name": "SumRows",
-										"Notes": "The sumrows function will sum all the values in a row.  These must all have conformable units, so in this case I have just selected the date and the hours columns. The answer is kind of silly, but makes sense when shown with the date unit type.",
+										"Notes": "The sumrows function will sum all the values in a row.  These must all have conformable units, so in this case I have just selected the date and the hours columns. The answer is kind of silly, but sort of makes sense when shown with the date unit type.",
 										"DiagramX": 115,
 										"DiagramY": 180,
 										"HideInfo": "y",
@@ -3067,7 +3113,7 @@
 									},
 									{
 										"name": "Table2",
-										"Notes": "Another table, conformable to MakeTable2",
+										"Notes": "Another table, conformable to Table1",
 										"DiagramX": 0,
 										"DiagramY": -85,
 										"HideInfo": "y",
@@ -3707,7 +3753,7 @@
 										"name": "Indices",
 										"Notes": "For instance, indices still refer to the untransposed value. This is the same result as what clients[3,2] would yield.",
 										"DiagramX": 10,
-										"DiagramY": -65,
+										"DiagramY": -40,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -3737,7 +3783,7 @@
 										"name": "Clients_Indicies",
 										"Notes": "",
 										"DiagramX": 10,
-										"DiagramY": -10,
+										"DiagramY": 15,
 										"HideInfo": "y",
 										"DiagramNotes": "n",
 										"HtmlNotes": "n",
@@ -3751,7 +3797,7 @@
 									},
 									{
 										"name": "Transposed",
-										"Notes": "The transpose function (shortcut tr) can be used to switch the display of the columns and rows.\n\nThis does not affect how the value is used otherwise.",
+										"Notes": "The transpose function (shortcut tr) can be used to switch the display of the columns and rows.\n\nThis does not affect how the value is used otherwise.\n\nNote this expression has its model input box checked so it can reference clients from the parent model.",
 										"DiagramX": 10,
 										"DiagramY": -135,
 										"HideInfo": "y",
@@ -3797,7 +3843,7 @@
 				"isOutput": "y",
 				"Type": "HTML Form",
 				"Formula": {
-					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.disclaimer {\n\t\t\t\tcolor: #004400;\n\t\t\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\t\t\tfont-size: 0.7em;\n\t\t\t\tfont-style: italic;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t}\n\t\t\t.link {\n\t\t\t\tcolor: blue;\n\t\t\t\tfont-weight: bold;\n\t\t\t}\n\t\t\t#page {\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session</h4>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p class=\"disclaimer\">\n\t\t\tMath Minion is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the <a href=\"../LICENSE.txt\" target=\"_blank\">GNU General Public License</a> for more details.\n\t\t</p>\n\t\t<p>\n\t\t\tThis session contains numerous explanations and small illustrations of how Math Minion works. \n\t\t</p>\n\t\t<p>\t\t\t\n\t\t\tBefore diving in, it would probably be a good idea to check out <a href=\"https://www.mathminion.org/video/mmnavigate.mp4\" target=\"_blank\">this video</a> on navigating in Math Minion and perhaps some of the other <a href=\"./help/videos.html\" target=\"_blank\">videos</a> .\n\t\t</p>\n\t\t<p>\n\t\t\tIf videos don't appeal, then the links for the <b><a href=\"./help/diagram.html\" target=\"_blank\">diagram</a></b> and <b><a href=\"./help/infoview.html\" target=\"_blank\">information view</a></b> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tAlso, detailed help is always available from the button at the upper right of this view.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the diagram and the examples you can import from the <b>Examples</b> HtmlPage.\n\t\t</p>\n\t\t<p>\n\t\t\tKeep your <b>Getting Started</b> session and <b>Math Minion News</b> session up to date by\n\t\t\treloading them with these links:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\">Reload Getting Started</span></li>\n\t\t\t<li><span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../news/MM_News.txt', mm_view: 'Welcome'});\">Reload MM_News</span></li>\n\t\t</ul>\n\t\t<p>\n\t\t\tIf you have any questions or comments, please use the <b><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Contact Me</a></b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>Craig</p>\n\t\t</div>\n\t</body>\n</html>"
+					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.disclaimer {\n\t\t\t\tcolor: #004400;\n\t\t\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\t\t\tfont-size: 0.7em;\n\t\t\t\tfont-style: italic;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t}\n\t\t\t.link {\n\t\t\t\tcolor: blue;\n\t\t\t\tfont-weight: bold;\n\t\t\t\tcursor: pointer;\n\t\t\t}\n\t\t\t#page {\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session</h4>\n\t\t</div>\n\t\t<p class=\"disclaimer\">\n\t\t\tMath Minion is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the <a href=\"../LICENSE.txt\" target=\"_blank\">GNU General Public License</a> for more details.\n\t\t</p>\n\t\t<p>\n\t\t\tThis session contains numerous explanations and small illustrations of how Math Minion works. \n\t\t</p>\n\t\t<p>\t\t\t\n\t\t\tBefore diving in, it would probably be a good idea to check out <b><a href=\"https://www.mathminion.org/video/mmnavigate.mp4\" target=\"_blank\">this video</a></b> on navigating in Math Minion and perhaps some of the other <b><a href=\"https://www.mathminion.org/help/videos.html\" target=\"_blank\">videos</a></b> .\n\t\t</p>\n\t\t<p>\n\t\t\tIf videos don't appeal, then the links for the\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/diagram.html'})\">\n\t\t\t\tdiagram\n\t\t\t</span> and\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/infoview.html'})\">\n\t\t\t\tinformation view\n\t\t\t</span> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tAlso, detailed help is always available from the button at the upper right of this view.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the diagram and the examples you can import from the <b>Examples</b> HtmlPage.\n\t\t</p>\n\t\t<p>\n\t\t\tKeep your <b>Getting Started</b> session and <b>Math Minion News</b> session up to date by\n\t\t\treloading them with these links:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\">Reload Getting Started</span></li>\n\t\t\t<li><span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../news/MM_News.txt', mm_view: 'Welcome'});\">Reload MM_News</span></li>\n\t\t</ul>\n\t\t<p>\n\t\t\tIf you have any questions or comments, please use the <b><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Contact Me</a></b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>Craig</p>\n\t\t</div>\n\t</body>\n</html>"
 				}
 			},
 			{
@@ -3840,7 +3886,7 @@
 								"Notes": "Dice\nA table of all possible outcomes of rolling two dice is calculated in the expression \"rolls\".",
 								"DiagramX": 205,
 								"DiagramY": -50,
-								"HideInfo": "n",
+								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"HtmlNotes": "y",
 								"Type": "Model",
@@ -3859,7 +3905,8 @@
 										"Formula": {
 											"Formula": "1:6+{transpose 1:6}"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"format": "12.0f"
 									},
 									{
 										"name": "sumn",
@@ -3874,16 +3921,18 @@
 										"Formula": {
 											"Formula": "{sum {eq rolls, count.x}}"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"format": "12.0f"
 									},
 									{
 										"name": "count",
 										"Notes": "Initializes \"x\" to 2 and then loops while it is less than or equal to 12, incrementing \"x\" on each loop.\n\nThe values for \"x\" and \"sumn\" are recorded for each loop.",
-										"DiagramX": 135,
-										"DiagramY": 115,
+										"DiagramX": 130,
+										"DiagramY": 20,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
-										"HtmlNotes": "n",
+										"HtmlNotes": "y",
+										"isOutput": "y",
 										"Type": "Iterator",
 										"whileFormula": {
 											"Formula": "{le $.x, 12}"
@@ -3907,15 +3956,15 @@
 									{
 										"name": "Probability",
 										"Notes": "The probability of any outcome is the number of ways that outcome can be achieved, divided by all the possible roll combinations.",
-										"DiagramX": 135,
-										"DiagramY": 50,
+										"DiagramX": 130,
+										"DiagramY": 95,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "count.r2 / (6*6)"
+											"Formula": "count.sumn / (6*6)"
 										},
 										"showInput": "y"
 									},
@@ -3923,7 +3972,7 @@
 										"name": "plot",
 										"Notes": "The results are displayed in this rather dull graph.",
 										"DiagramX": 225,
-										"DiagramY": 75,
+										"DiagramY": 20,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -3945,13 +3994,14 @@
 												"vmax": "0.2",
 												"lineType": 0
 											}
-										}
+										},
+										"Selected": "0_0"
 									},
 									{
 										"name": "table",
 										"Notes": "and also displayed in this table.",
 										"DiagramX": 225,
-										"DiagramY": 115,
+										"DiagramY": 65,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -3960,7 +4010,12 @@
 										"Formula": {
 											"Formula": "plot.table\n"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"tableFormats": [
+											null,
+											"12.0f",
+											"12.0f"
+										]
 									},
 									{
 										"name": "Overview",
@@ -4017,10 +4072,10 @@
 											"Formula": "{le $.i, n}"
 										},
 										"initXFormula": {
-											"Formula": "1:n*1\"m\""
+											"Formula": "1:n*1 m"
 										},
 										"nextXFormula": {
-											"Formula": "$.x + 1\"m\""
+											"Formula": "$.x + 1 m"
 										},
 										"recFormulas": [
 											{
@@ -4048,7 +4103,8 @@
 										"Formula": {
 											"Formula": "iter.r1"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"format": "12.0f"
 									},
 									{
 										"name": "r2",
@@ -4063,7 +4119,8 @@
 										"Formula": {
 											"Formula": "iter.r2"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"format": "12.0f"
 									},
 									{
 										"name": "r3",
@@ -4078,7 +4135,8 @@
 										"Formula": {
 											"Formula": "iter.r3"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"format": "12.0f"
 									},
 									{
 										"name": "No_Loop",
@@ -4091,9 +4149,10 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "(\n\t1:6 * 1\"m\" +\n\t{transpose 0:5*1\"m\"}\n)^2"
+											"Formula": "(\n\t1:6 * 1 m +\n\t{transpose 0:5 * 1 m}\n)^2"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"format": "12.0f"
 									}
 								]
 							},
@@ -4181,13 +4240,13 @@
 								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "\"Row \" + {fmt \"%3.0f\", 1:20}"
+									"Formula": "\"Row \" + {fmt \"3.0f\", 1:20}"
 								},
 								"showInput": "y"
 							},
 							{
 								"name": "TableValue",
-								"Notes": "Expressions can also display table values.  These often result from operations on a DataTable tool, but can also be created with functions as in this example.\n\nIf you tap in the expression view on the column header titled \"Value\", the unit browser will be displayed and you can select another display unit for the column.\n\nChanging the display unit never effects the actual calculations, only how the results are displayed.",
+								"Notes": "Expressions can also display table values.  These often result from operations on a DataTable tool, but can also be created with functions as in this example.\n\nIf you tap in the expression view on the column header titled \"Value\", the current display unit and format for the column will be shown. Tapping on the unit will bring up the unit browser where you can select a different display unit for the column.\n\nChanging the display unit never effects the actual calculations, only how the results are displayed.",
 								"DiagramX": 110,
 								"DiagramY": -25,
 								"HideInfo": "y",
@@ -4198,7 +4257,12 @@
 								"Formula": {
 									"Formula": "{table {cc \"Name\", \"Value\"}\n\tStringArray, ColumnArray\n}"
 								},
-								"showInput": "y"
+								"showInput": "y",
+								"tableFormats": [
+									null,
+									null,
+									"12.1f"
+								]
 							},
 							{
 								"name": "Complex",
@@ -4217,7 +4281,7 @@
 							},
 							{
 								"name": "Overview",
-								"Notes": "<b>Expressions</b>\n\nAn expression is the simplest Math Minion object - just a formula and the display of a result.  But like equations in a math problem, they are the work horse of any problem.\n\nYou will probably use expressions more than any other Math Minion tool.  This model has some examples and information about using them, but most of it is also covered elsewhere.",
+								"Notes": "<b>Expressions</b>\n\nAn expression is the simplest Math Minion object - just a formula and the display of a result.  But they are the work horse of any problem.\n\nYou will probably use expressions more than any other Math Minion tool.  This model has some examples and information about using them, but most of it is also covered elsewhere.",
 								"DiagramX": 20,
 								"DiagramY": -25,
 								"HideInfo": "n",
@@ -4278,7 +4342,7 @@
 							},
 							{
 								"name": "ScalarString",
-								"Notes": "A string constant can be defined by including the desired text in double quotes.",
+								"Notes": "A string constant can be defined by including the desired text in double quotes or backticks.",
 								"DiagramX": 110,
 								"DiagramY": 45,
 								"HideInfo": "y",
@@ -4294,7 +4358,7 @@
 							},
 							{
 								"name": "LongerString",
-								"Notes": "By using the expanded formula editor, you can create strings with more than one line, by enclosing the whole thing in double quotes.\n\nYou will notice that the string no longer fits completely in the display cell at the bottom, but if you click on that cell, a view will open that displays the entire string.\n\nHowever you can only change the value of the expression by editing the formula, not the displayed string.",
+								"Notes": "By using the expanded formula editor, you can create strings with more than one line, by enclosing the whole thing in double quotes or backticks.\n\nYou will notice that the string no longer fits completely in the display cell at the bottom, but if you click on that cell, a view will open that displays the entire string.\n\nHowever you can only change the value of the expression by editing the formula, not the displayed string.",
 								"DiagramX": 110,
 								"DiagramY": 75,
 								"HideInfo": "y",
@@ -4303,7 +4367,7 @@
 								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "\"This string has two\nlines.\""
+									"Formula": "`This string has\ntwo lines.`"
 								},
 								"isInput": "y",
 								"showInput": "y"
@@ -4444,7 +4508,7 @@
 												"lineType": 0
 											}
 										},
-										"Selected": "0_1"
+										"Selected": "0_2"
 									},
 									{
 										"name": "rand2",
@@ -5328,7 +5392,7 @@
 								"Notes": "In the \"Matrices\" model, there was an example where the growth of an investment was calculated assuming interest that was compounded monthly.\n\nThis example uses the ODE solver to see what would happen if the interest were continuously compounded.",
 								"DiagramX": 10,
 								"DiagramY": -35,
-								"HideInfo": "n",
+								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"HtmlNotes": "y",
 								"Type": "Model",
@@ -5351,7 +5415,7 @@
 									},
 									{
 										"name": "initial",
-										"Notes": "The same initial investment as in the monthly example.  There are no units for currency, so it is left dimensionless.\n",
+										"Notes": "The same initial investment as in the monthly example.  The dollar unit is numerically equal to fraction, but useful for clarity.",
 										"DiagramX": -5,
 										"DiagramY": 150,
 										"HideInfo": "y",
@@ -5360,9 +5424,11 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "1000"
+											"Formula": "1000 dollar"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"displayUnit": "dollar",
+										"format": "12.2f"
 									},
 									{
 										"name": "dy",
@@ -5378,11 +5444,12 @@
 											"Formula": "interest * ode.y"
 										},
 										"showInput": "y",
-										"displayUnit": "dollar/year"
+										"displayUnit": "dollar/year",
+										"format": "12.2f"
 									},
 									{
 										"name": "ode",
-										"Notes": "See the documentation (Help button) for details on the ODE inputs.\n\nFor this example:\n\nY0 in this case it is the value of the “initial” expression and is a scalar without units.\n\ndY/dT is the value of the “dy” expression.\n\nIt has units compatible with y and t. Since t has time units and y is dimensionless, the unit for this must be 1/time.\n\n EndT - the solver always integrates from 0 to this value of t.  It has to have the same units a t, which in this case is time, specifically 20 years.\n\nNextT  uses the formula\n\n$.t + 1 year\n\nto calculate the next record time. Here it is just the previous value plus a constant.\n\nNote this only applies to the record time and is not an integration step size.\n\nThe tolerances are left at their default values.\n\nThe t and y values are recorded for each year and labeled as “Time” and “Dollars” respectively.",
+										"Notes": "See the documentation (Help button) for details on the ODE inputs.\n\nFor this example:\n\nY0 in this case it is the value of the “initial” expression and is a scalar.\n\ndY/dT is the value of the “dy” expression.\n\nIt has units compatible with y and t. Since t has time units and y is dimensionless, the unit for this must be 1/time.\n\n EndT - the solver always integrates from 0 to this value of t.  It has to have the same units a t, which in this case is time, specifically 20 years.\n\nNextT  uses the formula\n\n$.t + 1 year\n\nto calculate the next record time. Here it is just the previous value plus a constant.\n\nNote this only applies to the record time and is not an integration step size.\n\nThe tolerances are left at their default values.\n\nThe t and y values are recorded for each year and labeled as “Time” and “Dollars” respectively.",
 										"DiagramX": 85,
 										"DiagramY": 115,
 										"HideInfo": "y",
@@ -5477,7 +5544,9 @@
 										"Formula": {
 											"Formula": "\ninitial *\n(1 + interest * 1 year / 12)^(1:20*12)"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"displayUnit": "dollar",
+										"format": "12.2f"
 									},
 									{
 										"name": "Increase",
@@ -5605,7 +5674,7 @@
 									},
 									{
 										"name": "g",
-										"Notes": "Approximate gravitational constant.",
+										"Notes": "Unit g0 is the normal acceleration due to gravity on earth",
 										"DiagramX": 5,
 										"DiagramY": 170,
 										"HideInfo": "y",
@@ -5613,7 +5682,7 @@
 										"HtmlNotes": "n",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "9.8 m/s^2"
+											"Formula": "1 g0"
 										}
 									},
 									{
@@ -5727,7 +5796,7 @@
 								"Objects": [
 									{
 										"name": "g",
-										"Notes": "Gravitational acceleration on earth.",
+										"Notes": "Unit g0 is the normal acceleration due to gravity on earth",
 										"DiagramX": -50,
 										"DiagramY": 80,
 										"HideInfo": "y",
@@ -5736,7 +5805,7 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "9.80665 m/s^2"
+											"Formula": "1 g0"
 										},
 										"showInput": "y"
 									},
@@ -5825,12 +5894,14 @@
 												"v": "ode.theta[0,1] 'Theta1",
 												"vmin": "",
 												"vmax": "",
+												"unit": "radian",
 												"lineType": 0
 											},
 											"Y2": {
 												"v": "ode.theta[0,2] 'Theta2",
 												"vmin": "",
 												"vmax": "",
+												"unit": "radian",
 												"lineType": 0
 											}
 										}
@@ -5894,7 +5965,7 @@
 									},
 									{
 										"name": "xy2graph",
-										"Notes": "A plot of the x/y coordinates of pendulum 2 (the outer pendulum)",
+										"Notes": "A plot of the x/y coordinates of pendulum 2 (the outer pendulum) in metres",
 										"DiagramX": 185,
 										"DiagramY": 60,
 										"HideInfo": "y",
@@ -5964,7 +6035,11 @@
 										"Formula": {
 											"Formula": "{table {cc \"Velocity\", \"Acceleration\"},\n\tv, a\n}"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"tableUnits": {
+											"1": "radian/s",
+											"2": "radian/s^2"
+										}
 									},
 									{
 										"name": "y02",
@@ -5977,7 +6052,7 @@
 										"isOutput": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{table {cc \"Angle\", \"Velocity\"},\n\t{cc 0.25, 0.5} * {pi},\n\t{cc 3 \"1/s\", 4 \"1/s\"}\n}"
+											"Formula": "{table {cc \"Angle\", \"Velocity\"},\n\t{cc 0.25, 0.5} * {pi},\n\t{cc 3 1/s, 4 1/s}\n}"
 										},
 										"showInput": "y",
 										"tableUnits": {
@@ -5997,7 +6072,8 @@
 										"Formula": {
 											"Formula": "ode.y.angle"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"displayUnit": "radian"
 									},
 									{
 										"name": "v",
@@ -6012,7 +6088,8 @@
 										"Formula": {
 											"Formula": "ode.y[0,\"velocity\"]"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"displayUnit": "radian/s"
 									},
 									{
 										"name": "a",
@@ -6027,7 +6104,8 @@
 										"Formula": {
 											"Formula": "{cc a1, a2}"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"displayUnit": "radian/s^2"
 									},
 									{
 										"name": "mSum",
@@ -6072,7 +6150,17 @@
 										"Formula": {
 											"Formula": "ode.table"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"tableUnits": {
+											"2": "degree",
+											"3": "degree"
+										},
+										"tableFormats": [
+											null,
+											"12.2f",
+											"12.2f",
+											"12.2f"
+										]
 									}
 								]
 							},
@@ -6103,10 +6191,10 @@
 											"Formula": "dy"
 										},
 										"nextTFormula": {
-											"Formula": "{if {eq $.t 0}, 1e-5, $.t * 2}"
+											"Formula": "{if {eq $.t 0 s}, 1e-5 s, $.t * 2}"
 										},
 										"endTFormula": {
-											"Formula": "4e10"
+											"Formula": "4e10 s"
 										},
 										"relTolFormula": {
 											"Formula": "1.0e-5"
@@ -6156,11 +6244,12 @@
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Matrix",
+										"unit": "1/s",
 										"CellInputs": {
-											"0_0": "0",
+											"0_0": "0 1/s",
 											"2_1": "-{cell -1, 0} - {cell 1, 0}",
-											"3_1": "3.0e7*y[2]^2",
-											"1_1": "-0.04*y[1] + 1.0e4*y[2]*y[3]"
+											"3_1": "3.0e7 1/s * y[2]^2",
+											"1_1": "-0.04 1/s * y[1] + 1.0e4 1/s *y[2]*y[3]"
 										},
 										"rowCount": "{nrows y0}",
 										"columnCount": "1"
@@ -6201,7 +6290,7 @@
 									},
 									{
 										"name": "logT",
-										"Notes": "The log (base 10) of the recorded values of t (skipping the first one).",
+										"Notes": "The log (base 10) of the recorded values of t (skipping the first one). Log values must be unitless, so t is divided by 1 s.",
 										"DiagramX": 55,
 										"DiagramY": 155,
 										"HideInfo": "y",
@@ -6209,7 +6298,7 @@
 										"HtmlNotes": "y",
 										"Type": "Expression",
 										"Formula": {
-											"Formula": "{log ode.time[range]}"
+											"Formula": "{log ode.time[range] / 1 s}"
 										},
 										"showInput": "y"
 									},
@@ -6373,7 +6462,7 @@
 										"name": "xyplot",
 										"Notes": "Plot the circle from calculated coordinates as well as one half the size.",
 										"DiagramX": 100,
-										"DiagramY": 110,
+										"DiagramY": 185,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -6405,21 +6494,22 @@
 									{
 										"name": "coordinates",
 										"Notes": "Calculate the x-y coordinates for a circle with a radius equal to radius.",
-										"DiagramX": 20,
-										"DiagramY": 145,
+										"DiagramX": 100,
+										"DiagramY": 140,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
-										"HtmlNotes": "n",
+										"HtmlNotes": "y",
 										"Type": "Expression",
 										"Formula": {
 											"Formula": "{cart radius[1,1], 1:60 / 30  * {pi}}"
-										}
+										},
+										"showInput": "y"
 									},
 									{
 										"name": "Coord_Calc",
 										"Notes": "<b>Calculation of Coordinates</b>\n\nThe formula in the <b>coordinates</b> expression:\n\n   <b>{cart radius[1,1], 1:60 / 30  * {pi}}</b>\n\nis a bit more complicated. Library functions are called by enclosing them in curly braces, with the name of the function immediately after the opening brace. The parameters, if any, follow in a comma separated list.\n\nThus in the formula above there are two functions, <b>cart</b> and <b>pi</b>. The pi function doesn't take any parameters and just returns the value of pi.\n\nThe cart function calculates the cartesian coordinates from a radius and an angle. Specifically for:\n\n   <b>{cart r, a}</b>\n\ncart returns a table value with the first column being the <b>x</b> value and the second being the <b>y</b> of the radius <b>r</b> and angle <b>a</b> converted to cartesian coordinates.\n\nTable value columns can be referenced using dot notation, so <b>coordinates.x</b> would return an array corresponding to the rows of the <b>x</b> column.  These are used in the <b>xyplot</b> tool to graph the circle.\n\nThe first parameter to the cart function is <b>radius[1,1]</b>. The <b>[1,1]</b> index operator specifies we just want the value in the first row and column so it is guaranteed to be a scalar.\n\nThe second parameter, <b>1:60 / 30 * {pi}</b> creates an array of integers from 1 to 60 using the <b>:</b> operator. This is then divided by 30 giving 60 values evenly spaced up to 2. This array is then multiplied by pi to give an array of angles up to 2pi, which is of course the number of radians in a circle.",
 										"DiagramX": 100,
-										"DiagramY": 160,
+										"DiagramY": 110,
 										"HideInfo": "n",
 										"DiagramNotes": "n",
 										"HtmlNotes": "y",
@@ -6430,7 +6520,7 @@
 									},
 									{
 										"name": "Overview",
-										"Notes": "<b>Circle Overview</b>\n\nIf an expression has its <b>Model Input</b> switch turned on, then any tool names used in the expression will refer to tools in the parent model, rather than the model containing the expression. In this case, the expression <b>radius</b> has its Model Input switch turned on and so its formula:\n\n   <b>diameter / 2</b>\n\nlooks for a value called diameter in the A_Simple_Calc model, not the circle model.\n\nHowever any tool in a child model can be referenced from the parent model, Thus a tool in A_Simple_Calc can have a formula like:\n\n   <b>circle.area</b>\n\nTake a look at the radius, area and circumference expressions and then have a look at the <b>Coordinates_Calc</b> tool.\n\nWhen you are done. return to the parent model by tapping on the <b>&lt; A_Simple_Calc</b> button at the upper right.",
+										"Notes": "<b>Circle Overview</b>\n\nIf an expression has its <b>Model Input</b> switch turned on, then any tool names used in the expression will refer to tools in the parent model, rather than the model containing the expression. In this case, the expression <b>radius</b> has its Model Input switch turned on and so its formula:\n\n   <b>diameter / 2</b>\n\nlooks for a value called diameter in the parent model, not the circle model.\n\nHowever any tool in a child model can be referenced by the parent model. Thus a tool in this model's parent can have a formula like:\n\n   <b>circle.area</b>",
 										"DiagramX": 20,
 										"DiagramY": 45,
 										"HideInfo": "n",
@@ -6523,11 +6613,11 @@
 							},
 							{
 								"name": "BMICalc",
-								"Notes": "This is a model which calculates body mass index, which is weight in kg divided by height, in m, squared.\n\nThe result is calculated as a dimensionless value so it is displayed correctly, regardless of display units.",
+								"Notes": "<b>BMICalc</b>\n\nThe BMI page uses this model to calculate body mass index, which is weight in kg divided by height, in m, squared.\n\nThe result is calculated as a dimensionless value so it is displayed correctly, regardless of display units.",
 								"DiagramX": 50,
 								"DiagramY": 150,
 								"HideInfo": "n",
-								"DiagramNotes": "y",
+								"DiagramNotes": "n",
 								"HtmlNotes": "y",
 								"Type": "Model",
 								"diagramScale": 1,
@@ -6593,26 +6683,25 @@
 								"isOutput": "y",
 								"Type": "HTML Form",
 								"Formula": {
-									"Formula": "'<html lang=\"en\">\n\t<head>\n\t\t<title>HTML Pages</title>\n\t\t<meta name=\"viewport\" content=\"initial-scale=1.0\">\n\t\t<link rel=\"stylesheet\"\n\t\t\thref=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t\t<style>\n\t\t\t<mm>css</mm>\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<p class=\"title\">HTML Pages</p>\n\t\t<div class=\"explain\">\n\t\t\t<p>\n\t\t\t\tMath Minion HTML page tools provide a way to present customized input and result views.  These can be used to simplify your own tasks, or to create calculation sheets that present a simpler interface for non-technical users.  The page you are reading is itself an  HTML page tool.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tAs the name implies, HTML page tools are presented as web browser views and have a single formula that should return a string value containing the HTML to be displayed. This formula can be any valid Math Minion formula, but most often simply consists of a single quote, followed by the desired HTML.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tSpecial HTML extensions allow the results of Math Minion formulas to appear on the rendered page and for the values from input fields to be made available to the Math Minion model.  Certain actions, such as adding rows to a data table or loading a different session can also be triggered from the html page.\n\t\t\t</p>\n\t\t\t<p>Tap on the <b>Help</b> button at the top right of this view to get help on how to do this.</p>\n\t\t</div>\n\t</body>\n</html>"
+									"Formula": "'\t\t\n<style>\n\t<mm>css</mm>\n</style>\n\n<p class=\"title\">HTML Pages</p>\n<div class=\"explain\">\n\t<p>\n\t\tMath Minion HTML page tools provide a way to present customized input and result views.  These can be used to simplify your own tasks, or to create calculation sheets that present a simpler interface for non-technical users.  The page you are reading is itself an  HTML page tool.\n\t</p>\n\t<p>\n\t\tAs the name implies, HTML page tools are presented as web browser views and have a single formula that should return a string value containing the HTML to be displayed. This formula can be any valid Math Minion formula, but most often simply consists of a single quote, followed by the desired HTML.\n\t</p>\n\t<p>\n\t\tSpecial HTML extensions allow the results of Math Minion formulas to appear on the rendered page and for the values from input fields to be made available to the Math Minion model.  Certain actions, such as adding rows to a data table or loading a different session can also be triggered from the html page.\n\t</p>\n\t<p>Tap on the <b>Help</b> button at the top right of this view to get help on how to do this.</p>\n</div>"
 								},
 								"inputs": {},
 								"f0": "css"
 							},
 							{
 								"name": "BMI",
-								"Notes": "            BMI Form",
+								"Notes": "<b>BMI</b>\n \nAn html page or calculating and recording body mass index.\n\nClick on this note to view.",
 								"DiagramX": 50,
 								"DiagramY": 115,
 								"HideInfo": "y",
-								"DiagramNotes": "y",
-								"HtmlNotes": "n",
-								"isOutput": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
 								"Type": "HTML Form",
 								"Formula": {
-									"Formula": "'<html lang=\"en\">\n\t<head>\n\t\t<title>Your BMI</title>\n\t\t<meta name=\"viewport\" content=\"initial-scale=1.0\">\n\t\t<link rel=\"stylesheet\"\n\t\t\thref=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t\t<style>\n\t\t\t<mm>css</mm>\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<p class=\"title\">Your BMI</p>\n\t\t<table class=\"center\">\n\t\t\t<tr><td><span class=\"rowlabel\">Weight</span></td>\n\t\t\t\t<td><input type=\"text\" id=\"weight\" value=\"<mm>$.weight</mm>\"\n\t\t\t\t\t class=\"input\" title=\"Enter weight with unit\">\n\t\t\t\t</td>\n\t\t\t</tr>\n\t\t\t<tr><td><span class=\"rowlabel\">Height</span>\n\t\t\t\t<td><input type=\"text\" id=\"height\" value=\"<mm>$.height</mm>\"\n\t\t\t\t\tclass=\"input\" title=\"Enter height with unit\">\n\t\t\t\t</td>\n\t\t\t</tr>\n\t\t</table>\n\t\t<div class=\"center\">\n\t\t\t<button onclick=\"mmpost(['weight','height']);\"\n\t\t\t\ttitle=\"Use the inputs to calculate the BMI\">Calculate</button>\n\t\t\t<button onclick=\"mmpost(['weight','height'],{mm_addrow: 'Weight'});\"\n\t\t\t\ttitle=\"Add weight to the Weight data table\">Record</button>\n\t\t</div>\n\t\t<p class=\"result\">\n\t\t\tBMI = <mm>BMICalc.BMI</mm><br>\n\t\t\tLast Recorded = <mm>{fmt \"%8.0f\", weight[{nrows weight}, \"date\"], \"date\"}</mm>\n\t\t</p>\n\t\t<div class=\"buttonrow moveup\">\n\t\t\t<button class=\"menubutton\" onclick=\"mmpost([],{mm_push: 'WeightPlot'});\"\n\t\t\t\ttitle=\"Plot the weight record\">Plot</button>\n\t\t\t<button class=\"menubutton\" onclick=\"mmpost([],{mm_view: 'Explanation'});\"\n\t\t\t\ttitle=\"Switch to the Explanation page\">Explain</button>\n\t\t</div>\n\t\t<div class=\"buttonrow\">\n\t\t\t<p><button class=\"menubutton\" onclick=\"mmpost([],{mm_push: 'Weight'});\"\n\t\t\t\ttitle=\"Show the weight table\">Table</button></p>\n\t\t</div>\n\t\t<mm>WeightPlot</mm>\n\t</body>\n</html>"
+									"Formula": "'\n<style>\n\t<mm>css</mm>\n</style>\n<p class=\"title\">Your BMI</p>\n<table class=\"center\">\n\t<tr><td><span class=\"rowlabel\">Weight</span></td>\n\t\t<td><input type=\"text\" id=\"weight\" value=\"<mm>$.weight</mm>\"\n\t\t\t class=\"input\" title=\"Enter weight with unit\">\n\t\t</td>\n\t</tr>\n\t<tr><td><span class=\"rowlabel\">Height</span>\n\t\t<td><input type=\"text\" id=\"height\" value=\"<mm>$.height</mm>\"\n\t\t\tclass=\"input\" title=\"Enter height with unit\">\n\t\t</td>\n\t</tr>\n</table>\n<div class=\"center\">\n\t<button onclick=\"mmpost(['weight','height']);\"\n\t\ttitle=\"Use the inputs to calculate the BMI\">Calculate</button>\n\t<button onclick=\"mmpost(['weight','height'],{mm_addrow: 'Weight'});\"\n\t\ttitle=\"Add weight to the Weight data table\">Record</button>\n</div>\n<p class=\"result\">\n\tBMI = <mm>BMICalc.BMI</mm><br>\n\tLast Recorded = <mm>{fmt \"%8.0f\", weight[{nrows weight}, \"date\"], \"date\"}</mm>\n</p>\n<div class=\"buttonrow moveup\">\n\t<button class=\"menubutton\" onclick=\"mmpost([],{mm_push: 'WeightPlot'});\"\n\t\ttitle=\"Plot the weight record\">Plot</button>\n\t<button class=\"menubutton\" onclick=\"mmpost([],{mm_push: 'Weight'});\"\n\t\ttitle=\"Show the weight table\">Table</button>\n</div>\n<p> </p>\n<mm>WeightPlot</mm>"
 								},
 								"inputs": {
-									"weight": "78 kg",
+									"weight": "77 kg",
 									"height": "6 ft + 1 in"
 								},
 								"f0": "css",
@@ -7665,7 +7754,7 @@
 								"isOutput": "y",
 								"Type": "HTML Form",
 								"Formula": {
-									"Formula": "'<!-- Html source - see help page -->\t\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\"\n\t\t\thref=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t<style>\n\t\t<mm>css</mm>\n\t</style>\n\t</head>\n\t<body>\n\t\t<p>\n\t\t\tThe user interface for Math Minion talks to the calculation engine by sending text messages to it and receiving text messages back. The <b>mm_cmd</b action allows an Html page to send a message to the calculation engine and optionally process a reply.\n\t\t</p>\n\t\t<p>\n\t\t\tBelow are two buttons and the one labelled <b>Clear Money</b> is defined by the following HTML:\n\t\t</p>\n\t\t<pre class=\"html\">\n&lt;button onClick=\n  \"mmpost([],\n  {\n    mm_cmd:\n    '.money.formula set formula 0 dollar'\n  }\n)\"\n&gt;\n  Clear Money\n&lt;/button&gt;</pre>\n\t\t<p>\n\t\t\tThe command <b>.money.formula set formula 0 dollar</b> tells the calculation engine to set the formula of the expression named <b>money</b. to <b>0 dollar</b>. Tap it and if money is some other value, your should see it immediately change.\n\t\t</p>\n\t\t<p>\n\t\t\tThe button labeled <b>Money = 40</b> is similar except its command is <b>.money.formula set formula 40 dollar</b> and it has a call back that shows the calculation engine response as JSON in an alert box. Try tapping it and after you have dismissed the alert, the value of money should change to 40 dollar.\n\t\t</p>\n\t\t<div>\n\t\t\t<button onClick=\n\t\t\t\t\"mmpost([],\n\t\t\t\t\t{\n\t\t\t\t\t\tmm_cmd:\n\t\t\t\t\t\t'.money.formula set formula 0 dollar'\n\t\t\t\t\t}\n\t\t\t\t)\"\n\t\t\t>\n\t\t\t\tClear Money\n\t\t\t</button>\n\t\t\t<button onClick=\n\t\t\t\t\"mmpost([],\n\t\t\t\t\t{\n\t\t\t\t\t\tmm_cmd:\n\t\t\t\t\t\t'.money.formula set formula 40 dollar'\n\t\t\t\t\t},\n\t\t\t\t\t(results) => {\n\t\t\t\t\t\talert(JSON.stringify(results, null, '  '));\n\t\t\t\t\t}\n\t\t\t\t)\"\n\t\t\t>\n\t\t\t\tMoney = 40\n\t\t\t</button>\n\t\t</div>\n\t\t<p>\n\t\t\tThe <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Console'})\">Console HtmlPage</span> in this model has a bit more complicated example that generates a rough facsimile of the <a href=\"./help/console.html\" target=\"_blank\">Console View</a>. \n\t</body>\n</html>"
+									"Formula": "'\n<style>\n\t<mm>css</mm>\n</style>\n\n<p>\n\tThe user interface for Math Minion talks to the calculation engine by sending text messages to it and receiving text messages back. The <b>mm_cmd</b action allows an Html page to send a message to the calculation engine and optionally process a reply.\n</p>\n<p>\n\tBelow are two buttons and the one labelled <b>Clear Money</b> is defined by the following HTML:\n</p>\n<pre class=\"html\">\n&lt;button onClick=\n  \"mmpost([],\n  {\nmm_cmd:\n'.money.formula set formula 0 dollar'\n  }\n)\"\n&gt;\n  Clear Money\n&lt;/button&gt;</pre>\n<p>\n\tThe command <b>.money.formula set formula 0 dollar</b> tells the calculation engine to set the formula of the expression named <b>money</b. to <b>0 dollar</b>. Tap it and if money is some other value, your should see it immediately change.\n</p>\n<p>\n\tThe button labeled <b>Money = 40</b> is similar except its command is <b>.money.formula set formula 40 dollar</b> and it has a call back that shows the calculation engine response as JSON in an alert box. Try tapping it and after you have dismissed the alert, the value of money should change to 40 dollar.\n</p>\n<div>\n\t<button onClick=\n\t\t\"mmpost([],\n\t\t\t{\n\t\t\t\tmm_cmd:\n\t\t\t\t'.money.formula set formula 0 dollar'\n\t\t\t}\n\t\t)\"\n\t>\n\t\tClear Money\n\t</button>\n\t<button onClick=\n\t\t\"mmpost([],\n\t\t\t{\n\t\t\t\tmm_cmd:\n\t\t\t\t'.money.formula set formula 40 dollar'\n\t\t\t},\n\t\t\t(results) => {\n\t\t\t\talert(JSON.stringify(results, null, '  '));\n\t\t\t}\n\t\t)\"\n\t>\n\t\tMoney = 40\n\t</button>\n</div>\n<p>\n\tThe <span class=\"link\" onClick=\"mmpost([],\n\t\t{mm_push: 'Console'})\">Console HtmlPage\n\t</span>\n\tin this model has a bit more complicated example that generates a rough facsimile of the <a href=\"./help/console.html\" target=\"_blank\">Console View</a>.\n</p>"
 								},
 								"f0": "css"
 							},
@@ -7680,10 +7769,14 @@
 								"isOutput": "y",
 								"Type": "HTML Form",
 								"Formula": {
-									"Formula": "'\n<!-- Modify the body and any other part of this html to meet your needs -->\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\"\n\t\t\thref=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t<style>\n\t\ttable {\n\t\t\twidth: 100%;\n\t\t\tborder-collapse: collapse;\n\t\t}\n\t\ttd, th {\n\t\t\tborder: 1px solid #ddd;\n\t\t\tpadding: 4px;\n\t\t}\n\n\t\ttr:nth-child(even){background-color: #f2f2f2;}\n\t\t\n\t\ttr:hover {background-color: #ddd;}\n\t\t\n\t\tth {\n\t\t\ttext-align: left;\n\t\t\tbackground-color: #04AA6D;\n\t\t\tcolor: white;\n\t\t}\n\t\tth.col0, td.col0 {\n\t\t\twidth: 50px;\n\t\t}\n\t\t#output {\n\t\t\twidth: 100%;\n\t\t\theight: 300px;\n\t\t\tmargin-top: 10px;\n\t\t}\n\t\t#input {\n\t\t\twidth: 100%\n\t\t}\n\t</style>\n\t<script>\n\t\tconst handleKey = (event) => {\n\t\t\t// watches for Enter and sends command when it see it\n\t\t\tif (event.code == 'Enter') {\n\t\t\t\tconst input = document.getElementById('input');\n\t\t\t\tmmpost([],{mm_cmd: input.value}, (results) => {\n\t\t\t\t\tconst outputArea = document.getElementById('output');\n\t\t\t\t\toutputArea.innerHTML = JSON.stringify(results, null, '  ');\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\t</script>\n\t</head>\n\t<body>\n\t\t<p>\n\t\t\tBelow is a crude copy of what the <a href=\"./help/console.html\" target=\"_blank\">console view</a> does. See the <a href=\"./help/console.html\" target=\"_blank\">console help</a> for details on giving commands.\n\t\t</p>\n\t\t<p>\n\t\t\tTry giving the command <b>.money.formula set formula 100 kg</b> (note the leading dot) and see what happens to the money expression.\n\t\t</p>\n\t\t<div id=\"main\">\n\t\t\t<div>\n\t\t\t\tCommand:\n\t\t\t\t<input id=\"input\" type=\"text\"><br>\n\t\t\t</div>\n\t\t\tResult\n\t\t\t<textarea id=\"output\">\n\t\t\t</textarea>\n\t\t</div>\n\t\t<script>\n\t\t\tinput.addEventListener('keydown', handleKey);\n\t\t</script>\n\t</body>\n</html>"
+									"Formula": "'\n<style>\n\ttable {\n\t\twidth: 100%;\n\t\tborder-collapse: collapse;\n\t}\n\ttd, th {\n\t\tborder: 1px solid #ddd;\n\t\tpadding: 4px;\n\t}\n\n\ttr:nth-child(even){background-color: #f2f2f2;}\n\t\n\ttr:hover {background-color: #ddd;}\n\t\n\tth {\n\t\ttext-align: left;\n\t\tbackground-color: #04AA6D;\n\t\tcolor: white;\n\t}\n\tth.col0, td.col0 {\n\t\twidth: 50px;\n\t}\n\t#output {\n\t\twidth: 100%;\n\t\theight: 300px;\n\t\tmargin-top: 10px;\n\t}\n\t#input {\n\t\twidth: 100%\n\t}\n</style>\n<script>\n\tconst handleKey = (event) => {\n\t\t// watches for Enter and sends command when it see it\n\t\tif (event.code == 'Enter') {\n\t\t\tconst input = document.getElementById('input');\n\t\t\tmmpost([],{mm_cmd: input.value}, (results) => {\n\t\t\t\tconst outputArea = document.getElementById('output');\n\t\t\t\toutputArea.innerHTML = JSON.stringify(results, null, '  ');\n\t\t\t});\n\t\t}\n\t}\n</script>\n<p>\n\tBelow is a crude copy of what the <a href=\"./help/console.html\" target=\"_blank\">console view</a> does. See the <a href=\"./help/console.html\" target=\"_blank\">console help</a> for details on giving commands.\n</p>\n<p>\n\tTry giving the command <b>.money.formula set formula 100 kg</b> (note the leading dot) and see what happens to the money expression.\n</p>\n<div id=\"main\">\n\t<div>\n\t\tCommand:\n\t\t<input id=\"input\" type=\"text\"><br>\n\t</div>\n\tResult\n\t<textarea id=\"output\">\n\t</textarea>\n</div>\n<script>\n\tinput.addEventListener('keydown', handleKey);\n</script>"
 								}
 							}
-						]
+						],
+						"inputs": {
+							"weight": "79 kg",
+							"height": "6 ft + 1 in"
+						}
 					},
 					{
 						"name": "Function_Solver",
@@ -7721,7 +7814,7 @@
 								"Notes": "An example of solving a single function",
 								"DiagramX": 25,
 								"DiagramY": 145,
-								"HideInfo": "n",
+								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"HtmlNotes": "y",
 								"Type": "Model",
@@ -7860,7 +7953,7 @@
 									},
 									{
 										"name": "Overview",
-										"Notes": "This model determines the intersection between two curves, specifically a parabola and a line.  Obviously this could easily be solved algebraically or even graphically, but that very simplicity makes it a useful example.\n\nThe top set of connected tools provides a visual representation of the problem, by graphing a range of x values versus the y values calculated by the parabola and line expressions.\n\nA glance at the plot shows that the line will cross the parabola in two places and indeed it is easy to determine their coordinates by zooming in and dragging the crossing points to a grid line.\n\nThe lower set of connected blocks uses the solver tool to find a value of x where the y values calculated by the two expressions are equal and hence at the intersection.",
+										"Notes": "This model determines the intersection between two curves, specifically a parabola and a line.  Obviously this could easily be solved algebraically or even graphically, but that very simplicity makes it a useful example.\n\nThe left set of connected tools provides a visual representation of the problem, by graphing a range of x values versus the y values calculated by the parabola and line expressions.\n\nA glance at the plot shows that the line will cross the parabola in two places and indeed it is easy to determine their coordinates by zooming in and dragging the crossing points to a grid line.\n\nThe right set of connected blocks uses the solver tool to find a value of x where the y values calculated by the two expressions are equal and hence at the intersection.",
 										"DiagramX": -325,
 										"DiagramY": -270,
 										"HideInfo": "n",
@@ -8096,7 +8189,7 @@
 						"Objects": [
 							{
 								"name": "LargerExample",
-								"Notes": "Example showing additional manipulation of DataTable values",
+								"Notes": "LargerExample\n\nA model showing additional manipulation of DataTable values",
 								"DiagramX": 40,
 								"DiagramY": 20,
 								"HideInfo": "n",
@@ -16041,7 +16134,7 @@
 									},
 									{
 										"name": "Overview",
-										"Notes": "<b>Old Weather Records</b>\n\nThis is an older example demonstrating some uses of a data base of weather station records from our time in Fernie, B.C.",
+										"Notes": "<b>Old Weather Records</b>\n\nThis model is an older example demonstrating some uses of a data base of weather station records from our time in Fernie, B.C.",
 										"DiagramX": -275,
 										"DiagramY": -305,
 										"HideInfo": "n",
@@ -16437,7 +16530,7 @@
 								"isOutput": "y",
 								"Type": "HTML Form",
 								"Formula": {
-									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<link rel=\"stylesheet\" \thref=\"./examples/htmlpage.css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t#page {\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Data Tables</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<p>\n\t\t\tData tables, unlike other Math Minion tools, contain static data as compared to the dynamic formulas that other tools use.\n\t\t</p>\n\t\t<p>\n\t\t\tWhile formulas can be used to input values, the formulas are immediately evaluated and discarded, with only the result being retained.\n\t\t</p>\n\t\t<p>\n\t\t\tThis makes data tables ideal for storing the kind of information that is often stored in spreadsheet or database tables.\n\t\t</p>\n\t\t<p>\n\t\t\tThe analogy is stronger with the latter as spreadsheets mix their data and calculations in the same cells, whereas databases and Math Minion store static data in their tables and use external, and hence visible, operations to slice and dice this data into other table value representations, without altering the source data.\n\t\t</p>\n\t\t<p class=\"reminder indent\">\n\t\t\t<b>Note:</b> the <a href=\"./help/datatable.html\" target=\"_blank\">DataTable help</a> has a comprehensive discussion of data table features and its examples use screenshots of the  <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Hours'});\">Hours</span> data table in this model.\n\t\t</p\n\t\t<p> \n\t\t\tIn this model, there are two data tables. The main one, <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Hours'});\">Hours</span>, stores fictitious billing information and has the following columns:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>Date</b> - numeric with <b>date</b> unit</li>\n\t\t\t<li><b>Client</b> - string with client name</li>\n\t\t\t<li><b>Project</b> - string with project name</li>\n\t\t\t<li><b>Hours</b> - numeric with <b>h</b> unit</li>\n\t\t\t<li><b>Charge</b> - calculated numeric with <b>dollar</b> unit</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe <b>Date</b> and <b>Hours</b> fields store time values, with appropriate units (date and hours), while the <b>Client</b> and <b>Project</b> fields store strings. However the <b>Client</b> column is designated as a menu, which means a formula supplies the available choices for the field. In this case the formula is <b>clients.name</b> which returns the array of names in the <b>name</b> column of the <b>Clients</b> data table.\n\t\t</p>\n\t\t<p>\n\t\t\tWhen I said that data tables only hold static data, that wasn't quite true for as a convenience, it is possible to include calculated columns as well. That is what the <b>Charge</b> column is. It's formula is a bit more complex and is described in the <a href=\"./help/datatable.html#coleditor\" target=\"_blank\">column editor</a> section of the DataTable help, but essentially it multiplies the <b>Hours</b> value of each row in the <b>Hours</b> table by the value in the <b>Rate</b> column of the <b>Clients</b> table which has the same client name in its <b>Name</b> column.\n\t\t</p>\n\t\t<p>\n\t\t\tThe expressions in this model just show some possible manipulations of the data, while the <b>LargerExample</b> adds more examples based on old weather data from our time in Fernie, B.C.\n\t\t</p>\n\t</body>\n</html>"
+									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<link rel=\"stylesheet\" \thref=\"./examples/htmlpage.css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t#page {\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t}\n\t\t\t.link {\n\t\t\t\tcolor: blue;\n\t\t\t\tcursor: pointer;\n\t\t\t\tfont-weight: bold;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>Data Tables</h3>\n\t\t</div>\n\t\t<p>\n\t\t\tData tables, unlike other Math Minion tools, contain static data as compared to the dynamic formulas that other tools use.\n\t\t</p>\n\t\t<p>\n\t\t\tWhile formulas can be used to input values, the formulas are immediately evaluated and discarded, with only the result being retained.\n\t\t</p>\n\t\t<p>\n\t\t\tThis makes data tables ideal for storing the kind of information that is often stored in spreadsheet or database tables.\n\t\t</p>\n\t\t<p>\n\t\t\tThe analogy is stronger with the latter as spreadsheets mix their data and calculations in the same cells, whereas databases and Math Minion store static data in their tables and use external, and hence visible, operations to slice and dice this data into other table value representations, without altering the source data.\n\t\t</p>\n\t\t<p class=\"reminder indent\">\n\t\t\t<b>Note:</b> the\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([],{mm_viewurl:'help/datatable.html'})\">DataTable help</span>\n\t\t\thas a comprehensive discussion of data table features and its examples use screenshots of the  <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Hours'});\">Hours</span> data table in this model.\n\t\t</p\n\t\t<p> \n\t\t\tIn this model, there are two data tables. The main one, <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Hours'});\">Hours</span>, stores fictitious billing information and has the following columns:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>Date</b> - numeric with <b>date</b> unit</li>\n\t\t\t<li><b>Client</b> - string with client name</li>\n\t\t\t<li><b>Project</b> - string with project name</li>\n\t\t\t<li><b>Hours</b> - numeric with <b>h</b> unit</li>\n\t\t\t<li><b>Charge</b> - calculated numeric with <b>dollar</b> unit</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe <b>Date</b> and <b>Hours</b> fields store time values, with appropriate units (date and hours), while the <b>Client</b> and <b>Project</b> fields store strings. However the <b>Client</b> column is designated as a menu, which means a formula supplies the available choices for the field. In this case the formula is <b>clients.name</b> which returns the array of names in the <b>name</b> column of the <b>Clients</b> data table.\n\t\t</p>\n\t\t<p>\n\t\t\tWhen I said that data tables only hold static data, that wasn't quite true for as a convenience, it is possible to include calculated columns as well. That is what the <b>Charge</b> column is. It's formula is a bit more complex and is described in the\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/datatable.html#coleditor'})\">\n\t\t\t\tcolumn editor</span> section of the DataTable help, but essentially it multiplies the <b>Hours</b> value of each row in the <b>Hours</b> table by the value in the <b>Rate</b> column of the <b>Clients</b> table which has the same client name in its <b>Name</b> column.\n\t\t</p>\n\t\t<p>\n\t\t\tThe expressions in this model just show some possible manipulations of the data, while the <b>LargerExample</b> adds more examples based on old weather data from our time in Fernie, B.C.\n\t\t</p>\n\t</body>\n</html>"
 								}
 							}
 						]
@@ -16686,7 +16779,7 @@
 							},
 							{
 								"name": "Overview",
-								"Notes": "<b>Menu</b>\n\nThe menu tool lets you place a a simple drop down menu onto a model information view or an html page.\n\nIt has a single formula that should return the options that can be selected. If this value has a two columns, then the first column will be the labels of the options in the menu, while the second will be values associated with the labels and",
+								"Notes": "<b>Menu</b>\n\nThe menu tool lets you place a a simple drop down menu onto a model information view or an html page.\n\nIt has a single formula that should return the options that can be selected. If this value has a two columns, then the first column will be the labels of the options in the menu, while the second will be values associated with the labels.",
 								"DiagramX": 45,
 								"DiagramY": -15,
 								"HideInfo": "n",
@@ -16890,7 +16983,7 @@
 							},
 							{
 								"name": "Plot3D",
-								"Notes": "<b>3D Plots</b>\n\nWhen a Z values is added to an X axis, a three dimensional plot is created.\n\nA 3D graph can have multiple X axes, as this one does, but each X axis can only have a single set of Y and Z values. If there are multiple x axes, tapping at the bottom of the graph will switch between them.\n\nYou can drag along any of the three axes (in the actual tool) to pan the graph and the axes values will change correspondingly.\n\nDragging horizontally along the top of the graph will rotate it.\n\nAs with 2D graphs, you can use pinch or scroll actions can be used to zoom the graph in and out and a long tap will reset the graph to its original position and scale.\n\\",
+								"Notes": "<b>3D Plots</b>\n\nWhen a Z values is added to an X axis, a three dimensional plot is created.\n\nA 3D graph can have multiple X axes, as this one does, but each X axis can only have a single set of Y and Z values. If there are multiple x axes, tapping at the bottom of the graph will switch between them.\n\nYou can drag along any of the three axes (in the actual tool) to pan the graph and the axes values will change correspondingly.\n\nDragging horizontally along the top of the graph will rotate it.\n\nAs with 2D graphs, you can use pinch or scroll actions can be used to zoom the graph in and out and a long tap will reset the graph to its original position and scale.",
 								"DiagramX": 155,
 								"DiagramY": 240,
 								"HideInfo": "y",
@@ -16935,7 +17028,7 @@
 							},
 							{
 								"name": "Plot2D",
-								"Notes": "<b>Plot2D - a 2 dimension X-Y graph.</b>\n\nIn this case there is a single X axis, which has two Y curves representing the sin and cosine of the X values. Currently the sin curve is selected and its axis values are shown in the same blue colour as the curve. The unselected green cosine curve is somewhat dimmed.\n\nTapping on the Y axis (in the actual tool) will switch to the next available Y curve, namelu the cosine curve. In this case the axis coordinates are the same for both curves, but they can be different.\n\nYou can also have multiple X axes and each X axis can have multiple Y curves. Tapping on the X axis will switch between them.\n\nYou can drag the graph around and the axis values will change correspondingly.\n\nYou can zoom in and out on the graph using a pinch gesture on a trackpad or screen as appropriate.\n\nIf you are using a mouse, then the centre scroll ball/wheel/gesture will zoom in and out. Two finger scrolling on a trackpad may work too, depending on your system and settings. If you hover over the x or y axis while scrolling, just that axis will be zoomed.\n\nTapping on the graph other than on the axes will display the tap coordinates at the upper right, while a long tap will reset the graph to its original position and scale.\n\nA long tap over the x or y axis, will just rescale that axis and no repositioning will be done.",
+								"Notes": "<b>Plot2D - a 2 dimension X-Y graph.</b>\n\nIn this case there is a single X axis, which has two Y curves representing the sin and cosine of the X values. Currently the sin curve is selected and its axis values are shown in the same blue colour as the curve. The unselected green cosine curve is somewhat dimmed.\n\nTapping on the Y axis (in the actual tool) will switch to the next available Y curve, namely the cosine curve. In this case the axis coordinates are the same for both curves, but they can be different.\n\nYou can also have multiple X axes and each X axis can have multiple Y curves. Tapping on the X axis will switch between them.\n\nYou can drag the graph around and the axis values will change correspondingly.\n\nYou can zoom in and out on the graph using a pinch gesture on a trackpad or screen as appropriate.\n\nIf you are using a mouse, then the centre scroll ball/wheel/gesture will zoom in and out. Two finger scrolling on a trackpad may work too, depending on your system and settings. \n\nIf you hover over the x or y axis while scrolling, just that axis will be zoomed.\n\nTapping on the graph other than on the axes will display the tap coordinates at the upper right, while a long tap will reset the graph to its original position and scale.\n\nA long tap over the x or y axis, will just rescale that axis and no repositioning will be done.",
 								"DiagramX": 65,
 								"DiagramY": 305,
 								"HideInfo": "y",
@@ -16978,7 +17071,7 @@
 							},
 							{
 								"name": "Overview",
-								"Notes": "<b>Graphs</b>\n\nhe Graph tool provides basic plotting capability, including the ability to plot multiple curves for both two and three dimensions as well as 3D surface plots.\n\nThe Graph help has a comprehensive discussion of graph features which won't be repeated here, but its examples use screenshots of the graphs in this model.\n\nIf viewing this in the model view, note that you will have to go to the graph's view, (tap on it) in order to manipulate it. In the model view the graphs are static.",
+								"Notes": "<b>Graphs</b>\n\nThe Graph tool provides basic plotting capability, including the ability to plot multiple curves for both two and three dimensions as well as 3D surface plots.\n\nThe Graph help has a comprehensive discussion of graph features which won't be repeated here, but its examples use screenshots of the graphs in this model.\n\nIf viewing this in the model view, note that you will have to go to the graph's view, (tap on it) in order to manipulate it. In the model view the graphs are static.",
 								"DiagramX": 65,
 								"DiagramY": 240,
 								"HideInfo": "n",
@@ -17088,7 +17181,7 @@
 					},
 					{
 						"name": "n",
-						"Notes": "The expression <b>n</b> calculates the number of points given 0.1 mile/gal intervals.\n\nNote that units that contain arithmetic operators have to be enclosed in double quotes unless the formula just consists of a number and unit.\n\nThe formula references the <b>start</b> and <b>end</b> expressions, so there a connection lines on the diagram running from the corners of their icons to the middle of a vertical edge of <b>n's</b> icon.\n\nSimilarly <b>n</b> is references in the <b>mpg</b> expression, so there is a line running from the corner of <b>n</b> to the middle of an edge of <b>mpg's</b> icon.\n\nThese connections make it easy to see how information flows through the calculation.",
+						"Notes": "The expression <b>n</b> calculates the number of points given 0.1 mile/gal intervals.\n\nThe formula references the <b>start</b> and <b>end</b> expressions, so there a connection lines on the diagram running from the corners of their icons to the middle of a vertical edge of <b>n's</b> icon.\n\nSimilarly <b>n</b> is referenced in the <b>mpg</b> expression, so there is a line running from the corner of <b>n</b> to the middle of an edge of <b>mpg's</b> icon.\n\nThese connections make it easy to see how information flows through the calculation.",
 						"DiagramX": 105,
 						"DiagramY": 105,
 						"HideInfo": "y",
@@ -17097,7 +17190,7 @@
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "(end - start) / .1 \"mile/gal\""
+							"Formula": "(end - start) / .1 mile/gal"
 						},
 						"showInput": "y"
 					},
@@ -17111,7 +17204,7 @@
 						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "0:n * .1 \"mile/gal\" + start"
+							"Formula": "0:n * .1 mile/gal + start"
 						},
 						"showInput": "y",
 						"displayUnit": "mile/gal",
