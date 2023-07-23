@@ -696,6 +696,11 @@ export function UnitPicker(props) {
 					// keeps input field in sync
 					setSelectedUnit(event.target.value);
 				},
+				onKeyDown: e => {
+					if (e.code == 'Enter') {
+						props.apply(`${selectedUnit}`, 0);
+					}
+				}
 			}
 		),
 		e(
