@@ -1458,6 +1458,7 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addUnit("erg","1 2 1 -2 0 0 0 0 1.000000e-07",true);
 		this.addUnit("cal","1 2 1 -2 0 0 0 0 4.184000e+00",true);
 		this.addUnit("kcal","1 2 1 -2 0 0 0 0 4.184000e+03",true);
+		this.addUnit("kwh","1 2 1 -2 0 0 0 0 3.6e+06",true),
 		this.addUnit("megatontnt","1 2 1 -2 0 0 0 0 4.184000e+15",true);
 	
 		this.addUnit("cp","1 -1 1 -1 0 0 0 0 1.000000e-03",true);
@@ -1504,6 +1505,8 @@ class MMUnitsContainer extends MMCommandParent {
 	
 		this.addUnit("Hz","1 0 0 -1 0 0 0 0 1.0",true);
 		this.addUnit("rpm","1 0 0 -1 0 0 0 0 0.104719755",true);
+
+		this.addUnit("mpg","1 -2 0 0 0 0 0 0 4.251437074e+5",true);
 	
 		this.addUnit("SG[60]","1 -3 1 0 0 0 0 0 9.990220e+02",true);
 		this.addUnit("API60","3 -3 1 0 0 0 0 0 1.413616e+05 1.315000e+02",true);
