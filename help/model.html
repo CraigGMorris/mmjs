@@ -11,6 +11,7 @@
 					namespace: 'Name Space',
 					ioexpr: 'Input Expressions',
 					info: 'Information View',
+					print: 'Printing the View',
 					defaultview: 'Default View',
 					parameters: 'Formula Parameters',
 				});
@@ -78,9 +79,10 @@
 				</p>
 				<img src="model.png" alt="Model Information View">
 				<p>
-					When first created, the content portion of the information view for a model will be blank.
-					However as you add tools to the model, any that have their display box checked will appear
-					in the model's information view.
+					If none of the tools in the model have any display boxes checked, then
+					the information view will just display a list of the tools in the model.
+					However as you add tools to the model, any that have their display box
+					checked will appear in the model's information view instead.
 				</p>
 				<p>
 					In a tool's <a href="notes.html">notes view</a>, you can
@@ -114,6 +116,11 @@
 					The order that tools are displayed is determined by their horizontal position
 					on the model diagram, with ties being determined by the vertical position.
 				</p>
+			</div>
+			<div id="print" class="section">
+				<h3>Printing the View</h3>
+				At the top left of the view there is a small non-scrolling printer icon
+				and tapping on that will bring up a print dialog for printing the view.				
 			</div>
 			<div id="defaultview" class="section">
 				<h3>Default View</h3>

@@ -26,7 +26,7 @@ function rtSetupHeading(title, sections) {
 	else {
 		lines.push('<span>&nbsp;</span>');
 	}
-	lines.push(title);
+	lines.push(`<span class="clickable" onClick="window.scroll({top: 0})">${title}</span>`);
 	if (pageNumber !== history.length) {
 		lines.push('<span class="clickable" onClick="history.forward();" title="Forward">&gt;</span>');
 	}
