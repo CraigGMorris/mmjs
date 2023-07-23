@@ -148,8 +148,8 @@ export function FormulaField(props) {
 						else {
 							// watches for Enter and applys changes when it see it
 							e.preventDefault();
-							applyChanges(formula);
-							// fieldInputRef.current.blur();
+							// just blur and let the onBlur catch it
+							fieldInputRef.current.blur();
 							return;
 						}
 					}
