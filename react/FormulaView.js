@@ -831,7 +831,9 @@ export function FormulaEditor(props) {
 					id: 'formula-editor__previewtable',
 					value: previewValue,
 					viewInfo: props.viewInfo,
-					viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, 140],
+					viewBox: [0, 0,
+						props.infoWidth - 2*nInfoViewPadding,
+						props.infoHeight - 155 - 130],
 				}
 			),
 		);

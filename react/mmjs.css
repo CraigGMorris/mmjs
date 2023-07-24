@@ -652,7 +652,7 @@ a:hover {
 #formula-editor__edit {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: var(--input--height) 1fr var(--input--height) 155px;
+	grid-template-rows: var(--input--height) 155px var(--input--height) 1fr;
 	grid-template-areas: "toolbar"
 		"input"
 		"actions"

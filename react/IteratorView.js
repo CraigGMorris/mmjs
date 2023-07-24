@@ -82,6 +82,7 @@ export function IteratorView(props) {
 				t: t,
 				viewInfo: props.viewInfo,
 				infoWidth: props.infoWidth,
+				infoHeight: props.infoHeight,
 				actions: props.actions,
 				editOptions: editOptions,
 				cancelAction: () => {

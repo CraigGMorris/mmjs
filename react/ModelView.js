@@ -67,7 +67,7 @@ export function ModelView(props) {
 		props.actions.doCommand('', () => {
 			props.actions.popView();
 		});
-		return null;
+		// return null; // removed this to prevent error on undo of new model Why originally needed?
 	}
 
 	const htmlAction = React.useCallback(e => {
@@ -141,6 +141,7 @@ export function ModelView(props) {
 					t: t,
 					viewInfo: props.viewInfo,
 					infoWidth: props.infoWidth,
+					infoHeight: props.infoHeight,
 					actions: props.actions,
 					editOptions: editOptions,
 					cancelAction: () => {
