@@ -150,6 +150,13 @@ export function FormulaField(props) {
 							e.preventDefault();
 							// just blur and let the onBlur catch it
 							fieldInputRef.current.blur();
+							if (e.ctrlKey) {
+								if (props.ctrlEnterAction) {
+									e.preventDefault();
+									e.stopPropagation();
+										props.ctrlEnterAction();
+								}
+							}
 							return;
 						}
 					}

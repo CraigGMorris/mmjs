@@ -94,6 +94,16 @@ export function ExpressionView(props) {
 		});
 	}
 
+	const addNewExpression = () => {
+		props.actions.doCommand('addTool Expression',(results) => {
+			if (results && results.length) {
+				const name = results[0].results;
+				props.actions.viewTool(name, 'Expression');			
+			}
+			props.actions.updateDiagram()
+		});
+	};
+
 	const results = updateResults.length ? updateResults[0].results : {};
 	const path = results.path;
 	const value = results.value;
@@ -376,15 +386,7 @@ export function ExpressionView(props) {
 						e(
 							'div', {
 								id: 'expression__add-new',
-								onClick: (e) => {
-									props.actions.doCommand('addTool Expression',(results) => {
-										if (results && results.length) {
-											const name = results[0].results;
-											props.actions.viewTool(name, 'Expression');			
-										}
-										props.actions.updateDiagram()
-									});
-								}
+								onClick: addNewExpression,
 							},
 							'+Exp'
 						),
@@ -408,6 +410,7 @@ export function ExpressionView(props) {
 								setDisplay(ExpressionDisplay.formulaEditor);
 							},
 							applyChanges: applyChanges,	
+							ctrlEnterAction: addNewExpression,
 						}
 					)
 				),
