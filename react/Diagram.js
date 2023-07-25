@@ -2005,6 +2005,7 @@ class Divider extends React.Component {
 				pointerEvents: 'auto',
 				fill: 'blue',
 				font: '30px sans-serif',
+				cursor: 'col-resize'
 			},
 			x: this.props.x,
 			y: this.props.y,

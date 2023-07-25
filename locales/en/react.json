@@ -73,6 +73,7 @@
 	"formulaEditorCurrentButton": "Current",
 	"formulaEditorCurrentKey": "Preview Current - alt-enter",
 	"formulaEditorPreviewButton": "Preview",
+	"formulaEditorPreviewResize": "Drag to resize the preview area",
 	"formulaEditorPreviewKey": "Preview Formula - ctrl-enter",
 	"formulaEditorFunctionsButton": "Functions",
 	"formulaEditorFunctionsHover": "Function selector - ctrl-f",

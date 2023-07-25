@@ -652,7 +652,7 @@ a:hover {
 #formula-editor__edit {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: var(--input--height) 155px var(--input--height) 1fr;
+	grid-template-rows: var(--input--height) 1fr var(--input--height) var(--preview-height) ;
 	grid-template-areas: "toolbar"
 		"input"
 		"actions"
@@ -710,15 +710,15 @@ a:hover {
 #formula-editor__actions {
 	display: grid;
 	grid-area: actions;
-	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr 12px;
 	grid-template-rows: 1fr;
-	grid-template-areas: "preview current apply";
+	grid-template-areas: "preview current apply resize";
 	grid-gap: 5px;
 }
 
 #formula-editor__actions button {
 	font-size: 10pt;
-	width: 100px;
+	width: 95px;
 	justify-self: center;
 }
 
@@ -738,6 +738,16 @@ a:hover {
 
 #formula-editor__current-button {
 	grid-area: current;
+}
+
+#formula-editor__preview-resize {
+	grid-area: resize;
+	color: var(--link--color);
+	cursor: row-resize;
+}
+
+#formula-editor__preview-resize:hover {
+	color: var(--link--color-hover);
 }
 
 #formula-editor__editor {

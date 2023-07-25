@@ -363,7 +363,12 @@ export function FormulaEditor(props) {
 	const [previewValue, setPreviewValue] = useState(props.value || '');
 	const [previewingCurrent, setPreviewingCurrent] = useState(true);
 	const [errorMessage, setErrorMessage] = useState(null);
+
+	// parameters to allow resizing the editor preview
 	const [previewParam, setPreviewParam] = useState(null);
+	const [previewHeight, setPreviewHeight] = useState(Math.min(300, props.infoHeight -150));
+	const [dividerPointer, setDividerPointer] = useState(null);
+
 	// following is used to trigger text parsing for preview - updated on anything that
 	// could change caret position.
 	const [eventHitCount, setEventHitCount] = useState(0);
@@ -372,6 +377,8 @@ export function FormulaEditor(props) {
 	// reference to editor textarea to keep track of selection and focus
 	const editInputRef = React.useRef(null);
 //	const normalClose = React.useRef(false);
+
+	document.documentElement.style.setProperty('--preview-height', `${previewHeight}px`);
 
 	useEffect(() => {
 		previewCurrent();
@@ -833,7 +840,7 @@ export function FormulaEditor(props) {
 					viewInfo: props.viewInfo,
 					viewBox: [0, 0,
 						props.infoWidth - 2*nInfoViewPadding,
-						props.infoHeight - 155 - 130],
+						previewHeight - 20],
 				}
 			),
 		);
@@ -932,6 +939,39 @@ export function FormulaEditor(props) {
 					onClick: previewCurrent,
 				},
 				t('react:formulaEditorCurrentButton'),
+			),
+			e(	// draggable resize icon for preview area
+				'div', {
+					id: 'formula-editor__preview-resize',
+					title: t('react:formulaEditorPreviewResize'),
+
+					onPointerDown: (e) => {
+						e.stopPropagation();
+						e.preventDefault();
+						setDividerPointer(e.clientY);
+						e.target.setPointerCapture(e.pointerId);
+					},
+				
+					onPointerMove: (e) => {
+						if (dividerPointer) {
+							e.stopPropagation();
+							e.preventDefault();
+							const change = dividerPointer - e.clientY;
+							let newPreviewHeight = Math.max(80, previewHeight + change);
+							newPreviewHeight = Math.min(props.infoHeight - 150, newPreviewHeight);
+							setPreviewHeight(newPreviewHeight);
+							setDividerPointer(e.clientY);
+						}		
+					},
+				
+					onPointerUp: (e) => {
+						e.stopPropagation();
+						e.preventDefault();
+						e.target.releasePointerCapture(e.pointerId);
+						setDividerPointer(null);
+					}
+				},
+				'↕'
 			)
 		),
 		previewComponent,
