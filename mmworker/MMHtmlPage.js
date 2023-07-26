@@ -540,6 +540,12 @@ class MMHtmlPageProcessor {
 				width: 50px;
 			}
 
+			input:focus-visible, textarea:focus-visible {
+				outline: 1px solid white;
+				border: solid 2px blue;
+				border-radius: 5px;
+			}
+			
 			select, button {
 				font-size: 12pt;
 			}

@@ -54,6 +54,12 @@
 	}
 }
 
+input:focus-visible, textarea:focus-visible {
+	outline: 1px solid white;
+	border: solid 2px blue;
+	border-radius: 5px;
+}
+
 body {
 	background-color: var(--body--bgcolor) !important;
 	color: var(--body--color);
@@ -96,6 +102,7 @@ textarea {
 	padding-left: 5px;
 	color: var(--input--color);
 	background-color: var(--input--bgcolor);
+	resize: none;
 }
 
 textarea:disabled {
@@ -675,7 +682,6 @@ a:hover {
 
 #formula-editor__preview-param {
 	grid-area: preview;
-	height: 150px;
 	box-sizing: border-box;
 	overflow: auto;
 	color: var(--link--color);
