@@ -253,7 +253,7 @@ export function MMApp(props) {
 		const setSize = () => {
 			const docElement = document.documentElement;
 			const newDocHeight = docElement.clientHeight - 16;
-			const newDocWidth = docElement.clientWidth - 16;
+			const newDocWidth = docElement.clientWidth - 8;
 			const rightPercent = rightPaneWidth/docWidth;
 			setDocHeight(newDocHeight);
 			setDocWidth(newDocWidth);
