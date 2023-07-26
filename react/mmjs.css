@@ -760,6 +760,7 @@ a:hover {
 #formula-editor__editor {
 	grid-area: input;
 	height: 100%;
+	margin-right: 1px;
 }
 
 #f-picker {
