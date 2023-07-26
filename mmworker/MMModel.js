@@ -167,6 +167,8 @@ class MMModel extends MMTool {
 				p.push(child.name + '.');
 			}
 		}
+		// note these will be removed by the MMTools parameter preview
+		// if the path is blank. This counts on them being last in the list
 		if (!this.children.toolnames) {
 			p.push('toolnames');
 		}
