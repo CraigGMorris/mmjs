@@ -30,6 +30,7 @@ export function ToolView(props) {
 	const t = props.t;
 	let name;
 	const nameRef = React.useRef();
+	const notesRef = React.useRef();
 	useEffect(() => {
 		// if the tool was just added focus on name and select it
 		if (nameRef.current) {
@@ -61,6 +62,14 @@ export function ToolView(props) {
 	const [notesText, setNotesText] = useState(notes);
 	const diagramNotes = updateResults.length ? results.diagramNotes : false;
 	const htmlNotes = updateResults.length ? results.htmlNotes : false;
+	const [notesSelection, setNotesSelection] = useState([0,0]);
+
+	useEffect(() => {
+		if (notesRef.current) {
+			notesRef.current.setSelectionRange(notesSelection[0], notesSelection[1]);
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [notesSelection]);
 
 	const doRename = () => {
 		const path = props.viewInfo.path;
@@ -217,6 +226,7 @@ export function ToolView(props) {
 				'textarea', {
 					id: 'tool-view__notes-input',
 					value: notesText,
+					ref: notesRef,
 					onChange: (event) => {
 						// keeps input field in sync
 						const value = event.target.value;
@@ -228,6 +238,21 @@ export function ToolView(props) {
 							e.stopPropagation();
 							doSetNotes(notesText);
 							setShowNotes(false);
+						}
+						else if (e.code === 'Tab') {
+							e.preventDefault();
+							e.stopPropagation();
+							// add tab character
+							const start = e.target.selectionStart;
+							const end = e.target.selectionEnd;
+							let value = e.target.value;
+					
+							value = value.substring(0, start) +
+								"\t" + value.substring(start);
+							setNotesText(value);
+					
+							// put caret at right position again
+							setNotesSelection([start + 1, end + 1]);
 						}
 					},
 					onBlur: () => {
