@@ -81,6 +81,32 @@
 					123000 kg-m^2/s^2 ' also 123 kJ
 				</div>
 				<p>
+					If the unit is to be followed by one of the operators that can appear in a
+					unit (<b>-</b>, <b>/</b> or <b>^</b>) there must be white space separating
+					the unit from the operator. Thus:
+				</p>
+				<p class="formula">
+					2 kg/3 h
+				</p>
+				<p>
+					would result in an unidentified unit error.
+				</p>
+				<p class="formula">
+					2 kg*3 h
+				</p>
+				<p>
+					would be legal, but it might be best to just always separate units from
+					operators with a space. Note that both
+				</p>
+				<p class="formula">
+					2 m^3<br>
+					2 m ^3
+				</p>
+				<p>
+					are legal, but the first results in 2 cubic metres, while the second yields
+					8 metres.
+				</p>
+				<p>
 					When you are editing a formula, you can request a unit browser to help you select
 					a conversion unit.  See the <a href="formulaeditor.html">formula editor</a> page
 					for details and see the <a href="units.html">units</a> page for more information

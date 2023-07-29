@@ -109,9 +109,9 @@
 						"name": "Units",
 						"Notes": "A value with an acceleration unit. Because the current default units are SI, its result value is shown in those units. However you can select any compatible unit for the display.",
 						"DiagramX": -70,
-						"DiagramY": 40,
+						"DiagramY": 35,
 						"HideInfo": "y",
-						"DiagramNotes": "y",
+						"DiagramNotes": "n",
 						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
@@ -123,8 +123,8 @@
 					{
 						"name": "Length",
 						"Notes": "An expression with a length unit.",
-						"DiagramX": -70,
-						"DiagramY": 110,
+						"DiagramX": 5,
+						"DiagramY": 5,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -138,8 +138,8 @@
 					{
 						"name": "Hours",
 						"Notes": "An expression with a time unit of hours",
-						"DiagramX": -70,
-						"DiagramY": 150,
+						"DiagramX": 5,
+						"DiagramY": 45,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -153,8 +153,8 @@
 					{
 						"name": "Minutes",
 						"Notes": "A time value with a unit of minutes.",
-						"DiagramX": -70,
-						"DiagramY": 190,
+						"DiagramX": 5,
+						"DiagramY": 95,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -168,10 +168,10 @@
 					{
 						"name": "Velocity",
 						"Notes": "When a length is divided by time, the resulting value will be a velocity.",
-						"DiagramX": 35,
-						"DiagramY": 5,
+						"DiagramX": 90,
+						"DiagramY": 15,
 						"HideInfo": "y",
-						"DiagramNotes": "y",
+						"DiagramNotes": "n",
 						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
@@ -183,10 +183,10 @@
 					{
 						"name": "AddTimes",
 						"Notes": "You can't add values with different fundamental properties, but adding values with different units of the same type is always allowed.",
-						"DiagramX": 35,
-						"DiagramY": 50,
+						"DiagramX": 90,
+						"DiagramY": 45,
 						"HideInfo": "y",
-						"DiagramNotes": "y",
+						"DiagramNotes": "n",
 						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
@@ -198,10 +198,10 @@
 					{
 						"name": "Fraction",
 						"Notes": "The default dimensionless unit for all the built-in unit sets is fraction.  Despite the name, these values are not constrained to be from 0 to 1 or 0 to 100.\n\nAs used in Math Minion, \"Fraction\" is just a generic description for  values which have powers of 0 for all of the fundamental SI properties.\n\nIn this expression, dividing the minutes value by the hours one causes the units to cancel out and the result is a \"Fraction\" value of 2.",
-						"DiagramX": 35,
-						"DiagramY": 105,
+						"DiagramX": 90,
+						"DiagramY": 95,
 						"HideInfo": "y",
-						"DiagramNotes": "y",
+						"DiagramNotes": "n",
 						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
@@ -213,11 +213,11 @@
 					},
 					{
 						"name": "mph",
-						"Notes": "This is the velocity value displayed in miles per hour.  The display unit is selected by tapping the displayed unit name.\n\nThe display format has also been set to shown just two figures after the decimal point. This is done in the field to the right of the unit in the expression's view.",
-						"DiagramX": 115,
-						"DiagramY": 5,
+						"Notes": "This is the velocity value displayed in miles per hour.  The display unit is selected by tapping the displayed unit name. (If you are viewing this in the model view, tap on this note to see the expression view first.)\n\nThe display format has also been set to shown just two figures after the decimal point. This is done in the field to the right of the unit in the expression's view.",
+						"DiagramX": 180,
+						"DiagramY": 10,
 						"HideInfo": "y",
-						"DiagramNotes": "y",
+						"DiagramNotes": "n",
 						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
@@ -231,10 +231,10 @@
 					{
 						"name": "TableColumns",
 						"Notes": "If the expression result is a table value, you can tap on the column name cell to enable selecting the display unit for that column.\n\nIf this case the default time unit of seconds has been replaced with hours in the first column, while the velocity unit has been left as the default.\n\nThe Times column has been set to show only two decimal places by means of a format specifier of <b>10.2f</b>, while the Velocity column has be given an exponential format of <b>12.6e</b>.",
-						"DiagramX": 115,
-						"DiagramY": 110,
+						"DiagramX": 180,
+						"DiagramY": 45,
 						"HideInfo": "y",
-						"DiagramNotes": "y",
+						"DiagramNotes": "n",
 						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
@@ -252,16 +252,47 @@
 						]
 					},
 					{
-						"name": "Overview",
-						"Notes": "The Math Minion unit conversion system is deeply integrated with the calculation engine, which permits dimensional analysis on all calculations.\n\nPlease take time to <span onClick=\"event.stopPropagation()\"><a href=\"./help/units.html\" target=\"_blank\">read about it in the documentation</a></span>.",
+						"name": "Syntax",
+						"Notes": "The unit must be separated from the number by a space and must only contain unit names and the operators <b>-</b>, <b>/</b> and <b>^</b>. There can only be a single <b>/</b>. Thus the following are all valid and are all equivalent to an energy of 123 kJ.\n\n<b>123 kj ' energy\n123 n-km ' also 123 kJ\n123000 kg-m^2/s^2 ' also 123 kJ</b>",
 						"DiagramX": -70,
-						"DiagramY": 5,
-						"HideInfo": "n",
+						"DiagramY": 65,
+						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": ""
+							"Formula": "123000 kg-m^2/s^2"
+						},
+						"showInput": "y"
+					},
+					{
+						"name": "Syntax2",
+						"Notes": "If the unit is to be followed by one of the operators that can appear in a unit (<b>-</b>, <b>/</b> or <b>^</b>) there must be white space separatingthe unit from the operator. Thus:\n\n\t<b>2 kg/3 h</b>\n\nwould result in an unidentified unit error.\n\n\t<b>2 kg*3 h</b>\n\nwould be legal, but it might be best to just always separate units from\noperators with a space. Note that both\n\n\t<b>2 m^3</b>\nand\n\t<b>2 m ^3</b>\n\nare legal, but the first results in 2 cubic metres, while the second yields 8 metres.",
+						"DiagramX": -70,
+						"DiagramY": 95,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "2 m ^3"
+						},
+						"showInput": "y"
+					},
+					{
+						"name": "Overview",
+						"Notes": "",
+						"DiagramX": -70,
+						"DiagramY": 5,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<style>\n\t#header {\n\t\tdisplay: grid;\n\t\tgrid-template-columns: 1fr 65px;\n\t\tgrid-gap: 10px;\n\t\tborder-bottom: 1px solid black;\n\t\tmargin-bottom: 10px;\n\t}\n\t#page {\n\t\tmargin-top: 10px;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t\tbackground-color: #f2f2f2;\n\t}\n\t.link {\n\t\tcolor: blue;\n\t\tcursor: pointer;\n\t\tfont-weight: bold;\n\t}\n</style>\n<div id=\"page\">\n\t<div id=\"header\">\n\t\t<h3>Conversion Units</h3>\n\t</div>\n\t<p>\n\t\tThe Math Minion unit conversion system is deeply integrated with the calculation engine, which permits dimensional analysis on all calculations.\n\t</p>\n\t<p>\n\t\tPlease take time to\n\t\t<span class=\"link\"\n\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/units.html'})\">\n\t\t\tread about it in the documentation\n\t\t</span>.\n\t</p>\n\t<p>\n\t\t<b>Note:</b> assuming you are reading this in the model view, in the notes below you can tap on the note or the name header to display the expression being discussed and its controls for unit and format.\n\t</p>\n</div>"
 						}
 					}
 				]
@@ -3843,7 +3874,7 @@
 				"isOutput": "y",
 				"Type": "HTML Form",
 				"Formula": {
-					"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.disclaimer {\n\t\t\t\tcolor: #004400;\n\t\t\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\t\t\tfont-size: 0.7em;\n\t\t\t\tfont-style: italic;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t}\n\t\t\t.link {\n\t\t\t\tcolor: blue;\n\t\t\t\tfont-weight: bold;\n\t\t\t\tcursor: pointer;\n\t\t\t}\n\t\t\t#page {\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session</h4>\n\t\t</div>\n\t\t<p class=\"disclaimer\">\n\t\t\tMath Minion is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the <a href=\"../LICENSE.txt\" target=\"_blank\">GNU General Public License</a> for more details.\n\t\t</p>\n\t\t<p>\n\t\t\tThis session contains numerous explanations and small illustrations of how Math Minion works. \n\t\t</p>\n\t\t<p>\t\t\t\n\t\t\tBefore diving in, it would probably be a good idea to check out <b><a href=\"https://www.mathminion.org/video/mmnavigate.mp4\" target=\"_blank\">this video</a></b> on navigating in Math Minion and perhaps some of the other <b><a href=\"https://www.mathminion.org/help/videos.html\" target=\"_blank\">videos</a></b> .\n\t\t</p>\n\t\t<p>\n\t\t\tIf videos don't appeal, then the links for the\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/diagram.html'})\">\n\t\t\t\tdiagram\n\t\t\t</span> and\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/infoview.html'})\">\n\t\t\t\tinformation view\n\t\t\t</span> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tAlso, detailed help is always available from the button at the upper right of this view.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the diagram and the examples you can import from the <b>Examples</b> HtmlPage.\n\t\t</p>\n\t\t<p>\n\t\t\tKeep your <b>Getting Started</b> session and <b>Math Minion News</b> session up to date by\n\t\t\treloading them with these links:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\">Reload Getting Started</span></li>\n\t\t\t<li><span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../news/MM_News.txt', mm_view: 'Welcome'});\">Reload MM_News</span></li>\n\t\t</ul>\n\t\t<p>\n\t\t\tIf you have any questions or comments, please use the <b><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Contact Me</a></b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>Craig</p>\n\t\t</div>\n\t</body>\n</html>"
+					"Formula": "'\n<html>\n\t<head>\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.disclaimer {\n\t\t\t\tcolor: #004400;\n\t\t\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\t\t\tfont-size: 0.7em;\n\t\t\t\tfont-style: italic;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t}\n\t\t\t.link {\n\t\t\t\tcolor: blue;\n\t\t\t\tfont-weight: bold;\n\t\t\t\tcursor: pointer;\n\t\t\t}\n\t\t\t#page {\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h4>Welcome to Math Minion's<br> \"Getting Started\" session</h4>\n\t\t</div>\n\t\t<p class=\"disclaimer\">\n\t\t\tMath Minion is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the <a href=\"../LICENSE.txt\" target=\"_blank\">GNU General Public License</a> for more details.\n\t\t</p>\n\t\t<p>\n\t\t\tThis session contains numerous explanations and small illustrations of how Math Minion works. \n\t\t</p>\n\t\t<p>\t\t\t\n\t\t\tBefore diving in, it would probably be a good idea to check out <b><a href=\"https://www.mathminion.org/video/mmnavigate.mp4\" target=\"_blank\">this video</a></b> on navigating in Math Minion and perhaps some of the other <b><a href=\"https://www.mathminion.org/help/videos.html\" target=\"_blank\">videos</a></b> .\n\t\t</p>\n\t\t<p>\n\t\t\tIf videos don't appeal, then the links for the\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/diagram.html'})\">\n\t\t\t\tdiagram\n\t\t\t</span> and\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/infoview.html'})\">\n\t\t\t\tinformation view\n\t\t\t</span> and skimming how to navigate will make things easier.\n\t\t</p>\n\t\t<p>\n\t\t\tAlso, detailed help is always available from the button at the upper right of this view, including a\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/tutorial.html'})\">\n\t\t\t\ttutorial\n\t\t\t</span>.\n\t\t</p>\n\t\t<p>\n\t\t\tThen explore the models on the diagram and the examples you can import from the <b>Examples</b> HtmlPage.\n\t\t</p>\n\t\t<p>\n\t\t\tKeep your <b>Getting Started</b> session and <b>Math Minion News</b> session up to date by\n\t\t\treloading them with these links:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\">Reload Getting Started</span></li>\n\t\t\t<li><span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../news/MM_News.txt', mm_view: 'Welcome'});\">Reload MM_News</span></li>\n\t\t</ul>\n\t\t<p>\n\t\t\tIf you have any questions or comments, please use the <b><a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Contact Me</a></b> link in the <b>Help Contents</b> to send them to me.\n\t\t</p>\n\t\t<p>Craig</p>\n\t\t</div>\n\t</body>\n</html>"
 				}
 			},
 			{
@@ -6380,12 +6411,12 @@
 								"Notes": "<b>Models</b>\n\nIf you have made it this far, you know that models are just containers for other tools, possibly including other models.",
 								"DiagramX": 20,
 								"DiagramY": 30,
-								"HideInfo": "n",
+								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"HtmlNotes": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": ""
+									"Formula": "circle."
 								}
 							},
 							{
@@ -6462,7 +6493,7 @@
 										"name": "xyplot",
 										"Notes": "Plot the circle from calculated coordinates as well as one half the size.",
 										"DiagramX": 100,
-										"DiagramY": 185,
+										"DiagramY": 150,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -6495,7 +6526,7 @@
 										"name": "coordinates",
 										"Notes": "Calculate the x-y coordinates for a circle with a radius equal to radius.",
 										"DiagramX": 100,
-										"DiagramY": 140,
+										"DiagramY": 105,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -6509,7 +6540,7 @@
 										"name": "Coord_Calc",
 										"Notes": "<b>Calculation of Coordinates</b>\n\nThe formula in the <b>coordinates</b> expression:\n\n   <b>{cart radius[1,1], 1:60 / 30  * {pi}}</b>\n\nis a bit more complicated. Library functions are called by enclosing them in curly braces, with the name of the function immediately after the opening brace. The parameters, if any, follow in a comma separated list.\n\nThus in the formula above there are two functions, <b>cart</b> and <b>pi</b>. The pi function doesn't take any parameters and just returns the value of pi.\n\nThe cart function calculates the cartesian coordinates from a radius and an angle. Specifically for:\n\n   <b>{cart r, a}</b>\n\ncart returns a table value with the first column being the <b>x</b> value and the second being the <b>y</b> of the radius <b>r</b> and angle <b>a</b> converted to cartesian coordinates.\n\nTable value columns can be referenced using dot notation, so <b>coordinates.x</b> would return an array corresponding to the rows of the <b>x</b> column.  These are used in the <b>xyplot</b> tool to graph the circle.\n\nThe first parameter to the cart function is <b>radius[1,1]</b>. The <b>[1,1]</b> index operator specifies we just want the value in the first row and column so it is guaranteed to be a scalar.\n\nThe second parameter, <b>1:60 / 30 * {pi}</b> creates an array of integers from 1 to 60 using the <b>:</b> operator. This is then divided by 30 giving 60 values evenly spaced up to 2. This array is then multiplied by pi to give an array of angles up to 2pi, which is of course the number of radians in a circle.",
 										"DiagramX": 100,
-										"DiagramY": 110,
+										"DiagramY": 195,
 										"HideInfo": "n",
 										"DiagramNotes": "n",
 										"HtmlNotes": "y",
@@ -6529,6 +6560,19 @@
 										"Type": "Expression",
 										"Formula": {
 											"Formula": ""
+										}
+									},
+									{
+										"name": "x1",
+										"Notes": "",
+										"DiagramX": 25,
+										"DiagramY": 185,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "4 year + 20230726 d"
 										}
 									}
 								]
@@ -16530,7 +16574,7 @@
 								"isOutput": "y",
 								"Type": "HTML Form",
 								"Formula": {
-									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<link rel=\"stylesheet\" \thref=\"./examples/htmlpage.css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t#page {\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t}\n\t\t\t.link {\n\t\t\t\tcolor: blue;\n\t\t\t\tcursor: pointer;\n\t\t\t\tfont-weight: bold;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>Data Tables</h3>\n\t\t</div>\n\t\t<p>\n\t\t\tData tables, unlike other Math Minion tools, contain static data as compared to the dynamic formulas that other tools use.\n\t\t</p>\n\t\t<p>\n\t\t\tWhile formulas can be used to input values, the formulas are immediately evaluated and discarded, with only the result being retained.\n\t\t</p>\n\t\t<p>\n\t\t\tThis makes data tables ideal for storing the kind of information that is often stored in spreadsheet or database tables.\n\t\t</p>\n\t\t<p>\n\t\t\tThe analogy is stronger with the latter as spreadsheets mix their data and calculations in the same cells, whereas databases and Math Minion store static data in their tables and use external, and hence visible, operations to slice and dice this data into other table value representations, without altering the source data.\n\t\t</p>\n\t\t<p class=\"reminder indent\">\n\t\t\t<b>Note:</b> the\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([],{mm_viewurl:'help/datatable.html'})\">DataTable help</span>\n\t\t\thas a comprehensive discussion of data table features and its examples use screenshots of the  <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Hours'});\">Hours</span> data table in this model.\n\t\t</p\n\t\t<p> \n\t\t\tIn this model, there are two data tables. The main one, <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Hours'});\">Hours</span>, stores fictitious billing information and has the following columns:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>Date</b> - numeric with <b>date</b> unit</li>\n\t\t\t<li><b>Client</b> - string with client name</li>\n\t\t\t<li><b>Project</b> - string with project name</li>\n\t\t\t<li><b>Hours</b> - numeric with <b>h</b> unit</li>\n\t\t\t<li><b>Charge</b> - calculated numeric with <b>dollar</b> unit</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe <b>Date</b> and <b>Hours</b> fields store time values, with appropriate units (date and hours), while the <b>Client</b> and <b>Project</b> fields store strings. However the <b>Client</b> column is designated as a menu, which means a formula supplies the available choices for the field. In this case the formula is <b>clients.name</b> which returns the array of names in the <b>name</b> column of the <b>Clients</b> data table.\n\t\t</p>\n\t\t<p>\n\t\t\tWhen I said that data tables only hold static data, that wasn't quite true for as a convenience, it is possible to include calculated columns as well. That is what the <b>Charge</b> column is. It's formula is a bit more complex and is described in the\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/datatable.html#coleditor'})\">\n\t\t\t\tcolumn editor</span> section of the DataTable help, but essentially it multiplies the <b>Hours</b> value of each row in the <b>Hours</b> table by the value in the <b>Rate</b> column of the <b>Clients</b> table which has the same client name in its <b>Name</b> column.\n\t\t</p>\n\t\t<p>\n\t\t\tThe expressions in this model just show some possible manipulations of the data, while the <b>LargerExample</b> adds more examples based on old weather data from our time in Fernie, B.C.\n\t\t</p>\n\t</body>\n</html>"
+									"Formula": "'\n<html>\n\t<head>\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t#page {\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t}\n\t\t\t.link {\n\t\t\t\tcolor: blue;\n\t\t\t\tcursor: pointer;\n\t\t\t\tfont-weight: bold;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>Data Tables</h3>\n\t\t</div>\n\t\t<p>\n\t\t\tData tables, unlike other Math Minion tools, contain static data as compared to the dynamic formulas that other tools use.\n\t\t</p>\n\t\t<p>\n\t\t\tWhile formulas can be used to input values, the formulas are immediately evaluated and discarded, with only the result being retained.\n\t\t</p>\n\t\t<p>\n\t\t\tThis makes data tables ideal for storing the kind of information that is often stored in spreadsheet or database tables.\n\t\t</p>\n\t\t<p>\n\t\t\tThe analogy is stronger with the latter as spreadsheets mix their data and calculations in the same cells, whereas databases and Math Minion store static data in their tables and use external, and hence visible, operations to slice and dice this data into other table value representations, without altering the source data.\n\t\t</p>\n\t\t<p class=\"reminder indent\">\n\t\t\t<b>Note:</b> the\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([],{mm_viewurl:'help/datatable.html'})\">DataTable help</span>\n\t\t\thas a comprehensive discussion of data table features and its examples use screenshots of the  <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Hours'});\">Hours</span> data table in this model.\n\t\t</p\n\t\t<p> \n\t\t\tIn this model, there are two data tables. The main one, <span class=\"link\" onClick=\"mmpost([], {mm_push: 'Hours'});\">Hours</span>, stores fictitious billing information and has the following columns:\n\t\t</p>\n\t\t<ul>\n\t\t\t<li><b>Date</b> - numeric with <b>date</b> unit</li>\n\t\t\t<li><b>Client</b> - string with client name</li>\n\t\t\t<li><b>Project</b> - string with project name</li>\n\t\t\t<li><b>Hours</b> - numeric with <b>h</b> unit</li>\n\t\t\t<li><b>Charge</b> - calculated numeric with <b>dollar</b> unit</li>\n\t\t</ul>\n\t\t<p>\n\t\t\tThe <b>Date</b> and <b>Hours</b> fields store time values, with appropriate units (date and hours), while the <b>Client</b> and <b>Project</b> fields store strings. However the <b>Client</b> column is designated as a menu, which means a formula supplies the available choices for the field. In this case the formula is <b>clients.name</b> which returns the array of names in the <b>name</b> column of the <b>Clients</b> data table.\n\t\t</p>\n\t\t<p>\n\t\t\tWhen I said that data tables only hold static data, that wasn't quite true for as a convenience, it is possible to include calculated columns as well. That is what the <b>Charge</b> column is. It's formula is a bit more complex and is described in the\n\t\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/datatable.html#coleditor'})\">\n\t\t\t\tcolumn editor</span> section of the DataTable help, but essentially it multiplies the <b>Hours</b> value of each row in the <b>Hours</b> table by the value in the <b>Rate</b> column of the <b>Clients</b> table which has the same client name in its <b>Name</b> column.\n\t\t</p>\n\t\t<p>\n\t\t\tThe expressions in this model just show some possible manipulations of the data, while the <b>LargerExample</b> adds more examples based on old weather data from our time in Fernie, B.C.\n\t\t</p>\n\t</body>\n</html>"
 								}
 							}
 						]
