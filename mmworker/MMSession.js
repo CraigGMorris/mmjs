@@ -686,6 +686,20 @@ class MMSession extends MMCommandParent {
 		}
 	}
 
+	/** @method deleteAllSessions
+	 * delete every session from the permenent storage
+	 */
+	async deleteAllSessions() {
+		const sessionPaths = await this.storage.listSessions();
+		for (const existingPath of sessionPaths) {
+			await this.storage.delete(existingPath);
+			if (this.storePath === existingPath) {
+				this.storePath = '(unnamed)';
+				await this.saveLastSessionPath()
+			}
+		}
+	}
+
 	/** @method copySession
 	 * make a copy of the session in persistent storage
 	 * @param {string} oldPath - the path to load from
@@ -816,6 +830,7 @@ class MMSession extends MMCommandParent {
 		verbs['loadurl'] = this.loadUrlCommand;
 		verbs['copy'] = this.copySessionCommand;
 		verbs['delete'] = this.deleteSessionCommand;
+		verbs['deleteallsessions'] = this.deleteAllSessionsCommand;
 		verbs['rename'] = this.renameSessionCommand;
 		verbs['getjson'] = this.getJsonCommand;
 		verbs['pushmodel'] = this.pushModelCommand;
@@ -840,6 +855,7 @@ class MMSession extends MMCommandParent {
 			save: 'mmcmd:_sessionSave',
 			copy: 'mmcmd:_sessionCopy',
 			delete: 'mmcmd:_sessionDelete',
+			deleteAllSessions: 'mmcmd:_sessionDeleteAll',
 			getjson: 'mmcmd:_sessionGetJson',
 			pushmodel: 'mmcmd:_sessionPushModel',
 			popmodel: 'mmcmd:_sessionPopModel',
@@ -976,6 +992,20 @@ class MMSession extends MMCommandParent {
 			return;
 		}
 		let result = await this.deleteSession(command.args);
+		command.results = `deleted: ${result}`;
+	}
+
+	/**
+	 * @method deleteAllSessionsCommand
+	 * verb
+	 * @param {MMCommand} command
+	 */
+	async deleteAllSessionsCommand(command) {
+		if (!indexedDB) {
+			this.setError('mmcmd:noIndexedDB', {});
+			return;
+		}
+		let result = await this.deleteAllSessions(command.args);
 		command.results = `deleted: ${result}`;
 	}
 

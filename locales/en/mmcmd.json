@@ -239,6 +239,7 @@
 	"_optReset": "Reset the optimizer outputs to 0 and disable\n\nusage: reset",
 	"_sessionCopy": "Create a copy of a session\n\nusage: copy fromPath toPath",
 	"_sessionDelete": "Delete a session\n\nusage: delete path",
+	"_sessionDeleteAll": "Delete ALL!!! sessions. Be sure about this",
 	"_sessionGetJson": "Returns the json of session suitable for storing.\nIf path is supplied, that session will be returned\n\nusage: getjson {path}",
 	"_sessionImport": "creates session from the json argument\n\nusage import json",
 	"_sessionList": "List the local sessions\n\nusage: listsessions",
