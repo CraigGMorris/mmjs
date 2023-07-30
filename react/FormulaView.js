@@ -111,6 +111,7 @@ export function FormulaField(props) {
 		nameSpace: nameSpace,
 	};
 
+	let showEditor = false;
 	return e(
 		'div', {
 			className: 'formula-input-field',
@@ -163,20 +164,41 @@ export function FormulaField(props) {
 				},
 
 				onFocus: e => {
-					if (formula.length > 100 || formula.includes('\n')) {
-						e.stopPropagation();
-						let selStart = e.target.selectionStart;
-						editOptions.selectionStart = Math.max(0, selStart);
-						let selEnd = fieldInputRef.current.selectionEnd;
-						editOptions.selectionEnd = Math.max(selStart, selEnd);
-						if (props.editAction) {
-							props.editAction(editOptions);
+					if (!showEditor) {
+						// focus not from clicking in field
+						if (formula.length > 100 || formula.includes('\n')) {
+							if (props.editAction) {
+								e.stopPropagation();
+								props.editAction(editOptions);
+							}
+						}
+						else {
+							if (props.gotFocusAction) {
+								props.gotFocusAction();
+							}
 						}
 					}
-					else {
-						if (props.gotFocusAction) {
-							props.gotFocusAction();
+				},
+				onPointerDown: e => {
+					if (props.editAction && (formula.length > 100 || formula.includes('\n'))) {
+						// set so focus knows it is because of a click in the field
+						// need to get to pointer up where the selection start is known
+						showEditor = true;
+					}
+				},
+				onPointerUp: e => {
+					if (showEditor && props.editAction) {
+						// we need to switch to editor because of pointer click
+						// get the selection start so it is maintained in editor
+						let selStart = Math.max(0, fieldInputRef.current.selectionStart);
+						let newLineCount = 0
+						for (let i = 0; i < selStart; i++) {
+							if (formula[i] === '\n') {
+								newLineCount++;
+							}
 						}
+						editOptions.selectionStart = selStart + newLineCount;
+						props.editAction(editOptions);
 					}
 				}
 			},
