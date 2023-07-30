@@ -691,7 +691,6 @@ a:hover {
 
 #formula-editor__preview-func-desc {
 	grid-area: preview;
-	height: 150px;
 	box-sizing: border-box;
 	overflow: auto;
 }
