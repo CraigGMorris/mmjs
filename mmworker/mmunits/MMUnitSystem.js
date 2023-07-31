@@ -1151,6 +1151,7 @@ class MMUnitsContainer extends MMCommandParent {
 			verbs['listuserunits'] = this.listUserUnits;
 			verbs['remove'] = this.removeUserDefinition;
 			verbs['unitsfordim'] = this.listUnitsWithDimensions;
+			verbs['unitsofsametype'] = this.listUnitsOfSameType;
 		}
 		return verbs;
 	}
@@ -1166,6 +1167,7 @@ class MMUnitsContainer extends MMCommandParent {
 			listuserunits: 'mmunit:_listuserunits',
 			remove: 'mmunit:_removeuserunit',
 			unitsfordim:	'mmunit:_unitsfordim',
+			unitsofsametype: 'mmunit:_unitsofsametype',
 		}[command];
 		if (key) {
 			return key;
@@ -1289,6 +1291,27 @@ class MMUnitsContainer extends MMCommandParent {
 			const unit = this.children[key];
 			if (unit.dimensionString === dimensionString) {
 				unitNames.push(unit.name);
+			}
+		}
+
+		unitNames = unitNames.sort();
+		command.results = unitNames;
+	}
+
+	/** method listUnitsWithDimensions
+	 * @param {MMCommand} command - requires command.args = the dimension string
+	 */
+	listUnitsOfSameType(command) {
+		const unitName = command.args;
+		const templateUnit = this.children[unitName];
+		let unitNames = [];
+		if (templateUnit) {
+			const dimensionString = templateUnit.dimensionString;
+			for (let key in this.children) {
+				const unit = this.children[key];
+				if (unit.dimensionString === dimensionString) {
+					unitNames.push(unit.name);
+				}
 			}
 		}
 

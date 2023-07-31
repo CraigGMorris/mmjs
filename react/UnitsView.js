@@ -616,13 +616,20 @@ export function UnitPicker(props) {
 
 	useEffect(() => {
 		if (selectedType) {
+			let foundType = false;
 			for (let type of unitTypes) {
 				if (type.name === selectedType) {
 					props.actions.doCommand(`/unitsys.units unitsfordim ${type.dim}`, (cmds) => {
 						setUnitNames(cmds[0].results);
 					});
+					foundType = true;
 					break;
 				}
+			}
+			if (!foundType && props.unitName) {
+				props.actions.doCommand(`/unitsys.units unitsofsametype ${props.unitName}`, (cmds) => {
+					setUnitNames(cmds[0].results);
+				});
 			}
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
