@@ -1010,7 +1010,7 @@ export function FormulaEditor(props) {
 		if (selectionStart !== 0) {
 			while (selectionStart >= 0) {
 				const prevChar = targetValue[--selectionStart];
-				if (!prevChar || prevChar.match(/[ \t+*:%.(\/\-\^\[\{}]/)) {
+				if (!prevChar || prevChar.match(/[ \t\n+*:%.(\/\-\^\[\{}]/)) {
 					if (prevChar === '{' && selectionStart >= 0) {
 						selectionStart--;
 					}
