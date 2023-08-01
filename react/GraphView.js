@@ -65,6 +65,7 @@ export function GraphView(props) {
 	const [editOptions, setEditOptions] = useState({});
 	const [unitLineName, setUnitLineName] = useState('x1');
 	const [unitType, setUnitType] = useState('');
+	const [unitName, setUnitName] = useState('');
 	const [plotInfo, setPlotInfo] = useState('');
  
 	const updateResults = props.viewInfo.updateResults;
@@ -142,6 +143,7 @@ export function GraphView(props) {
 				t: props.t,
 				actions: props.actions,
 				unitType: unitType,
+				unitName: unitName,
 				cancel: () => {
 					setDisplay(DisplayType.input);
 				},
@@ -272,6 +274,7 @@ export function GraphView(props) {
 							className: 'graph__display-unit',
 							onClick: () => {
 								setUnitType(value.unitType);
+								setUnitName(value.unit),
 								setUnitLineName(name);
 								setDisplay(DisplayType.unitPicker);
 							}

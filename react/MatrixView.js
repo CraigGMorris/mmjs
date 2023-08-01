@@ -125,6 +125,7 @@ export function MatrixView(props) {
 
 	const valueUnit = (value && value.unit) ? value.unit : '';
 	const unitType = (value && value.unitType) ? value.unitType : '';
+	const unitName = value ? value.unit : '';
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 
@@ -168,6 +169,7 @@ export function MatrixView(props) {
 					t: props.t,
 					actions: props.actions,
 					unitType: unitType,
+					unitName: unitName,
 					cancel: () => {
 						setDisplay(MatrixDisplay.table);
 					},

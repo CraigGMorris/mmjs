@@ -191,6 +191,7 @@ function EditColumnView(props) {
 					t: props.t,
 					actions: props.actions,
 					unitType: props.unitType,
+					unitName: props.selectedColumn ? props.selectedColumn.dUnit : '',
 					cancel: () => {
 						setEditColumnDisplay(DataTableDisplay.editColumn);
 					},

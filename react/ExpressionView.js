@@ -162,6 +162,7 @@ export function ExpressionView(props) {
 					t: props.t,
 					actions: props.actions,
 					unitType: unitType,
+					unitName: valueUnit,
 					cancel: () => {
 						setDisplay(ExpressionDisplay.expression);
 					},

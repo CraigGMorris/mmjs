@@ -34,5 +34,6 @@
 	"_removetype": "usage: removetype typeName",
 	"_renametype": "usage: renametype fromName toName",
 	"_unitsfordim": "usage unitsfordim dimensionString",
-	"_unitfortype": "usage: unitfortype typeName\nreturns the unit for type in the set"
+	"_unitfortype": "usage: unitfortype typeName\nreturns the unit for type in the set",
+	"_unitsofsametype": "usage: unitsofsametype unitName\nreturns units with same type as unitName"
 }
