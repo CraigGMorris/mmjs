@@ -1203,9 +1203,16 @@ class MMUnitsContainer extends MMCommandParent {
 		if (this.children[lowerCaseName]) {
 			throw(this.t('mmunit:duplicateUnit', {name: name}));
 		}
-		let newUnit = new MMUnit(name, this).initWithDescription(isMaster, description);
-		this.addChild(name, newUnit);
-		this.registerDimensionsOfUnit(newUnit);
+		let newUnit = new MMUnit(name, this);
+		try {
+			newUnit.initWithDescription(isMaster, description);
+			this.registerDimensionsOfUnit(newUnit);
+		}
+		catch (e) {
+			if (this.children[lowerCaseName]) {
+				this.removeChildNamed(lowerCaseName);
+			}
+		}
 		return newUnit;
 	}
 
