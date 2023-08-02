@@ -619,6 +619,7 @@ export function FormulaEditor(props) {
 			if (results) {
 				setPreviewValue(results[0].results);
 				setPreviewingCurrent(false);
+				editInputRef.current.focus();
 			}
 		}, previewErrorHandler);
 	}
@@ -1032,7 +1033,7 @@ export function FormulaEditor(props) {
 		let newSelection
 		if (value.startsWith('{')) {
 			// function - set before first argument
-			newSelection = selectionEnd;
+			newSelection = parts[0].length;
 			while(newFormula[newSelection].match(/\w/)) { newSelection++; }
 			newSelection++;
 		}
