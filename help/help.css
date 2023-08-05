@@ -164,6 +164,12 @@ body {
 		border-bottom: solid 1px black;
 	}
 
+	#title span {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
 	#contentstoggle {
 		grid-area: contents;
 		text-align: left;
