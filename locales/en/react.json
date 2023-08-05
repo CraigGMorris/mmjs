@@ -77,6 +77,7 @@
 	"formulaEditorPreviewKey": "Preview Formula - ctrl-enter",
 	"formulaEditorFunctionsButton": "Functions",
 	"formulaEditorFunctionsHover": "Function selector - ctrl-f",
+	"formulaEditorSelectionType": "Selection",
 	"formulaEditorUnitsButton": "Units",
 	"formulaEditorUnitsHover": "Unit selector - ctrl-u",
 	"formulaEditorValuesHover": "Value selector - shift-ctrl-v",

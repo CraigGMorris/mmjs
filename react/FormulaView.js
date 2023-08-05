@@ -28,7 +28,7 @@ const useEffect = React.useEffect;
 /**
  * Enum for formula display types.
  * @readonly
- * @enum {string}
+ * @enum {Number}
  */
 const FormulaDisplay = Object.freeze({
 	editor: 0,
@@ -372,6 +372,18 @@ function FunctionPicker(props) {
 	)
 }
 
+/**
+ * Enum for formula editor preview calc types.
+ * @readonly
+ * @enum {Number}
+ */
+const FormulaPreviewCalcType = Object.freeze({
+	current: 0,
+	preview: 1,
+	selection: 2
+});
+
+
 export function FormulaEditor(props) {
 	let t = props.t;
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
@@ -383,7 +395,7 @@ export function FormulaEditor(props) {
 	const selEnd = editOptions.selectionEnd ? editOptions.selectionEnd : selStart;
 	const [selection, setSelection] = useState([selStart,selEnd]);
 	const [previewValue, setPreviewValue] = useState(props.value || '');
-	const [previewingCurrent, setPreviewingCurrent] = useState(true);
+	const [previewCalcType, setPreviewCalcType] = useState(FormulaPreviewCalcType.current);
 	const [errorMessage, setErrorMessage] = useState(null);
 
 	// parameters to allow resizing the editor preview
@@ -404,7 +416,7 @@ export function FormulaEditor(props) {
 
 	useEffect(() => {
 		previewCurrent();
-		setPreviewingCurrent(true);
+		setPreviewCalcType(FormulaPreviewCalcType.current);
 	}, []);
 
 	const latestFormula = React.useRef(null);
@@ -618,7 +630,9 @@ export function FormulaEditor(props) {
 		props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview ${nameSpace}__blob__${f}`, (results) => {
 			if (results) {
 				setPreviewValue(results[0].results);
-				setPreviewingCurrent(false);
+				setPreviewCalcType((selStart === selEnd) ?
+					FormulaPreviewCalcType.preview :
+					FormulaPreviewCalcType.selection);
 				editInputRef.current.focus();
 			}
 		}, previewErrorHandler);
@@ -633,7 +647,7 @@ export function FormulaEditor(props) {
 			props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview ${nameSpace}__blob__${f}`, (results) => {
 				if (results) {
 					setPreviewValue(results[0].results);
-					setPreviewingCurrent(true);
+					setPreviewCalcType(FormulaPreviewCalcType.current);
 					editInputRef.current.focus();
 				}
 			}, previewErrorHandler);	
@@ -837,6 +851,18 @@ export function FormulaEditor(props) {
 			);
 		}
 	} else {
+		let calcType;
+		switch (previewCalcType) {
+			case FormulaPreviewCalcType.current:
+				calcType = t('react:formulaEditorCurrentButton');
+				break;
+			case FormulaPreviewCalcType.preview:
+				calcType = t('react:formulaEditorPreviewButton');
+				break;
+			case FormulaPreviewCalcType.selection:
+				calcType = t('react:formulaEditorSelectionType');
+				break;						
+		}
 		previewComponent = e(
 			'div', {
 				id: 'formula-editor__preview-table',
@@ -845,7 +871,7 @@ export function FormulaEditor(props) {
 				'div', {
 					id: 'formula-editor__preview-unit',
 				},
-				(previewingCurrent ? t('react:formulaEditorCurrentButton') : t('react:formulaEditorPreviewButton'))
+				calcType
 				+
 				(previewValue ?
 					(previewValue.t === 's' ?
