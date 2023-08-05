@@ -634,6 +634,7 @@ export function FormulaEditor(props) {
 				if (results) {
 					setPreviewValue(results[0].results);
 					setPreviewingCurrent(true);
+					editInputRef.current.focus();
 				}
 			}, previewErrorHandler);	
 		}
