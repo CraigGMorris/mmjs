@@ -261,6 +261,7 @@ class MMModel extends MMTool {
 				else {
 					// position newTool under right most tools
 					let maxX = -10000000, maxY = -10000000;
+					// find right most
 					for (const key in this.children) {
 						const tool = this.children[key];
 						if (tool instanceof MMTool && tool !== newTool) {
@@ -268,14 +269,28 @@ class MMModel extends MMTool {
 						}
 					}
 
+					// find bottom most of right most icons
 					for (const key in this.children) {
 						const tool = this.children[key];
 						if (tool instanceof MMTool && tool !== newTool) {
-							if (tool.position.x >= maxX - 65) {
+							if (tool.position.x === maxX) {
 								maxY = Math.max(maxY, tool.position.y);
 							}
 						}
 					}
+
+					// now check for overlap and if so move farther right
+					for (const key in this.children) {
+						const tool = this.children[key];
+						if (tool instanceof MMTool && tool !== newTool) {
+							const y = tool.position.y
+							if (y > maxY && y < maxY + 55 && tool.position.x >= maxX - 65) {
+								maxX = tool.position.x + 70;
+								break;
+							}
+						}
+					}
+
 					newTool.position = {x: maxX, y: maxY + 30};
 				}
 			}
