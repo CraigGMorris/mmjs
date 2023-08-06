@@ -135,7 +135,7 @@ const createMenu = () => {
                 preload: path.join(__dirname, 'preload.js'),
               },
             });
-            helpWindow.loadFile(path.join(__dirname, 'help/getstarted.html'));
+            helpWindow.loadFile(path.join(__dirname, 'help/helppage.html'));
           }
         }
       ]

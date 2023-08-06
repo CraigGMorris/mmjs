@@ -6,17 +6,21 @@
 		<script type="text/javascript" src="help.js"></script>
 		<script type="text/javascript">
 			window.onload = () => {
-				rtSetupHeading('Tutorial',{
+				rtSetupHeading('Introductory Tutorial',{
 					overview: 'Overview',
 					getstart: 'Getting Started',
+					windows: 'Windows',
 					new: 'Starting a New Session',
-					add: 'Adding Expressions',
-					plot: 'Plotting Results',
+					expr: 'Expressions',
+					feditor: 'Formula Editor',
+					modelview: 'Model View',
+					dgm: 'Diagram',
+					saving: 'Saving Sessions',
 					conclusion: 'Conclusion',
 				});
 			};			
 		</script>	
-		<title>Tutorial</title>
+		<title>Introductory Tutorial</title>
 		<style>
 				#page {
 					/* background-color: rgb(253, 255, 247); */
@@ -34,20 +38,35 @@
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
-					This tutorial will attempt to introduce the basics of Math Minion.
-					To keep the size manageable, I won't repeat all the stuff from other
-					<a href="getstarted.html#help">help pages</a>, but I will try to use lots of
-					links to relevant pages and sections.
+					This tutorial will just touch on the basics of Math Minion, while
+					the <a href="getstarted.html">Getting Started session</a>
+					and the <a href="helppage.html">help pages</a> are the primary
+					resources.
 				</p>
-				<p>So let's get started.</p>
+				<p>Links to  help pages will be used liberally in the following.
+				</p>
 			</div>
 			<div id="getstart" class="section">
 				<h3>Getting Started</h3>
 				<p>
-					When you access Math Minion for the first time or on a new server or from a new browser,
-					the <a href="getstarted.html#getstart">Getting Started session</a> will
-					be loaded and if your browser window is wide enough. you will see something
-					like this:
+					When you access Math Minion for the first time or on a new server,
+					in a new browser or the first time running the Mac app,
+					the <a href="getstarted.html">Getting Started session</a> will
+					be loaded. 
+				</p>
+				<p>
+					It is is a heavily commented guide as well as a
+					demonstration of Math Minion's features and tools.
+					It and the <a href="helppage.html">help pages</a> are the
+					primary documentation resources for Math Minion and
+					it is well worth checking out when you are done here.
+				</p>
+			</div>
+			<div id="windows" class="section">
+				<h3>Windows</h3>
+				<p>
+					If your browser window is wide enough. you will see something
+					like this when Math Minion starts:
 				</p>
 				<img src="tutorial/getstarted.png" alt="Getting Started">
 				<p>
@@ -57,9 +76,11 @@
 				</p>
 				<p>
 					On the right is an <a href="infoview.html">information view</a> about the currently
-					selected <a href="tools.html">tool</a>, which in this case is the root model itself.
-					Results for tools contained by a model can be displayed on its information view
-					and in this case the HtmlPage named welcome is displayed. 
+					selected <a href="tools.html">tool</a>, or if no tool is selected,
+					as is this case here, about the model itself.
+					The information view for a model can show results for tools it contains
+					and in this case the <a href="htmlpage.html">Html Page</a> named
+					<b>Welcome</b> is displayed. 
 				</p>
 				<p>
 					On a narrow device, like a phone, you probably will just see the
@@ -93,331 +114,372 @@
 				</p>
 				<img src="tutorial/sessionstop.png" alt="Top of sessions view">
 				<p>
-					Tap the <a href="sessions.html#new">New</a> button to start a new session.  The
-					<a href="infoview.html">information view</a> should now be empty except for the
-					name field for the <b>root</b> <a href="model.html">model</a> and the
-					<a href="diagram.html">diagram</a> should be blank.
+					Tap the <a href="sessions.html#new">New</a> button to start a new session.
+				</p>
+				<p>
+					Since <a href="expression.html">expressions</a> are so frequently needed,
+					one named <b>x1</b> will be created for you and it
+					will appear in both the <a href="diagram.html">diagram</a> and the
+					<a href="infoview.html">information view</a> of the the
+					<b>root</b> <a href="model.html">model</a>.
 				</p>
 				<img src="tutorial/blanksession.png" alt="Blank Session">
 			</div>
-			<div id="add" class="section">
-				<h3>Add Expressions</h3>
+			<div id="expr" class="section">
+				<h3>Expressions</h3>
 				<p>
-					Tapping any where on the diagram background will produce this
-					<a href="diagram.html#bgmenu">background menu</a>:
+					Tap on either the icon or the <b>Expression: x1</b> line in the information
+					view to see the view for the expression.
 				</p>
-				<img src="tutorial/dgmbgmenu.png" alt="Diagram background menu">
+				<img src="tutorial/expression.png" alt="The x1 expression">
 				<p>
-					Tap on <b>Add Expression</b> to create an <a href="expression.html">expression tool</a>.
-					An icon will appear on the <a href="diagram.html">diagram</a> where you originally tapped:
-				</p>
-				<img src="tutorial/expricon.png" alt="Expression Icon">
-				<p>and the top of the <a href="infoview.html">information view</a> will become:</p>
-				<img src="tutorial/x1info.png" alt="New expression info view">
-				<p>
-					Note, if you make a mistake, you can probably just tap the <b>Undo</b>
-					button on the <a href="infoview.html#bottombar">bottom button bar</a>
-					to reverse it.
+					All an expression tool does is evaluate a single
+					<a href="formula.html">formula</a>, but it is almost
+					always the most commonly used tool.
 				</p>
 				<p>
-					Tap in the name field (currently has <b>x1</b>) and change the name to <b>square</b>
+					The name field and name have already been selected, so just type <b>BMI</b> and
+					hit return. Yes, I know all the controvery about Body Mass Index, but it is a
+					nice short, well known formula to play with.  Namely:
+				</p>
+				<p class="formula">
+					BMI = weight/height^2
+				</p>
+				<p>
+					where weight is in kilograms and height is in metres.
+				</p>
+				<o>
+					After hitting return in the name field, you should be positioned in the
+					expressions <a href="formulaeditor.html">formula field</a>.
+				</p>
+				<img src="tutorial/bmi1.png" alt="Now the BMI expression">
+				<p>
+					Enter the formula:
+				</p>
+				<p class="formula">
+					80 kg / (6 ft + 1 in)^2
+				</p>
+				<p>
 					and hit return.
 				</p>
+				<img src="tutorial/bmi2.png" alt="Calculated BMI">
 				<p>
-					Now tap in the <a href="formulaeditor.html#fields">formula field</a> (to the right of the equals
-					sign) and enter the <a href="formula.html">formula</a>:
-				</p>
-				<p class="formula">
-					2 m * 200 cm
+					The mixed <a href="units.html">conversion units</a> have been dealt
+					with and an answer returned in the SI units BMIs are reported in.
 				</p>
 				<p>
-					and hit return.
+					Let's do this a bit differently. Tap the <b>+Exp</b> button beside
+					the <b>Display Input</b> check box.
+					This will create another empty expression. Name it <b>Weight</b>, enter
+					the formula 80 kg and check the <b>Display</b> and
+					<b>Display Input</b> check boxes. It should look like this:
+				</p>
+				<img src="tutorial/bmiweight.png" alt="The Weight expression">
+				<p>
+					Tap the <b>+Exp</b> to create a third expression and name it <b>Height</b>.
+					Enter the formula <b>6 ft + 1 in</b> and again check the <b>Display</b> and
+					<b>Display Input</b> check boxes. It should look like this:
+				</p>
+				<img src="tutorial/bmiheight.png" alt="The Height expression">
+				<p>
+					and the diagram will now look like this:
+				</p>
+				<img src="tutorial/bmidgm1.png" alt="Diagram with weight and height icons">
+			</div>
+			<div id="feditor" class="section">
+				<h3>Formula Editor</h3>
+				<p>
+					Let's return to the original BMI expression and revise the formula
+					to use the new <b>Weight</b> and <b>Height</b>
+					expressions and take a tour of
+					the <a href="formulaeditor.html">formula editor</a>. 
 				</p>
 				<p>
-					The <a href="infoview.html">information view</a> should now like this: 
-				</p>
-				<img src="tutorial/square1.png" alt="square expression info">
-				<p>
-					The current <a href="units.html#sets">conversion unit set</a> is SI, so the value
-					is displayed in <b>m^2</b> and Math Minion recognizes that as an <b>Area</b>.
+					Tap on the <b>BMI</b> icon on the diagram to return to that expression
+					and check the display checkbox, since I appear to have done so before
+					taking these screen shots. &#128522;
 				</p>
 				<p>
-					Math Minion is pretty rigorous about conversion units and uses
-					<a href="units.html#dimanal">dimensional analysis</a> to
-					ensure units can be mixed in appropriate ways.
+					Then tap on the expand <b>&#10530;</b> icon to the right of the formula.
+					This will bring up the formula editor. (Note you can also hit the return
+					key while holding down shift in the formula field.)
+				</p>
+				<img src="tutorial/bmifedit1.png" alt="Formula editor">
+				<p>
+					While it is convenient to enter simple values and formulas right in a
+					formula field, the formula editor offers a number of tools to make
+					composing a formula easier. We are going to completely replace our existing
+					formula, so select everything inside the text area and delete it:
+				</p>
+				<img src="tutorial/bmifedit2.png" alt="Empty formula editor">
+				<p>
+					The area in the bottom part of the screen shows various previews,
+					depending on where the cursor is in a formula and whether a preview
+					button has been pressed. Note that you can adjust the relative sizes
+					of the formula input and preview areas by dragging on the up/down icon <b>&#8597;</b> to the right of the <b>Apply</b>
+					button.
 				</p>
 				<p>
-					All Math Minion values are matrices, so this scalar
-					appears as a 1x1 matrix.
+					In this case the cursor is in a position where you are most likely to
+					want to enter a value or a tool name, so the preview area lists the
+					tools currently in the model. If you enter an <b>w</b>, the list will
+					be filtered, in this case down to just weight.
+				</p>
+				<img src="tutorial/bmifedit3.png" alt="Formula editor with 1 character">
+				<p>
+					As long a you have entered at least one character, hitting the tab key
+					will insert the top entry in the list, here
+					<b>Weight</b>, into the formula. You can also just tap on any entry to
+					insert it. Go ahead and do that and then enter a slash, followed by a
+					1 and a space, so it looks like this:
+				</p>
+				<img src="tutorial/bmifedit4.png" alt="Formula editor with unit preview">
+				<p>
+					The cursor is preceeded by a number and a space, which suggests
+					you may want to enter a conversion unit for the number, so all
+					defined conversions units are displayed in the scrollable preview area.
+					Type an <b>o</b> (oh) character and the list will be filtered to just
+					these:
+				</p>
+				<img src="tutorial/bmifedit5.png" alt="Formula editor with O unit preview">
+				<p>
+					Rather than picking one, backspace over the <b>o</b> and tap on the
+					<b>Units</b> button <b>ABOVE</b> the formula. This will show the 
+					<a href="formulaeditor.html#ubrowser">unit browser</a>, which lets
+					you browse through units by type.
 				</p>
 				<p>
-					Tap on the <b>Units</b> button at the bottom of the information view
+					On the left hand side will be a list of unit types. Scroll down to
+					<b>Mass</b> and tap on it.
 				</p>
-				<img src="tutorial/infobuttons.png" alt="Information view buttons">
+				<img src="tutorial/bmiunits1.png" alt="Unit browser">
 				<p>
-					to get the units view:
+					Now the right hand side lists all the defined mass units.
+					Tap on <b>lb</b> and hit the apply button.
 				</p>
-				<img src="tutorial/unitsview.png" alt="Units view">
+				<img src="tutorial/bmifedit6.png" alt="Unit browser">
 				<p>
-					Tap on <b>US</b> to select US units and then on the <b>&lt; square</b> button
-					at the upper left to return to the square expression. (Everything that is blue in
-					information views has a tappable action).
-				</p>
-				<p>
-					The result for <b>square</b> is now shown in the default US area unit of <b>ft^2</b>.
-				</p>
-				<img src="tutorial/squareus.png" alt="square expression in US units">
-				<p>
-					Repeat the steps above to switch back to <b>SI</b> units so that square again
-					shows the result in square metres.
+					The <b>lb</b> unit has been inserted at the cursor position
 				</p>
 				<p>
-					Okay, let's try something different. Click on the background again and select
-					<b>Add Expression</b> to create another expression. Name it
-					<b>angles</b> and then tap on the <b>&#10530;</b> icon to the right of the
-					<a href="formulaeditor.html#fields">formula field</a>. This will bring up a
-					<a href="formulaeditor.html#editor">formula editor</a> which allows us to
-					edit larger more complex formulas, but also has some helpful tools.
+					Okay, erase the <b>1 lb</b> and type a open curly brace <b>{</b>.
 				</p>
-				<img src="tutorial/formulaedit1.png" alt="Empty formula editor">
+				<img src="tutorial/bmifunc1.png" alt="Function preview">
 				<p>
-					Enter the formula
-				</p>
-				<p class="formula">
-					1:72
+					Math Minion function calls consist of a open curly brace immediately
+					followed by the function name and then a comma separated list of
+					arguments, if any, any finally a closing curly brace.
 				</p>
 				<p>
-					into the text area and then tap the <b>Preview</b> button at the bottom. You
-					should see something like:
-				</p>
-				<img src="tutorial/formulaedit2.png" alt="Formula editor with preview">
-				<p>
-					The area at the bottom has been filled with the result of evaluating the formula.
-					In this case it is a column array with elements from 1 to 72, which is what the
-					colon operator does. You can scroll or drag on the table to see more values and
-					dragging on the row number column will scroll through it quickly.
+					Since we have entered an opening brace, the preview area has been
+					filled with a list of all the available functions. Like the other
+					previews, it will be filtered as we type characters.
 				</p>
 				<p>
-					go back to the formula and add <b>*10</b> and a space, so it looks like:
+					We are just playing around here, so just enter a tab to insert the
+					<b>{abs x}</b> function.
 				</p>
-				<img src="tutorial/formulaedit3.png" alt="Edited formula">
+				<img src="tutorial/bmifunc2.png" alt="Function inserted inot formula">
 				<p>
-					and tap on the <b>Units</b> button to bring up the
-					<a href="formulaeditor.html#ubrowser">unit browser</a>. Tap on
-					<b>Dimensionless</b> in the left hand column and then <b>degree</b> in the right
-					column, which should give you this:
+					After inserting the function, the cursor is positioned before
+					the first argument. If we enter a question mark at this position,
+					we get:
 				</p>
-				<img src="tutorial/unitpicker.png" alt="Unit browser">
+				<img src="tutorial/bmifunc3.png" alt="Function description">
 				<p>
-					Tap the <b>Apply</b> button and <b>degree</b> will be inserted into the formula at the cursor
-					location:
-				</p>
-				<img src="tutorial/formulaedit4.png" alt="Complete angles formula">
-				<p>
-					Tap the <b>Apply</b> button to assign the formula to the angles expression.
-				</p>
-				<img src="tutorial/angles1.png" alt="Angles expression with fraction units">
-				<p>
-					That doesn't look right for 10 times 1 to 72 should be 10, 20, 30 etc. However note the
-					display unit is <b>Fraction</b> which is the default unit for the <b>Dimensionless</b>
-					unit type. In fact the values are in radians as degrees have been converted to the base
-					unit.
+					which shows a brief description of the function in the preview area.
 				</p>
 				<p>
-					Tap on <b>Dimensionless: Fraction</b> and the
-					<a href="formulaeditor.html#ubrowser">unit browser</a> should reappear with
-					the <b>Dimensionless</b> type already selected. Choose <b>degree</b> from the right
-					hand column and <b>Apply</b> it. This should result in:
+					Erase the inserted function and tap the <b>Functions</b> button above
+					the formula area.
 				</p>
-				<img src="tutorial/angles2.png" alt="Angles expression with degree units">
+				<img src="tutorial/bmifunc4.png" alt="Function browser">
 				<p>
-					which is what we expected. Note that all values and calculations are done internally
-					in SI base units and selecting different units for display has no effect on the actual
-					values calculated.  Similarly all inputs are converted to SI base units immediately.
+					There isn't much I can add to the instructions at the top of the view.
+					Browse through the functions if you wish and then just hit cancel to
+					return to the formula editor.
 				</p>
 				<p>
-					Now create another expression and name it <b>sine</b> and then tap on the <b>&#10530;</b>
-					icon to the right of the its <a href="formulaeditor.html#fields">formula field</a>.
+					Let's finally complete the formula to calculate BMI again by adding
+					<b>height^2</b> after the divide sign.
+				</p>
+				<img src="tutorial/bmifedit7.png" alt="Current result preview">
+				<p>
+					With the cursor at the end of the line and no space after the 2,
+					Math Minion has nothing to suggest as a completion, so it reverts
+					to showing the <b>Current</b> value for the expression, that is the value
+					calculated from the original formula before any editing.
 				</p>
 				<p>
-					In the resulting <a href="formulaeditor.html#editor">formula editor</a>, if you enter
-					<b>{s</b> in the text editor, you should see something like this:
+					Click on the preview button and you will get this:
 				</p>
-				<img src="tutorial/formulaedit5.png" alt="Function preview">
+				<img src="tutorial/bmifedit8.png" alt="Calculated result preview">
 				<p>
-					The preview area now shows all the functions that start with <b>s</b>. If you were to type
-					additional characters, the list would be shortened appropriately, but just tap on
-				</p>
-				<p class="formula">{sin x}</p>
-				<p>
-					to insert the function into your formula to give you this.
-				</p>
-				<img src="tutorial/formulaedit6.png" alt="formula inserted">
-				<p>
-					Math Minion functions are always enclosed in curly braces <b>{...}</b>, with the name of
-					the function immediately following the opening brace.  The parameters, if any, follow as
-					a comma separated list followed by the closing brace.
+					This now shows the result of calculating the edited formula. As hoped
+					the value is the same as the previous formula and the only
+					difference in the display is the <b>Current =</b> label has changed to
+					<b>Preview =</b>.
 				</p>
 				<p>
-					Inserting a function with the function preview or function browser will place the cursor
-					before the first argument. You will almost always have to replace the arguments, but they
-					are included as reminders. If you type a <b>?</b> in front of the first argument, the
-					preview area will show a brief description of the function:
+					Try selecting just the word <b>height</b> and tap the preview button
+					again.
 				</p>
-				<img src="tutorial/formulaedit7.png" alt="preview function description">
+				<img src="tutorial/bmifedit9.png" alt="Calculated height result preview">
 				<p>
-					Remove both the <b>?</b> and the <b>x</b> and you will get the following:
-				</p>
-				<img src="tutorial/formulaedit8.png" alt="parameter preview">
-				<p>
-					The preview area now displays all the available tool names. Typing will reduce the list
-					appropriately, so typing an a will reduce the list to just <b>angles</b>. Hitting
-					<b>Tab</b> after you have entered one or more characters will insert the name at the top
-					of the list into the formula or you can just tap on one of the names in the list. Do either
-					so the formula reads:
-				</p>
-				<p class="formula">
-					{sin angles}
-				</p>
-				<p>	
-					The function preview is handy when you have an idea of what function you want, but you
-					will sometimes want to browse through the functions and their descriptions to see what
-					is available.
-				</p>
-				<p>
-					Tap on the
-					<b>Functions</b> button to open a
-					<a href="formulaeditor.html#fbrowser">function browser</a>.
-				</p>
-				<p>
-					The functions are presented in groups like log functions, trig functions etc.,
-					which expand to show the actual functions when you tap on them.
-				</p>
-				<p>
-						For instance, tap on <b>Trigonometric math functions</b> row and then on
-						<b>{sin x}</b> in the list that is revealed. You should see the description of
-						the function and an <b>Insert</b> button.
-				</p>
-				<img src="tutorial/fbrowser.png" alt="Function browser">
-				<p>
-					Tapping on the <b>Insert</b> button would return you to the function editor with
-					the function inserted, but as we already have the function in our formula, just tap
-					the <b>Cancel</b> button.
-				</p>
-				<img src="tutorial/formulaedit9.png" alt="final sine formula">
-				<p>
-					Tap the <b>Apply</b> button to assign the formula to the <b>sine</b> expression. The
-					information view should now look like this:
-				</p>
-				<img src="tutorial/sinangles.png" alt="Sine angles">
-				<p>
-					The sine of all the elements of the array calculated by the <b>angles</b> expression
-					appear in the table at the bottom. In general Math Minion operators and functions work
-					on all elements of their arguments.
-				</p>
-				<p>
-					The <a href="diagram.html">diagram</a> will now look something like the following,
-					although your icons will probably be in different positions,
-				</p>
-				<img src="tutorial/diagram1.png" alt="Diagram">
-				<p>
-					You can drag the icons around to arrange them however you want. You can also zoom
-					in or out with a pinch or scroll action or use the <b>+</b> and <b>-</b> buttons at
-					the upper right.
-				</p>
-				<p>
-					Tapping on the title <b>root</b> in this case will automatically resize and recenter
-					the diagram. If present, the <b>&#8660;</b> symbol on the right can be dragged to resize
-					the information view. Tapping on any icon will present its information in the information
-					view.
-				</p>
-				<p>
-					Note the line going from the corner of the <b>angles</b> expression to the center of one of the
-					vertical sides of the <b>sine</b> expression. This indicates that the <b>sine</b> expression
-					is using the value of <b>angles</b> in its calculations.
+					With <b>height</b> selected, the preview, now labeled <b>Selection =</b>,
+					shows the value of evaluating just the selected text. This is really
+					handy if your formula isn't giving you what you want or has an error.
 				</p>
 			</div>
-			<div id="plot" class="subsection">
-				<h3>Plotting Results</h3>
+			<div id="modelview" class="section">
+				<h3>Model View</h3>
 				<p>
-					Tap on the <a href="diagram.html">diagram</a> background again and this time select 
-					<b>Add Display Tool</b> and then <a href="graph.html">Graph</a> from the resulting menu.
-					Rename it <b>Plot</b> and the information view will look like this:
+					If you now tap on the <b>&lt; root</b> button at the top left of the
+					information view, you will return to viewing the root model, which
+					now looks like this:
 				</p>
-				<img src="tutorial/singraph1.png" alt="Empty graph information view">
+				<img src="tutorial/bmiroot1.png" alt="Root model view">
 				<p>
-					Enter <b>angles</b> in the <b>x1</b> <a href="formulaeditor.html#fields">formula field</a>
-					and <b>sine</b> in the <b>y1_1</b> one. Note that the unit beside <b>angles</b> is
-					<b>Fraction</b>. Tap on it and select <b>degree</b> from the
-					<a href="formulaeditor.html#ubrowser">unit browser</a> and <b>Apply</b> it.
+					Those display boxes we were checking told the model to display the input field
+					and calculated result for both the <b>Weight</b> and <b>Height</b> expressions
+					and just the calculated result for <b>BMI</b>. Try tapping in the input field
+					for weight and change it to 81 kg.
 				</p>
+				<img src="tutorial/bmiroot2.png" alt="Modified root model view">
 				<p>
-					 Now tap the <b>Plot</b> button to show the plot:
-				</p>
-				<img src="tutorial/singraph2.png" alt="Sin plot">
-				<p>
-					Dragging the graph around will result in the axis labels changing accordingly. You
-					can also <a href="graph.html#zoom2d">zoom in and out</a>.
+					The new BMI is shown immediately and demonstrates that the model view
+					is now a convenient little form.
 				</p>
 				<p>
-					Note that we have made a small mistake in that the plot begins at 10 degrees, rather than
-					0 degrees.
+					The diagram now looks like this:
+				</p>
+				<img src="tutorial/bmidgm2.png" alt="Root model diagram">
+				<p>
+					The lines running from the corners of the <b>Weight</b> and <b>Height</b>
+					icons to the middle of a vertical side of the <b>BMI</b> icon indicate that
+					the <b>BMI</b> tool uses the values of <b>Weight</b> and <b>Height</b>. It is
+					kind of trivial in such a simple example, but quite useful when lots of tools
+					are involve in a model.
 				</p>
 				<p>
-					Go back to your diagram, which may now look something like this:
+					Drag the <b>BMI</b> icon over to the right so the diagram looks something like
+					this:
 				</p>
-				<img src="tutorial/diagram2.png" alt="Diagram">
+				<img src="tutorial/bmidgm3.png" alt="Modified root model diagram">
 				<p>
-					and tap on the <b>angles</b> icon and change the formula in the resulting
-					information view to
+					Notice that the fields in the information view have been rearranged to have
+					the <b>BMI</b> at the bottom. The fields in a model information view are
+					arranged according to the position of the tool icons on the diagram, with
+					left most ones first and any ties being resolved in favour of the top most ones.
 				</p>
-				<p class="formula">
-					0:72*10 degree
-				</p>
+				<img src="tutorial/bmiroot3.png" alt="Modified root model view">
 				<p>
-					Hit return and then click on the graph icon <b>Plot</b> and the correction should be visible:
-				</p>
-				<img src="tutorial/singraph3.png" alt="Sine plot">
-				<p>
-					Add one last expression named <b>table</b> and enter the its function editor. Type a
-					<b>p</b>, which will reduce the preview list to just <b>plot</b>. Now type a dot and you will
-					see:
-				</p>
-				<img src="tutorial/formulaedit10.png" alt="plot parameter preview">
-				<p>
-					The preview area now shows all the parameters available from the graph tool <b>Plot</b>.
-					There are quite a few, but typing a <b>t</b> should reduce the list to just <b>table</b>
-					and <b>table1</b>. Tap <b>table</b> and apply the formula to get:
-				</p>
-				<img src="tutorial/plottable.png" alt="plot table">
-				<p>
-					which represents the lines of the plot as a table value.
+					Looking at this, it probably isn't necessary to show the calculated results of
+					the <b>Weight</b> and <b>Height</b> icons.  Tap on either the <b>Weight</b> icon
+					or one of the <b>Weight</b> labels in the information view to show that expression
+					again. Uncheck the <b>Display Input</b> box and then do the same for the
+					<b>Height</b>.
 				</p>
 				<p>
-					To finish up, tap on the <b>Sessions</b> button at the bottom of the information view and then
-					on the <b>Save</b> button. A dialog will appear asking for a name to save the session as:
+					Return to the model information view (tap <b>&lt; root</b>) and it should now
+					look like this:
 				</p>
-				<img src="tutorial/savedialog.png" alt="Save dialog">
+				<img src="tutorial/bmiroot4.png" alt="Further modified root model view">
 				<p>
-					Give it a name and tap <b>Ok</b> to save the session in the browser's database. Note that
-					this occurs on your local device and nothing is sent over the network. For added safety I
-					frequently use the <b>Export All</b> button on the <a href="sessions.html">Sessions</a>
-					view to save a copy of everything to a file on my device.
+					Tapping on that little printer icon in the upper right of a model or html page
+					tool would bring up a print dialog that would let you print the contents of the
+					information view or save it as a PDF.
 				</p>
-				<div id="conclusion" class="section">
-					<h3>Conclusion</h3>
-					<p>
-						That is it for this very basic introduction. It barely touched on the things
-						Math Minion can do, so you might want
-						to go back to the <a href="getstarted.html#getstart">Getting Started session</a>
-						and browse through its examples and descriptions as well as other help pages.
-					</p>
-					<p>
-						If you get stuck or have and questions or comments, please don't hesitate to
-						<a href="http://www.redtree.com/contact.html">contact me</a>.
-					</p>
-				</div>
-				</div>
+			</div>
+			<div id="dgm" class="section">
+				<h3>Diagram</h3>
+				<p>
+					A few quick notes about the diagram:
+				</p>
+				<ul>
+					<li>You can drag the background around to pan the whole diagram.</li>
+					<li>You can drag icons to rearrange them.</li>
+					<li>You can zoom the diagram in and out by, depending on your device:
+						<ul>
+							<li>Tapping on the <b>+</b> and <b>-</b> buttons at the top right.</li>
+							<li>Scrolling with your mouse wheel or track pad</li>
+							<li>Using a pinch gesture on the screen or trackpad</li>
+						</ul>
+					</li>
+					<li>Tapping on the background will bring up a
+						<a href="diagram.html#bgmenu">context menu</a>.
+					</li>
+					<li>
+						Tapping on an icon will show its information view or if the view is
+						already showing, it will dismiss it.
+					</li>
+					<li>
+						Tapping and holding on an icon for a couple of seconds before releasing
+						will produce a <a href="diagram.html#toolmenu">tool menu</a>.
+					</li>
+					<li>
+						Tapping and holding on the diagram background for a couple of seconds
+						before releasing will produce a selection box with the upper left at the
+						tap point. It can be resized by dragging the upper left or lower right
+						corners. Any icons partially inside the box will be selected.
+					</li>
+					<li>
+						Tapping inside a selection box will produce a
+						<a href="diagram.html#selmenu">selection menu</a>.
+					</li>
+				</ul>
+			</div>
+			<div id="saving" class="section">
+				<h3>Saving Sessions</h3>
+				<p>
+					Math Minion continously saves your work in a
+					<a href="https://en.wikipedia.org/wiki/Indexed_Database_API">browser database</a>
+					so that even if you exit Math Minion without even naming your session, it will still
+					be there when you come back.
+				</p>
+				<p>
+					However if you are working on an unnamed session and
+					want to create or load another session,
+					you have to go to the session view (using the <b>Session</b> button at the bottom of
+					the <a href="infoview.html">information view</a>) and tap the <b>Save</b> button. 
+					You will be asked for a name and afterwards can return to the saved session by tapping
+					on its name in the session view.
+				</p>
+				<p>
+					Once the session is named, there is no need to use the <b>Save</b> button to save
+					changes you may make to it. They will be automatically saved.
+				</p>
+				<p>
+					However it is a good idea to export your sessions to device or cloud files fairly
+					often. There is an <b>Export All</b> button on the session view that will export
+					your entire collection of sessions to a single file that can be imported if necessary
+					or if you wish to have the sessions in another browser or device.
+				</p>
+				<p>
+					<b>NOTE:</b> As part of Apple's antitracking efforts, all Safari browsers and
+					all browsers on iOS and iPadOS automatically delete the entire database if you
+					don't visit the site for seven days. While protection from tracking is nice,
+					it is unfortunate that there is no way I know of that a user can tell it not
+					to do this for a specific site.
+				</p>
+				<p>
+					Other browsers on PCs, and I imagine Android, do not do this, although exporting
+					your stuff frequently is probably still a good idea.
+				</p>
+			</div>
+			<div id="conclusion" class="section">
+				<h3>Conclusion</h3>
+				<p>
+					That is it for this very basic introduction. It barely touched on the things
+					Math Minion can do, so you might want
+					to go back to the <a href="getstarted.html">Getting Started session</a>
+					and browse through its examples and descriptions as well as other help pages.
+				</p>
+				<p>
+					If you get stuck or have and questions or comments, please don't hesitate to
+					<a href="http://www.redtree.com/contact.html">contact me</a>.
+				</p>
+			</div>
 		</div>
 	</body>
 </html>

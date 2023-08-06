@@ -52,9 +52,10 @@ function rtSetupHeading(title, sections) {
 	menuLines.push('</div>')
 	menuLines.push('<div id="contentsmenu" hidden="true">');
 	menuLines.push(`
+	<div class="contentlink"><a href="helppage.html">Help Pages</a></div>
 	<div class="contentlink"><a href="getstarted.html">Getting Started</a></div>
+	<div class="contentlink"><a href="tutorial.html">Introductory Tutorial</a></div>
 	<div class="contentlink"><a href="videos.html">Videos</a></div>
-	<div class="contentlink"><a href="tutorial.html">Tutorial</a></div>
 	<div class="contentlink"><a href="examples.html">Examples</a></div>
 	<div class="contentlink"><a href="http://www.redtree.com/contact.html">Contact Me</a></div>
 	<div class="contentlink"><a href="freeprivate.html">License</a></div>

@@ -1044,7 +1044,7 @@ export class Diagram extends React.Component {
 						{
 							text: this.props.t('react:dgmButtonHelp'),
 							action: () => {
-								window.open(`./help/getstarted.html`,'MM Help');
+								window.open(`./help/helppage.html`,'MM Help');
 								this.setState({showContext: null});
 								this.props.actions.updateView();
 					}

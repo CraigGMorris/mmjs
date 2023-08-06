@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Help Pages',{
+					help: 'Help Pages',
+					button: 'Information View Help Button',
+					contact: 'Contact Me',
+				});
+			};			
+		</script>	
+		<title>Help Pages</title>
+	</head>
+	
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="menubody"></div>
+			<div id="help" class="section">
+				<h3>Help Pages</h3>
+				<p>
+					At the top of all help pages is a non-scrolling header with the following buttons
+				</p>
+				<ul>
+					<li><b>&lt;</b> - Previous help page if applicable</li>
+					<li><b>Title</b> - tapping will scroll back to the top of the page</li>
+					<li><b>&gt;</b> - Next help page (if you have gone to a previous one)</li>
+					<li><b>X</b> - closes the help window or tab</li>
+				</ul>
+					
+				</p>
+				<p>Below the header are the <b>Section Menu</b> and <b>Help Contents</b> buttons.
+					Tapping on <b>Section Menu</b> will expand to a set of links for quickly jumping to
+					a section of the current page. Tapping on <b>Help Contents</b> will reveal a list
+					of links to all the available help pages.
+				</p>
+				<p>
+					If you are new to Math Minion, be sure to check out the
+					<a href="getstarted.html">Getting Started Session</a>,
+					<a href="tutorial.html">Introductory Tutorial</a>,
+					and the <a href="videos.html">Navigate Video</a>.
+				</p>
+			</div>
+			<div id="button" class="section">
+				<h3>Information View Help Button</h3>
+				<p>
+					At the top right of the <a href="infoview.html">information view</a> there is a
+					context sensitive help button that will display help for the current view.
+				</p>
+			</div>
+			<div id="contact" class="section">
+				<h3>Contact Me</h3>
+				<p>
+					If you can't find the answer in the documentation, or if you have any questions or
+					comments, please <a href="http://www.redtree.com/contact.html">contact me</a>.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>
