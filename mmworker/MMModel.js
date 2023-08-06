@@ -271,7 +271,7 @@ class MMModel extends MMTool {
 					for (const key in this.children) {
 						const tool = this.children[key];
 						if (tool instanceof MMTool && tool !== newTool) {
-							if (tool.position.x === maxX) {
+							if (tool.position.x >= maxX - 65) {
 								maxY = Math.max(maxY, tool.position.y);
 							}
 						}
