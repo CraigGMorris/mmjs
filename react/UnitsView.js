@@ -590,6 +590,7 @@ export class UnitSetView extends React.Component {
 
 // unit picker component
 export function UnitPicker(props) {
+	const inputRef = React.useRef();
 	let t = props.t;
 
 	const [unitTypes, setUnitTypes] = useState([]);
@@ -611,6 +612,9 @@ export function UnitPicker(props) {
 		props.actions.doCommand('/unitsys.sets get defaultSetName', (cmds) => {
 			setDefaultSetName(cmds[0].results);
 		});
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	},[]);
 
@@ -667,6 +671,9 @@ export function UnitPicker(props) {
 						unitName = selectedUnit + unitName;
 					}
 					setSelectedUnit(unitName);
+					if (inputRef.current) {
+						inputRef.current.focus();
+					}
 				}
 			},
 			unitName
@@ -698,6 +705,7 @@ export function UnitPicker(props) {
 		e(
 			'input', {
 				id: 'unit-picker__input',
+				ref: inputRef,
 				value: selectedUnit,
 				onChange: (event) => {
 					// keeps input field in sync
@@ -727,12 +735,7 @@ export function UnitPicker(props) {
 				'button', {
 					id: 'unit-picker__apply',
 					onClick: () => {
-						// if (selectedUnit) {
 							props.apply(`${selectedUnit}`, 0);
-						// }
-						// else {
-						// 	props.cancel();
-						// }
 					}
 				},
 				t('react:unitPickerApply')
