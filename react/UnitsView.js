@@ -647,6 +647,9 @@ export function UnitPicker(props) {
 				key: type.name,
 				onClick: () => {
 					setSelectedType(type.name);
+					if (inputRef.current) {
+						inputRef.current.focus();
+					}			
 				}
 			},
 			type.name
@@ -715,6 +718,9 @@ export function UnitPicker(props) {
 					if (e.code == 'Enter') {
 						props.apply(`${selectedUnit}`, 0);
 					}
+					else if (e.code === 'Escape') {
+						props.cancel();
+					}
 				}
 			}
 		),
@@ -725,6 +731,7 @@ export function UnitPicker(props) {
 			e(
 				'button', {
 					id: 'unit-picker__cancel',
+					title: 'Escape',
 					onClick: () => {
 						props.cancel();
 					}
@@ -734,6 +741,7 @@ export function UnitPicker(props) {
 			e(
 				'button', {
 					id: 'unit-picker__apply',
+					title: 'Return',
 					onClick: () => {
 							props.apply(`${selectedUnit}`, 0);
 					}
