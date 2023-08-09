@@ -5,87 +5,19 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Math Minion</title>
-	<link rel="stylesheet" href="./help/help.css">
+	<link rel="stylesheet" href="./react/mmjs.css">
+	<link rel="stylesheet" href="mmsite.css">
 	<link rel="icon" type="image/png" href="./favicon32.png">
-	<style>
-		* {box-sizing:border-box}
-		#menu {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1fr;
-		grid-gap: 5px;
-		border-bottom: solid 1px black;
-		padding-bottom: 5px;
-		margin-bottom: 10px;
-	}
-	#menu div {
-		padding-left: 20px;
-	}
 
-	.center {
-		text-align: center;
-	}
-
-	/* Slideshow container */
-	.slideshow-container {
-		max-width: 600px;
-		position: relative;
-		margin: auto;
-	}
-
-	/* Make the images invisible by default */
-	.slide {
-		display: none;
-	}
-
-	.slide img {
-		display: block;
-		margin-left: auto;
-		margin-right: auto;
-	}
-
-	/* forward & Back buttons */
-	.back, .forward {
-		cursor: pointer;
-		color: grey;
-		font-weight: bold;
-		font-size: 24px;
-		transition: 0.4s ease;
-			user-select: none;
-	}
-
-	/* Place the "forward button" to the right */
-	/* .forward {
-		right: 0;
-		border-radius: 4px 0 0 4px;
-	} */
-
-	/*when the user hovers,add a black background with some little opacity */
-	.back:hover, .forward:hover {
-		color: rgba(0,200,0,1);
-	}
-
-	/* Caption Info */
-	.info {
-		/* color: #e3e3e3; */
-		display: grid;
-		grid-template-columns: 20px 1fr 20px;
-		font-size: 16px;
-		padding: 10px 14px;
-		bottom: 10px;
-		width: 100%;
-		text-align: center;
-	}
-</style>
 </head>	
 
 <body>
 	<div id="page">
-		<div id="title">Math Minion</div>
+		<div id="title"><span>Math Minion</span></div>
 		<div id="menu">
 			<div id="run"><a href="run.html">Run</a>
 			</div>
-			<div id="help"><a href="help/getstarted.html">Help</a></div>
+			<div id="help"><a href="help/helppage.html">Help</a></div>
 		</div>
 		<p>
 			<b>Math Minion</b> is a general purpose calculation tool that runs completely in the
@@ -93,8 +25,9 @@
 			<a href="help/freeprivate.html">free and private</a>.
 		</p>
 		<p>
-			While it does have many high powered mathmatical tools, it can also be a more adept,
-			transparent and powerful way of performing many of the tasks usually done in <b>spreadsheets</b>
+			While it does have many high powered mathmatical tools, it can also just be used as
+			a fancy calculator or a more adept, transparent and powerful way of performing many
+			of the tasks usually done in <b>spreadsheets</b>
 			and smallish <b>databases</b>.
 		</p>
 		<div class="slideshow-container fade">
@@ -107,7 +40,7 @@
 					<div>
 						Of course it can do math things like this surface plot.
 					</div>
-					<siv class="forward" onclick="plusSlides(1)">&#10095;</div>
+					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
 				</div>
 			</div>
 		
@@ -173,49 +106,38 @@
 					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
 				</div>
 			</div>
-		<p>	
-			It combines a <a href="help/diagram.html">mind map style diagram</a> of the
-			relationships between a range of <a href="help/tools.html">calculation tools</a>,
-			with a <a href="help/formula.html">formula system</a> that operates transparently
-			on scalars, arrays and matrices. It also includes a
-			<a href="help/units.html">comprehensive conversion unit system</a> 
-			that performs dimensional analysis such that it knows dividing a btu/h value by a
-			voltage results in amps, but adding a litre and a pound would be an error.
-		</p>	
-		<p>
-			Best of all, if you have a reasonably recent browser and can wait a few seconds for
-			it to load, you can try it right now by tapping on <a href="run.html">Run</a> and check out
-			the <b>Getting Started</b> session.
-		</p>
-		<h4>Known Problems</h4>
+		</div>
+		<h3>Features</h3>
 		<ul>
+			<li>a <a href="help/formula.html">formula system</a> that operates transparently
+				on scalars, arrays and matrices
+			</li>
 			<li>
-				<b>iPad Trackpad</b><br>
-					<p>
-						Pinching on the iPad trackpad to zoom the diagram zooms the entire window
-						on Safari and Firefox, rather than just the diagram.
-					</p>
-					<p>
-						It seems to work correctly on the Chrome and Edge browsers.
-					</p>
-				</p>
+				a range of <a href="help/tools.html">calculation tools</a> including function
+				and differential equation solvers, optimizer, data tables and more.
+			</li>
+			<li>
+				a <a href="help/diagram.html">mind map style diagram</a> of the
+				relationships between the calculation tools.
+			</li>
+			<li>
+				a <a href="help/units.html">comprehensive conversion unit system</a> 
+				that performs dimensional analysis such that it knows dividing a btu/h value by a
+				voltage results in amps, but adding a litre and a pound would be an error.
 			</li>
 		</ul>
-		<h4>Math Minion and CoolProp</h4>
-		<p>There is an older version of Math Minion available that has a fluid flash tool based
-			on the open source <a href="http://coolprop.org">CoolProp</a> property package.
-		</p>
 		<p>
-			I have stopped updating this with the latest Math Minion features in the absence
-			of any feedback indicating there interest in it, but you can still run it at
-			<a href="http://coolmm.mathminion.org">coolmm.mathminion.org</a>.
-			Please be patient, for there is a lot of code to download.  It has examples with
-			fairly detailed explanations and of course help for the flash tool.
+			Best of all, if you have a reasonably recent browser and can wait a bit for
+			it to load, you can try it right now by tapping on <a href="run.html">Run</a>. 
+			It will load its <a href="help/getstarted.html">Getting Started</a> session
+			which has lots of explanations and examples.
 		</p>
 		<p>
 			The source code is in the
-			<a href="https://github.com/CraigGMorris/mmjs">GitHub repository</a> as branch
-			<b>coolmm</b>.
+			<a href="https://github.com/CraigGMorris/mmjs">GitHub repository</a>.
+		</p>
+		<p>
+			I have also made a <a href="macapp.html">Mac application</a> version. 
 		</p>
 
 	</div>

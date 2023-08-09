@@ -88,6 +88,7 @@ export function OptimizerView(props) {
 				t: t,
 				viewInfo: props.viewInfo,
 				infoWidth: props.infoWidth,
+				infoHeight: props.infoHeight,
 				actions: props.actions,
 				editOptions: editOptions,
 				cancelAction: () => {
@@ -222,6 +223,7 @@ export function OptimizerView(props) {
 						'input', {
 							id: 'opt__is-enabled-checkbox',
 							className: 'checkbox__input',
+							tabIndex: -1,
 							type: 'checkbox',
 							checked: results.isEnabled,
 							onChange: () => {
@@ -237,6 +239,7 @@ export function OptimizerView(props) {
 				e(
 					'button', {
 						id: 'opt__reset-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} reset`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);

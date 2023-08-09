@@ -88,6 +88,7 @@ export function SolverView(props) {
 				t: t,
 				viewInfo: props.viewInfo,
 				infoWidth: props.infoWidth,
+				infoHeight: props.infoHeight,
 				actions: props.actions,
 				editOptions: editOptions,
 				cancelAction: () => {
@@ -276,6 +277,7 @@ export function SolverView(props) {
 						'input', {
 							id: 'solver__is-enabled-checkbox',
 							className: 'checkbox__input',
+							tabIndex: -1,
 							type: 'checkbox',
 							checked: results.isEnabled,
 							onChange: () => {
@@ -291,6 +293,7 @@ export function SolverView(props) {
 				e(
 					'button', {
 						id: 'solver__reset-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} reset`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);
@@ -302,6 +305,7 @@ export function SolverView(props) {
 				e(
 					'button', {
 						id: 'solver__add-function-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addfunction`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);

@@ -158,6 +158,10 @@ class MMIterator extends MMTool {
 		for (let i = 0; i < count; i++) {
 			const formula = this.recordedValueFormulas[i];
 			const recValue = formula.value();
+			if (recValue instanceof MMTableValue) {
+				this.setError('mmcmd:recordTableError', {number: i + 1, path: this.getPath()});
+				return false;
+			}
 			const a = this.recordedValues[i];
 			if (recValue) {
 				a.push(recValue.copyOf());

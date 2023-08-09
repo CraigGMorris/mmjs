@@ -47,7 +47,6 @@ i18next
 			const domContainer = document.querySelector('#root');
 			domContainer.style.height = '100%';
 			domContainer.style.width = '100%';
-			domContainer.style.border = 'solid 1px';
 			ReactDOM.render(e(MMApp, {t: t}), domContainer);
 		}
 	);

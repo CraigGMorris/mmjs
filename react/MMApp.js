@@ -253,7 +253,8 @@ export function MMApp(props) {
 		const setSize = () => {
 			const docElement = document.documentElement;
 			const newDocHeight = docElement.clientHeight - 16;
-			const newDocWidth = docElement.clientWidth - 16;
+			const newDocWidth = docElement.clientWidth - 8;
+			const rightPercent = rightPaneWidth/docWidth;
 			setDocHeight(newDocHeight);
 			setDocWidth(newDocWidth);
 			document.body.style.height = `${newDocHeight}px`;
@@ -263,13 +264,22 @@ export function MMApp(props) {
 			if (viewType !== ViewType.info) {
 				setViewType(twoPane ? ViewType.twoPanes : ViewType.diagram);
 			}
+			if(twoPane && rightPaneWidth !== 320) {
+				const newRPWidth = newDocWidth * rightPercent;
+				if (newRPWidth > 320) {
+					setRightPaneWidth(newRPWidth);
+				}
+				else {
+					setRightPaneWidth(320);
+				}
+			}
 		};
 		setSize();
 		window.addEventListener('resize', setSize);
 		return () => {
 			window.removeEventListener('resize', setSize);
 		}
-	}, [viewType]);
+	}, [viewType, rightPaneWidth]);
 
 	useEffect(() => {
 		if (!autoLoadComplete) {
@@ -918,6 +928,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				'button', {
 					id:'info-tools__expand-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					onClick: () => {
 						switch (viewType) {
 							case ViewType.twoPanes:
@@ -941,6 +952,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 			e('button', {
 				id:'info-tools__undo-button',
 				className: 'info-tools__button',
+				tabIndex: -1,
 				disabled: !undoStack.length,
 				onClick: () => {
 					let undo = undoStack.pop();
@@ -964,6 +976,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					'button', {
 					id:'info-tools__redo-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					disabled: !redoStack.length,
 					onClick: () => {
 						let redo = redoStack.pop();
@@ -987,6 +1000,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				'button', {
 					id:'info-tools__unit-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					disabled: viewKeys.has('units'),
 					onClick: () => {
 						pushView('units', 'react:unitsTitle');
@@ -998,6 +1012,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				'button', {
 					id:'info-tools__console-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					disabled: viewKeys.has('console'),
 					onClick: () => {
 						pushConsole();
@@ -1009,6 +1024,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					'button', {
 					id:'info-tools__sessions-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					disabled: viewKeys.has('sessions'),
 					onClick: () => {
 						pushView('sessions', 'react:sessionsTitle', {rootFolder: ''});

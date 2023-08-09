@@ -167,6 +167,8 @@ class MMModel extends MMTool {
 				p.push(child.name + '.');
 			}
 		}
+		// note these will be removed by the MMTools parameter preview
+		// if the path is blank. This counts on them being last in the list
 		if (!this.children.toolnames) {
 			p.push('toolnames');
 		}
@@ -230,10 +232,12 @@ class MMModel extends MMTool {
 		}
 
 		if (!name) {
-			name = `x${this.nextToolNumber++}`;
+			const baseName = (typeName === 'Expression') ? 'x' : typeName;
+			let n = 2;
+			name = baseName + '1';
 			while ( this.childNamed(name) ) {
-				name = `x${this.nextToolNumber++}`;
-			}	
+				name = `${baseName}${n++}`;
+			}
 		}
 		let isImport = false;
 		if (typeName === 'Import') {
@@ -250,30 +254,55 @@ class MMModel extends MMTool {
 				newTool.position = position;
 			}
 			else {
-				let maxX = 10, maxY = 10;
-				for (const key in this.children) {
-					const tool = this.children[key];
-					if (tool instanceof MMTool) {
-						if (tool.position.y > maxY) {
-							maxY = tool.position.y;
-							maxX = tool.position.x;
-						}
-						else if (tool.position.y == maxY && tool.position.x > maxX) {
-							maxX = tool.position.x;
-						}
-					}
-				}
-
-				if (maxX < 500) {
-					newTool.position = {x: maxX + 70, y: maxY};
+				if (Object.keys(this.children).length === 1) {
+					// no previous tools
+					newTool.position = {x: 10, y: 10}
 				}
 				else {
-					newTool.position = {x: 10, y: maxY + 30};
+					// position newTool under right most tools
+					let maxX = -10000000, maxY = -10000000;
+					// find right most
+					for (const key in this.children) {
+						const tool = this.children[key];
+						if (tool instanceof MMTool && tool !== newTool) {
+							maxX = Math.max(maxX, tool.position.x);
+						}
+					}
+
+					// find bottom most of right most icons
+					for (const key in this.children) {
+						const tool = this.children[key];
+						if (tool instanceof MMTool && tool !== newTool) {
+							if (tool.position.x === maxX) {
+								maxY = Math.max(maxY, tool.position.y);
+							}
+						}
+					}
+
+					// now check for overlap and if so move farther right
+					for (const key in this.children) {
+						const tool = this.children[key];
+						if (tool instanceof MMTool && tool !== newTool) {
+							const y = tool.position.y
+							if (y > maxY && y < maxY + 55 && tool.position.x >= maxX - 65) {
+								maxX = tool.position.x + 70;
+								break;
+							}
+						}
+					}
+
+					newTool.position = {x: maxX, y: maxY + 30};
 				}
 			}
 			if (isImport) {
 				newTool.importInfo = new MMImportModelInfo('');
 			}
+			else if (typeName === 'Model') {
+				newTool.addToolCommand({
+					args: 'Expression'
+				});
+			}
+			newTool.justAdded = true;
 			command.results = name;
 			command.undo = this.getPath() + ' removetool ' + name;
 		}
@@ -1009,6 +1038,9 @@ class MMModel extends MMTool {
 		chunks.push('		}');
 		chunks.push('		</script>');
 		chunks.push('		<div class="model-form__objects">')
+		if (isMyNameSpace) {
+			chunks.push('	  <div class="model-form__print" onClick="window.print();">&nbsp;🖨️</div>')
+		}
 		for (let object of results.objects) {
 			if (object.htmlNotes && object.notes) {
 				isAnyOutput = true;
@@ -1153,17 +1185,7 @@ class MMModel extends MMTool {
 			this.lastDefaultUnitSetName = theMMSession.unitSystem.sets.defaultSetName;
 			this.htmlProcessor.clearCache();
 		}
-		results.html = `
-		<html>
-			<head>
-				<link rel="stylesheet"
-					href="./examples/htmlpage.css"
-					type="text/css">
-			</head>
-			<body>
-				${this.htmlProcessor.htmlForRequestor()}
-			</body>
-		</html>`;
+		results.html = this.htmlProcessor.htmlForRequestor();
 	}
 
 	/**

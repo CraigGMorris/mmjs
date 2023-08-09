@@ -536,6 +536,10 @@ class MMOde extends MMTool {
 		for (let i = 0; i < count; i++) {
 			const formula = this.recordedValueFormulas[i];
 			const recValue = formula.value();
+			if (recValue instanceof MMTableValue) {
+				this.setError('mmcmd:recordTableError', {number: i + 1, path: this.getPath()});
+				return false;
+			}
 			const a = this.recordedValues[i];
 			if (recValue) {
 				a.push(recValue.copyOf());
@@ -993,7 +997,7 @@ class MMOde extends MMTool {
 			const solver = new MMOdeSolver(this);
 			let nextT = this.nextTFormula.numberValue();
 			let tNext = nextT.values[0];
-			const tStop = endT.values[0];
+			let tStop = endT.values[0];
 			if (tNext > tStop) {
 				tNext = tStop;
 			}
@@ -1013,7 +1017,12 @@ class MMOde extends MMTool {
 				if (!this.recordCurrentValues()) {
 					break;
 				}
-
+				const endT = this.endTFormula.numberValue();
+				if (endT && endT.values[0] <= this.odeT.values[0]) {
+					this.isSolved = true;
+					return;
+				}
+				tStop = endT.values[0];
 				if (this.odeT.values[0] >= tStop) {
 					this.isSolved = true;
 					break;

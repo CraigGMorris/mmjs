@@ -193,16 +193,21 @@ class MMExpression extends MMTool {
 	valueForRequestor(requestor) {
 		if (!this.cachedValue) {
 			this.cachedValue = this.formula.value();
-			if (this.cachedValue instanceof MMTableValue && this.tableFormats) {
-				const tv = this.cachedValue;
-				for (let i in this.tableFormats) {
-					if (tv.columns[i-1]) {
-						tv.columns[i-1].format = this.tableFormats[i];
+			if (this.cachedValue instanceof MMTableValue) {
+				if (this.tableFormats) {
+					const tv = this.cachedValue;
+					for (let i in this.tableFormats) {
+						if (tv.columns[i-1]) {
+							tv.columns[i-1].format = this.tableFormats[i];
+						}
 					}
 				}
-				for (let i in this.tableUnits) {
-					if (tv.columns[i-1]) {
-						tv.columns[i-1].displayUnit = this.tableUnits[i];
+				if (this.tableUnits) {
+					const tv = this.cachedValue;
+					for (let i in this.tableUnits) {
+						if (tv.columns[i-1]) {
+							tv.columns[i-1].displayUnit = this.tableUnits[i];
+						}
 					}
 				}
 			}

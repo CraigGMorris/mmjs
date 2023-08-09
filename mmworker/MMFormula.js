@@ -4586,15 +4586,20 @@ class MMFormula extends MMCommandObject {
 				workingFormula = workingFormula.replace(dotRegex, '$1[0,"$2"]');
 			}
 
-			let pattern = /"[\s\S]*?"|`[\s\S]*?`|[=*/+\-^:%()'@{}#[\],]|[\w.$]+/g;
+			let pattern = /"[\s\S]*?"|`[\s\S]*?`|[=*/+\-^:%()'@{}#[\],]|[\w.$]+|[\s]+/g;
 			tokens = workingFormula.match(pattern);
 			let nTokens = tokens.length;
 			let startOp = new MMParenthesisOperator();
 			operatorStack.push(startOp);
 			parenCount = 1;
 			let treatMinusAsUnary = true;
+			const spaceRegex = /^\s+$/;
+			const unitRegex = /^[\w^/-]+$/;
 			for (let i = 0; i < nTokens; i++) {
 				let token = tokens[i];
+				if (spaceRegex.test(token)) {
+					continue;
+				} 
 				if (token == '(') {
 					addParenOp();
 					treatMinusAsUnary = true;
@@ -4742,17 +4747,33 @@ class MMFormula extends MMCommandObject {
 
 						let op;
 						let k = i + 1;
+						if (k < nTokens && spaceRegex.test(tokens[k])) {
+							k++; i++;
+						}
 						if (k < nTokens) {
 							let unitToken = tokens[k];
+							let quoted = false;
 							if (unitToken.startsWith('"') && unitToken.length > 1) {
+								// quoted unit
 								unitToken = unitToken.substring(1, unitToken.length - 1);
+								quoted = true;
 							}
 							else if (unitToken && !/[A-Za-z]/.test(unitToken.charAt(0))) {
-								unitToken = null;
+								// unit must start with a character or 1/
+								if (unitToken != '1' || k+1 >= nTokens || tokens[k+1] !== '/' ) {
+									unitToken = null;
+								}
 							}
-							else if (unitToken && k + 1 < nTokens && tokens[k+1] === '^') {
-								unitToken = null;  // unit has power in complex formula
+							if (unitToken && !quoted) {
+								// assemble unit from valid trailing parts
+								const unitParts = [unitToken];
+								while (++k < nTokens && unitRegex.test(tokens[k])) {
+									unitParts.push(tokens[k]);
+									i++
+								}
+								unitToken = unitParts.join('');
 							}
+							
 							if (unitToken) {
 								let unit = theMMSession.unitSystem.unitNamed(unitToken);
 								if (!unit) {

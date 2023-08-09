@@ -65,6 +65,7 @@ export function GraphView(props) {
 	const [editOptions, setEditOptions] = useState({});
 	const [unitLineName, setUnitLineName] = useState('x1');
 	const [unitType, setUnitType] = useState('');
+	const [unitName, setUnitName] = useState('');
 	const [plotInfo, setPlotInfo] = useState('');
  
 	const updateResults = props.viewInfo.updateResults;
@@ -125,6 +126,7 @@ export function GraphView(props) {
 				t: t,
 				viewInfo: props.viewInfo,
 				infoWidth: props.infoWidth,
+				infoHeight: props.infoHeight,
 				actions: props.actions,
 				editOptions: editOptions,
 				cancelAction: () => {
@@ -141,6 +143,7 @@ export function GraphView(props) {
 				t: props.t,
 				actions: props.actions,
 				unitType: unitType,
+				unitName: unitName,
 				cancel: () => {
 					setDisplay(DisplayType.input);
 				},
@@ -271,6 +274,7 @@ export function GraphView(props) {
 							className: 'graph__display-unit',
 							onClick: () => {
 								setUnitType(value.unitType);
+								setUnitName(value.unit),
 								setUnitLineName(name);
 								setDisplay(DisplayType.unitPicker);
 							}
@@ -362,6 +366,7 @@ export function GraphView(props) {
 				e(
 					'button', {
 						id: 'graph__addx-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addaxis x`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);
@@ -373,6 +378,7 @@ export function GraphView(props) {
 				e(
 					'button', {
 						id: 'graph__addy-button',
+						tabIndex: -1,
 						disabled: !results.enableY,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addaxis y`, () => {
@@ -385,6 +391,7 @@ export function GraphView(props) {
 				e(
 					'button', {
 						id: 'graph__addz-button',
+						tabIndex: -1,
 						disabled: !results.enableZ,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addaxis z`, () => {
@@ -397,6 +404,7 @@ export function GraphView(props) {
 				e(
 					'button', {
 						id: 'graph__plot-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} plotInfo`, (infoResults) => {
 								setPlotInfo(infoResults[0].results);

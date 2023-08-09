@@ -144,6 +144,8 @@ class MMTool extends MMCommandParent {
 	 */
 	parameters() {
 		let p = super.parameters();
+		// note that previewParameter counts on these being first
+		// in the list
 		p.push('notes');
 		p.push('html');
 		return p;
@@ -194,6 +196,10 @@ class MMTool extends MMCommandParent {
 			diagramNotes: this.diagramNotes,
 			htmlNotes: this.htmlNotes,
 			isOutput: this._isOutput,
+		}
+		if (this.justAdded) {
+			delete this.justAdded;
+			command.results.justAdded = true;
 		}
 	}
 
@@ -247,6 +253,10 @@ class MMTool extends MMCommandParent {
 		if (path.length === 0) {
 			// this is owner of formula
 			list.shift(); list.shift(); // remove html and notes
+			// model has tools and toolnames that should be removed from end
+			if (this instanceof MMModel) {
+				list.pop(); list.pop();
+			}
 		}
 		const eligible = [];
 		for (const pRaw of list) {

@@ -46,8 +46,6 @@ export function MatrixView(props) {
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
 	const results = updateResults.length ? updateResults[0].results : {};
-	const rowCountFormula = results.rowCountFormula;
-	const columnCountFormula = results.columnCountFormula;
 	const rowCount = results.rowCount;
   const columnCount = results.columnCount;
 	const cellInputs = results.cellInputs || [];
@@ -58,6 +56,9 @@ export function MatrixView(props) {
 	const [display, setDisplay] = useState(MatrixDisplay.table);
 	const originInput = cellInputs[currentCell.join('_')];
 	const [editFormula, setEditFormula] = useState(originInput ? originInput.input : '')
+	const [rowCountFormula, setRowCountFormula] = useState(results.rowCountFormula);
+	const [columnCountFormula, setColumnCountFormula] = useState(results.columnCountFormula);
+
 	const [editOptions, setEditOptions] = useState({})
 	const [applyType, setApplyType] = useState('cell');
 	const [formatString, setFormatString] = useState('');
@@ -95,6 +96,12 @@ export function MatrixView(props) {
 		else {
 			setFormatString('');
 		}
+		if (results.columnCountFormula) {
+			setColumnCountFormula(results.columnCountFormula);
+		}
+		if (results.rowCountFormula) {
+			setRowCountFormula(results.rowCountFormula);
+		}
 	}, [props.viewInfo.updateResults])
 
 
@@ -118,6 +125,7 @@ export function MatrixView(props) {
 
 	const valueUnit = (value && value.unit) ? value.unit : '';
 	const unitType = (value && value.unitType) ? value.unitType : '';
+	const unitName = value ? value.unit : '';
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 
@@ -136,7 +144,7 @@ export function MatrixView(props) {
 				return (formula) => {
 					props.actions.doCommand(`__blob__${results.path}.columnCount set formula__blob__${formula}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
-						setEditFormula(formula);
+						setColumnCountFormula(formula);
 						setDisplay(MatrixDisplay.table);
 					});
 				}
@@ -144,7 +152,7 @@ export function MatrixView(props) {
 					return (formula) => {
 						props.actions.doCommand(`__blob__${results.path}.rowCount set formula__blob__${formula}`, () => {
 							props.actions.updateView(props.viewInfo.stackIndex);
-							setEditFormula(formula);
+							setRowCountFormula(formula);
 							setDisplay(MatrixDisplay.table);
 						});
 					}
@@ -161,6 +169,7 @@ export function MatrixView(props) {
 					t: props.t,
 					actions: props.actions,
 					unitType: unitType,
+					unitName: unitName,
 					cancel: () => {
 						setDisplay(MatrixDisplay.table);
 					},
@@ -182,6 +191,7 @@ export function MatrixView(props) {
 					t: t,
 					viewInfo: props.viewInfo,
 					infoWidth: props.infoWidth,
+					infoHeight: props.infoHeight,
 					actions: props.actions,
 					editOptions: editOptions,
 					cancelAction: () => {
@@ -228,7 +238,7 @@ export function MatrixView(props) {
 							formula: rowCountFormula || '',
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							editAction: (editOptins) => {
+							editAction: (editOptions) => {
 								setEditOptions(editOptions);
 								setApplyType('rows');
 								setDisplay(MatrixDisplay.formulaEditor);
@@ -276,6 +286,7 @@ export function MatrixView(props) {
 					e(
 						'input', {
 							id: 'matrix__format-input',
+							tabIndex: -1,
 							placeholder: 'format',
 							value: formatString,
 							onChange: (event) => {

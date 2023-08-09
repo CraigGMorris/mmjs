@@ -1151,6 +1151,7 @@ class MMUnitsContainer extends MMCommandParent {
 			verbs['listuserunits'] = this.listUserUnits;
 			verbs['remove'] = this.removeUserDefinition;
 			verbs['unitsfordim'] = this.listUnitsWithDimensions;
+			verbs['unitsofsametype'] = this.listUnitsOfSameType;
 		}
 		return verbs;
 	}
@@ -1166,6 +1167,7 @@ class MMUnitsContainer extends MMCommandParent {
 			listuserunits: 'mmunit:_listuserunits',
 			remove: 'mmunit:_removeuserunit',
 			unitsfordim:	'mmunit:_unitsfordim',
+			unitsofsametype: 'mmunit:_unitsofsametype',
 		}[command];
 		if (key) {
 			return key;
@@ -1201,9 +1203,16 @@ class MMUnitsContainer extends MMCommandParent {
 		if (this.children[lowerCaseName]) {
 			throw(this.t('mmunit:duplicateUnit', {name: name}));
 		}
-		let newUnit = new MMUnit(name, this).initWithDescription(isMaster, description);
-		this.addChild(name, newUnit);
-		this.registerDimensionsOfUnit(newUnit);
+		let newUnit = new MMUnit(name, this);
+		try {
+			newUnit.initWithDescription(isMaster, description);
+			this.registerDimensionsOfUnit(newUnit);
+		}
+		catch (e) {
+			if (this.children[lowerCaseName]) {
+				this.removeChildNamed(lowerCaseName);
+			}
+		}
 		return newUnit;
 	}
 
@@ -1289,6 +1298,27 @@ class MMUnitsContainer extends MMCommandParent {
 			const unit = this.children[key];
 			if (unit.dimensionString === dimensionString) {
 				unitNames.push(unit.name);
+			}
+		}
+
+		unitNames = unitNames.sort();
+		command.results = unitNames;
+	}
+
+	/** method listUnitsWithDimensions
+	 * @param {MMCommand} command - requires command.args = the dimension string
+	 */
+	listUnitsOfSameType(command) {
+		const unitName = command.args;
+		const templateUnit = this.children[unitName];
+		let unitNames = [];
+		if (templateUnit) {
+			const dimensionString = templateUnit.dimensionString;
+			for (let key in this.children) {
+				const unit = this.children[key];
+				if (unit.dimensionString === dimensionString) {
+					unitNames.push(unit.name);
+				}
 			}
 		}
 
@@ -1423,6 +1453,8 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addUnit("darcy","1 2 0 0 0 0 0 0 9.869233e-13",true);
 		this.addUnit("hectare","1 2 0 0 0 0 0 0 1.000000e+04",true);
 		this.addUnit("lp100km","1 2 0 0 0 0 0 0 1.000000e-08",true);
+
+		this.addUnit("g0","1 1 0 -2 0 0 0 0 9.80665e+00",true);
 	
 		this.addUnit("debye","1 1 0 1 1 0 0 0 3.335640e-30",true);
 	
@@ -1456,6 +1488,7 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addUnit("erg","1 2 1 -2 0 0 0 0 1.000000e-07",true);
 		this.addUnit("cal","1 2 1 -2 0 0 0 0 4.184000e+00",true);
 		this.addUnit("kcal","1 2 1 -2 0 0 0 0 4.184000e+03",true);
+		this.addUnit("kwh","1 2 1 -2 0 0 0 0 3.6e+06",true),
 		this.addUnit("megatontnt","1 2 1 -2 0 0 0 0 4.184000e+15",true);
 	
 		this.addUnit("cp","1 -1 1 -1 0 0 0 0 1.000000e-03",true);
@@ -1502,6 +1535,8 @@ class MMUnitsContainer extends MMCommandParent {
 	
 		this.addUnit("Hz","1 0 0 -1 0 0 0 0 1.0",true);
 		this.addUnit("rpm","1 0 0 -1 0 0 0 0 0.104719755",true);
+
+		this.addUnit("mpg","1 -2 0 0 0 0 0 0 4.251437074e+5",true);
 	
 		this.addUnit("SG[60]","1 -3 1 0 0 0 0 0 9.990220e+02",true);
 		this.addUnit("API60","3 -3 1 0 0 0 0 0 1.413616e+05 1.315000e+02",true);

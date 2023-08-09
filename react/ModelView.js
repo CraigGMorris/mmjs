@@ -67,7 +67,7 @@ export function ModelView(props) {
 		props.actions.doCommand('', () => {
 			props.actions.popView();
 		});
-		return null;
+		// return null; // removed this to prevent error on undo of new model Why originally needed?
 	}
 
 	const htmlAction = React.useCallback(e => {
@@ -101,6 +101,11 @@ export function ModelView(props) {
 						else if (received.update) {
 							// console.log('updating');
 							props.actions.updateView(props.viewInfo.stackIndex);
+						}
+						else if (received.viewurl) {
+							const page = received.viewurl.name;
+							window.open(page);
+							//window.open(`help/${page.toLowerCase()}.html`,'MM Help');
 						}
 						else {
 							props.actions.updateDiagram();
@@ -141,6 +146,7 @@ export function ModelView(props) {
 					t: t,
 					viewInfo: props.viewInfo,
 					infoWidth: props.infoWidth,
+					infoHeight: props.infoHeight,
 					actions: props.actions,
 					editOptions: editOptions,
 					cancelAction: () => {

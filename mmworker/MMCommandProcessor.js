@@ -178,6 +178,7 @@ class MMCommandProcessor {
 			results.timeoutId = commands.timeoutId;
 			commands = commands.cmdString;
 		}
+		// console.log(commands);
 		try {
 			commands = commands.trim();
 			if (commands.length > 0) {

@@ -1057,6 +1057,7 @@ class MMTableValue extends MMValue {
 				const newColumn = new MMTableValueColumn({
 					name: column.name,
 					displayUnit: column.displayUnit ? column.displayUnit.name : null,
+					format: column.format,
 					value: selectedValues
 				});
 				newColumns.push(newColumn);

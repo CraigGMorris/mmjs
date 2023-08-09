@@ -239,6 +239,10 @@ class MMHtmlPageProcessor {
 						}
 					}
 						break;
+					case 'mm_viewurl': {
+						response.viewurl = {name: actions[action]};
+					}
+						break;
 					case 'mm_push': {
 						// pass back instruction to view to push another tool view over the html page view
 						const target = getTarget(actions[action])
@@ -503,7 +507,197 @@ class MMHtmlPageProcessor {
 			if (this.processedHtml) {
 				this.parent.addRequestor(requestor);
 			}
-			return messageCode + this.processedHtml;
+			return `
+<html>
+	<head>
+		<style>
+			body {
+				background-color: rgb(255, 253, 225) !important;
+				color: black;
+				-webkit-print-color-adjust: exact;
+			}
+			table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+			td, th {
+				border: 1px solid black;
+				padding: 4px;
+			}
+
+			tr:nth-child(odd){background-color: #f2f2f2;}
+			tr:nth-child(even){background-color: #ffffff;}
+
+			tr:hover {background-color: #ddd;}
+
+			th {
+				text-align: left;
+				background-color: #e8e8ff;
+				color: black;
+			}
+			th.col0, td.col0 {
+				/* display: none; */
+				width: 50px;
+			}
+
+			input:focus-visible, textarea:focus-visible {
+				outline: 1px solid white;
+				border: solid 2px blue;
+				border-radius: 5px;
+			}
+			
+			select, button {
+				font-size: 12pt;
+			}
+
+			.tvalue .col0 {
+				display: none;
+			}
+
+			.formula {
+				color: navy;
+				font-weight: bold;
+			}
+
+			.model-form {
+				margin-top: 10px;
+			}
+
+			.model-form__title {
+				font-size: 12pt;
+				font-weight: bold;
+				margin-bottom: 10px;
+			}
+			.model-form__print {
+				float: right;
+				position: sticky;
+				top: 10px;
+				margin-right: 10px;
+				cursor: pointer;
+			}
+			
+			@media print {
+				.model-form__print {
+					visibility: hidden;
+				}
+			}
+			.model-form__default-name {
+				border-bottom: solid 1px black;
+				padding: 5px;
+				color: blue;
+			}
+			.model-form__input-row {
+				display: grid;
+				grid-template-columns: 112px 1fr;
+				background-color: #f2f2f2;
+				width: 100%;
+			}
+			.model-form__input-name {
+				width:100px;
+				border: solid 1px black;
+				padding: 5px;
+				overflow: scroll;
+			}
+
+			.model-form__input	{
+				border: solid 1px;
+				padding: 5px;
+			}
+
+			.model-form__input input {
+				width: calc(100% - 10px);
+			}
+
+			.model-form__output-row {
+				display: grid;
+				grid-template-columns: 112px 1fr;
+				background-color: #e8e8ff;
+				border: solid 1px;
+			}
+			.model-form__output-name {
+				width:100px;
+				border: solid 1px black;
+				padding: 5px;
+				overflow: scroll;
+			}
+			.model-form__output-table, .model-form__output-tool {
+				margin-top: 5px;
+			}
+			.model-form__output-table .model-form__output-name {
+				background-color: #e8e8ff;
+			}
+			.model-form__output-tool .model-form__output-name {
+				background-color: #e8e8ff;
+			}
+			.model-form__output-row .model-form__output-name {
+				width:100px;
+				border: solid 1px black;
+				padding: 5px;
+			}
+			.model-form__output-row .model-form__output-value {
+				white-space: pre-wrap;
+				border: solid 1px black;
+				padding: 5px;
+			}
+			.model-form__input-name:hover, .model-form__output-name:hover, .model-form__default-name:hover, .model-form__multiline-formula:hover {
+				cursor: pointer;
+			}
+			.model-form__output-value	{
+				background-color: white;
+			}
+			.model-form__output-row, .model-form__input-row {
+				margin-top: 5px;
+			}
+
+			.model-form__output-row, .model-form__output-tool {
+				margin-bottom: 10px;
+			}
+
+			.model-form__multiline-formula {
+				white-space: pre-wrap;
+				border: solid 1px;
+				padding: 5px;
+			}
+			.model-form__input-row:hover, .model-form__output-row:hover {background-color: #ddd;}
+
+			.model-form__notes {
+				white-space: pre-wrap;
+				margin-top: 10px;
+				border: solid 1px;
+				padding: 5px;
+				background-color: #f2f2f2;
+				cursor: pointer;
+			}
+
+			.model-form-nested .model-form__input-name:hover,
+			.model-form-nested .model-form__output-name:hover,
+			.model-form-nested .model-form__multiline-formula:hover,
+			.model-form-nested .model-form__notes {
+				cursor: auto;
+			}
+
+			/* .model-form-nested .model-form__output-name:hover {
+				cursor: auto;
+			} */
+
+			.button-tool {
+				margin-top: 10px;
+				margin-bottom: 10px;
+				text-align: center;
+			}
+
+			.graph__svg {
+				background-color: white;
+			}
+		</style>
+		${messageCode}
+	</head>
+	<body>
+		${this.processedHtml}
+	</body>
+</html>
+`;
+			// return styleCode + messageCode + this.processedHtml;
 		}
 		catch(e) {
 			if ((typeof e === 'string')) {
@@ -532,16 +726,8 @@ class MMHtmlPage extends MMTool {
 		this.htmlProcessor = new MMHtmlPageProcessor(this)
 		this.formula = new MMFormula('Formula', this);
 		this.formula.formula = `'<!-- Html source - see help page -->	
-<html>
-	<head>
-		<link rel="stylesheet"
-			href="./examples/htmlpage.css"
-			type="text/css">
-	</head>
-	<body>
-		Replace this content in the source formula with your own content.
-	</body>
-</html>`
+Replace this content in the source formula with your own content.
+`
 	}
 
 	/**

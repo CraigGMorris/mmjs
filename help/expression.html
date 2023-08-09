@@ -25,6 +25,7 @@
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
@@ -32,41 +33,32 @@
 					or constant in your calculation.
 				</p>
 				<p>
-					It's name can be used in other formulas to represent the value it calculates.  Thus if
-					an expression named <b>speed</b> has a formula that is just:
+					For example, the expression below is named "distance" and has the formula
 				</p>
 				<p class="formula">
-					100 kph
-				</p>
-				<p>
-					and a second expression <b>distance</b> has a formula:
-				</p>
-				<p>
 					speed * 2 h
 				</p>
 				<p>
-					The value of <b>distance</b> will be 200 km.
+					where "speed" is another expression which calculates a 5x2 matrix of
+					velocities with the formula:
 				</p>
-				<p>If instead of a scalar, <b>speed</b> was a 2x2 matrix of <b>kph</b> values:
-				<table class="formula">
-					<tr><td>25</td><td>50</td></tr>
-					<tr><td>75</td><td>100</td></tr>
-				</table>
-				</p>
-				<p>
-					then the <a href="infoview.html">information view</a> for the <b>distance</b> expression
-					would look like:
+				<p class="formula">
+					{redim 1:10 * 10 kph, 2}
 				</p>
 				<img src="expression.png" alt="Expression info view"/>
 				<p>
-					Tapping on <b>Length: m</b> and selecting <b>km</b> as the display unit would result in:
+					The default unit for length when using the SI
+					<a href="units.html#sets">unit set</a> is metres, but
+					we can make this easier to read by tapping where it says <b>Length: m</b>
+					and selecting <b>km</b> as the display unit from the resulting display. We can also add a format to
+					only show one decimal place.
 				</p>
 				<img src="expression2.png" alt="Expression info view"/>
 			</div>
 			<div id="inputs" class="section">
 				<h3>Inputs</h3>
 				<div class="subsection">
-					In addition to the standard name field, display check box and notes button, an expression
+					In addition to the <a href="infoview.html">standard name field, display check box and notes button</a>, an expression
 					has:
 				</div>
 				<div id="incheck" class="subsection">
@@ -89,11 +81,24 @@
 						view.
 					</p>
 				</div>
+				<div id="addexpr" class="subsection">
+					<h3>Add Expression (+Exp)</h3>
+					<p>
+						Since expressions are so commonly used, this button is provided to immediately
+						add a new expression without having to go to the diagram. The icon for the new
+						expression will be automatically placed on the diagram.
+					</p>
+				</div>
 				<div id="formula" class="subsection">
 					<h3>Formula Field</h3>
 					<p>
 						The <a href="formulaeditor.html#fields">formula field</a> has the
 						<a href="formula.html">formula</a> that defines the value of the expression.
+					</p>
+					<p>
+						Tapping the <b>⤢</b> symbol to the right of the field will open a
+						<a href="formulaeditor.html">formula editor</a> which has helpful tools for
+						composing a longer or more complex formula.
 					</p>
 					<p>
 						Tapping on the equal sign to the left of the formula field will cause the expression
@@ -112,8 +117,6 @@
 					<p>
 						If you wish to display the value with a different unit, tap on the unit to open a 
 						<a href="formulaeditor.html#ubrowser">unit browser</a> where you can select a different one.
-						In the image above this has been done to display the results in <b>kph</b>, rather than the default
-						<b>m/s</b> of the <b>SI</b> <a href="units.html#sets">unit set</a> used by this session.
 					</p>
 					<p>
 						Note that setting the display unit does not change the formula or the value it
@@ -125,19 +128,19 @@
 					<h3>Format</h3>
 					<p>
 						If the expression result is a number, then there will be a format field to the right
-						of the unit field. The format string is styled on C format string and typically is of
+						of the unit field. The format string is of
 						the form:
 					</p>
 					<p class="formula">
-						%12.4f
+						12.4f
 					</p>
 					<p>
 						which says the field should be 12 characters wide with 4 characters after the
-						decimal point in normal floating point format. In Math Minion, the percent sign is
-						optional.
+						decimal point in normal fixed point format.
 					</p>
 					<p>
-						An <b>e</b> can be used instead of the <b>f</b> for exponential format.
+						An <b>e</b> can be used instead of the <b>f</b> for exponential format and a
+						<b>c</b> can be used for a fixed point format with commas.
 					</p>
 					<p>
 						 You can even show numbers with an arbitrary base between 2 and 36.
@@ -174,7 +177,12 @@
 				<h3>Table Values</h3>
 				<p>
 					If the result of evaluating the formula is a
-					<a href="minionvalue.html#table">table value</a>, then the unit and format fields
+					<a href="minionvalue.html#table">table value</a>, here defined by the formula
+				</p>
+				<p class="formula">
+					{table "Speed", speed, "Distance", distance}
+				</p>
+				<p>then the unit and format fields
 					 will be absent since different columns might have different units.
 				</p>
 				<p>
@@ -210,6 +218,9 @@
 					<li><b>html</b> - a html code representation of the tool.</li>
 					<li><b>notes</b> - the notes for the tool</li>
 					<li><b>myname</b> - the name of the tool</li>
+					<li><b>table</b> - a table representation of the value, with the column
+						names just being the column numbers.
+					</li>
 					</ul>
 			</div>
 		</div>

@@ -5,7 +5,7 @@
 	--link--color-hover: #c5fc98fe;
 	--diagram--bgcolor: #eeffee;
 	--info-nav--bgcolor: #111;
-	--info-view--padding: 5px;
+	--info-view--padding: 4px;
 	--border--color: #fff;
 	--button--border-color: #d1d1d1;
 	--button--active-color: #666;
@@ -54,6 +54,12 @@
 	}
 }
 
+input:focus-visible, textarea:focus-visible {
+	outline: 1px solid white;
+	border: solid 2px blue;
+	border-radius: 5px;
+}
+
 body {
 	background-color: var(--body--bgcolor) !important;
 	color: var(--body--color);
@@ -96,6 +102,8 @@ textarea {
 	padding-left: 5px;
 	color: var(--input--color);
 	background-color: var(--input--bgcolor);
+	border-radius: 5px;
+	resize: none;
 }
 
 textarea:disabled {
@@ -520,9 +528,9 @@ a:hover {
 
 #expression__in-out-boxes {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 1fr 1fr 40px;
 	grid-template-rows: 1fr;
-	grid-template-areas: "is-input show-input";
+	grid-template-areas: "is-input show-input add-new";
 }
 
 #expression__is-input {
@@ -533,6 +541,12 @@ a:hover {
 #expression__show-input {
 	grid-area: show-input;
 	grid-template-columns: 30px 1fr
+}
+
+#expression__add-new {
+	grid-area: add-new;
+	color: var(--link--color);
+	cursor: pointer;
 }
 
 #expression__is-input-label, #expression__show-input-label {
@@ -646,7 +660,7 @@ a:hover {
 #formula-editor__edit {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: var(--input--height) 1fr var(--input--height) 155px;
+	grid-template-rows: var(--input--height) 1fr var(--input--height) var(--preview-height) ;
 	grid-template-areas: "toolbar"
 		"input"
 		"actions"
@@ -669,7 +683,6 @@ a:hover {
 
 #formula-editor__preview-param {
 	grid-area: preview;
-	height: 150px;
 	box-sizing: border-box;
 	overflow: auto;
 	color: var(--link--color);
@@ -678,7 +691,6 @@ a:hover {
 
 #formula-editor__preview-func-desc {
 	grid-area: preview;
-	height: 150px;
 	box-sizing: border-box;
 	overflow: auto;
 }
@@ -704,15 +716,15 @@ a:hover {
 #formula-editor__actions {
 	display: grid;
 	grid-area: actions;
-	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr 12px;
 	grid-template-rows: 1fr;
-	grid-template-areas: "preview current apply";
+	grid-template-areas: "preview current apply resize";
 	grid-gap: 5px;
 }
 
 #formula-editor__actions button {
 	font-size: 10pt;
-	width: 100px;
+	width: 95px;
 	justify-self: center;
 }
 
@@ -734,9 +746,20 @@ a:hover {
 	grid-area: current;
 }
 
+#formula-editor__preview-resize {
+	grid-area: resize;
+	color: var(--link--color);
+	cursor: row-resize;
+}
+
+#formula-editor__preview-resize:hover {
+	color: var(--link--color-hover);
+}
+
 #formula-editor__editor {
 	grid-area: input;
 	height: 100%;
+	margin-right: 1px;
 }
 
 #f-picker {
@@ -786,7 +809,7 @@ a:hover {
 }
 
 .f-picker__section-header:hover {
-	color: var(--link--color-hover);
+	background-color: var(--button--active-color);
 }
 
 .f-picker__comment {
@@ -805,7 +828,7 @@ a:hover {
 }
 
 .f-picker__f-def:hover {
-	color: var(--link--color-hover);
+	background-color: var(--button--active-color);
 }
 
 #f-picker__f-desc {
@@ -1550,9 +1573,47 @@ a:hover {
 	width: 100%;
 }
 
+#sessions__prompt-wrapper {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr;
+	grid-template-areas: "prompt prompt"
+		"input input"
+		"cancel apply";
+
+	width: 300px;
+	margin: 0 auto;
+	grid-row-gap: 15px;
+
+}
+
+#sessions__menu-prompt {
+	grid-area: prompt;
+	margin-top: 10px
+}
+
+#sessions__prompt-input {
+	grid-area: input;
+}
+
+#sessions__prompt-cancel {
+	grid-area: cancel;
+	width: 100px;
+}
+
+#sessions__prompt-apply {
+	grid-area: apply;
+	width: 100px;
+}
+
 .sessions__entry {
 	display: grid;
 	grid-template-columns: 1fr 30px;
+	cursor: pointer;
+}
+
+.sessions__folder-name:hover, .sessions__entry-menu:hover, .sessions__entry-name:hover {
+	background-color: var(--button--active-color);
 }
 
 .sessions__folder-name {
@@ -1850,7 +1911,7 @@ a:hover {
 }
 
 .units__label:hover {
-	color: var(--link--color-hover);
+	background-color: var(--button--active-color);
 }
 
 #user-units {
@@ -2152,6 +2213,14 @@ a:hover {
 	box-sizing: border-box;
 	height: calc(var(--info-height) - (3.5 * var(--input--height)));
 	white-space: nowrap;
+}
+
+.unit-picker__type-name, .unit-picker__unit-name {
+	cursor: pointer;
+}
+
+.unit-picker__type-name:hover, .unit-picker__unit-name:hover {
+	background-color: var(--button--active-color);
 }
 
 #unit-picker__list-units {

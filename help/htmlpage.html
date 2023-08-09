@@ -10,6 +10,7 @@
 					overview: 'Overview',
 					formula: 'Formula Field',
 					render: 'Rendered Page',
+					print: 'Printing the Page',
 					mm: 'The <b>&lt;mm&gt;</b> Tag',
 					mmpost: 'mmpost Function',
 					inputs: 'Inputs Argument',
@@ -33,6 +34,7 @@
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
@@ -78,6 +80,11 @@
 					Rendering in this way prevents malicious code in the tool from interacting directly
 					with the main program code.
 				</p>
+			</div>
+			<div id="print" class="section">
+				<h3>Printing the Page</h3>
+				At the top left of the rendered view there is a small non-scrolling printer icon
+				and tapping on that will bring up a print dialog for printing the view.				
 			</div>
 			<div id="mm" class="section">
 				<h3>The <b>&lt;mm&gt;</b> Tag</h3>
@@ -352,6 +359,13 @@
 						Web security protocols (specifically CORS) may prevent you from importing from
 						servers you don't control and thus can't set the appropriate permissions on. However
 						it should alway be possible to load from the server hosting Math Minion itself.
+					</p>
+				</div>
+				<div id="viewurl" class="subsection">
+					<h3>View URL - mm_viewurl</h3>
+					<p>
+						If a call to <b>mmpost</b> has a request with a key <b>mm_viewurl</b>,
+						a new window will be opened with the contents of that URL.
 					</p>
 				</div>
 				<div id="cmd" class="subsection">

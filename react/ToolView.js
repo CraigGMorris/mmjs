@@ -29,10 +29,27 @@ const useEffect = React.useEffect;
 export function ToolView(props) {
 	const t = props.t;
 	let name;
+	const nameRef = React.useRef();
+	const notesRef = React.useRef();
+	useEffect(() => {
+		// if the tool was just added focus on name and select it
+		if (nameRef.current) {
+			const updateResults = props.viewInfo.updateResults;
+			if (updateResults && updateResults.length) {
+				const results = updateResults[0].results;
+				if (results && results.justAdded) {
+					nameRef.current.focus()
+					nameRef.current.selectionStart = 0;
+				}
+			}
+		}
+	}, []);
+	const initialNotes = React.useRef('');
 	useEffect(() => {
 		const updateResults = props.viewInfo.updateResults;
 		const notes = updateResults.length ? updateResults[0].results.notes : '';		
 		setNotesText(notes);
+		initialNotes.current = notes;
 	}, [props.viewInfo.updateResults]);
 
 	const pathParts = props.viewInfo.path.split('.');
@@ -45,6 +62,14 @@ export function ToolView(props) {
 	const [notesText, setNotesText] = useState(notes);
 	const diagramNotes = updateResults.length ? results.diagramNotes : false;
 	const htmlNotes = updateResults.length ? results.htmlNotes : false;
+	const [notesSelection, setNotesSelection] = useState([0,0]);
+
+	useEffect(() => {
+		if (notesRef.current) {
+			notesRef.current.setSelectionRange(notesSelection[0], notesSelection[1]);
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [notesSelection]);
 
 	const doRename = () => {
 		const path = props.viewInfo.path;
@@ -58,6 +83,19 @@ export function ToolView(props) {
 			props.actions.updateView(props.viewInfo.stackIndex);
 		});
 	}
+
+	const latestNotes = React.useRef(null);
+  useEffect(() => {
+    latestNotes.current = notesText;
+  }, [notesText]);
+
+	useEffect(() => {
+		return () => {
+			if (latestNotes.current !== initialNotes.current) {
+				doSetNotes(latestNotes.current);
+			}
+		};
+	}, []);
 
 	const doSetHtmlNotes = (shouldShow) => {
 		props.actions.doCommand(`${props.viewInfo.path} set htmlNotes ${shouldShow ? 't' : 'f'}`, () => {
@@ -80,6 +118,8 @@ export function ToolView(props) {
 		e(
 			'input', {
 				id: 'tool-view__name-input',
+				ref: nameRef,
+				tabIndex: 0,
 				value: toolName || '',
 				placeholder: t('react:toolNamePlaceHolder'),
 				onChange: (event) => {
@@ -117,6 +157,7 @@ export function ToolView(props) {
 			e(
 				'input', {
 					id: 'tool-view__is-output-checkbox',
+					tabIndex: -1,
 					className: 'checkbox__input',
 					type: 'checkbox',
 					checked: results.isOutput || false,
@@ -135,6 +176,7 @@ export function ToolView(props) {
 		e(
 			'button', {
 				id: 'tool-view__notes-toggle',
+				tabIndex: -1,
 				onClick: () => {
 					setShowNotes(!showNotes);
 				}
@@ -184,6 +226,7 @@ export function ToolView(props) {
 				'textarea', {
 					id: 'tool-view__notes-input',
 					value: notesText,
+					ref: notesRef,
 					onChange: (event) => {
 						// keeps input field in sync
 						const value = event.target.value;
@@ -195,6 +238,21 @@ export function ToolView(props) {
 							e.stopPropagation();
 							doSetNotes(notesText);
 							setShowNotes(false);
+						}
+						else if (e.code === 'Tab') {
+							e.preventDefault();
+							e.stopPropagation();
+							// add tab character
+							const start = e.target.selectionStart;
+							const end = e.target.selectionEnd;
+							let value = e.target.value;
+					
+							value = value.substring(0, start) +
+								"\t" + value.substring(start);
+							setNotesText(value);
+					
+							// put caret at right position again
+							setNotesSelection([start + 1, end + 1]);
 						}
 					},
 					onBlur: () => {

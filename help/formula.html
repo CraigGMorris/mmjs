@@ -27,6 +27,7 @@
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
@@ -66,26 +67,45 @@
 					A number can be followed by a <a href="units.html">conversion unit</a>:
 				</p>
 				<p class="formula">
-					123.45 km
+					123.45 km/h
 				</p>
 				<p>
-					If the formula consists of more than just number and a unit and the unit contains a
-					<b>-</b>, <b>/</b> or <b>^</b> symbol, then the unit must be in double quotes.
+					The unit must be separated from the number by a space and must only contain unit
+					names and the operators <b>-</b>, <b>/</b> and <b>^</b>. There can only be a
+					single <b>/</b>. Thus the following are all valid;
 				</p>
-				<div class="subsection" data-collapsed="false">
-					<h3>Not Okay</h3>
-					<div class="formula">
-						123.45 km/h * 12 min
-					</div>
+				<div class="formula">
+					123 m/s^2 ' an acceleration<br>
+					123 kj ' energy<br>
+					123 n-km ' also 123 kJ<br>
+					123000 kg-m^2/s^2 ' also 123 kJ
 				</div>
-				<div class="subsection" data-collapsed="false">
-					<h3>Okay</h3>
-					<div class="formula">
-						123.45 "km/h" * 12 min<br>
-						123.45 km / 12 min<br>
-						123.45 km/h
-					</div>
-				</div>
+				<p>
+					If the unit is to be followed by one of the operators that can appear in a
+					unit (<b>-</b>, <b>/</b> or <b>^</b>) there must be white space separating
+					the unit from the operator. Thus:
+				</p>
+				<p class="formula">
+					2 kg/3 h
+				</p>
+				<p>
+					would result in an unidentified unit error.
+				</p>
+				<p class="formula">
+					2 kg*3 h
+				</p>
+				<p>
+					would be legal, but it might be best to just always separate units from
+					operators with a space. Note that both
+				</p>
+				<p class="formula">
+					2 m^3<br>
+					2 m ^3
+				</p>
+				<p>
+					are legal, but the first results in 2 cubic metres, while the second yields
+					8 metres.
+				</p>
 				<p>
 					When you are editing a formula, you can request a unit browser to help you select
 					a conversion unit.  See the <a href="formulaeditor.html">formula editor</a> page

@@ -94,6 +94,16 @@ export function ExpressionView(props) {
 		});
 	}
 
+	const addNewExpression = () => {
+		props.actions.doCommand('addTool Expression',(results) => {
+			if (results && results.length) {
+				const name = results[0].results;
+				props.actions.viewTool(name, 'Expression');			
+			}
+			props.actions.updateDiagram()
+		});
+	};
+
 	const results = updateResults.length ? updateResults[0].results : {};
 	const path = results.path;
 	const value = results.value;
@@ -134,6 +144,7 @@ export function ExpressionView(props) {
 					t: t,
 					viewInfo: props.viewInfo,
 					infoWidth: props.infoWidth,
+					infoHeight: props.infoHeight,
 					actions: props.actions,
 					editOptions: editOptions,
 					cancelAction: () => {
@@ -151,6 +162,7 @@ export function ExpressionView(props) {
 					t: props.t,
 					actions: props.actions,
 					unitType: unitType,
+					unitName: valueUnit,
 					cancel: () => {
 						setDisplay(ExpressionDisplay.expression);
 					},
@@ -261,6 +273,7 @@ export function ExpressionView(props) {
 				formatInput = e(
 					'input', {
 						id: 'expression__format-input',
+						tabIndex: -1,
 						placeholder: 'format',
 						value: formatString,
 						onChange: (event) => {
@@ -324,6 +337,7 @@ export function ExpressionView(props) {
 								'input', {
 									id: 'expression__is-input-checkbox',
 									className: 'checkbox__input',
+									tabIndex: -1,
 									type: 'checkbox',
 									checked: results.isInput || false,
 									onChange: (event) => {
@@ -356,6 +370,7 @@ export function ExpressionView(props) {
 								'input', {
 									id: 'expression__show-input-checkbox',
 									className: 'checkbox__input',
+									tabIndex: -1,
 									type: 'checkbox',
 									checked: results.showInput || false,
 									onChange: (event) => {
@@ -369,6 +384,13 @@ export function ExpressionView(props) {
 									}
 								},
 							),	
+						),
+						e(
+							'div', {
+								id: 'expression__add-new',
+								onClick: addNewExpression,
+							},
+							'+Exp'
 						),
 					),
 				),
@@ -390,6 +412,7 @@ export function ExpressionView(props) {
 								setDisplay(ExpressionDisplay.formulaEditor);
 							},
 							applyChanges: applyChanges,	
+							ctrlEnterAction: addNewExpression,
 						}
 					)
 				),

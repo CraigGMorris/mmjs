@@ -590,6 +590,7 @@ export class UnitSetView extends React.Component {
 
 // unit picker component
 export function UnitPicker(props) {
+	const inputRef = React.useRef();
 	let t = props.t;
 
 	const [unitTypes, setUnitTypes] = useState([]);
@@ -611,18 +612,28 @@ export function UnitPicker(props) {
 		props.actions.doCommand('/unitsys.sets get defaultSetName', (cmds) => {
 			setDefaultSetName(cmds[0].results);
 		});
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	},[]);
 
 	useEffect(() => {
 		if (selectedType) {
+			let foundType = false;
 			for (let type of unitTypes) {
 				if (type.name === selectedType) {
 					props.actions.doCommand(`/unitsys.units unitsfordim ${type.dim}`, (cmds) => {
 						setUnitNames(cmds[0].results);
 					});
+					foundType = true;
 					break;
 				}
+			}
+			if (!foundType && props.unitName) {
+				props.actions.doCommand(`/unitsys.units unitsofsametype ${props.unitName}`, (cmds) => {
+					setUnitNames(cmds[0].results);
+				});
 			}
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -636,6 +647,9 @@ export function UnitPicker(props) {
 				key: type.name,
 				onClick: () => {
 					setSelectedType(type.name);
+					if (inputRef.current) {
+						inputRef.current.focus();
+					}			
 				}
 			},
 			type.name
@@ -660,6 +674,9 @@ export function UnitPicker(props) {
 						unitName = selectedUnit + unitName;
 					}
 					setSelectedUnit(unitName);
+					if (inputRef.current) {
+						inputRef.current.focus();
+					}
 				}
 			},
 			unitName
@@ -691,11 +708,20 @@ export function UnitPicker(props) {
 		e(
 			'input', {
 				id: 'unit-picker__input',
+				ref: inputRef,
 				value: selectedUnit,
 				onChange: (event) => {
 					// keeps input field in sync
 					setSelectedUnit(event.target.value);
 				},
+				onKeyDown: e => {
+					if (e.code == 'Enter') {
+						props.apply(`${selectedUnit}`, 0);
+					}
+					else if (e.code === 'Escape') {
+						props.cancel();
+					}
+				}
 			}
 		),
 		e(
@@ -705,6 +731,7 @@ export function UnitPicker(props) {
 			e(
 				'button', {
 					id: 'unit-picker__cancel',
+					title: 'Escape',
 					onClick: () => {
 						props.cancel();
 					}
@@ -714,13 +741,9 @@ export function UnitPicker(props) {
 			e(
 				'button', {
 					id: 'unit-picker__apply',
+					title: 'Return',
 					onClick: () => {
-						// if (selectedUnit) {
 							props.apply(`${selectedUnit}`, 0);
-						// }
-						// else {
-						// 	props.cancel();
-						// }
 					}
 				},
 				t('react:unitPickerApply')
