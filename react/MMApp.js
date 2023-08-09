@@ -145,6 +145,7 @@ export function MMFormatValue(v, format) {
 	}
 	else if (typeof v === 'number') {
 		if (format) {
+			let leadingPadChar = ' ';
 			const parts = format.split('.');	// split on decimal point, if there is one
 			let width = 14;
 			format = parts[parts.length - 1];
@@ -152,6 +153,9 @@ export function MMFormatValue(v, format) {
 				const widthField = parts[0].replace(/[^\d]+/,'');
 				if (widthField.length) {
 					width = parseInt(widthField);
+					if (widthField.startsWith('0')) {
+						leadingPadChar = '0';
+					}
 				}
 			}
 			let precision = parseInt(format);
@@ -178,7 +182,7 @@ export function MMFormatValue(v, format) {
 					break;
 			}
 			if (width > s.length) {
-				s = s.padStart(width);
+				s = s.padStart(width, leadingPadChar);
 			}
 			return s;
 		}
