@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "Turbine",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "root",
+	"SelectedObject": "Properties",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -14807,14 +14807,12 @@
 				"HideInfo": "y",
 				"DiagramNotes": "y",
 				"HtmlNotes": "n",
-				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
-					"Formula": "{table {cc \"T\", \"P\", \"V\" \"H\", \"U\", \"S\", \"Cp\", \"W\", \"Vf\"},\n\tphcalc.t,\n\tphcalc.p,\n\tphcalc.v,\n\tphcalc.h,\n\tphcalc.u,\n\tphcalc.s,\n\tphcalc.cp,\n\tphcalc.w,\n\tphcalc.vapfrac\n}"
+					"Formula": "{tr {table {cc \"Stream\", \"T\", \"P\", \"V\" \"H\", \"U\", \"S\", \"Cp\", \"W\", \"Vf\"},\n\t\"Outlet\",\n\tphcalc.t,\n\tphcalc.p,\n\tphcalc.v,\n\tphcalc.h,\n\tphcalc.u,\n\tphcalc.s,\n\tphcalc.cp,\n\tphcalc.w,\n\tphcalc.vapfrac\n}}"
 				},
 				"tableUnits": {
-					"1": "K",
-					"2": "MPa"
+					"1": "K"
 				}
 			},
 			{
@@ -14825,14 +14823,12 @@
 				"HideInfo": "y",
 				"DiagramNotes": "y",
 				"HtmlNotes": "n",
-				"isOutput": "y",
 				"Type": "Expression",
 				"Formula": {
-					"Formula": "{table {cc \"T\", \"P\", \"V\" \"H\", \"U\", \"S\", \"Cp\", \"W\", \"Vf\"},\n\ttpcalc.t,\n\ttpcalc.p,\n\ttpcalc.v,\n\ttpcalc.h,\n\ttpcalc.u,\n\ttpcalc.s,\n\ttpcalc.cp,\n\ttpcalc.w,\n\ttpcalc.vapfrac\n}"
+					"Formula": "{tr {table {cc \"Stream\", \"T\", \"P\", \"V\" \"H\", \"U\", \"S\", \"Cp\", \"W\", \"Vf\"},\n\t\"Inlet\",\n\ttpcalc.t,\n\ttpcalc.p,\n\ttpcalc.v,\n\ttpcalc.h,\n\ttpcalc.u,\n\ttpcalc.s,\n\ttpcalc.cp,\n\ttpcalc.w,\n\ttpcalc.vapfrac\n}}"
 				},
 				"tableUnits": {
-					"1": "K",
-					"2": "MPa"
+					"1": "K"
 				}
 			},
 			{
@@ -14846,6 +14842,20 @@
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "PHCalc.t"
+				}
+			},
+			{
+				"name": "Properties",
+				"Notes": "",
+				"DiagramX": 305,
+				"DiagramY": 50,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{tr {cc inletProps, outletProps}}"
 				}
 			}
 		]
