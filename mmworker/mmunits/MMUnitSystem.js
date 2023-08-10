@@ -123,6 +123,7 @@ class MMUnitSystem extends MMCommandParent {
 	 */
 	static format(v, format) {
 		if (format) {
+			let leadingPadChar = ' ';
 			const parts = format.split('.');	// split on decimal point, if there is one
 			let width = 0;
 			format = parts[parts.length - 1];
@@ -130,6 +131,9 @@ class MMUnitSystem extends MMCommandParent {
 				const widthField = parts[0].replace(/[^\d]+/,'');
 				if (widthField.length) {
 					width = parseInt(widthField);
+					if (widthField.startsWith('0')) {
+						leadingPadChar = '0';
+					}
 				}
 			}
 			let precision = parseInt(format);
@@ -156,7 +160,7 @@ class MMUnitSystem extends MMCommandParent {
 					break;
 			}
 			if (width > s.length) {
-				s = s.padStart(width);
+				s = s.padStart(width, leadingPadChar);
 			}
 			return s;
 		}
