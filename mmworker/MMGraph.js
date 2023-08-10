@@ -1904,7 +1904,7 @@ class MMGraph extends MMTool {
 												// fall through and add dot as well for barWithDot
 												
 											case MMGraphLineType.dot:
-												path.push(`M ${scaledX} ${scaledY} m -1 0 a 1,1 0 1,0 2,0 a 1,1 0 1,0 -2,0`);
+												path.push(`M ${scaledX} ${scaledY} m -3 0 a 3,3 0 1,0 6,0 a 3,3 0 1,0 -6,0`);
 												break;
 
 											case MMGraphLineType.hidden:
