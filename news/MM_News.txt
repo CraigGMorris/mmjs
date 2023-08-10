@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "MM_News",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
+	"SelectedObject": "Aug_2023_News",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -2118,7 +2118,7 @@
 								"DiagramY": -130,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
-								"HtmlNotes": "y",
+								"HtmlNotes": "n",
 								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
@@ -2632,215 +2632,6 @@
 								}
 							}
 						]
-					},
-					{
-						"name": "toolNames",
-						"Notes": "<b>Model toolnames Parameter</b>\nThe model parameter _toolnames has been changed to just toolnames. A child with that name would have precedence.",
-						"DiagramX": 195,
-						"DiagramY": -30,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "aModel.toolnames"
-						},
-						"showInput": "y"
-					},
-					{
-						"name": "Eval_Array",
-						"Notes": "<b>Eval Arrays</b>\nThe eval function can now operator on arrays.",
-						"DiagramX": 195,
-						"DiagramY": -125,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{eval {cc \"1+2\", \"2+3\", \"3+4\"}}"
-						},
-						"showInput": "y"
-					},
-					{
-						"name": "IsNan_Function",
-						"Notes": "<b>Added an isNaN function</b>",
-						"DiagramX": 195,
-						"DiagramY": -90,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{isNaN {cc 1/2, 1/0, 0/0}}"
-						},
-						"showInput": "y"
-					},
-					{
-						"name": "Tool_Arrays",
-						"Notes": "<b>Tool Value Arrays</b>\nTool values no longer have to be scalar.\n\nHere an array of two models is created and the output display for each is shown.",
-						"DiagramX": 195,
-						"DiagramY": -60,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{cc aModel, pasted_json}"
-						},
-						"showInput": "y"
-					},
-					{
-						"name": "Intro",
-						"Notes": "<b>Update for Dec 2022</b>\nI'm not sure anyone reads these, but it seems like time for a quick update on the changes that have dribbled out since the last update.",
-						"DiagramX": 90,
-						"DiagramY": -125,
-						"HideInfo": "n",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": ""
-						}
-					},
-					{
-						"name": "aModel",
-						"Notes": "<b>Default Model View</b>\nIf none of the tools in a model are explicitly displayed, the information view for the model will now display a list of all the tools in the model, rather than just being left blank.",
-						"DiagramX": 90,
-						"DiagramY": 0,
-						"HideInfo": "n",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Model",
-						"diagramScale": 1,
-						"Objects": [
-							{
-								"name": "x1",
-								"Notes": "",
-								"DiagramX": -45,
-								"DiagramY": -160,
-								"HideInfo": "n",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": ""
-								}
-							},
-							{
-								"name": "x2",
-								"Notes": "",
-								"DiagramX": -45,
-								"DiagramY": -130,
-								"HideInfo": "n",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": ""
-								}
-							}
-						]
-					},
-					{
-						"name": "CSV_Argument",
-						"Notes": "<b>CSV Argument for Table Function</b>\nAlso using wfetch to retrieve data if running locally.",
-						"DiagramX": 90,
-						"DiagramY": -90,
-						"HideInfo": "n",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Model",
-						"diagramScale": 1,
-						"Objects": [
-							{
-								"name": "header",
-								"Notes": "The required three line definition for the data as described in the help for Data Tables.",
-								"DiagramX": -55,
-								"DiagramY": -55,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "y",
-								"isOutput": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "`table,en\n\"Date\",\"MinT\",\"MaxT\",\"mmRain\"\n\"s\",\"degC\",\"degC\",\"mm\"\n`"
-								}
-							},
-							{
-								"name": "weather",
-								"Notes": "When the string is passed to the table function it results in a table value.",
-								"DiagramX": -55,
-								"DiagramY": -85,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "y",
-								"isOutput": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "{table csv}"
-								},
-								"showInput": "y",
-								"tableUnits": {
-									"1": "date"
-								},
-								"tableFormats": [
-									null,
-									"10.0f",
-									"10.1f",
-									"10.1f",
-									"10.1f"
-								]
-							},
-							{
-								"name": "rawCSV",
-								"Notes": "<b>Retrieving Local Files</b>\n\nAs an aside, the wfetch function is used to retrieve some text CSV from the server. In this case the file is in the examples folder that is part of the Math Minion project.\n\nCross origin resource sharing restrictions, known as CORS, prevent fetching files from servers other the one serving the Math Minion code in most cases, but if you run a Math Minion server on your own machine, you can access files from the Math Minion folder tree.\n\nI use a folder named \"local\" on my personal machine where I place files I want to access from Math Minion, such as data from my weather station. This data is in turn updated by Python and shell scripts.\n\nThe \"local\" folder is gitignored in the distribution.",
-								"DiagramX": -55,
-								"DiagramY": -25,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "y",
-								"isOutput": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "{wfetch \"GET\", \"/examples/weather.csv\"}"
-								},
-								"showInput": "y"
-							},
-							{
-								"name": "csv",
-								"Notes": "<b>CSV Argument for Table Function</b>\nIf a single string argument starting with \"table\" is passed to the table function, then it is assumed to be a CSV string as described in the Data Table help and a table value representing the CSV values will be returned.\n\nHere the raw CSV data is added to a header to make the string to pass to the table function.",
-								"DiagramX": -55,
-								"DiagramY": -115,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "y",
-								"isOutput": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "header + rawCSV"
-								},
-								"showInput": "y"
-							}
-						]
-					},
-					{
-						"name": "Other_Changes",
-						"Notes": "<b>Other Changes</b>\n\n- Added a check to prevent the root model having its display flag set.\n\n- The number of icons displayed on the diagram is now limited to 300. If there are more tools than that in a model, a warning will appear at the top of the diagram. This is to avoid slow operation if you paste JSON that creates a huge number of tools.\n\n- Minor help and format fixes.",
-						"DiagramX": 195,
-						"DiagramY": 0,
-						"HideInfo": "n",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": ""
-						}
 					}
 				]
 			},
@@ -2855,7 +2646,7 @@
 				"isOutput": "y",
 				"Type": "HTML Form",
 				"Formula": {
-					"Formula": "'\n<style>\n\tli {\n\t\tmargin-bottom: 10px;\n\t}\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t#page {\n\t\tmargin-top: 10px;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t\tbackground-color: #f2f2f2;\n\t}\n\n</style>\n<h3>August 2023 News</h3>\n<div id=\"page\">\n<p>\n\tI had been pretty much ignoring poor Math Minion as it was working fine for me and I have had no user feedback (<a href=\"https://redtree.com/contact.html\" target=\"_blank\">hint, hint</a>).\n</p>\n<p>\nHowever after once again stumbling upon <a href=\"https://en.wikipedia.org/wiki/Electron_(software_framework)\" target=\"_blsnk\">Electron JS</a>, I became intrigued with the idea of creating a\n<span class=\"link\"\n\tonClick=\"mmpost([], {mm_viewurl: 'macapp.html'})\">\n\tMac app version\n</span>\nof MM. This got me in the coding mood and that resulted in the changes mentioned below.\n</p>\n<ul>\n\t<li>\n\t\tThe formula parser has been changed so that is no longer necessary to place compound units like \"kg/h\" in quotes in any formula. However you do have to follow the unit by a space if the next character is an operator that can appear in a unit (i.e. - / or ^).\n\t</li>\n\t<li>\n\t\tIf the information panel has been made bigger than its default size, it will now scale proportionately when the window is resized.\n\t</li>\n\t<li>\n\t\tOn the theory that the first thing added to a new model is an expression, one is now automatically added when a new model is created.\n\t</li>\n\t<li>\n\t\tSince one often adds a sequence of expressions, there is now a button, labeled <b>+Exp</b> on the <b>Expression</b> information view. Tapping this will automatically add another expression and show its information view. Typing <b>Ctrl-Enter</b> in the formula field will do the same. The icon for the new expression will be automatically placed on the lower right of the diagram.\n\t</li>\n\t<li>\n\t\tWhen a new tool is added, the name field is now automatically focused and selected so you can just start typing a new name. Also while the default name for an expression is still x1, x2 etc., the other tools get names like Model1, Solver1 etc.\n\t</li>\n\t<li>\n\t\tOnly the main fields for tools are now tab targets, so it is easier to say tab around. In an expression, typing a tab in the name field or typing return after renaming will automatically move the cursor to the formula field.\n\t</li>\n\t<li>\n\t\tThere is now a small print icon in the upper right of the model information view. Tapping on that icon will produce a print dialog for printing the contents of this view.\n\t</li>\n\t<li>\n\t\tHelp pages now have a non-scrolling header line with forward and back buttons, as appropriate, as well as a close button and a centered title.\n\t</li>\n\t<li>\n\t\tThe help and Getting Started sessions have been updated. Tap to\n\t\t<span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\">reload Getting Started</span>. There is also a new\n<span class=\"link\"\n\tonClick=\"mmpost([], {mm_viewurl: 'help/tutorial.html'})\">\n\tIntroductory Tutorial\n</span>.\n\t</li>\n\t<li>\n\t\tThere is now a up/down icon <b>&#8597;</b> at the right of the formula editor that can be dragged to resize the relative heights of the formula and preview areas.\n\t</li>\n\t<li>\n\t\tWhen the cursor is in a position in the formula editor where a conversion unit might be appropriate, the preview area will show all the possible units. These will be filtered as you type and can be inserted with a tab or by tapping on a preview value.\n\t</li>\n\t<li>\n\t\tFormula previews of selections are now labeled as such and the selection remains highlighted in the formula.\n\t</li>\n\t<li>\n\t\tFixed a problem where inserting a function from preview did not result in the cursor being positioned before first argument.\n\t</li>\n\t<li>\n\t\tTapping on the diagram or otherwise leaving the formula or note editors without applying the changes no longer results in any changes being lost.\n\t</li>\n\t<li>\n\t\tIf the unit browser is invoked with an unknown unit type, but there are other units already defined with that type, they will be displayed in the right hand pane.\n\t</li>\n\t<li>\n\t\tTyping <b>Return</b> in the unit picker now does the <b>Apply</b> action, while typing <b>Escape</b> does a <b>Cancel</b>.\n\t</li>\n\t<li>\n\t\tAdded the units <b>kwh</b> and <b>mpg</b> as well as <b>g0</b> which is the average earth acceleration due to gravity.\n\t</li>\n\t<li>\n\t\tFixed a problem where the select function wasn't carrying column formats into its result.\n\t</li>\n\t<li>\n\t\tMade <b>Tab</b> insert a tab character in the notes editor rather than skipping to next field.\n\t</li>\n\t<li>\n\t\tAdded the console command <b>deleteallsessions</b> to the root, i.e. <b>/</b>. <b>USE WITH CAUTION</b>\n\t</li>\n\t<li>\n\t\tAdded an error message to indicate that iterator and ode tools cannot record table values.\n\t</li>\n\t<li>\n\t\tThe <b>endT</b> formula in the ODE tool is now reevaluated at each recording time so it can be used to end the integration early.\n\t</li>\n\t<li>\n\t\tAdded a <b>mm_viewurl</b> html page tool command which opens a window viewing the passed url.\n\t</li>\n\t<li>\n\t\tFixed a bad link in the function picker for complex number help.\n\t</li>\n\t<li>\n\t\tFixes to the matrix tool row and column count formula handling.\n\t</li>\n\t<li>\n\t\tImprovements to the highlights when hovering over some lists.\n\t</li>\n\t<li>\n\t\tMore appropriate cursor pointers are used for clickable parts of the session view and the unit picker.\n\t</li>\n</ul>\n</div>"
+					"Formula": "'\n<style>\n\tli {\n\t\tmargin-bottom: 10px;\n\t}\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t#page {\n\t\tmargin-top: 10px;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t\tbackground-color: #f2f2f2;\n\t}\n\n</style>\n<h3>August 2023 News</h3>\n<div id=\"page\">\n<p>\n\tI had been pretty much ignoring poor Math Minion as it was working fine for me and I have had no user feedback (<a href=\"https://redtree.com/contact.html\" target=\"_blank\">hint, hint</a>).\n</p>\n<p>\nHowever after once again stumbling upon <a href=\"https://en.wikipedia.org/wiki/Electron_(software_framework)\" target=\"_blsnk\">Electron JS</a>, I became intrigued with the idea of creating a\n<span class=\"link\"\n\tonClick=\"mmpost([], {mm_viewurl: 'macapp.html'})\">\n\tMac app version\n</span>\nof MM. This got me in the coding mood and that resulted in the changes mentioned below.\n</p>\n<ul>\n\t<li>\n\t\tThe formula parser has been changed so that is no longer necessary to place compound units like \"kg/h\" in quotes in any formula. However you do have to follow the unit by a space if the next character is an operator that can appear in a unit (i.e. - / or ^).\n\t</li>\n\t<li>\n\t\tIf the information panel has been made bigger than its default size, it will now scale proportionately when the window is resized.\n\t</li>\n\t<li>\n\t\tOn the theory that the first thing added to a new model is an expression, one is now automatically added when a new model is created.\n\t</li>\n\t<li>\n\t\tSince one often adds a sequence of expressions, there is now a button, labeled <b>+Exp</b> on the <b>Expression</b> information view. Tapping this will automatically add another expression and show its information view. Typing <b>Ctrl-Enter</b> in the formula field will do the same. The icon for the new expression will be automatically placed on the lower right of the diagram.\n\t</li>\n\t<li>\n\t\tWhen a new tool is added, the name field is now automatically focused and selected so you can just start typing a new name. Also while the default name for an expression is still x1, x2 etc., the other tools get names like Model1, Solver1 etc.\n\t</li>\n\t<li>\n\t\tOnly the main fields for tools are now tab targets, so it is easier to say tab around. In an expression, typing a tab in the name field or typing return after renaming will automatically move the cursor to the formula field.\n\t</li>\n\t<li>\n\t\tThere is now a small print icon in the upper right of the model information view. Tapping on that icon will produce a print dialog for printing the contents of this view.\n\t</li>\n\t<li>\n\t\tHelp pages now have a non-scrolling header line with forward and back buttons, as appropriate, as well as a close button and a centered title.\n\t</li>\n\t<li>\n\t\tThe help and Getting Started sessions have been updated. Tap to\n\t\t<span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\">reload Getting Started</span>. There is also a new\n<span class=\"link\"\n\tonClick=\"mmpost([], {mm_viewurl: 'help/tutorial.html'})\">\n\tIntroductory Tutorial\n</span>.\n\t</li>\n\t<li>\n\t\tThere is now a up/down icon <b>&#8597;</b> at the right of the formula editor that can be dragged to resize the relative heights of the formula and preview areas.\n\t</li>\n\t<li>\n\t\tWhen the cursor is in a position in the formula editor where a conversion unit might be appropriate, the preview area will show all the possible units. These will be filtered as you type and can be inserted with a tab or by tapping on a preview value.\n\t</li>\n\t<li>\n\t\tFormula previews of selections are now labeled as such and the selection remains highlighted in the formula.\n\t</li>\n\t<li>\n\t\tFixed a problem where inserting a function from preview did not result in the cursor being positioned before first argument.\n\t</li>\n\t<li>\n\t\tTapping on the diagram or otherwise leaving the formula or note editors without applying the changes no longer results in any changes being lost.\n\t</li>\n\t<li>\n\t\tIf the unit browser is invoked with an unknown unit type, but there are other units already defined with that type, they will be displayed in the right hand pane.\n\t</li>\n\t<li>\n\t\tTyping <b>Return</b> in the unit picker now does the <b>Apply</b> action, while typing <b>Escape</b> does a <b>Cancel</b>.\n\t</li>\n\t<li>\n\t\tAdded the units <b>kwh</b> and <b>mpg</b> as well as <b>g0</b> which is the average earth acceleration due to gravity.\n\t</li>\n\t<li>\n\t\tFixed a problem where the select function wasn't carrying column formats into its result.\n\t</li>\n\t<li>\n\t\tMade <b>Tab</b> insert a tab character in the notes editor rather than skipping to next field.\n\t</li>\n\t<li>\n\t\tAdded the console command <b>deleteallsessions</b> to the root, i.e. <b>/</b>. <b>USE WITH CAUTION</b>\n\t</li>\n\t<li>\n\t\tAdded an error message to indicate that iterator and ode tools cannot record table values.\n\t</li>\n\t<li>\n\t\tThe <b>endT</b> formula in the ODE tool is now reevaluated at each recording time so it can be used to end the integration early.\n\t</li>\n\t<li>\n\t\tAdded a <b>mm_viewurl</b> html page tool command which opens a window viewing the passed url.\n\t</li>\n\t<li>\n\t\tFixed a bad link in the function picker for complex number help.\n\t</li>\n\t<li>\n\t\tFixes to the matrix tool row and column count formula handling.\n\t</li>\n\t<li>\n\t\tImprovements to the highlights when hovering over some lists.\n\t</li>\n\t<li>\n\t\tMore appropriate cursor pointers are used for clickable parts of the session view and the unit picker.\n\t</li>\n\t<li>\n\t\tFixed leading zero format (e.g. 02.0f) problem.\n\t</lli>\n\t<li>\n\t\tIncreased the size of 2D graph scatter points.\n\t</li>\n\t<li>\n\t\tExpression column units weren't being added to table results unless a format was also defined.\n\t</li>\n</ul>\n</div>"
 				}
 			}
 		]
