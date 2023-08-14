@@ -638,6 +638,22 @@ export function FormulaEditor(props) {
 		}, previewErrorHandler);
 	}
 
+	let importFile = (event) => {
+		//Retrieve the first (and only!) File from the FileList object
+		var f = event.target.files[0]; 
+
+		if (f) {
+			let r = new FileReader();
+			r.onload = (e) => {
+				let contents = e.target.result;
+				setFormula("'" + contents);
+			};
+			r.readAsText(f);
+		} else { 
+			alert("Failed to load file");
+		}
+	}
+
 	const previewCurrent = () => {
 		setErrorMessage(null);
 		setPreviewParam(null);
@@ -896,6 +912,36 @@ export function FormulaEditor(props) {
 		);
 	}
 
+	let previewButton;
+	if (formula === "'") {
+		previewButton = e(
+			'label', {
+				id: 'formula-editor__preview-button',
+				className: 'input-file-button',
+			},
+			t('react:formulaEditorImportButton'),
+			e(
+				'input', {
+					id: 'formula-editor__import-input',
+					type: 'file',
+					onChange: e => {
+						importFile(e);
+					},
+				}
+			),	
+		)
+	}
+	else {
+		previewButton = e(
+			'button', {
+				id: 'formula-editor__preview-button',
+				title: t('react:formulaEditorPreviewKey'),
+				onClick: updatePreview,
+			},
+			t('react:formulaEditorPreviewButton'),
+		);
+	}
+
 	const editComponent = e(
 		// this is always rendered to keep cursor position/selection, but is hidden if display != editor
 		'div', {
@@ -974,14 +1020,7 @@ export function FormulaEditor(props) {
 				},
 				t('react:formulaEditorApplyButton')
 			),
-			e(
-				'button', {
-					id: 'formula-editor__preview-button',
-					title: t('react:formulaEditorPreviewKey'),
-					onClick: updatePreview,
-				},
-				t('react:formulaEditorPreviewButton'),
-			),
+			previewButton,
 			e(
 				'button', {
 					id: 'formula-editor__current-button',
