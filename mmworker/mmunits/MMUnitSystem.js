@@ -1388,6 +1388,8 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addUnit("arcmin","1 0 0 0 0 0 0 0 0.00029088820866572158",true);
 		this.addUnit("arcsec","1 0 0 0 0 0 0 0 4.8481368110953598e-06",true);
 		this.addUnit("dollar","1 0 0 0 0 0 0 0 1.000000e+00",true)
+		this.addUnit("count","1 0 0 0 0 0 0 0 1.000000e+00",true)
+		this.addUnit("quantity","1 0 0 0 0 0 0 0 1.000000e+00",true)
 	
 		this.addUnit("m","1 1 0 0 0 0 0 0 1.000000e+00",true);
 		this.addUnit("angstrom","1 1 0 0 0 0 0 0 1.000000e-10",true);
