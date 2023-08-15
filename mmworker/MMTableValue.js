@@ -95,7 +95,7 @@ class MMTableValueColumn {
 				}
 			}
 		}
-		else {
+		else if (context.column) {
 			const column = context.column;
 			this.name = column.name;
 			this._displayUnit = column.displayUnit;
@@ -608,7 +608,7 @@ class MMTableValue extends MMValue {
 			const csv = context.csv;
 			let i = 0;
 			let line;
-			let re = new RegExp('.*?\\n');
+			let re = new RegExp('.*?[\\r\\n]+');
 			const exceptionWith = (key, args) => {
 				let msg = new MMCommandMessage(key, args);
 				throw(msg);
