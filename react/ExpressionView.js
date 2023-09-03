@@ -304,6 +304,9 @@ export function ExpressionView(props) {
 			else if (value.t === 's') {
 				displayedUnit = 'String';
 			}
+			else if (value.t === 'j') {
+				displayedUnit = 'JSON';
+			}
 			displayComponent = e(
 				'div', {
 					// main vertical sections

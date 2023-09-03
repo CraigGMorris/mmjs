@@ -27,6 +27,7 @@
 	MMToolValue:readonly
 	MMTableValue:readonly
 	MMTableValueColumn:readonly
+	MMJsonValue: readonly
 	MMPropertyType:readonly
 	MMUnitSystem:readonly
 */
@@ -329,6 +330,9 @@ class MMExpression extends MMTool {
 								rv.displayUnit = column.displayUnit;
 							}
 						}
+					}
+					else if (value instanceof MMJsonValue) {
+						rv = value.valueForDescription(description);
 					}
 					if (!rv) {
 						rv = super.valueDescribedBy(description, requestor);

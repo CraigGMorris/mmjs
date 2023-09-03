@@ -900,6 +900,14 @@
 							</p>`,
 					},
 					{
+						f: "{jsonparse s}",
+						desc: `<p>
+								The <b>s</b> parameter must be a string consisting of legal JSON code.
+								The result is a
+								<a href="./help/minionvalue.html#json" target="_blank">Math Minion JsonValue</a>.
+							</p>`,
+					},
+					{
 						f: "{split s, sep}",
 						desc: `<p>Splits the elements of string <b>s</b> into an array string, using the scalar string <b>sep</b>
 								as the separator. If <b>s</b> isn't a scalar, the result will one row per value of s, with each value split

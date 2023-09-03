@@ -39,6 +39,7 @@ importScripts(
   "MMNumberValue.js",
   "MMStringValue.js",
   "MMTableValue.js",
+  "MMJsonValue.js",
   "MMToolValue.js",
   "MMTool.js",
   'MMModel.js',

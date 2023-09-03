@@ -9,7 +9,7 @@
 	],
 	"CaseName": "Getting Started",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "Welcome",
+	"SelectedObject": "root",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -3857,6 +3857,253 @@
 										},
 										"showInput": "y"
 									}
+								]
+							}
+						]
+					},
+					{
+						"name": "JsonValue",
+						"Notes": "",
+						"DiagramX": 5,
+						"DiagramY": 85,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "Overview",
+								"Notes": "",
+								"DiagramX": 10,
+								"DiagramY": 10,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<html>\n\t<head>\n\t\t<style>\n\t\t\t.link {\n\t\t\t\tcolor: blue;\n\t\t\t\tfont-weight: bold;\n\t\t\t\tcursor: pointer;\n\t\t\t}\n\t\t\t#page {\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t}\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div>\n\t\t\t<p><b>JSON Values</b></p>\t\t\n\t\t\t<p>\n\t\t\t\t<a href=\"https://en.wikipedia.org/wiki/JSON\" target=\"_blank\">JSON</a> is a very popular way of representing data in a text format. The <b>jsonparse</b> function creates a JSON object value the contents of which can be referenced and converted into Math Minion number and string values.\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+								}
+							},
+							{
+								"name": "parsedClients",
+								"Notes": "the jsonparse function will return a JsonValue. It is displayed simply as a JSON string.",
+								"DiagramX": 10,
+								"DiagramY": 65,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{jsonparse clientsjson}"
+								}
+							},
+							{
+								"name": "ClientsJson",
+								"Notes": "For example given this JSON source:",
+								"DiagramX": 10,
+								"DiagramY": 35,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "'{\n\t\"Names\": [\n\t\t\"HAL\",\n\t\t\"Fred\",\n\t\t\"Acme\",\n\t\t\"Pear\"\n\t],\n\t\"rate\": [\n\t\t120.00,\n\t\t100.00,\n\t\t175.00,\n\t\t140.00\n\t]\n}"
+								}
+							},
+							{
+								"name": "Names",
+								"Notes": "You can reference the elements of a JsonValue with normal dot notation and if the element is a string or number array, the appropriate Math Minion value will be returned.\n\nNote that the member names are case sensitive.",
+								"DiagramX": 10,
+								"DiagramY": 95,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "parsedClients.Names"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "ClientTable",
+								"Notes": "Making a table from the JsonValue.",
+								"DiagramX": 10,
+								"DiagramY": 125,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{table\n\t\"Client\", Names,\n\t\"Rate $/h\", parsedClients.rate\n}"
+								},
+								"showInput": "y",
+								"tableFormats": [
+									null,
+									null,
+									"12.2f"
+								]
+							},
+							{
+								"name": "ClientsJson2",
+								"Notes": "JSON data can take many forms.  Here the base object contains an array named clients, where each member of the array has a \"Name\" and \"rate\" member.  The base object also contains a \"Date\" string value.",
+								"DiagramX": 85,
+								"DiagramY": 10,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "'{\n\t\"Clients\": [\n\t\t{\n\t\t\t\"Name\": \"Hal\",\n\t\t\t\"Rate\": 120.00\n\t\t},\n\t\t{\n\t\t\t\"Name\": \"Fred\",\n\t\t\t\"Rate\": 100.00\n\t\t},\n\t\t{\n\t\t\t\"Name\": \"Acme\",\n\t\t\t\"Rate\": 175.00\n\t\t},\n\t\t{\n\t\t\t\"Name\": \"Pear\",\n\t\t\t\"Rate\": 140.00\n\t\t}\n\t],\n\t\"Date\": \"2023-09-01\"\n}"
+								}
+							},
+							{
+								"name": "ParsedClients2",
+								"Notes": "",
+								"DiagramX": 85,
+								"DiagramY": 40,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{jsonparse clientsjson2}"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "ClientsMember",
+								"Notes": "Referencing the \"Clients\" member will return another JsonValue containing just the referenced member.",
+								"DiagramX": 85,
+								"DiagramY": 65,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "parsedClients2.Clients"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "Names2",
+								"Notes": "Using a special index value consisting of a string starting with a colon, followed by a member name, will extract all those members from an array of objects.",
+								"DiagramX": 85,
+								"DiagramY": 95,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "ClientsMember[\":Name\"]"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "ClientTable2",
+								"Notes": "Creating the same table as ClientTable from the ClientsJson2 source.",
+								"DiagramX": 85,
+								"DiagramY": 125,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{table\n\t\"Client\", Names2,\n\t\"Rate $/h\", ClientsMember[\":Rate\"]\n}"
+								},
+								"showInput": "y",
+								"tableFormats": [
+									null,
+									null,
+									"12.2f"
+								]
+							},
+							{
+								"name": "MemberNames",
+								"Notes": "Using an string index consisting of just a \"*\" will return the names of all the members of an object.",
+								"DiagramX": 85,
+								"DiagramY": 155,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "parsedClients2[\"*\"]"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "ClientsJson3",
+								"Notes": "In this case the Clients object isn't an array, but rather has keyed subobjects each containing a name and rate.",
+								"DiagramX": 165,
+								"DiagramY": 10,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "'{\n\t\"Clients\": {\n\t\t\"C001\": {\n\t\t\t\"Name\": \"Hal\",\n\t\t\t\"Rate\": 120.00\n\t\t},\n\t\t\"C002\": {\n\t\t\t\"Name\": \"Fred\",\n\t\t\t\"Rate\": 100.00\n\t\t},\n\t\t\"C003\": {\n\t\t\t\"Name\": \"Acme\",\n\t\t\t\"Rate\": 175.00\n\t\t},\n\t\t\"C004\": {\n\t\t\t\"Name\": \"Pear\",\n\t\t\t\"Rate\": 140.00\n\t\t}\n\t},\n\t\"Date\": \"2023-09-01\"\n}"
+								}
+							},
+							{
+								"name": "ParsedClients3",
+								"Notes": "",
+								"DiagramX": 165,
+								"DiagramY": 40,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{jsonparse clientsjson3}"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "ClientObjectArray",
+								"Notes": "Using a string index of \":*\" selects all the members of an object.",
+								"DiagramX": 165,
+								"DiagramY": 65,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "ParsedClients3.Clients[\":*\"]"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "ClientTable3",
+								"Notes": "Here we will make up yet another client table, including a column of IDs by extracting the member names from the Client object and then the name and rate from the member values.",
+								"DiagramX": 165,
+								"DiagramY": 95,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{table\n\t\"ID\", ParsedClients3.Clients[\"*\"],\n\t\"Client\", ClientObjectArray[\":Name\"],\n\t\"Rate\", ClientObjectArray[\":Rate\"]\n}"
+								},
+								"showInput": "y",
+								"tableFormats": [
+									null,
+									null,
+									"12.2f",
+									"12.2f"
 								]
 							}
 						]

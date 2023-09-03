@@ -29,6 +29,7 @@
 	"formulaAndArgTypeError": "And function arguments must be strings or numbers",
 	"formulaArgCountError": "Incorrect number of arguments\nin: {{path}}\nformula: {{formula}}",
 	"formulaArrayInitError": "The intialization variable for the array function must be numeric or a string",
+	"formulaBadJsonValue": "Error in JSON description\n\n{{msg}}",
 	"formulaBadUnit": "Unrecognized unit in formula",
 	"formulaBraceMismatch": "Mismatched function brace",
 	"formulaAngleNotDimensionless": "Angle value must be have dimensionless unit",

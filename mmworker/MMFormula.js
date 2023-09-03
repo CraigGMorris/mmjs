@@ -25,6 +25,7 @@
 	MMToolValue:readonly
 	MMStringValue:readonly
 	MMTableValue:readonly
+	MMJsonValue: readonly
 	MMTableValueColumn:readonly
 	MMUnitSystem:readonly
 	MMMatrix:readonly
@@ -194,6 +195,9 @@ const MMFormulaFactory = (token, formula) => {
 		'lowercase': (f) => {return new MMLowerCaseFunction(f)},
 		'uppercase': (f) => {return new MMUpperCaseFunction(f)},
 		'utf8': (f) => {return new MMUtf8Function(f)},
+
+		// json functions
+		'jsonparse': (f) => {return new MMJsonParseFunction(f)},
 
 		// time functions
 		'mktime': (f) => {return new MMMktimeFunction(f)},
@@ -3554,6 +3558,21 @@ class MMUtf8Function extends MMSingleValueFunction {
 		return null;
 	}
 }
+
+class MMJsonParseFunction extends MMSingleValueFunction {
+	operationOnString(v) {
+		if (v.valueCount) {
+			const s = v._values[0];
+			if (s.length) {
+				const rv = new MMJsonValue(s);
+				return rv;
+			}
+		}
+		return null;
+	}
+}
+
+
 // Time functions
 
 class MMMktimeFunction extends MMSingleValueFunction {
