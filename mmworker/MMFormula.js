@@ -3513,7 +3513,7 @@ class MMSubstringFunction extends MMMultipleArgumentFunction {
 			s = this.arguments[1].value()
 			from = this.arguments[0].value();
 		}
-		if (from instanceof MMNumberValue && (!length || length instanceof MMNumberValue)) {
+		if (s && from instanceof MMNumberValue && (!length || length instanceof MMNumberValue)) {
 			return s.subString(from, length);
 		}
 		return null;
