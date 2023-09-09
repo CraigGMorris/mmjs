@@ -301,11 +301,32 @@ export function ExpressionView(props) {
 					}
 				);
 			}
-			else if (value.t === 's') {
-				displayedUnit = 'String';
-			}
-			else if (value.t === 'j') {
-				displayedUnit = 'JSON';
+			else if (value.t === 's' || value.t === 'j') {
+				displayedUnit = e(
+					'span', {
+						id: 'expression__string-type'
+					},
+					value.t === 's' ? 'String' : 'JSON'
+				);
+				if (value.nr === 1 && value.nc === 1) {
+					formatInput = e(
+						'span', {
+							id: 'expression__save-text',
+							className: 'link',
+							onClick: (e) => {
+								const type = value.t === 's' ? 'text/plain' : 'application/json'
+								const blob = new Blob(value.v, {type : type});
+								const link = document.createElement('a');
+								link.download = path.split('.').pop();;
+								link.href = URL.createObjectURL(blob);
+								link.click();
+								URL.revokeObjectURL(link.href);
+		
+							},
+						},
+						t('react:exprExportText')
+					)
+				}
 			}
 			displayComponent = e(
 				'div', {

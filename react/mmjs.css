@@ -591,6 +591,10 @@ a:hover {
 	height: 22px;
 }
 
+#expression__string-type {
+	color: var(--body--color)
+}
+
 #expression__units {
 	box-sizing: border-box;
 	padding-top: 2px;
@@ -1100,6 +1104,14 @@ a:hover {
 .iter__input .formula-field {
 	padding-top: 5px;
 	padding-bottom: 5px;
+}
+
+.link {
+	color: var(--link--color);
+}
+
+.link:hover {
+	color: var(--link--color-hover);
 }
 
 #matrix {

@@ -62,6 +62,7 @@
 	"dgmMaxIconsWarnign": "Only {{max}} of {{count}} shown",
 	"dgmShowNotes": "Show Notes",
 	"dgmToolHasNote": "Notes",
+	"exprExportText": "Export",
 	"exprIsInput": "Model Input",
 	"exprIsOutput": "Display",
 	"exprShowInput": "Display Input",
