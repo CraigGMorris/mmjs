@@ -60,8 +60,7 @@
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int date / 10000}"
-						},
-						"format": "12.0f"
+						}
 					},
 					{
 						"name": "Month",
@@ -74,8 +73,7 @@
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int date /100 - year*100}"
-						},
-						"format": "12.0f"
+						}
 					},
 					{
 						"name": "date",
@@ -101,8 +99,7 @@
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int date - year * 10000 - month * 100}"
-						},
-						"format": "12.0f"
+						}
 					},
 					{
 						"name": "Hour",
@@ -115,8 +112,7 @@
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int hhmmss / 10000}"
-						},
-						"format": "12.0f"
+						}
 					},
 					{
 						"name": "hhmmss",
@@ -129,8 +125,7 @@
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int (date - {int date}) * 1000000 + 0.5}"
-						},
-						"format": "12.0f"
+						}
 					},
 					{
 						"name": "Minute",
@@ -143,8 +138,7 @@
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int (hhmmss - hour * 10000) / 100}"
-						},
-						"format": "12.0f"
+						}
 					},
 					{
 						"name": "Second",
@@ -157,8 +151,7 @@
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "hhmmss - hour * 10000 - minute * 100"
-						},
-						"format": "12.0f"
+						}
 					},
 					{
 						"name": "MonthName",
@@ -185,7 +178,7 @@
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "MonthName +\n{fmt \" %2.0f\", day} +\n\", \" +\n{fmt \"%4.0f\", year}"
+							"Formula": "MonthName +\n{fmt \" %2.0f\", day} +\n\", \"+\n{fmt \", %4.0f\", year}"
 						}
 					},
 					{
