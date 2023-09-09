@@ -677,7 +677,7 @@ a:hover {
 
 #formula-editor__preview-table {
 	grid-area: preview;
-	height: 140px;
+	height: 100%;
 	box-sizing: border-box;
 }
 
@@ -1733,6 +1733,11 @@ a:hover {
 
 .tableview__cell--input {
 	fill: var(--tableview__input--color);
+}
+
+#tableview__string-text, #tableview__scalar-string {
+	height: 100%;
+	width: 100%;
 }
 
 #tool-view {

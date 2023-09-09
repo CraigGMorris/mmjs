@@ -56,9 +56,36 @@ export function TableView(props) {
 	const svgRef = React.useRef(null);
 
 	const cellHeight = 30;
-	const cellWidth = 120;
+	let cellWidth = 120;
 
 	const value = props.value;
+	let scalarString;
+	let maxStringLength = 14;
+	if (value.t === 's' || value.t === 'j') {
+		if (value.nc === 1) {
+			if (value.nr === 1 && value.v[0].length <= 1000000) {
+				// display entire string
+				scalarString = e(
+					'div', {
+						id: 'tableview__scalar-string',
+						key: 'stringValue',
+					},
+					e(
+						'textarea', {
+							id: 'tableview__string-text',
+							readOnly: true,
+							value: value.v[0],
+						}
+					)
+				)
+			}
+			else {
+				cellWidth = props.viewBox[2] - 50;
+				maxStringLength = cellWidth / 8;
+			}
+		}
+	}
+
 	const isTransposed = value ? value.isTransposed : false;
 	const rowLabelWidth = isTransposed ? cellWidth : 50;
 
@@ -331,6 +358,10 @@ const pointerMove = useCallback(e => {
 		return MMFormatValue(v, format);
 	}, []);
 
+	if (scalarString) {
+		return scalarString;
+	}
+
 	let cells = [];
 	let colorClass;
 	const nDisplayedRows = Math.min(nRowCells, nRows - rowOrigin);
@@ -418,7 +449,7 @@ const pointerMove = useCallback(e => {
 				}
 				let cmp;
 				if (typeof v === 'string') {
-					displayedV = displayedV.substring(0,14);
+					displayedV = displayedV.substring(0,maxStringLength);
 				}
 				cmp = e('text', {
 					className: 'tableview__cell-text',
@@ -584,6 +615,7 @@ const pointerMove = useCallback(e => {
 		}
 	);
 	cells.push(originBox);
+
 	return e(
 		'svg', {
 			id: 'tableview__value-svg',
