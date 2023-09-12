@@ -155,10 +155,9 @@
 				<div id="calculated" class="section">
 					<h3>Calculated Value</h3>
 					<p>
-						The lower part of the view displays the result of the calculation as a matrix or
-						table.  If the display won't fit in the window, you can scroll it both horizontally
-						and vertically by dragging it. Dragging on the row or column headers will scroll
-						rapidly.
+						The lower part of the view normally displays the result of the calculation in a
+						table.  The table can be scrolled both horizontally and vertically by dragging any cell.
+						Dragging on the row or column headers will rapidly scroll.
 					</p>
 					<p>
 						Tapping on a cell will show the contents of the cell in a large text area in a new
@@ -166,10 +165,19 @@
 						a format hasn't been assigned, it will be shown with high precision.
 					</p>
 					<p>
-						For string values, which might be far larger than can
-						be displayed in a cell, it allows you to see the whole string in a scrollable view
-						as well as copying all or part of it to the clipboard.  Tapping the <b>Done</b>
-						button on this view will return to the main view.
+						For string values with more than one element, the text values might be far
+						larger than can be displayed in a cell, so this allows you to see the whole
+						string in a scrollable view as well as copying all or part of it to the clipboard.
+						Tapping the <b>Done</b> button on this view will return to the main view.
+					</p>
+					<p>
+						For the special case of a
+						<a href="minionvalue.html#json">json object</a>
+						or string with just one element,
+						the entire text is displayed in a scrollable text view
+						instead of the normal table. An <b>Export</b> button will also appear
+						in the area above the text and tapping it will open a file save dialog
+						allowing you to save the text to a file on your device.
 					</p>
 				</div>
 			</div>
