@@ -3578,6 +3578,21 @@
 											"Formula": "{table MakeTable2,\n\t\"No\" + {fmt \"%3.0f\", 11:15},\n\t1:5 * 3\"m\",\n\t100:104 * 3\"kg\",\n\t\"lb=\" + {fmt \"%.2f\",\n\t\t200:204 * 1\"kg\", \"lb\"\n\t}\n}"
 										},
 										"showInput": "y"
+									},
+									{
+										"name": "MakeTableCsv",
+										"Notes": "The table function can also create a table value from CSV data.\n\nIf the table function is given a single string argument that has the following format format:\n\nThe first line is:\ntable,en\n\nwhere the comma can be replaced with another separator, like a tab, and the en with a different country code.\n\nThe second line is a series of double quoted column names, separated by the separator charactor.\n\nThe third line is a matching series of double quoted unit names for number columns or the word string for string columns.\n\nThe remaining lines are data matching the form of the second and third lines in CSV format.\n\nA table value is returned.",
+										"DiagramX": 200,
+										"DiagramY": 210,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table `table,en\n\"one\",\"two\",\"three\"\n\"string\",\"Fraction\",\"string\"\n\"s1\",1.0000000000,\"n = 10\"\n\"s2\",2.0000000000,\"n = 20\"\n\"s3\",3.0000000000,\"n = 30\"\n\"s4\",4.0000000000,\"n = 40\"\n`}"
+										},
+										"showInput": "y"
 									}
 								]
 							},
@@ -3858,6 +3873,21 @@
 										"showInput": "y"
 									}
 								]
+							},
+							{
+								"name": "Csv_Function",
+								"Notes": "The csv function takes a table value as an argument and returns a string value in Comma Separated Value format.",
+								"DiagramX": 85,
+								"DiagramY": 35,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{csv clients}"
+								},
+								"showInput": "y"
 							}
 						]
 					},
