@@ -806,6 +806,12 @@
 					},
 					selectorDesc,
 					transposeDesc,
+					{
+						f: "{csv t}",
+						desc: `<p>
+							Returns a string representing the <b>t</b> table value argument in Comma Separated Value format.
+						</p>`
+					}
 				]
 			},
 			{

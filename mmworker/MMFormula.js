@@ -34,6 +34,7 @@
 	theMMSession:readonly
 	MMPropertyType:readonly
 	MMDyadicUnitAction:readonly
+	MMReport:readonly
 */
 
 /**
@@ -177,6 +178,7 @@ const MMFormulaFactory = (token, formula) => {
 		'groupsum': (f) => {return new MMGroupTableFunction(f, 'sum')},
 		'groupmin': (f) => {return new MMGroupTableFunction(f, 'min')},
 		'groupmax': (f) => {return new MMGroupTableFunction(f, 'max')},
+		'csv': (f) => {return new MMCsvFunction(f, 'csv')},
 
 		// lookup functions
 		'lookup': (f) => {return new MMLookupFunction(f)},
@@ -3268,6 +3270,27 @@ class MMGroupTableFunction extends MMMultipleArgumentFunction {
 		});
 	}
 }
+
+class MMCsvFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 1);
+	}
+
+	value() {
+		const tableValue = this.arguments[0].value();
+		if (tableValue instanceof MMTableValue) {
+			const csv = MMReport.forToolValue(null, tableValue, null, {isTableCopy: true});
+			if (csv) {
+				return MMStringValue.scalarValue(csv.substring(9));
+			}
+		}
+		else {
+			this.formula.setError('mmcmd:formulaCsvTypeError');
+			return null;
+		}
+	}
+}
+	
 
 // Lookup functions
 

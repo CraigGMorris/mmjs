@@ -206,7 +206,7 @@ var MMReport = {
 						units.push(MMReport.headerString('string', options));
 					}
 					else {
-						let displayUnit = tool.tableUnits ? tool.tableUnits[j-1] : null;
+						let displayUnit = (tool && tool.tableUnits) ? tool.tableUnits[j-1] : null;
 						if (!displayUnit) {
 							displayUnit = column.displayUnit;
 						}
@@ -227,7 +227,7 @@ var MMReport = {
 					for (let j = 0; j < value.columnCount; j++) {
 						const column = value.columns[j];
 						const columnValue = column.value;
-						let columnUnit = tool.tableUnits ? tool.tableUnits[j] : null;
+						let columnUnit = (tool && tool.tableUnits) ? tool.tableUnits[j] : null;
 						if (!columnUnit) {
 							columnUnit = column.displayUnit;
 						}
