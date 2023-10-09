@@ -2692,7 +2692,7 @@
 					},
 					{
 						"name": "ClientsJson",
-						"Notes": "If a string value only has a single element, it is now fully displayed in a scrollable text view, rather than in a table cell.\n\nThis is also applies to previews of a formula or selected parts of a formula in the formula editor.\n\nIn this case the text is a simple JSON data structure. Tap on this note to view the expression.\n\nNote that an Export button will appear above the string view. Tapping this will present a file dialog allowing you to export the text to a file on your device.",
+						"Notes": "If a string value only has a single element, it is now fully displayed in a scrollable text view, rather than in a table cell.\n\nThis also applies to previews of a formula or selected parts of a formula in the formula editor.\n\nIn this case the text is a simple JSON data structure. Tap on this note to view the expression.\n\nNote that an Export button will appear above the string view. Tapping this will present a file dialog allowing you to export the text to a file on your device.",
 						"DiagramX": 10,
 						"DiagramY": 40,
 						"HideInfo": "y",
