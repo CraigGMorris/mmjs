@@ -31,6 +31,9 @@ MMTableValue:readonly
 */
 var MMReport = {
 	separator: (options) => {
+		if (options.sep) {
+			return options.sep;
+		}
 		if (options.isCSV || options.isTableCopy) {
 			return ',';
 		}

@@ -3277,9 +3277,16 @@ class MMCsvFunction extends MMMultipleArgumentFunction {
 	}
 
 	value() {
-		const tableValue = this.arguments[0].value();
+		const tableValue = this.arguments[this.arguments.length - 1].value();
+		const options = {isTableCopy: true};
+		if (this.arguments.length > 1) {
+			const sepValue = this.arguments[0].value();
+			if (sepValue instanceof MMStringValue) {
+				options.sep = sepValue.values[0];
+			}
+		}
 		if (tableValue instanceof MMTableValue) {
-			const csv = MMReport.forToolValue(null, tableValue, null, {isTableCopy: true});
+			const csv = MMReport.forToolValue(null, tableValue, null, options);
 			if (csv) {
 				return MMStringValue.scalarValue(csv.substring(9));
 			}

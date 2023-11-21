@@ -807,9 +807,12 @@
 					selectorDesc,
 					transposeDesc,
 					{
-						f: "{csv t}",
+						f: "{csv t, sep}",
 						desc: `<p>
 							Returns a string representing the <b>t</b> table value argument in Comma Separated Value format.
+						</p>
+							If a string value is included as the second argument, it will be used as the separator instead 
+							a comma.
 						</p>`
 					}
 				]
