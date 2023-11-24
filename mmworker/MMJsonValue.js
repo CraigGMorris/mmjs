@@ -146,14 +146,19 @@ class MMJsonValue extends MMValue {
 
 					for (const element of elements) {
 						const member = element[key];
-						if (member) {
-							newObj.push(member);
-						}
-						else if (type === 'number') {
-							newObj.push(0);
+						if (typeof member === 'boolean') {
+							newObj.push(member ? 't' : '')
 						}
 						else {
-							newObj.push('');
+							if (member) {
+									newObj.push(member);
+								}
+							else if (type === 'number') {
+								newObj.push(0);
+							}
+							else {
+								newObj.push('');
+							}
 						}
 					}
 				}
