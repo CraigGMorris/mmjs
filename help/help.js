@@ -67,6 +67,7 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink"><a href="console.html">Console</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink"><a href="formula.html">Formulas</a></div>
+	<div class="contentlink"><a href="functions.html">Formula Functions</a></div>
 	<div class="contentlink"><a href="minionvalue.html">Minion Values</a></div>
 	<div class="contentlink"><a href="formulaeditor.html">Formula Editor</a></div>
 	<div class="contentlink subsection"><a href="formulaeditor.html#vbrowser">Value Browser</a></div>
