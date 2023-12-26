@@ -46,7 +46,6 @@ export function FormulaField(props) {
 	const [formula, setFormula] = useState(props.formula !== undefined ? props.formula : props.viewInfo.formula);
 	const [initialFormula, setInitialFormula] = useState('');
 	const [nameSpace, setNameSpace] = useState('');
-	const [renameTo, setRenameTo] = useState('');
 
 	const isExpression = props.viewInfo.viewKey === 'Expression';
 	useEffect(() => {
@@ -115,7 +114,7 @@ export function FormulaField(props) {
 	return e(
 		'div', {
 			className: 'formula-input-field',
-			onBlur: e => {
+			onBlur: () => {
 				applyChanges(formula);
 			},
 		},
@@ -179,14 +178,14 @@ export function FormulaField(props) {
 						}
 					}
 				},
-				onPointerDown: e => {
+				onPointerDown: () => {
 					if (props.editAction && (formula.length > 100 || formula.includes('\n'))) {
 						// set so focus knows it is because of a click in the field
 						// need to get to pointer up where the selection start is known
 						showEditor = true;
 					}
 				},
-				onPointerUp: e => {
+				onPointerUp: () => {
 					if (showEditor && props.editAction) {
 						// we need to switch to editor because of pointer click
 						// get the selection start so it is maintained in editor
@@ -406,7 +405,6 @@ export function FormulaEditor(props) {
 	// following is used to trigger text parsing for preview - updated on anything that
 	// could change caret position.
 	const [eventHitCount, setEventHitCount] = useState(0);
-	const [justTest, setJustTest] = useState(null);
 
 	// reference to editor textarea to keep track of selection and focus
 	const editInputRef = React.useRef(null);
@@ -560,7 +558,7 @@ export function FormulaEditor(props) {
 				}
 			}
 		}
-		if (currentChar && currentChar.match(/[,+*:%(\/\-\^\[]/)) {
+		if (currentChar && currentChar.match(/[,+*:%(/\-^[]/)) {
 			// operator or paren or bracket etc - show all
 			makeParamPreview('','');
 			return;
@@ -601,7 +599,7 @@ export function FormulaEditor(props) {
 			makeFunctionPreview(start);
 			return;
 		}
-		if (prevChar && !prevChar.match(/[,\s+*:%(\/\-\^\[]/)) {
+		if (prevChar && !prevChar.match(/[,\s+*:%(/\-^[]/)) {
 			setPreviewParam(null);
 			return;
 		}
@@ -683,7 +681,7 @@ export function FormulaEditor(props) {
 		}
 	}
 
-	const onClickHandler = event => {
+	const onClickHandler = () => {
 		setEventHitCount(eventHitCount+1);
 	}
 
@@ -1077,7 +1075,7 @@ export function FormulaEditor(props) {
 		if (selectionStart !== 0) {
 			while (selectionStart >= 0) {
 				const prevChar = targetValue[--selectionStart];
-				if (!prevChar || prevChar.match(/[ \t\n+*:%.(\/\-\^\[\{}]/)) {
+				if (!prevChar || prevChar.match(/[ \t\n+*:%.(/\-^[{}]/)) {
 					if (prevChar === '{' && selectionStart >= 0) {
 						selectionStart--;
 					}
