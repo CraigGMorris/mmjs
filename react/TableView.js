@@ -128,7 +128,11 @@ export function TableView(props) {
 			setInitialOffset(newOffset);
 			setLastRow(nRows);
 		}
-	}, [value.t, currentCell, nRows, lastRow, maxDisplayedRows, maxDisplayedCols]);
+	}, [
+			value.t, currentCell, nRows, lastRow,
+			maxDisplayedRows, maxDisplayedCols, cellWidth,
+			isTransposed
+		]);
 
 	useEffect(() => {
 		// make sure at least one row and column appear
@@ -140,7 +144,10 @@ export function TableView(props) {
 			setTableViewOffset({x: 0, y: 0});
 			setInitialOffset({x: 0, y: 0});		
 		}	
-	}, [props.value, props.viewBox]);
+	}, [
+			props.value, props.viewBox, cellWidth, nRows, nColumns,
+			tableViewOffset
+		]);
 
 	const xTextPad = 5;
 
@@ -176,7 +183,7 @@ export function TableView(props) {
 				x: tableViewOffset.x,
 				y: tableViewOffset.y
 			});
-	}, [tableViewOffset]);
+	}, [tableViewOffset, rowLabelWidth]);
 
 	const xyToRowColumn = useCallback((x, y) => {
 		let row, column;
@@ -193,7 +200,7 @@ export function TableView(props) {
 			column = 1 + Math.floor((x + tableViewOffset.x - rowLabelWidth) / cellWidth);
 		}
 		return [row, column];
-	},[tableViewOffset]);
+	},[tableViewOffset, cellWidth, rowLabelWidth]);
 
 	const pointerEnd = useCallback(e => {
 		const x = e.nativeEvent.offsetX;
@@ -228,7 +235,10 @@ export function TableView(props) {
 				cellClick(row, column);
 			}
 		}
-	}, [pointerCaptured, dragOrigin.x, dragOrigin.y, cellClick, longPress, xyToRowColumn])
+	}, [
+			pointerCaptured, dragOrigin.x, dragOrigin.y, cellClick,
+			longPress, xyToRowColumn, isTransposed, tableViewOffset
+		])
 
 const pointerMove = useCallback(e => {
 		if (dragType === TableViewDragType.none) {
@@ -312,7 +322,11 @@ const pointerMove = useCallback(e => {
 					break;
 			}	
 		}
-	}, [dragOrigin, dragType, pointerCaptured, initialOffset, viewBox, value])
+	}, [
+			dragOrigin, dragType, pointerCaptured, initialOffset,
+			viewBox, cellWidth, nRows, nColumns,
+			rowLabelWidth
+		])
 
 	const wheel = useCallback(e => {
 		let offsetX = Math.max(0, e.deltaX + initialOffset.x);
@@ -331,20 +345,21 @@ const pointerMove = useCallback(e => {
 		setInitialOffset({x: offsetX, y: offsetY});
 		e.stopPropagation();
 		e.preventDefault();
-	}, [initialOffset, props.value]);
+	}, [initialOffset, cellWidth, nRows, nColumns, viewBox]);
 
+	const svgCurrent = svgRef.current;
 	useEffect(() => {
 		if (svgRef.current) {
 			// console.log('add listener');
 			svgRef.current.addEventListener('wheel', wheel, {passive: false});
 		}
-    return () => {
-			if (svgRef.current) {
+		return () => {
+			if (svgCurrent) {
 				// console.log('remove listener');
-	      svgRef.current.removeEventListener('wheel', wheel);
+				svgCurrent.removeEventListener('wheel', wheel);
 			}
     };
-  }, [wheel]);
+  }, [wheel, svgCurrent]);
 
 	const pointerEnter = useCallback(e => {
 		if (dragType != TableViewDragType.none) {

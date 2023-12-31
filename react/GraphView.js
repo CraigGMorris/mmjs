@@ -573,7 +573,7 @@ class Plot2D extends React.Component {
 			this.node.addEventListener('pointerup', this.onPointerUp);
 			e.target.setPointerCapture(e.pointerId);
 		}
-		this.setState((state) => {
+		this.setState(() => {
 			return {
 				cursorPosition: null
 			}
@@ -649,7 +649,7 @@ class Plot2D extends React.Component {
 						if (yIsDate) {
 							yValue = convertDateValue(yValue, axisY.unit);
 						}
-						this.setState((state) => {
+						this.setState(() => {
 							return {
 								cursorPosition: {x: xValue, y: yValue}
 							}
@@ -798,14 +798,10 @@ class Plot2D extends React.Component {
 	 * @method checkAxis
 	 * check to ensure selected axis isn't hidden. If so move to first unhidden
 	 */
-	 checkAxis(xAxisIndex, yAxisIndex, currentXAxis, currentYAxis) {
+	checkAxis(xAxisIndex, yAxisIndex, currentXAxis, currentYAxis) {
 		const nXValues = this.props.info.xInfo.length;
 		let xIndex = xAxisIndex % nXValues
 		let nXChecked = 0;
-		let rv = {	// if one not found, return original
-			xAxisIndex: xAxisIndex,
-			yAxisIndex: yAxisIndex
-		}
 		while (nXChecked++ < nXValues) {
 			const x = this.props.info.xInfo[xIndex];
 			const nYValues = x.yInfo.length;
@@ -1452,13 +1448,12 @@ class Plot3D extends React.Component {
 	/**
 	 * @method checkAxis
 	 */
-	 checkAxis(xAxisIndex, currentXAxis) {
+	checkAxis(xAxisIndex, currentXAxis) {
 		const nXValues = this.props.info.xInfo.length;
 		let xIndex = xAxisIndex % nXValues
 		let nChecked = 0;
 		while (nChecked++ < nXValues) {
 			const x = this.props.info.xInfo[xIndex];
-			const z = x.zInfo;
 			if (x.zInfo.lineType !== MMGraphLineType.hidden) {
 				if (xIndex !== currentXAxis) {
 					this.props.actions.doCommand(`${this.props.viewInfo.path} setselected ${xIndex}`, () => {

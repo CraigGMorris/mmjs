@@ -102,7 +102,7 @@ export function MatrixView(props) {
 		if (results.rowCountFormula) {
 			setRowCountFormula(results.rowCountFormula);
 		}
-	}, [props.viewInfo.updateResults])
+	}, [updateResults])
 
 
 	if (updateResults.error) {

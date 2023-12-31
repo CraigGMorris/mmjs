@@ -344,7 +344,7 @@ export function MMApp(props) {
 	 * an optional selectedTool containing information
 	 * for a tool in the top most model to be viewed immediately
 	 */
-	const resetInfoStack = useCallback((rootName, resetInfo, currentStackIndex) => {
+	const resetInfoStack = useCallback((rootName, resetInfo) => {
 		let path = `/.${rootName}`;
 		let infoState = {
 			title: rootName,
@@ -589,7 +589,7 @@ export function MMApp(props) {
 			const oldTop = infoStack.pop();
 			switch (oldTop.viewKey) {
 				case 'Model':
-					doCommand('/ popmodel', (cmds) => {
+					doCommand('/ popmodel', () => {
 						let rescale = false;
 						if (dgmStateStack.length) {
 							const dgmState = dgmStateStack.pop();

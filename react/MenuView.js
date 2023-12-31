@@ -51,13 +51,12 @@ export function MenuView(props) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	const results = updateResults.length ? updateResults[0].results : {};
 	useEffect(() => {
-		const updateResults = props.viewInfo.updateResults;
-		const results = updateResults.length ? updateResults[0].results : {};
 		setSelected(results.selected != null ? results.selected : -10);
 		setOptionLabels(results.optionLabels || []);
 		setOptionValues(results.optionValues || []);
-	}, props.viewInfo.updateResults);
+	}, [updateResults, results]);
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
@@ -69,7 +68,6 @@ export function MenuView(props) {
 		});
 		return null;
 	}
-	const results = updateResults.length ? updateResults[0].results : {};
 
 	const applyOptionChanges = () => {
 		const path = `${results.path}.options`;

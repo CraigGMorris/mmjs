@@ -50,6 +50,8 @@ export function ExpressionView(props) {
 	const [editOptions, setEditOptions] = useState({});
 	const [formatString, setFormatString] = useState('');
 
+	const updateResults = props.viewInfo.updateResults;
+
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
@@ -75,10 +77,9 @@ export function ExpressionView(props) {
 				setFormatString(results.value.format);
 			}
 		}
-	}, [props.viewInfo.updateResults, selectedCell])
+	}, [props.viewInfo.updateResults, selectedCell, updateResults])
 
 	const t = props.t;
-	const updateResults = props.viewInfo.updateResults;
 	if (updateResults.error) {
 		// use empty command just to defer popView
 		props.actions.doCommand('', () => {
@@ -313,11 +314,11 @@ export function ExpressionView(props) {
 						'span', {
 							id: 'expression__save-text',
 							className: 'link',
-							onClick: (e) => {
+							onClick: () => {
 								const type = value.t === 's' ? 'text/plain' : 'application/json'
 								const blob = new Blob(value.v, {type : type});
 								const link = document.createElement('a');
-								link.download = path.split('.').pop();;
+								link.download = path.split('.').pop();
 								link.href = URL.createObjectURL(blob);
 								link.click();
 								URL.revokeObjectURL(link.href);

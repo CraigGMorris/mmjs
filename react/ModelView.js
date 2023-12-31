@@ -18,7 +18,7 @@
 'use strict';
 
 import {ToolView} from './ToolView.js';
-import {FormulaField, FormulaEditor} from './FormulaView.js';
+import {FormulaEditor} from './FormulaView.js';
 
 const e = React.createElement;
 const useState = React.useState;
@@ -47,8 +47,8 @@ export function ModelView(props) {
 	const [importSource, setImportSource] = useState('');
 	const [indexToolName, setIndexToolName] = useState('');
 	const [display, setDisplay] = useState(ModelDisplay.model);
-	const [editOptions, setEditOptions] = useState({});
 
+	const editOptions = {}
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);

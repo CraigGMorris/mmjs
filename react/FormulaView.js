@@ -48,21 +48,25 @@ export function FormulaField(props) {
 	const [nameSpace, setNameSpace] = useState('');
 
 	const isExpression = props.viewInfo.viewKey === 'Expression';
+	const pFormula = props.formula
+	const pViewInfo = props.viewInfo;
+	const pApplyChanges = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
+
 	useEffect(() => {
-		if (props.formula === '' &&
-			props.viewInfo &&
+		if (pFormula === '' &&
+			pViewInfo &&
 			isExpression &&
 			fieldInputRef.current)
 		{
 			fieldInputRef.current.focus();
 		}
-	}, []);
+	}, [isExpression, pFormula, pViewInfo]);
 
 	useEffect(() => {
-		const f = props.formula !== undefined ? props.formula : props.viewInfo.formula;
+		const f = pFormula !== undefined ? pFormula : pViewInfo.formula;
 		setFormula(f);
 		setInitialFormula(f);
-	}, [props.formula]);
+	}, [pFormula, pViewInfo]);
 
 	useEffect(() => {
 		const results = props.viewInfo.updateResults[0]
@@ -83,24 +87,21 @@ export function FormulaField(props) {
   }, [initialFormula]);
 
 	const isSwitchingToEditor = React.useRef(false);
-
 	useEffect(() => {
 		return () => {
 			if (!isSwitchingToEditor.current && latestFormula.current !== latestInitial.current) {
 				const fNew = replaceSmartQuotes(latestFormula.current);
-				const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
-				f(fNew);
+				pApplyChanges(fNew);
 			}
 		};
-	}, []);
+	}, [pApplyChanges]);
 
 	const fieldInputRef = React.useRef(null);
 
 	const applyChanges = (formula) => {
 		formula = replaceSmartQuotes(formula);
 		if (formula !== initialFormula) { // only apply if changed
-			const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
-			f(formula);
+			pApplyChanges(formula);
 		}
 	}
 
@@ -412,10 +413,32 @@ export function FormulaEditor(props) {
 
 	document.documentElement.style.setProperty('--preview-height', `${previewHeight}px`);
 
+	const pApplyChanges = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
+	const pEditOptions = props.editOptions;
+	const pViewInfo = props.viewInfo;
+	const pActions = props.actions;
+
+	const previewCurrent = React.useCallback(() => {
+		setErrorMessage(null);
+		setPreviewParam(null);
+		const f = pEditOptions.initialFormula;
+		const nameSpace = pEditOptions.nameSpace;
+		if (typeof(f) ===  "string") {
+			pActions.doCommand(`__blob__${pViewInfo.path} fpreview ${nameSpace}__blob__${f}`, (results) => {
+				if (results) {
+					setPreviewValue(results[0].results);
+					setPreviewCalcType(FormulaPreviewCalcType.current);
+					editInputRef.current.focus();
+				}
+			}, previewErrorHandler);	
+		}
+	},[pEditOptions, pActions,pViewInfo]);
+
+
 	useEffect(() => {
 		previewCurrent();
 		setPreviewCalcType(FormulaPreviewCalcType.current);
-	}, []);
+	}, [previewCurrent]);
 
 	const latestFormula = React.useRef(null);
   useEffect(() => {
@@ -424,13 +447,12 @@ export function FormulaEditor(props) {
 
 	useEffect(() => {
 		return () => {
-			if (latestFormula.current !== props.editOptions.initialFormula) {
+			if (latestFormula.current !== pEditOptions.initialFormula) {
 				const formula = replaceSmartQuotes(latestFormula.current);
-				const f = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
-				f(formula);
+				pApplyChanges(formula);
 			}
 		};
-	}, []);
+	}, [pApplyChanges, pEditOptions]);
 
 	useEffect(() => {
 		if (display === FormulaDisplay.editor) {
@@ -444,9 +466,9 @@ export function FormulaEditor(props) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selection]);
 
-	const makeParamPreview = (path, start='') => {
-		if (editOptions.nameSpace) {
-			props.actions.doCommand(`${editOptions.nameSpace}.${path} parampreview ${path}:${start}`, (results) => {
+	const makeParamPreview = React.useCallback((path, start='') => {
+		if (pEditOptions.nameSpace) {
+			pActions.doCommand(`${pEditOptions.nameSpace}.${path} parampreview ${path}:${start}`, (results) => {
 				if (results.length && results[0].results) {
 					const eligible = JSON.parse(results[0].results);
 					if (eligible.length) {
@@ -457,10 +479,10 @@ export function FormulaEditor(props) {
 				setPreviewParam(null);
 			});
 		}
-	}
+	}, [pActions, pEditOptions]);
 
-	const makeUnitPreview = (prefix) => {
-		props.actions.doCommand('/unitsys.units list', (results) => {
+	const makeUnitPreview = React.useCallback((prefix) => {
+		pActions.doCommand('/unitsys.units list', (results) => {
 			if (results.length && results[0].results) {
 				const units = results[0].results;
 				let eligible = [];
@@ -481,7 +503,7 @@ export function FormulaEditor(props) {
 			}
 			setPreviewParam(null);
 		});	
-	}
+	},[pActions]);
 
 	const makeFunctionPreview = (start) => {
 		const data = functionPickerData();
@@ -604,7 +626,7 @@ export function FormulaEditor(props) {
 			return;
 		}
 		makeParamPreview(path, start);
-	},[eventHitCount, formula]);
+	},[eventHitCount, formula, makeParamPreview, makeUnitPreview]);
 
 	const applyChanges = (formula) => {
 		formula = replaceSmartQuotes(formula);
@@ -649,22 +671,6 @@ export function FormulaEditor(props) {
 			r.readAsText(f);
 		} else { 
 			alert("Failed to load file");
-		}
-	}
-
-	const previewCurrent = () => {
-		setErrorMessage(null);
-		setPreviewParam(null);
-		const f = editOptions.initialFormula;
-		const nameSpace = editOptions.nameSpace;
-		if (typeof(f) ===  "string") {
-			props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview ${nameSpace}__blob__${f}`, (results) => {
-				if (results) {
-					setPreviewValue(results[0].results);
-					setPreviewCalcType(FormulaPreviewCalcType.current);
-					editInputRef.current.focus();
-				}
-			}, previewErrorHandler);	
 		}
 	}
 

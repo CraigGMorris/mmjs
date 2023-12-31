@@ -365,18 +365,17 @@ function EditRowView(props) {
 	const [selectedField, setSelectedField] = useState(column);
 	const [selectedRow, setSelectedRow] = useState(row);
 	const [editOptions, setEditOptions] = useState({});
-	const [formulaString, setFormulaString] = useState('');
 	useEffect(() => {
 		const nRows = props.value.nr;
 		if (nRows === 0) {
 			props.setDisplay(DataTableDisplay.table);
 		}
-	}, [props.value.nr]);
+	}, [props])//.value.nr]);
 
 	const displayedRow = Math.min(props.value.nr, selectedRow)
 	const value = props.value;
 	switch(editRowDisplay) {
-		case DataTableDisplay.editRow:
+		case DataTableDisplay.editRow: {
 			const fields = [];
 			
 			for (let columnNumber = 0; columnNumber < value.nc; columnNumber++) {
@@ -604,6 +603,7 @@ function EditRowView(props) {
 					fields
 				)
 			);
+		}
 
 		case DataTableDisplay.editCell:
 			return e(
@@ -927,6 +927,7 @@ export function DataTableView(props) {
 						t: props.t,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
+						infoHeight: props.infoHeight,
 						path: path,
 						columnProperties: columnProperties,
 						actions: props.actions,
@@ -950,6 +951,7 @@ export function DataTableView(props) {
 						t: props.t,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
+						infoHeight: props.infoHeight,
 						value: value,
 						path: path,
 						actions: props.actions,
@@ -963,17 +965,6 @@ export function DataTableView(props) {
 	
 		case DataTableDisplay.editCell: {
 			const [row, column] = selectedCell;
-			let formulaString = '';
-			if (column > 0 && row > 0) {
-				const tableColumn = value.v[column - 1];
-				const v = tableColumn.v.v[row - 1];
-				if (typeof v === 'string') {
-					formulaString = "'" + v;
-				}
-				else if (typeof v === 'number') {
-					formulaString = `${v.toString().replace(/(\..*)(0+$)/,'$1')} ${tableColumn.dUnit}`;
-				}
-			}
 
 			return e(
 				FormulaEditor, {

@@ -23,7 +23,6 @@ import {FormulaField, FormulaEditor} from './FormulaView.js';
 const e = React.createElement;
 const useEffect = React.useEffect;
 const useState = React.useState;
-const useCallback = React.useCallback;
 
 /**
  * Enum for button page display types.
@@ -63,21 +62,21 @@ export function ButtonView(props) {
 	}
 	const results = updateResults.length ? updateResults[0].results : {};
 
-	const applyLabelChanges = useCallback((formula) => {
+	const applyLabelChanges = (formula) => {
 			const path = `${toolPath}.labelFormula`;
 			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(ButtonDisplay.main);
 			});
-		});
+		};
 
-	const applyTargetChanges = useCallback((formula) => {
+	const applyTargetChanges = (formula) => {
 		const path = `${toolPath}.targetFormula`;
 		props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 			setDisplay(ButtonDisplay.main);
 		});
-	});
+	};
 
 	let displayComponent;
 	if (display === ButtonDisplay.labelFormulaEditor) {
