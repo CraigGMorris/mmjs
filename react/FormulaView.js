@@ -428,7 +428,9 @@ export function FormulaEditor(props) {
 				if (results) {
 					setPreviewValue(results[0].results);
 					setPreviewCalcType(FormulaPreviewCalcType.current);
-					editInputRef.current.focus();
+					if (editInputRef.current) {
+						editInputRef.current.focus();
+					}
 				}
 			}, previewErrorHandler);	
 		}
