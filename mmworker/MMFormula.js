@@ -318,6 +318,9 @@ class MMMonadicOperator extends MMFormulaOperator {
 			if (v instanceof MMStringValue) {
 				return this.operationOnString(v);
 			}
+			if (v instanceof MMToolValue) {
+				return this.operationOnTool(v);
+			}
 		}
 		return null;
 	}
@@ -339,6 +342,16 @@ class MMMonadicOperator extends MMFormulaOperator {
 	 */
 	// eslint-disable-next-line no-unused-vars
 	operationOnString(value) {
+		return null;
+	}
+
+	/**
+	 * @method operationOnTool
+	 * @param {MMToolValue} value
+	 * @returns {MMValue}
+	 */
+	// eslint-disable-next-line no-unused-vars
+	operationOnTool(value) {
 		return null;
 	}
 
@@ -1196,6 +1209,9 @@ class MMSingleValueFunction extends MMFunctionOperator {
 		else if (v instanceof MMTableValue) {
 			return this.operationOnTable(v);
 		}
+		else if (v instanceof MMToolValue) {
+			return this.operationOnTool(v);
+		}
 		return null;
 	}
 
@@ -1216,6 +1232,16 @@ class MMSingleValueFunction extends MMFunctionOperator {
 	 */
 	// eslint-disable-next-line no-unused-vars
 	operationOnString(value) {
+		return null;
+	}
+
+	/**
+	 * @method operationOnToo
+	 * @param {MMToolValue} value
+	 * @returns {MMValue}
+	 */
+	// eslint-disable-next-line no-unused-vars
+	operationOnTool(value) {
 		return null;
 	}
 
@@ -2491,6 +2517,10 @@ class MMColumnCountFunction extends MMSingleValueFunction {
 		return this.operationOn(v);
 	}
 
+	operationOnTool(v) {
+		return this.operationOn(v);
+	}
+
 	operationOnTable(v) {
 		return this.operationOn(v);
 	}
@@ -2745,7 +2775,10 @@ class MMRedimFunction extends MMMultipleArgumentFunction {
 
 	value() {
 		const matrix = this.arguments[1].value();
-		if (matrix instanceof MMNumberValue || matrix instanceof MMStringValue) {
+		if (matrix instanceof MMNumberValue ||
+			matrix instanceof MMStringValue ||
+			matrix instanceof MMToolValue
+		 ) {
 			return matrix.redimension(this.arguments[0].value());
 		}
 		return null;
@@ -2761,6 +2794,10 @@ class MMRowCountFunction extends MMSingleValueFunction {
 		return this.operationOn(v);
 	}
 
+	operationOnTool(v) {
+		return this.operationOn(v);
+	}
+
 	operationOnTable(v) {
 		return this.operationOn(v);
 	}
@@ -2772,6 +2809,10 @@ class MMTransposeFunction extends MMSingleValueFunction {
 	}
 
 	operationOnString(v) {
+		return this.operationOn(v);
+	}
+
+	operationOnTool(v) {
 		return this.operationOn(v);
 	}
 

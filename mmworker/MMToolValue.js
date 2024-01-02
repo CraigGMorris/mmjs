@@ -219,6 +219,72 @@ class MMToolValue extends MMValue {
 	}
 
 	/**
+	 * @method append
+	 * appends columns to value
+	 * @param {MMValue} additions
+	*/
+	append(additions) {
+		let rv = null;
+		const rowCount = this.rowCount
+		if (additions instanceof MMToolValue && rowCount === additions.rowCount) {
+			const thisColumnCount = this.columnCount;
+			const addColumnCount = additions.columnCount
+			const columnCount = thisColumnCount + addColumnCount;
+			rv = new MMToolValue(this.rowCount, columnCount);
+			let column = 1;
+			for (let thisColumn = 1; thisColumn <= thisColumnCount; thisColumn++) {
+				for (let row = 1; row <= rowCount; row++) {
+					rv.setValue(this.valueAtRowColumn(row, thisColumn), row, column);
+				}
+				column++;
+			}
+
+			for (let addColumn = 1; addColumn <= addColumnCount; addColumn++) {
+				for (let row = 1; row <= rowCount; row++) {
+					rv.setValue(additions.valueAtRowColumn(row, addColumn), row, column);
+				}
+				column++
+			}
+		}
+		return rv;
+	}
+
+	/** @method redimension
+	 * return value reconfigured to given number of columns
+	 * @param {MMNumberValue} nColumns
+	 */
+	redimension(nColumns) {
+		let rv;
+		if (nColumns instanceof MMNumberValue && nColumns.valueCount) {
+			let columnCount = Math.floor(nColumns._values[0] + 0.01);
+			if (this.valueCount % columnCount !== 0) {
+				this.exceptionWith('mmcmd:formulaRedimCountError')
+			}
+			const rowCount = this.valueCount / columnCount;
+			rv = new MMToolValue(rowCount, columnCount);
+			rv._values = Array.from(this._values);
+		}
+		return rv;
+	}
+
+	/** @method transpose
+	 *  @returns {MMToolValue}
+	 */
+	transpose() {
+		const rowCount = this.rowCount;
+		const columnCount = this.columnCount
+		const rv = new MMToolValue(columnCount, rowCount);
+		const rvValues = rv._values;
+		const thisValues = this._values;
+		for (let i = 0; i < rowCount; i++) {
+			for (let j = 0; j < columnCount; j++) {
+				rvValues[j*rowCount+i] = thisValues[i*columnCount+j];
+			}
+		}
+		return rv;
+	}
+
+	/**
 	 * @param {String} description
 	 * @param {MMTool} requestor
 	 * @returns {MMValue}
