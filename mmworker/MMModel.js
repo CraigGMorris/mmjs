@@ -1270,7 +1270,46 @@ class MMModel extends MMTool {
 			}
 		}
 		else {
-			value = super.valueDescribedBy(description, requestor);
+			// check for wild card characters
+			const parts = toolName.split('*');
+			if (toolName === '*' || parts.length > 1) {
+				const tools = [];
+				const children = this.positionSortedChildren();
+				for (const child of children) {
+					let shouldAdd = true;
+					let s = child.name.toLowerCase();
+					for (const i in parts) {
+						const part = parts[i]
+;						if (part === '') {
+							if (i == parts.length - 1) {
+								// a * at the beginning or end with have a blank part
+								// if just a *, then the parts will be two blanks
+								// if at end, remove rest of s
+								s = ''
+							}
+							continue;
+						}
+						const match = s.match(part);
+						if (!match) {
+							shouldAdd = false;
+							break;
+						}
+						s = s.substring(match.index + part.length);
+					}
+					if (shouldAdd && s === '') {
+						tools.push(child);
+					}
+				}
+				if (tools.length) {
+					value = MMToolValue.toolArrayValue(tools);
+					if (restOfPath && restOfPath.length) {
+						value = value.valueDescribedBy(restOfPath, requestor);
+					}
+				}		
+			}
+			else {
+				value = super.valueDescribedBy(description, requestor);
+			}
 		}
 		return value;
 	}
