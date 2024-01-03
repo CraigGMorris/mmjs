@@ -1271,23 +1271,21 @@ class MMModel extends MMTool {
 		}
 		else {
 			// check for wild card characters
-			// if (toolName.match(/\*/)) {
-				// Replace '*' in the pattern with '.*' to create a regular expression
-				const regexPattern = new RegExp("^" + toolName.split("*").join(".*") + "$");
-				const tools = [];
-				const children = this.positionSortedChildren()
-				for (const child of children) {
-					if (regexPattern.test(child.name.toLowerCase())) {
-						tools.push(child);
-					}
+			// Replace '*' in the pattern with '.*' to create a regular expression
+			const regexPattern = new RegExp("^" + toolName.split("*").join(".*") + "$");
+			const tools = [];
+			const children = this.positionSortedChildren()
+			for (const child of children) {
+				if (regexPattern.test(child.name.toLowerCase())) {
+					tools.push(child);
 				}
-				if (tools.length) {
-					value = MMToolValue.toolArrayValue(tools);
-					if (restOfPath && restOfPath.length) {
-						value = value.valueDescribedBy(restOfPath, requestor);
-					}
-				}		
-			// }
+			}
+			if (tools.length) {
+				value = MMToolValue.toolArrayValue(tools);
+				if (restOfPath && restOfPath.length) {
+					value = value.valueDescribedBy(restOfPath, requestor);
+				}
+			}		
 			else {
 				value = super.valueDescribedBy(description, requestor);
 			}
