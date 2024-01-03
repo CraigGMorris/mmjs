@@ -929,6 +929,30 @@ class MMModel extends MMTool {
 		theMMSession.popModel();
 	}
 
+	positionSort(a, b) {
+		// sort by position with left most first and  ties broken by
+		// top most first
+		const posA = a.position;
+		const posB = b.position;
+		if (posA.x < posB.x) {
+			return -1
+		}
+		if (posA.x > posB.x) {
+			return 1;
+		}
+		if (posA.y < posB.y) {
+			return -1;
+		}
+		if (posA.y > posB.y) {
+			return 1
+		}
+		return 0;	
+	}
+
+	positionSortedChildren() {
+		return Object.values(this.children).sort(this.positionSort);
+	}
+
 	htmlInfo() {
 		const results = {};
 		const inputs = [];
@@ -948,29 +972,9 @@ class MMModel extends MMTool {
 			objects.push(tool);
 		}
 
-		const positionSort = (a, b) => {
-			// sort by position with left most first and  ties broken by
-			// top most first
-			const posA = a.position;
-			const posB = b.position;
-			if (posA.x < posB.x) {
-				return -1
-			}
-			if (posA.x > posB.x) {
-				return 1;
-			}
-			if (posA.y < posB.y) {
-				return -1;
-			}
-			if (posA.y > posB.y) {
-				return 1
-			}
-			return 0;	
-		}
-
-		results.inputs = inputs.sort(positionSort);
-		results.outputs = outputs.sort(positionSort);
-		results.objects = objects.sort(positionSort);
+		results.inputs = inputs.sort(this.positionSort);
+		results.outputs = outputs.sort(this.positionSort);
+		results.objects = objects.sort(this.positionSort);
 		return results;
 	}
 
@@ -1242,8 +1246,7 @@ class MMModel extends MMTool {
 		}
 		else if (toolName === 'toolnames') {
 			const names = [];
-			for (const name in this.children) {
-				const child = this.children[name];
+			for (const child of this.positionSortedChildren()) {
 				if (child instanceof MMTool) {
 					names.push(child.name);
 				}
@@ -1254,8 +1257,7 @@ class MMModel extends MMTool {
 		}
 		else if (toolName === 'tools') {
 			const tools = [];
-			for (const name in this.children) {
-				const tool = this.children[name];
+			for (const tool of this.positionSortedChildren()) {
 				if (tool instanceof MMTool) {
 					tools.push(tool);
 				}

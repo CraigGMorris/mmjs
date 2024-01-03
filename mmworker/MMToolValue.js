@@ -301,32 +301,23 @@ class MMToolValue extends MMValue {
 			const firstTool = this.valueAtRowColumn(1,1);
 			if (firstTool) {
 				const firstValue = firstTool.valueDescribedBy(description, requestor);
-				if (firstValue instanceof MMNumberValue) {
-					rv = new MMNumberValue(this.rowCount, this.columnCount, firstValue.unitDimensions);
-				}
-				else if (firstValue instanceof MMStringValue) {
-					rv = new MMStringValue(this.rowCount, this.columnCount);
-				}
-				else {
+				if (!(
+					firstValue instanceof MMNumberValue ||
+					firstValue instanceof MMStringValue ||
+					firstValue instanceof MMToolValue)
+				){
 					return null;
 				}
-				rv.setValueAtCount(firstValue.valueAtCount(0), 0);
+				rv = firstValue;
+				// rv.setValueAtCount(firstValue.valueAtCount(0), 0);
 				for (let i = 1; i < this.valueCount; i++) {
 					const tool = this.valueAtCount(i);
 					if (!tool) {
 						return null;
 					}
 					const value = tool.valueDescribedBy(description, requestor);
-					if (!value || Object.getPrototypeOf(value).constructor !== Object.getPrototypeOf(firstValue).constructor) {
-						if (firstValue instanceof MMNumberValue) {
-							rv.setValueAtCount(NaN, i);
-						}
-						else {
-							rv.setValueAtCount('???', i);
-						}
-					}
-					else {
-						rv.setValueAtCount(value.valueAtCount(0), i);
+					if (value && Object.getPrototypeOf(value).constructor === Object.getPrototypeOf(firstValue).constructor) {
+						rv = rv.concat(value);
 					}
 				}
 			}
