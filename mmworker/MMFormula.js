@@ -859,6 +859,9 @@ class MMIndexOperator extends MMFormulaOperator {
 						rv = new MMStringValue(rowCount, columnCount);
 					}
 					else if (firstValue instanceof MMToolValue) {
+						if (columnCount === 1) {
+							return sourceValue.valueDescribedBy(firstDescription);
+						}
 						rv = new MMToolValue(rowCount, columnCount);
 					}
 					else {
