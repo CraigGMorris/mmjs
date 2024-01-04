@@ -90,8 +90,11 @@
 			<div id="tool" class="section">
 				<h3>Tool Reference</h3>
 				<p>
+					Tool references are not often used, but can be helpful in certain circumstances.
+				</p>
+				<p>
 					When the name of an expression tool is referenced in a formula, it will evaluate to
-					the minion value calculated by the expression's formula.  A matrix reference will be
+					the minion value calculated by the expression's formula.  Similarly a matrix reference will be
 					replaced by a numeric value and a data table reference with a table value.
 				</p>
 				<p>
@@ -121,23 +124,48 @@
 					will both return the derivative values of the <b>integ</b> solver.
 				</p>
 				<p>
-					Where this becomes useful is when the expression with the tool reference is designated
-					as an output expression.  This allows formulas in the parent model access to the
-					parameters of the tool that it is referencing.
+					This is rarely needed, but could be useful is when the expression with the tool reference is designated
+					is an input expression.  This allows formulas in the model access to the
+					parameters of the tool that it is referencing from the parent model.
 				</p>
 				<p>
-					A tool reference can be made to any tool using the <b>self</b> parameter.  For example
+					Arrays of tool references can be created by using the <b>tools</b> parameter of
+					of model or by using the index operation <b>[]</b> with a model. The tools parameter
+					will return an array of all the tools in the model, while the index operator will
+					tools with names matching the string contained n the operator. The string can contain
+					<b>*</b> wild card characters which will match any number of arbitrary characters. For instance
+				</p>
+				<p class="formula">
+					model1["field*"]
+				</p>
+				<p>
+					would return all the tools in <b>model1</b> whose names started with "field".
+				</p>
+				<p>
+					An index of "value" can be used with references to expression tool to get its value,
+					Thus
+				</p>
+				<p class="formula">
+					model1["field*"]["value"]
+				</p>
+				<p>
+					and assuming all the "field" tools were scalar expressions, would return an
+					array with all the values of those fields. Note you must be sure all the
+					expression have the same unit type.
+				</p>
+				<p>
+					Tool arrays can be useful in constructing reports with values from various
+					sub-models, but are rarely used otherwise.
+				</p>
+				<p>
+					Finally a tool reference can be made to any tool using the <b>self</b> parameter.  For example
 					a reference to a data table named <b>dtable</b> would look like:
 				</p>
 				<p class="formula">
 					dtable.self
 				</p>
 				<p>
-					This could allow the data table itself to be returned in an output expression, rather
-					than its table value.
-				</p>
-				<p>
-					Tool values are always scalars.
+					This a historical holdover that is retained for backwards compatibility.
 				</p>
 			</div>
 			<div id="json" class="section">

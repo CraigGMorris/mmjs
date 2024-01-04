@@ -234,6 +234,17 @@ export function ExpressionView(props) {
 					setSelectedCell([row,column]);
 					return;					
 				}
+
+				if (value.t === 'tool') {
+					setSelectedCell([row,column]);
+					const vIndex = (row - 1) * value.nc + (column - 1) ;
+					const toolV = value.v[vIndex];
+					if (toolV.t !== 'Model') {
+						props.actions.pushTool(toolV.n, toolV.p, toolV.t);
+						props.actions.updateDiagram();
+					}
+					return;
+				}
 	
 				const formatValue = (v, format) => {
 					if (typeof v === 'string') {
@@ -302,12 +313,12 @@ export function ExpressionView(props) {
 					}
 				);
 			}
-			else if (value.t === 's' || value.t === 'j') {
+			else if (value.t === 's' || value.t === 'j' || value.t === 'tool') {
 				displayedUnit = e(
 					'span', {
 						id: 'expression__string-type'
 					},
-					value.t === 's' ? 'String' : 'JSON'
+					{'s': 'String', j: 'JSON', tool: 'Tool'}[value.t]
 				);
 				if (value.nr === 1 && value.nc === 1) {
 					formatInput = e(

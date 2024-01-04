@@ -170,9 +170,10 @@ class MMToolValue extends MMValue {
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
 	jsonValue() {
+		const v = this._values.map(t => {return {t: t.typeName, n: t.name, p: t.getPath()}})
 		return {
-			t: 's',
-			v: this._values.map(t => t.typeName + ": " + t.name),
+			t: 'tool',
+			v: v,
 			nr: this.rowCount,
 			nc: this.columnCount
 		}
@@ -309,7 +310,6 @@ class MMToolValue extends MMValue {
 					return null;
 				}
 				rv = firstValue;
-				// rv.setValueAtCount(firstValue.valueAtCount(0), 0);
 				for (let i = 1; i < this.valueCount; i++) {
 					const tool = this.valueAtCount(i);
 					if (!tool) {

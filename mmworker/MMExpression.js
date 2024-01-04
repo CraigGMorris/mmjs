@@ -269,6 +269,9 @@ class MMExpression extends MMTool {
 		if (description) {
 			const lcDescription = description.toLowerCase();
 			switch (lcDescription) {
+				case "value":
+					rv = value;
+					break;
 				case 'hasvalue':
 					if (value) {
 						rv = MMNumberValue.scalarValue(1);

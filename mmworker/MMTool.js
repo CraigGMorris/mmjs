@@ -146,6 +146,7 @@ class MMTool extends MMCommandParent {
 		let p = super.parameters();
 		// note that previewParameter counts on these being first
 		// in the list
+		p.push('myname');
 		p.push('notes');
 		p.push('html');
 		return p;

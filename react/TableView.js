@@ -457,8 +457,15 @@ const pointerMove = useCallback(e => {
 					const vIndex = (row + rowOrigin) * nColumns + column + columnOrigin;
 					if (value.v) {
 						v = vIndex < nValues ? value.v[vIndex] : '';
-						displayedV = formatValue(v, value.format);
-					} else {
+						if (value.t === 'tool') {
+							displayedV = v.t.substring(0,3) + ': ' + v.n;
+							displayedV = displayedV.substring(0,maxStringLength);
+						}
+						else {
+							displayedV = formatValue(v, value.format);
+						}
+					}
+					else {
 						displayedV = '';
 					}
 				}
