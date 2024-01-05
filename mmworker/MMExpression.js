@@ -269,9 +269,6 @@ class MMExpression extends MMTool {
 		if (description) {
 			const lcDescription = description.toLowerCase();
 			switch (lcDescription) {
-				case "value":
-					rv = value;
-					break;
 				case 'hasvalue':
 					if (value) {
 						rv = MMNumberValue.scalarValue(1);
@@ -405,6 +402,20 @@ class MMExpression extends MMTool {
 			json = value.jsonValue(displayUnit, formats);
 		}
 		return json;
+	}
+
+	/**
+	 * @method htmlValue
+	 * @returns {String}
+	 */
+	htmlValue(requestor) {
+		const value = this.valueForRequestor();
+		if (value instanceof MMToolValue) {
+			console.log('tool')
+		}
+		else {
+			return super.htmlValue(requestor);
+		}
 	}
 
 	/**

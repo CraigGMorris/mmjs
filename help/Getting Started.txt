@@ -9,7 +9,7 @@
 	],
 	"CaseName": "Getting Started",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "root",
+	"SelectedObject": "",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -2519,12 +2519,51 @@
 												"showInput": "y"
 											}
 										]
+									},
+									{
+										"name": "GrossWeight",
+										"Notes": "",
+										"DiagramX": 115,
+										"DiagramY": 65,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "100 kg"
+										}
+									},
+									{
+										"name": "TareWeight",
+										"Notes": "",
+										"DiagramX": 115,
+										"DiagramY": 90,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "10 kg"
+										}
+									},
+									{
+										"name": "Net_Weight",
+										"Notes": "",
+										"DiagramX": 115,
+										"DiagramY": 115,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "grossWeight - tareWeight"
+										}
 									}
 								]
 							},
 							{
 								"name": "Reference",
-								"Notes": "The expression references <b>subModel</b> in <b>aModel</b>\n\nThe result can be used as if it were the model itself.\n\nThe view of <b>subModel</b> is displayed here and if you click on the name or note for <b>twoPi</b> to view it, you will see the title on the resulting view is aModel.subModel.twoPi",
+								"Notes": "This expression references <b>subModel</b> in <b>aModel</b>\n\nThe result can be used as if it were the model itself.\n\nThe view of <b>subModel</b> is displayed here and if you click on the name or note for <b>twoPi</b> to view it, you will see the title on the resulting view is aModel.subModel.twoPi",
 								"DiagramX": 15,
 								"DiagramY": 65,
 								"HideInfo": "y",
@@ -2541,9 +2580,9 @@
 								"name": "Direct",
 								"Notes": "In this case it is easier to access <b>twoPi</b> directly.",
 								"DiagramX": 105,
-								"DiagramY": 15,
+								"DiagramY": -15,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
 								"HtmlNotes": "y",
 								"isOutput": "y",
 								"Type": "Expression",
@@ -2571,7 +2610,7 @@
 								"name": "Expression_Ref",
 								"Notes": "Using the self parameter to get a reference to an expression.\n\nNote that in the model view, the value of the reference is displayed.",
 								"DiagramX": 105,
-								"DiagramY": 50,
+								"DiagramY": 25,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"HtmlNotes": "y",
@@ -2599,7 +2638,7 @@
 								"name": "Dereference",
 								"Notes": "Here the reference is used to get the notes for direct.",
 								"DiagramX": 105,
-								"DiagramY": 80,
+								"DiagramY": 55,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"HtmlNotes": "y",
@@ -2607,6 +2646,36 @@
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "Expression_Ref.notes"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "Weights",
+								"Notes": "You can use an index operator with a string to retrieve tool references from a model.  The string can contain \"*\" wildcard characters that will match any sequence of characters.\n\nHere we ask for all the tools whose names end with \"weight\". This will return reference to three scalar expressions, whose values are listed below, but you probably wouldn't normally display a reference array. Click here to see the how the array looks in the expression display.",
+								"DiagramX": 105,
+								"DiagramY": 85,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "aModel[\"*Weight\"]"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "WeightTable",
+								"Notes": "More typically you might use a referance array to construct an output table as in this expression.",
+								"DiagramX": 105,
+								"DiagramY": 120,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{table\n\t\"Name\", weights.myname,\n\t\"Value\", weights.value\n}"
 								},
 								"showInput": "y"
 							}

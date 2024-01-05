@@ -380,9 +380,8 @@ class MMTool extends MMCommandParent {
 	 */
 	htmlValue(requestor) {
 		const v = this.valueDescribedBy('table', requestor);
-		return v ? this.valueDescribedBy('table', requestor).htmlValue() : null;
+		return v ? v.htmlValue() : null;
 	}
-
 
 	/**
 	 * @method inputSources
