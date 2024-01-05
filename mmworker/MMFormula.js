@@ -864,9 +864,6 @@ class MMIndexOperator extends MMFormulaOperator {
 						rv = new MMStringValue(rowCount, columnCount);
 					}
 					else if (firstValue instanceof MMToolValue) {
-						if (columnCount === 1) {
-							return sourceValue.valueDescribedBy(firstDescription);
-						}
 						rv = new MMToolValue(rowCount, columnCount);
 					}
 					else {
@@ -884,8 +881,11 @@ class MMIndexOperator extends MMFormulaOperator {
 								if (firstValue instanceof MMNumberValue) {
 									rv.setValue(NaN, row + 1, col + 1);
 								}
-								else {
+								else if (firstValue instanceof MMStringValue) {
 									rv.setValue('???', row + 1, col + 1);
+								}
+								else {
+									return null;
 								}
 							}
 							else {
