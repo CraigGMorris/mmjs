@@ -833,64 +833,142 @@ class MMIndexOperator extends MMFormulaOperator {
 	value() {
 		const sourceValue = this.sourceArgument.value();
 		if (sourceValue instanceof MMToolValue) {
-			let rowValue = this.rowArgument.value();
-			if (rowValue instanceof MMNumberValue && rowValue.valueAtRowColumn(1,1) === 0) {
+			let descriptionValue = this.rowArgument.value();
+			if (descriptionValue instanceof MMNumberValue && descriptionValue.valueAtRowColumn(1,1) === 0) {
 				// to handle x[n].name, which gets transformed into
 				// x[n][0,"name"] in formulaParser
-				rowValue = this.columnArgument.value();
+				descriptionValue = this.columnArgument.value();
 			}
-			if (rowValue instanceof MMStringValue) {
-				if (rowValue.valueCount === 1 && sourceValue.valueCount === 1) {
+			if (descriptionValue instanceof MMStringValue) {
+				const sourceCount = sourceValue.valueCount;
+				const descriptionCount = descriptionValue.valueCount;
+				if (descriptionCount === 1 && sourceCount === 1) {
 					const tool = sourceValue.valueAtRowColumn(1, 1);
-					const valueDescription = rowValue.valueAtRowColumn(1, 1);
+					const valueDescription = descriptionValue.valueAtRowColumn(1, 1);
 					return tool.valueDescribedBy(valueDescription, this.formula.owner);
 				}
 				else {
 					let rv;
 					const firstTool = sourceValue.valueAtRowColumn(1, 1);
-					let firstDescription = rowValue.valueAtRowColumn(1, 1);
-					if (firstDescription === 'value' && firstTool instanceof MMExpression) {
-						// if asking for "value" from an expression reference, return
-						// the sourceValue valueDescribedBy for "value"
-						return sourceValue.valueDescribedBy('value', this.formula.owner);
-					}
+					const firstDescription = descriptionValue.valueAtRowColumn(1, 1);
+					// if (firstDescription === 'value' && firstTool instanceof MMExpression) {
+					// 	// if asking for "value" from an expression reference, return
+					// 	// the sourceValue valueDescribedBy for "value"
+					// 	return sourceValue.valueDescribedBy('value', this.formula.owner);
+					// }
 					const firstValue = firstTool.valueDescribedBy(firstDescription, this.formula.owner);
-					const rowCount = sourceValue.valueCount;
-					const columnCount = rowValue.valueCount;
-					if (firstValue instanceof MMNumberValue) {
-						rv = new MMNumberValue(rowCount, columnCount, firstValue.unitDimensions);
-					}
-					else if (firstValue instanceof MMStringValue) {
-						rv = new MMStringValue(rowCount, columnCount);
-					}
-					else if (firstValue instanceof MMToolValue) {
-						rv = new MMToolValue(rowCount, columnCount);
-					}
-					else {
+					if (!firstValue) {
 						return null;
 					}
-					for (let row = 0; row < sourceValue.valueCount; row++) {
-						const tool = sourceValue.valueAtCount(row);
-						if (!tool) {
-							return null;
+					const firstCount = firstValue.valueCount;
+
+					const makeReturnValue = (value, rowCount, columnCount) => {
+						if (value instanceof MMNumberValue) {
+							return new MMNumberValue(rowCount, columnCount, value.unitDimensions);
 						}
-						for (let col = 0; col < rowValue.valueCount; col++) {
-							const description = rowValue.valueAtCount(col);
-							const value = tool.valueDescribedBy(description, this.formula.owner);
-							if (!value || Object.getPrototypeOf(value).constructor !== Object.getPrototypeOf(firstValue).constructor) {
-								if (firstValue instanceof MMNumberValue) {
+						else if (value instanceof MMStringValue) {
+							return new MMStringValue(rowCount, columnCount);
+						}
+						else if (value instanceof MMToolValue) {
+							return new MMToolValue(rowCount, columnCount);
+						}
+						else {
+							return null;
+						}	
+					}
+
+					let rowCount, columnCount;
+					if (descriptionCount > 1) {
+						// there are multiple descriptions
+						// one column per description
+						// one row per source value, using first element;
+						rowCount = sourceCount
+						columnCount = descriptionCount;
+						rv = makeReturnValue(firstValue, rowCount, columnCount);
+						if (!rv) { return null; }
+						for (let row = 0; row < rowCount; row++) {
+							const tool = sourceValue.valueAtCount(row);
+							if (!tool) {
+								return null;
+							}
+							for (let col = 0; col < columnCount; col++) {
+								const description = descriptionValue.valueAtCount(col);;
+								const value = tool.valueDescribedBy(description, this.formula.owner);
+								if (!value || Object.getPrototypeOf(value).constructor !== Object.getPrototypeOf(firstValue).constructor) {
+									if (firstValue instanceof MMNumberValue) {
+										rv.setValue(NaN, row + 1, col + 1);
+									}
+									else if (firstValue instanceof MMStringValue) {
+										rv.setValue('???', row + 1, col + 1);
+									}
+									else {
+										return null;
+									}
+								}
+								else if (firstValue instanceof MMNumberValue &&
+									!MMUnitSystem.areDimensionsEqual(value.unitDimensions, firstValue.unitDimensions))
+								{
 									rv.setValue(NaN, row + 1, col + 1);
 								}
-								else if (firstValue instanceof MMStringValue) {
-									rv.setValue('???', row + 1, col + 1);
-								}
 								else {
-									return null;
+									rv.setValue(value.valueAtCount(0), row + 1, col + 1);
 								}
 							}
-							else {
-								rv.setValue(value.valueAtCount(0), row + 1, col + 1);
+						}
+					}
+					else if (firstCount > 1) {
+						// one description, but multiple value per source
+						// one row per source and one column per value
+						rowCount = sourceCount;
+						columnCount = firstCount;
+						rv = makeReturnValue(firstValue, rowCount, columnCount);
+						if (!rv) { return null; }
+						for (let row = 0; row < rowCount; row++) {
+							const tool = sourceValue.valueAtCount(row);
+							if (!tool) {
+								return null;
 							}
+							const value = tool.valueDescribedBy(firstDescription, this.formula.owner);
+							if (!value) { return null; }
+							if (value.valueCount !== columnCount) { return null; }
+							if (!value || Object.getPrototypeOf(value).constructor !== Object.getPrototypeOf(firstValue).constructor) {
+								return null;
+							}
+							if (firstValue instanceof MMNumberValue &&
+								!MMUnitSystem.areDimensionsEqual(value.unitDimensions, firstValue.unitDimensions))
+							{
+								return null;
+							}
+							for (let col = 0; col < columnCount; col++) {
+								rv.setValue(value.valueAtCount(col), row + 1, col + 1);
+							}
+						}
+					}
+					else {
+						// one description and one value per source
+						// follow the dimensions of source
+						rowCount = sourceValue.rowCount;
+						columnCount = sourceValue.columnCount;
+						rv = makeReturnValue(firstValue, rowCount, columnCount);
+						if (!rv) { return null; }
+						for (let i = 0; i < sourceCount; i++) {
+							const tool = sourceValue.valueAtCount(i);
+							if (!tool) {
+								return null;
+							}
+							const value = tool.valueDescribedBy(firstDescription, this.formula.owner);
+							if (!value) {
+								return null;
+							}
+							if (!value || Object.getPrototypeOf(value).constructor !== Object.getPrototypeOf(firstValue).constructor) {
+								return null;
+							}
+							if (firstValue instanceof MMNumberValue &&
+								!MMUnitSystem.areDimensionsEqual(value.unitDimensions, firstValue.unitDimensions))
+							{
+								return null;
+							}
+							rv.setValueAtCount(value.valueAtCount(0), i);
 						}
 					}
 					return rv;

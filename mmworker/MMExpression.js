@@ -277,6 +277,14 @@ class MMExpression extends MMTool {
 						rv = MMNumberValue.scalarValue(0);
 					}
 					break;
+				case "value":
+					if (value instanceof MMToolValue) {
+						rv = value.valueDescribedBy(description, requestor); 
+					}
+					else {
+						rv = value;
+					}
+					break;
 				case 'formula':
 					if (this.formula.formula) {
 						rv = MMStringValue.scalarValue(this.formula.formula);
@@ -327,6 +335,9 @@ class MMExpression extends MMTool {
 								rv.displayUnit = column.displayUnit;
 							}
 						}
+					}
+					else if (value instanceof MMToolValue) {
+						rv = value.valueDescribedBy(description, requestor);
 					}
 					else if (value instanceof MMJsonValue) {
 						rv = value.valueForDescription(description);
