@@ -316,10 +316,7 @@ class MMExpression extends MMTool {
 					break;
 
 				default: {
-					if (value instanceof MMToolValue) {
-						rv = value.valueDescribedBy(description, requestor);
-					}
-					else if (value instanceof MMTableValue) {
+					if (value instanceof MMTableValue) {
 						const column = value.columnNamed(description);
 						rv = column ? column.value : null;
 						if (rv && column) {
