@@ -420,6 +420,9 @@ class MMTool extends MMCommandParent {
 		}
 		this.forgetCalculated();
 		super.renameto(command);
+		if (this.parent) {
+			this.parent.forgetCalculated();
+		}
 	}
 
 	/**

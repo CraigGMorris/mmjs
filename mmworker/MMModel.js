@@ -305,6 +305,7 @@ class MMModel extends MMTool {
 			newTool.justAdded = true;
 			command.results = name;
 			command.undo = this.getPath() + ' removetool ' + name;
+			this.forgetCalculated();
 		}
 	}
 
@@ -342,6 +343,7 @@ class MMModel extends MMTool {
 			command.undo = `__blob__${this.getPath()} restoretool__blob__${json}`;
 		}
 		this.htmlProcessor.clearCache();
+		this.forgetCalculated();
 	}
 
 	/**
@@ -1235,7 +1237,7 @@ class MMModel extends MMTool {
 			return MMToolValue.scalarValue(this);
 		}
 		const toolNameParts = description.split('.');
-		const toolName = toolNameParts.shift().toLowerCase();
+		let toolName = toolNameParts.shift().toLowerCase();
 		const restOfPath = toolNameParts.join('.');
 		const tool = this.children[toolName];
 		if (tool instanceof MMTool) {
@@ -1270,13 +1272,23 @@ class MMModel extends MMTool {
 			}
 		}
 		else {
+			// check for search type prefix
+			let type = 'name';
+			if (toolName.startsWith('type:')) {
+				type = 'className';
+				toolName = toolName.substring(5);
+			}
+			else if (toolName.startsWith('notes:')) {
+				type = 'notes';
+				toolName = toolName.substring(6);
+			}
 			// check for wild card characters
 			// Replace '*' in the pattern with '.*' to create a regular expression
 			const regexPattern = new RegExp("^" + toolName.split("*").join(".*") + "$");
 			const tools = [];
 			const children = this.positionSortedChildren()
 			for (const child of children) {
-				if (regexPattern.test(child.name.toLowerCase())) {
+				if (regexPattern.test(child[type].toLowerCase())) {
 					tools.push(child);
 				}
 			}
