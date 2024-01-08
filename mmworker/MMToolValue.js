@@ -301,11 +301,11 @@ class MMToolValue extends MMValue {
 		else if (this.valueCount > 1) {
 			const firstTool = this.valueAtRowColumn(1,1);
 			if (firstTool) {
-				if (description === 'value' && firstTool instanceof MMExpression) {
-					// if a "value" is asked for, use '' for description so the
-					// referenced expression returns its own value
-					description = '';
-				}
+				// if (description === 'value' && firstTool instanceof MMExpression) {
+				// 	// if a "value" is asked for, use '' for description so the
+				// 	// referenced expression returns its own value
+				// 	description = '';
+				// }
 				const firstValue = firstTool.valueDescribedBy(description, requestor);
 				if (!(
 					firstValue instanceof MMNumberValue ||

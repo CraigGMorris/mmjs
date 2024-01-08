@@ -1288,7 +1288,9 @@ class MMModel extends MMTool {
 			const tools = [];
 			const children = this.positionSortedChildren()
 			for (const child of children) {
-				if (regexPattern.test(child[type].toLowerCase())) {
+				// if search for class name, remove the leading MM
+				const testValue = type === "className" ? child.className.substring(2) : child[type];
+				if (regexPattern.test(testValue.toLowerCase())) {
 					tools.push(child);
 				}
 			}

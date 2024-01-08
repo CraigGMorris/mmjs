@@ -851,11 +851,6 @@ class MMIndexOperator extends MMFormulaOperator {
 					let rv;
 					const firstTool = sourceValue.valueAtRowColumn(1, 1);
 					const firstDescription = descriptionValue.valueAtRowColumn(1, 1);
-					// if (firstDescription === 'value' && firstTool instanceof MMExpression) {
-					// 	// if asking for "value" from an expression reference, return
-					// 	// the sourceValue valueDescribedBy for "value"
-					// 	return sourceValue.valueDescribedBy('value', this.formula.owner);
-					// }
 					const firstValue = firstTool.valueDescribedBy(firstDescription, this.formula.owner);
 					if (!firstValue) {
 						return null;
