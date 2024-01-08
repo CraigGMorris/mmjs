@@ -90,16 +90,17 @@
 			<div id="tool" class="section">
 				<h3>Tool Reference</h3>
 				<p>
-					Tool references are not often used, but can be helpful in certain circumstances.
+					A tool reference is simply a value that points to another tool.
 				</p>
 				<p>
-					When the name of an expression tool is referenced in a formula, it will evaluate to
-					the minion value calculated by the expression's formula.  Similarly a matrix reference will be
-					replaced by a numeric value and a data table reference with a table value.
+					When the name of an expression tool is used as formula, it  evaluates to
+					the minion value calculated by the expression's formula.  Similarly a matrix
+					reference will be replaced by a numeric value and a data table reference
+					with a table value.
 				</p>
 				<p>
 					However other tools don't have values intrinsically associated with their names and
-					a reference to them will become a tool reference.
+					a formula consisting of just their name will become a tool reference.
 				</p>
 				<p>
 					For instance if a model has an ordinary differential equation solver calling <b>integ</b>
@@ -124,16 +125,17 @@
 					will both return the derivative values of the <b>integ</b> solver.
 				</p>
 				<p>
-					This is rarely needed, but could be useful is when the expression with the tool reference is designated
-					is an input expression.  This allows formulas in the model access to the
-					parameters of the tool that it is referencing from the parent model.
+					This can be useful when the expression with the tool reference is designated
+					is an input expression as it allows formulas in the model access to the
+					parameters of a tool that is referenced from the parent model.
 				</p>
 				<p>
 					Arrays of tool references can be created by using the <b>tools</b> parameter of
 					of model or by using the index operation <b>[]</b> with a model. The tools parameter
-					will return an array of all the tools in the model, while the index operator will
-					tools with names matching the string contained n the operator. The string can contain
-					<b>*</b> wild card characters which will match any number of arbitrary characters. For instance
+					will return an array of all the tools in the model, while the index operator will return
+					an array of tools with names matching the string contained in the operator.
+					The string can contain <b>*</b> wild card characters which will match any
+					number of arbitrary characters. For instance
 				</p>
 				<p class="formula">
 					model1["field*"]
@@ -154,8 +156,26 @@
 					expression have the same unit type.
 				</p>
 				<p>
-					Tool arrays can be useful in constructing reports with values from various
-					sub-models, but are rarely used otherwise.
+					If the index string is prefixed with "type:" or "notes:" then the tool type
+					("Expression", "Model", etc.) or the tool's notes are searched rather than the
+					tool name.
+				</p>
+				<p>
+					If you are familiar with regular expressions, note that the index value is
+					converted to a regular expression with a prefix of "^" and a postfix of "$"
+					and the "*" characters replaced with ".*". This means you are free to use other
+					regular expression features in the search term.  For instance:
+				</p>
+				<p class="formula">
+					myModel["x[\d]+"]
+				</p>
+				<p>
+					would return all the tools in myModel whose names consist of an "x" followed by
+					one or more digits.
+				</p>
+				<p>
+					Tool arrays can be particularly useful in constructing reports with values from various
+					models that represent things like forms.
 				</p>
 				<p>
 					Finally a tool reference can be made to any tool using the <b>self</b> parameter.  For example
@@ -165,7 +185,7 @@
 					dtable.self
 				</p>
 				<p>
-					This a historical holdover that is retained for backwards compatibility.
+					but this a mainly historical holdover that is retained for backwards compatibility.
 				</p>
 			</div>
 			<div id="json" class="section">

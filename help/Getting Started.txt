@@ -2578,7 +2578,7 @@
 							},
 							{
 								"name": "Direct",
-								"Notes": "In this case it is easier to access <b>twoPi</b> directly.",
+								"Notes": "However in this case it is easier to access <b>twoPi</b> directly.",
 								"DiagramX": 105,
 								"DiagramY": -15,
 								"HideInfo": "y",
@@ -2607,23 +2607,8 @@
 								"showInput": "y"
 							},
 							{
-								"name": "Expression_Ref",
-								"Notes": "Using the self parameter to get a reference to an expression.\n\nNote that in the model view, the value of the reference is displayed.",
-								"DiagramX": 105,
-								"DiagramY": 25,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "y",
-								"isOutput": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "Direct.self"
-								},
-								"showInput": "y"
-							},
-							{
 								"name": "Overview",
-								"Notes": "<b>Reference Values</b>\n\nWhile some tools, like expression, data table and matrix, return a numeric, string or table value when referenced in a formula, many others return a reference to themselves.\n\nThere are now better ways to accomplish what these reference values were primarily intended for, but there could be some edge cases where they might still be useful.",
+								"Notes": "<b>Reference Values</b>\n\nWhile some tools, like expression, data table and matrix, return a numeric, string or table value when referenced in a formula, many others return a reference to themselves.",
 								"DiagramX": 15,
 								"DiagramY": -15,
 								"HideInfo": "n",
@@ -2635,25 +2620,10 @@
 								}
 							},
 							{
-								"name": "Dereference",
-								"Notes": "Here the reference is used to get the notes for direct.",
-								"DiagramX": 105,
-								"DiagramY": 55,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "y",
-								"isOutput": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "Expression_Ref.notes"
-								},
-								"showInput": "y"
-							},
-							{
 								"name": "Weights",
 								"Notes": "You can use an index operator with a string to retrieve tool references from a model.  The string can contain \"*\" wildcard characters that will match any sequence of characters.\n\nHere we ask for all the tools whose names end with \"weight\". This will return reference to three scalar expressions, whose values are listed below, but you probably wouldn't normally display a reference array. Click here to see the how the array looks in the expression display.",
 								"DiagramX": 105,
-								"DiagramY": 85,
+								"DiagramY": 30,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"HtmlNotes": "y",
@@ -2676,6 +2646,36 @@
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "{table\n\t\"Name\", weights.myname,\n\t\"Value\", weights.value\n}"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "WeightsType",
+								"Notes": "Alternatively, if you prefix the index term with <b>\"type:\"</b>, the type name of the tool will be searched instead of the name. Here a search for <b>\"note:expr*\"</b> will return all the Expression tools in aModel.",
+								"DiagramX": 105,
+								"DiagramY": 60,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "aModel[\"type:expr*\"]"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "WeightsNotes",
+								"Notes": "Similarly a prefix of <b>\"notes:\"</b> can be used to search tool notes.  Here the term is used to find the tools in aModel that don't have notes.",
+								"DiagramX": 105,
+								"DiagramY": 90,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": ""
 								},
 								"showInput": "y"
 							}
