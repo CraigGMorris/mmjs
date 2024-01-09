@@ -952,7 +952,13 @@ class MMModel extends MMTool {
 	}
 
 	positionSortedChildren() {
-		return Object.values(this.children).sort(this.positionSort);
+		const tools = []
+		for (const t of Object.values(this.children)) {
+			if (t instanceof MMTool) {
+				tools.push(t);
+			}
+		}
+		return tools.sort(this.positionSort);
 	}
 
 	htmlInfo() {
@@ -1247,23 +1253,13 @@ class MMModel extends MMTool {
 			return MMStringValue.scalarValue(this.htmlValue());
 		}
 		else if (toolName === 'toolnames') {
-			const names = [];
-			for (const child of this.positionSortedChildren()) {
-				if (child instanceof MMTool) {
-					names.push(child.name);
-				}
-			}
+			const names = this.positionSortedChildren().map( t => t.name);
 			if (names.length) {
 				value = MMStringValue.stringArrayValue(names);
 			}
 		}
 		else if (toolName === 'tools') {
-			const tools = [];
-			for (const tool of this.positionSortedChildren()) {
-				if (tool instanceof MMTool) {
-					tools.push(tool);
-				}
-			}
+			const tools = this.positionSortedChildren();
 			if (tools.length) {
 				value = MMToolValue.toolArrayValue(tools);
 				if (restOfPath && restOfPath.length) {
