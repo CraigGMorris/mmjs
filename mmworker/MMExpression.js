@@ -182,6 +182,11 @@ class MMExpression extends MMTool {
 				p.push(column.name);
 			}
 		}
+		else if (v instanceof MMToolValue) {
+			if (v._values && v._values[0]) {
+				p = v._values[0].parameters();
+			}
+		}
 		return p;
 	}
 
