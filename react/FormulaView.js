@@ -94,7 +94,7 @@ export function FormulaField(props) {
 				pApplyChanges(fNew);
 			}
 		};
-	}, [pApplyChanges]);
+	}, []);
 
 	const fieldInputRef = React.useRef(null);
 
