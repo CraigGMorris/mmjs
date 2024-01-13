@@ -2754,7 +2754,12 @@ class MMInvertFunction extends MMSingleValueFunction {
 
 class MMMatrixCellFunction extends MMMultipleArgumentFunction {
 	processArguments(operandStack) {
-		if ((this.formula.owner instanceof MMMatrix)) {
+		if (!(this.formula.parent instanceof MMMatrix)) {
+			this.formula.setError('mmcmd:matrixOnlyFunction', {
+				formula: this.formula.truncatedFormula(),
+				path: this.formula.parent.getPath(),
+				func: 'cell'
+			});
 			return false;
 		}
 		return super.processArguments(operandStack, 1);
@@ -2786,7 +2791,12 @@ class MMMatrixCellFunction extends MMMultipleArgumentFunction {
 
 class MMMatrixColumnFunction extends MMFunctionOperator {
 	processArguments(operandStack) {
-		if ((this.formula.owner instanceof MMMatrix)) {
+		if (!(this.formula.parent instanceof MMMatrix)) {
+			this.formula.setError('mmcmd:matrixOnlyFunction', {
+				formula: this.formula.truncatedFormula(),
+				path: this.formula.parent.getPath(),
+				func: 'col'
+			});
 			return false;
 		}
 
@@ -2826,7 +2836,12 @@ class MMMatrixMultiplyFunction extends MMMultipleArgumentFunction {
 
 class MMMatrixRowFunction extends MMFunctionOperator {
 	processArguments(operandStack) {
-		if ((this.formula.owner instanceof MMMatrix)) {
+		if (!(this.formula.parent instanceof MMMatrix)) {
+			this.formula.setError('mmcmd:matrixOnlyFunction', {
+				formula: this.formula.truncatedFormula(),
+				path: this.formula.parent.getPath(),
+				func: 'row'
+			});
 			return false;
 		}
 
