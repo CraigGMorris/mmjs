@@ -440,7 +440,7 @@ export function FormulaEditor(props) {
 	useEffect(() => {
 		previewCurrent();
 		setPreviewCalcType(FormulaPreviewCalcType.current);
-	}, [previewCurrent]);
+	}, []);
 
 	const latestFormula = React.useRef(null);
   useEffect(() => {
