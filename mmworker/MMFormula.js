@@ -4772,7 +4772,7 @@ class MMFormula extends MMCommandObject {
 				workingFormula = workingFormula.replace(dotRegex, '$1[0,"$2"]');
 			}
 
-			let pattern = /"[\s\S]*?"|`[\s\S]*?`|[=*/+\-^:%()'@{}#[\],]|[\w.$]+|[\s]+/g;
+			let pattern = /"[\s\S]*?"|`[\s\S]*?`|#.*?\n|[=*/+\-^:%()'@{}[\],]|[\w.$]+|[\s]+/g;
 			tokens = workingFormula.match(pattern);
 			let nTokens = tokens.length;
 			let startOp = new MMParenthesisOperator();
@@ -4783,7 +4783,7 @@ class MMFormula extends MMCommandObject {
 			const unitRegex = /^[\w^/-]+$/;
 			for (let i = 0; i < nTokens; i++) {
 				let token = tokens[i];
-				if (spaceRegex.test(token)) {
+				if (spaceRegex.test(token) || token.startsWith('#')) {
 					continue;
 				} 
 				if (token == '(') {
