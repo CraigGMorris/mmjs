@@ -9,7 +9,7 @@
 	],
 	"CaseName": "Getting Started",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
+	"SelectedObject": "root",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -755,6 +755,21 @@
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "7 % 4"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "comments",
+								"Notes": "",
+								"DiagramX": 130,
+								"DiagramY": 125,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "# hashtags, like the ones\n# starting these lines can\n# be used for comments\n{if {gt operators, 10 m^2},\n\t\"big\",  # bigger than 10\n\t\"small\" # 10 or less\n}"
 								},
 								"showInput": "y"
 							}

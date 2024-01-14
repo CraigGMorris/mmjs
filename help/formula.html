@@ -273,14 +273,22 @@
 			<div id="comments" class="section">
 				<h3>Comments</h3>
 				<p>
-					Anything in a formula following a single quote character is considered a comment:
+					Comments can be added to the end of formula lines by using a hash "#" character,
+					as in:
 				</p>
-				<p class="formula">a + b ' this is just a comment</p>
+				<pre class="formula">
+{if needConversion,
+  a * conversion, # need conversion
+  a # just return value
+}</pre>
 				<p>
-					If the formula has new line characters in it, the comment must still be at the end
-					of the formula.  In other words you cannot have a comment on each line of a single
-					formula.  The comment itself can have multiple lines though.
+					A single quote character which isn't the first character of the formula and
+					isn't contained in quotes, will cause the entire rest of the formula to
+					be considered a comment, even if there are multiple lines:
 				</p>
+				<pre class="formula">
+a + b ' this is
+just a comment</pre>
 			</div>
 			<div id="strings" class="section">
 				<h3>Strings</h3>
