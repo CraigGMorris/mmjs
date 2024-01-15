@@ -270,6 +270,10 @@ class MMExpression extends MMTool {
 	 */
 	valueDescribedBy(description, requestor) {
 		let rv = null;	// return value
+		if (this.formula && this.formula.formula && this.formula.formula.startsWith('$')) {
+			// any reference to self will be recursive - see if Tool can handle it.
+			return super.valueDescribedBy(description, requestor);
+		}
 		let value = this.valueForRequestor(requestor);
 		if (description) {
 			const lcDescription = description.toLowerCase();

@@ -9,7 +9,7 @@
 	],
 	"CaseName": "Getting Started",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "root",
+	"SelectedObject": "",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -1132,7 +1132,7 @@
 										"name": "rowIndex",
 										"Notes": "If only the row index is given, the entire row(s) is returned.",
 										"DiagramX": 115,
-										"DiagramY": 90,
+										"DiagramY": 95,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -1147,7 +1147,7 @@
 										"name": "columnIndex",
 										"Notes": "To select entire columns, an index of 0 can be used for the row index.",
 										"DiagramX": 115,
-										"DiagramY": 135,
+										"DiagramY": 140,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -17243,7 +17243,7 @@
 						"name": "Imported_Model",
 						"Notes": "<b>Imported_Model</b>\nIf the same model is used repeatedly in a number of places, it can be advantageous to import the model structure from another session, rather than making multiple copies.\n\nThen if a change is made to the source session, it will be reflected in all the imported instances.\n\nThis probably won't come up much, but is described in the <span onClick=\"event.stopPropagation()\"><a href=\"../help/importedmodel.html\" target=\"_blank\">Imported Model help</a></span>.",
 						"DiagramX": 145,
-						"DiagramY": 115,
+						"DiagramY": 140,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -17475,6 +17475,21 @@
 								}
 							}
 						]
+					},
+					{
+						"name": "Parameters",
+						"Notes": "In addition to whatever parameters individual tools may have, all tools have the following:\n\n\t<b>myname</b> - the tool name\n\t<b>notes</b> - the tool's notes\n\t<b>parent</b> - the model the tool belongs to\n\t<b>html</b> - the html representation of the tool",
+						"DiagramX": 145,
+						"DiagramY": 110,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "\"The notes for the Menu model are\n\n\" + menu.notes"
+						},
+						"showInput": "y"
 					}
 				]
 			},

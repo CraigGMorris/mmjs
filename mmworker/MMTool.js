@@ -149,6 +149,7 @@ class MMTool extends MMCommandParent {
 		p.push('myname');
 		p.push('notes');
 		p.push('html');
+		p.push('parent');
 		return p;
 	}
 	
@@ -364,6 +365,11 @@ class MMTool extends MMCommandParent {
 						rv = MMStringValue.scalarValue(value);
 					}
 				}
+					break;
+				case 'parent': 
+					if (this.parent instanceof MMModel) {
+						rv = MMToolValue.scalarValue(this.parent)
+					}
 					break;
 			}
 		}
