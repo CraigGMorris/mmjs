@@ -428,7 +428,13 @@ class MMExpression extends MMTool {
 	htmlValue(requestor) {
 		const value = this.valueForRequestor();
 		if (value instanceof MMToolValue) {
-			console.log('tool')
+			const lines = [];
+			for (const v of value.values) {
+				if (v) {
+					lines.push(v.typeName + ': ' + v.name + '<br>');
+				}
+			}
+			return lines.join('\n');
 		}
 		else {
 			return super.htmlValue(requestor);
