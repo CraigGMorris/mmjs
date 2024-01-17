@@ -604,7 +604,7 @@ class MMValue {
 				else if (selector[0] === '&') {
 					selector = selector.substring(1).trim();
 				}
-				const columnMatch = selector.match(/^[^!<=>?]+/);
+				const columnMatch = selector.match(/^[^!<=>?*]+/);
 				if (!columnMatch) { syntaxError(selectorValue); }
 				const columnNumber = parseFloat(columnMatch[0].trim());
 				if (isNaN(columnNumber) || columnNumber > this.columnCount) {
@@ -654,7 +654,11 @@ class MMValue {
 					'>': (a, b) => {return a > b ? 1 : 0;},
 					'<=': (a, b) => {return a <= b ? 1 : 0;},
 					'>=': (a, b) => {return a >= b ? 1 : 0;},
-					'?': (a, b) => {return a.includes(b);}
+					'?': (a, b) => {return a.includes(b);},
+					'*': (a, b) => {
+						const re =  new RegExp(b);
+						return a.match(re) ? 1 : 0;
+					}
 				}[opString];
 
 				for (let i = 0; i < this.rowCount; i++) {
