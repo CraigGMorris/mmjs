@@ -4743,8 +4743,8 @@ class MMFormula extends MMCommandObject {
 				return this._resultOperator;
 			}
 
-			// trim white space, if any
-			let workingFormula = this._formula.trim();
+			// trim white space, if any - then add \n for trailing # comments
+			let workingFormula = this._formula.trim() + '\n';
 
 			// first check for number and unit separated by spaces
 			let tokens = workingFormula.split(/\s/);
