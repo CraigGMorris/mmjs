@@ -2642,7 +2642,6 @@
 								"HideInfo": "y",
 								"DiagramNotes": "n",
 								"HtmlNotes": "y",
-								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "aModel[\"*Weight\"]"
@@ -2691,6 +2690,21 @@
 								"Type": "Expression",
 								"Formula": {
 									"Formula": ""
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "ParentModel",
+								"Notes": "Assuming there isn't an actual tool named <b>thisModel</b> then using that name in a formula will return a tool reference to the model that the formula is in.",
+								"DiagramX": 105,
+								"DiagramY": 155,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "thisModel.myName"
 								},
 								"showInput": "y"
 							}

@@ -660,6 +660,11 @@ class MMToolReferenceOperator extends MMFormulaOperator {
 		else {
 			tool = this.formula.nameSpace.childNamed(toolName);
 		}
+		if (!tool && toolName.toLowerCase() === 'thismodel') {
+			if (this.formula.parent && this.formula.parent.parent instanceof MMModel) {
+				tool = this.formula.parent.parent;
+			}
+		}
 		if (tool) {
 			let args;
 			if (parts.length > 1) {
@@ -4748,6 +4753,11 @@ class MMFormula extends MMCommandObject {
 
 			// first check for number and unit separated by spaces
 			let tokens = workingFormula.split(/\s/);
+			const lastToken = tokens.pop();
+			if (lastToken !== '') {
+				// removes last token if empty string so tokenCount is right
+				tokens.push(lastToken);
+			}
 			let tokenCount = tokens.length;
 			if (tokenCount == 2 || (tokenCount > 2 && tokens[2] == "'")) {
 				let value = filterFloat(tokens[0]);

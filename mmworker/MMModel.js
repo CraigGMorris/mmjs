@@ -1114,7 +1114,14 @@ class MMModel extends MMTool {
 									chunks.push(`<div class="model-form__output-tool">`);
 									chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
 								}
-								chunks.push(`<div id="${outputId}" class="model-form__output_value"${enableClick}>${toolValue.htmlValue(requestor)}</div>`);
+								let displayValue;
+								if (toolValue === this) {
+									displayValue = this.name;
+								}
+								else {
+									displayValue = toolValue.htmlValue(requestor);
+								}
+								chunks.push(`<div id="${outputId}" class="model-form__output_value"${enableClick}>${displayValue}</div>`);
 								if (!headerDone) {
 									chunks.push('</div>');	
 									headerDone = true;
@@ -1300,6 +1307,10 @@ class MMModel extends MMTool {
 				value = super.valueDescribedBy(description, requestor);
 			}
 		}
+		if (requestor && value) {
+			this.addRequestor(requestor);
+		}
+
 		return value;
 	}
 
