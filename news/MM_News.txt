@@ -14,7 +14,7 @@
 		"Notes": "",
 		"DiagramX": 0,
 		"DiagramY": 0,
-		"HideInfo": "n",
+		"HideInfo": "y",
 		"DiagramNotes": "n",
 		"HtmlNotes": "n",
 		"Type": "Model",
@@ -2795,6 +2795,263 @@
 						"Formula": {
 							"Formula": ""
 						}
+					}
+				]
+			},
+			{
+				"name": "Jan_2024_News",
+				"Notes": "",
+				"DiagramX": 80,
+				"DiagramY": -215,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "Comments",
+						"Notes": "<h4>Comments</h4>I have finally made some long overdue improvements to comments in formulas.\n\nSpecifically you can now used a <b>#</b> character to comment out the rest of the line in multiline formulas.  Unlike the previous, and still supported, single quote comments, these do not consume the rest of the formula.",
+						"DiagramX": 10,
+						"DiagramY": 10,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "# make a simple table\n{table # will have two columns\n\t\"Speed\", # first with 2 distances\n\t{cc 60 km, 80 km},\n\t\"Time\", # second with times\n\t{cc 1.2 h, 1.5 h} # stuff\n}"
+						},
+						"showInput": "y",
+						"tableUnits": {
+							"1": "km",
+							"2": "h"
+						},
+						"tableFormats": [
+							null,
+							"13.1f",
+							"13.2f"
+						]
+					},
+					{
+						"name": "Miscellaneous",
+						"Notes": "<h4>Miscellaneous</h4>There were a couple of small changes:\n\n- added a \"*\" operator to the select function, which selects column values matching a regular expression.\n\n- implemented some missing functions for tool reference values, namely\n    <b>transpose, append, ncols, nrows</b>\n\n- added a second optional argument to <b>csv</b> function for a separator so you can use something like a tab instead of a comma.\n\nAnd of course bug fixes such as:\n\n - Fixed a problem with the formula editor when called from a row edit in a DataTable.\n\n - Fixed problem with boolean JSON arrays.",
+						"DiagramX": 15,
+						"DiagramY": 110,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ""
+						}
+					},
+					{
+						"name": "Model_Indices",
+						"Notes": "<h4>Model Index Operator</h4>The index operator <b>[]</b> can now be used with model references to get tool references for tools contained in the model. Click here for more.",
+						"DiagramX": 10,
+						"DiagramY": 40,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "Overview",
+								"Notes": "The index operator <b>[]</b> can now be used with model references to get tool references for tools contained in a model. The indices can be used to select using the tool's name, type or notes.",
+								"DiagramX": 10,
+								"DiagramY": 10,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "aModel",
+								"Notes": "<h4>aModel</h4>This model contains a data table (DataTable1) and four expressions (GrossWeight, TareWeight, New_Weight and Speed).",
+								"DiagramX": 10,
+								"DiagramY": 45,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "GrossWeight",
+										"Notes": "Some expressions",
+										"DiagramX": 115,
+										"DiagramY": 65,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "100 kg"
+										}
+									},
+									{
+										"name": "TareWeight",
+										"Notes": "",
+										"DiagramX": 115,
+										"DiagramY": 95,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "10 kg"
+										}
+									},
+									{
+										"name": "Net_Weight",
+										"Notes": "",
+										"DiagramX": 115,
+										"DiagramY": 120,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "grossWeight - tareWeight"
+										}
+									},
+									{
+										"name": "DataTable1",
+										"Notes": "An minimal data table so model contains something other than expressions",
+										"DiagramX": 115,
+										"DiagramY": 30,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Data Table",
+										"Columns": [
+											{
+												"name": "Field_1",
+												"displayUnit": "Fraction",
+												"nValues": [
+													0
+												],
+												"unitDimensions": "0 0 0 0 0 0 0",
+												"defaultValue": "0 Fraction"
+											}
+										],
+										"Filter": {
+											"Formula": ""
+										}
+									},
+									{
+										"name": "Speed",
+										"Notes": "",
+										"DiagramX": 115,
+										"DiagramY": 145,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "100 kph"
+										}
+									}
+								]
+							},
+							{
+								"name": "Weights",
+								"Notes": "Here we ask for all the tools whose names end with \"weight\". The wildcard character <b>*</b> is used at the beginning and end so any name that contains \"weight\" somewhere will be returned.\n\nDirectly displaying non-scalar tool values on the model view is rarely desirable, so click here to see the expression result.",
+								"DiagramX": 90,
+								"DiagramY": 10,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "aModel[\"*Weight\"]"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "WeightTable",
+								"Notes": "A possible use of the returned referance array might be to construct an output table as in this expression.",
+								"DiagramX": 90,
+								"DiagramY": 100,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{table\n\t\"Name\", weights.myname,\n\t\"Value\", weights.value\n}"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "WeightsType",
+								"Notes": "Alternatively, if you prefix the index term with <b>\"type:\"</b>, the type name of the tool will be searched instead of the name. Here a search for <b>\"note:expr*\"</b> will return all the Expression tools in aModel.\n\nThe result (click to see) is the previous three expressions, plus an expression named \"Speed\".",
+								"DiagramX": 90,
+								"DiagramY": 40,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "aModel[\"type:expr*\"]"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "WeightsNotes",
+								"Notes": "Similarly a prefix of <b>\"notes:\"</b> can be used to search tool notes.  Here the term is used to find the tools in aModel that have at least one word character. An additional index of <b>[\"myname\"]</b> returns each tool name.\n\nThe searches are actually done with regular expressions, with a <b>^</b> prefix and a <b>$</b> postfix and the <b>*</b> characters replaced with <b>.*</b>.  This means you can also use regular expression terms in the search pattern, as with the <b>[\\w*</b> here.",
+								"DiagramX": 90,
+								"DiagramY": 70,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "aModel[\"notes:*[\\w]*\"][\"myname\"]"
+								},
+								"showInput": "y"
+							}
+						]
+					},
+					{
+						"name": "LoadSpeed",
+						"Notes": "<h4>Load Speed</h4>Perhaps the most important recent change wasn't in the program, but rather the settings on the website.\n\nI thought the code was being compressed by AWS CloudFront, but as it turned out, it wasn't because of a missing permission on S3.\n\nIf none of that means anything to you, the bottom line is the program now downloads much, much faster.",
+						"DiagramX": 10,
+						"DiagramY": -20,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ""
+						}
+					},
+					{
+						"name": "Parent_Model",
+						"Notes": "<h4>thisModel</h4>The tool name <b>thisModel</b> will now return a tool value of the model to which the formula belongs.",
+						"DiagramX": 10,
+						"DiagramY": 70,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "thisModel"
+						},
+						"showInput": "y"
 					}
 				]
 			}
