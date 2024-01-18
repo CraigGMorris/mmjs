@@ -605,7 +605,7 @@ class MMTableValue extends MMValue {
 
 				"Fraction","Fraction" ... column display unitss using csv separator
 			*/
-			const csv = context.csv;
+			const csv = context.csv.trim();
 			let i = 0;
 			let line;
 			let re = new RegExp('.*?[\\r\\n]+');
