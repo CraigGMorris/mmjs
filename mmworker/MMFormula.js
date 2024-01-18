@@ -850,13 +850,13 @@ class MMIndexOperator extends MMFormulaOperator {
 				if (descriptionCount === 1 && sourceCount === 1) {
 					const tool = sourceValue.valueAtRowColumn(1, 1);
 					const valueDescription = descriptionValue.valueAtRowColumn(1, 1);
-					return tool.valueDescribedBy(valueDescription, this.formula.owner);
+					return tool.valueDescribedBy(valueDescription, this.formula.parent);
 				}
 				else {
 					let rv;
 					const firstTool = sourceValue.valueAtRowColumn(1, 1);
 					const firstDescription = descriptionValue.valueAtRowColumn(1, 1);
-					const firstValue = firstTool.valueDescribedBy(firstDescription, this.formula.owner);
+					const firstValue = firstTool.valueDescribedBy(firstDescription, this.formula.parent);
 					if (!firstValue) {
 						return null;
 					}
@@ -893,7 +893,7 @@ class MMIndexOperator extends MMFormulaOperator {
 							}
 							for (let col = 0; col < columnCount; col++) {
 								const description = descriptionValue.valueAtCount(col);;
-								const value = tool.valueDescribedBy(description, this.formula.owner);
+								const value = tool.valueDescribedBy(description, this.formula.parent);
 								if (!value || Object.getPrototypeOf(value).constructor !== Object.getPrototypeOf(firstValue).constructor) {
 									if (firstValue instanceof MMNumberValue) {
 										rv.setValue(NaN, row + 1, col + 1);
@@ -928,7 +928,7 @@ class MMIndexOperator extends MMFormulaOperator {
 							if (!tool) {
 								return null;
 							}
-							const value = tool.valueDescribedBy(firstDescription, this.formula.owner);
+							const value = tool.valueDescribedBy(firstDescription, this.formula.parent);
 							if (!value) { return null; }
 							if (value.valueCount !== columnCount) { return null; }
 							if (!value || Object.getPrototypeOf(value).constructor !== Object.getPrototypeOf(firstValue).constructor) {
@@ -956,7 +956,7 @@ class MMIndexOperator extends MMFormulaOperator {
 							if (!tool) {
 								return null;
 							}
-							const value = tool.valueDescribedBy(firstDescription, this.formula.owner);
+							const value = tool.valueDescribedBy(firstDescription, this.formula.parent);
 							if (!value) {
 								return null;
 							}
