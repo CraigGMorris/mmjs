@@ -2967,7 +2967,7 @@
 							},
 							{
 								"name": "Weights",
-								"Notes": "Here we ask for all the tools whose names end with \"weight\". The wildcard character <b>*</b> is used at the beginning and end so any name that contains \"weight\" somewhere will be returned.\n\nDirectly displaying non-scalar tool values on the model view is rarely desirable, so click here to see the expression result.",
+								"Notes": "Here we ask for all the tools whose names end with \"weight\". The wildcard character <b>*</b> is used at the beginning so any name that ending with \"weight\" will be returned.\n\nDirectly displaying non-scalar tool values on the model view is rarely desirable, so click here to see the expression result.",
 								"DiagramX": 90,
 								"DiagramY": 10,
 								"HideInfo": "y",
