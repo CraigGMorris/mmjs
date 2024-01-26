@@ -126,8 +126,10 @@ class MMUnitSystem extends MMCommandParent {
 			let leadingPadChar = ' ';
 			const parts = format.split('.');	// split on decimal point, if there is one
 			let width = 0;
+			let prefix = '';  // character before wisth for date format
 			format = parts[parts.length - 1];
 			if (parts.length && parts[0].length) {
+				prefix = parts[0].substring(0,1);
 				const widthField = parts[0].replace(/[^\d]+/,'');
 				if (widthField.length) {
 					width = parseInt(widthField);
@@ -137,8 +139,10 @@ class MMUnitSystem extends MMCommandParent {
 				}
 			}
 			let precision = parseInt(format);
+			let precisionDefined = true;
 			if (isNaN(precision) || precision < 0 || precision > 36) {
 				precision = 8;
+				precisionDefined = false;
 			}
 			let s = ''
 			const type = format.slice(-1)  // last character should be format type
@@ -158,7 +162,30 @@ class MMUnitSystem extends MMCommandParent {
 				case 'x':
 					s = `${precision}r` + v.toString(precision);
 					break;
-			}
+				case '/':
+				case '-':
+					// Create a Date object
+					const sParts = v.toFixed(6).padStart(15,'0').split('.');
+					const sTime = sParts[1].replace(/(\d\d)(\d\d)(\d\d)/, '$1:$2:$3');
+					const regex = prefix === 'd' || prefix === 'm' ?
+						/(\d\d)(\d\d)(\d\d\d\d)/ :
+						/(\d\d\d\d)(\d\d)(\d\d)/;
+					const sDate = sParts[0].replace(regex, `$1${type}$2${type}$3`);
+					if (!precisionDefined) {
+						precision = 0;
+					}
+
+					// adjust precision for added colons
+					let addedColons = 0;
+					if (precision > 5) {
+						addedColons = 2;
+					}
+					else if (precision > 2) {
+						addedColons = 1;
+					}
+					s = sDate + ' ' + sTime.substring(0,precision + addedColons);
+					break;
+				}
 			if (width > s.length) {
 				s = s.padStart(width, leadingPadChar);
 			}

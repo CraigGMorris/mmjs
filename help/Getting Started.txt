@@ -1698,8 +1698,8 @@
 									{
 										"name": "Format_Unit",
 										"Notes": "An optional third parameter can be supplied to the fmt function and if present, it should be a string that is the name of the unit to be used for the number.\n\nThis unit must be of the same unit type as the number being formatted.\n\nIn this case the number is dimensionless and a percentage unit is requested.",
-										"DiagramX": 110,
-										"DiagramY": 15,
+										"DiagramX": 105,
+										"DiagramY": 105,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -1713,8 +1713,8 @@
 									{
 										"name": "DisplayFormat",
 										"Notes": "Note that you can set the display format on some tools, like this expression. It has a display format of\n12.2f and so is displayed appropriately without having to use the fmt function.",
-										"DiagramX": 110,
-										"DiagramY": 130,
+										"DiagramX": 105,
+										"DiagramY": 220,
 										"HideInfo": "y",
 										"DiagramNotes": "y",
 										"HtmlNotes": "y",
@@ -1753,6 +1753,36 @@
 										"Type": "Expression",
 										"Formula": {
 											"Formula": "{fmt \"12.6e\", 12345678.1234}"
+										},
+										"showInput": "y"
+									},
+									{
+										"name": "DateFormat",
+										"Notes": "For the date units (date, dated, datem), you can use a <b>/</b> or <b>-</b> and that character will be used to separate the month, day and year. \n\nIf the dated or datem units are being used, prefix the whole format with a <b>d</b> or <b>m</b> so it is the last four digits that are grouped as the year.",
+										"DiagramX": 15,
+										"DiagramY": 245,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{fmt \".4/\", {now} + {timezone}, \"date\"}"
+										},
+										"showInput": "y"
+									},
+									{
+										"name": "RadixFormat",
+										"Notes": "You can even show numbers with an arbitrary base between 2 and 36. For instance a value could be represented in hex with\t<b>%14.16x</b>.\n\nIn this case the precision value is used as the radix value.",
+										"DiagramX": 105,
+										"DiagramY": 15,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{fmt \"14.16x\", 1234}"
 										},
 										"showInput": "y"
 									}

@@ -148,8 +148,10 @@ export function MMFormatValue(v, format) {
 			let leadingPadChar = ' ';
 			const parts = format.split('.');	// split on decimal point, if there is one
 			let width = 14;
+			let prefix = '';  // character before wisth for date format
 			format = parts[parts.length - 1];
 			if (parts.length && parts[0].length) {
+				prefix = parts[0].substring(0,1);
 				const widthField = parts[0].replace(/[^\d]+/,'');
 				if (widthField.length) {
 					width = parseInt(widthField);
@@ -159,8 +161,10 @@ export function MMFormatValue(v, format) {
 				}
 			}
 			let precision = parseInt(format);
+			let precisionDefined = true;
 			if (isNaN(precision) || precision < 0 || precision > 36) {
 				precision = 8;
+				precisionDefined = false;
 			}
 			let s = ''
 			const type = format.slice(-1)  // last character should be format type
@@ -179,6 +183,20 @@ export function MMFormatValue(v, format) {
 				case 'r':
 				case 'x':
 					s = `${precision}r` + v.toString(precision);
+					break;
+				case '/':
+				case '-':
+					// Create a Date object
+					const sParts = v.toFixed(6).padStart(15,'0').split('.');
+					const sTime = sParts[1] // skip time colons so string fits in table box
+					const regex = prefix === 'd' || prefix === 'm' ?
+						/(\d\d)(\d\d)(\d\d\d\d)/ :
+						/(\d\d\d\d)(\d\d)(\d\d)/;
+					const sDate = sParts[0].replace(regex, `$1${type}$2${type}$3`);
+					if (!precisionDefined) {
+						precision = 0;
+					}
+					s = sDate + ' ' + sTime.substring(0, precision);
 					break;
 			}
 			if (width > s.length) {
