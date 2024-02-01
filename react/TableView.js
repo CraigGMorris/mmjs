@@ -61,11 +61,12 @@ export function TableView(props) {
 	const value = props.value;
 	let scalarString;
 	let maxStringLength = 14;
+	document.documentElement.style.setProperty('--tableview-height', `${props.viewBox[3]}px`);
 	if (value.t === 's' || value.t === 'j') {
 		if (value.nc === 1) {
 			if (value.nr === 1 && value.v[0].length <= 1000000) {
 				// display entire string
-				scalarString = e(
+					scalarString = e(
 					'div', {
 						id: 'tableview__scalar-string',
 						key: 'stringValue',

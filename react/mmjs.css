@@ -1748,7 +1748,8 @@ a:hover {
 }
 
 #tableview__string-text, #tableview__scalar-string {
-	height: calc(var(--preview-height) - 20px);
+	/* height: calc(var(--preview-height) - 20px); */
+	height: var(--tableview-height);
 	width: 100%;
 }
 
