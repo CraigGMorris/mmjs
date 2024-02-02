@@ -3056,7 +3056,7 @@
 				]
 			},
 			{
-				"name": "Jan_26_2024",
+				"name": "Feb_02_2024",
 				"Notes": "",
 				"DiagramX": 80,
 				"DiagramY": -215,
@@ -3069,11 +3069,11 @@
 				"Objects": [
 					{
 						"name": "DateFormat",
-						"Notes": "Format descriptors are now available for the <b>date</b>, <b>datem</b> and <b>dated</b> unit types of time.\n\nThese are <b>/</b> and <b>-</b> and result in the years, months and days being separated by that character.\n\nIt can be used without and width or precision values, in which case just the date is displayed (i.e. the precision is 0)\n\nHere hte format is just <b>/</b>\n(Tap to view the actual expression)",
+						"Notes": "Format descriptors are now available for the <b>date</b>, <b>datem</b> and <b>dated</b> unit types of time.\n\nThese are <b>/</b> and <b>-</b> and result in the years, months and days being separated by that character.\n\nIt can be used without any width or precision values, in which case just the date is displayed (i.e., the precision is 0.\n\nHere the format is just <b>/</b>\n(Tap to view the actual expression)",
 						"DiagramX": 10,
 						"DiagramY": 10,
 						"HideInfo": "y",
-						"DiagramNotes": "y",
+						"DiagramNotes": "n",
 						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
@@ -3088,7 +3088,7 @@
 						"name": "DateFormat2",
 						"Notes": "Same thing with a minus separator.",
 						"DiagramX": 10,
-						"DiagramY": 120,
+						"DiagramY": 40,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -3103,9 +3103,9 @@
 					},
 					{
 						"name": "DateD",
-						"Notes": "If the unit is <b>dated</b> or <b>datem</b> then the entire format should be preceded by a <b>d</b> or <b>m</b> so the last four digits are grouped as the year.\n\nHere the format is <b>d-</b>.",
+						"Notes": "If the unit is <b>dated</b> or <b>datem</b>, then the entire format should be preceded by a <b>d</b> or <b>m</b>. This ensures that it is the last four digits that are grouped as the year.\n\nHere the format is <b>d-</b>.",
 						"DiagramX": 10,
-						"DiagramY": 155,
+						"DiagramY": 80,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -3120,9 +3120,9 @@
 					},
 					{
 						"name": "WithTime",
-						"Notes": "If a precision value is used, then the time portion is added. On the diagram and in model views, colons are appended between the hours, minutes and seconds, but they don't appear in tool table cells to conserve space.\n\nHere the format is <b>d.4-</b>.",
-						"DiagramX": 85,
-						"DiagramY": 10,
+						"Notes": "If a precision value is used, then the time portion is added. On the diagram and in model views, colons are appended between the hours, minutes and seconds, but to conserve space they don't appear in tool table cells.\n\nHere the format is <b>d.4-</b>.",
+						"DiagramX": 10,
+						"DiagramY": 150,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -3139,7 +3139,7 @@
 						"name": "Width",
 						"Notes": "Width can be used, but is rarely needed.\n\nHere the format is <b>12.2/</b>",
 						"DiagramX": 85,
-						"DiagramY": 100,
+						"DiagramY": 10,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -3156,7 +3156,7 @@
 						"name": "FmtFunc",
 						"Notes": "These formats can also be used with the <b>fmt</b> function.",
 						"DiagramX": 85,
-						"DiagramY": 150,
+						"DiagramY": 60,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -3168,6 +3168,36 @@
 						"showInput": "y",
 						"displayUnit": "date",
 						"format": "12.2/"
+					},
+					{
+						"name": "BugFix",
+						"Notes": "Fixed a problem where the display box wouldn't fill the available height in expression scalar string displays.",
+						"DiagramX": 85,
+						"DiagramY": 100,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "'A multiline string\n2\n3\n4\n5\nYou get the idea"
+						},
+						"displayUnit": "date",
+						"format": "12.2/"
+					},
+					{
+						"name": "Some_Tips",
+						"Notes": "",
+						"DiagramX": 85,
+						"DiagramY": 160,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<h3>Safari and Storage</h3>\n<p>\n\t Apple's Safari browser, in its effort to limit web page user tracking, clears data stored in the browser's indexedDB if a website is not revisited for 7 days. This poses a significant issue for Math Minion users, as it relies on this storage for session data. Without exporting your sessions to a file, this can lead to data loss.\n</p>\n<p>\n\tOther desktop browsers like Chrome, Firefox, and MS Edge do not exhibit this behavior, making them viable alternatives on desktop platforms. However, iOS and iPadOS users face a challenge as all browsers on these platforms are required to use the Apple Webkit engine.\n</p>\n<p>\n\tA potential solution is converting Math Minion into a web app. On iPhone or iPad, do this by tapping the share icon and selecting <b>Add to Home Screen</b>. This action places a Math Minion icon on your home screen, functioning similarly to a standalone app while preventing the 7-day data clearance.\n</p>\n<p>\n\t For MacOS Sonoma users, you can apply a similar trick in Safari. Select <b>Add to Dock</b> from the File menu while viewing Math Minion. This also seems to preserve the database effectively.\n</p>\n<p>\n\tYou should still make it a practice to save your sessions to a file frequently. I use the <b>Export All</b> button on the sessions view in Math Minion, to save a copy of all of my sessions every day.  It only takes a few seconds.\n</p>\n<p>\n\tWhich brings me to my second topic today:\n</p>\n<h3>Transferring Sessions Using ExportAll</h3>\n<p>\n\tIt is quite easy to move all your session to a different browser or device using the <b>Export All</b> button on the sessions view. Tapping this will bring up a dialog, which will let you save a file containing all your sessions to a file on your device.\n</p>\n<p>\n\tUsing the <b>Import</b> button on the sessions view in another browser will import the entire saved sessions structure into a folder called <b>root</b> in the new browser. If you then rename this folder to just <b>/</b>, all the sessions and folders in root will be moved to the top level and any previous top level sessions and folders will be moved into a folder called <b>copy-2</b>, which can be deleted if not needed.\n</p>\n<p>\n\t<i>(To rename sessions or folders, tap on the gear icon on the right of their name in the sessions menu).</i>\n</p>\n<p>\n\tYou can even import a backup copy of an export all into the original browser and then examine and retrieve any sessions that you might want to recover from the root folder and then delete to root folder instead. I have often used this when I have accidentally deleted a session or mangled some calculation in it.\n</p>\n<p>\t\n\tStoring the export file in cloud storage, like <b>iCloud Drive</b>, <b>OneDrive</b>, <b>Google Drive</b>, facilitates importing it on a different device. I generally use Math Minion on my Mac, but occasionally have need for it on my iPhone or iPad and this is a quick way to get a current copy of everything onto them.\n</p>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>"
+						}
 					}
 				]
 			}
