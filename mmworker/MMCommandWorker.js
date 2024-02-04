@@ -54,9 +54,7 @@ importScripts(
   "MMGraph.js",
   "MMHtmlPage.js",
   "MMButton.js",
-  "MMMenu.js",
-  // "pouchdb.min.js"
-  "pouchdb.js"
+  "MMMenu.js"
 );
 
 class MMCommandWorker {

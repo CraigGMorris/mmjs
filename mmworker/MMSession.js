@@ -34,7 +34,6 @@
 	MMHtmlPage:readonly
 	MMButton:readonly
 	MMMenu:readonly
-	PouchDB:readonly
 */
 
 /** @class MMPoint
@@ -197,96 +196,6 @@ class MMIndexedDBStorage  {
 				reject(event.target.errorCode);
 			}
 		});
-	}
-}
-
-/**
- * @class MMPouchDBStorage - persistent storage for session using pouchdb
- */
-class MMPouchDBStorage {
-	/**
-	 * @method save
-	 * @param {String} path - persistent storage path
-	 * @param {String} json - json representation of session
-	*/
-	constructor() {
-		this.db = new PouchDB('MMSessions', {auto_compaction: true});
-		this.revs = {};
-	}
-
-	async save(path, json) {
-		const record = {
-			_id: path,
-			_rev: this.revs[path],
-			json: json
-		}
-		// console.log(`saving ${path} rev ${record._rev}`);
-		const result = await this.db.put(record);
-		// console.log(`saved ${path} rev ${result.rev}`);
-		this.revs[path] = result.rev;
-		return result.json;	
-	}
-
-	/**
-	 * @method load
-	 * @param {String} path - persistent storage path
-	 */
-	async load(path) {
-		try {
-			const result = await this.db.get(path);
-			this.revs[path] = result._rev;
-			return result.json;
-		}
-		catch(e) {
-			console.log(e.message);
-			return;
-		}
-	}
-
-	/**
-	 * @emethod copy
-	 * @param {String} oldPath
-	 * @param {String} newPath
-	 */
-	async copy(oldPath, newPath) {
-		let session = await this.load(oldPath);
-		if (session) {
-			await this.save(newPath, session);
-			return newPath;
-		}
-	}
-	
-	/**
-	 * @method delete
-	 * @param {String} path - persistent storage path to delete
-	*/
-	async delete(path) {
-		const doc = await this.db.get(path, {conflicts: true});
-		if (doc._conflicts) {
-			for (let conflictRev of doc._conflicts) {
-				await this.db.remove(doc._id, conflictRev);
-			}
-		}
-		await this.db.remove(doc._id, doc._rev);
-		delete this.revs[path];
-	}
-
-	/**
-	 * @method listSessions
-	 */
-	async listSessions() {
-		const result = await this.db.allDocs();
-		if (result) {
-			const docIds = [];
-			for (const row of result.rows) {
-				docIds.push(row.id);
-				this.revs[row.id] = row.value.rev;
-			}
-			// const docIds = result.rows.map(row => row.id);
-			return docIds;
-		}
-
-		return [];
 	}
 }
 
@@ -584,16 +493,6 @@ class MMSession extends MMCommandParent {
 		}
 	}
 
-	async importOldStorage() {
-		const pouchDB = new MMPouchDBStorage()
-		const paths = await pouchDB.listSessions();
-		for (const path of paths) {
-			console.log(`importing ${path}`);
-			const session = await pouchDB.load(path);
-			await this.storage.save(path, session);
-		}
-	}
-
 	/** @method loadAutoSaved
 	 * load the autosaved session from persistent storage
 	 */
@@ -601,7 +500,7 @@ class MMSession extends MMCommandParent {
 		const storageVersion = await this.storage.load(this.savedStorageVersionId);
 		// console.log(`storage version ${storageVersion}`);
 		if (!storageVersion) {
-			await this.importOldStorage();
+			// await this.importOldStorage();
 			await this.storage.save(this.savedStorageVersionId, '1');
 		}
 		// this.remoteCouch = await indexedDB.load('(remoteCouch)');
