@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2024.02.03";
+const VERSION = "2024.02.04.1";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
@@ -15,6 +15,7 @@ const APP_STATIC_RESOURCES = [
 	"run.html",
 	"macapp.html",
 	"LICENSE.txt",
+	"apple-touch-icon.png",
 	"examples/Financial.txt",
 	"examples/Foot_Inch_Calculator.txt",
 	"examples/FormatTime.txt",
