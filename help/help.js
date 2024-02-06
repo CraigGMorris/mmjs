@@ -57,6 +57,7 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink"><a href="tutorial.html">Introductory Tutorial</a></div>
 	<div class="contentlink"><a href="videos.html">Videos</a></div>
 	<div class="contentlink"><a href="examples.html">Examples</a></div>
+	<div class="contentlink"><a href="pwa.html">Installing as App</a></div>
 	<div class="contentlink"><a href="http://www.redtree.com/contact.html">Contact Me</a></div>
 	<div class="contentlink"><a href="freeprivate.html">License</a></div>
 	<div>&nbsp;</div>

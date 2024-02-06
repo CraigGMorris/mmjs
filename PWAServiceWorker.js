@@ -100,6 +100,7 @@ const APP_STATIC_RESOURCES = [
 	"help/optimizer.html",
 	"help/optimizer.png",
 	"help/plot2d.png",
+	"help/pwa.html",
 	"help/sessionmenu.png",
 	"help/sessions.html",
 	"help/sessions.png",
