@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2024.02.04.1";
+const VERSION = "2024.02.09";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
@@ -247,9 +247,9 @@ self.addEventListener("activate", (event) => {
 // On fetch, intercept server requests
 // and respond with cached responses instead of going to network
 self.addEventListener("fetch", (event) => {
-		// Check if the request is for a video file in the /video directory
-		if (event.request.url.includes('/video/')) {
-			// Use network only strategy for videos to avoid caching
+		// Check if the request is for a directory we don't want to cache
+		if (event.request.url.includes('/video/') || event.request.url.includes('/downloads/')) {
+			// Use network only strategy for these directories
 			event.respondWith(fetch(event.request));
 			return;
 	}
