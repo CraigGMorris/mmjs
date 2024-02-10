@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2024.02.10";
+const VERSION = "2024.02.10.1";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
@@ -222,19 +222,24 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
-      cache.addAll(APP_STATIC_RESOURCES);
+      await cache.addAll(APP_STATIC_RESOURCES);
+			// console.log('addAll finished');
     })()
   );
 });
 
 // delete old caches on activate
 self.addEventListener("activate", (event) => {
+	// console.log('in activate');
   event.waitUntil(
     (async () => {
+			// console.log('in waitUntil');
       const names = await caches.keys();
       await Promise.all(
         names.map((name) => {
+					// console.log(`activate map ${name}`)
           if (name !== CACHE_NAME) {
+						// console.log(`deleting ${name}`);
             return caches.delete(name);
           }
         })
@@ -247,11 +252,12 @@ self.addEventListener("activate", (event) => {
 // On fetch, intercept server requests
 // and respond with cached responses instead of going to network
 self.addEventListener("fetch", (event) => {
-		// Check if the request is for a directory we don't want to cache
-		if (event.request.url.includes('/video/') || event.request.url.includes('/downloads/')) {
-			// Use network only strategy for these directories
-			event.respondWith(fetch(event.request));
-			return;
+	// console.log('in fetch');
+	// Check if the request is for a directory we don't want to cache
+	if (event.request.url.includes('/video/') || event.request.url.includes('/downloads/')) {
+		// Use network only strategy for these directories
+		event.respondWith(fetch(event.request));
+		return;
 	}
 
   // For all other requests, go to the cache first, and then the network.
@@ -261,10 +267,24 @@ self.addEventListener("fetch", (event) => {
       const cachedResponse = await cache.match(event.request);
       if (cachedResponse) {
         // Return the cached response if it's available.
+				// console.log(`found cached ${event.request.url}`);
         return cachedResponse;
       }
+			try {
+				console.log(`trying network for ${event.request.url}`);
+				const networkResponse = await fetch(event.request);
+				if (networkResponse.ok) {
+					console.log(`network got ${event.request.url}`);
+					cache.put(request, networkResponse.clone());
+				}
+				return networkResponse;
+			} catch (error) {
+				console.log(`could not get ${event.request.url}`);
+	      return new Response(null, { status: 404 });
+				// return Response.error();
+			}
       // If resource isn't in the cache, return a 404.
-      return new Response(null, { status: 404 });
+      // return new Response(null, { status: 404 });
     })()
   );
 });
