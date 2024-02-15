@@ -271,10 +271,10 @@ self.addEventListener("fetch", (event) => {
         return cachedResponse;
       }
 			try {
-				console.log(`trying network for ${event.request.url}`);
+				// console.log(`trying network for ${event.request.url}`);
 				const networkResponse = await fetch(event.request);
 				if (networkResponse.ok) {
-					console.log(`network got ${event.request.url}`);
+					// console.log(`network got ${event.request.url}`);
 					cache.put(request, networkResponse.clone());
 				}
 				return networkResponse;
