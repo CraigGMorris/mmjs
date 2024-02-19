@@ -591,10 +591,12 @@ class MMSession extends MMCommandParent {
 	async deleteAllSessions() {
 		const sessionPaths = await this.storage.listSessions();
 		for (const existingPath of sessionPaths) {
-			await this.storage.delete(existingPath);
-			if (this.storePath === existingPath) {
-				this.storePath = '(unnamed)';
-				await this.saveLastSessionPath()
+			if (!existingPath.startsWith('(')) {
+				await this.storage.delete(existingPath);
+				if (this.storePath === existingPath) {
+					this.storePath = '(unnamed)';
+					await this.saveLastSessionPath()
+				}
 			}
 		}
 	}
@@ -668,7 +670,7 @@ class MMSession extends MMCommandParent {
 					let newSessionPath = newPath + existingPath.substring(oldPath.length);
 					let n = 2;
 					while (setOfPaths.has(newSessionPath)) {
-						newSessionPath = newPath + `copy-${n++}/` +existingPath.substring(oldPath.length);
+						newSessionPath = newPath + `All_Replaced-${n++}/` +existingPath.substring(oldPath.length);
 					}
 					try {
 						await this.storage.copy(existingPath, newSessionPath);
@@ -1003,19 +1005,35 @@ class MMSession extends MMCommandParent {
 		if (json.startsWith('{"folderName":')) {
 			// importing a folder archive
 			const archive = JSON.parse(json);
+			const folderName = archive.folderName;
 			const sessions = archive.sessions;
 
-			let n = 2;
-			let newFolderPath = rootPath + archive.folderName;
-			while (pathAlreadyUsed(newFolderPath)) {
-				newFolderPath =  archive.folderName + `-${n++}`;
+			let newFolderPath = "";
+			let newFolderName = folderName;
+			if (folderName === 'root/') {
+				newFolderName = 'All Imported/';
+			}
+			else if (rootPath === '') {
+				// if importing into root and folder isn't root
+				// then set the path to folderName in case there aren't any other sessions
+				newFolderPath = folderName;
+			}
+			for (const path of existingPaths) {
+				// see if there are any real sessions
+				if (!path.startsWith('(')) {
+					let n = 2;
+					newFolderPath = rootPath + newFolderName;
+					while (pathAlreadyUsed(newFolderPath)) {
+						newFolderPath =  newfolderName + `-${n++}`;
+					}
+					break;
+				}
 			}
 
 			for (const path of Object.keys(sessions)) {
 				const fullPath = newFolderPath + path;
 				await this.storage.save(fullPath, sessions[path]);
 			}
-
 		}
 		else {
 			// assume session import
