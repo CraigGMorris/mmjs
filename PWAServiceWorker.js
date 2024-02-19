@@ -273,18 +273,15 @@ self.addEventListener("fetch", (event) => {
 			try {
 				// console.log(`trying network for ${event.request.url}`);
 				const networkResponse = await fetch(event.request);
-				if (networkResponse.ok) {
+				if (networkResponse.ok && !event.request.url.includes('?')) {
 					// console.log(`network got ${event.request.url}`);
-					cache.put(request, networkResponse.clone());
+					cache.put(event.request, networkResponse.clone());
 				}
 				return networkResponse;
 			} catch (error) {
 				console.log(`could not get ${event.request.url}`);
 	      return new Response(null, { status: 404 });
-				// return Response.error();
 			}
-      // If resource isn't in the cache, return a 404.
-      // return new Response(null, { status: 404 });
     })()
   );
 });
