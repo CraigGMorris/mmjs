@@ -173,6 +173,20 @@ class MMIndexedDBStorage  {
 	}
 
 	/**
+	 * @emethod areTheSame
+	 * @param {String} firstPath
+	 * @param {String} secondPath
+	 */
+	async areTheSame(firstPath, secondPath) {
+		const first = await this.load(firstPath);
+		if (!first) {
+			return false;
+		}
+		const second = await this.load(secondPath);
+		return (first == second);
+	}
+
+	/**
 	 * @method listSessions
 	 */
 	async listSessions() {
@@ -666,14 +680,22 @@ class MMSession extends MMCommandParent {
 			const sessionPaths = await this.storage.listSessions();
 			const setOfPaths = new Set(sessionPaths);
 			for (const existingPath of sessionPaths) {
+				let theSame = false;
 				if (existingPath.startsWith(oldPath)) {
 					let newSessionPath = newPath + existingPath.substring(oldPath.length);
 					let n = 2;
-					while (setOfPaths.has(newSessionPath)) {
-						newSessionPath = newPath + `All_Replaced-${n++}/` +existingPath.substring(oldPath.length);
+					if (setOfPaths.has(newSessionPath)) {
+						theSame = await this.storage.areTheSame(newSessionPath, existingPath);
+						if (!theSame) {
+							do {
+								newSessionPath = newPath + `All_Replaced-${n++}/` +existingPath.substring(oldPath.length);
+							} while (setOfPaths.has(newSessionPath))
+						}
 					}
 					try {
-						await this.storage.copy(existingPath, newSessionPath);
+						if (!theSame) {
+							await this.storage.copy(existingPath, newSessionPath);
+						}
 						await this.storage.delete(existingPath);
 					}
 					catch(e) {
