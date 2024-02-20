@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "MM_News",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "root",
+	"SelectedObject": "",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -3213,6 +3213,20 @@
 				"Type": "HTML Form",
 				"Formula": {
 					"Formula": "'\n<h3>Feb 12, 2024 - Progressive Web App</h3>\n<p>\n\tRecently I uploaded a progressive web app (PWA) version of Math Minion. This conveys almost no visible sign of change to using the program, but does bring a number of hidden advantages:\n</p>\n<ul>\n\t<li>\n\t\tA PWA can be installed to operate as a standalone app. It still runs in\n\t\tthe browser, but in a clean window of its own and with an application icon\n\t\tthat you can use to launch it, just like a regular app.\n\t</li>\n\t<li>\n\t\tAll of its source is cached on your device, which means it loads\n\t\tquickly and can be used offline.\n\t</li>\n\t<li>\n\t\tIf the server source code is updated, the cached code will automatically\n\t\tbe updated when the app is run and the device is online.\n\t</li>\n</ul>\n<h3>Installing as an App</h3>\n<p>\n\tWhile most of the benefits of being a PWA are realized even if you\n\tdon't install it as an app, you may appreciate the cleaner interface\n\tand ability to launch from an icon. How you install will depend on\n\tthe browser and device you use, but here are some that I have tried.\n</p>\n<p><b>Desktop Chromium Browsers</b><br>\n\tThese browsers, including Google Chrome, MS Edge, Brave and others,\n\thave a small icon at the right of the address bar when a web app\n\tcan be installed. Hover over it and a tooltip saying something like\n\t\"App available. Install Math Minion\". Just click on it and follow the\n\tinstructions.\n</p>\n<p><b>Safari on a Mac</b><br>\n\tWhile running Math Minion in the browser, click on the share icon\n\ton the top bar and select <b>Add to Dock</b>.\n\tThis will place a Math Minion icon on the dock and clicking on it will\n\tlaunch a standalone version of Math Minion. As far as I know, there is\n\tno way to have this icon anywhere else.\n</p>\n<p><b>iOS and iPadOS Devices</b><br>\n\tWhile running Math Minion in a browser, tap on the share icon and\n\tscroll down and select <b>Add to Home Screen</b>. This will place\n\ta Math Minion icon on the home screen. It can be moved or put in\n\ta folder like any other app icon.\n</p>\n<p><b>Android</b><br>\n\tI don't have an Android device to try this on, but from what I have read,\n\tdepending on browser and device, a button saying something like\n\t<b>Install</b> or <b>Add to Home Screen</b> will appear.\n</p>\n<p><b>Firefox</b><br>\n\tFirefox does not support installing web apps on desktop computers. It\n\treportedly does on iOS and Android, but I haven't tested it.\n</p>\n<h3>Help in Standalone App</h3>\n<p>\n\tNote that when you tap on one of Math Minion's help\n\tbuttons in the standalone app, the help opens in \n\ta new tab or window in the browser, rather than in a new app window.\n</p>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>"
+				}
+			},
+			{
+				"name": "Feb_20_2024",
+				"Notes": "",
+				"DiagramX": 80,
+				"DiagramY": -265,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "HTML Form",
+				"Formula": {
+					"Formula": "'\n<h3>Feb 20, 2024 - Import and Rename Changes</h3>\n<p>\n\tNow if you import a file created with the <b>Export All</b> button and there are no currently stored sessions, the sessions and folders will be placed directly in the top level of the sessions window, rather than in a <b>root/</b> folder like before.  This just saves renaming <b>root/</b> to just <b>/</b>, but it saves that bit of time.\n</p>\n<p>\n\tHow do you get rid of all your existing sessions without deleting one by one? If you go to the <b>Console</b> tab in the information view and enter the command:\n</p>\n<p class=\"formula\">\n\t/ deleteallsessions\n</p>\n<p>\n\tEverything will disappear immediately, so BE CAREFUL. You will almost always want to do an Export All before using this.  I considered making some button to do this, but it seemed too dangerous, even with a confirmation box.\n</p>\n<p>\n\tIf you import an exported all file and sessions already exist, the imported sessions and folders will be placed in a folder like before, but the name is now <b>All Imported/</b> rather than the previous <b>root/</b>.\n</p>\n<p>\n\tIf you rename a folder to <b>/</b>, only sessions that are missing or different from those in the target folder are now actually copied and for differences, the originals will now appear in a <b>All_Replaced</b> folder, rather than <b>copy</b>.\n</p>\n<h3>Bug Fix</h3>\n<p>\n\tThe progressive web app changes introduced a bug whereby a URL with parameters, such as\n</p>\n<p class=\"formula\">\n\thttps://mathminion.org/run.html?cmd=someCommand\n</p>\n<p>\n\twas failing. This probably isn't used very often, but I have used it in some of the documentation. In any event it is now fixed.\n</p>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>"
 				}
 			}
 		]
