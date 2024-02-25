@@ -209,12 +209,6 @@ const APP_STATIC_RESOURCES = [
 	"react/ToolView.js",
 	"react/UnitsView.js",
 	"react/mmjs.css",
-	"screenshots/orbits.png",
-	"screenshots/predator.png",
-	"screenshots/pv.png",
-	"screenshots/strings.png",
-	"screenshots/surfaceplot.png",
-	"screenshots/timesheet.png",
 ];
 
 // On install, cache the static resources
