@@ -263,9 +263,10 @@ export function MMApp(props) {
 	const [docHeight, setDocHeight] = useState(document.documentElement.clientHeight - 16);
 	const [docWidth, setDocWidth] = useState(document.documentElement.clientWidth - 16);
 	const twoPane = docWidth >= 640;
+	const defaultRightPaneWidth = Math.max(320, docWidth/2);
 	const [allow2Pane, setAllow2Pane] = useState(twoPane);
 	const [viewType, setViewType] = useState(twoPane ? ViewType.twoPanes : ViewType.info);
-	const [rightPaneWidth, setRightPaneWidth] = useState(320);
+	const [rightPaneWidth, setRightPaneWidth] = useState(defaultRightPaneWidth);
 	const [viewInfo, setViewInfo] = useState(initialInfo);
 	const [statusMessage, setStatusMessage] = useState('');
 
@@ -301,7 +302,7 @@ export function MMApp(props) {
 		return () => {
 			window.removeEventListener('resize', setSize);
 		}
-	}, [viewType, rightPaneWidth]);
+	}, [viewType]);
 
 	useEffect(() => {
 		if (!autoLoadComplete) {
