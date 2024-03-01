@@ -507,11 +507,11 @@ class Plot2D extends React.Component {
 		for (const x of info.xInfo) {
 			lineCount += x.yInfo.length;
 		}
-		const yTitleHeight = (lineCount - 1) * 20;
+		const yTitleHeight = Math.floor((lineCount - 1)/3) * 20;
 
 		this.height = 500.0 + yTitleHeight;
 		this.width = 500.0;
-		this.leftMargin = 80;
+		this.leftMargin = 90;
 		this.rightMargin = 10;
 		this.topMargin = 40;
 		this.bottomMargin = 60 + yTitleHeight;
@@ -914,7 +914,7 @@ class Plot2D extends React.Component {
 					fill: 'black',
 					textAnchor: 'middle',
 				},
-				axisX.title + (axisX.unit ? ` (${axisX.unit})` : '')
+				axisX.title + (axisX.unit && (axisX.unit !== 'Fraction') ? ` (${axisX.unit})` : '')
 			),
 			e(
 				'text', {
@@ -932,14 +932,16 @@ class Plot2D extends React.Component {
 
 		if (axisX.minLabel != null) {
 			const labelText = (labelValue) => {
-				if (labelValue != 0.0 && (Math.abs(labelValue) > 100000000.0 || Math.abs(labelValue) < 0.01)) {
+				if (labelValue != 0.0 && (Math.abs(labelValue) > 10000000.0 || Math.abs(labelValue) < 0.01)) {
 					return labelValue.toExponential(2);
 				}
-				else if (labelValue >= 1000000.0) {
+				else if (Math.abs(labelValue) >= 100000.0) {
+					// regex trims trailing zeros
 					return labelValue.toFixed(0).trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
 				}
 				else {
-					return labelValue.toFixed(3).trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
+					const decimals = 5 - Math.max(1, Math.floor(Math.log10(Math.abs(labelValue))))
+					return labelValue.toFixed(decimals).trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
 				}
 			}
 	
@@ -1012,21 +1014,10 @@ class Plot2D extends React.Component {
 				
 				const labelValue = (y.maxLabel + yLabelTranslate) - i * labelStep / yScale;
 				let yLabelText = labelText(labelValue);
-				if (i === 0) {
-					if (y.title ) {
-						yLabelText;// += ' '+ y.title;
-					}
-					// if (y.unit) {
-					// 	yLabelText += ` (${y.unit})`;
-					// }
-				}
 				let labelY = centerY - 5.0;
 				if (i === 0) {
 					labelY = topMargin + 20.0;
 				}
-				// else if (i === yLabelCount - 1) {
-				// 	labelY -= 20.0;
-				// }
 				yLabelElements.push(e(
 					'text', {
 						className: 'graph__svg-ylabel',
@@ -1150,8 +1141,7 @@ class Plot2D extends React.Component {
 							else {
 								fill = 'none';
 							}
-							// opacity = y === axisX.yInfo[yAxisIndex] ? 1 : .5;
-							opacity = 1.0;
+							opacity = y === axisX.yInfo[yAxisIndex] ? 1 : .5;
 							elements.push(e(
 								'path', {
 									className: lineClass,
@@ -1164,18 +1154,30 @@ class Plot2D extends React.Component {
 							))
 						}
 						let yTitle = y.title;
-						if (y.unit) {
+						if (y.unit && y.unit !== 'Fraction') {
 							yTitle += ` (${y.unit})`;
-						}					
+						}
+						let titleAnchor = 'start';
+						let titleX = 25;
+						let titleY = topMargin + plotHeight + Math.floor(yTitleNumber/3) * 20 + 50;
+						const column = yTitleNumber % 3;
+						if (column === 1) {
+							titleX = leftMargin + plotWidth/2;
+							titleAnchor = 'middle';
+						}	else if (column === 2) {
+							titleX = leftMargin + plotWidth;
+							titleAnchor = 'end';
+						}
+
 						elements.push(e(
 							'text', {
 								className: 'graph__ytitle',
 								key: `ytitle${yTitleNumber}`,
-								x: 25,
-								y: topMargin + plotHeight + yTitleNumber * 20 + 50,
+								x: titleX,
+								y: titleY,
 								stroke: lineColor,
 								fill: lineColor,
-								textAnchor: 'start',
+								textAnchor: titleAnchor,
 							}, yTitle)
 						);
 						yTitleNumber++;
