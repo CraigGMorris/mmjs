@@ -502,8 +502,22 @@ const convertDateValue = (seconds, unit) => {
 class Plot2D extends React.Component {
 	constructor(props) {
 		super(props);
-		this.height = 500.0;
+		let lineCount = 0;
+		const info = this.props.info;
+		for (const x of info.xInfo) {
+			lineCount += x.yInfo.length;
+		}
+		const yTitleHeight = (lineCount - 1) * 20;
+
+		this.height = 500.0 + yTitleHeight;
 		this.width = 500.0;
+		this.leftMargin = 80;
+		this.rightMargin = 10;
+		this.topMargin = 40;
+		this.bottomMargin = 60 + yTitleHeight;
+		this.plotWidth = this.width - this.leftMargin - this.rightMargin;
+		this.plotHeight = this.height - this.topMargin - this.bottomMargin;
+
 		this.panSum = 0;
 		this.eventCache = [];
 		this.pinch = 0;
@@ -635,16 +649,16 @@ class Plot2D extends React.Component {
 						const xSpan = (axisX.maxLabel - axisX.minLabel)
 						const ySpan = (axisY.maxLabel - axisY.minLabel)
 
-						const xLabelTranslate = -xSpan * (translate.x / this.width) / xScale;
-						const yLabelTranslate = ySpan * translate.y / height / yScale;
+						const xLabelTranslate = -xSpan * (translate.x / this.plotWidth) / xScale;
+						const yLabelTranslate = ySpan * translate.y / this.plotHeight / yScale;
 
-						let xValue = (axisX.minLabel + xLabelTranslate) + xSpan * svgPoint.x / width / xScale;
+						let xValue = (axisX.minLabel + xLabelTranslate) + xSpan * (svgPoint.x - this.leftMargin) / this.plotWidth / xScale;
 						const xIsDate = (axisX.unit === 'date' || axisX.unit === 'dated' || axisX.unit === 'datem');
 						if (xIsDate) {
 							xValue = convertDateValue(xValue, axisX.unit);
 						}
 
-						let yValue = (axisY.maxLabel + yLabelTranslate) - ySpan * svgPoint.y / height / yScale;
+						let yValue = (axisY.maxLabel + yLabelTranslate) - ySpan * (svgPoint.y - this.topMargin) / this.plotHeight / yScale;
 						const yIsDate = (axisY.unit === 'date' || axisY.unit === 'dated' || axisY.unit === 'datem');
 						if (yIsDate) {
 							yValue = convertDateValue(yValue, axisY.unit);
@@ -862,6 +876,13 @@ class Plot2D extends React.Component {
 	render() {
 		const height = this.height;
 		const width = this.width;
+		const leftMargin = this.leftMargin;
+		const rightMargin = this.rightMargin;
+		const topMargin = this.topMargin;
+		const bottomMargin = this.bottomMargin;
+		const plotWidth = this.plotWidth;
+		const plotHeight = this.plotHeight;
+
 		const viewBox = [0, 0, width, height];
 		const info = this.props.info;
 		const xAxisIndex = this.state.xAxisIndex;
@@ -887,11 +908,11 @@ class Plot2D extends React.Component {
 				'text', {
 					id: 'graph__x-title',
 					key: 'xTitle',
-					x: width - 10,
-					y: height - 25,
-					stroke: lineColor,
-					fill: lineColor,
-					textAnchor: 'end',
+					x: leftMargin + plotWidth/2,
+					y: plotHeight + topMargin + 30,
+					stroke: 'black',
+					fill: 'black',
+					textAnchor: 'middle',
 				},
 				axisX.title + (axisX.unit ? ` (${axisX.unit})` : '')
 			),
@@ -923,9 +944,9 @@ class Plot2D extends React.Component {
 			}
 	
 			const xLabelCount = 5;
-			let step = width / (xLabelCount - 1);
+			let step = plotWidth / (xLabelCount - 1);
 			let labelStep = (axisX.maxLabel - axisX.minLabel) / (xLabelCount - 1);
-			const xLabelTranslate = (axisX.minLabel - axisX.maxLabel) * (translate.x / width) / xScale;
+			const xLabelTranslate = (axisX.minLabel - axisX.maxLabel) * (translate.x / plotWidth) / xScale;
 			const xIsDate = (axisX.unit === 'date' || axisX.unit === 'dated' || axisX.unit === 'datem');
 
 			const gridFormat = (key, x1, x2, y1, y2) => {
@@ -944,14 +965,14 @@ class Plot2D extends React.Component {
 
 			const xLabelElements = [];
 			for (let i = 0; i < xLabelCount; i++) {
-				const centerX = i * step;
-				xLabelElements.push(gridFormat(`${axisX.name}_${i}`, centerX, centerX, height, 0.0));
+				const centerX = i * step + leftMargin;
+				xLabelElements.push(gridFormat(`${axisX.name}_${i}`, centerX, centerX, topMargin, topMargin + plotHeight));
 				
 				let anchor;
 				let labelX = centerX;
 				if (i === 0) {
 					anchor = 'start';
-					labelX = 5.0;
+					labelX = leftMargin;
 				}
 				else if (i === xLabelCount - 1) {
 					anchor = 'end';
@@ -968,7 +989,7 @@ class Plot2D extends React.Component {
 						className: 'graph__svg-xlabel',
 						key: i,
 						x: labelX,
-						y: height - 5,
+						y: height - this.bottomMargin + 15,
 						stroke: lineColor,
 						fill: lineColor,
 						textAnchor: anchor,
@@ -980,40 +1001,41 @@ class Plot2D extends React.Component {
 			let y = axisX.yInfo[yAxisIndex];
 			const yLabelCount = 5;
 			labelStep = (y.maxLabel - y.minLabel) / (yLabelCount - 1);
-			const yLabelTranslate = (y.maxLabel - y.minLabel) * (translate.y / height) / yScale;
+			const yLabelTranslate = (y.maxLabel - y.minLabel) * (translate.y / plotHeight) / yScale;
 
 			lineColor = lineColors[(yAxisIndex + colorStart) % nColors];
-			step = height / ( yLabelCount - 1);
+			step = plotHeight / ( yLabelCount - 1);
 			for (let i = 0; i < yLabelCount; i++) {
-				const centerY = i * step;
-				yLabelElements.push(gridFormat(`${y.name}_${i}`, 0.0, width, centerY, centerY));
+				const centerY = i * step + topMargin;
+				yLabelElements.push(gridFormat(`${y.name}_${i}`, leftMargin,
+					width - rightMargin, centerY, centerY));
 				
 				const labelValue = (y.maxLabel + yLabelTranslate) - i * labelStep / yScale;
 				let yLabelText = labelText(labelValue);
 				if (i === 0) {
 					if (y.title ) {
-						yLabelText += ' '+ y.title;
+						yLabelText;// += ' '+ y.title;
 					}
-					if (y.unit) {
-						yLabelText += ` (${y.unit})`;
-					}
+					// if (y.unit) {
+					// 	yLabelText += ` (${y.unit})`;
+					// }
 				}
 				let labelY = centerY - 5.0;
 				if (i === 0) {
-					labelY = 20.0;
+					labelY = topMargin + 20.0;
 				}
-				else if (i === yLabelCount - 1) {
-					labelY -= 20.0;
-				}
+				// else if (i === yLabelCount - 1) {
+				// 	labelY -= 20.0;
+				// }
 				yLabelElements.push(e(
 					'text', {
 						className: 'graph__svg-ylabel',
 						key: i,
-						x: 5,
+						x: leftMargin - 5,
 						y: labelY,
 						stroke: lineColor,
 						fill: lineColor,
-						textAnchor: 'start'
+						textAnchor: 'end'
 					}, yLabelText
 				));
 			}
@@ -1024,8 +1046,8 @@ class Plot2D extends React.Component {
 						className: 'graph__svg-xyCursor',
 						key: 'cursorX',
 						x: width - 200,
-						y: 25,
-							stroke: lineColor,
+						y: this.topMargin + 15,
+						stroke: lineColor,
 						fill: lineColor,
 						textAnchor: 'start',
 					}, labelText(this.state.cursorPosition.x))
@@ -1035,7 +1057,7 @@ class Plot2D extends React.Component {
 						className: 'graph__svg-xyCursor',
 						key: 'cursorY',
 						x: width - 100,
-						y: 25,
+						y: this.topMargin + 15,
 						stroke: lineColor,
 						fill: lineColor,
 						textAnchor: 'start',
@@ -1043,13 +1065,12 @@ class Plot2D extends React.Component {
 				)
 
 			}
-	
-	
 
 			// lines
 			const lines = [];
 			const xCount = info.xInfo.length;
 			let colorNumber = 0;
+			let yTitleNumber = 0;
 			for (let xNumber = 0; xNumber < xCount; xNumber++) {
 				const x = info.xInfo[xNumber];
 				const xValues = x.values;
@@ -1063,11 +1084,11 @@ class Plot2D extends React.Component {
 				const columnCount = x.columnCount || 1;
 				const rowCount = nPoints / columnCount;
 
-				const scaleForX = (minX === maxX) ? 0.1 : xScale * width / (maxX - minX);
+				const scaleForX = (minX === maxX) ? 0.1 : xScale * plotWidth / (maxX - minX);
 
 				for (let lineNumber = 0; lineNumber < nLines; lineNumber++) {
 					const y = x.yInfo[lineNumber];
-					
+
 					let yValues = y.values;
 					if (!yValues) {
 						continue;
@@ -1077,7 +1098,7 @@ class Plot2D extends React.Component {
 						const n = Math.min(nPoints, yValues.length);
 						const minY = y.minValue;
 						const maxY = y.maxValue;
-						const scaleForY = (minY == maxY) ? 0.1 : yScale * height / (maxY - minY);
+						const scaleForY = (minY == maxY) ? 0.1 : yScale * plotHeight / (maxY - minY);
 						
 						for (let col = 0; col < columnCount; col++) {
 							const lineClass = `graph__svg_line_${y.name}-${col}`;
@@ -1090,10 +1111,10 @@ class Plot2D extends React.Component {
 									const xPoint = xValues[pointCount];
 									const yPoint = yValues[pointCount];
 									
-									const scaledY = ((maxY - yPoint) * scaleForY + translate.y).toFixed(5);
+									const scaledY = (topMargin + (maxY - yPoint) * scaleForY + translate.y).toFixed(5);
 									const scaledY0 = (maxY * scaleForY).toFixed(5);
 
-									const scaledX = ((xPoint - minX) * scaleForX + translate.x).toFixed(5);
+									const scaledX = (leftMargin + (xPoint - minX) * scaleForX + translate.x).toFixed(5);
 
 									switch(lineType) {
 										case MMGraphLineType.bar:
@@ -1129,7 +1150,8 @@ class Plot2D extends React.Component {
 							else {
 								fill = 'none';
 							}
-							opacity = y === axisX.yInfo[yAxisIndex] ? 1 : .5;
+							// opacity = y === axisX.yInfo[yAxisIndex] ? 1 : .5;
+							opacity = 1.0;
 							elements.push(e(
 								'path', {
 									className: lineClass,
@@ -1141,6 +1163,22 @@ class Plot2D extends React.Component {
 								}
 							))
 						}
+						let yTitle = y.title;
+						if (y.unit) {
+							yTitle += ` (${y.unit})`;
+						}					
+						elements.push(e(
+							'text', {
+								className: 'graph__ytitle',
+								key: `ytitle${yTitleNumber}`,
+								x: 25,
+								y: topMargin + plotHeight + yTitleNumber * 20 + 50,
+								stroke: lineColor,
+								fill: lineColor,
+								textAnchor: 'start',
+							}, yTitle)
+						);
+						yTitleNumber++;
 					}
 				}
 			}

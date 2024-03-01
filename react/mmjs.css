@@ -920,7 +920,6 @@ a:hover {
 }
 
 #graph__plot-view {
-	background-color: white;
 	height: calc(var(--info-height) - 80px);
 }
 
