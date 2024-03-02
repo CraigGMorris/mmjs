@@ -10,7 +10,7 @@
 	],
 	"CaseName": "orbits",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
+	"SelectedObject": "plot3d",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -735,7 +735,7 @@
 				"HtmlNotes": "n",
 				"Type": "Graph",
 				"X1": {
-					"v": "Y_Coord",
+					"v": "X_Coord",
 					"vmin": "",
 					"vmax": "",
 					"Y1": {
@@ -797,7 +797,8 @@
 						"vmax": "{max X1Local, X2Local, Y1Local, Y2Local}",
 						"lineType": 0
 					}
-				}
+				},
+				"Selected": "0_0"
 			},
 			{
 				"name": "xyz",
