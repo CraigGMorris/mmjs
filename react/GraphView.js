@@ -892,7 +892,10 @@ class Plot2D extends React.Component {
 
 		let axisX = info.xInfo[xAxisIndex];
 
-		const lineColors =  ['Blue', '#009900', 'Brown', 'Orange', 'Purple', '#e60000', '#cccc00'];
+		const lineColors = [
+			'Blue', '#009900', 'Brown', '#E58231', 'Purple', '#e60000', '#7D8F9B',
+			'#9076C7', '#4994EC', '#684D43',
+		];
 		const nColors = lineColors.length;
 
 		let colorStart = 0;
@@ -1090,10 +1093,10 @@ class Plot2D extends React.Component {
 						const maxY = y.maxValue;
 						const scaleForY = (minY == maxY) ? 0.1 : yScale * plotHeight / (maxY - minY);
 						
+						lineColor = lineColors[colorNumber++ % nColors];
 						let opacity = !this.state.highlightTrace || y === axisX.yInfo[yAxisIndex] ? 1 : .5;
 						for (let col = 0; col < columnCount; col++) {
 							const lineClass = `graph__svg_line_${y.name}-${col}`;
-							lineColor = lineColors[colorNumber++ % nColors];
 							const path = [];
 
 							for (let row = 0; row < rowCount; row++) {
