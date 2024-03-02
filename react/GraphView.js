@@ -507,14 +507,15 @@ class Plot2D extends React.Component {
 		for (const x of info.xInfo) {
 			lineCount += x.yInfo.length;
 		}
-		const yTitleHeight = Math.floor((lineCount - 1)/3) * 20;
+		this.yLegendSpacing = 20;
+		this.yLegendHeight = Math.floor((lineCount - 1)/3) * this.yLegendSpacing;
 
-		this.height = 500.0 + yTitleHeight;
+		this.height = 500.0;// + this.yLegendHeight;
 		this.width = 500.0;
 		this.leftMargin = 90;
 		this.rightMargin = 10;
-		this.topMargin = 40;
-		this.bottomMargin = 60 + yTitleHeight;
+		this.topMargin = 40 + this.yLegendHeight;
+		this.bottomMargin = 60;
 		this.plotWidth = this.width - this.leftMargin - this.rightMargin;
 		this.plotHeight = this.height - this.topMargin - this.bottomMargin;
 
@@ -536,6 +537,7 @@ class Plot2D extends React.Component {
 		initialState.yScale = 1;
 		initialState.translate =  {x: 0, y: 0};
 		initialState.cursorPosition = null;
+		initialState.highlightTrace = false;
 		this.state = initialState;
 
 		this.onPointerDown = this.onPointerDown.bind(this);
@@ -625,18 +627,44 @@ class Plot2D extends React.Component {
 				}
 				else {
 					const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY});
-					if (svgPoint.y > this.height - 40) {
-						this.incrementXAxis();
-					}
-					else if (svgPoint.x < 40) {
-						this.incrementYAxis();
-					}
-					else if (svgPoint.y < 40 && svgPoint.x > this.width - 100) {
+					if (svgPoint.y > this.height - 40 && svgPoint.x > this.width - 50) {
 						e.target.releasePointerCapture(e.pointerId);
 						this.node.removeEventListener('pointermove', this.onPointerMove);
 						this.node.removeEventListener('pointerup', this.onPointerUp);	
 						this.props.setDisplay(DisplayType.input);
 						return;
+					}
+					else if (svgPoint.y < this.yLegendHeight + 2 * this.yLegendSpacing) {
+						const row = Math.floor(svgPoint.y / this.yLegendSpacing) + 1;
+						const col = Math.floor(svgPoint.x * 3 / this.width) + 1;
+						const traceNumber = (row - 1) * 3 + col;
+						let traceCount = 0;
+						const xInfo = this.props.info.xInfo;
+						const nX = xInfo.length;
+						for (let xNumber = 0; xNumber < nX; xNumber++) {
+							const x = xInfo[xNumber];
+							if (traceCount + x.yInfo.length >= traceNumber) {
+								const yNumber = traceNumber - traceCount - 1;
+								const y = x.yInfo[yNumber];
+								if (xNumber === this.state.xAxisIndex && yNumber === this.state.yAxisIndex) {
+									this.setState((state) => {
+										return {
+											highlightTrace: !state.highlightTrace
+										}
+									});			
+								} else {
+									this.setState((state) => {
+										const newState = this.checkAxis(xNumber, yNumber,
+												this.state.xAxisIndex, this.state.yAxisIndex
+											);
+										newState.highlightTrace = true;
+										return newState;
+									});
+								}
+								break;
+							}
+							traceCount += x.yInfo.length;
+						}
 					}
 					else {
 						const xScale = this.state.xScale;
@@ -844,35 +872,6 @@ class Plot2D extends React.Component {
 		}
 	}
 
-
-	/**
-	 * @method incrementXAxis
-	 */
-	incrementXAxis() {
-		this.setState((state) => {
-			const nXValues = this.props.info.xInfo.length;
-			const newIndex = (state.xAxisIndex + 1) % nXValues;
-			return this.checkAxis(newIndex, 0, state.xAxisIndex, state.yAxisIndex);
-		});
-	}
-
-	/**
-	 * @method incrementYAxis
-	 */
-	incrementYAxis() {
-		this.setState((state) => {
-			const x = this.props.info.xInfo[state.xAxisIndex];
-			const nYValues = x.yInfo.length;
-			let yAxisIndex = (state.yAxisIndex + 1) % nYValues;
-			while (yAxisIndex < nYValues - 1 && x.yInfo[yAxisIndex].lineType === MMGraphLineType.hidden) {
-				yAxisIndex++;
-			}
-			if (nYValues > 1) {
-				return this.checkAxis(state.xAxisIndex, yAxisIndex, state.xAxisIndex, state.yAxisIndex);
-			}
-		})
-	}
-
 	render() {
 		const height = this.height;
 		const width = this.width;
@@ -921,7 +920,7 @@ class Plot2D extends React.Component {
 					id: 'graph__edit-link',
 					key: 'edit',
 					x: width - 10,
-					y: 25,
+					y: height - 15,
 					stroke: 'blue',
 					fill: 'blue',
 					textAnchor: 'end',
@@ -1091,6 +1090,7 @@ class Plot2D extends React.Component {
 						const maxY = y.maxValue;
 						const scaleForY = (minY == maxY) ? 0.1 : yScale * plotHeight / (maxY - minY);
 						
+						let opacity = !this.state.highlightTrace || y === axisX.yInfo[yAxisIndex] ? 1 : .5;
 						for (let col = 0; col < columnCount; col++) {
 							const lineClass = `graph__svg_line_${y.name}-${col}`;
 							lineColor = lineColors[colorNumber++ % nColors];
@@ -1134,14 +1134,13 @@ class Plot2D extends React.Component {
 									}		
 								}
 							}															
-							let fill, opacity;
+							let fill;
 							if (lineType === MMGraphLineType.dot || lineType === MMGraphLineType.barWithDot) {
 								fill = lineColor;
 							}
 							else {
 								fill = 'none';
 							}
-							opacity = y === axisX.yInfo[yAxisIndex] ? 1 : .5;
 							elements.push(e(
 								'path', {
 									className: lineClass,
@@ -1159,7 +1158,7 @@ class Plot2D extends React.Component {
 						}
 						let titleAnchor = 'start';
 						let titleX = 25;
-						let titleY = topMargin + plotHeight + Math.floor(yTitleNumber/3) * 20 + 50;
+						let titleY = (Math.floor(yTitleNumber/3) + 1) * this.yLegendSpacing;
 						const column = yTitleNumber % 3;
 						if (column === 1) {
 							titleX = leftMargin + plotWidth/2;
@@ -1177,6 +1176,7 @@ class Plot2D extends React.Component {
 								y: titleY,
 								stroke: lineColor,
 								fill: lineColor,
+								opacity: opacity,
 								textAnchor: titleAnchor,
 							}, yTitle)
 						);
@@ -1330,15 +1330,15 @@ class Plot3D extends React.Component {
 				}
 				else {
 					const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY})
-					if (svgPoint.y > this.height - 40) {
-						this.incrementXAxis();
-					}
-					else if (!this.isRotating && svgPoint.y < 40 && svgPoint.x > 400) {
+					if (!this.isRotating && svgPoint.y > this.height - 40 && svgPoint.x > this.width - 50) {
 						e.target.releasePointerCapture(e.pointerId);
 						this.node.removeEventListener('pointermove', this.onPointerMove);
 						this.node.removeEventListener('pointerup', this.onPointerUp);	
 						this.props.setDisplay(DisplayType.input);
 						return;
+					}
+					else if (svgPoint.y > this.height - 40) {
+						this.incrementXAxis();
 					}
 				}
 			}
@@ -1544,7 +1544,7 @@ class Plot3D extends React.Component {
 					id: 'graph__edit-link',
 					key: 'edit',
 					x: width - 10,
-					y: 25,
+					y: height - 15,
 					stroke: 'blue',
 					fill: 'blue',
 					textAnchor: 'end',
