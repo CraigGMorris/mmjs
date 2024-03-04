@@ -1368,7 +1368,10 @@ class MMGraph extends MMTool {
 		const svgId = `svg_${this.name}`
 		lines.push(`<svg id="${svgId}" viewBox="0,0,${width},${height}">`);
 		
-		const lineColors =  ['Blue', '#009900', 'Brown', 'Orange', 'Purple', '#e60000', '#cccc00'];
+		const lineColors = [
+			'Blue', '#009900', 'Brown', '#E58231', 'Purple', '#e60000', '#7D8F9B',
+			'#9076C7', '#4994EC', '#684D43',
+		];
 		const nColors = lineColors.length;
 		let colorNumber = 0;
 
@@ -1765,6 +1768,20 @@ class MMGraph extends MMTool {
 		else { // 2d
 			// determine color to start with
 			let colorStart = 0;
+			const leftMargin = 90;
+			const rightMargin = 10;
+			let lineCount = 0;
+			for (const x of this.xValues) {
+				lineCount += x.numberOfYValues;
+			}
+			const yLegendSpacing = 20;
+			const yLegendHeight = Math.floor((lineCount - 1)/3) * yLegendSpacing;
+	
+			const topMargin = 40 + yLegendHeight;
+			const bottomMargin = 60;
+			const plotWidth = width - leftMargin - rightMargin;
+			const plotHeight = height - topMargin - bottomMargin;
+	
 			for (let i = 0; i < xAxisIndex; i++) {
 				const x = this.xValues[i];
 				colorStart += x.numberOfYValues;
@@ -1778,15 +1795,19 @@ class MMGraph extends MMTool {
 			let xValues = xValue.values;
 			let lineColor = lineColors[xAxisIndex % nColors];
 	
-			const xTitle = xValue.title;
-			lines.push(`<text class="svg_xlabel" x="${width}" y="${height - 25}" stroke="${lineColor}" text-anchor="end">${xTitle}</text>`);
+			const xTitle = xValue.title +
+				(xValue.displayUnit && (xValue.displayUnit.name !== 'Fraction')
+				? ` (${xValue.displayUnit.name})`
+				: '');
+			lines.push(`<text class="svg_xlabel" x="${leftMargin + plotWidth/2}" y="${plotHeight + topMargin + 30}" stroke="black" text-anchor="middle">${xTitle}</text>`);
 	
 			if (xValues instanceof MMNumberValue ) {			
 				const scale = 1.0;
 
 				const [minX, maxX, xLabels] = xValue.plotLabels(5);
 				const xLabelCount = xLabels.length;
-				let step = width / (xLabelCount - 1);
+				let step = plotWidth / (xLabelCount - 1);
+				let labelStep = (maxX - minX) / (xLabelCount - 1);
 
 				const gridFormat = (x1, x2, y1, y2) => {
 					return `<line class="svg_gridlines" x1="${x1}" x2="${x2}" y1="${y1}" y2="${y2}" stroke="black"/>`
@@ -1795,15 +1816,16 @@ class MMGraph extends MMTool {
 				lines.push('<g class="svg_gridx">"');
 
 				for (let i = 0; i < xLabelCount; i++) {
-					const centerX = i * step;
-					lines.push(gridFormat(centerX, centerX, height, 0.0));
+					const centerX = i * step + leftMargin;
+					lines.push(gridFormat(centerX, centerX, topMargin, topMargin + plotHeight));
 					
 					const labelText = xLabels[i];
 					let anchor;
 					let labelX = centerX;
+					const labelY = height - bottomMargin + 15;
 					if (i === 0) {
 						anchor = 'start';
-						labelX = 5.0;
+						labelX = leftMargin;
 					}
 					else if (i === xLabelCount - 1) {
 						anchor = 'end';
@@ -1811,7 +1833,7 @@ class MMGraph extends MMTool {
 					else {
 						anchor = 'middle';
 					}
-					lines.push(`<text  class="svg_xlabel" x="${labelX}" y="${height - 5.0}" stroke="${lineColor}" text-anchor="${anchor}">${labelText}</text>`);
+					lines.push(`<text  class="svg_xlabel" x="${labelX}" y="${labelY}" stroke="${lineColor}" text-anchor="${anchor}">${labelText}</text>`);
 				}
 				lines.push('</g>');
 				lines.push('<g class="svg_gridy">');
@@ -1821,24 +1843,18 @@ class MMGraph extends MMTool {
 				const yLabelCount = yLabels.length;
 				lineColor = lineColors[(yAxisIndex + colorStart) % nColors];
 
-				step = height / ( yLabelCount - 1);
+				step = plotHeight / ( yLabelCount - 1);
 				for (let i = 0; i < yLabelCount; i++) {
-					const centerY = i * step;
-					lines.push(gridFormat(0.0, width, centerY, centerY));
+					const centerY = i * step + topMargin;
+					lines.push(gridFormat(leftMargin, width - rightMargin, centerY, centerY));
 					
-					let yString = yLabels[yLabelCount - i - 1];
-					if (i == 0 && yValue.formula.formula ) {
-						yString += ' '+ yValue.title;
-					}
+					let yString = yLabels[yLabelCount - i - 1];					
 					let labelY = centerY - 5.0;
-					if (i == yLabelCount - 1) {
-						labelY -= 20.0;
+					if (i === 0) {
+						labelY = topMargin + 20.0;
 					}
-					else if (i == 0) {
-						labelY = 20.0;
-					}
-	
-					lines.push(`<text class="svg_ylabel" x="5.0" y="${labelY}" stroke="${lineColor}" text-anchor="start">${yString}</text>`);
+		
+					lines.push(`<text class="svg_ylabel" x="${leftMargin - 5}" y="${labelY}" stroke="${lineColor}" text-anchor="end">${yString}</text>`);
 				}
 				lines.push('</g>');
 				lines.push('</g>');
@@ -1846,17 +1862,19 @@ class MMGraph extends MMTool {
 				// lines
 				lines.push('<g class="svg_lines">');
 				const xCount = this.xValues.length;
+				let yTitleNumber = 0;
 				for (let xNumber = 0; xNumber < xCount; xNumber++) {
 					const xValue = this.xValues[xNumber];
 					const xValues = xValue.values;					
 					const nLines = xValue.numberOfYValues;
 					const nPoints = xValues.valueCount;
-					const scaleForX = (minX === maxX) ? 0.1 : scale * width / (maxX - minX);
+					const scaleForX = (minX === maxX) ? 0.1 : scale * plotWidth / (maxX - minX);
 
 					for (let lineNumber = 0; lineNumber < nLines; lineNumber++) {
 						const lineClass = `svg_line_${xNumber+1}_${lineNumber+1}`;
 						const yValue = xValue.yForIndex(lineNumber);
-						const opacity = (xNumber === xAxisIndex && lineNumber === yAxisIndex) ? 1 : 0.5;
+						const highlightTrace = false;  // for now turn this off - consider getting from interface
+						const opacity = !highlightTrace || (xNumber === xAxisIndex && lineNumber === yAxisIndex) ? 1 : 0.5;
 						
 						let yValues = null;
 						try {
@@ -1869,13 +1887,13 @@ class MMGraph extends MMTool {
 						if (yValues instanceof MMNumberValue) {
 							const n = Math.min(nPoints, yValues.valueCount);
 							const [minY, maxY] = yValue.plotLabels(5);
-							const scaleForY = (minY == maxY) ? 0.1 : scale * height / (maxY - minY);
+							const scaleForY = (minY == maxY) ? 0.1 : scale * plotHeight / (maxY - minY);
 
 							const rowCount = xValues.rowCount;
 							const columnCount = xValues.columnCount;
+							lineColor = lineColors[colorNumber++ % nColors];
 							
 							for (let col = 0; col < columnCount; col++) {
-								lineColor = lineColors[colorNumber++ % nColors];
 								const path = [];
 								if (lineType === MMGraphLineType.dot || lineType === MMGraphLineType.barWithDot) {
 									path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="${lineColor}" opacity=${opacity} d="`);
@@ -1890,10 +1908,11 @@ class MMGraph extends MMTool {
 										const x = xValues.values[pointCount];
 										const y = yValues.values[pointCount];
 										
-										const scaledY = (-(y - minY) * scaleForY + height).toFixed(5);
-										const scaledY0 = (minY * scaleForY + height).toFixed(5);
-										const scaledX = ((x - minX) * scaleForX).toFixed(5);
-
+										const scaledY = ((minY - y) * scaleForY + 
+											topMargin + plotHeight).toFixed(5);
+										const scaledY0 = (topMargin + maxY * scaleForY).toFixed(5);
+										const scaledX = (leftMargin + (x - minX) * scaleForX).toFixed(5);
+	
 										switch(lineType) {
 											case MMGraphLineType.bar:
 											case MMGraphLineType.barWithDot: 
@@ -1923,6 +1942,30 @@ class MMGraph extends MMTool {
 								}															
 								lines.push(path.join(' ') + '"/>');
 							}
+
+							let yTitle = yValue.title;
+							let displayUnit = yValue.displayUnit;
+							if (!displayUnit) {
+								displayUnit = yValue.values.defaultUnit;
+							}
+				
+				
+							if (displayUnit && displayUnit.name !== 'Fraction') {
+								yTitle += ` (${displayUnit.name})`;
+							}
+							let titleAnchor = 'start';
+							let titleX = 25;
+							let titleY = (Math.floor(yTitleNumber/3) + 1) * yLegendSpacing;
+							const column = yTitleNumber % 3;
+							if (column === 1) {
+								titleX = leftMargin + plotWidth/2;
+								titleAnchor = 'middle';
+							}	else if (column === 2) {
+								titleX = leftMargin + plotWidth;
+								titleAnchor = 'end';
+							}
+							lines.push(`<text class="svg_ylegend" x="${titleX}" y="${titleY}" stroke="${lineColor}" text-anchor="${titleAnchor}" opacity="opacity">${yTitle}</text>`);
+							yTitleNumber++;
 						}
 					}
 				}

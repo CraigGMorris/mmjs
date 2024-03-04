@@ -1106,8 +1106,7 @@ class Plot2D extends React.Component {
 									const yPoint = yValues[pointCount];
 									
 									const scaledY = (topMargin + (maxY - yPoint) * scaleForY + translate.y).toFixed(5);
-									const scaledY0 = (maxY * scaleForY).toFixed(5);
-
+									const scaledY0 = (topMargin + maxY * scaleForY).toFixed(5);
 									const scaledX = (leftMargin + (xPoint - minX) * scaleForX + translate.x).toFixed(5);
 
 									switch(lineType) {
