@@ -669,6 +669,9 @@ class MMGraph extends MMTool {
 		if (this.selectedCurve) {
 			o['Selected'] = this.selectedCurve;
 		}
+		if (this.highlightTrace) {
+			o['highlight'] = 'true';
+		}
 
 		return o;
 	}
@@ -688,6 +691,9 @@ class MMGraph extends MMTool {
 		}
 		if (saved.Selected) {
 			this.selectedCurve = saved.Selected;
+		}
+		if (saved.highlight === 'true') {
+			this.highlightTrace = true;
 		}
 	}
 
@@ -1873,8 +1879,7 @@ class MMGraph extends MMTool {
 					for (let lineNumber = 0; lineNumber < nLines; lineNumber++) {
 						const lineClass = `svg_line_${xNumber+1}_${lineNumber+1}`;
 						const yValue = xValue.yForIndex(lineNumber);
-						const highlightTrace = false;  // for now turn this off - consider getting from interface
-						const opacity = !highlightTrace || (xNumber === xAxisIndex && lineNumber === yAxisIndex) ? 1 : 0.5;
+						const opacity = !this.highlightTrace || (xNumber === xAxisIndex && lineNumber === yAxisIndex) ? 1 : 0.5;
 						
 						let yValues = null;
 						try {
@@ -1964,7 +1969,7 @@ class MMGraph extends MMTool {
 								titleX = leftMargin + plotWidth;
 								titleAnchor = 'end';
 							}
-							lines.push(`<text class="svg_ylegend" x="${titleX}" y="${titleY}" stroke="${lineColor}" text-anchor="${titleAnchor}" opacity="opacity">${yTitle}</text>`);
+							lines.push(`<text class="svg_ylegend" x="${titleX}" y="${titleY}" stroke="${lineColor}" text-anchor="${titleAnchor}" opacity="${opacity}">${yTitle}</text>`);
 							yTitleNumber++;
 						}
 					}
@@ -2038,8 +2043,12 @@ class MMGraph extends MMTool {
 	 * returns stringifiable object with info needed to plot
 	 */
 	plotInfo() {
+		const xInfo = this.xValues.map(x => x.plotInfo());
+		if (this.highlightTrace) {
+			xInfo.highlightTrace = this.highlightTrace;
+		}
 		return {
-			xInfo: this.xValues.map(x => x.plotInfo())
+			xInfo: xInfo
 		}
 	}
 
@@ -2054,6 +2063,7 @@ class MMGraph extends MMTool {
 		verbs['svg'] = this.svgCommand;
 		verbs['plotinfo'] = this.plotInfoCommand;
 		verbs['setselected'] = this.setSelectedCurve;
+		verbs['sethighlight'] = this.setHighlightTrace;
 		return verbs;
 	}
 
@@ -2254,10 +2264,18 @@ class MMGraph extends MMTool {
 	/**
 	 * @method setSelectedCurve
 	 * @param {MMCommand}} command 
-	 * @returns 
 	 */
 	setSelectedCurve(command) {
 		this.selectedCurve = command.args;
+		this.forgetCalculated();
+	}
+
+	/**
+	 * @method setHighlightTrace
+	 * @param {MMCommand}} command 
+	 */
+	setHighlightTrace(command) {
+		this.highlightTrace = command.args === 'true';
 		this.forgetCalculated();
 	}
 

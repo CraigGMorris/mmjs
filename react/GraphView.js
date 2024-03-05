@@ -537,7 +537,7 @@ class Plot2D extends React.Component {
 		initialState.yScale = 1;
 		initialState.translate =  {x: 0, y: 0};
 		initialState.cursorPosition = null;
-		initialState.highlightTrace = false;
+		initialState.highlightTrace = info.xInfo.highlightTrace;
 		this.state = initialState;
 
 		this.onPointerDown = this.onPointerDown.bind(this);
@@ -661,6 +661,9 @@ class Plot2D extends React.Component {
 										return newState;
 									});
 								}
+								this.props.actions.doCommand(`${this.props.viewInfo.path} sethighlight ${this.state.highlightTrace}`, () => {
+								});
+		
 								break;
 							}
 							traceCount += x.yInfo.length;
@@ -1106,9 +1109,8 @@ class Plot2D extends React.Component {
 									const yPoint = yValues[pointCount];
 									
 									const scaledY = (topMargin + (maxY - yPoint) * scaleForY + translate.y).toFixed(5);
-									const scaledY0 = (topMargin + maxY * scaleForY).toFixed(5);
+									const scaledY0 = (topMargin + plotHeight).toFixed(5);
 									const scaledX = (leftMargin + (xPoint - minX) * scaleForX + translate.x).toFixed(5);
-
 									switch(lineType) {
 										case MMGraphLineType.bar:
 										case MMGraphLineType.barWithDot: 
