@@ -940,7 +940,7 @@ class Plot2D extends React.Component {
 
 		if (axisX.minLabel != null) {
 			const labelText = (labelValue) => {
-				if (labelValue != 0.0 && (Math.abs(labelValue) > 10000000.0 || Math.abs(labelValue) < 0.01)) {
+				if (labelValue != 0.0 && (Math.abs(labelValue) > 100000000.0 || Math.abs(labelValue) < 0.01)) {
 					return labelValue.toExponential(2);
 				}
 				else if (Math.abs(labelValue) >= 100000.0) {
