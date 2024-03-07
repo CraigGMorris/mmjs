@@ -101,7 +101,8 @@ class MMGraphAxis {
 
 	get values() {
 		if (!this._values) {
-			this._values = this.formula.numberValue();
+			this._values = this.formula.value();
+			// this._values = this.formula.numberValue();
 		}
 		return this._values;
 	}
@@ -252,25 +253,37 @@ class MMGraphAxis {
 				info.columnCount = this.values.columnCount;
 			}
 			let displayUnit = this.displayUnit;
-			if (!displayUnit) {
-				displayUnit = this.values.defaultUnit;
+			if (this.values instanceof MMNumberValue) {
+				if (!displayUnit) {
+					displayUnit = this.values.defaultUnit;
+				}
+				info.unit = displayUnit.name;
 			}
-			info.unit = displayUnit.name;
+			else {
+				info.unit = 'String';
+			}
 			const minValue = this.graph.valueDescribedBy(`min${this.name}`);
 			info.minValue = minValue ? minValue.values[0] : 0;
 			const maxValue = this.graph.valueDescribedBy(`max${this.name}`);
 			info.maxValue = maxValue ? maxValue.values[0] : 1
-			if (info.unit === 'date' || info.unit === 'dated' || info.unit === 'datem') {
-				// date values cannot be interpolated, so the view will have to convert them
-				// one by one from the base values;
+			if (info.unit !== 'String') {
+				if (info.unit === 'date' || info.unit === 'dated' || info.unit === 'datem') {
+					// date values cannot be interpolated, so the view will have to convert them
+					// one by one from the base values;
+					info.minLabel = info.minValue;
+					info.maxLabel = info.maxValue;
+				}
+				else {
+					info.minLabel = displayUnit.convertFromBase(info.minValue);
+					info.maxLabel = displayUnit.convertFromBase(info.maxValue);
+				}
+			} else {
 				info.minLabel = info.minValue;
 				info.maxLabel = info.maxValue;
 			}
-			else {
-				info.minLabel = displayUnit.convertFromBase(info.minValue);
-				info.maxLabel = displayUnit.convertFromBase(info.maxValue);
+			if (this.values && this.values.values) {
+				info.values = Array.from(this.values.values);
 			}
-			info.values = Array.from(this.values.values)
 		}
 		return info;
 	}
@@ -409,7 +422,10 @@ class MMGraphX extends MMGraphAxis {
 		}
 		else {
 			const value = this.graph.valueDescribedBy(this.name);
-			if (value) {
+			if (value instanceof MMStringValue) {
+				o.unit = 'String';
+			}
+			else if (value) {
 				o.unit = value.defaultUnit.name;
 			}			
 		}
@@ -833,6 +849,12 @@ class MMGraph extends MMTool {
 			let rv;
 			if (xNumber > 0 && xNumber <= this.xValues.length) {
 				const xValue = this.xValues[xNumber - 1];
+				if (xValue.values instanceof MMStringValue) {
+					return returnValue(MMNumberValue.scalarValue(1));
+				}
+				else if (xValue.values && !(xValue.values instanceof MMNumberValue)) {
+					return null;
+				}
 				rv = xValue.minValue;
 				
 				if (!rv) {
@@ -858,6 +880,13 @@ class MMGraph extends MMTool {
 			let rv;
 			if (xNumber > 0 && xNumber <= this.xValues.length) {
 				const xValue = this.xValues[xNumber - 1];
+				if (xValue.values instanceof MMStringValue) {
+					return returnValue(MMNumberValue.scalarValue(xValue.values.valueCount));
+				}
+				else if (xValue.values && !(xValue.values instanceof MMNumberValue)) {
+					return null;
+				}
+
 				rv = xValue.maxValue;
 				
 				if (!rv) {
@@ -907,7 +936,8 @@ class MMGraph extends MMTool {
 					if (!rv) {
 						if (yNumber > 1 ) {
 							const y1 = xValue.yForIndex(yNumber - 2);
-							if (yValue.values && y1.values &&
+							if (yValue.values instanceof MMNumberValue && 
+								y1.values instanceof MMNumberValue && 
 								MMUnitSystem.areDimensionsEqual(yValue.values.unitDimensions, y1.values.unitDimensions))
 							{
 								rv = this.valueDescribedBy(`miny${xNumber}_${yNumber-1}`, requestor);
@@ -915,15 +945,16 @@ class MMGraph extends MMTool {
 						}
 						else if (xNumber > 1) {
 							const x1 = this.xValues[xNumber - 2];
-						const y1 = x1.yForIndex(0);
-							if (yValue.values && y1.values &&
+							const y1 = x1.yForIndex(0);
+							if (yValue.values instanceof MMNumberValue &&
+								y1.values instanceof MMNumberValue &&
 								MMUnitSystem.areDimensionsEqual(yValue.values.unitDimensions, y1.values.unitDimensions))
 							{
 								rv = this.valueDescribedBy(`miny${xNumber-1}_1`);
 							}
 						}
 						if (!rv) {
-							rv = yValue.values ? yValue.values.min() : null;
+							rv = yValue.values instanceof MMNumberValue ? yValue.values.min() : null;
 						}
 					}
 				}
@@ -960,7 +991,8 @@ class MMGraph extends MMTool {
 					if (!rv) {
 						if (yNumber > 1 ) {
 							const y1 = xValue.yForIndex(yNumber - 2);
-							if (yValue.values && y1.values &&
+							if (yValue.values instanceof MMNumberValue &&
+								y1.values instanceof MMNumberValue &&
 								MMUnitSystem.areDimensionsEqual(yValue.values.unitDimensions, y1.values.unitDimensions))
 							{
 								rv = this.valueDescribedBy(`maxy${xNumber}_${yNumber-1}`, requestor);
@@ -969,14 +1001,15 @@ class MMGraph extends MMTool {
 						else if (xNumber > 1) {
 							const x1 = this.xValues[xNumber - 2];
 							const y1 = x1.yForIndex(0);
-							if (yValue.values && y1.values &&
+							if (yValue.values instanceof MMNumberValue && 
+								y1.values instanceof MMNumberValue &&
 								MMUnitSystem.areDimensionsEqual(yValue.values.unitDimensions, y1.values.unitDimensions))
 							{
 								rv = this.valueDescribedBy(`maxy${xNumber-1}_1`);
 							}
 						}
 						if (!rv) {
-							rv = yValue.values ? yValue.values.max() : null;
+							rv = yValue.values instanceof MMNumberValue ? yValue.values.max() : null;
 						}
 					}
 				}
@@ -1007,14 +1040,14 @@ class MMGraph extends MMTool {
 						if (xNumber > 1) {
 							const x1 = this.xValues[xNumber - 2];
 							const z1 = x1.zValue;
-							if (xValue.zValue.values && z1.values &&
+							if (xValue.zValue.values && z1.values instanceof MMNumberValue &&
 								MMUnitSystem.areDimensionsEqual(xValue.zValue.values.unitDimensions, z1.values.unitDimensions))
 							{
 								rv = this.valueDescribedBy(`minz${xNumber - 1}`, requestor);
 							}
 						}
 					if (!rv) {
-						rv = xValue.zValue.values ? xValue.zValue.values.min() : null;
+						rv = xValue.zValue.values instanceof MMNumberValue ? xValue.zValue.values.min() : null;
 					}
 				}
 			}
@@ -1044,14 +1077,14 @@ class MMGraph extends MMTool {
 						if (xNumber > 1) {
 							const x1 = this.xValues[xNumber - 2];
 							const z1 = x1.zValue;
-							if (xValue.zValue.values && z1.values &&
+							if (xValue.zValue.values && z1.values instanceof MMNumberValue &&
 								MMUnitSystem.areDimensionsEqual(xValue.zValue.values.unitDimensions, z1.values.unitDimensions))
 							{
 								rv = this.valueDescribedBy(`maxz${xNumber - 1}`, requestor);
 							}
 						}
 					if (!rv) {
-						rv = xValue.zValue.values ? xValue.zValue.values.max() : null;
+						rv = xValue.zValue.values instanceof MMNumberValue ? xValue.zValue.values.max() : null;
 					}
 				}
 			}
@@ -1792,6 +1825,7 @@ class MMGraph extends MMTool {
 				const x = this.xValues[i];
 				colorStart += x.numberOfYValues;
 			}
+			colorStart += yAxisIndex;
 	
 			const xValue = this.xValues[xAxisIndex];
 			if (yAxisIndex >= xValue.numberOfValues ) {
@@ -1799,19 +1833,22 @@ class MMGraph extends MMTool {
 			}
 
 			let xValues = xValue.values;
-			let lineColor = lineColors[xAxisIndex % nColors];
+			let lineColor = lineColors[colorStart % nColors];
 	
 			const xTitle = xValue.title +
-				(xValue.displayUnit && (xValue.displayUnit.name !== 'Fraction')
+				((xValue.displayUnit &&
+					xValue.displayUnit.name !== 'Fraction' &&
+					xValue.displayUnit.name !== 'String')
 				? ` (${xValue.displayUnit.name})`
 				: '');
 			lines.push(`<text class="svg_xlabel" x="${leftMargin + plotWidth/2}" y="${plotHeight + topMargin + 30}" stroke="black" text-anchor="middle">${xTitle}</text>`);
 	
-			if (xValues instanceof MMNumberValue ) {			
+			if (xValues instanceof MMNumberValue || xValues instanceof MMStringValue) {	
+				const isXString = xValues instanceof MMStringValue;		
 				const scale = 1.0;
 
 				const [minX, maxX, xLabels] = xValue.plotLabels(5);
-				const xLabelCount = xLabels.length;
+				const xLabelCount = isXString ? xValues.valueCount : xLabels.length;
 				let step = plotWidth / (xLabelCount - 1);
 				let labelStep = (maxX - minX) / (xLabelCount - 1);
 
@@ -1823,23 +1860,32 @@ class MMGraph extends MMTool {
 
 				for (let i = 0; i < xLabelCount; i++) {
 					const centerX = i * step + leftMargin;
-					lines.push(gridFormat(centerX, centerX, topMargin, topMargin + plotHeight));
-					
+					if (!isXString) {
+						lines.push(gridFormat(centerX, centerX, topMargin, topMargin + plotHeight));
+					}
 					const labelText = xLabels[i];
 					let anchor;
 					let labelX = centerX;
-					const labelY = height - bottomMargin + 15;
-					if (i === 0) {
-						anchor = 'start';
-						labelX = leftMargin;
-					}
-					else if (i === xLabelCount - 1) {
-						anchor = 'end';
+					let labelValue;
+					if (isXString) {
+						labelValue = xValues.values[i];
+						const labelY = height - bottomMargin + 15;
+						lines.push(`<text  class="svg_xlabel" x="${labelX}" y="${labelY}" stroke="${lineColor}" text-anchor="end" transform="rotate(-30, ${labelX}, ${labelY})">${labelValue}</text>`);	
 					}
 					else {
-						anchor = 'middle';
+						const labelY = height - bottomMargin + 15;
+						if (i === 0) {
+							anchor = 'start';
+							labelX = leftMargin;
+						}
+						else if (i === xLabelCount - 1) {
+							anchor = 'end';
+						}
+						else {
+							anchor = 'middle';
+						}
+						lines.push(`<text  class="svg_xlabel" x="${labelX}" y="${labelY}" stroke="${lineColor}" text-anchor="${anchor}">${labelText}</text>`);
 					}
-					lines.push(`<text  class="svg_xlabel" x="${labelX}" y="${labelY}" stroke="${lineColor}" text-anchor="${anchor}">${labelText}</text>`);
 				}
 				lines.push('</g>');
 				lines.push('<g class="svg_gridy">');
@@ -1847,7 +1893,6 @@ class MMGraph extends MMTool {
 				const yValue = xValue.yForIndex(yAxisIndex);
 				const yLabels = yValue.plotLabels(5)[2];
 				const yLabelCount = yLabels.length;
-				lineColor = lineColors[(yAxisIndex + colorStart) % nColors];
 
 				step = plotHeight / ( yLabelCount - 1);
 				for (let i = 0; i < yLabelCount; i++) {
@@ -1869,12 +1914,13 @@ class MMGraph extends MMTool {
 				lines.push('<g class="svg_lines">');
 				const xCount = this.xValues.length;
 				let yTitleNumber = 0;
+				const xLineScale = isXString ? 1 : scale;
 				for (let xNumber = 0; xNumber < xCount; xNumber++) {
 					const xValue = this.xValues[xNumber];
 					const xValues = xValue.values;					
 					const nLines = xValue.numberOfYValues;
 					const nPoints = xValues.valueCount;
-					const scaleForX = (minX === maxX) ? 0.1 : scale * plotWidth / (maxX - minX);
+					const scaleForX = (minX === maxX) ? 0.1 : xLineScale * plotWidth / (maxX - minX);
 
 					for (let lineNumber = 0; lineNumber < nLines; lineNumber++) {
 						const lineClass = `svg_line_${xNumber+1}_${lineNumber+1}`;
@@ -1898,19 +1944,20 @@ class MMGraph extends MMTool {
 							const columnCount = xValues.columnCount;
 							lineColor = lineColors[colorNumber++ % nColors];
 							
+							const strokeWidth = isXString ? 10 : 1;
 							for (let col = 0; col < columnCount; col++) {
 								const path = [];
 								if (lineType === MMGraphLineType.dot || lineType === MMGraphLineType.barWithDot) {
 									path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="${lineColor}" opacity=${opacity} d="`);
 								}
 								else if (lineType !== MMGraphLineType.hidden) {
-									path.push(`<path class="${lineClass}" stroke="${lineColor}" fill="none" opacity=${opacity} d="`);
+									path.push(`<path class="${lineClass}" stroke="${lineColor}" stroke-width="${strokeWidth}" fill="none" opacity=${opacity} d="`);
 								}
 
 								for (let row = 0; row < rowCount; row++) {
 									const pointCount = row*columnCount + col;
 									if (pointCount < n) {
-										const x = xValues.values[pointCount];
+										const x = isXString ? pointCount + 1 : xValues.values[pointCount];
 										const y = yValues.values[pointCount];
 										
 										const scaledY = ((minY - y) * scaleForY + 
