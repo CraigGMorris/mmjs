@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2024.03.05";
+const VERSION = "2024.03.08";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
@@ -8,7 +8,6 @@ const CACHE_NAME = `mathminion-${VERSION}`;
 const APP_STATIC_RESOURCES = [
   "/",
 	"PWAManifest.json",
-  "index.html",
 	"index.js",
 	"minion.svg",
 	"mmsite.css",
@@ -248,6 +247,10 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
 	// console.log('in fetch');
 	// Check if the request is for a directory we don't want to cache
+	if (event.request.url.endsWith('/') || event.request.url.endsWith('/mm')) {
+		event.request.url += 'index.html';
+	};
+
 	if (event.request.url.includes('/video/') || event.request.url.includes('/downloads/')) {
 		// Use network only strategy for these directories
 		event.respondWith(fetch(event.request));
