@@ -1841,7 +1841,7 @@ class MMGraph extends MMTool {
 					xValue.displayUnit.name !== 'String')
 				? ` (${xValue.displayUnit.name})`
 				: '');
-			lines.push(`<text class="svg_xlabel" x="${leftMargin + plotWidth/2}" y="${plotHeight + topMargin + 30}" stroke="black" text-anchor="middle">${xTitle}</text>`);
+			lines.push(`<text class="svg_xlabel" x="${leftMargin + plotWidth/2}" y="${plotHeight + topMargin + 30}" stroke="${lineColor}" text-anchor="middle">${xTitle}</text>`);
 	
 			if (xValues instanceof MMNumberValue || xValues instanceof MMStringValue) {	
 				const isXString = xValues instanceof MMStringValue;		

@@ -916,8 +916,8 @@ class Plot2D extends React.Component {
 					key: 'xTitle',
 					x: leftMargin + plotWidth/2,
 					y: plotHeight + topMargin + 30,
-					stroke: 'black',
-					fill: 'black',
+					stroke: lineColor,
+					fill: lineColor,
 					textAnchor: 'middle',
 				},
 				axisX.title + (axisX.unit &&
