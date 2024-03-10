@@ -1017,7 +1017,8 @@
 								"vmax": "",
 								"lineType": 0
 							}
-						}
+						},
+						"Selected": "0_0"
 					},
 					{
 						"name": "rectline",

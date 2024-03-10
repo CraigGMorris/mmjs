@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "Fanning Friction Factor",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "root",
+	"SelectedObject": "",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -151,12 +151,12 @@
 			},
 			{
 				"name": "Friction_Factors",
-				"Notes": "In the graph information view, tap the Y axis labels to step through the e/D lines.  A Y label of f_001 would indicate that colour is for the e/D = 0.001 line.",
+				"Notes": "",
 				"DiagramX": 560,
 				"DiagramY": 215,
 				"HideInfo": "y",
-				"DiagramNotes": "y",
-				"HtmlNotes": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"isOutput": "y",
 				"Type": "Graph",
 				"X1": {
@@ -618,20 +618,6 @@
 					}
 				],
 				"AutoRun": "y"
-			},
-			{
-				"name": "Legend",
-				"Notes": "",
-				"DiagramX": 565,
-				"DiagramY": 345,
-				"HideInfo": "y",
-				"DiagramNotes": "n",
-				"HtmlNotes": "n",
-				"isOutput": "y",
-				"Type": "Expression",
-				"Formula": {
-					"Formula": "Friction_Factors.legend[0,2:3]"
-				}
 			}
 		]
 	}

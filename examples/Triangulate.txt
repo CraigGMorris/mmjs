@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "Triangulate Example",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "root",
+	"SelectedObject": "",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -92,12 +92,12 @@
 				"isOutput": "y",
 				"Type": "Graph",
 				"X1": {
-					"v": "x",
+					"v": "x'Transmitter X",
 					"vmin": "-5 km",
 					"vmax": "15 km",
 					"unit": "km",
 					"Y1": {
-						"v": "y",
+						"v": "y'Transmitter Y",
 						"vmin": "-5 km",
 						"vmax": "15 km",
 						"unit": "km",
@@ -105,12 +105,12 @@
 					}
 				},
 				"X2": {
-					"v": "optX",
+					"v": "optX'Optimized X",
 					"vmin": "-5 km",
 					"vmax": "15 km",
 					"unit": "km",
 					"Y1": {
-						"v": "optY",
+						"v": "optY'Optimized Y",
 						"vmin": "-5 km",
 						"vmax": "15 km",
 						"unit": "km",

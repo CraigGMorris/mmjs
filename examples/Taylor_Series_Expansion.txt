@@ -7,7 +7,7 @@
 	"UserUnits": [],
 	"CaseName": "Taylor Series Expansion",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "root",
+	"SelectedObject": "",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -157,7 +157,7 @@
 					"Y1": {
 						"v": "rowE",
 						"vmin": "",
-						"vmax": "",
+						"vmax": "8",
 						"lineType": 0
 					}
 				}
