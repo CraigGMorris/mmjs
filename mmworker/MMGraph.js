@@ -1295,7 +1295,8 @@ class MMGraph extends MMTool {
 	 * @returns MMTableValue
 	 */
 	legendTable() {
-		const lineColors =  ['Blue', 'Green', 'Brown', 'Orange', 'Purple', 'Red', 'Yellow'];
+		const lineColors =  ['Blue', 'Green', 'Brown', 'Orange', 'Purple', 'Red', 'Gray', 'Dark Purple',
+		'Light Blue', 'Dark Brown'];
 		if (this.xValues[0].zValue) { // 3d
 			const nValues = this.xValues.length;
 			const xTitles = new MMStringValue(nValues, 1);
