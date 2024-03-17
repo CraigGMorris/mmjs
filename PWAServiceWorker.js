@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2024.03.08";
+const VERSION = "2024.03.17";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
@@ -281,4 +281,10 @@ self.addEventListener("fetch", (event) => {
 			}
     })()
   );
+});
+
+self.addEventListener('message', function (event) {
+  if (event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
 });
