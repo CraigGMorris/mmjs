@@ -241,7 +241,7 @@ class MMSession extends MMCommandParent {
 		this.savedLastPathId = '(lastPath)';
 		this.savedLastNewsId = '(lastNews)';
 		this.savedStorageVersionId = '(storageVersion)';
-		this.lastNews = '20240220';
+		this.lastNews = '20240317';
 		this.newSession();
 		this.couchError = null;
 	}
