@@ -338,7 +338,7 @@ const pointerMove = useCallback(e => {
 
 		// make sure at least one row and column appear
 		const nMaxRows = Math.max(0,nRows - maxY/cellHeight + 1);
-		const nMaxColumns = Math.max(0,nColumns - maxX/cellWidth + 1);	
+		const nMaxColumns = Math.max(0,nColumns - maxX/cellWidth + 1);
 		offsetX = Math.min(offsetX, nMaxColumns*cellWidth)
 		offsetY = Math.min(offsetY, nMaxRows*cellHeight);
 		// console.log(`wheel x ${offsetX} y ${offsetY}`);
@@ -347,20 +347,6 @@ const pointerMove = useCallback(e => {
 		e.stopPropagation();
 		e.preventDefault();
 	}, [initialOffset, cellWidth, nRows, nColumns, viewBox]);
-
-	const svgCurrent = svgRef.current;
-	useEffect(() => {
-		if (svgRef.current) {
-			// console.log('add listener');
-			svgRef.current.addEventListener('wheel', wheel, {passive: false});
-		}
-		return () => {
-			if (svgCurrent) {
-				// console.log('remove listener');
-				svgCurrent.removeEventListener('wheel', wheel);
-			}
-    };
-  }, [wheel, svgCurrent]);
 
 	const pointerEnter = useCallback(e => {
 		if (dragType != TableViewDragType.none) {
@@ -648,6 +634,7 @@ const pointerMove = useCallback(e => {
 			onPointerUp: pointerEnd,
 			onPointerMove: pointerMove,
 			onPointerEnter: pointerEnter,
+			onWheel: wheel,
 		},
 		cells
 	);
