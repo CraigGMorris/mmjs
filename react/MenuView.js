@@ -45,6 +45,17 @@ export function MenuView(props) {
 	const [optionValues, setOptionValues] = useState([]);
 	const [selected, setSelected] = useState(-1);
 
+	const t = props.t;
+	const updateResults = props.viewInfo.updateResults;
+
+	if (updateResults.error) {
+		// use empty command just to defer popView
+		props.actions.doCommand('', () => {
+			props.actions.popView();
+		});
+		return null;
+	}
+
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
@@ -57,17 +68,6 @@ export function MenuView(props) {
 		setOptionLabels(results.optionLabels || []);
 		setOptionValues(results.optionValues || []);
 	}, [updateResults, results]);
-
-	const t = props.t;
-	const updateResults = props.viewInfo.updateResults;
-
-	if (updateResults.error) {
-		// use empty command just to defer popView
-		props.actions.doCommand('', () => {
-			props.actions.popView();
-		});
-		return null;
-	}
 
 	const applyOptionChanges = () => {
 		const path = `${results.path}.options`;
