@@ -22,6 +22,7 @@
 	--tableview__input--color: rgba(254,239,167,1);
 	--tableview__selected-color: rgb(165, 214, 81);
 	--selected__list--bgcolor: rgb(79, 85, 116);
+	--expr-table-row-color: rgb(79, 85, 116);
 	--subtext--color: darkgray;
 	--title--color: #69e469;
 	--bold--color: #fbb636;
@@ -48,6 +49,7 @@
 		--tableview__value--bgcolor: rgba(238,255,238,1);
 		--tableview__input--color: rgba(254,239,167,1);	
 		--selected__list--bgcolor: lightgray;
+		--expr-table-row-color: lightgray;
 		--subtext--color: rgb(102, 101, 101);
 		--title--color: #040;
 		--bold--color: black;
@@ -574,6 +576,39 @@ a:hover {
 #expression__string-text {
 	width: 100%;
 	height: calc(var(--info-height) - calc(var(--input--height) * 2));
+}
+
+#expression__table-view {
+	display: grid;
+	grid-template-rows: var(--input--height) 1fr;
+	grid-template-areas: "number"
+		"fields";
+	grid-gap: 5px;
+	margin-top: 5px;
+}
+
+#expression__table-row-number {
+	grid-area: number;
+	display: grid;
+	grid-template-columns: 1fr 30px 30px 30px 30px 50px;
+	grid-gap: 5px;
+}
+
+#expression__table-row-fields {
+	overflow: auto;
+	grid-area: fields;
+	height: calc(var(--info-height) - 120px);
+	align-content: start;
+	display: grid;
+	grid-gap: 10px 5px;
+}
+
+#expression__table-row-last,  #datatable__edit-row-first {
+	font-size: 16pt;
+}
+
+.expression__table-row-name-label {
+	background-color: var(--expr-table-row-color);
 }
 
 #expression__units-format {

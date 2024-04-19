@@ -37,6 +37,7 @@ const ExpressionDisplay = Object.freeze({
 	unitPicker: 1,
 	stringValue: 2,
 	formulaEditor: 3,
+	tableRow: 4,
 });
 
 /**
@@ -219,6 +220,23 @@ export function ExpressionView(props) {
 
 			)
 			break;
+		
+		case ExpressionDisplay.tableRow:
+			displayComponent = e(
+					ShowRowView, {
+						key: 'showRow',
+						t: props.t,
+						viewInfo: props.viewInfo,
+						infoWidth: props.infoWidth,
+						infoHeight: props.infoHeight,
+						value: value,
+						path: path,
+						actions: props.actions,
+						selectedCell: selectedCell,
+						setDisplay: setDisplay,
+					});
+				break;
+	
 		case ExpressionDisplay.expression: {
 			const cellClick = (row, column) => {
 				if (row === 0 && column === 0) {
@@ -275,7 +293,7 @@ export function ExpressionView(props) {
 					}
 				}
 				setStringDisplay(displayV(row, column));
-				setDisplay(ExpressionDisplay.stringValue);
+				setDisplay(value.t === 't' ? ExpressionDisplay.tableRow : ExpressionDisplay.stringValue);
 			}
 
 			let displayedUnit = '';
@@ -498,5 +516,132 @@ export function ExpressionView(props) {
 			displayComponent: displayComponent,
 			...props,
 		},
+	);
+}
+
+function ShowRowView(props) {
+	const [row, column] = props.selectedCell;
+	const t = props.t;
+	const [selectedRow, setSelectedRow] = useState(row);
+
+	const displayedRow = Math.min(props.value.nr, selectedRow)
+	const value = props.value;
+	const fields = [];
+	
+	if (value.t === 't') {
+		for (let columnNumber = 0; columnNumber < value.nc; columnNumber++) {
+			const column = value.v[columnNumber];
+			const v = column.v.v[displayedRow - 1];
+			let valueField = '';
+			if (typeof v === 'string') {
+				valueField = v;
+			}
+			else if (typeof v === 'number') {
+				if (column.format) {
+					valueField = `${MMFormatValue(v, column.format)} ${column.dUnit}`;
+				}
+				else {
+					valueField = `${v.toString().replace(/(\..*)(0+$)/,'$1')} ${column.dUnit}`;
+				}
+			}
+			const rowN = column.v.rowN ? column.v.rowN[displayedRow - 1] : displayedRow;
+			let selectValueField;
+
+			fields.push(
+				e(
+					'div', {
+						className: 'expression__row-cell',
+						key: columnNumber,
+					},
+					e(
+						'div', {
+							className: 'expression__table-row-name-label',
+						},
+						column.name,
+						selectValueField,
+					),
+					valueField
+				)
+			)
+		}
+	}
+
+	return e(
+		'div', {
+			id: 'expression__row-view',
+			onKeyDown: e => {
+				if (e.code === 'Escape') {
+					e.preventDefault();
+					props.setDisplay(ExpressionDisplay.expression);
+				}
+			}
+		},
+		e(
+			'div', {
+				id: 'expression__table-row-number',
+			},
+			t('react:dataRowTitle', {
+				row: displayedRow,
+				nr: value.nr,
+				allNr: (value.allNr ? ` // ${value.allNr}` : '')
+			}),
+			e(
+				'button', {
+					id: 'expression__table-row-first',
+					onClick: () => {
+						setSelectedRow(1);
+					}							
+				},
+				t('react:dataRowFirstButton')
+			),
+			e(
+				'button', {
+					id: 'expression__table-row-prev',
+					disabled: displayedRow <= 1,
+					onClick: () => {
+						if (displayedRow > 1) {
+							setSelectedRow(displayedRow-1);
+						}
+					},
+				},
+				t('react:dataRowPrevButton')
+			),
+			e(
+				'button', {
+					id: 'expression__table-row-next',
+					disabled: displayedRow >= value.nr,
+					onClick: () => {
+						if (displayedRow < value.nr) {
+							setSelectedRow(displayedRow+1);
+						}
+					},
+				},
+				t('react:dataRowNextButton')
+			),
+			e(
+				'button', {
+					id: 'express__table-row-last',
+					onClick: () => {
+						setSelectedRow(value.nr);
+					}							
+				},
+				t('react:dataRowLastButton')
+			),
+			e(
+				'button', {
+					id: 'expression__table-row-done',
+					onClick: () => {
+						props.setDisplay(ExpressionDisplay.expression);
+					},
+				},
+				t('react:dataRowDoneButton')
+			),
+		),
+		e(
+			'div', {
+				id: 'expression__table-row-fields',
+			},
+			fields
+		)
 	);
 }

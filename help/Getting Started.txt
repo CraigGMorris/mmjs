@@ -9,7 +9,7 @@
 	],
 	"CaseName": "Getting Started",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "root",
+	"SelectedObject": "",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -4682,7 +4682,7 @@
 							},
 							{
 								"name": "TableValue",
-								"Notes": "Expressions can also display table values.  These often result from operations on a DataTable tool, but can also be created with functions as in this example.\n\nIf you tap in the expression view on the column header titled \"Value\", the current display unit and format for the column will be shown. Tapping on the unit will bring up the unit browser where you can select a different display unit for the column.\n\nChanging the display unit never effects the actual calculations, only how the results are displayed.",
+								"Notes": "Expressions can also display table values.  These often result from operations on a DataTable tool, but can also be created with functions as in this example.\n\nIf you tap in the expression view on the column header titled \"Value\", the current display unit and format for the column will be shown. Tapping on the unit will bring up the unit browser where you can select a different display unit for the column.\n\nChanging the display unit never effects the actual calculations, only how the results are displayed.\n\nTapping on a cell value will result in an expanded row view.",
 								"DiagramX": 110,
 								"DiagramY": -25,
 								"HideInfo": "y",
