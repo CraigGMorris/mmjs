@@ -1563,6 +1563,9 @@ class MMUnitsContainer extends MMCommandParent {
 	
 		this.addUnit("Wb","1 2 1 -2 -1 0 0 0 1.0",true);
 		this.addUnit("Mx","1 2 1 -2 -1 0 0 0 1.0e-8",true);
+
+		this.addUnit("T","1 0 1 -2 -1 0 0 0 1.0");
+		this.addUnit("Gauss","1 0 1 -2 -1 0 0 0 1.0e-4");
 	
 		this.addUnit("Henry","1 2 1 -2 -2 0 0 0 1.0",true);
 	
@@ -1756,6 +1759,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 					"Length" : "m",
 					"LuminousIntensity" : "cd",
 					"MagneticFlux" : "kg-m^2/A-s^2",
+					"MagneticFluxDensity" : "kg/A-s^2",
 					"Mass" : "kg",
 					"MassEnthalpy" : "m^2/s^2",
 					"MassFlow" : "kg/s",
@@ -1811,6 +1815,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 					"Length" : "m",
 					"LuminousIntensity" : "cd",
 					"MagneticFlux" : "Wb",
+					"MagneticFluxDensity" : "T",
 					"Mass" : "kg",
 					"MassEnthalpy" : "kJ/kg",
 					"MassFlow" : "kg/h",
@@ -1866,6 +1871,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 					"Length" : "ft",
 					"LuminousIntensity" : "cd",
 					"MagneticFlux" : "Wb",
+					"MagneticFluxDensity" : "T",
 					"Mass" : "lb",
 					"MassEnthalpy" : "Btu/lb",
 					"MassFlow" : "lb/h",
