@@ -4,7 +4,10 @@
 	"DetailWidth": 320,
 	"DeviceWidth": 1024,
 	"UserUnitSets": {},
-	"UserUnits": [],
+	"UserUnits": [
+		null,
+		null
+	],
 	"CaseName": "Financial",
 	"DefaultUnitSet": "SI",
 	"SelectedObject": "",
@@ -609,7 +612,7 @@
 						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "{sum Payments / (1 + rate )^((dates - dates[1])/ 365 d)}"
+							"Formula": "{sum Payments / (1 + rate )^((dates - dates[1])/1 year)}"
 						}
 					},
 					{
