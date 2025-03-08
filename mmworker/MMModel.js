@@ -1008,7 +1008,7 @@ class MMModel extends MMTool {
 		if (this !== theMMSession.currentModel) {
 			pathParts.push(this.name);
 			let parent = this.parent;
-			while (parent !== theMMSession.currentModel) {
+			while (parent && parent !== theMMSession.currentModel) {
 				pathParts.push(parent.name);
 				parent = parent.parent;
 			}

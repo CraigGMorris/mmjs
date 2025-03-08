@@ -72,7 +72,7 @@ export class SessionsView extends React.Component {
 				await this.props.actions.doCommand(
 					`/ load ${e.target.getAttribute('value')}`,
 					(results) => {
-						this.props.actions.resetInfoStack('root', results[0].results);
+						this.props.actions.resetInfoStack('root', results ? results[0].results : null);
 						this.props.updateDiagram(true);
 					}
 				);
@@ -93,8 +93,8 @@ export class SessionsView extends React.Component {
 					r.onload = (e) => { 
 						let contents = e.target.result;
 						contents = `__blob__/ import__blob__${this.props.viewInfo.rootFolder}:` + contents;
-						this.props.actions.doCommand(contents, () => {
-							this.props.actions.resetInfoStack('root');
+						this.props.actions.doCommand(contents, (results) => {
+							this.props.actions.resetInfoStack('root', results ? results[0].results : null);
 							this.props.updateDiagram(true);
 						});
 					};
