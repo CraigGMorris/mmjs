@@ -21,7 +21,6 @@ Models have the following JSON fields:
 	"Objects": [
 	]
 }
-
 Where:
 "name": must conform to regex pattern `[A-Za-z][A-Za-z0-9_]+`
 "Notes": is an arbitrary string.
@@ -33,7 +32,6 @@ All tools have the fields above, but each type of tool will have additional fiel
 For Models, there is "diagramScale", which should initially be 1 and an array called Objects, which contains the tools in the Model.
 
 The most common tool is Expression, which contains a single formula, which is stored as a string:
-
 {
 	"name": "Revenue",
 	"Notes": "Assuming extrodinary luck",
@@ -47,8 +45,9 @@ The most common tool is Expression, which contains a single formula, which is st
 		"Formula": "production * price dollar/kg"
 }
 
-Formulas:
+See mmtools.txt for additional tools
 
+Formulas:
 Formulas manipulate values using operators.
 Values can be strings, numbers or tables.
 String and number values are always matrices even if one or both dimensions is just one.
@@ -64,7 +63,6 @@ The operators that can be used in a formula are listed below in triple quotes, w
 ^ Power
 % Modulus
 : Range (produces a number value with a single column and rows of integers increasing by one from the first operand to the second operand. Operands must have a dimensionless conversion unit type)
-"""
 
 The operator precedence is (from higher to lower):
 unary minus (i.e. -3)
@@ -74,7 +72,6 @@ unary minus (i.e. -3)
 + -
 
 Parenthesis can be used as required to specify the calculation order:
-
 (2 + 3) * 4
 
 The operands can be named tool values or constants, optionally followed by a space and a conversion unit,
@@ -84,12 +81,11 @@ Examples:
 "a string"
 Revenue
 
-Never use ' for quoting. Use ` to enclose strings containing "
+NEVER use ' for quoting.
+Use ` to enclose strings containing "
 
 When an Expression name is used, the value will be the result of calculating its formula. Most other tools will require the name of their value to be added following a dot. For Model "Bob" containing Expression "Ted", then a tool in the same Model as Bob would reference Ted as:
-
 Bob.Ted
-
 This nesting can be multiple levels deep.
 
 Square brackets can be used to access the specific cells of a value. For example a[3,2] would return the value in the third row and second column of a value named "a".
@@ -110,21 +106,18 @@ Back references in regular expressions use $n rather than \n. That is $1, $2 etc
 Only a single \ character is needed for regular expression terms like \d, \s etc.
 
 Conversion Units
-
 The base units understood are listed in mmunits.txt
 
-It also understands a unit "date", which converts a float number with the form yyyymmdd.hhmmss into a time value.
+Also a unit "date", converts a float number with the form yyyymmdd.hhmmss into a time value.
 
 The temperature units for degrees C, F and R are represented as "degC", "degF", "degR".
 
 Compound units use - for multiply and / for division.
 There can only be a single / in a unit.
 The numerator can be just the number 1, so the unit "1/s" would be a frequency.
-
 Powers are separated from the unit with a "^" thus unit "m^2" equals square metres. 
 
 Conversion unit examples:
-
 10 m^3/kg
 14.2 W/m^2-K
 1e7 kg
@@ -176,20 +169,16 @@ The final result should have created objects contained in an array in a "CopyObj
 	}
 ]}
 
-
 Input values for a Model are represented by Expressions that contain the fields:
-
 "isInput": "y",
 "showInput": "y"
 
 Setting isInput to "y" allows the Expression to use the namespace of the parent model
 
 Results that are to be displayed should be evaluated in Expressions that have the field:
-
 "isOutput": "y
 
 So the response to a request "Make a model to calculate the area and circumference of a circle given a radius" should look like this:
-
 {"CopyObjects": [
 	{
 		"name": "circle",
@@ -248,4 +237,3 @@ So the response to a request "Make a model to calculate the area and circumferen
 		]
 	}
 ]}
-
