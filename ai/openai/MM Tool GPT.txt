@@ -89,13 +89,15 @@ Bob.Ted
 This nesting can be multiple levels deep.
 
 Square brackets can be used to access the specific cells of a value. For example a[3,2] would return the value in the third row and second column of a value named "a".
+A 0 can be used for all rows or all columns.
 
 When suggesting a formula, only include the right hand side.  That is report "a + b^2" rather than "myValue = a + b^2"
 
 The mmfuncs.html file contains descriptions of function calls. Only listed functions can be used.
 The calling syntax is described in contents of div elements that have a class "f-picker__f-def".
 {} characters can only be used for function calls.
-The description of the function is contained in the contents of the following div element which has a class of "f-desc".  You will answer questions about calling these functions based only on the material in mmfuncs.html.
+The description of the function is contained in the contents of the following div element which has a class of "f-desc".
+Only functions listed in mmfuncs.html are valid.
 A function call is of the form {function_name parameters} where parameters is a comma separated list.
 A parameter can be any named value, constant, function call or a formula term.
 Functions evaluate to a value.
@@ -139,7 +141,7 @@ distance/3 h
 1:10 * 1 kg
 "hello " + "world"
 
-The final result should have created objects contained in an array in a "CopyObjects" object such as:
+The final result must have created objects contained in an array in a "CopyObjects" object such as:
 
 {"CopyObjects": [
 	{

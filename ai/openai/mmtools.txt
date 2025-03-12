@@ -1,4 +1,5 @@
 Additional Math Minion tools.
+Note, in a formula $ can be used as a proxy for the formula owner's name.
 
 Graph
 produces 2D and 3D plots
