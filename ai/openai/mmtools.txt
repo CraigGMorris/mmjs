@@ -1,5 +1,4 @@
 Additional Math Minion tools.
-Note, in a formula $ can be used as a proxy for the formula owner's name.
 
 Graph
 produces 2D and 3D plots
@@ -162,3 +161,65 @@ countFormula determines how many outputs there are
 outputs should be an array of zeros countFormula long.
 
 The output values are available as parameters 1, 2 etc as in myOpt.1. These are used in formulas in other tools to calculate the function values.
+
+
+Ordinary Differential Equation Solver
+Numerically integrates dy/dt given an initial value y0 and a calculated dy. It varies its y and t parameters.
+
+It should have the JSON fields:
+"Type": "ODE Solver"
+"AutoRun": "y"
+"relTolFormula": {
+	"Formula": "1.0e-5"
+},
+"absTolFormula": {
+	"Formula": "1.0e-10*{baseunit $.y}"
+}
+the fields above should be included as shown.
+"y0Formula": {
+	"Formula": "y0"
+}
+"dyFormula": {
+	"Formula": "dy"
+}
+The y0Formula and dyFormula should calculate the y0 and dy values.
+Always calculate dy in an expression, not directly in dyFormula
+✅ Correct:
+
+{
+    "name": "dy",
+    "Formula": {
+        "Formula": "{table `Prey`, ODE.y.Prey*(preyGrowth - preyDeath*ODE.y.Predator), `Predator`, ODE.y.Predator*(predatorEfficiency*preyDeath*ODE.y.Prey - predatorDeath)}"
+    }
+}
+Then, the ODE Solver should reference this Expression:
+"dyFormula": {
+    "Formula": "dy"
+}
+
+❌ Incorrect: Using y0 inside dyFormula.
+
+"dyFormula": {
+    "Formula": "{table `Prey`, y0.Prey*(preyGrowth - preyDeath*y0.Predator), `Predator`, y0.Predator*(predatorEfficiency*preyDeath*y0.Prey - predatorDeath)}"
+}
+
+Use an expression to define y0 and use it in y0Formula
+
+"recFormulas": [
+	{
+		"Formula": "$.t 'Time"
+	},
+	{
+		"Formula": "Theta"
+	}
+]
+"nextTFormula": {
+	"Formula": "$.t + 0.1 s"
+},
+"endTFormula": {
+	"Formula": "10 s"
+}
+recFormulas is an array of formulas that will be evaluated at intervals determined by the nextTFormula. These values constitute the output of the tool and will be available from parameter "table". If the formulas include a comment, everything after the ' character, this will be used as the column name. It cannot include spaces.
+The $.t term evaluates to the current value of t. Do not use it anywhere else.
+
+
