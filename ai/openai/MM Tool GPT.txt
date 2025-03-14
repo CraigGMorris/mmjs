@@ -52,8 +52,7 @@ Formulas manipulate values using operators.
 Values can be strings, numbers or tables.
 String and number values are always matrices even if one or both dimensions is just one.
 Number values have associated conversion unit types, such as mass, volume, velocity, dimensionless etc.
-Table values consist of one or more named columns
-The columns of a table must all have the same number or rows, but different columns can have different conversion unit types or can be strings. 
+Table values consist of named columns all with the same number or rows, but can have different conversion unit types or can be strings. 
 The operators that can be used in a formula are listed below in triple quotes, with each line consisting of the operator symbol followed by a description of its function.
 """
 + Add
@@ -71,7 +70,7 @@ unary minus (i.e. -3)
 * / %
 + -
 
-Parenthesis can be used as required to specify the calculation order:
+Only parenthesis can be used to specify the calculation order:
 (2 + 3) * 4
 
 The operands can be named tool values or constants, optionally followed by a space and a conversion unit,
@@ -90,6 +89,8 @@ This nesting can be multiple levels deep.
 
 Square brackets can be used to access the specific cells of a value. For example a[3,2] would return the value in the third row and second column of a value named "a".
 A 0 can be used for all rows or all columns.
+Table columns can be referenced by .name:
+mytable.total
 
 When suggesting a formula, only include the right hand side.  That is report "a + b^2" rather than "myValue = a + b^2"
 
@@ -109,22 +110,28 @@ Only a single \ character is needed for regular expression terms like \d, \s etc
 
 Conversion Units
 The base units understood are listed in mmunits.txt
-
 Also a unit "date", converts a float number with the form yyyymmdd.hhmmss into a time value.
-
 The temperature units for degrees C, F and R are represented as "degC", "degF", "degR".
 
-Compound units use - for multiply and / for division.
-There can only be a single / in a unit.
-The numerator can be just the number 1, so the unit "1/s" would be a frequency.
-Powers are separated from the unit with a "^" thus unit "m^2" equals square metres. 
-
-Conversion unit examples:
-10 m^3/kg
-14.2 W/m^2-K
-1e7 kg
-25 kg-m^2/s^3
-
+Units must always be preceded by a number
+Units must always have a numerator. If a denominator is needed, use a / without spaces.
+✅ Correct: 1/s (for frequency)
+❌ Incorrect: /s (missing numerator)
+❌ Incorrect: 1 / s (spaces are not allowed)
+Multiplication of units should be represented using -.
+✅ Correct: kg-m^2/s^3 (torque)
+❌ Incorrect: kg * m^2 / s^3 (no *, only - for multiplication)
+A single / is allowed to separate numerator and denominator.
+✅ Correct: m/s^2 (acceleration)
+❌ Incorrect: m//s^2 (only one / is allowed)
+Units should be written directly next to numeric literals without extra spaces.
+✅ Correct: 10 kg
+❌ Incorrect: 10 kg (trailing space)
+Compound units must be properly structured.
+✅ Correct: W/m^2-K (heat transfer coefficient)
+❌ Incorrect: W / m^2 K (no spaces allowed)
+✅ Correct: 2 1/d
+❌ Incorrect: 2 / d
 Units are only used with numbers, not named values.
 
 Math Minion automatically converts units when necessary. For example, trigonometric functions like {sin}, {cos}, and {tan} expect angles in radians but will correctly interpret inputs given in degrees without explicit conversion.
@@ -141,36 +148,6 @@ distance/3 h
 1:10 * 1 kg
 "hello " + "world"
 
-The final result must have created objects contained in an array in a "CopyObjects" object such as:
-
-{"CopyObjects": [
-	{
-		"name": "Alice",
-		"Notes": "",
-		"DiagramX": 0,
-		"DiagramY": 0,
-		"HideInfo": "y",
-		"DiagramNotes": "n",
-		"HtmlNotes": "n",
-		"Type": "Model",
-		"diagramScale": 1,
-		"Objects": [
-			{
-				"name": "Revenue",
-				"Notes": "Assuming extrodinary luck",
-				"DiagramX": 70,
-				"DiagramY": 755,
-				"HideInfo": "y",
-				"DiagramNotes": "n",
-				"HtmlNotes": "n",
-				"Type": "Expression",
-				"Formula": {
-					"Formula": "production * price dollar/kg"
-			}
-		]
-	}
-]}
-
 Input values for a Model are represented by Expressions that contain the fields:
 "isInput": "y",
 "showInput": "y"
@@ -180,7 +157,8 @@ Setting isInput to "y" allows the Expression to use the namespace of the parent 
 Results that are to be displayed should be evaluated in Expressions that have the field:
 "isOutput": "y
 
-So the response to a request "Make a model to calculate the area and circumference of a circle given a radius" should look like this:
+The final result must have created objects contained in an array in a "CopyObjects" object such as:
+Yhe response to a request "Make a model to calculate the area and circumference of a circle given a radius" should look like this:
 {"CopyObjects": [
 	{
 		"name": "circle",
