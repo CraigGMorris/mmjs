@@ -425,7 +425,7 @@ class MMGraphX extends MMGraphAxis {
 			if (value instanceof MMStringValue) {
 				o.unit = 'String';
 			}
-			else if (value) {
+			else if (value && value.defaultUnit) {
 				o.unit = value.defaultUnit.name;
 			}			
 		}
@@ -454,7 +454,7 @@ class MMGraphX extends MMGraphAxis {
 			}
 			else {
 				const value = this.graph.valueDescribedBy(yValue.name);
-				if (value) {
+				if (value && value.defaultUnit) {
 					yInfo.unit = value.defaultUnit.name;
 				}			
 			}	
@@ -482,7 +482,7 @@ class MMGraphX extends MMGraphAxis {
 			}
 			else {
 				const value = this.graph.valueDescribedBy(zInfo.name);
-				if (value) {
+				if (value && value.defaultUnit) {
 					zInfo.unit = value.defaultUnit.name;
 				}			
 			}	
