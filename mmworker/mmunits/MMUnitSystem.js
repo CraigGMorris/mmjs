@@ -446,7 +446,10 @@ class MMUnit extends MMCommandObject {
 	 * @param {number[]} dimensions
 	 */
 	static stringFromDimensions(dimensions) {
-		return dimensions.map(n => String(n)).join(' ');
+		if (dimensions) {
+			return dimensions.map(n => String(n)).join(' ');
+		}
+		return null;
 	}
 
 	static dimensionsFromString(dimensionString) {
