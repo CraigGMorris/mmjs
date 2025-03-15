@@ -253,7 +253,7 @@ export class SessionsView extends React.Component {
 						else {
 							json = results[0].results;
 						}
-						const blob = new Blob([json], {type : "text/plain"});
+						const blob = new Blob([json], {type : "application/json"});
 						const link = document.createElement('a');
 						link.download = pathParts.pop();
 						if (link.download.length === 0) {
