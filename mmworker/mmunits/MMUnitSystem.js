@@ -1537,6 +1537,7 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addUnit("atm","1 -1 1 -2 0 0 0 0 1.013250e+05",true);
 		this.addUnit("barg","2 -1 1 -2 0 0 0 0 1.000000e+05 1.013250e+05",true);
 		this.addUnit("mmHg0C","1 -1 1 -2 0 0 0 0 1.333220e+02",true);
+		this.addUnit("mmHg","1 -1 1 -2 0 0 0 0 1.333220e+02",true);
 		this.addUnit("cmHg0C","1 -1 1 -2 0 0 0 0 1.333220e+00",true);
 		this.addUnit("inHg32F","1 -1 1 -2 0 0 0 0 3.386383e+03",true);
 		this.addUnit("feetH2O4C","1 -1 1 -2 0 0 0 0 2.988980e+00",true);
