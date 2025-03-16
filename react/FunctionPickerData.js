@@ -1193,6 +1193,14 @@
 						<p>If <b>n</b> is omitted, the first column is used.  If <b>n</b> is negative, the sort is reversed</p>`,
 					},
 					{
+						f: "{mod x, n}",
+						desc: `Convenience function for x%n`,
+					},
+					{
+						f: "{sqrt x}",
+						desc: `Convenience function for x^0.5`,
+					},
+					{
 						f: "{wfetch method, url, headers}",
 						desc: `<p>
 							This uses XMLHttpRequest to perform net requests, but note that Cross Origin Resource Sharing

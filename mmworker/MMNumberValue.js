@@ -654,6 +654,19 @@ class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/** @method sqrt - returns square root value for real
+	 * @returns {MMNumberValue}
+	 */
+	sqrt() {
+		let rv = this.monadicResultWithUnitDimensions(this.unitDimensions);
+		const count = this.valueCount;
+		for (let i = 0; i < count; i++) {
+			const v = this._values[i];
+			rv._values[i] = Math.sqrt(v);
+		}
+		return rv;
+	}
+
 	/** @method min
 	 * returns the minimum of all the values
 	 */

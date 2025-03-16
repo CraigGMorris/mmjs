@@ -95,7 +95,7 @@ Miscellaneousfunctions: "Miscellaneous functions",
 <div id="ComplexNumberfunctions" class="section">
 <h3 class="f-picker__section-header">Complex Number functions</h3>
 <div class="f-picker__comment">
-<i>Please see the <a href="./complex.html">Complex Number</a> help page for more information on complex
+<i>Please see the <a href="./help/complex.html" target="_blank">Complex Number</a> help page for more information on complex
 					number handling in Math Minion.</i>
 </div>
 <div class="f-picker__f-def">{complex r, i}</div>
@@ -756,10 +756,10 @@ Miscellaneousfunctions: "Miscellaneous functions",
 							<b>%14.16x</b>.
 							</p>
 							<p>
-								For the date units (date, dated, datem), you can use a <b>/</b> or <b>-</b>
-								and that character will be used to separate the month, day and year. If the
-								dated or datem units are being used, prefix the whole format with a <b>d</b>
-								or <b>m</b> so it is the last four digits that are grouped as the year.
+							For the date units (date, dated, datem), you can use a <b>/</b> or <b>-</b>
+							and that character will be used to separate the month, day and year. If the
+							dated or datem units are being used, prefix the whole format with a <b>d</b>
+							or <b>m</b> so it is the last four digits that are grouped as the year.
 							</p>
 							<p>
 							Note it is also permissable to omit the size number, i.e.
@@ -791,7 +791,7 @@ Miscellaneousfunctions: "Miscellaneous functions",
 <div class="f-desc"><p>
 								The <b>s</b> parameter must be a string consisting of legal JSON code.
 								The result is a
-								<a href="./minionvalue.html#json">Math Minion JsonValue</a>.
+								<a href="./help/minionvalue.html#json" target="_blank">Math Minion JsonValue</a>.
 							</p></div>
 <div class="f-picker__f-def">{split s, sep}</div>
 <div class="f-desc"><p>Splits the elements of string <b>s</b> into an array string, using the scalar string <b>sep</b>
@@ -983,6 +983,10 @@ Miscellaneousfunctions: "Miscellaneous functions",
 						the index operator for <b>x</b>, the result would be a sorted copy of <b>x</b> 
 						<p>If <b>x</b> is a table value the sort will be on its column number <b>n</b>.</p>
 						<p>If <b>n</b> is omitted, the first column is used.  If <b>n</b> is negative, the sort is reversed</p></div>
+<div class="f-picker__f-def">{mod x, n}</div>
+<div class="f-desc">Convenience function for x%n</div>
+<div class="f-picker__f-def">{sqrt x}</div>
+<div class="f-desc">Convenience function for x^0.5</div>
 <div class="f-picker__f-def">{wfetch method, url, headers}</div>
 <div class="f-desc"><p>
 							This uses XMLHttpRequest to perform net requests, but note that Cross Origin Resource Sharing

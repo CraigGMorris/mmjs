@@ -225,12 +225,14 @@ const MMFormulaFactory = (token, formula) => {
 		'getbit': (f) => {return new MMGetBitFunction(f)},
 		'html': (f) => {return new MMHtmlFunction(f)},
 		'int': (f) => {return new MMGenericSingleFunction(f, Math.trunc)},
+		'mod': (f) => {return new MMModFunction(f)},
 		'numeric': (f) => {return new MMNumericFunction(f)},
 		'rand': (f) => {return new MMRandFunction(f)},
 		'round': (f) => {return new MMGenericSingleFunction(f, (x) => {
 			return Math.trunc(x + 0.5 * Math.sign(x))
 		})},
 		'sign': (f) => {return new MMGenericSingleFunction(f, Math.sign)},
+		'sqrt': (f) => {return new MMSqrtFunction(f)},
 		'isort': (f) => {return new MMISortFunction(f)},
 		'sort': (f) => {return new MMSortFunction(f)},
 		'wfetch': (f) => {return new MMWFetchFunction(f)},
@@ -4270,6 +4272,37 @@ class MMSortFunction extends MMISortFunction {
 		if (indices) {
 			return this.v.valueForIndexRowColumn(indices)
 		}
+	}
+}
+
+class MMSqrtFunction extends MMSingleValueFunction {
+	/**
+	 * @method value
+	 * @override
+	 * @returns {MMValue}
+	 */
+	value() {
+		const v = this.argument ? this.argument.value() : null;
+		if (v) {
+			return v.sqrt();
+		}
+		return null;
+	}
+}
+
+class MMModFunction extends MMMultipleArgumentFunction {
+	processArguments(operandStack) {
+		return super.processArguments(operandStack, 2);
+	}
+
+	value() {
+		const v = this.arguments[1].value();
+		const n = this.arguments[0].value()
+		if (v instanceof MMNumberValue && n instanceof MMNumberValue)
+		{
+			return v.mod(n);
+		}
+		return null;
 	}
 }
 
