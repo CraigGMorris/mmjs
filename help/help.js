@@ -54,6 +54,7 @@ function rtSetupHeading(title, sections) {
 	menuLines.push(`
 	<div class="contentlink"><a href="helppage.html">Help Pages</a></div>
 	<div class="contentlink"><a href="getstarted.html">Getting Started</a></div>
+	<div class="contentlink"><a href="chatgpt.html">Ask ChatGPT</a></div>
 	<div class="contentlink"><a href="tutorial.html">Introductory Tutorial</a></div>
 	<div class="contentlink"><a href="videos.html">Videos</a></div>
 	<div class="contentlink"><a href="examples.html">Examples</a></div>

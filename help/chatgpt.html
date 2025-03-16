@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Ask ChatGPT',{
+					gpt: 'Ask ChatGPT',
+					tools: 'Tools Assistant',
+					data: 'Data Table Assistant',
+					help: 'Help Assistant',
+					contact: 'Contact Me',
+				});
+			};			
+		</script>	
+		<style>
+			.note
+			{
+				font-weight: bold;
+				font-style: italic;
+			}
+		</style>
+
+		<title>Ask ChatGPT</title>
+	</head>
+	
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="menubody"></div>
+				<p class="note">
+					NOTE: OpenAI will require a paid ChatGPT account to make effective use of these assistants.
+				</p>
+			<div id="gpt" class="section">
+				<h3>Getting Help from ChatGPT</h3>
+				<p>
+					I have created some ChatGPT assistants for Math Minion. These are chat sessions that start with specialized knowledge for a given task. You should think of them as somewhat dim interns rather than as experts. They can save you time for simple tasks, but they will make mistakes and their work should be checked carefully.
+				</p>
+				<p>
+					If you have the ChatGPT app installed, clicking on an assistant link should open it with the assistant ready to follow your instructions. If you don't have the app, you should be taken to a new ChatGPT web page, again with the assistant ready.
+				</p>
+			</div>
+			<div id="tools" class="section">
+				<h3>Tools Assistant</h3>
+				<p>
+					Describe your problem to ChatGPT and it will attempt to create a JSON representation of a suitable Math Minion tool, usually a Model, to solve your problem. Copy and paste the result onto the Math Minion diagram to create the actual tool.
+				</p>
+				<p>
+					The results may require some fixing, but usually provide a good starting point and can be much faster than starting from scratch.
+				</p>
+				<p class="link">
+					<a href="https://chatgpt.com/g/g-67ce2b8302b881918ab06486ed92184d-math-minion-tool-assistant">Tool Assistant</a>
+				</p>
+			</div>
+			<div id="data" class="section">
+				<h3>Data Table Assistant</h3>
+				<p>
+					Give this assistant some representation of a table, text or image and it will attempt to create a Math Minion CSV file appropriate for pasting on the diagram to create a data table tool.
+				</p>
+				<p class="link">
+					<a href="https://chatgpt.com/g/g-67d4d1a5d7c48191bf07e3a0b321c72a-mm-datatable-assistant">Data Table Assistant</a>
+				</p>
+			</div>
+			<div id="help" class="section">
+				<h3>Help Assistant</h3>
+				<p>
+					Ask this assistant for general Math Minion help. It will search through the available help and attempt to provide an answer.
+				</p>
+				<p class="link">
+					<a href="https://chatgpt.com/g/g-67d4f5ca343481918c1e2f95432511af-mm-help-assistant">Help Assistant</a>
+				</p>
+			</div>
+
+			<div id="contact" class="section">
+				<h3>Contact Me</h3>
+				<p>
+					If you have any questions or
+					comments, please <a href="http://www.redtree.com/contact.html">contact me</a>.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>
