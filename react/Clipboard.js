@@ -23,13 +23,13 @@ const useEffect = React.useEffect;
 
 var clipboardText = '';
 var importedFileText = '';
-var useNavigator = (navigator.vendor.startsWith('Google') && navigator.clipboard);
+var clipboard = navigator.clipboard;
 
-export function hasSystemClipboard() { return useNavigator; } 
+export function hasSystemClipboard() { return !!clipboard; } 
 
 export async function readClipboard() {
-	if (useNavigator) {
-		let result = await navigator.clipboard.readText();
+	if (clipboard) {
+		let result = await clipboard.readText();
 		return result;
 	}
 	else {
@@ -43,8 +43,8 @@ export async function readClipboard() {
 }
 
 export async function writeClipboard(text) {
-	if (useNavigator) {
-			const result = await navigator.clipboard.writeText(text);
+	if (clipboard) {
+			const result = await clipboard.writeText(text);
 			return result;
 		}
 		else {
