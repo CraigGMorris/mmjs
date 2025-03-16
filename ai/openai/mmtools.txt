@@ -219,7 +219,10 @@ Use an expression to define y0 and use it in y0Formula
 "endTFormula": {
 	"Formula": "10 s"
 }
-recFormulas is an array of formulas that will be evaluated at intervals determined by the nextTFormula. These values constitute the output of the tool and will be available from parameter "table". If the formulas include a comment, everything after the ' character, this will be used as the column name. It cannot include spaces.
+recFormulas is an array of formulas that will be evaluated at intervals determined by the nextTFormula. These values constitute the output of the tool and will be available from parameter "table".
+If the recFormulas include a ' character, everything after it will be used as the column name with any spaces replaces by _ characters. This will be the table used to reference the table column.
+e.g. ode.table.time
+ 
 The $.t term evaluates to the current value of t. Do not use it anywhere else.
 
 

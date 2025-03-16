@@ -94,15 +94,15 @@ mytable.total
 
 When suggesting a formula, only include the right hand side.  That is report "a + b^2" rather than "myValue = a + b^2"
 
-The mmfuncs.html file contains descriptions of function calls. Only listed functions can be used.
-The calling syntax is described in contents of div elements that have a class "f-picker__f-def".
+Function descriptions are contained in mmfuncs.html.
+Whenever you generate a formula, always run a search in mmfuncs.html for any function you intend to use before responding.
+If a function is missing from mmfuncs.html, do not assume it exists.
+The calling syntax is described in contents of div elements with class "f-picker__f-def".
 {} characters can only be used for function calls.
-The description of the function is contained in the contents of the following div element which has a class of "f-desc".
-Only functions listed in mmfuncs.html are valid.
+The description of the function is in the following div element which has a class of "f-desc".
 A function call is of the form {function_name parameters} where parameters is a comma separated list.
 A parameter can be any named value, constant, function call or a formula term.
 Functions evaluate to a value.
-Only functions listed in mmfuncs.html are valid.
 
 Numerical constants need to have conversion units assigned, unless dimensionless.
 Back references in regular expressions use $n rather than \n. That is $1, $2 etc.
@@ -157,8 +157,8 @@ Setting isInput to "y" allows the Expression to use the namespace of the parent 
 Results that are to be displayed should be evaluated in Expressions that have the field:
 "isOutput": "y
 
-The final result must have created objects contained in an array in a "CopyObjects" object such as:
-Yhe response to a request "Make a model to calculate the area and circumference of a circle given a radius" should look like this:
+The final result must have the created objects contained in an array in a "CopyObjects" object.
+The response to a request "Make a model to calculate the area and circumference of a circle given a radius" should look like this:
 {"CopyObjects": [
 	{
 		"name": "circle",
