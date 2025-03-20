@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2025.03.08";
+const VERSION = "2025.03.20";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
@@ -34,6 +34,7 @@ const APP_STATIC_RESOURCES = [
 	"help/broyden.png",
 	"help/button.html",
 	"help/button.png",
+	"help/chatgpt.html",
 	"help/complex.html",
 	"help/connections.png",
 	"help/console.html",
@@ -214,29 +215,37 @@ const APP_STATIC_RESOURCES = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
-      const cache = await caches.open(CACHE_NAME);
-      await cache.addAll(APP_STATIC_RESOURCES);
-			// console.log('addAll finished');
+     const cache = await caches.open(CACHE_NAME);
+			for (const resource of APP_STATIC_RESOURCES) {
+        try {
+					const request = new Request(resource, { cache: 'reload' });
+          await cache.add(request);
+        } catch (err) {
+          console.error(`Failed to cache ${resource}:`, err);
+        }
+      }
+
+			console.log('addAll finished');
     })()
   );
 });
 
 // delete old caches on activate
 self.addEventListener("activate", (event) => {
-	// console.log('in activate');
+	console.log('in activate');
   event.waitUntil(
     (async () => {
 			// console.log('in waitUntil');
       const names = await caches.keys();
       await Promise.all(
         names.map((name) => {
-					// console.log(`activate map ${name}`)
           if (name !== CACHE_NAME) {
-						// console.log(`deleting ${name}`);
+						console.log(`deleting ${name}`);
             return caches.delete(name);
           }
         })
       );
+			console.log(`activate map ${CACHE_NAME}`)
       await clients.claim();
     })()
   );
@@ -251,7 +260,11 @@ self.addEventListener("fetch", (event) => {
 		event.request.url += 'index.html';
 	};
 
-	if (event.request.url.includes('/video/') || event.request.url.includes('/downloads/')) {
+	if (
+		event.request.url.includes('/video/') ||
+		event.request.url.includes('/downloads/') ||
+		event.request.url.includes('?')
+	) {
 		// Use network only strategy for these directories
 		event.respondWith(fetch(event.request));
 		return;
@@ -264,13 +277,13 @@ self.addEventListener("fetch", (event) => {
       const cachedResponse = await cache.match(event.request);
       if (cachedResponse) {
         // Return the cached response if it's available.
-				// console.log(`found cached ${event.request.url}`);
+				// console.log(`found cached ${event.request.url} ${CACHE_NAME}`);
         return cachedResponse;
       }
 			try {
 				// console.log(`trying network for ${event.request.url}`);
 				const networkResponse = await fetch(event.request);
-				if (networkResponse.ok && !event.request.url.includes('?')) {
+				if (networkResponse.ok) {
 					// console.log(`network got ${event.request.url}`);
 					cache.put(event.request, networkResponse.clone());
 				}
@@ -285,6 +298,7 @@ self.addEventListener("fetch", (event) => {
 
 self.addEventListener('message', function (event) {
   if (event.data.action === 'skipWaiting') {
+		// console.log('skipWaiting');
     self.skipWaiting();
   }
 });

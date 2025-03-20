@@ -36,8 +36,7 @@
 <body>
 	<div id="root">Loading...please be patient, its a big program</div>
 	<div id="update">
-		A new version is available. Click <a id="reload">here</a> to reload or
-		<a id="close-reload">here</a> to ignore.
+		A new version is available. Click <a id="reload">here</a> to reload.
 	</div>
 	
 	
@@ -55,10 +54,6 @@
 		document.getElementById('reload').addEventListener('click', function(){
 			newWorker.postMessage({ action: 'skipWaiting' });
 		});
-		document.getElementById('close-reload').addEventListener('click', function(){
-			const updateNotice = document.getElementById('update');
-			updateNotice.className = 'hide';
-		});
 		if ("serviceWorker" in navigator) {
 			navigator.serviceWorker.register("PWAServiceWorker.js").then((swReg) => {
 				swReg.addEventListener('updatefound', () => {
@@ -70,6 +65,7 @@
 								// new update available
 								const updateNotice = document.getElementById('update');
 								updateNotice.className = 'show';
+								console.log('showing prompt');
 							}
 						}
             // else No update available
