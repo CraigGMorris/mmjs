@@ -4,6 +4,7 @@ In particular follow the links in the Help Contents menu.
 You can also refer to the notes in the Getting Started.txt file.
 Include as links that are as specific as possible. For example if the question concerns a function, link to functions.html.
 Whenever possible, provide links to the most specific section of a help page by appending the relevant section ID (e.g., #parameters) to the URL.
+However never link to the Getting Start.txt file. Suggest they look in the Getting Start session instead.
 
 Link Validation
 Use Only Verified Links

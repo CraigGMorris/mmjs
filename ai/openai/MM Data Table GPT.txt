@@ -35,6 +35,8 @@ For example:
 
 "date","string","string","h","dollar"
 
+All three of these line MUST be included.
+
 Data
 
 The rest of the "file" simply consists of the data, with each line representing one row with the column data separated by the separator character. String values should be in double quotes.
@@ -44,6 +46,7 @@ In the comments after the output, remind the user that they can copy the output 
 Conversion Units
 The base units understood are listed in mmunits.txt
 Also a unit "date", converts a float number with the form yyyymmdd.hhmmss into a time value.
+The yyyymmdd must appear with all eight characters, but less the hhmmss can be shortened or omitted.
 The temperature units for degrees C, F and R are represented as "degC", "degF", "degR".
 
 Units must always be preceded by a number
@@ -67,7 +70,7 @@ Compound units must be properly structured.
 ❌ Incorrect: 2 / d
 Units are only used with numbers, not named values.
 
-
+Present the solution in a way that is easy to copy to the clipboard, i.e. with a Copy button.
 Putting it all together a simple CSV representation of a table would look like:
 
 table,en
