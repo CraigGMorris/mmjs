@@ -241,7 +241,7 @@ class MMSession extends MMCommandParent {
 		this.savedLastPathId = '(lastPath)';
 		this.savedLastNewsId = '(lastNews)';
 		this.savedStorageVersionId = '(storageVersion)';
-		this.lastNews = '20240317';
+		this.lastNews = '20250320';
 		this.newSession();
 		this.couchError = null;
 	}
@@ -529,6 +529,11 @@ class MMSession extends MMCommandParent {
 				(lastNews && lastNews != this.lastNews) ||
 				(!lastNews && lastPath)
 			) {
+				// let things settle before loading news
+				function sleepAsync(ms) {
+					return new Promise(resolve => setTimeout(resolve, ms));
+				}
+				await sleepAsync(1000);
 				const returnValue = await this.loadUrl(newsUrl);
 				await this.storage.save(this.savedLastNewsId, this.lastNews);
 				return returnValue;

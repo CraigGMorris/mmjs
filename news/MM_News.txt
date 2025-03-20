@@ -4,10 +4,13 @@
 	"DetailWidth": 320,
 	"DeviceWidth": 1024,
 	"UserUnitSets": {},
-	"UserUnits": [],
+	"UserUnits": [
+		null,
+		null
+	],
 	"CaseName": "MM_News",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "root",
+	"SelectedObject": "",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -23,8 +26,8 @@
 			{
 				"name": "Older_Articles",
 				"Notes": "<b>Click here for previous news articles</b>",
-				"DiagramX": 80,
-				"DiagramY": -165,
+				"DiagramX": 160,
+				"DiagramY": -260,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"HtmlNotes": "y",
@@ -34,8 +37,8 @@
 					{
 						"name": "News_20211010",
 						"Notes": "",
-						"DiagramX": 170,
-						"DiagramY": -110,
+						"DiagramX": 155,
+						"DiagramY": -160,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -326,6 +329,7 @@
 								"HideInfo": "y",
 								"DiagramNotes": "y",
 								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "HTML Form",
 								"Formula": {
 									"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.link {color: blue;}\n\t\t\t\n\t\t\t\t\t\t#records table {\n\t\t\t\twidth: 350px;\n\t\t\t}\n\t\t\t\n\t\t\t.withstyle table, th, td {\n\t\t\t\tborder: 0px solid black;\n\t\t\t\tborder-collapse: collapse;\n\t\t\t}\n\t\t\t.withstyle td, .withstyle th {\n\t\t\t  border: 1px solid #ddd;\n\t\t\t  padding: 8px;\n\t\t\t}\n\n\t\t\t.withstyle tr:nth-child(even){background-color: #f2f2f2;}\n\t\t\t\n\t\t\t.withstyle tr:hover {background-color: #ddd;}\n\t\t\t\n\t\t\t.withstyle th {\n\t\t\t  padding-top: 12px;\n\t\t\t  padding-bottom: 12px;\n\t\t\t  text-align: left;\n\t\t\t  background-color: #04AA6D;\n\t\t\t  color: white;\n\t\t\t}\n\t\t\t#projhours th.col1, #projhours td.col1 {\n\t\t\t  width: 150px;\n\t\t\t}\n\t\t\t\n\t\t\t#projhours .col0 {\n\t\t\t\tvisibility: hidden;\n\t\t\t\tborder: 0px;\n\t\t\t\twidth: 0px;\n\t\t\t\tpadding: 0px;\n\t\t\t}\n\t\t\t\n\t\t\t.link {\n\t\t\t\tcolor: blue;\n\t\t\t\tcursor: pointer;\n\t\t\t}\n\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h4>Math Minion News: 2021-10-10</h4>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Yet Another News Iteration</h3>\n\t\t\t<p>\n\t\t\t\tThis news session bring yet another experiment in organization. The news from each date is now contained in its own model, which allows the HTML page to be bundled with other tools it may use for examples. The news from all dates will be collected in a \"News\" model, just to make the back titles obvious that the older news is in the parent model.\n\t\t\t</p>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>HTML Page Fixes and Upgrades</h3>\n\t\t\t<p>\n\t\t\t\tIncluding table values in the HTML page tool was not working properly. It has been fixed and I added some small enhancements such as CSS classes for the columns (col1, col2 etc) to make styling easier.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tWhile few people have probably tried to use this feature or the HTML page tool in general, I think the HTML page tool is a great way to present information or even prepare reports for printing or saving as a PDF files. Granted using it does require some basic knowledge of HTML and preferably CSS, but these have lots of great resources on the web, such as:\n\t\t\t</p>\t\n\t\t\t<ul>\n\t\t\t\t<li><a href=\"https://developer.mozilla.org/en-US/docs/Web/Guide\" target=\"_blank\">MDN Developer Guide</a> from Mozilla.</li>\n\t\t\t\t<li><a href=\"https://www.w3schools.com\" target=\"_blank\">W3Schools</a></li>\n\t\t\t</ul>\n\t\t\t<p>\n\t\t\t\tIllustrating the fix gives me an excuse to flog the HTML page a bit more. 🙂\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tOne of the features of the  HTML page tool is the ability to embed calculated values using the <b>&lt;mm&gt;</b> custom tag. Any Math Minion formula can be included inside the tag and the whole tag will be replaced in the final HTML with the result of the formula.  Thus:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t&lt;mm&gt;{pi}&lt;/mm&gt;\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\twould be replaced with <mm>{pi}</mm>. If you look at the source formula for this page, you will see that is exactly what has been done here. Also the\n\t\t\t\t<b><span class=\"link\" onClick=\"mmpost([], {mm_push: 'renderedHtml'})\">renderedHTML</span></b> expression will show the HTML used after the substitutions have been made (click in its cell for the full text).\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tIf the formula returns a value which is not a scalar, then the tag is replaced with an HTML table. For instance:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t&lt;mm&gt;{array 3, 2, 1:6} * 1 kg&lt;/mm&gt;\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\twould result in\n\t\t\t</p>\n\t\t\t<p><mm>{array 3, 2, 1:6} * 1 kg</mm></p>\n\t\t\t<p>\n\t\t\t\tThis should have also worked with table values, but didn't and is what required the fix. Referencing a table value like:\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t&lt;mm&gt;clientHours&lt;/mm&gt;\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tnow results in:\n\t\t\t<p>\n\t\t\t<div>\n\t\t\t\t<mm>clientHours</mm>\n\t\t\t</div>\n\t\t\t<p>\n\t\t\t\tThis is functional, but not very attractive.  However it can be restyled with CSS to look however you want.  Here is another table, but this time with some styling, largely copied from a W3Schools example.  The styling also hides the row numbers\n\t\t\t</p>\n\t\t\t<div id=\"projhours\" class=\"withstyle\">\n\t\t\t\t<mm>projectHours</mm>\n\t\t\t</div>\n\t\t\t<p>\n\t\t\t\tA non-table value can be similarly styled.  Using the formula\n\t\t\t</p>\n\t\t\t<p class=\"formula\">\n\t\t\t\t&lt;mm&gt;{array 10, 4, 1:40} * 1 min&lt;/mm&gt;\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tand with the row numbers are left retained results in:\n\t\t\t</p>\n\t\t\t<div class=\"withstyle\">\n\t\t\t\t<mm>{array 10, 4, 1:40} * 1 min</mm>\n\t\t\t</div>\n\t\t\t<p>\n\t\t\t\tIf you are having problems getting your HTML pages to work the way you want, just <a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">let me know</a> and I will be happy to try and help. The only caveat is that I am sometimes off grid and if so my reply might be delayed.\n\t\t\t</p>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Printing and PDFs</h3>\n\t\t\t<p>\n\t\t\t\tOnce you have a nice report in an HTML page tool, you may want to print it or save it as a PDF file. There isn't a specific Math Minion function for doing this, but at least on a Mac or PC, all the major browsers make it quite simple. (I don't actually have a Windows machine, but a quick trial on a borrowed Windows session with Edge worked).\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tFirst click on the displayed content of your page, avoiding any links, and select everything in it with Cmd A on Mac or Ctrl A on Windows. On a Mac, just select <b>Print</b> from the <b>File</b> menu and you should get a print preview showing just your formatted selected content, without the diagram.  On Windows, right clicking on the selected content and choosing <b>Print</b> from the resulting popup menu should achieve the same.\n\t\t\t</p>\n\t\t\t<p>\t\n\t\t\t\tYou can now print to a printer or save the output to a PDF file in the normal manner (the dialogs differ slightly depending on the browser and OS). On a Mac you can choose the option to include background graphics if you wish to maintain background colours (not sure about Windows).\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tWhile it is possible to print or even save to a PDF on iOS and iPad, I don't know of any way to print anything other than what is showing on the screen and most reports would not fit on a acreen without scrolling. I have no idea if this can be done on Android devices.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<b>\n\t\t\t</p>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Feedback</h3>\n\t\t\t<p>\n\t\t\t\tAs always, any and all feedback or questions are encouraged and appreciated.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
@@ -341,8 +345,8 @@
 					{
 						"name": "News_20210910",
 						"Notes": "",
-						"DiagramX": 170,
-						"DiagramY": -85,
+						"DiagramX": 85,
+						"DiagramY": -160,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -719,8 +723,8 @@
 					{
 						"name": "News_20210703",
 						"Notes": "",
-						"DiagramX": 170,
-						"DiagramY": -60,
+						"DiagramX": 225,
+						"DiagramY": -185,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -746,8 +750,8 @@
 					{
 						"name": "News_20210621",
 						"Notes": "",
-						"DiagramX": 170,
-						"DiagramY": -35,
+						"DiagramX": 155,
+						"DiagramY": -185,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -773,8 +777,8 @@
 					{
 						"name": "News_20211207",
 						"Notes": "",
-						"DiagramX": 170,
-						"DiagramY": -135,
+						"DiagramX": 225,
+						"DiagramY": -160,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -786,8 +790,8 @@
 					{
 						"name": "News_20220121",
 						"Notes": "",
-						"DiagramX": 170,
-						"DiagramY": -160,
+						"DiagramX": 85,
+						"DiagramY": -135,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1357,8 +1361,8 @@
 					{
 						"name": "News_20220226",
 						"Notes": "",
-						"DiagramX": 170,
-						"DiagramY": -185,
+						"DiagramX": 155,
+						"DiagramY": -135,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1736,8 +1740,8 @@
 					{
 						"name": "News_20220324",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": -5,
+						"DiagramX": 225,
+						"DiagramY": -135,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1810,14 +1814,14 @@
 						"isOutput": "y",
 						"Type": "HTML Form",
 						"Formula": {
-							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.link {color: blue;}\n\t\t\t.date {\n\t\t\t\tfont-size: 14pt;\n\t\t\t\tcolor: blue;\n\t\t\t}\n\t\t\t.article {\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n \t\t\t}\n\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>Math Minion News Articles</h3>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Jan_2024_News'});\">January 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Improvements to load speed</li>\n\t\t\t\t<li>End of line comments in formulas</li>\n\t\t\t\t<li>Index operator and Model references</li>\n\t\t\t\t<li>Miscellaneous other fixes and improvements</li>\n\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Oct_2023_News'});\">October 2023 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>A number of changes to make importing and exporting long\n\t\t\t\tstrings easier.</li>\n\t\t\t\t<li>Added JSON parsing features.</li>\n\t\t\t\t<li>The table function can now create a table value directly from a CSV string.</li>\n\t\t\t\t<li>Conversely a new csv function creates a CSV string from a table value.</li>\n\t\t\t\t<li>Other minor stuff.</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Aug_2023_News'});\">August 2023 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Units almost never need to be in quotes anymore.</li>\n\t\t\t\t<li>Numerous small changes to the user interface.</li>\n\t\t\t\t<li>There is now a print icon for model views.</li>\n\t\t\t\t<li>Various improvements to formula editing and unit selection.</li>\n\t\t\t\t<li>Numerous other changes and bug fixes.</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Dec_2022_News'});\">December 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>CSV Argument for Table Function</li>\n\t\t\t\t<li>Retrieving Local Files</li>\n\t\t\t\t<li>Pasting JSON</li>\n\t\t\t\t<li>Default Model View</li>\n\t\t\t\t<li>Eval Arrays</li>\n\t\t\t\t<li>Added an isNaN Function</li>\n\t\t\t\t<li>Tool Value Arrays</li>\n\t\t\t\t<li>Model toolnames Parameter</li>\n\t\t\t\t<li>Other Changes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Sept_2022_News'});\">September 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Formula Editor Completions</li>\n\t\t\t\t<li>Axis Zooming on Graphs</li>\n\t\t\t\t<li>Back Tick Quoting</li>\n\t\t\t\t<li>Constants with Number Bases</li>\n\t\t\t\t<li>\"Contains\" Select Operator</li>\n\t\t\t\t<li>Multiple Select Terms</li>\n\t\t\t\t<li>Sortling On Columns</li>\n\t\t\t\t<li>New Options for Table Function</li>\n\t\t\t\t<li>Column Names and Append</li>\n\t\t\t\t<li>Transposing Tables</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Aug_2022_News'});\">August 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Model View</li>\n\t\t\t\t<li>New Display Tools (Menu and Button)</li>\n\t\t\t\t<li>Formatting Improvements</li>\n\t\t\t\t<li>Videos</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220324'});\">2022-03-24 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Graph changes</li>\n\t\t\t\t<li>Html page tool changes</li>\n\t\t\t\t<li>A couple of new functions</li>\n\t\t\t\t<li>Result colouring for expression icons</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220226'});\">2022-02-26 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Added a filter field to the <a href=\"help/datatable.html#infoview\" target=\"_blank\">Data Table view</a></li>\n\t\t\t\t<li>Data table columns can now be presented as <a href=\"help/datatable.html#coleditor\" target=\"_blank\">menus</a></li>\n\t\t\t\t<li>Html pages can now issue <a href=\"help/htmlpage.html#cmd\" target=\"_blank\">commands</a> directly to the calculation engine.</li>\n\t\t\t\t<li>Miscellaneous changes and fixes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220121'});\">2022-01-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>It is now possible to add calculated columns to data tables.</li>\n\t\t\t\t<li>Data table rows can now be edited and browsed in a new\n\t\t\t\t<a href=\"help/datatable.html#roweditor\" target=\"_blank\">row editor</a></li>\n\t\t\t\t<li>Enhancements to the Htmlpage tool.</li>\n\t\t\t\t<li>Added notes as a formula parameter to all tools.</li>\n\t\t\t\t<li>Added an import button to the clipboard view.</li>\n\t\t\t\t<li>Added scroll wheel (two finger trackpad drag) scrolling for table views.</li>\n\t\t\t\t<li>Improvements to the append, select, sumcols, mincols, and maxcols functions</li>\n\t\t\t\t<li>Added <b>dollar</b> as a dimensionless unit</li>\n\t\t\t\t<li>Miscellaneous other fixes and changes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211207'});\">2021-12-07 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Changes to Session Storage</li>\n\t\t\t\t<li><a href=\"help/couchdb.html\" target=\"_blank\">CouchDB Integration</a></li>\n\t\t\t\t<li><a href=\"help/mmserver.html\" target=\"_blank\">Running a MM Server</a></li>\n\t\t\t\t<li>MM App Removed from App Store</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211010'});\">2021-10-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Yet Another News Iteration</li>\n\t\t\t\t<li>HTML Page Fixes and Upgrades</li>\n\t\t\t\t<li>Printing and PDFs</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210910'});\">2021-09-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Select Function Features</li>\n\t\t\t\t<li>Table Value Enhancements</li>\n\t\t\t\t<li>Miscellaneous Fixes etc.</li>\n\t\t\t\t<li>Coolprop molar density flashes</li>\n\t\t\t\t<li>Updated Getting Started</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210703'});\">2021-07-03 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>CoolMM - Math Minion + Coolprop</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210621'});\">2021-06-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New News</li>\n\t\t\t\t<li>Server Address Changes (Again)</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Feedback</h3>\n\t\t\t<p>\n\t\t\t\tAs always, any and all feedback or questions are encouraged and appreciated.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.link {color: blue;}\n\t\t\t.date {\n\t\t\t\tfont-size: 14pt;\n\t\t\t\tcolor: blue;\n\t\t\t}\n\t\t\t.article {\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n \t\t\t}\n\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>Math Minion News Articles</h3>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Mar_17_2024'});\">March 17 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>2D Plot display revamp</li>\n\t\t\t\t<li>Initial information pane size</li>\n\t\t\t\t<li>Progressive web app updates</li>\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Feb_20_2024'});\">February 20 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Import and rename changes</li>\n\t\t\t\t<li>Progressive web app bug fix</li>\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Feb_12_2024'});\">February 12 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Progressive web app</li>\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Feb_02_2024'});\">February 02 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Format descriptors for date unit types</li>\n\t\t\t\t<li>Notes on Safari storage</li>\n\t\t\t\t<li>Transferring sessions using ExportAll</li>\n\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Jan_2024_News'});\">January 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Improvements to load speed</li>\n\t\t\t\t<li>End of line comments in formulas</li>\n\t\t\t\t<li>Index operator and Model references</li>\n\t\t\t\t<li>Miscellaneous other fixes and improvements</li>\n\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Oct_2023_News'});\">October 2023 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>A number of changes to make importing and exporting long\n\t\t\t\tstrings easier.</li>\n\t\t\t\t<li>Added JSON parsing features.</li>\n\t\t\t\t<li>The table function can now create a table value directly from a CSV string.</li>\n\t\t\t\t<li>Conversely a new csv function creates a CSV string from a table value.</li>\n\t\t\t\t<li>Other minor stuff.</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Aug_2023_News'});\">August 2023 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Units almost never need to be in quotes anymore.</li>\n\t\t\t\t<li>Numerous small changes to the user interface.</li>\n\t\t\t\t<li>There is now a print icon for model views.</li>\n\t\t\t\t<li>Various improvements to formula editing and unit selection.</li>\n\t\t\t\t<li>Numerous other changes and bug fixes.</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Dec_2022_News'});\">December 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>CSV Argument for Table Function</li>\n\t\t\t\t<li>Retrieving Local Files</li>\n\t\t\t\t<li>Pasting JSON</li>\n\t\t\t\t<li>Default Model View</li>\n\t\t\t\t<li>Eval Arrays</li>\n\t\t\t\t<li>Added an isNaN Function</li>\n\t\t\t\t<li>Tool Value Arrays</li>\n\t\t\t\t<li>Model toolnames Parameter</li>\n\t\t\t\t<li>Other Changes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Sept_2022_News'});\">September 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Formula Editor Completions</li>\n\t\t\t\t<li>Axis Zooming on Graphs</li>\n\t\t\t\t<li>Back Tick Quoting</li>\n\t\t\t\t<li>Constants with Number Bases</li>\n\t\t\t\t<li>\"Contains\" Select Operator</li>\n\t\t\t\t<li>Multiple Select Terms</li>\n\t\t\t\t<li>Sortling On Columns</li>\n\t\t\t\t<li>New Options for Table Function</li>\n\t\t\t\t<li>Column Names and Append</li>\n\t\t\t\t<li>Transposing Tables</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Aug_2022_News'});\">August 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Model View</li>\n\t\t\t\t<li>New Display Tools (Menu and Button)</li>\n\t\t\t\t<li>Formatting Improvements</li>\n\t\t\t\t<li>Videos</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220324'});\">2022-03-24 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Graph changes</li>\n\t\t\t\t<li>Html page tool changes</li>\n\t\t\t\t<li>A couple of new functions</li>\n\t\t\t\t<li>Result colouring for expression icons</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220226'});\">2022-02-26 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Added a filter field to the <a href=\"help/datatable.html#infoview\" target=\"_blank\">Data Table view</a></li>\n\t\t\t\t<li>Data table columns can now be presented as <a href=\"help/datatable.html#coleditor\" target=\"_blank\">menus</a></li>\n\t\t\t\t<li>Html pages can now issue <a href=\"help/htmlpage.html#cmd\" target=\"_blank\">commands</a> directly to the calculation engine.</li>\n\t\t\t\t<li>Miscellaneous changes and fixes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220121'});\">2022-01-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>It is now possible to add calculated columns to data tables.</li>\n\t\t\t\t<li>Data table rows can now be edited and browsed in a new\n\t\t\t\t<a href=\"help/datatable.html#roweditor\" target=\"_blank\">row editor</a></li>\n\t\t\t\t<li>Enhancements to the Htmlpage tool.</li>\n\t\t\t\t<li>Added notes as a formula parameter to all tools.</li>\n\t\t\t\t<li>Added an import button to the clipboard view.</li>\n\t\t\t\t<li>Added scroll wheel (two finger trackpad drag) scrolling for table views.</li>\n\t\t\t\t<li>Improvements to the append, select, sumcols, mincols, and maxcols functions</li>\n\t\t\t\t<li>Added <b>dollar</b> as a dimensionless unit</li>\n\t\t\t\t<li>Miscellaneous other fixes and changes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211207'});\">2021-12-07 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Changes to Session Storage</li>\n\t\t\t\t<li><a href=\"help/couchdb.html\" target=\"_blank\">CouchDB Integration</a></li>\n\t\t\t\t<li><a href=\"help/mmserver.html\" target=\"_blank\">Running a MM Server</a></li>\n\t\t\t\t<li>MM App Removed from App Store</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211010'});\">2021-10-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Yet Another News Iteration</li>\n\t\t\t\t<li>HTML Page Fixes and Upgrades</li>\n\t\t\t\t<li>Printing and PDFs</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210910'});\">2021-09-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Select Function Features</li>\n\t\t\t\t<li>Table Value Enhancements</li>\n\t\t\t\t<li>Miscellaneous Fixes etc.</li>\n\t\t\t\t<li>Coolprop molar density flashes</li>\n\t\t\t\t<li>Updated Getting Started</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210703'});\">2021-07-03 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>CoolMM - Math Minion + Coolprop</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210621'});\">2021-06-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New News</li>\n\t\t\t\t<li>Server Address Changes (Again)</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Feedback</h3>\n\t\t\t<p>\n\t\t\t\tAs always, any and all feedback or questions are encouraged and appreciated.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
 						}
 					},
 					{
 						"name": "Aug_2022_News",
 						"Notes": "<b>New Model Information Views</b>\n\nThe views for models have been completely redesigned, with the motivation being to provide a means of generating simple forms, reports etc., without needing any knowledge of HTML.\n\nIn that spirit, this article is just the view for this model and what you are reading right now its notes. In addition to the <b>Show on Diagram</b> button, the notes editor for a tool now has a <b>Show in Model HTML</b> button. Model notes are shown at the top of its own view.\n\n<i>Okay, I cheated a bit by including some very basic tags to highlight things. Notes can contain some simple HTML tags like these, but nothing too fancy.</i>\n\nAny tool in a model can be set to have its results shown on the model's view. This is done by checking the <b>Display</b> check box beside its name on the tool's view. What is displayed will depend on what type of tool it is.\n\nExpressions now have a check box labeled <b>Display Input</b>, which if checked will cause an input field to appear in the model view. This allows you to enter or edit an expression's formula right from the model view. This expression (<b>Weight</b>) has that box checked, so an input field for it will appear below. It does not have its <b>Display</b> box checked though, so the calculated value will not be shown. In this case that will normally just be an entered constant.\n\nThe <b>Energy</b> expression does have its <b>Display</b> box checked, so its result is displayed, but not its formula. It also has its notes shown.  You can set these in any combination and even have only the notes appear.\n\nRather than a lengthy explanation like this, a more normal use for notes would be something like:",
 						"DiagramX": 85,
-						"DiagramY": -35,
+						"DiagramY": -110,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -2031,8 +2035,8 @@
 					{
 						"name": "Sept_2022_News",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": -60,
+						"DiagramX": 155,
+						"DiagramY": -110,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2352,8 +2356,8 @@
 					{
 						"name": "Dec_2022_News",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": -85,
+						"DiagramX": 225,
+						"DiagramY": -110,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2636,8 +2640,8 @@
 					{
 						"name": "Oct_2023_News",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": -135,
+						"DiagramX": 155,
+						"DiagramY": -80,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2786,7 +2790,7 @@
 						"name": "Aug_2023_News",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -110,
+						"DiagramY": -80,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2799,8 +2803,8 @@
 					{
 						"name": "Jan_2024_News",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": -160,
+						"DiagramX": 225,
+						"DiagramY": -80,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3052,188 +3056,329 @@
 								"showInput": "y"
 							}
 						]
-					}
-				]
-			},
-			{
-				"name": "Feb_02_2024",
-				"Notes": "",
-				"DiagramX": 80,
-				"DiagramY": -190,
-				"HideInfo": "n",
-				"DiagramNotes": "n",
-				"HtmlNotes": "n",
-				"isOutput": "y",
-				"Type": "Model",
-				"diagramScale": 1,
-				"Objects": [
-					{
-						"name": "DateFormat",
-						"Notes": "Format descriptors are now available for the <b>date</b>, <b>datem</b> and <b>dated</b> unit types of time.\n\nThese are <b>/</b> and <b>-</b> and result in the years, months and days being separated by that character.\n\nIt can be used without any width or precision values, in which case just the date is displayed (i.e., the precision is 0.\n\nHere the format is just <b>/</b>\n(Tap to view the actual expression)",
-						"DiagramX": 10,
-						"DiagramY": 10,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{now}+{timezone}"
-						},
-						"showInput": "y",
-						"displayUnit": "date",
-						"format": "/"
 					},
 					{
-						"name": "DateFormat2",
-						"Notes": "Same thing with a minus separator.",
-						"DiagramX": 10,
-						"DiagramY": 40,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{now}+{timezone}"
-						},
-						"showInput": "y",
-						"displayUnit": "date",
-						"format": "-"
-					},
-					{
-						"name": "DateD",
-						"Notes": "If the unit is <b>dated</b> or <b>datem</b>, then the entire format should be preceded by a <b>d</b> or <b>m</b>. This ensures that it is the last four digits that are grouped as the year.\n\nHere the format is <b>d-</b>.",
-						"DiagramX": 10,
-						"DiagramY": 80,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{now}+{timezone}"
-						},
-						"showInput": "y",
-						"displayUnit": "dated",
-						"format": "d-"
-					},
-					{
-						"name": "WithTime",
-						"Notes": "If a precision value is used, then the time portion is added. On the diagram and in model views, colons are appended between the hours, minutes and seconds, but to conserve space they don't appear in tool table cells.\n\nHere the format is <b>d.4-</b>.",
-						"DiagramX": 10,
-						"DiagramY": 150,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{now}+{timezone}"
-						},
-						"showInput": "y",
-						"displayUnit": "dated",
-						"format": "d.4-"
-					},
-					{
-						"name": "Width",
-						"Notes": "Width can be used, but is rarely needed.\n\nHere the format is <b>12.2/</b>",
-						"DiagramX": 85,
-						"DiagramY": 10,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{now}+{timezone}"
-						},
-						"showInput": "y",
-						"displayUnit": "date",
-						"format": "12.2/"
-					},
-					{
-						"name": "FmtFunc",
-						"Notes": "These formats can also be used with the <b>fmt</b> function.",
-						"DiagramX": 85,
-						"DiagramY": 60,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "\"The current date and time is \"\n+\n{fmt\n\t\".4/\",\n\t{now}+{timezone},\n\t\"date\"\n}"
-						},
-						"showInput": "y",
-						"displayUnit": "date",
-						"format": "12.2/"
-					},
-					{
-						"name": "BugFix",
-						"Notes": "Fixed a problem where the display box wouldn't fill the available height in expression scalar string displays.",
-						"DiagramX": 85,
-						"DiagramY": 100,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "'A multiline string\n2\n3\n4\n5\nYou get the idea"
-						},
-						"displayUnit": "date",
-						"format": "12.2/"
-					},
-					{
-						"name": "Some_Tips",
+						"name": "Feb_02_2024",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": 160,
+						"DiagramY": -55,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "DateFormat",
+								"Notes": "Format descriptors are now available for the <b>date</b>, <b>datem</b> and <b>dated</b> unit types of time.\n\nThese are <b>/</b> and <b>-</b> and result in the years, months and days being separated by that character.\n\nIt can be used without any width or precision values, in which case just the date is displayed (i.e., the precision is 0.\n\nHere the format is just <b>/</b>\n(Tap to view the actual expression)",
+								"DiagramX": 10,
+								"DiagramY": 10,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{now}+{timezone}"
+								},
+								"showInput": "y",
+								"displayUnit": "date",
+								"format": "/"
+							},
+							{
+								"name": "DateFormat2",
+								"Notes": "Same thing with a minus separator.",
+								"DiagramX": 10,
+								"DiagramY": 40,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{now}+{timezone}"
+								},
+								"showInput": "y",
+								"displayUnit": "date",
+								"format": "-"
+							},
+							{
+								"name": "DateD",
+								"Notes": "If the unit is <b>dated</b> or <b>datem</b>, then the entire format should be preceded by a <b>d</b> or <b>m</b>. This ensures that it is the last four digits that are grouped as the year.\n\nHere the format is <b>d-</b>.",
+								"DiagramX": 10,
+								"DiagramY": 80,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{now}+{timezone}"
+								},
+								"showInput": "y",
+								"displayUnit": "dated",
+								"format": "d-"
+							},
+							{
+								"name": "WithTime",
+								"Notes": "If a precision value is used, then the time portion is added. On the diagram and in model views, colons are appended between the hours, minutes and seconds, but to conserve space they don't appear in tool table cells.\n\nHere the format is <b>d.4-</b>.",
+								"DiagramX": 10,
+								"DiagramY": 150,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{now}+{timezone}"
+								},
+								"showInput": "y",
+								"displayUnit": "dated",
+								"format": "d.4-"
+							},
+							{
+								"name": "Width",
+								"Notes": "Width can be used, but is rarely needed.\n\nHere the format is <b>12.2/</b>",
+								"DiagramX": 85,
+								"DiagramY": 10,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{now}+{timezone}"
+								},
+								"showInput": "y",
+								"displayUnit": "date",
+								"format": "12.2/"
+							},
+							{
+								"name": "FmtFunc",
+								"Notes": "These formats can also be used with the <b>fmt</b> function.",
+								"DiagramX": 85,
+								"DiagramY": 60,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "\"The current date and time is \"\n+\n{fmt\n\t\".4/\",\n\t{now}+{timezone},\n\t\"date\"\n}"
+								},
+								"showInput": "y",
+								"displayUnit": "date",
+								"format": "12.2/"
+							},
+							{
+								"name": "BugFix",
+								"Notes": "Fixed a problem where the display box wouldn't fill the available height in expression scalar string displays.",
+								"DiagramX": 85,
+								"DiagramY": 100,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "'A multiline string\n2\n3\n4\n5\nYou get the idea"
+								},
+								"displayUnit": "date",
+								"format": "12.2/"
+							},
+							{
+								"name": "Some_Tips",
+								"Notes": "",
+								"DiagramX": 85,
+								"DiagramY": 160,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<h3>Safari and Storage</h3>\n<p>\n\t Apple's Safari browser, in its effort to limit web page user tracking, clears data stored in the browser's indexedDB if a website is not revisited for 7 days. This poses a significant issue for Math Minion users, as it relies on this storage for session data. Without exporting your sessions to a file, this can lead to data loss.\n</p>\n<p>\n\tOther desktop browsers like Chrome, Firefox, and MS Edge do not exhibit this behavior, making them viable alternatives on desktop platforms. However, iOS and iPadOS users face a challenge as all browsers on these platforms are required to use the Apple Webkit engine.\n</p>\n<p>\n\tA potential solution is converting Math Minion into a web app. On iPhone or iPad, do this by tapping the share icon and selecting <b>Add to Home Screen</b>. This action places a Math Minion icon on your home screen, functioning similarly to a standalone app while preventing the 7-day data clearance.\n</p>\n<p>\n\t For MacOS Sonoma users, you can apply a similar trick in Safari. Select <b>Add to Dock</b> from the File menu while viewing Math Minion. This also seems to preserve the database effectively.\n</p>\n<p>\n\tYou should still make it a practice to save your sessions to a file frequently. I use the <b>Export All</b> button on the sessions view in Math Minion, to save a copy of all of my sessions every day.  It only takes a few seconds.\n</p>\n<p>\n\tWhich brings me to my second topic today:\n</p>\n<h3>Transferring Sessions Using ExportAll</h3>\n<p>\n\tIt is quite easy to move all your session to a different browser or device using the <b>Export All</b> button on the sessions view. Tapping this will bring up a dialog, which will let you save a file containing all your sessions to a file on your device.\n</p>\n<p>\n\tUsing the <b>Import</b> button on the sessions view in another browser will import the entire saved sessions structure into a folder called <b>root</b> in the new browser. If you then rename this folder to just <b>/</b>, all the sessions and folders in root will be moved to the top level and any previous top level sessions and folders will be moved into a folder called <b>copy-2</b>, which can be deleted if not needed.\n</p>\n<p>\n\t<i>(To rename sessions or folders, tap on the gear icon on the right of their name in the sessions menu).</i>\n</p>\n<p>\n\tYou can even import a backup copy of an export all into the original browser and then examine and retrieve any sessions that you might want to recover from the root folder and then delete to root folder instead. I have often used this when I have accidentally deleted a session or mangled some calculation in it.\n</p>\n<p>\t\n\tStoring the export file in cloud storage, like <b>iCloud Drive</b>, <b>OneDrive</b>, <b>Google Drive</b>, facilitates importing it on a different device. I generally use Math Minion on my Mac, but occasionally have need for it on my iPhone or iPad and this is a quick way to get a current copy of everything onto them.\n</p>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>"
+								}
+							}
+						]
+					},
+					{
+						"name": "Feb_12_2024",
+						"Notes": "",
+						"DiagramX": 155,
+						"DiagramY": -55,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
 						"isOutput": "y",
 						"Type": "HTML Form",
 						"Formula": {
-							"Formula": "'\n<h3>Safari and Storage</h3>\n<p>\n\t Apple's Safari browser, in its effort to limit web page user tracking, clears data stored in the browser's indexedDB if a website is not revisited for 7 days. This poses a significant issue for Math Minion users, as it relies on this storage for session data. Without exporting your sessions to a file, this can lead to data loss.\n</p>\n<p>\n\tOther desktop browsers like Chrome, Firefox, and MS Edge do not exhibit this behavior, making them viable alternatives on desktop platforms. However, iOS and iPadOS users face a challenge as all browsers on these platforms are required to use the Apple Webkit engine.\n</p>\n<p>\n\tA potential solution is converting Math Minion into a web app. On iPhone or iPad, do this by tapping the share icon and selecting <b>Add to Home Screen</b>. This action places a Math Minion icon on your home screen, functioning similarly to a standalone app while preventing the 7-day data clearance.\n</p>\n<p>\n\t For MacOS Sonoma users, you can apply a similar trick in Safari. Select <b>Add to Dock</b> from the File menu while viewing Math Minion. This also seems to preserve the database effectively.\n</p>\n<p>\n\tYou should still make it a practice to save your sessions to a file frequently. I use the <b>Export All</b> button on the sessions view in Math Minion, to save a copy of all of my sessions every day.  It only takes a few seconds.\n</p>\n<p>\n\tWhich brings me to my second topic today:\n</p>\n<h3>Transferring Sessions Using ExportAll</h3>\n<p>\n\tIt is quite easy to move all your session to a different browser or device using the <b>Export All</b> button on the sessions view. Tapping this will bring up a dialog, which will let you save a file containing all your sessions to a file on your device.\n</p>\n<p>\n\tUsing the <b>Import</b> button on the sessions view in another browser will import the entire saved sessions structure into a folder called <b>root</b> in the new browser. If you then rename this folder to just <b>/</b>, all the sessions and folders in root will be moved to the top level and any previous top level sessions and folders will be moved into a folder called <b>copy-2</b>, which can be deleted if not needed.\n</p>\n<p>\n\t<i>(To rename sessions or folders, tap on the gear icon on the right of their name in the sessions menu).</i>\n</p>\n<p>\n\tYou can even import a backup copy of an export all into the original browser and then examine and retrieve any sessions that you might want to recover from the root folder and then delete to root folder instead. I have often used this when I have accidentally deleted a session or mangled some calculation in it.\n</p>\n<p>\t\n\tStoring the export file in cloud storage, like <b>iCloud Drive</b>, <b>OneDrive</b>, <b>Google Drive</b>, facilitates importing it on a different device. I generally use Math Minion on my Mac, but occasionally have need for it on my iPhone or iPad and this is a quick way to get a current copy of everything onto them.\n</p>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>"
+							"Formula": "'\n<h3>Feb 12, 2024 - Progressive Web App</h3>\n<p>\n\tRecently I uploaded a progressive web app (PWA) version of Math Minion. This conveys almost no visible sign of change to using the program, but does bring a number of hidden advantages:\n</p>\n<ul>\n\t<li>\n\t\tA PWA can be installed to operate as a standalone app. It still runs in\n\t\tthe browser, but in a clean window of its own and with an application icon\n\t\tthat you can use to launch it, just like a regular app.\n\t</li>\n\t<li>\n\t\tAll of its source is cached on your device, which means it loads\n\t\tquickly and can be used offline.\n\t</li>\n\t<li>\n\t\tIf the server source code is updated, the cached code will automatically\n\t\tbe updated when the app is run and the device is online.\n\t</li>\n</ul>\n<h3>Installing as an App</h3>\n<p>\n\tWhile most of the benefits of being a PWA are realized even if you\n\tdon't install it as an app, you may appreciate the cleaner interface\n\tand ability to launch from an icon. How you install will depend on\n\tthe browser and device you use, but here are some that I have tried.\n</p>\n<p><b>Desktop Chromium Browsers</b><br>\n\tThese browsers, including Google Chrome, MS Edge, Brave and others,\n\thave a small icon at the right of the address bar when a web app\n\tcan be installed. Hover over it and a tooltip saying something like\n\t\"App available. Install Math Minion\". Just click on it and follow the\n\tinstructions.\n</p>\n<p><b>Safari on a Mac</b><br>\n\tWhile running Math Minion in the browser, click on the share icon\n\ton the top bar and select <b>Add to Dock</b>.\n\tThis will place a Math Minion icon on the dock and clicking on it will\n\tlaunch a standalone version of Math Minion. As far as I know, there is\n\tno way to have this icon anywhere else.\n</p>\n<p><b>iOS and iPadOS Devices</b><br>\n\tWhile running Math Minion in a browser, tap on the share icon and\n\tscroll down and select <b>Add to Home Screen</b>. This will place\n\ta Math Minion icon on the home screen. It can be moved or put in\n\ta folder like any other app icon.\n</p>\n<p><b>Android</b><br>\n\tI don't have an Android device to try this on, but from what I have read,\n\tdepending on browser and device, a button saying something like\n\t<b>Install</b> or <b>Add to Home Screen</b> will appear.\n</p>\n<p><b>Firefox</b><br>\n\tFirefox does not support installing web apps on desktop computers. It\n\treportedly does on iOS and Android, but I haven't tested it.\n</p>\n<h3>Help in Standalone App</h3>\n<p>\n\tNote that when you tap on one of Math Minion's help\n\tbuttons in the standalone app, the help opens in \n\ta new tab or window in the browser, rather than in a new app window.\n</p>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>"
 						}
+					},
+					{
+						"name": "Feb_20_2024",
+						"Notes": "",
+						"DiagramX": 225,
+						"DiagramY": -55,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<h3>Feb 20, 2024 - Import and Rename Changes</h3>\n<p>\n\tNow if you import a file created with the <b>Export All</b> button and there are no currently stored sessions, the sessions and folders will be placed directly in the top level of the sessions window, rather than in a <b>root/</b> folder like before.  This just saves renaming <b>root/</b> to just <b>/</b>, but it saves that bit of time.\n</p>\n<p>\n\tHow do you get rid of all your existing sessions without deleting one by one? If you go to the <b>Console</b> tab in the information view and enter the command:\n</p>\n<p class=\"formula\">\n\t/ deleteallsessions\n</p>\n<p>\n\tEverything will disappear immediately, so BE CAREFUL. You will almost always want to do an Export All before using this.  I considered making some button to do this, but it seemed too dangerous, even with a confirmation box.\n</p>\n<p>\n\tIf you import an exported all file and sessions already exist, the imported sessions and folders will be placed in a folder like before, but the name is now <b>All Imported/</b> rather than the previous <b>root/</b>.\n</p>\n<p>\n\tIf you rename a folder to <b>/</b>, only sessions that are missing or different from those in the target folder are now actually copied and for differences, the originals will now appear in a <b>All_Replaced</b> folder, rather than <b>copy</b>.\n</p>\n<h3>Bug Fix</h3>\n<p>\n\tThe progressive web app changes introduced a bug whereby a URL with parameters, such as\n</p>\n<p class=\"formula\">\n\thttps://mathminion.org/run.html?cmd=someCommand\n</p>\n<p>\n\twas failing. This probably isn't used very often, but I have used it in some of the documentation. In any event it is now fixed.\n</p>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>"
+						}
+					},
+					{
+						"name": "Mar_17_2024",
+						"Notes": "",
+						"DiagramX": 85,
+						"DiagramY": -30,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "angles",
+								"Notes": "Angles for sin and cosine plot",
+								"DiagramX": 100,
+								"DiagramY": 40,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "(0:72) * 10 degree"
+								}
+							},
+							{
+								"name": "Plot2D",
+								"Notes": "<b>2D Plot Display Revamp</b>\n\nThe 2D plot was originally written to make the most of the small, low resolution screens of the early iPhones. Not only are phone screens much better now, I would guess MM is usually run on a desktop or tablet device.\n\nThe 2D plot display in this version has more conventional axis displays and now has a legend of all the curves at the top. Selecting a curve and its associated X and Y axes is now done by tapping on those legend titles.\n\nSelecting a legend will also highlight it by dimming all the others, but this dimming can be dismissed by tapping the selected legend again.",
+								"DiagramX": 10,
+								"DiagramY": 40,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Graph",
+								"X1": {
+									"v": "Angles",
+									"vmin": "",
+									"vmax": "",
+									"unit": "degree",
+									"Y1": {
+										"v": "3 ft * {sin angles} 'Sin",
+										"vmin": "-1 m",
+										"vmax": "1 m",
+										"lineType": 0
+									},
+									"Y2": {
+										"v": "3 ft * {cos angles} 'Cosine",
+										"vmin": "",
+										"vmax": "",
+										"lineType": 0
+									}
+								},
+								"Selected": "0_0"
+							},
+							{
+								"name": "Marks",
+								"Notes": "Values for the bar graphs",
+								"DiagramX": 100,
+								"DiagramY": 75,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "Student",
+										"displayUnit": "string",
+										"sValues": [
+											"Tom",
+											"Dick",
+											"Jane",
+											"Harry",
+											"Sally",
+											"Veronica",
+											"Jessie",
+											"Fred",
+											"Tom"
+										],
+										"defaultValue": "'"
+									},
+									{
+										"name": "mark",
+										"displayUnit": "%",
+										"format": "12.1f",
+										"nValues": [
+											0.75,
+											0.9,
+											0.85,
+											0.7000000000000001,
+											0.9500000000000001,
+											0.55,
+											0.78,
+											0.98,
+											0.4
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 %"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "BarChart",
+								"Notes": "You can now define the X axis values to be a modest number of strings.  These will be distributed evenly along the X axis and can serve to present simple bar graphs.",
+								"DiagramX": 10,
+								"DiagramY": 75,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Graph",
+								"X1": {
+									"v": "marks.student'",
+									"vmin": "",
+									"vmax": "",
+									"Y1": {
+										"v": "marks.mark'Mark",
+										"vmin": "0",
+										"vmax": "1",
+										"unit": "%",
+										"lineType": 2
+									}
+								}
+							},
+							{
+								"name": "Other",
+								"Notes": "<h4>Initial Information Pane Size</h4>If the overall display width is sufficient, the initial view will be divided equally between the diagram and the information pane.  You can still drag the divider to resize them as desired.\n<h4>Progressive Web App Updates</h4>Some changes were made to make the updates smoother when a new version is released. In some circumstances you may now see a popup dialog saying a new version is available and to click to reload.\n\nThis seems to be working properly on Chromium based browsers. However Safari is once again a problem child. If the app has been installed on the dock (Mac) or home screen (iOS), then it doesn't appear to detect that an update is available. It does seem to update eventually when using the site in the browser itself.\n\nTherefore if you use Safari, it is probably best at this point to just use MM right in the browser. If you do install it to the dock or home screen, then check the website periodically to see if an update is available. You will probably have to remove and reinstall the app to update the installed version.\n\nBE SURE AND EXPORT ALL before removing a dock or home screen app to ensure you don't lose any information.",
+								"DiagramX": 10,
+								"DiagramY": 110,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": ""
+								}
+							}
+						]
 					}
 				]
 			},
 			{
-				"name": "Feb_12_2024",
+				"name": "Mar_20_2025",
 				"Notes": "",
-				"DiagramX": 80,
-				"DiagramY": -215,
-				"HideInfo": "y",
-				"DiagramNotes": "n",
-				"HtmlNotes": "n",
-				"isOutput": "y",
-				"Type": "HTML Form",
-				"Formula": {
-					"Formula": "'\n<h3>Feb 12, 2024 - Progressive Web App</h3>\n<p>\n\tRecently I uploaded a progressive web app (PWA) version of Math Minion. This conveys almost no visible sign of change to using the program, but does bring a number of hidden advantages:\n</p>\n<ul>\n\t<li>\n\t\tA PWA can be installed to operate as a standalone app. It still runs in\n\t\tthe browser, but in a clean window of its own and with an application icon\n\t\tthat you can use to launch it, just like a regular app.\n\t</li>\n\t<li>\n\t\tAll of its source is cached on your device, which means it loads\n\t\tquickly and can be used offline.\n\t</li>\n\t<li>\n\t\tIf the server source code is updated, the cached code will automatically\n\t\tbe updated when the app is run and the device is online.\n\t</li>\n</ul>\n<h3>Installing as an App</h3>\n<p>\n\tWhile most of the benefits of being a PWA are realized even if you\n\tdon't install it as an app, you may appreciate the cleaner interface\n\tand ability to launch from an icon. How you install will depend on\n\tthe browser and device you use, but here are some that I have tried.\n</p>\n<p><b>Desktop Chromium Browsers</b><br>\n\tThese browsers, including Google Chrome, MS Edge, Brave and others,\n\thave a small icon at the right of the address bar when a web app\n\tcan be installed. Hover over it and a tooltip saying something like\n\t\"App available. Install Math Minion\". Just click on it and follow the\n\tinstructions.\n</p>\n<p><b>Safari on a Mac</b><br>\n\tWhile running Math Minion in the browser, click on the share icon\n\ton the top bar and select <b>Add to Dock</b>.\n\tThis will place a Math Minion icon on the dock and clicking on it will\n\tlaunch a standalone version of Math Minion. As far as I know, there is\n\tno way to have this icon anywhere else.\n</p>\n<p><b>iOS and iPadOS Devices</b><br>\n\tWhile running Math Minion in a browser, tap on the share icon and\n\tscroll down and select <b>Add to Home Screen</b>. This will place\n\ta Math Minion icon on the home screen. It can be moved or put in\n\ta folder like any other app icon.\n</p>\n<p><b>Android</b><br>\n\tI don't have an Android device to try this on, but from what I have read,\n\tdepending on browser and device, a button saying something like\n\t<b>Install</b> or <b>Add to Home Screen</b> will appear.\n</p>\n<p><b>Firefox</b><br>\n\tFirefox does not support installing web apps on desktop computers. It\n\treportedly does on iOS and Android, but I haven't tested it.\n</p>\n<h3>Help in Standalone App</h3>\n<p>\n\tNote that when you tap on one of Math Minion's help\n\tbuttons in the standalone app, the help opens in \n\ta new tab or window in the browser, rather than in a new app window.\n</p>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>"
-				}
-			},
-			{
-				"name": "Feb_20_2024",
-				"Notes": "",
-				"DiagramX": 80,
-				"DiagramY": -240,
-				"HideInfo": "y",
-				"DiagramNotes": "n",
-				"HtmlNotes": "n",
-				"isOutput": "y",
-				"Type": "HTML Form",
-				"Formula": {
-					"Formula": "'\n<h3>Feb 20, 2024 - Import and Rename Changes</h3>\n<p>\n\tNow if you import a file created with the <b>Export All</b> button and there are no currently stored sessions, the sessions and folders will be placed directly in the top level of the sessions window, rather than in a <b>root/</b> folder like before.  This just saves renaming <b>root/</b> to just <b>/</b>, but it saves that bit of time.\n</p>\n<p>\n\tHow do you get rid of all your existing sessions without deleting one by one? If you go to the <b>Console</b> tab in the information view and enter the command:\n</p>\n<p class=\"formula\">\n\t/ deleteallsessions\n</p>\n<p>\n\tEverything will disappear immediately, so BE CAREFUL. You will almost always want to do an Export All before using this.  I considered making some button to do this, but it seemed too dangerous, even with a confirmation box.\n</p>\n<p>\n\tIf you import an exported all file and sessions already exist, the imported sessions and folders will be placed in a folder like before, but the name is now <b>All Imported/</b> rather than the previous <b>root/</b>.\n</p>\n<p>\n\tIf you rename a folder to <b>/</b>, only sessions that are missing or different from those in the target folder are now actually copied and for differences, the originals will now appear in a <b>All_Replaced</b> folder, rather than <b>copy</b>.\n</p>\n<h3>Bug Fix</h3>\n<p>\n\tThe progressive web app changes introduced a bug whereby a URL with parameters, such as\n</p>\n<p class=\"formula\">\n\thttps://mathminion.org/run.html?cmd=someCommand\n</p>\n<p>\n\twas failing. This probably isn't used very often, but I have used it in some of the documentation. In any event it is now fixed.\n</p>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>"
-				}
-			},
-			{
-				"name": "Mar_17_2024",
-				"Notes": "",
-				"DiagramX": 80,
-				"DiagramY": -265,
+				"DiagramX": 85,
+				"DiagramY": -260,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"HtmlNotes": "n",
@@ -3242,91 +3387,407 @@
 				"diagramScale": 1,
 				"Objects": [
 					{
-						"name": "angles",
-						"Notes": "Angles for sin and cosine plot",
+						"name": "PredatorPrey",
+						"Notes": "This model simulates a predator-prey relationship using the Lotka-Volterra equations.",
 						"DiagramX": 100,
-						"DiagramY": 40,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
+						"DiagramY": 30,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
 						"HtmlNotes": "n",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "(0:72) * 10 degree"
-						}
+						"isOutput": "y",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "preyInit",
+								"Notes": "Initial prey population",
+								"DiagramX": 20,
+								"DiagramY": 50,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "200 count"
+								},
+								"isInput": "y",
+								"showInput": "y"
+							},
+							{
+								"name": "predatorInit",
+								"Notes": "Initial predator population",
+								"DiagramX": 20,
+								"DiagramY": 90,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "200 count"
+								},
+								"isInput": "y",
+								"showInput": "y"
+							},
+							{
+								"name": "preyGrowth",
+								"Notes": "Prey growth rate per day in absence of predators",
+								"DiagramX": 20,
+								"DiagramY": 130,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "1 1/d"
+								},
+								"isInput": "y",
+								"showInput": "y"
+							},
+							{
+								"name": "preyDeath",
+								"Notes": "Prey death rate per predator encounter",
+								"DiagramX": 20,
+								"DiagramY": 170,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "0.003 1/d"
+								},
+								"isInput": "y",
+								"showInput": "y"
+							},
+							{
+								"name": "predatorDeath",
+								"Notes": "Predator death rate in absence of food",
+								"DiagramX": 20,
+								"DiagramY": 210,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "2 1/d"
+								},
+								"isInput": "y",
+								"showInput": "y"
+							},
+							{
+								"name": "predatorEfficiency",
+								"Notes": "Efficiency of turning prey into predators",
+								"DiagramX": 20,
+								"DiagramY": 250,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "1"
+								},
+								"isInput": "y",
+								"showInput": "y"
+							},
+							{
+								"name": "y0",
+								"Notes": "Initial population values",
+								"DiagramX": 100,
+								"DiagramY": 50,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{table `Prey`, preyInit, `Predator`, predatorInit}"
+								}
+							},
+							{
+								"name": "dy",
+								"Notes": "Change in population per time step",
+								"DiagramX": 100,
+								"DiagramY": 90,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{table `Prey`, ODE.y.Prey*(preyGrowth - preyDeath*ODE.y.Predator), `Predator`, ODE.y.Predator*(predatorEfficiency*preyDeath*ODE.y.Prey - predatorDeath)}"
+								}
+							},
+							{
+								"name": "ODE",
+								"Notes": "ODE solver for predator-prey model",
+								"DiagramX": 100,
+								"DiagramY": 130,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "ODE Solver",
+								"y0Formula": {
+									"Formula": "y0"
+								},
+								"dyFormula": {
+									"Formula": "dy"
+								},
+								"nextTFormula": {
+									"Formula": "$.t + 1 d"
+								},
+								"endTFormula": {
+									"Formula": "100 d"
+								},
+								"relTolFormula": {
+									"Formula": "1.0e-5"
+								},
+								"absTolFormula": {
+									"Formula": "1.0e-10*{baseunit $.y}"
+								},
+								"recFormulas": [
+									{
+										"Formula": "$.t 'Time"
+									},
+									{
+										"Formula": "ODE.y.Prey 'Prey Population"
+									},
+									{
+										"Formula": "ODE.y.Predator 'Predator Population"
+									}
+								],
+								"AutoRun": "y"
+							},
+							{
+								"name": "ResultsTable",
+								"Notes": "Simulation results",
+								"DiagramX": 100,
+								"DiagramY": 170,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "ODE.table"
+								}
+							},
+							{
+								"name": "ResultsGraph",
+								"Notes": "Graph of predator and prey populations over time",
+								"DiagramX": 100,
+								"DiagramY": 210,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Graph",
+								"X1": {
+									"v": "ODE.table.Time 'Time",
+									"vmin": "",
+									"vmax": "",
+									"unit": "d",
+									"Y1": {
+										"v": "ODE.table.Prey_Population 'Prey",
+										"vmin": "",
+										"vmax": "",
+										"lineType": 0
+									},
+									"Y2": {
+										"v": "ODE.table.Predator_Population 'Predator",
+										"vmin": "",
+										"vmax": "",
+										"lineType": 0
+									}
+								}
+							}
+						]
 					},
 					{
-						"name": "Plot2D",
-						"Notes": "<b>2D Plot Display Revamp</b>\n\nThe 2D plot was originally written to make the most of the small, low resolution screens of the early iPhones. Not only are phone screens much better now, I would guess MM is usually run on a desktop or tablet device.\n\nThe 2D plot display in this version has more conventional axis displays and now has a legend of all the curves at the top. Selecting a curve and its associated X and Y axes is now done by tapping on those legend titles.\n\nSelecting a legend will also highlight it by dimming all the others, but this dimming can be dismissed by tapping the selected legend again.",
-						"DiagramX": 10,
-						"DiagramY": 40,
+						"name": "Temperatures",
+						"Notes": "",
+						"DiagramX": 100,
+						"DiagramY": 65,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Graph",
-						"X1": {
-							"v": "Angles",
-							"vmin": "",
-							"vmax": "",
-							"unit": "degree",
-							"Y1": {
-								"v": "3 ft * {sin angles} 'Sin",
-								"vmin": "-1 m",
-								"vmax": "1 m",
-								"lineType": 0
-							},
-							"Y2": {
-								"v": "3 ft * {cos angles} 'Cosine",
-								"vmin": "",
-								"vmax": "",
-								"lineType": 0
-							}
-						},
-						"Selected": "0_0"
-					},
-					{
-						"name": "Marks",
-						"Notes": "Values for the bar graphs",
-						"DiagramX": 100,
-						"DiagramY": 75,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
 						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Data Table",
 						"Columns": [
 							{
-								"name": "Student",
+								"name": "Month",
 								"displayUnit": "string",
 								"sValues": [
-									"Tom",
-									"Dick",
-									"Jane",
-									"Harry",
-									"Sally",
-									"Veronica",
-									"Jessie",
-									"Fred",
-									"Tom"
+									"Jan",
+									"Feb",
+									"Mar",
+									"Apr",
+									"May",
+									"Jun",
+									"Jul",
+									"Aug",
+									"Sep",
+									"Oct",
+									"Nov",
+									"Dec"
 								],
-								"defaultValue": "'"
+								"defaultValue": ""
 							},
 							{
-								"name": "mark",
-								"displayUnit": "%",
-								"format": "12.1f",
+								"name": "Daily Average (°C)",
+								"displayUnit": "degC",
 								"nValues": [
-									0.75,
-									0.9,
-									0.85,
-									0.7000000000000001,
-									0.9500000000000001,
-									0.55,
-									0.78,
-									0.98,
-									0.4
+									275.54999999999995,
+									276.34999999999997,
+									278.34999999999997,
+									281.15,
+									284.75,
+									287.84999999999997,
+									290.45,
+									290.34999999999997,
+									286.84999999999997,
+									281.75,
+									277.54999999999995,
+									275.25
 								],
-								"unitDimensions": "0 0 0 0 0 0 0",
-								"defaultValue": "0 %"
+								"unitDimensions": "0 0 0 0 1 0 0",
+								"defaultValue": "0 degC"
+							},
+							{
+								"name": "Standard Deviation",
+								"displayUnit": "degC",
+								"nValues": [
+									275.04999999999995,
+									274.65,
+									274.34999999999997,
+									274.25,
+									274.45,
+									274.45,
+									274.25,
+									274.15,
+									274.34999999999997,
+									274.04999999999995,
+									274.95,
+									274.95
+								],
+								"unitDimensions": "0 0 0 0 1 0 0",
+								"defaultValue": "0 degC"
+							},
+							{
+								"name": "Daily Maximum (°C)",
+								"displayUnit": "degC",
+								"nValues": [
+									278.65,
+									280.34999999999997,
+									282.84999999999997,
+									286.34999999999997,
+									290.15,
+									293.25,
+									296.15,
+									296.45,
+									292.95,
+									286.25,
+									280.84999999999997,
+									278.04999999999995
+								],
+								"unitDimensions": "0 0 0 0 1 0 0",
+								"defaultValue": "0 degC"
+							},
+							{
+								"name": "Daily Minimum (°C)",
+								"displayUnit": "degC",
+								"nValues": [
+									272.34999999999997,
+									272.45,
+									273.84999999999997,
+									275.95,
+									279.34999999999997,
+									282.45,
+									284.65,
+									284.25,
+									280.75,
+									277.15,
+									274.15,
+									272.34999999999997
+								],
+								"unitDimensions": "0 0 0 0 1 0 0",
+								"defaultValue": "0 degC"
+							},
+							{
+								"name": "Extreme Maximum (°C)",
+								"displayUnit": "degC",
+								"nValues": [
+									289.25,
+									290.65,
+									293.75,
+									301.65,
+									306.34999999999997,
+									310.04999999999995,
+									310.34999999999997,
+									310.95,
+									304.75,
+									297.34999999999997,
+									290.95,
+									288.25
+								],
+								"unitDimensions": "0 0 0 0 1 0 0",
+								"defaultValue": "0 degC"
+							},
+							{
+								"name": "Extreme Maximum Date",
+								"displayUnit": "date",
+								"nValues": [
+									-61516800,
+									667526400,
+									-151804800,
+									893894400,
+									423014400,
+									393206400,
+									-139536000,
+									50630400,
+									589248000,
+									717897600,
+									163036800,
+									1135382400
+								],
+								"unitDimensions": "0 0 1 0 0 0 0",
+								"defaultValue": "0 date"
+							},
+							{
+								"name": "Extreme Minimum (°C)",
+								"displayUnit": "degC",
+								"nValues": [
+									249.24999999999997,
+									255.34999999999997,
+									260.34999999999997,
+									267.54999999999995,
+									270.95,
+									272.54999999999995,
+									275.34999999999997,
+									274.84999999999997,
+									270.34999999999997,
+									263.45,
+									252.74999999999997,
+									254.64999999999998
+								],
+								"unitDimensions": "0 0 0 0 1 0 0",
+								"defaultValue": "0 degC"
+							},
+							{
+								"name": "Extreme Minimum Date",
+								"displayUnit": "date",
+								"nValues": [
+									-29030400,
+									65750400,
+									194659200,
+									68428800,
+									-113616000,
+									234057600,
+									47606400,
+									-110764800,
+									67996800,
+									449539200,
+									478224000,
+									331776000
+								],
+								"unitDimensions": "0 0 1 0 0 0 0",
+								"defaultValue": "0 date"
 							}
 						],
 						"Filter": {
@@ -3334,39 +3795,17 @@
 						}
 					},
 					{
-						"name": "BarChart",
-						"Notes": "You can now define the X axis values to be a modest number of strings.  These will be distributed evenly along the X axis and can serve to present simple bar graphs.",
-						"DiagramX": 10,
-						"DiagramY": 75,
+						"name": "Mar_20_2025",
+						"Notes": "",
+						"DiagramX": 5,
+						"DiagramY": 30,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
-						"HtmlNotes": "y",
+						"HtmlNotes": "n",
 						"isOutput": "y",
-						"Type": "Graph",
-						"X1": {
-							"v": "marks.student'",
-							"vmin": "",
-							"vmax": "",
-							"Y1": {
-								"v": "marks.mark'Mark",
-								"vmin": "0",
-								"vmax": "1",
-								"unit": "%",
-								"lineType": 2
-							}
-						}
-					},
-					{
-						"name": "Other",
-						"Notes": "<h4>Initial Information Pane Size</h4>If the overall display width is sufficient, the initial view will be divided equally between the diagram and the information pane.  You can still drag the divider to resize them as desired.\n<h4>Progressive Web App Updates</h4>Some changes were made to make the updates smoother when a new version is released. In some circumstances you may now see a popup dialog saying a new version is available and to click to reload.\n\nThis seems to be working properly on Chromium based browsers. However Safari is once again a problem child. If the app has been installed on the dock (Mac) or home screen (iOS), then it doesn't appear to detect that an update is available. It does seem to update eventually when using the site in the browser itself.\n\nTherefore if you use Safari, it is probably best at this point to just use MM right in the browser. If you do install it to the dock or home screen, then check the website periodically to see if an update is available. You will probably have to remove and reinstall the app to update the installed version.\n\nBE SURE AND EXPORT ALL before removing a dock or home screen app to ensure you don't lose any information.",
-						"DiagramX": 10,
-						"DiagramY": 110,
-						"HideInfo": "n",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"Type": "Expression",
+						"Type": "HTML Form",
 						"Formula": {
-							"Formula": ""
+							"Formula": "'\n<style>\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t.quote\n\t{\n\t\tcolor: green;\n\t\tmargin-left: 30px;\n\t}\n\t.main {\n\t\tbackground-color: #f2f2f2;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t}\n</style>\n<div class=\"main\">\n<h3>Math Minion News: Mar 20, 2025</h3>\n<p>\nWow, it seems to have passed since the last news update. I have made occasional unannounced bug fixes during that time, but nothing that seemed to warrant new News. However a rare recent prod from a friend and user has sparked changes are probably enough to justify an update.\n</p>\n<h3>No More Clipboard Window in Safari</h3>\n<p>\n\tFinally, users of Safari and all browsers on the iPhone, iPad and Vision Pro will no longer need to use that clunky clipboard window to interact with the system clipboard. Note you will probably be asked to allow access when you first try to use this.\n</p>\n<h3>Export File Name Extension</h3>\n<p>\n\tI have changed the file name extension for exported files to \"json\". This doesn't have any impact on reading existing files and indeed you can override the extension in the save dialog if you wish.\n</p>\n<p>\n\tThe files themselves have always been in json format and remain unchanged. I think the original idea behind the txt extension was to emphasis that they were human readable. However most folks know about json now and many text editors apply appropriate syntax colouring to files with the json extension, so the change seemed worthwhile.\n</p>\n<h3>ChatGPT Assistants</h3>\n<p>\n\tIf you happen to have a paid ChatGPT account, there are now a couple of Math Minion assistants implemented as GPTs. Time will tell if these are really useful, but find them pretty cool to play with.\n</p>\n<h4>Math Minion Tool Assistant</h4>\n<p>\n\tFrom a problem description, this assistant will attempt create a json representation of the solution using the following Math Minion tools:\n</p>\n<ul>\n\t<li>Model</li>\n\t<li>Expression</li>\n\t<li>Equation Solver</li>\n\t<li>Optimizer</li>\n\t<li>ODE Solver</li>\n</ul>\n<p>\nThis will be suitable for pasting onto the Math Minion diagram. For instance the prompt:\n</p>\n<p class='quote'>\nCreate a model to simulate a predator/prey relationship. Inputs should be:\ninitial populations of predator and prey - default 200 for both\nthe prey growth per period of time in the absence of predators - default 1 per day\nDeath rate of prey per encounter with predators - default 0.003 1/d\nDeath rate of predator in absence of food - default 2 per day\nEfficiency of turning prey into predators - default 1\nShow both a table and graph of the results\n</p>\n<p>\n\tProduced the <span class=\"link\"\n\t\t\t\tonClick=\"mmpost({}, {mm_view: 'PredatorPrey'})\">\n\t\t\t\tPredatorPrey</span> model. In this case no modifications to the result were needed, but results vary from time to time, perhaps depending on whether the AI is having a bad day or missed its digital coffee. Pointing out any mistakes to it will often result in it making an appropriate fix, but it may be faster to just fix it yourself.\n</p>\n<p>\n\tThink of it more as a somewhat dim intern than an expert system. It can save time on simple problems, but will often make mistakes, so its work will need careful checking.\n</p>\n<p>\n\tThis assistant can be accessed by the link below. These links are also available by selecting\n\t<a href=\"./help/chatgpt.html\" target=\"_blank\">Ask ChatGPT</a> from the contents menu in the help.\n</p>\n<p class=\"link\">\n\t\t\t\t\n\t<a href=\"https://chatgpt.com/g/g-67ce2b8302b881918ab06486ed92184d-math-minion-tool-assistant\" target=\"_blank\">Tool Assistant</a>\n</p>\n\n<h4>Math Minion Data Table Assistant</h4>\n<p>\n\tThis assistant will try to create from the given data a Math Minion specific CSV file that when pasted on the diagram will result in a new Data Table tool.  For instance this prompt:\n</p>\n<p class=\"quote\">\n \tJan\tFeb\tMar\tApr\tMay\tJun\tJul\tAug\tSep\tOct\tNov\tDec\tYear\tCode\nDaily Average (°C)\t2.4\t3.2\t5.2\t8.0\t11.6\t14.7\t17.3\t17.2\t13.7\t8.6\t4.4\t2.1\t9.0\tA\nStandard Deviation\t1.9\t1.5\t1.2\t1.1\t1.3\t1.3\t1.1\t1.0\t1.2\t0.9\t1.8\t1.8\t1.3\tA\nDaily Maximum (°C)\t5.5\t7.2\t9.7\t13.2\t17.0\t20.1\t23.0\t23.3\t19.8\t13.1\t7.7\t4.9\t13.7\tA\nDaily Minimum (°C)\t-0.8\t-0.7\t0.7\t2.8\t6.2\t9.3\t11.5\t11.1\t7.6\t4.0\t1.0\t-0.8\t4.3\tA\nExtreme Maximum (°C)\t16.1\t17.5\t20.6\t28.5\t33.2\t36.9\t37.2\t37.8\t31.6\t24.2\t17.8\t15.1\t\t\nDate (yyyy/dd)\t1968/ 20\t1991/ 26\t1965/ 11\t1998/ 30\t1983/ 29\t1982/ 18\t1965/ 31\t1971/ 10\t1988/ 03\t1992/ 01\t1975/ 03\t2005/ 24\t\t\nExtreme Minimum (°C)\t-23.9\t-17.8\t-12.8\t-5.6\t-2.2\t-0.6\t2.2\t1.7\t-2.8\t-9.7\t-20.4\t-18.5\t\t\nDate (yyyy/dd)\t1969/ 30\t1972/ 01\t1976/ 03\t1972/ 03\t1966/ 27+\t1977/ 02\t1971/ 06\t1966/ 29+\t1972/ 27\t1984/ 31\t1985/ 26\t1980/ 07\t\t\n<br>\nOmitting the Year and Code columns, rotate the table so the months are the rows and create a data table\n</p>\n<p>\n\tproduced the <span class=\"link\"\n\t\t\t\tonClick=\"mmpost({}, {mm_view: 'Temperatures'})\">\n\t\t\t\tTemperatures</span> table. Note the instructions to omit columns and rotate the table.\n</p>\n<p>\n\tInput will probably normally text, but it also works with images of tables and I even had it convert a bar chart successfully by telling it to estimate the values from the bar lengths.\n</p>\n<p>\n\tThis assistant can be accessed by the following link\n</p>\n<p class=\"link\">\n\t\t\t\t\n\t<a href=\"https://chatgpt.com/g/g-67d4d1a5d7c48191bf07e3a0b321c72a-mm-datatable-assistant\" target=\"_blank\">Data Table Assistant</a>\n</p>\n<p>\n\tIf you have a chance to play with these, I would love to <a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">hear how it went</a>.\n\n<h3>Miscellaneous Bug Fixes</h3>\n<p>\n\tAs always there has been a number of minor changes and bug fixes. Many of these were quietly done during the course of the year.\n</p>\n<ul>\n<li>    Added mmHg as synonym for unit mmHg0C</li>\n<li>    Added MagneticFluxDensity units Tesla (T) and Gauss.</li>\n<li>    Added mod and sqrt as conveniece functions for x%n and x^0.5</li>\n<li>    some additional error checking in Graph</li>\n<li>    added error check in MMUnit</li>\n<li>    fix to import problem when imported session wasn't at root</li>\n<li>    removed obsolete reference to mac version from web home page</li>\n<li>    fix to financial example</li>\n<li>    Added an expanded row view to expression table values</li>\n<li>    Fixed problem with copy as table with tables having specified column units</li>\n<li>    Fixed problem with menu tool info view</li>\n<li>    Fixed problem with wheel scrolling in TableView.</li>\n</ul>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>\n</div>"
 						}
 					}
 				]
