@@ -51,9 +51,12 @@
 	<script>
 		let newWorker;
 		// The click event on the pop up notification
-		document.getElementById('reload').addEventListener('click', function(){
-			newWorker.postMessage({ action: 'skipWaiting' });
-		});
+		const reloadBtn = document.getElementById('reload');
+		if (reloadBtn) {
+			reloadBtn.addEventListener('click', function() {
+				newWorker?.postMessage({ action: 'skipWaiting' });
+			});
+		}
 		if ("serviceWorker" in navigator) {
 			navigator.serviceWorker.register("PWAServiceWorker.js").then((swReg) => {
 				swReg.addEventListener('updatefound', () => {
@@ -64,13 +67,15 @@
 							if (navigator.serviceWorker.controller) {
 								// new update available
 								const updateNotice = document.getElementById('update');
-								updateNotice.className = 'show';
+								updateNotice.classList.add('show');
 								console.log('showing prompt');
 							}
 						}
             // else No update available
           });
         });
+			}).catch(err => {
+				console.error("Service Worker registration failed:", err);
 			});
 
 			let refreshing;
