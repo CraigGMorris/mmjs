@@ -11,7 +11,7 @@
 	"CaseName": "MM_News",
 	"DefaultUnitSet": "SI",
 	"SelectedObject": "",
-	"ModelPath": "/.root",
+	"ModelPath": "/.root.Mar_20_2025",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
