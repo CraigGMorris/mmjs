@@ -208,7 +208,7 @@ class MMCommandProcessor {
 					if (this.useLineContinuation) {
 						continuedCmd = '';
 						if (cmd.endsWith('__')) {
-							cmd = cmd.substr(0, cmd.length-1);   // escaped end underscore - leave one behind
+							cmd = cmd.slice(0, -1);   // escaped end underscore - leave one behind
 						}
 						else {
 							if (cmd.endsWith('_')) {
@@ -258,13 +258,13 @@ class MMCommandProcessor {
 			let secondQuotePos = expression.indexOf(firstChar, 1);
 			if (secondQuotePos >= 0) {
 				return [
-					expression.slice(1,secondQuotePos).trim(),
-					expression.substr(secondQuotePos+1).trim()
+					expression.slice(1, secondQuotePos).trim(),
+					expression.slice(secondQuotePos + 1).trim()
 				];
 			}
 			else {
 				// no closing quote, return everything after the first quote
-				return [expression.substr(1).trim()];
+				return [expression.slice(1).trim()];
 			}
 		}
 
@@ -272,8 +272,8 @@ class MMCommandProcessor {
 		let firstSpacePos = expression.indexOf(' ');
 		if (firstSpacePos >= 0) {
 			return [
-				expression.slice(0,firstSpacePos).trim(),
-				expression.substr(firstSpacePos + 1).trim()
+				expression.slice(0, firstSpacePos).trim(),
+				expression.slice(firstSpacePos + 1).trim()
 			];
 		}
 		else {
@@ -308,11 +308,11 @@ class MMCommandProcessor {
 		if (path.length > 0) {
 			switch(path[0]) {
 				case '.':
-					return this.followPath(path.substr(1), this.defaultObject);
+					return this.followPath(path.slice(1), this.defaultObject);
 				case '/':
-					return this.followPath(path.substr(1), this.root);
+					return this.followPath(path.slice(1), this.root);
 				case '^':
-					return this.followPath(path.substr(1), this.defaultObject.parent);
+					return this.followPath(path.slice(1), this.defaultObject.parent);
 			}
 		}
 		return undefined;
