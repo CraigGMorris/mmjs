@@ -212,8 +212,8 @@ class MMCommandProcessor {
 						}
 						else {
 							if (cmd.endsWith('_')) {
-								continuedCmd = cmd.substr(0, cmd.length-1) + '\n';
-								continue;
+									continuedCmd = cmd.slice(0, -1) + '\n';
+									continue;
 							}
 						}
 					}
