@@ -18,7 +18,7 @@
 'use strict';
 
 /* global
-	MMCommandParent:readonly
+	MMParent:readonly
 	MMPropertyType:readonly
 	MMStringValue:readonly
 	theMMSession:readonly
@@ -31,7 +31,7 @@
 
 /**
  * @class MMTool - base class for all calculation tools
- * @extends MMCommandParent
+ * @extends MMParent
  * @member {MMSession} session;
  * @member {string} notes
  * @member {string} description
@@ -44,7 +44,7 @@
  * @member {boolean} diagramNotes;
  */
 // eslint-disable-next-line no-unused-vars
-class MMTool extends MMCommandParent {
+class MMTool extends MMParent {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel

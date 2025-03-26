@@ -58,9 +58,9 @@ class MMCommand {
 }
 
 /** @class MMCommandProcessor
- * @member {MMCommandParent} root
+ * @member {MMParent} root
  * @member {boolean} useLineContinuation - if true, an underscore at line end means concatenate next line
- * @member {MMCommandObject} defaultObject
+ * @member {MMObject} defaultObject
  * @member {string} currentExpression
  * @member {function} statusCallBack - (message: string) => void
 */
@@ -74,14 +74,14 @@ class MMCommandProcessor {
 		this.statusCallBack = undefined;
 	}
 
-	/**  @param {MMCommandParent} root - MMCommandParent */
+	/**  @param {MMParent} root - MMParent */
 	setRoot(root) {
 		this.root = root;
 		this.defaultObject = root;
 	}
 
 	/**  @param {string} path
-	 * @returns {MMCommandObject} MMCommandObject at path
+	 * @returns {MMObject} MMObject at path
 	 */
 	setDefaultToPath(path) {
 		let newObject = this.getObjectFromPath(path);
@@ -283,14 +283,14 @@ class MMCommandProcessor {
 
 	/**
 	 * @param {string} path 
-	 * @param {MMCommandObject} startObject 
-	 * @returns {MMCommandObject} returns found object or nil
+	 * @param {MMObject} startObject 
+	 * @returns {MMObject} returns found object or nil
 	 */
 	followPath(path, startObject) {
 		let parts = path.split('.');
 		let resultObject = startObject;
 		for (let part of parts) {
-			if (part.length > 0 && resultObject instanceof MMCommandParent) {
+			if (part.length > 0 && resultObject instanceof MMParent) {
 				resultObject = resultObject.childNamed(part);
 			}
 			if (!resultObject) {
@@ -302,7 +302,7 @@ class MMCommandProcessor {
 
 	/**
 	 * @param {string} path
-	 * @returns {MMCommandObject} found object or nil
+	 * @returns {MMObject} found object or nil
 	 */
 	getObjectFromPath(path) {
 		if (path.length > 0) {
@@ -341,21 +341,21 @@ class MMCommandProcessor {
  * @property {boolean} readOnly;
  */
 
-/** @class MMCommandObject
+/** @class MMObject
  *	@member {string} name
  *	@member {string} className
  *	@member {MMCommandProcessor} processor - can be nil
- *	@member {MMCommandParent} parent - can be nil
+ *	@member {MMParent} parent - can be nil
  *	@member {Object} properties - {string: PropertyInfo}
  *	@member {Object} setProperties - {string: PropertyInfo}
  * properties added with set command
  *	@member {Object} verbs - [string]: (string) => any
  *	@member {MMCommand} _command
 */
-/* export */ class MMCommandObject {
+/* export */ class MMObject {
 	/** @constructor
 	 * @param {string} name
-	 * @param {MMCommandParent} parent
+	 * @param {MMParent} parent
 	 * @param {string} className
 	*/
 	constructor( name, parent, className) {
@@ -421,7 +421,7 @@ class MMCommandProcessor {
 	 * shortcut translate call
 	 * @param {string} key
 	 * @param {Object} args - optional
-	 * @param {MMCommandObject} child - optional
+	 * @param {MMObject} child - optional
 	 * @returns {string}
 	 */
 	t(key, args, child) {
@@ -749,15 +749,15 @@ class MMCommandProcessor {
 	}
 }
 
-/** @class MMCommandParent
- * @member {Object} children - {string: MMCommandObject}
+/** @class MMParent
+ * @member {Object} children - {string: MMObject}
 */
-/* export */ class MMCommandParent extends MMCommandObject {
+/* export */ class MMParent extends MMObject {
 
 	/**
 	 * @constructor
 	 * @param {string} name 
-	 * @param {Object} anyParam - can be MMCommandProcessor or MMCommandParent
+	 * @param {Object} anyParam - can be MMCommandProcessor or MMParent
 	 * should be MMCommandProcessor for root object, otherwise the parent object
 	 * @param {string} className 
 	 */
@@ -770,7 +770,7 @@ class MMCommandProcessor {
 			cmdProcessor.setRoot(this);			// no parent so this must be root
 			this.children = {};
 		}
-		else if (anyParam instanceof MMCommandParent) {
+		else if (anyParam instanceof MMParent) {
 			super(name, anyParam, className);
 			this.children = {};
 		}
@@ -878,7 +878,7 @@ class MMCommandProcessor {
 	/**
 	 * adds child to the children of this object
 	 * @param {string} name 
-	 * @param {MMCommandObject} child 
+	 * @param {MMObject} child 
 	 */
 	addChild(name, child) {
 		this.children[name.toLowerCase()] = child;
@@ -886,7 +886,7 @@ class MMCommandProcessor {
 
 	/**
 	 * @param {string} name
-	 * @returns {MMCommandObject} - returns child MMCommandObject or nil
+	 * @returns {MMObject} - returns child MMObject or nil
 	 */
 	childNamed(name) {
 		return this.children[name.toLowerCase()];

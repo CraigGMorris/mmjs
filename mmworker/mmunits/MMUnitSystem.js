@@ -19,8 +19,8 @@
 
 /* globals
 	theMMSession:readonly
-	MMCommandParent:readonly
-	MMCommandObject:readonly
+	MMParent:readonly
+	MMObject:readonly
 	MMPropertyType:readonly
 	MMCommandMessage:readonly
 */
@@ -80,7 +80,7 @@ const MMUnitDateType = Object.freeze({
  * @member {MMUnitsContainer} units
  */
 // eslint-disable-next-line no-unused-vars
-class MMUnitSystem extends MMCommandParent {
+class MMUnitSystem extends MMParent {
 	/** @static areDimensionsEqual
 	 * @param {Number[]} dim1
 	 * @param {Number[]} dim2
@@ -434,7 +434,7 @@ class MMUnitSystem extends MMCommandParent {
  * 		non master units are user units that will not be disturbed when the program is updated
  * @member {MMUnitSystem} unitSystem;
  */
-class MMUnit extends MMCommandObject {
+class MMUnit extends MMObject {
 
 	/** @static compoundRegex
 	 * compound unit operators
@@ -898,7 +898,7 @@ class MMUnit extends MMCommandObject {
  * @member {boolean} isMaster
  * @member {MMUnitSystem} unitSystem
  */
-class MMUnitSet extends MMCommandObject {
+class MMUnitSet extends MMObject {
 		/** @constructor
 	 * @param {string} name
 	 * @param {MMUnitSetsContainer} setsContainer
@@ -1162,7 +1162,7 @@ class MMUnitSet extends MMCommandObject {
  * key is dimensionString, value is array of units with those dimensions
  * @member {MMUnitSystem} unitSystem;
  */
-class MMUnitsContainer extends MMCommandParent {
+class MMUnitsContainer extends MMParent {
 	/**
 	 * @constructor
 	 * @param {MMUnitSystem} unitSystem - parent
@@ -1587,7 +1587,7 @@ class MMUnitsContainer extends MMCommandParent {
  * @member {MMUnitSet} defaultSet;
  * @member {MMUnitSystem} unitSystem;
  */
-class MMUnitSetsContainer extends MMCommandParent {
+class MMUnitSetsContainer extends MMParent {
 	/**
 	 * @constructor
 	 * @param {MMUnitSystem} unitSystem - parent

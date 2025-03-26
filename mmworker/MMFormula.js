@@ -29,7 +29,7 @@
 	MMTableValueColumn:readonly
 	MMUnitSystem:readonly
 	MMMatrix:readonly
-	MMCommandObject:readonly
+	MMObject:readonly
 	MMCommandMessage:readonly
 	theMMSession:readonly
 	MMPropertyType:readonly
@@ -4339,13 +4339,13 @@ class MMWFetchFunction extends MMMultipleArgumentFunction {
 
 /**
  * @class MMFormula
- * @extends MMCommandObject
+ * @extends MMObject
  * @member {string} formula
  * @member {MMModel} nameSpace
  * @member {boolean} isInError
  */
 // eslint-disable-next-line no-unused-vars
-class MMFormula extends MMCommandObject {
+class MMFormula extends MMObject {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMTool} parentTool

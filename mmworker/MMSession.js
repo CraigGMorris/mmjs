@@ -18,7 +18,7 @@
 'use strict';
 
 /* global
-	MMCommandParent:readonly
+	MMParent:readonly
 	MMUnitSystem:readonly
 	MMPropertyType:readonly
 	MMModel:readonly
@@ -215,7 +215,7 @@ class MMIndexedDBStorage  {
 
 /**
  * @class MMSession - base Math Minion class
- * @extends MMCommandParent
+ * @extends MMParent
  * @member {MMUnitSystem} unitSystem
  * @member {MMModel} rootModel
  * @member {MMModel} currentModel
@@ -226,7 +226,7 @@ class MMIndexedDBStorage  {
  * @member {MMIndexedDBStorage} storage
  */
 // eslint-disable-next-line no-unused-vars
-class MMSession extends MMCommandParent {
+class MMSession extends MMParent {
 	// session creation and storage commands
 
 	/**

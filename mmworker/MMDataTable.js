@@ -18,7 +18,7 @@
 'use strict';
 
 /* global
-	MMCommandObject: readonly
+	MMObject: readonly
 	MMTool:readonly
 	MMTableValueColumn:readonly
 	MMTableValue:readonly
@@ -32,9 +32,9 @@
 
 /**
  * @class MMDataTableColumn
- * @extends MMCommandObject
+ * @extends MMObject
  */
-class MMDataTableColumn extends MMCommandObject {
+class MMDataTableColumn extends MMObject {
 	/**
 	 * @constructor
 	 * @param {MMDataTable} table - owner

@@ -46,7 +46,7 @@ class MMOde extends MMTool {
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Ode');
-		this.odeT = MMNumberValue.scalarValue(0); // this is just t in user interface, but t is already used by MMCommandObject
+		this.odeT = MMNumberValue.scalarValue(0); // this is just t in user interface, but t is already used by MMObject
 		this.initialYFormula = new MMFormula('y0', this);
 		this.derivativeFormula = new MMFormula('dy', this);
 		this.nextTFormula = new MMFormula('nextT', this);
