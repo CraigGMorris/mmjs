@@ -780,7 +780,6 @@ class MMCommandProcessor {
 	get verbs() {
 		let actions = super.verbs;
 		actions['list'] = this.listChildNames;
-		actions['createchild'] = this.createChildFromArgs;
 		actions['removechild'] = this.removeChildNamedCommand;
 		return actions;
 	}
@@ -793,7 +792,6 @@ class MMCommandProcessor {
 	getVerbUsageKey(command) {
 		let key = {
 			list:					'cmd:_list',
-			createchild:	'cmd:_createchild',
 			removechild:	'cmd:_removechild'
 		}[command];
 		if (key) {
@@ -802,40 +800,6 @@ class MMCommandProcessor {
 		else {
 			return super.getVerbUsageKey(command);
 		}
-	}
-
-	/**
-	 * will be overridden by derived classes
-	 * as implemented here, only useful for testing
-	 * @param {string} className 
-	 * @param {string} name 
-	 * @returns {MMCommandObject} - MMCommandObject created
-	 */
-	createChild(className, name) {
-		switch(className) {
-			case 'MMCommandObject':
-				return new MMCommandObject(name, this, className);
-			case 'MMCommandParent':
-				return new MMCommandParent(name, this, className);
-			default:
-				throw(this.t('cmd:unknownClass', {className: className}));
-		}
-	}
-
-	/**
-	 * @method createChildFromArgs
-	 * parses args string and then calls createChild
-	 * @param {MMCommand} command 
-	 */
-	createChildFromArgs(command) {
-		let argValues = this.splitArgsString(command.args);
-		if (argValues.length < 2) {
-			throw(this.t('cmd:_createchild'));
-		}
-		let name = argValues[1];
-		this.createChild(argValues[0], name);
-		command.results = [this.t('cmd:createdChild', {className: argValues[0], name: argValues[1]})];
-		command.undo = this.getPath() + ' removechild ' + name;			
 	}
 
 	/**
