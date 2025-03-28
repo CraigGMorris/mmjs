@@ -784,6 +784,7 @@ class MMSession extends MMCommandParent {
 			copy: 'mmcmd:_sessionCopy',
 			delete: 'mmcmd:_sessionDelete',
 			deleteAllSessions: 'mmcmd:_sessionDeleteAll',
+			rename: 'mmcmd:_sessionRename',
 			getjson: 'mmcmd:_sessionGetJson',
 			pushmodel: 'mmcmd:_sessionPushModel',
 			popmodel: 'mmcmd:_sessionPopModel',
