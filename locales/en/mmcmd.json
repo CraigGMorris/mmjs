@@ -252,6 +252,7 @@
 	"_sessionPopModel": "Switch current model to its parent\n\nusage popmodel",
 	"_sessionPushModel": "Switch current model to the child model named modelName\n\nusage pushmodel modelName",
 	"_sessionRemote": "Set the url for CouchDB syncing\n\nusage: remote url",
+	"_sessionRename": "Rename a session\n\nusage: rename fromPath toPath",
 	"_sessionSave": "Save session to path or to current path if omitted\n\nusage: save {path}",
 	"_solverAddFunction": "Add a function to the solver - can optionally include function number\n\nusage: reset {number}",
 	"_solverRemoveFunction": "Remove function number\n\nusage: removefunction fNumber",
