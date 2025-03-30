@@ -173,7 +173,7 @@ class MMExpression extends MMTool {
 	 */
 	parameters() {
 		let p = super.parameters();
-		p.push('table.');
+		p.push('table');
 		p.push('hasValue');
 		p.push('formula');
 		const v = this.valueForRequestor();
