@@ -37,6 +37,7 @@ export class UnitsView extends React.Component {
 	componentDidMount() {
 		this.props.actions.setUpdateCommands(this.props.viewInfo.stackIndex,
 			`/unitsys.sets list
+'''
 			/unitsys.sets get defaultSetName`);
 	}
 

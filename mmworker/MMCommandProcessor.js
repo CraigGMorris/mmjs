@@ -163,7 +163,8 @@ class MMCommandProcessor {
 		return true;
 	}
 
-	/** @param {string} commands
+	/** 
+	 * @param {string} commands
 	 * commands is normally an object containing a cmdString and an id, but it can be just a plain string
 	 * cmdString (or the plain string) can be made up of many commands separated by newline or semicolon
 	 * characters.  This function splits them up and processes them one at a time and returns the
@@ -194,11 +195,8 @@ class MMCommandProcessor {
 					}
 					return results;
 				}
-				// cmds are separated by either \n or ;
-				// two ; are replaced by a single one
-				commands = commands.replace(/([^;]);([^;])/,'$1\n$2');
-				commands = commands.replace(/;;/, ';');
-				let cmdLines = commands.split('\n');
+				// cmds are separated by either '''\n
+				let cmdLines = commands.split(`\n'''`);
 				let continuedCmd = '';
 				for( let cmd of cmdLines) {
 					if (cmd.startsWith("'") && !continuedCmd) {  // comment
@@ -519,7 +517,7 @@ class MMCommandProcessor {
 		if (!args) {
 			throw(this.t('cmd:_set'));
 		}
-		let firstSpace = args.indexOf(' ');
+		let firstSpace = args.search(/\s/);
 		let propertyName;
 		let valueString;
 		if (firstSpace == -1) {
