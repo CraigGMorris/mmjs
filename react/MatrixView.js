@@ -134,7 +134,7 @@ export function MatrixView(props) {
 			case 'cell':
 				return (formula) => {
 					const path = props.viewInfo.path;
-					props.actions.doCommand(`${path} setcell ${currentCell.join(' ')}${formula}`, () => {
+					props.actions.doCommand(`__blob__${path} setcell ${currentCell.join(' ')}__blob__${formula}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
 						setEditFormula(formula);
 						setDisplay(MatrixDisplay.table);
@@ -142,7 +142,7 @@ export function MatrixView(props) {
 				}
 			case 'columns':
 				return (formula) => {
-					props.actions.doCommand(`${results.path}.columnCount set formula${formula}`, () => {
+					props.actions.doCommand(`__blob__${results.path}.columnCount set formula__blob__${formula}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
 						setColumnCountFormula(formula);
 						setDisplay(MatrixDisplay.table);
@@ -150,7 +150,7 @@ export function MatrixView(props) {
 				}
 				case 'rows':
 					return (formula) => {
-						props.actions.doCommand(`${results.path}.rowCount set formula${formula}`, () => {
+						props.actions.doCommand(`__blob__${results.path}.rowCount set formula__blob__${formula}`, () => {
 							props.actions.updateView(props.viewInfo.stackIndex);
 							setRowCountFormula(formula);
 							setDisplay(MatrixDisplay.table);

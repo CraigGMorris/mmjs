@@ -573,7 +573,7 @@ class MMDataTable extends MMTool {
 			if (Object.values(undoOptions).length > 1) {
 				command.results = undoOptions.name;
 				const undoString = JSON.stringify(undoOptions);
-				command.undo = `${this.getPath()} updatecolumn${undoString}`;
+				command.undo = `__blob__${this.getPath()} updatecolumn__blob__${undoString}`;
 			}
 		}
 	}
@@ -630,7 +630,7 @@ class MMDataTable extends MMTool {
 			const columnJson = JSON.stringify(savedColumn);
 			let columnNumber = this.columnArray.indexOf(column);
 			super.removeChildNamedCommand(command);
-			command.undo = `${this.getPath()} restorecolumn ${columnNumber+1}${columnJson}`;
+			command.undo = `__blob__${this.getPath()} restorecolumn ${columnNumber+1}__blob__${columnJson}`;
 		}
 		else {
 			this.setError('mmcmd:tableBadColumnName', {path: this.getPath(), name: name});
@@ -667,7 +667,7 @@ class MMDataTable extends MMTool {
 	 * @method restoreColumnCommand
 	 * @param {MMCommand} command
 	 * command.args should be the the column number followed by the undo json
-	 * in the form /.x restorecolumn 1 followed by the json text
+	 * in the form __blob__/.x restorecolumn 1__blob__ followed by the json text
 	 */
 	restoreColumnCommand(command) {
 		const indicesMatch = command.args.match(/^\d+\s+/);
@@ -865,7 +865,7 @@ class MMDataTable extends MMTool {
 		const oldInputs = this.removeRows([rowNumber], true);
 		if (Object.keys(oldInputs).length) {
 			const inputsJson = JSON.stringify(oldInputs);
-			command.undo = `${this.getPath()} restorerows${inputsJson}`;
+			command.undo = `__blob__${this.getPath()} restorerows__blob__${inputsJson}`;
 		}
 	}
 
@@ -915,7 +915,7 @@ class MMDataTable extends MMTool {
 		const oldInputs = this.removeRows(rowNumbers, ignoreFilter);
 		if (Object.keys(oldInputs).length) {
 			const inputsJson = JSON.stringify(oldInputs);
-			command.undo = `${this.getPath()} restorerows${inputsJson}`;
+			command.undo = `__blob__${this.getPath()} restorerows__blob__${inputsJson}`;
 		}
 	}
 

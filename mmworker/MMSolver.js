@@ -274,7 +274,7 @@ class MMSolver extends MMTool {
 		}
 		const functionJson = this.jsonForFunction(removeRow);
 		this.removeFunction(removeRow);
-		command.undo = `${this.getPath()} restorefunction${functionJson}`;
+		command.undo = `__blob__${this.getPath()} restorefunction__blob__${functionJson}`;
 	}
 
 	/**

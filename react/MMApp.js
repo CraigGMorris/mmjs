@@ -980,8 +980,8 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				onClick: () => {
 					let undo = undoStack.pop();
 					if (undo) {
-						if (undo.startsWith('')) {
-							undo = undo.replace(/^/,'undo ');
+						if (undo.startsWith('__blob__')) {
+							undo = undo.replace(/^__blob__/,'__blob__undo ');
 						}
 						else {
 							undo = 'undo ' + undo;
@@ -1004,8 +1004,8 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					onClick: () => {
 						let redo = redoStack.pop();
 						if (redo) {
-							if (redo.startsWith('')) {
-								redo = redo.replace(/^/,'redo ');
+							if (redo.startsWith('__blob__')) {
+								redo = redo.replace(/^__blob__/,'__blob__redo ');
 							}
 							else {
 								redo = 'redo ' + redo;

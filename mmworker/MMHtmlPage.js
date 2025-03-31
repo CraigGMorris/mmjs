@@ -292,7 +292,7 @@ class MMHtmlPageProcessor {
 									const oldInputs = target.removeRows(rows);
 									if (Object.keys(oldInputs).length) {
 										const inputsJson = JSON.stringify(oldInputs);
-										response.undo = `${this.getPath()} restorerows${inputsJson}`;
+										response.undo = `__blob__${this.getPath()} restorerows__blob__${inputsJson}`;
 									}
 								}
 								else if (target instanceof MMExpression) {
@@ -303,7 +303,7 @@ class MMHtmlPageProcessor {
 											const oldInputs = tool.removeRows(rows)
 											if (Object.keys(oldInputs).length) {
 												const inputsJson = JSON.stringify(oldInputs);
-												response.undo = `${this.getPath()} restorerows${inputsJson}`;
+												response.undo = `__blob__${this.getPath()} restorerows__blob__${inputsJson}`;
 											}
 										}
 									}

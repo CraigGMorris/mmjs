@@ -64,7 +64,7 @@ export function ButtonView(props) {
 
 	const applyLabelChanges = (formula) => {
 			const path = `${toolPath}.labelFormula`;
-			props.actions.doCommand(`${path} set formula${formula}`, () => {
+			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(ButtonDisplay.main);
 			});
@@ -72,7 +72,7 @@ export function ButtonView(props) {
 
 	const applyTargetChanges = (formula) => {
 		const path = `${toolPath}.targetFormula`;
-		props.actions.doCommand(`${path} set formula${formula}`, () => {
+		props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 			setDisplay(ButtonDisplay.main);
 		});

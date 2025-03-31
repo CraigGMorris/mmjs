@@ -76,7 +76,7 @@ export function ModelView(props) {
 			if (results.path) {
 				const source = e.source
 				const message = e.data.substring(8)
-				props.actions.doCommand(`${results.path} htmlaction${message}`, (results) => {
+				props.actions.doCommand(`__blob__${results.path} htmlaction__blob__${message}`, (results) => {
 					if (results && results[0] && results[0].results) {
 						const received = results[0].results;
 						if (received.results) {
@@ -130,7 +130,7 @@ export function ModelView(props) {
 	}, [htmlAction]);
 
 	const applyInputChanges = (formula, path) => {
-		props.actions.doCommand(`${path} set formula${formula}`, () => {
+		props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 			setDisplay(ModelDisplay.model);
 		});

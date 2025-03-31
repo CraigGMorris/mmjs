@@ -586,7 +586,7 @@ class MMMatrix extends MMTool {
 				const cellInput = this.cellInputs[`${row}_${column}`];
 				const oldInput = cellInput ? cellInput.input : '';
 				this.setCellInput(row, column, inputString);
-				command.undo = `${this.getPath()} setcell ${row} ${column}${oldInput}`;
+				command.undo = `__blob__${this.getPath()} setcell ${row} ${column}__blob__${oldInput}`;
 			}
 			else {
 				throw(this.t('mmcmd:matrixSetCellError', { path: this.getPath(), args: command.args }));
