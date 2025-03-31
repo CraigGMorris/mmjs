@@ -424,7 +424,7 @@ export function FormulaEditor(props) {
 		const f = pEditOptions.initialFormula;
 		const nameSpace = pEditOptions.nameSpace;
 		if (typeof(f) ===  "string") {
-			pActions.doCommand(`__blob__${pViewInfo.path} fpreview ${nameSpace}__blob__${f}`, (results) => {
+			pActions.doCommand(`${pViewInfo.path} fpreview ${nameSpace}${f}`, (results) => {
 				if (results) {
 					setPreviewValue(results[0].results);
 					setPreviewCalcType(FormulaPreviewCalcType.current);
@@ -649,7 +649,7 @@ export function FormulaEditor(props) {
 		let f = (selStart === selEnd) ? formula : editInputRef.current.value.substring(selStart, selEnd);
 		f = replaceSmartQuotes(f);
 		const nameSpace = editOptions.nameSpace;
-		props.actions.doCommand(`__blob__${props.viewInfo.path} fpreview ${nameSpace}__blob__${f}`, (results) => {
+		props.actions.doCommand(`${props.viewInfo.path} fpreview ${nameSpace}${f}`, (results) => {
 			if (results) {
 				setPreviewValue(results[0].results);
 				setPreviewCalcType((selStart === selEnd) ?

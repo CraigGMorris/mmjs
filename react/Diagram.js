@@ -1034,7 +1034,7 @@ export class Diagram extends React.Component {
 							action: () => {
 								readClipboard().then(clipText => {
 									const position = this.state.showContext.info;
-									this.props.actions.doCommand(`__blob__${this.state.path} paste ${position.x} ${position.y}__blob__${clipText}`, () => {
+									this.props.actions.doCommand(`${this.state.path} paste ${position.x} ${position.y}${clipText}`, () => {
 										this.setState({showContext: null});
 										this.props.actions.updateView();
 									});

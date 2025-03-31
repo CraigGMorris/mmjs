@@ -340,7 +340,7 @@ class MMModel extends MMTool {
 		}
 		if (savedTools.length) {
 			const json = JSON.stringify(savedTools);
-			command.undo = `__blob__${this.getPath()} restoretool__blob__${json}`;
+			command.undo = `${this.getPath()} restoretool${json}`;
 		}
 		this.htmlProcessor.clearCache();
 		this.forgetCalculated();
@@ -370,7 +370,7 @@ class MMModel extends MMTool {
 	 * @method restoreToolCommand
 	 * @param {MMCommand} command
 	 * command.args should be the undo json
-	 * in the form __blob__/.x restoretool__blob__ followed by the json text
+	 * in the form /.x restoretool followed by the json text
 	 */
 	restoreToolCommand(command) {
 		const savedTools = JSON.parse(command.args);
@@ -583,7 +583,7 @@ class MMModel extends MMTool {
 	 * @method pasteCommand
 	 * @param {MMCommand} command
 	 * command.args should be the tool x y toolJson
-	 * in the form __blob__/.x paste x y__blob__ followed by the json text
+	 * in the form /.x paste x y followed by the json text
 	 */
 	pasteCommand(command) {
 		const indicesMatch = command.args.match(/^-*?[\d.]+\s+-*?[\d.]+\s+/);
@@ -1355,7 +1355,7 @@ class MMModel extends MMTool {
 	makeImportUndo() {
 		const savedImport = this.importInfo ? this.importInfo.saveObject() : null;
 		if (savedImport) {
-			return `__blob__${this.getPath()} restoreimport__blob__${JSON.stringify(savedImport)}`;
+			return `${this.getPath()} restoreimport${JSON.stringify(savedImport)}`;
 		}
 		else {
 			return `${this.getPath()} makelocal`;
@@ -1392,7 +1392,7 @@ class MMModel extends MMTool {
 	 * @method restoreImportCommand
 	 * @param {MMCommand} command
 	 * command.args should be the undo json
-	 * in the form __blob__/.x restoreimport__blob__ followed by the json text
+	 * in the form /.x restoreimport followed by the json text
 	 * if importInfo previously existed, or just restoremport if none did
 	 */
 	async restoreImportCommand(command) {

@@ -79,7 +79,7 @@ export function ToolView(props) {
 	}
 
 	const doSetNotes = (newNotes) => {
-		props.actions.doCommand(`__blob__${props.viewInfo.path} set notes__blob__${newNotes}`, () => {
+		props.actions.doCommand(`${props.viewInfo.path} set notes${newNotes}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 		});
 	}
