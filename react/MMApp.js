@@ -980,12 +980,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				onClick: () => {
 					let undo = undoStack.pop();
 					if (undo) {
-						if (undo.startsWith('__blob__')) {
-							undo = undo.replace(/^__blob__/,'__blob__undo ');
-						}
-						else {
-							undo = 'undo ' + undo;
-						}
+						undo = 'undo ' + undo;
 						doCommand(undo, () => {
 							updateView(infoStack.length - 1);
 							updateDiagram();
@@ -1004,12 +999,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					onClick: () => {
 						let redo = redoStack.pop();
 						if (redo) {
-							if (redo.startsWith('__blob__')) {
-								redo = redo.replace(/^__blob__/,'__blob__redo ');
-							}
-							else {
-								redo = 'redo ' + redo;
-							}
+							redo = 'redo ' + redo;
 							doCommand(redo, () => {
 								updateView(infoStack.length - 1);
 								updateDiagram();
