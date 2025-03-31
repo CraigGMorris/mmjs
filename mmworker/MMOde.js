@@ -385,7 +385,7 @@ class MMOde extends MMTool {
 			const saveForUndo = {n: recNumber, f: this.recordedValueFormulas[recNumber - 1].formula};
 			this.removeRecordedValue(recNumber);
 			const undoString = JSON.stringify(saveForUndo);
-			command.undo = `__blob__${this.getPath()} restorerecorded__blob__${undoString}`;
+			command.undo = `${this.getPath()} restorerecorded ${undoString}`;
 			command.results = 'removed recorded';
 		}
 		else {

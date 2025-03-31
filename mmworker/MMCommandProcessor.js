@@ -183,19 +183,7 @@ class MMCommandProcessor {
 		try {
 			commands = commands.trim();
 			if (commands.length > 0) {
-				if (commands.startsWith('__blob__')) {
-					// the command has subject and verb surrounded by '__blob__' with everything
-					// following the second __blob__ being a single argument
-					let endBlob = commands.indexOf('__blob__',7);
-					let subjectAndVerb = commands.substring(8, endBlob);
-					let arg = commands.substring(endBlob + 8);
-					let action = new MMCommand(subjectAndVerb + ' ' + arg);
-					if (await this.processCommand(action)) {
-						results.push(action);
-					}
-					return results;
-				}
-				// cmds are separated by either '''\n
+				// cmds are separated by '''\n
 				let cmdLines = commands.split(`\n'''`);
 				let continuedCmd = '';
 				for( let cmd of cmdLines) {
@@ -541,7 +529,7 @@ class MMCommandProcessor {
 		}
 		this.setValue(propertyName, valueString);
 		command.results = propertyName + ' = ' + valueString;
-		command.undo = `__blob__${this.getPath()} set ${propertyName}__blob__${oldValue}`;
+		command.undo = `${this.getPath()} set ${propertyName} ${oldValue}`;
 	}
 
 	/** @returns {string} returns path of this object */

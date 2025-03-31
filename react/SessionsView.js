@@ -92,7 +92,7 @@ export class SessionsView extends React.Component {
 					let r = new FileReader();
 					r.onload = (e) => { 
 						let contents = e.target.result;
-						contents = `__blob__/ import__blob__${this.props.viewInfo.rootFolder}:` + contents;
+						contents = `/ import ${this.props.viewInfo.rootFolder}:` + contents;
 						this.props.actions.doCommand(contents, (results) => {
 							this.props.actions.resetInfoStack('root', results ? results[0].results : null);
 							this.props.updateDiagram(true);

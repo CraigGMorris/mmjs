@@ -88,7 +88,7 @@ function EditColumnView(props) {
 					columnProperties.format = columnFormat;
 					columnProperties.isMenu = isMenu ? true : false;
 					const json = JSON.stringify(columnProperties);
-					props.actions.doCommand(`__blob__${path} updatecolumn__blob__${json}`, () => {
+					props.actions.doCommand(`${path} updatecolumn ${json}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
 						props.setDisplay(DataTableDisplay.table);
 					});
@@ -133,7 +133,7 @@ function EditColumnView(props) {
 					if (isCalculated) { columnProperties.isCalculated = true; }
 					if (isMenu) { columnProperties.isMenu = true;}
 					const json = JSON.stringify(columnProperties);
-					props.actions.doCommand(`__blob__${path} addcolumn__blob__${json}`, () => {
+					props.actions.doCommand(`${path} addcolumn ${json}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
 						props.setDisplay(DataTableDisplay.table);
 					});
@@ -431,7 +431,7 @@ function EditRowView(props) {
 								if (newValue != v) {
 									const replacement = column.v.unit ? newValue + ' ' + column.v.unit : newValue;
 									const path = props.viewInfo.path;
-									props.actions.doCommand(`__blob__${path} setcell ${displayedRow} ${columnNumber + 1}__blob__${replacement}`,() => {
+									props.actions.doCommand(`${path} setcell ${displayedRow} ${columnNumber + 1} ${replacement}`,() => {
 										setEditRowDisplay(DataTableDisplay.editRow);
 										props.actions.updateView(props.viewInfo.stackIndex);
 									})	
@@ -453,7 +453,7 @@ function EditRowView(props) {
 							key: rowN, // need to ensure each formula field is unique when moving through rows
 							applyChanges: (formula) => {
 								const path = props.viewInfo.path;
-								props.actions.doCommand(`__blob__${path} setcell ${displayedRow} ${selectedField}__blob__${formula}`,() => {
+								props.actions.doCommand(`${path} setcell ${displayedRow} ${selectedField} ${formula}`,() => {
 									setEditRowDisplay(DataTableDisplay.editRow);
 									props.actions.updateView(props.viewInfo.stackIndex);
 								})
@@ -620,7 +620,7 @@ function EditRowView(props) {
 					},
 					applyChanges: (formula) => {
 						const path = props.viewInfo.path;
-						props.actions.doCommand(`__blob__${path} setcell ${displayedRow} ${selectedField}__blob__${formula}`,() => {
+						props.actions.doCommand(`${path} setcell ${displayedRow} ${selectedField} ${formula}`,() => {
 							setEditRowDisplay(DataTableDisplay.editRow);
 							props.actions.updateView(props.viewInfo.stackIndex);
 						})
@@ -846,7 +846,7 @@ export function DataTableView(props) {
 							},
 							applyChanges: (formula) => {
 								const path = props.viewInfo.path;
-								props.actions.doCommand(`__blob__${path}.filterFormula set formula__blob__${formula}`,() => {
+								props.actions.doCommand(`${path}.filterFormula set formula ${formula}`,() => {
 									props.actions.updateView(props.viewInfo.stackIndex);
 								})
 							}
@@ -884,7 +884,7 @@ export function DataTableView(props) {
 					},
 					applyChanges: (formula) => {
 						const path = props.viewInfo.path;
-						props.actions.doCommand(`__blob__${path}.filterFormula set formula__blob__${formula}`,() => {
+						props.actions.doCommand(`${path}.filterFormula set formula ${formula}`,() => {
 							props.actions.updateView(props.viewInfo.stackIndex);
 							setDisplay(DataTableDisplay.table);
 						})
@@ -980,7 +980,7 @@ export function DataTableView(props) {
 					},
 					applyChanges: (formula) => {
 						const path = props.viewInfo.path;
-						props.actions.doCommand(`__blob__${path} setcell ${row} ${column}__blob__${formula}`,() => {
+						props.actions.doCommand(`${path} setcell ${row} ${column} ${formula}`,() => {
 							setDisplay(DataTableDisplay.table);
 							props.actions.updateView(props.viewInfo.stackIndex);
 						})

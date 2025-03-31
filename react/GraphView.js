@@ -110,7 +110,7 @@ export function GraphView(props) {
 	const applyChanges = (name) => {
 		const path = `${results.path}.${name}`;
 		return (formula) => {
-			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
+			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(DisplayType.input);
 			});

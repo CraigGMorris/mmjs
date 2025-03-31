@@ -2374,7 +2374,7 @@ class MMGraph extends MMTool {
 						savedX.axisName = name;
 						this.removeXValueAtIndex(xNumber);
 						const undoString = JSON.stringify(savedX);
-						command.undo = `__blob__${this.getPath()} restoreaxis__blob__${undoString}`;
+						command.undo = `${this.getPath()} restoreaxis ${undoString}`;
 						return;
 					}
 					case 'y': {
@@ -2389,7 +2389,7 @@ class MMGraph extends MMTool {
 							savedY.axisName = name;
 							xValue.removeYValueAtIndex(yNumber);
 							const undoString = JSON.stringify(savedY);
-							command.undo = `__blob__${this.getPath()} restoreaxis__blob__${undoString}`;
+							command.undo = `${this.getPath()} restoreaxis ${undoString}`;
 							return;
 						}
 						break;
@@ -2405,7 +2405,7 @@ class MMGraph extends MMTool {
 							savedZ.axisName = name;
 							xValue.removeZValue();
 							const undoString = JSON.stringify(savedZ);
-							command.undo = `__blob__${this.getPath()} restoreaxis__blob__${undoString}`;
+							command.undo = `${this.getPath()} restoreaxis ${undoString}`;
 							return;
 						}
 					}

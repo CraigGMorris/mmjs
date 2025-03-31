@@ -90,7 +90,7 @@ export function ExpressionView(props) {
 	}
 
 	const applyChanges = (formula) => {
-		props.actions.doCommand(`__blob__${path}.${formulaName} set formula__blob__${formula}`, () => {
+		props.actions.doCommand(`${path}.${formulaName} set formula ${formula}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 			setDisplay(ExpressionDisplay.expression);
 		});

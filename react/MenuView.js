@@ -72,7 +72,7 @@ export function MenuView(props) {
 	const applyOptionChanges = () => {
 		const path = `${results.path}.options`;
 		return (formula) => {
-			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
+			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(MenuDisplay.main);
 			});
