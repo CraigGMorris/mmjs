@@ -335,7 +335,7 @@ export class UnitSetsView extends React.Component {
 							// keeps input field in sync
 							this.setState({input: event.target.value});
 						},
-						onKeyCode: (event) => {
+						onKeyDown: (event) => {
 							// watches for Enter and sends command when it see it
 							if (event.code == 'Enter') {
 								this.props.actions.doCommand(`/unitsys.sets.${this.state.selected} renameto ${this.state.input}`, () => {
