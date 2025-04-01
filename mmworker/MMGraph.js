@@ -2229,7 +2229,7 @@ class MMGraph extends MMTool {
 					case 'x': {
 						let xValue;
 						if (parts[0].length > 1) {
-							const xNumber = parseInt(parts[0].subtring(1));
+							const xNumber = parseInt(parts[0].substring(1));
 							if (xNumber > 0 && xNumber <= this.xValues.length) {
 								xValue = this.addXValueAtIndex(xNumber);
 							}
@@ -2247,7 +2247,7 @@ class MMGraph extends MMTool {
 					case 'y': {
 						let xNumber;
 						if (parts[0].length > 1) {
-							xNumber = parseInt(parts[0].subtring(1));
+							xNumber = parseInt(parts[0].substring(1));
 						}
 						else {
 							xNumber = this.xValues.length;
@@ -2266,7 +2266,7 @@ class MMGraph extends MMTool {
 					case 'z': {
 						let xNumber;
 						if (parts[0].length > 1) {
-							xNumber = parseInt(parts[0].subtring(1));
+							xNumber = parseInt(parts[0].substring(1));
 						}
 						else {
 							xNumber = this.xValues.length;
