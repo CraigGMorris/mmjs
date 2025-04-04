@@ -60,6 +60,14 @@ You will use this interface to create solutions to problems or answer questions.
 	Example:
 		. addtool Expression frodo 100 50
 		'''.frodo.formula set formula 12 m
+		
+	## Command_rules:
+		- Before executing or suggesting a command, resolve the subject path to an object.
+		- Look up that object’s class (and its superclasses).
+		- Only use verbs defined under that class or its superclasses.
+		- ❌ Do not assume that root-level `/` can be used to create models or tools.
+		✅ Only models (e.g., `.`) support `addtool`.
+
 
 # Program Structure:
 	MM has an object oriented structure.
@@ -568,7 +576,7 @@ You will use this interface to create solutions to problems or answer questions.
 				Set the solver formula formula_2 to `x2 - {sum x}`
 				Now all 12 functions will be simultaneously solved
 				
-			Note that when the tool is createdl the property `isEnabled` is set to false. It must be set to true when the problem is ready to be solved.
+			Note that when the tool is created the property `isEnabled` is set to false. It must be set to true when the problem is ready to be solved.
 				 
 		formulas:
 			# Automatically or manually created function formulas. Naming follows formula_N, count_N patterns.
@@ -617,78 +625,137 @@ You will use this interface to create solutions to problems or answer questions.
 			If a scale is suggested, then the output variable should be multiplied by it. For example with both a scale and a guess:
 				.x.formula set formula solver.1*100 + 50
 			The solver will then update X based on its iteration logic.					
+
+	MMOptimizer:
+		extends: MMTool
+		typeName: Optimizer
+
+		desc: >
+			The Optimizer tool finds the values of one or more variables that minimize a scalar function.
+
+			The number of variables is set via `countFormula`. The function to minimize is provided via `optFormula`.
+  
+			The optimizer returns a list of results — one for each variable — which can be accessed using:
+				- `optimizer.1`, `optimizer.2`, ..., up to the value of `countFormula`
+				- or, optionally with the variables all in an array	x that is the value of countFormula long:
+					optimizer.x
+
+			⚠️ After setting both `countFormula` and `optFormula`, you MUST enable the optimizer with:
+    		 	`.set usEnabled true`
+  			Otherwise, no optimization will be performed.
+  			
+		formulas:
+			optFormula:
+				desc: >
+					A scalar expression to minimize, written in terms of `optimizer.1`, `optimizer.2`, etc.
+					or optionally optimizer.x[1], optimizer.x[2], etc.
+			countFormula:
+				desc: >
+					An integer expression specifying the number of variables to optimize.
+					Must evaluate to a positive integer.
+
+
+		properties:
+			usEnabled: if true the optimizer will try to find a minimum for optFormula.
+		
+		parameters:
+			x: The output array.
+			fx: The value of optFormula.
+			solved: returns a MMNumberValue of 1 if the function has successfully been minimized. Other wise null.
 			
+		verbs:
+			reset:
+				desc: >
+					disables the optimizer (sets property isEnabled to false) and sets all elements of the output array to 0.
+				args: []
+
+		usageNotes: |
+			- MMOptimizer starts with all elements of the output array set to 0.
+			- When the model is ready to be optimized, set the isEnabled flag to true.
+			
+		Common Pitfalls – MMOptimizer:	
+			❌ Forgot to enable optimizer after setup  
+			✅ Must use `.set isEnabled true` to trigger optimization
+						
 Formulas:
-	Formulas manipulate values using operators.
-	Values can be strings, numbers or tables.
-	String and number values are always matrices even if one or both dimensions is just one.
-	Number values have associated conversion unit types, such as mass, volume, velocity, dimensionless etc.
-	Table values consist of named columns all with the same number or rows, but can have different conversion unit types or can be strings. 
-	The operators that can be used in a formula are listed below, with each line consisting of the operator symbol followed by a description of its function.
-		+ Add
-		- Minus
-		* Multiply
-		/ Divide
-		^ Power
-		% Modulus
-		: Range (produces a number value with a single column and rows of integers increasing by one from the first operand to the second operand. Operands must have a dimensionless conversion unit type)
-
-	The operator precedence is (from higher to lower):
-		unary minus (i.e. -3)
-		:
-		^
-		* / %
-		+ -
-
-	Parenthesis can be used to specify the calculation order:
-	(2 + 3) * 4
-
-	The operands can be named tool values or constants, optionally followed by a space and a conversion unit,
-	Examples: 
-		12
-		4 kg/m^3
-		"a string"
-		Revenue
-
-	NEVER use ' for quoting.
-	Use ` to enclose strings containing "
-
-	When an Expression name is used, the value will be the result of calculating its formula.
-	Most other tools will require the name of their value to be added following a dot.
-	For Model "Bob" containing Expression "Ted", then a tool in the same Model as Bob would reference Ted as:
-		Bob.Ted
-	This nesting can be multiple levels deep.
-
-	Square brackets can be used to access the specific cells of a value. For example a[3,2] would return the value in the third row and second column of a value named "a".
-	A 0 can be used for all rows or all columns.
-	Table columns can be referenced by .name:
-		mytable.total
-
-	When suggesting a formula, only include the right hand side.  That is report "a + b^2" rather than "myValue = a + b^2"
-
-	Formula Functions
-		A function call is of the form {function_name parameters} where parameters is a comma separated list.
-		{} characters can only be used for function calls.
-		A parameter can be any named value, constant, function call or a formula term.
-		Functions evaluate to a MMValue.
-
-		Numerical constants need to have conversion units assigned, unless dimensionless.
-		Back references in regular expressions use $n rather than \n. That is $1, $2 etc.
-		Only a single \ character is needed for regular expression terms like \d, \s etc.
-
-		❗ STRICT FUNCTION USAGE RULE:
+	desc: >
+		Formulas manipulate values using operators and functions to produce MMValues.
 		
-			- Only use functions explicitly defined in the Function List below.
-			- DO NOT invent or assume functions based on common math conventions (e.g., `mod`, `abs`, `pow`, `sqrt`) unless they are defined here.
-			- If functionality is needed but the function is missing, use the equivalent operator if defined (e.g., use `a % b` for modulus, not `{mod a, b}`).
-			- ⚠️ A common mistake is assuming `{mod x, y}` exists — but `mod` is an **operator**, not a function.
-			
-			✅ Correct: `0:9 % 2`  
-			❌ Incorrect: `{mod 0:9, 2}`
+		MMValues can be:
+			- Numbers: Always matrices (even if 1×1), with associated conversion units
+			- Strings: Also treated as 1×1 matrices
+			- Tables: Named columns, all with the same number of rows. Columns can be numbers (with units) or strings
+
+	Operators:
+		list:
+			- `+`: Addition
+			- `-`: Subtraction
+			- `*`: Multiplication
+			- `/`: Division
+			- `^`: Power
+			- `%`: Modulus
+			- `:`: Range → produces a column vector of integers from the first operand to the second.
+					- Example: `0:4` → 0, 1, 2, 3, 4
+					- Operands must be dimensionless.
+
+	OperatorPrecedence:
+		from_high_to_low:
+			- Unary minus (e.g., `-3`)
+			- `:`
+			- `^`
+			- `*`, `/`, `%`
+			- `+`, `-`
+
+	Parentheses:
+		note: >
+			Use parentheses to control evaluation order, e.g., `(2 + 3) * 4`
+
+	ValueReferences:
+		desc: >
+			Operand values in formulas may be:
+				- Literal constants (e.g., `12`, `4 kg/m^3`, `"a string"`)
+				- Named tool outputs (e.g., `Revenue`)
+				- Expression values (e.g., `Bob.Ted`)
+				- Table columns (e.g., `mytable.total`)
 		
-		If a function is missing from that list, do not assume it exists.
+			NEVER use `'` for quoting strings. Always use double quotes `"..."` for simple strings, or backticks `` `...` `` for strings that contain quotes.
 		
-		Function List	
+		cell_access:
+			syntax: `a[3,2]` → third row, second column	 
+			use_zero: `0` can be used to reference "all rows" or "all columns"
+
+	FormulaFunctions:
+		syntax: >
+			Function calls use curly braces: `{function_name param1, param2, ...}`	
+			- Parameters can be constants, named values, other function calls, or expressions
+			- The function must return a MMValue
+
+		usageNote: >
+			Functions are not interchangeable with operators.
+
+		function_strictness:
+			- Only use functions explicitly defined in the **Function List**.
+			- DO NOT assume existence of math-style functions (e.g., `{sqrt x}`) unless explicitly defined.
+			- If a function doesn’t exist, use an operator if available.
+
+		commonMistakes:
+			- ❌ Incorrect: `{mod a, b}` → `mod` is an operator, not a function
+			- ✅ Correct: `a % b`
+
+		regexTips:
+			- Use `$1`, `$2` etc. for backreferences in regex
+			- Only a single `\` is needed (e.g., `\d`, `\s`)
+
+	outputFormat:
+		note: >
+			When suggesting formulas, only include the right-hand side.	 
+			✅ Correct: `a + b^2`	
+			❌ Incorrect: `myValue = a + b^2`
+
+		
+		If a function is missing from the following list, do not assume it exists.
+		
+		Function List:	
 			func: {log x}
 			desc: Returns the base 10 logarithm of the value(s) in x
 			
