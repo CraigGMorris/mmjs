@@ -161,7 +161,6 @@ class MMOptimizer extends MMTool {
 			this.commonXi = new Float64Array(n);
 		}
 		this.isOptimized = false;
-		this.isEnabled = false;
 		if (!this.isLoadingCase) {
 			this.forgetCalculated();
 		}
@@ -212,6 +211,7 @@ class MMOptimizer extends MMTool {
 	 */
 	resetCommand(command) {
 		this.resetOutputs();
+		this.isEnabled = false;
 		command.results = 'reset done';
 	}
 
@@ -234,7 +234,6 @@ class MMOptimizer extends MMTool {
 		if (this.isInError && this.isEnabled ) {
 			this.isInError = false;
 			this.resetOutputs();
-			this.isEnabled = true;
 		}
 		else {
 			this.isInError = false;
@@ -721,6 +720,7 @@ class MMOptimizer extends MMTool {
 		if (this.isRunning || this.isLoadingCase) {
 			return;
 		}
+		this.numberOfOutputs; // ensure this has been evaluated
 		this.isOptimized = false;
 		this.isRunning = true;
 		try {
