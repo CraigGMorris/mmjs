@@ -291,7 +291,7 @@ class MMSession extends MMParent {
 		this.nextToolLocation = this.unknownPosition;
 		this.rootModel = MMToolTypes['Model'].factory('root', this);
 		this.currentModel = this.rootModel;
-		this.modelStack = [this.currentModel];
+		this.modelStack = [];
 		this.storePath = storePath;
 		this.processor.defaultObject = this.rootModel;
 		this.selectedObject = '';
@@ -340,7 +340,7 @@ class MMSession extends MMParent {
 		this.nextToolLocation = this.unknownPosition;
 		this.rootModel = rootModel;
 		this.currentModel = rootModel;
-		this.modelStack = [rootModel];
+		this.modelStack = [];
 		if (!storePath) {
 			this.storePath = saveObject.CaseName;
 		}
@@ -765,6 +765,7 @@ class MMSession extends MMParent {
 		verbs['popmodel'] = this.popModelCommand;
 		verbs['import'] = this.importCommand;
 		verbs['remote'] = this.remoteDBCommand;
+		verbs['getmodelstack'] = this.getModelStackCommand;
 		return verbs;
 	}
 
@@ -789,7 +790,8 @@ class MMSession extends MMParent {
 			pushmodel: 'mmcmd:_sessionPushModel',
 			popmodel: 'mmcmd:_sessionPopModel',
 			import: 'mmcmd:_sessionImport',
-			remote: 'mmcmd:_sessionRemote'
+			remote: 'mmcmd:_sessionRemote',
+			getmodelstack: 'mmcmd:_sessionGetModelStack'
 		}[command];
 		if (key) {
 			return key;
@@ -1211,6 +1213,17 @@ class MMSession extends MMParent {
 				command.results.indexToolType = indexTool.typeName;
 			}
 		}
+	}
+
+	/**
+	 * @method getModelStackCommand
+	 * verb
+	 * @param {MMCommand} command - returns model stack array
+	 */
+	async getModelStackCommand(command) {
+		let modelStack = this.modelStack.map(m => m.name);
+		modelStack.push(this.currentModel.name);
+		command.results = {modelStack: modelStack};
 	}
 
 	// testing method - place to easily try things out

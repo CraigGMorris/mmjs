@@ -269,6 +269,7 @@ export function MMApp(props) {
 	const [rightPaneWidth, setRightPaneWidth] = useState(defaultRightPaneWidth);
 	const [viewInfo, setViewInfo] = useState(initialInfo);
 	const [statusMessage, setStatusMessage] = useState('');
+	const [showConsole, setShowConsole] = useState(false);
 
 	const diagramRef = React.useRef(null);
 
@@ -623,10 +624,10 @@ export function MMApp(props) {
 					});
 					break;
 
-				case 'console':
-					consoleInfo.current = oldTop;
-					updateView(infoStack.length-1);
-					break;
+				// case 'console':
+				// 	consoleInfo.current = oldTop;
+				// 	updateView(infoStack.length-1);
+				// 	break;
 				
 				default:
 					updateView(infoStack.length-1);
@@ -634,7 +635,7 @@ export function MMApp(props) {
 			}
 			setViewInfo(infoStack[infoStack.length-1]);
 		}
-	},[doCommand, updateView]);
+	},[doCommand, updateView, showConsole]);
 
 	/**
 	 * pushModel
@@ -751,13 +752,14 @@ const pushTool = useCallback((toolName, path, toolType) => {
 	}, [updateView, pushTool]);
 
 	/**
-	 * pushConsole
+	 * toggleConsole
 	 * pushes the console onto the info view
 	 */
-	const pushConsole = useCallback(() => {
-		infoStack.push(consoleInfo.current);
-		setViewInfo(consoleInfo.current);
-		setStateViewType(viewType === ViewType.diagram ? ViewType.info : viewType)
+	const toggleConsole = useCallback(() => {
+		setShowConsole(prev => !prev);
+		// infoStack.push(consoleInfo.current);
+		// setViewInfo(consoleInfo.current);
+		// setStateViewType(viewType === ViewType.diagram ? ViewType.info : viewType)
 	}, [viewType, setStateViewType]);
 
 	/**
@@ -860,7 +862,11 @@ const pushTool = useCallback((toolName, path, toolType) => {
 	if (viewType !== ViewType.diagram) {
 		let i = infoStack.length-1;
 		previousTitle = i > 0 ? infoStack[i-1].title : '';
+		let keyView = infoViews[viewInfo.viewKey];
 		title = viewInfo.title;
+		if (showConsole) {
+			keyView = infoViews['console'];
+		}
 		const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 		infoView = e(
 			'div', {
@@ -870,7 +876,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					height: infoHeight,
 				}
 			},
-			e(infoViews[viewInfo.viewKey], {
+			e(keyView, {
 				key: viewInfo.path,
 				className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
 				actions: actions,
@@ -1028,7 +1034,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					tabIndex: -1,
 					disabled: viewKeys.has('console'),
 					onClick: () => {
-						pushConsole();
+						toggleConsole();
 					}
 				},
 				t('react:infoButtonConsole')

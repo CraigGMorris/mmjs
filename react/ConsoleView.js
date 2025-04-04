@@ -35,10 +35,10 @@ export function ConsoleView(props) {
 		inputRef.current.focus();
 	}, []);
 
-	/** function callBack - called when the worker completes command
+	/** function consoleCallBack - called when the worker completes console command
 	 * @param {MMCommand[]} cmds
 	 */
-	let callBack = cmds => {
+	let consoleCallBack = cmds => {
 		let lines = [];
 		const getOutput = (r) => {
 			let cmdOutput = r;
@@ -72,6 +72,29 @@ export function ConsoleView(props) {
 
 		props.updateDiagram();
 	}
+
+	// Wrapper for doCommand
+	function doCommandPromise(cmd, callBack) {
+		return new Promise((resolve) => {
+			props.actions.doCommand(cmd, (result) => {
+				resolve(callBack(result));
+			});
+		});
+	}
+	
+	const performCommand = async (cmd, callBack) => {
+		if (cmd.trim().match(/^\/\s+popmodel/)) {
+			props.actions.popModel()
+		}
+		else if (cmd.trim().match(/^\/\s+pushmodel\s+[A-Za-z][A-Za-z0-9_]+/)) {
+			const parts = cmd.trim().split(/\s+/);
+			const modelName = parts[2];
+			props.actions.pushModel(modelName);
+		}
+		else {
+			await doCommandPromise(cmd, callBack);
+		}
+	}
 	
 	let readCommandFile = event => {
 		//Retrieve the first (and only!) File from the FileList object
@@ -79,9 +102,12 @@ export function ConsoleView(props) {
 
 		if (f) {
 			let r = new FileReader();
-			r.onload = (e) => { 
-				let contents = e.target.result;
-				props.actions.doCommand(contents, callBack);
+			r.onload = async (e) => { 
+				const contents = e.target.result;
+				const cmds = contents.split(`\n'''`);
+				for (const cmd of cmds) {
+					await performCommand(cmd, consoleCallBack);
+				}
 			};
 			r.readAsText(f);
 		} else { 
@@ -114,7 +140,7 @@ export function ConsoleView(props) {
 				onKeyDown: event => {
 					if (event.code == 'Enter') {
 						// watches for Enter and sends command when it see it
-						props.actions.doCommand(input, callBack);
+						performCommand(input, consoleCallBack);
 						const stackLength = inputStackRef.current.length;
 						if (stackLength === 0 || inputStackRef.current[stackLength - 1] !== input) {
 							inputStackRef.current.push(input);
