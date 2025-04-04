@@ -297,11 +297,6 @@ class MMModel extends MMTool {
 			if (isImport) {
 				newTool.importInfo = new MMImportModelInfo('');
 			}
-			else if (typeName === 'Model') {
-				newTool.addToolCommand({
-					args: 'Expression'
-				});
-			}
 			newTool.justAdded = true;
 			command.results = name;
 			command.undo = this.getPath() + ' removetool ' + name;
