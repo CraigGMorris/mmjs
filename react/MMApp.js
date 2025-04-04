@@ -844,6 +844,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 		updateView: updateView,
 		updateDiagram: updateDiagram,
 		renameTool: renameTool,
+		toggleConsole: toggleConsole,
 	};
 	
 	let previousTitle = '';

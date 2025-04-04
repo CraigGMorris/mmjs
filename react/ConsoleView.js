@@ -106,8 +106,10 @@ export function ConsoleView(props) {
 				const contents = e.target.result;
 				const cmds = contents.split(`\n'''`);
 				for (const cmd of cmds) {
-					await performCommand(cmd, consoleCallBack);
+					await performCommand(cmd, () => {});
 				}
+				props.updateDiagram();
+				props.actions.toggleConsole();
 			};
 			r.readAsText(f);
 		} else { 
