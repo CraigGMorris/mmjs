@@ -859,7 +859,6 @@ class MMSession extends MMParent {
 	 */
 	async newSessionCommand(command) {
 		this.newSession(command.args);
-		this.rootModel.addToolCommand({args: 'Expression'});
 		await this.saveLastSessionPath();
 		command.results = this.storePath;
 	}
