@@ -20,20 +20,72 @@
 const e = React.createElement;
 const useState = React.useState;
 
+const consoleStacks = {
+	output: {
+		stack: ['Results:'],
+		maxCount: 100,
+		currentFrame: 0,
+		show() {
+			return this.stack[this.currentFrame];
+		},
+		push(s) {
+			consoleStacks.push(this,s)
+		},
+		scroll(nLines) {
+			consoleStacks.scroll(this, nLines);
+		}
+	},
+	input: {
+		stack: [''],
+		maxCount: 100,
+		currentFrame: 0,
+		show() {
+			return this.stack[this.currentFrame];
+		},
+		push(s) {
+			if (this.stack.length < 2 || this.stack[this.stack.length-2] !== s) {
+				this.stack[this.stack.length-1] = s;
+				consoleStacks.push(this,'');
+			}
+		},
+		scroll(nLines) {
+			consoleStacks.scroll(this, nLines);
+		}
+	},
+	push(stack, s) {
+		stack.stack.push(s);
+		while (stack.stack.length > stack.maxCount) {
+			stack.stack.shift();
+		}
+		stack.currentFrame = stack.stack.length - 1;
+	},
+	scroll(stack, nLines) {
+		let n = stack.currentFrame + nLines;
+		stack.currentFrame = Math.min(Math.max(n, 0), stack.stack.length -1);
+	}
+
+}
+
 /**
  * accepts command line inputs and displays result
  */
 export function ConsoleView(props) {
-	const [output, setOutput] = useState('');
+	const [output, setOutput] = useState(consoleStacks.output.show());
 	const [input, setInput] = useState('');
+	const [view, setView] = useState('OpenAI');
 	const t = props.t;
 	const inputRef = React.useRef(null);
-	const inputStackRef = React.useRef([]);
-	const inputStackPos = React.useRef(0);
 
 	React.useEffect(() => {
-		inputRef.current.focus();
+		if (view === 'Console') {
+			inputRef.current.focus();
+		}
 	}, []);
+
+	const pushOutput = (s) => {
+		consoleStacks.output.push(s)
+		setOutput(consoleStacks.output.show());
+	}
 
 	/** function consoleCallBack - called when the worker completes console command
 	 * @param {MMCommand[]} cmds
@@ -68,7 +120,7 @@ export function ConsoleView(props) {
 		if (lines.length > 100000) {
 			lines = lines.substr(0, 100000) + '\nTRUNCATED at 100000 chars';
 		}
-		setOutput(lines);
+		pushOutput(lines);
 
 		props.updateDiagram();
 	}
@@ -95,6 +147,16 @@ export function ConsoleView(props) {
 			await doCommandPromise(cmd, callBack);
 		}
 	}
+
+	let commandAction;
+
+	switch(view) {
+		case 'OpenAI':
+			commandAction = (cmd, callBack) => {
+
+			}
+	}
+
 	
 	let readCommandFile = event => {
 		//Retrieve the first (and only!) File from the FileList object
@@ -116,8 +178,8 @@ export function ConsoleView(props) {
 			alert("Failed to load file");
 		}
 	}
-	
-	return e(
+
+	let viewElement = e(
 		'div', {
 			id: 'console',
 		},
@@ -129,7 +191,7 @@ export function ConsoleView(props) {
 			}
 		),
 		e(
-			'input', {
+			'textarea', {
 				id: 'console__input',
 				value: input || '',
 				placeholder: t('react:consoleReadPlaceHolder'),
@@ -140,60 +202,95 @@ export function ConsoleView(props) {
 					setInput(value);				
 				},
 				onKeyDown: event => {
-					if (event.code == 'Enter') {
-						// watches for Enter and sends command when it see it
-						performCommand(input, consoleCallBack);
-						const stackLength = inputStackRef.current.length;
-						if (stackLength === 0 || inputStackRef.current[stackLength - 1] !== input) {
-							inputStackRef.current.push(input);
+					if (event.code == 'Enter' && !event.shiftKey) {
+						event.preventDefault();
+						if (input) {
+							// watches for Enter and sends command when it see it
+							performCommand(input, consoleCallBack);
+							consoleStacks.input.push(input);
+							setInput('');
 						}
-						inputStackPos.current = inputStackRef.current.length;
-						setInput('');
+					}
+					else if (event.code === 'ArrowUp') {
+						event.stopPropagation();
+						event.preventDefault();
+						if (event.shiftKey) {
+							// change results frame
+							consoleStacks.output.scroll(-1);
+							setOutput(consoleStacks.output.show());
 						}
-						else if (event.code === 'ArrowUp') {
-							event.stopPropagation();
-							event.preventDefault();					
-							let pos = inputStackPos.current;
-							if (pos > 0) {
-								setInput(inputStackRef.current[--pos]);
-								inputStackPos.current = pos;
-							}
+						else {
+							// scroll through command history	
+							consoleStacks.input.scroll(-1);
+							setInput(consoleStacks.input.show());		
 						}
-						else if (event.code === 'ArrowDown') {
-							event.stopPropagation();
-							event.preventDefault();					
-							let pos = inputStackPos.current;
-							const currentLength = inputStackRef.current.length
-							if (pos < currentLength - 1) {
-								setInput(inputStackRef.current[++pos]);
-								inputStackPos.current = pos;
-							}
-							else {
-								setInput('');
-								inputStackPos.current = inputStackRef.current.length;
-							}
+					}
+					else if (event.code === 'ArrowDown') {
+						event.stopPropagation();
+						event.preventDefault();					
+						if (event.shiftKey) {
+							// change results frame
+							consoleStacks.output.scroll(1);
+							setOutput(consoleStacks.output.show());
+						}
+						else {
+							consoleStacks.input.scroll(1)
+							setInput(consoleStacks.input.show())
+						}
 					}
 				}
 			}
-		),
+		)
+	);
+	
+	return e(
+		'div', {
+			id: 'console__main',
+		},
+		viewElement,
 		e(
 			'div', {
-				id: 'console__read-file',
+				id: 'console__footer',
 			},
 			e(
-				'label', {
-					id: 'console__read-file-label',
-					className: 'input-file-button',
+				'div', {
+					id: 'console__toggle'
 				},
-				t('react:consoleReadCommands'),
 				e(
-					'input', {
-						id: 'console__read-file-input',
-						type: 'file',
-						onChange:  readCommandFile,
-					}
-				),	
+					'select', {
+							value: view,
+							onChange: (event) => {
+								setView(event.target.value);
+							},
+						},
+						e('option', { value: 'OpenAI' }, 'OpenAI'),
+						e('option', { value: 'Console' }, 'Console')
+				)
 			),
+			e(
+				'div', {
+					id: 'console__read-file',
+				},
+				e(
+					'label', {
+						id: 'console__read-file-label',
+						className: 'input-file-button',
+					},
+					t('react:consoleReadCommands'),
+					e(
+						'input', {
+							id: 'console__read-file-input',
+							type: 'file',
+							onChange:  readCommandFile,
+						}
+					),	
+				),
+			),
+			e(
+				'div', {
+					id: 'console__spare'
+				}
+			)
 		)
 	);
 }
