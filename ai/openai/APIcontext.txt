@@ -298,6 +298,24 @@ You will use this interface to create solutions to problems or answer questions.
 			value:
 				desc: Retrieves the tool's value in json format.
 				args: []
+
+		usageNote: >
+			In any formula defined within a tool, the `$` symbol can be used as a shortcut for the tool's own name.
+			In any formula, the `$` symbol refers to the **tool that owns the formula** — not any tool it references. 
+			
+			For example, within a tool named `myOde`, the formula:
+				$.t + 1 s
+			is equivalent to:
+				myOde.t + 1 s
+			
+			This only substitutes the **tool’s own name** — not its full path.  
+			So if the tool is located at `/.root.sub.myOde`, then `$` → `myOde`, **not** the full path.
+			
+			This can be especially useful in deeply nested models or when copying formulas between tools.
+			⚠️ The `$` symbol may only be used inside formulas.
+			It is not valid in:
+				- Subject paths (e.g., `/.$.addtool` is invalid)
+				- Property names.
 	
 	MMModel:
 		extends: MMParent
@@ -464,6 +482,14 @@ You will use this interface to create solutions to problems or answer questions.
 				args:
 					- Column number
 					- Format string (omit to clear the format)
+
+		usageNote: >
+			Expressions may evaluate to either scalar values (numbers, strings, or units) or table values.
+			
+			⚠️ Only table values support field access using `.ColumnName` syntax.
+			Scalar values must be used directly. For example:
+				- Correct: preyGrowth * popSolver.y.Prey   (preyGrowth is a scalar)
+				- Incorrect: preyGrowth.Prey   (invalid — preyGrowth is not a table)
 
 	MMGraph:
 		extends: MMTool
@@ -676,6 +702,129 @@ You will use this interface to create solutions to problems or answer questions.
 		Common Pitfalls – MMOptimizer:	
 			❌ Forgot to enable optimizer after setup  
 			✅ Must use `.set isEnabled true` to trigger optimization
+
+	MMOdeSolver:
+		extends: MMTool
+		typeName: Ode
+		
+		desc: >
+			MMOdeSolver numerically integrates the system of differential equations dy/dt.
+			It starts from an initial value (y0) and advances over time until endT, using external Expressions or tools to compute the derivative dy.
+			The solver updates y and t, and repeatedly evaluates dy until the integration is complete.
+			
+			Initial Value: >
+				MMOde has a formula named y0, that calculates the initial values of y at t=0.
+				y0 should be a table, with column names for the different y values. For example for a simple pendulum:
+					{table `Angle`, 40 degree, `Velocity`, 0 1/s}
+				The ode solver y parameter will be an identical table.
+				The y table will be used to calculate dy as a table whose first column is angular velocity and second is acceleration.
+				This could be calculated in an Expression, which is then used as the value for the myOde.dy formula.
+				The ode solver will calculate a y table value at a new t and the process will be repeated until the t value exceed the value calculated by the solver's endT formula.
+				
+				The y0 table can have more than 1 row if appropriate. For example a double pendulum might have angle and velocity values for each pendulum leg:
+					{table `Angle`, {cc 40 degree, 60 degree}, `Velocity`, {cc 0 1/s, 4 1/s}}
+				The dy table would have to have a similar form.
+				
+				The column order of dy must match that of y — column names are ignored for this purpose.
+				
+		formulas:
+			y0: >
+				the initial value table at t = 0.
+			dy: >
+				a table of the same form as y0, containing the derivatives (dy/dt) of myOde.y matched by column order.
+			endT: >
+				The termination value for t. The integration will be from t=0 to t=endT.
+			nextT: >
+				The t value when the next recording of recorded values. Example:
+					$.t + 1 s
+				where the $ is a synonym for the ode solver's name.
+				This is not the internal solver time step; it only controls how often values are recorded via rN formulas.
+			relTol: >
+				This is a measure of the allowed relative errors. Thus the default value of 1e-5 means the errors are controlled to 0.001%. Don't change it unless requested to.
+			absTol: >
+				This is used to control errors when a y value might become so small that relative error becomes meaningless.
+				It should be set to some small value below which errors are unimportant.
+				It should be a table with the same columns as y, but only 1 row.
+				The default value is:
+					1.0e-10*{baseunit $.y}
+				where the $ is a synonym for the solver's name. Don't change it unless requested to.
+			rN: >
+				recorded values formulas, where N = 1, 2, 3 etc.
+				A new formula is added with use of the addrecorded verb, starting with r1.
+				For example one might want to record the time and angle of the pendulum:
+					.myOde addrecorded
+					.myOde.r1 set formula $.t 'Time
+					.myOde addrecorded
+					.myOde.r2 set formula theta
+				The $ can be used as a synonym for the ode solver name.
+				A single-quoted label like 'Time is interpreted as the column name for the recorded value.
+				The ode.table parameter will be return a table with one column for each recorded value.
+
+		properties:
+			shouldAutoRun:
+				desc: >
+					If true the integration will rerun whenever changes make the existing results obsolete.
+					Default is true;
+			isStiff:
+				desc: >
+					If true a special integration method for stiff systems will be used.
+					Default is false.
+		
+		parameters:
+			t: >
+				The current value of t, the independent variable in dy/dt.
+				It must be a scalar.
+			y: >
+				The current value of y, the dependent variable in dy/dt.
+			dy: >
+				The value of the dy formula.
+			y0: >
+				The initial value for y when t = 0. It must be a table as described in the y0 formula section.
+			nextt: >
+				The value calculated by the nextT formula.
+			endt: >
+				The value calculated by the endT formula.
+			abstol: >
+				The value calculated by the absTol formula.
+			reltol: >
+				The value calculated by the relTol formula.
+			table: >
+				A table of the recorded values with r1 being the first column, r2 the second and so forth.
+
+		verbs:
+			run:
+				desc: >
+					Runs the integration. Not necessary if the shouldAutoRun property is true.
+					If shouldAutoRun is false, then this can be run to an endT, then modify endT and resume the integration.
+				args: []
+				
+			reset:
+				desc: >
+					Resets t to 0, y to y0 and discards any recorded values.
+					Note that this does not set shouldAutoRun to false, so if it is true, the integration will immediately re-run.
+				args: []
+			
+			addrecorded:
+				desc: >
+					This adds a formula named rN, where N is the next available index (starting at 1).
+					This formula will be evaluated whenever t equals the value calculated by the nextT formula.
+					The results of the evaluation will be stored in a table column for use after the integration is finished.
+					For example for graphing curves.
+					
+				args: []
+				
+			removerecorded:
+				desc: >
+					Removes recorded value formula rN, where N is the number given in the argument.
+				args:
+					- N where N is the number of the rN formula to remove.				
+
+		usageNote: >
+	After adding a MMOdeSolver, you should:
+		1. Set its `y0`, `dy`, `endT`, and `nextT` formulas
+		2. Add any recorded formulas (e.g. time, position, etc.)
+		3. Use the `run` verb or rely on `shouldAutoRun = true`
+	Use the `$` symbol as a shorthand for the solver’s name in formulas.
 						
 Formulas:
 	desc: >
@@ -717,6 +866,7 @@ Formulas:
 				- Named tool outputs (e.g., `Revenue`)
 				- Expression values (e.g., `Bob.Ted`)
 				- Table columns (e.g., `mytable.total`)
+				- $ is a built-in symbol representing the name of the tool in which the formula appears.
 		
 			NEVER use `'` for quoting strings. Always use double quotes `"..."` for simple strings, or backticks `` `...` `` for strings that contain quotes.
 		
@@ -728,7 +878,11 @@ Formulas:
 		syntax: >
 			Function calls use curly braces: `{function_name param1, param2, ...}`	
 			- Parameters can be constants, named values, other function calls, or expressions
+			- Use braces for function calls: `{function argument[, ...]}`
+				✅ Correct: {log x}
+				❌ Incorrect: log(x) or log x
 			- The function must return a MMValue
+			- Do not use parentheses-style syntax; it is not recognized.
 
 		usageNote: >
 			Functions are not interchangeable with operators.
@@ -1406,17 +1560,32 @@ Conversion Units:
 	Only use units with numeric literals, never with a named value.
 	
 	Unit Usage Rules:
-		Only use units listed in the "Conversion Units" section of this context.
-		Do not invent or shorten unit names (e.g., use `degree`, not `deg`; `kg`, not `kilogram`).
-		Units must be typed *exactly* as listed — they are case-sensitive and have no aliases.
+		- Only use units listed in the "Conversion Units" section of this context.
+		- Use full unit names, not abbreviations unless specifically defined.
+		- Do not invent or shorten unit names (e.g., use `degree`, not `deg`; `kg`, not `kilogram`).
+		- Units must be typed *exactly* as listed — they have no aliases.
 		⚠️ Common mistake: using `deg` instead of `degree`, `mps` instead of `m/s`, or omitting a numeric value before a unit.
+		- Compound units must use dashes, not multiplication symbols.
 		
 		✅ Correct: 45 degree  
-		❌ Incorrect: 45 deg  
+		❌ Incorrect: 45 deg
+
+		- Units with inverse values (like `1/d`, `1/s`) must be written by applying the unit to a value, not as a standalone division.
+
+		✅ Correct:
+			0.003 1/d     (0.003 per day)
+			2 1/s         (2 per second)
+  
+		❌ Incorrect:
+			2 /d          (interpreted as "2 divided by d" — invalid unless `d` is defined)
+
+		Always write the **value first**, followed by the unit `1/unit`. Avoid using `/unit` alone.
+
 
 Some examples of formulas:
 	2*3 + 4
 	distance/3 h
 	{date {now} + {timezone}}
 	1:10 * 1 kg
+	time * 300 1/s
 	"hello " + "world"
