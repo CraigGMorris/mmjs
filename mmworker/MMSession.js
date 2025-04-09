@@ -1170,12 +1170,15 @@ class MMSession extends MMParent {
 		const names = command.args.toLowerCase().split('.');
 		let model = this.currentModel;
 		for (const name of names){
-			model = model.children[name];
+			model = model?.children[name];
 		}
 		// const model = this.currentModel.childNamed(command.args);
 		if (model instanceof MMModel) {
 			this.pushModel(model);
 			await this.autoSaveSession();
+		}
+		else {
+			this.setError('mmcmd:sessionPushModelFailed', {path: command.args});
 		}
 
 		command.results = {path: this.currentModel.getPath()};

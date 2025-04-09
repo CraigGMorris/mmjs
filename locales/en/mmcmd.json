@@ -153,6 +153,7 @@
 	"sessionDeleteFailed": "There was an error attempting to delete the session\n{{path}}\n{{error}}",
 	"sessionInvalidImport": "The imported content isn't recognized as a session or folder archive",
 	"sessionLoadUrlFailed": "Failed to load {{url}}\n\n{{error}}",
+	"sessionPushModelFailed": "Could not find a model {{path}}",
 	"sessionSaveFailed": "There was an error attempting to save the session to\n{{path}}\n{{error}}",
 	"sessionLoadFailed": "There was an error attempting to load the session\n{{path}}\n{{error}}",
 	"sessionRenameFailed": "There was an error attempting to rename the session\n{{oldPath}} to\n{{newPath}}\n{{error}}",

@@ -642,8 +642,19 @@ export function MMApp(props) {
 	 * pushes model named on to the diagram and infoview
 	 * @param {String} modelName 
 	 */
-	const pushModel = useCallback((modelName) => {
+	const pushModel = useCallback((modelName, successCallBack, failCallBack) => {
 		doCommand(`/ pushmodel ${modelName}`, (cmds) => {
+			if (cmds[0].error) {
+				if (failCallBack) {
+					failCallBack(cmds[0].error);
+				}
+				return;
+			}
+			else {
+				if (successCallBack) {
+					successCallBack(cmds?.[0]?.results?.path);
+				}
+			}
 			if (diagramRef.current) {
 				dgmStateStack.push({...diagramRef.current.state});
 			}
@@ -683,7 +694,7 @@ export function MMApp(props) {
 				}
 				updateDiagram(true);
 			}
-		});
+		}, failCallBack);
 	},[doCommand, updateDiagram]);
 
 	/**

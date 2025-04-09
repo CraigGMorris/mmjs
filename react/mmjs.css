@@ -320,21 +320,42 @@ a:hover {
 	height: 100%;
 	font-size: 1em;
 	display: grid;
+	grid-area: view;
 	grid-template-columns: 1fr;
-	grid-template-rows: 1fr 30px 40px;
+	grid-template-rows: 1fr 80px;
 	grid-template-areas: "result"
 		"input"
-		"readfile"					
+}
+
+#console__main {
+	height: 100%;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr 40px;
+	grid-template-areas: "view"
+		"footer"					
 }
 
 #console__result {
 	grid-area: result;
+	overflow-y: auto;
 }
 
 #console__input {
 	grid-area: input;
-	justify-self: center;
 	margin-top: 3px;
+}
+
+#console__footer {
+	grid-area: footer;
+	display: grid;
+	grid-template-columns: 1fr 2fr 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: "toggle readfile spare"
+}
+
+#consule__toggle {
+	grid-area: toggle;
 }
 
 #console__read-file {
@@ -343,9 +364,30 @@ a:hover {
 	align-self: center;
 }
 
+#console__spare {
+	grid-area: spare;
+}
+
 #console__read-file-label {
 	margin-top: 5px;
 	width: 200px;
+}
+
+#console__chatpanel {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr 80px;
+	grid-template-areas: "chatlog"
+		"chatinput"
+}
+
+#console__chatlog {
+	grid-area: chatlog;
+	overflow-y: auto;
+}
+
+#console__chatinput {
+	grid-area: chatinput;
 }
 
 .datatable__column-edit-section {

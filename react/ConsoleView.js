@@ -22,29 +22,32 @@ const useState = React.useState;
 
 const consoleStacks = {
 	output: {
-		stack: ['Results:'],
+		page: ['Results:'],
 		maxCount: 100,
-		currentFrame: 0,
+		currentPage: 0,
 		show() {
-			return this.stack[this.currentFrame];
+			return this.page[this.currentPage];
 		},
 		push(s) {
 			consoleStacks.push(this,s)
+		},
+		update(s) {
+			this.page[this.currentPage] += s;
 		},
 		scroll(nLines) {
 			consoleStacks.scroll(this, nLines);
 		}
 	},
 	input: {
-		stack: [''],
+		page: [''],
 		maxCount: 100,
-		currentFrame: 0,
+		currentPage: 0,
 		show() {
-			return this.stack[this.currentFrame];
+			return this.page[this.currentPage];
 		},
 		push(s) {
-			if (this.stack.length < 2 || this.stack[this.stack.length-2] !== s) {
-				this.stack[this.stack.length-1] = s;
+			if (this.page.length < 2 || this.page[this.page.length-2] !== s) {
+				this.page[this.page.length-1] = s;
 				consoleStacks.push(this,'');
 			}
 		},
@@ -52,19 +55,34 @@ const consoleStacks = {
 			consoleStacks.scroll(this, nLines);
 		}
 	},
-	push(stack, s) {
-		stack.stack.push(s);
-		while (stack.stack.length > stack.maxCount) {
-			stack.stack.shift();
+	push(field, s) {
+		field.page.push(s);
+		while (field.page.length > field.maxCount) {
+			field.page.shift();
 		}
-		stack.currentFrame = stack.stack.length - 1;
+		field.currentPage = field.page.length - 1;
 	},
-	scroll(stack, nLines) {
-		let n = stack.currentFrame + nLines;
-		stack.currentFrame = Math.min(Math.max(n, 0), stack.stack.length -1);
+	scroll(field, nLines) {
+		let n = field.currentPage + nLines;
+		field.currentPage = Math.min(Math.max(n, 0), field.page.length -1);
 	}
-
 }
+
+const pendingOutput = [];
+
+const openAIHistory = {
+	chatHistory: [],
+	promptTemplate: `You are an assistant for the Math Minion CLI. Only output valid MM commands.`,
+
+	init() {
+		openAIHistory.chatHistory = [{ role: "system", content: openAIChat.promptTemplate }];
+	},
+
+	pushHistory(role, content) {
+		openAIHistory.chatHistory.push({ role, content });
+	},
+};
+
 
 /**
  * accepts command line inputs and displays result
@@ -72,19 +90,46 @@ const consoleStacks = {
 export function ConsoleView(props) {
 	const [output, setOutput] = useState(consoleStacks.output.show());
 	const [input, setInput] = useState('');
-	const [view, setView] = useState('OpenAI');
+	const [view, setView] = useState('Console');
 	const t = props.t;
 	const inputRef = React.useRef(null);
+	const isMounted = React.useRef(false);
 
 	React.useEffect(() => {
-		if (view === 'Console') {
-			inputRef.current.focus();
+		inputRef.current.focus();
+	}, []);
+
+	React.useEffect(() => {
+		isMounted.current = true;
+
+		// flush pending output if any
+		if (pendingOutput.length > 0) {
+			pendingOutput.forEach(s => consoleStacks.output.push(s));
+			setOutput(consoleStacks.output.show());
+			pendingOutput.length = 0;
 		}
+	
+		inputRef.current?.focus();
+	
+		return () => {
+			isMounted.current = false;
+		};
 	}, []);
 
 	const pushOutput = (s) => {
-		consoleStacks.output.push(s)
-		setOutput(consoleStacks.output.show());
+		if (isMounted.current) {
+			consoleStacks.output.push(s);
+			setOutput(consoleStacks.output.show());
+		} else {
+			pendingOutput.push(s);
+		}
+	}
+
+	function stringifyError(error) {
+		return error?.msgKey ? 
+		t(error.msgKey, error.args)
+	:
+		t(JSON.stringify(error, null, ' '));
 	}
 
 	/** function consoleCallBack - called when the worker completes console command
@@ -98,11 +143,8 @@ export function ConsoleView(props) {
 				if (cmdOutput.verb == 'help' && cmdOutput.args) {
 					cmdOutput = t(cmdOutput.results.msgKey, cmdOutput.results.args);
 				}
-				else if (cmdOutput.verb == 'error' && cmdOutput.results.msgKey) {
-					cmdOutput = t(cmdOutput.results.msgKey, cmdOutput.results.args);
-				}
 				else {
-					cmdOutput = JSON.stringify(cmdOutput, null, ' ');
+					cmdOutput = stringifyError(cmdOutput.results)
 				}
 			}
 			lines.push(cmdOutput);
@@ -126,37 +168,44 @@ export function ConsoleView(props) {
 	}
 
 	// Wrapper for doCommand
-	function doCommandPromise(cmd, callBack) {
-		return new Promise((resolve) => {
-			props.actions.doCommand(cmd, (result) => {
-				resolve(callBack(result));
-			});
+	function doCommandPromise(cmd, callBack, errorHandler) {
+		return new Promise((resolve, reject) => {
+			props.actions.doCommand(
+				cmd,
+				(result) => {
+					// Only resolve with callBack if there was no error
+					if (!result?.error) {
+						resolve(callBack(result));
+					}
+					else {
+						// if result has error, treat as handled and resolve without calling callBack
+						resolve();
+					}
+				},
+				errorHandler ?
+					(error) => {
+						errorHandler(error);
+						resolve();
+					}
+					: null
+			);
 		});
 	}
 	
-	const performCommand = async (cmd, callBack) => {
+	const performCommand = async (cmd, callBack, errorHandler) => {
 		if (cmd.trim().match(/^\/\s+popmodel/)) {
-			props.actions.popModel()
+			props.actions.popModel();
+			callBack(`popped Model`);
 		}
 		else if (cmd.trim().match(/^\/\s+pushmodel\s+[A-Za-z][A-Za-z0-9_]+/)) {
 			const parts = cmd.trim().split(/\s+/);
 			const modelName = parts[2];
-			props.actions.pushModel(modelName);
+			props.actions.pushModel(modelName, callBack, errorHandler);
 		}
 		else {
-			await doCommandPromise(cmd, callBack);
+			await doCommandPromise(cmd, callBack, errorHandler);
 		}
 	}
-
-	let commandAction;
-
-	switch(view) {
-		case 'OpenAI':
-			commandAction = (cmd, callBack) => {
-
-			}
-	}
-
 	
 	let readCommandFile = event => {
 		//Retrieve the first (and only!) File from the FileList object
@@ -168,7 +217,7 @@ export function ConsoleView(props) {
 				const contents = e.target.result;
 				const cmds = contents.split(`\n'''`);
 				for (const cmd of cmds) {
-					await performCommand(cmd, () => {});
+					await commandAction(cmd, () => {});
 				}
 				props.updateDiagram();
 				props.actions.toggleConsole();
@@ -177,6 +226,125 @@ export function ConsoleView(props) {
 		} else { 
 			alert("Failed to load file");
 		}
+	}
+
+	const openAIChat = {
+		outputs: [],
+		async sendPrompt(promptText) {
+			const mock = await import("../ai/openai/mockAssistant.js");
+			return mock.runAssistant(promptText);	
+			/*
+			openAIChat.pushHistory("user", promptText);
+			const response = await fetch("https://api.openai.com/v1/chat/completions", {
+				method: "POST",
+				headers: {
+					"Authorization": `Bearer ${YOUR_API_KEY}`,
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					model: "gpt-4",
+					messages: openAIChat.chatHistory,
+					temperature: 0.3
+				})
+			});
+		const data = await response.json();
+		let parsed;
+		try {
+			parsed = JSON.parse(data.choices[0].message.content);
+			if (!Array.isArray(parsed.commands)) throw new Error("Missing 'commands'");
+			if (!Array.isArray(parsed.comments)) parsed.comments = [];
+		} catch (err) {
+			pushOutput("⚠️ Assistant response not in expected JSON format.");
+			pushOutput(data.choices[0].message.content);
+			throw err;
+		}
+		this.pushHistory("assistant", JSON.stringify(parsed));
+		return parsed;
+			*/
+		},
+	
+		action(userPrompt, successCallback, failureCallback, retryCount = 0) {
+			openAIChat.outputs = [];
+			openAIChat.sendPrompt(userPrompt).then(parsed => {
+				parsed.comments.forEach((comment) => {openAIChat.outputs.push(comment)});
+				openAIChat.executeCommands(parsed.commands, userPrompt, successCallback, failureCallback, retryCount);
+			}).catch(err => {
+				pushOutput(`❌ Failed to parse assistant response: ${err.message}`);
+			});
+		},
+	
+		async executeCommands(commandsBlock, originalPrompt, onSuccess, onFailure, retryCount = 0) {
+			const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
+	
+			const runNext = async () => {
+				if (lines.length === 0) {
+					onSuccess(openAIChat.outputs.join('\n'));
+					// pushOutput(openAIChat.outputs.join('\n'));
+					return;
+				}
+				const cmd = lines.shift();
+				performCommand(cmd, async (result) => {	
+					if (result) {
+						if (typeof result === 'string') {
+							openAIChat.outputs.push(`✅ ${cmd} =>\n ${result}`)
+						}
+						else {
+							openAIChat.outputs.push(
+								`✅  ${cmd} =>\n ${JSON.stringify(result[0].results)}`
+							);
+						}
+					}
+					// if (onSuccess) {
+					// 	onSuccess(cmd, result[0]?.results);
+					// }
+					runNext();
+				}, async (error) => {
+					const message = error;
+					openAIChat.outputs.push(`❌ Error in: ${cmd}\n${message}`);
+					if (retryCount++ >= 2) {
+						openAIChat.outputs.push("⚠️ Too many errors. Aborting.");
+						if (onFailure) onFailure(cmd, message);
+						return;
+					}
+
+					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
+					openAIHistory.pushHistory("user", retryPrompt);
+					try {
+						const retry = await openAIChat.sendPrompt(retryPrompt);
+						retry.comments.forEach((comment) => {openAIChat.outputs.push(comment)});
+						console.log(retry);
+						this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
+					}catch (err) {
+            openAIChat.outputs.push("❌ Assistant retry failed.");
+          }
+					return;
+				});
+			};
+	
+			runNext();
+		}
+		
+	};
+
+	let commandAction, successCallBack, failCallBack;
+	switch(view) {
+
+		case 'Console':
+			commandAction = performCommand;
+			successCallBack = consoleCallBack;
+			failCallBack = (error) => { pushOutput(stringifyError(error)) };
+			break;
+
+		case 'OpenAI':
+			commandAction = openAIChat.action;
+			successCallBack = (result) => {
+				pushOutput(result);
+			}
+			failCallBack = (error) => {console.log(`OpenAI Fail`);}
+			break;
+		default:
+			alert('invalid view in console - this is a bug');
+			break;
 	}
 
 	let viewElement = e(
@@ -206,7 +374,7 @@ export function ConsoleView(props) {
 						event.preventDefault();
 						if (input) {
 							// watches for Enter and sends command when it see it
-							performCommand(input, consoleCallBack);
+							commandAction(input, successCallBack, failCallBack);
 							consoleStacks.input.push(input);
 							setInput('');
 						}
