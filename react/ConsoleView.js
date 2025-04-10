@@ -67,8 +67,6 @@ const consoleStacks = {
 	},
 }
 
-const pendingOutput = [];
-
 const openAIHistory = {
 	chatHistory: [],
 	promptTemplate: `You are an assistant for the Math Minion CLI. Only output valid MM commands.`,
@@ -82,6 +80,7 @@ const openAIHistory = {
 	},
 };
 
+let inputTarget = 'Console';
 
 /**
  * accepts command line inputs and displays result
@@ -89,24 +88,16 @@ const openAIHistory = {
 export function ConsoleView(props) {
 	const [output, setOutput] = useState(consoleStacks.output.show());
 	const [input, setInput] = useState('');
-	const [view, setView] = useState('Console');
+	const [target, setTarget] = useState(inputTarget);
 	const t = props.t;
 	const inputRef = React.useRef(null);
 	const isMounted = React.useRef(false);
-
-	React.useEffect(() => {
-		inputRef.current.focus();
-	}, []);
+	const targetRef = React.useRef(null);
 
 	React.useEffect(() => {
 		isMounted.current = true;
-
-		// flush pending output if any
-		// if (pendingOutput.length > 0) {
-		// 	pendingOutput.forEach(s => consoleStacks.output.push(s));
-			setOutput(consoleStacks.output.show());
-		// 	pendingOutput.length = 0;
-		// }
+		setOutput(consoleStacks.output.show());
+		setTarget(inputTarget);
 	
 		inputRef.current?.focus();
 	
@@ -119,8 +110,6 @@ export function ConsoleView(props) {
 		consoleStacks.output.push(s);
 		if (isMounted.current) {
 			setOutput(consoleStacks.output.show());
-		// } else {
-		// 	pendingOutput.push(s);
 		}
 	}
 
@@ -333,7 +322,7 @@ export function ConsoleView(props) {
 	};
 
 	let commandAction, successCallBack, failCallBack;
-	switch(view) {
+	switch(target) {
 
 		case 'Console':
 			commandAction = performCommand;
@@ -349,11 +338,11 @@ export function ConsoleView(props) {
 			failCallBack = (error) => {console.log(`OpenAI Fail`);}
 			break;
 		default:
-			alert('invalid view in console - this is a bug');
+			alert('invalid input target in console - this is a bug');
 			break;
 	}
 
-	let viewElement = e(
+	let mainElement = e(
 		'div', {
 			id: 'console',
 		},
@@ -421,7 +410,7 @@ export function ConsoleView(props) {
 		'div', {
 			id: 'console__main',
 		},
-		viewElement,
+		mainElement,
 		e(
 			'div', {
 				id: 'console__footer',
@@ -432,9 +421,11 @@ export function ConsoleView(props) {
 				},
 				e(
 					'select', {
-							value: view,
+							value: target,
+							ref: targetRef,
 							onChange: (event) => {
-								setView(event.target.value);
+								inputTarget = event.target.value;
+								setTarget(event.target.value);
 							},
 						},
 						e('option', { value: 'OpenAI' }, 'OpenAI'),
