@@ -22,21 +22,26 @@ const useState = React.useState;
 
 const consoleStacks = {
 	output: {
-		page: ['Results:'],
+		page: [['Results:']],
 		maxCount: 100,
 		currentPage: 0,
 		show() {
-			return this.page[this.currentPage];
+			return this.page[this.currentPage].join('\n');
 		},
 		push(s) {
-			consoleStacks.push(this,s)
+			this.page.push([s]);
+			while (this.page.length > this.maxCount) {
+				this.page.shift();
+			}
+			this.currentPage = this.page.length - 1;
 		},
 		update(s) {
-			this.page[this.currentPage] += s;
+			this.page[this.currentPage].push(s);
 		},
 		scroll(nLines) {
-			consoleStacks.scroll(this, nLines);
-		}
+			let n = this.currentPage + nLines;
+			this.currentPage = Math.min(Math.max(n, 0), this.page.length -1);
+			}
 	},
 	input: {
 		page: [''],
@@ -48,24 +53,18 @@ const consoleStacks = {
 		push(s) {
 			if (this.page.length < 2 || this.page[this.page.length-2] !== s) {
 				this.page[this.page.length-1] = s;
-				consoleStacks.push(this,'');
+				this.page.push('');
+				while (this.page.length > this.maxCount) {
+					this.page.shift();
+				}
+				this.currentPage = this.page.length - 1;
 			}
 		},
-		scroll(nLines) {
-			consoleStacks.scroll(this, nLines);
-		}
+		scroll(nLines, input) {
+			let n = this.currentPage + nLines;
+			this.currentPage = Math.min(Math.max(n, 0), this.page.length -1);
+			}
 	},
-	push(field, s) {
-		field.page.push(s);
-		while (field.page.length > field.maxCount) {
-			field.page.shift();
-		}
-		field.currentPage = field.page.length - 1;
-	},
-	scroll(field, nLines) {
-		let n = field.currentPage + nLines;
-		field.currentPage = Math.min(Math.max(n, 0), field.page.length -1);
-	}
 }
 
 const pendingOutput = [];
@@ -103,11 +102,11 @@ export function ConsoleView(props) {
 		isMounted.current = true;
 
 		// flush pending output if any
-		if (pendingOutput.length > 0) {
-			pendingOutput.forEach(s => consoleStacks.output.push(s));
+		// if (pendingOutput.length > 0) {
+		// 	pendingOutput.forEach(s => consoleStacks.output.push(s));
 			setOutput(consoleStacks.output.show());
-			pendingOutput.length = 0;
-		}
+		// 	pendingOutput.length = 0;
+		// }
 	
 		inputRef.current?.focus();
 	
@@ -117,11 +116,18 @@ export function ConsoleView(props) {
 	}, []);
 
 	const pushOutput = (s) => {
+		consoleStacks.output.push(s);
 		if (isMounted.current) {
-			consoleStacks.output.push(s);
 			setOutput(consoleStacks.output.show());
-		} else {
-			pendingOutput.push(s);
+		// } else {
+		// 	pendingOutput.push(s);
+		}
+	}
+
+	const updateOutput = (s) => {
+		consoleStacks.output.update(s);
+		if (isMounted.current) {
+			setOutput(consoleStacks.output.show());
 		}
 	}
 
@@ -264,12 +270,13 @@ export function ConsoleView(props) {
 		},
 	
 		action(userPrompt, successCallback, failureCallback, retryCount = 0) {
-			openAIChat.outputs = [];
+			pushOutput(`User: ${userPrompt}\n`);
 			openAIChat.sendPrompt(userPrompt).then(parsed => {
-				parsed.comments.forEach((comment) => {openAIChat.outputs.push(comment)});
+				parsed.comments.forEach((comment) => {updateOutput(`Comment: ${comment}`)});
+				updateOutput('');
 				openAIChat.executeCommands(parsed.commands, userPrompt, successCallback, failureCallback, retryCount);
 			}).catch(err => {
-				pushOutput(`❌ Failed to parse assistant response: ${err.message}`);
+				updateOutput(`❌ Failed to parse assistant response: ${err.message}`);
 			});
 		},
 	
@@ -278,18 +285,17 @@ export function ConsoleView(props) {
 	
 			const runNext = async () => {
 				if (lines.length === 0) {
-					onSuccess(openAIChat.outputs.join('\n'));
-					// pushOutput(openAIChat.outputs.join('\n'));
+					onSuccess('Done');
 					return;
 				}
 				const cmd = lines.shift();
 				performCommand(cmd, async (result) => {	
 					if (result) {
 						if (typeof result === 'string') {
-							openAIChat.outputs.push(`✅ ${cmd} =>\n ${result}`)
+							updateOutput(`✅ ${cmd} =>\n ${result}`)
 						}
 						else {
-							openAIChat.outputs.push(
+							updateOutput(
 								`✅  ${cmd} =>\n ${JSON.stringify(result[0].results)}`
 							);
 						}
@@ -299,23 +305,23 @@ export function ConsoleView(props) {
 					// }
 					runNext();
 				}, async (error) => {
-					const message = error;
-					openAIChat.outputs.push(`❌ Error in: ${cmd}\n${message}`);
+					const message = stringifyError(error);
+					updateOutput(`❌ Error in: ${cmd}\n${message}`);
 					if (retryCount++ >= 2) {
-						openAIChat.outputs.push("⚠️ Too many errors. Aborting.");
+						updateOutput("⚠️ Too many errors. Aborting.");
 						if (onFailure) onFailure(cmd, message);
 						return;
 					}
 
 					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
+					console.log(retryPrompt);
 					openAIHistory.pushHistory("user", retryPrompt);
 					try {
 						const retry = await openAIChat.sendPrompt(retryPrompt);
-						retry.comments.forEach((comment) => {openAIChat.outputs.push(comment)});
-						console.log(retry);
+						retry.comments.forEach((comment) => {updateOutput(comment)});
 						this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
 					}catch (err) {
-            openAIChat.outputs.push("❌ Assistant retry failed.");
+            updateOutput("❌ Assistant retry failed.");
           }
 					return;
 				});
@@ -338,7 +344,7 @@ export function ConsoleView(props) {
 		case 'OpenAI':
 			commandAction = openAIChat.action;
 			successCallBack = (result) => {
-				pushOutput(result);
+				updateOutput(result);
 			}
 			failCallBack = (error) => {console.log(`OpenAI Fail`);}
 			break;
