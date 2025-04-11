@@ -204,6 +204,7 @@
 	"viewError": "There was an error trying to show the view",
 	"unimplemented": "{{feature}} is not yet implemented",
 	"warning": "Warning",
+	"_aikey": "set the apikey for an AI model\n\nusage: aikey ai apikey\n\nwhere ai is openai etc.\n\nA apikey of x removes the key",
 	"_exprSetColumnUnit": "set the display unit for a column\n\nusage: setcolumnunit columnNumber unitName",
 	"_exprSetColumnFormat": "set the display format for a column\n\nusage: setcolumnformat columnNumber formatString",
 	"_formulaRefresh": "reevaluate the formula\n\nusage: refresh",

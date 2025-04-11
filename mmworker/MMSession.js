@@ -241,6 +241,7 @@ class MMSession extends MMParent {
 		this.savedLastPathId = '(lastPath)';
 		this.savedLastNewsId = '(lastNews)';
 		this.savedStorageVersionId = '(storageVersion)';
+		this.openAIKey = '(openAIKey)';
 		this.lastNews = '20250320b';
 		this.newSession();
 		this.couchError = null;
@@ -766,6 +767,7 @@ class MMSession extends MMParent {
 		verbs['import'] = this.importCommand;
 		verbs['remote'] = this.remoteDBCommand;
 		verbs['getmodelstack'] = this.getModelStackCommand;
+		verbs['aikey'] = this.aiKeyCommand;
 		return verbs;
 	}
 
@@ -791,7 +793,8 @@ class MMSession extends MMParent {
 			popmodel: 'mmcmd:_sessionPopModel',
 			import: 'mmcmd:_sessionImport',
 			remote: 'mmcmd:_sessionRemote',
-			getmodelstack: 'mmcmd:_sessionGetModelStack'
+			getmodelstack: 'mmcmd:_sessionGetModelStack',
+			aikey: 'mmcmd:_aikey',
 		}[command];
 		if (key) {
 			return key;
@@ -1234,6 +1237,51 @@ class MMSession extends MMParent {
 		// let test = command.args;
 
 		command.results = results;
+	}
+
+	/**
+	 * @method aikeyCommand
+	 * verb
+	 * @param {MMCommand} command - sets, gets or clears aikey
+	 */
+	async aiKeyCommand(command) {
+		if (!indexedDB) {
+			this.setError('mmcmd:noIndexedDB', {});
+			return;
+		}
+		const args = this.splitArgsString(command.args);
+		if (args.length === 0) {
+			this.setError('mmcmd:_aikey', {});
+			return;
+		}
+		else if (args.length === 1) {
+			switch (args[0].toLowerCase()) {
+				case 'openai':
+					command.results = await this.storage.load(this.openAIKey);
+					return;
+				default:
+					this.setError('No AI model', {model: args[0]});
+			}
+		}
+		else {
+			switch (args[0].toLowerCase()) {
+				case 'openai': {
+					let key = args[1];
+					if (key.toLowerCase() === 'x') {
+						await this.storage.save(this.openAIKey, '');
+						command.results = 'key cleared';
+					}
+					else {
+						await this.storage.save(this.openAIKey, key);
+						command.results = 'key saved';
+					}
+					return;
+				}
+				default:
+					this.setError('No AI model', {model: args[0]});
+			}
+		}
+
 	}
 }
 

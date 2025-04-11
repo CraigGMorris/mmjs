@@ -69,10 +69,11 @@ const consoleStacks = {
 
 const openAIHistory = {
 	chatHistory: [],
-	promptTemplate: `You are an assistant for the Math Minion CLI. Only output valid MM commands.`,
+	promptTemplate: ``,
+	apiKey: '',
 
 	init() {
-		openAIHistory.chatHistory = [{ role: "system", content: openAIChat.promptTemplate }];
+		openAIHistory.chatHistory = [{ role: "system", content: openAIHistory.promptTemplate }];
 	},
 
 	pushHistory(role, content) {
@@ -127,6 +128,30 @@ export function ConsoleView(props) {
 		t(JSON.stringify(error, null, ' '));
 	}
 
+	if (target === 'OpenAI') {
+		if (!openAIHistory.promptTemplate) {
+			fetch('../ai/openai/APIcontext.txt').then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.text();
+			})
+			.then(text => {
+				openAIHistory.promptTemplate = text;
+				openAIHistory.init();
+			}).catch(error => {
+				pushOutput(`Could not fetch system prompt\n${error}`);
+			});
+		}
+		if (!openAIHistory.apiKey) {
+			props.actions.doCommand(
+				'/ aikey openai',
+				(results) => {
+					openAIHistory.apiKey = results?.[0]?.results;
+			});
+		}
+	}
+
 	/** function consoleCallBack - called when the worker completes console command
 	 * @param {MMCommand[]} cmds
 	 */
@@ -146,7 +171,12 @@ export function ConsoleView(props) {
 		
 		}
 		for (let r of cmds) {
-			getOutput(r);
+			if (r.error) {
+				lines.push(stringifyError(r.error));
+			}
+			else {
+				getOutput(r);
+			}
 		}
 
 		if (cmds.error) {
@@ -173,7 +203,7 @@ export function ConsoleView(props) {
 						resolve(callBack(result));
 					}
 					else {
-						// if result has error, treat as handled and resolve without calling callBack
+						errorHandler(result.error);
 						resolve();
 					}
 				},
@@ -211,11 +241,15 @@ export function ConsoleView(props) {
 			r.onload = async (e) => { 
 				const contents = e.target.result;
 				const cmds = contents.split(`\n'''`);
+				pushOutput('');
 				for (const cmd of cmds) {
-					await commandAction(cmd, () => {});
+					updateOutput(`Command: ${cmd}`);
+					await commandAction(cmd, (result) => {
+						updateOutput(`=> ${result?.[0]?.results}`)
+					});
 				}
 				props.updateDiagram();
-				props.actions.toggleConsole();
+				// props.actions.toggleConsole();
 			};
 			r.readAsText(f);
 		} else { 
@@ -226,39 +260,57 @@ export function ConsoleView(props) {
 	const openAIChat = {
 		outputs: [],
 		async sendPrompt(promptText) {
-			const mock = await import("../ai/openai/mockAssistant.js");
-			return mock.runAssistant(promptText);	
-			/*
-			openAIChat.pushHistory("user", promptText);
+			// const mock = await import("../ai/openai/mockAssistant.js");
+			// return mock.runAssistant(promptText);
+
+			openAIHistory.pushHistory("user", promptText);
 			const response = await fetch("https://api.openai.com/v1/chat/completions", {
 				method: "POST",
 				headers: {
-					"Authorization": `Bearer ${YOUR_API_KEY}`,
+					"Authorization": `Bearer ${openAIHistory.apiKey}`,
 					"Content-Type": "application/json"
 				},
 				body: JSON.stringify({
-					model: "gpt-4",
-					messages: openAIChat.chatHistory,
+					model: "gpt-4o",
+					messages: openAIHistory.chatHistory,
 					temperature: 0.3
 				})
 			});
-		const data = await response.json();
-		let parsed;
-		try {
-			parsed = JSON.parse(data.choices[0].message.content);
-			if (!Array.isArray(parsed.commands)) throw new Error("Missing 'commands'");
-			if (!Array.isArray(parsed.comments)) parsed.comments = [];
-		} catch (err) {
-			pushOutput("⚠️ Assistant response not in expected JSON format.");
-			pushOutput(data.choices[0].message.content);
-			throw err;
-		}
-		this.pushHistory("assistant", JSON.stringify(parsed));
-		return parsed;
-			*/
+			if (response.status === 429) {
+				const body = await response.text();
+				console.error("❌ 429 Too Many Requests", body);
+				updateOutput(`❌ ${body}`);
+				return;
+			}
+			
+			const data = await response.json();
+			let parsed;
+			try {
+				const raw = data.choices[0].message.content;
+
+				// Remove code block formatting
+				const cleaned = raw.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+				console.log(cleaned);
+				parsed = JSON.parse(cleaned);
+				if (!Array.isArray(parsed.commands)) throw new Error("Missing 'commands'");
+				if (!Array.isArray(parsed.comments)) parsed.comments = [];
+			} catch (err) {
+				updateOutput("⚠️ Assistant response not in expected JSON format.");
+				updateOutput(data.choices[0].message.content);
+				throw err;
+			}
+			openAIHistory.pushHistory("assistant", JSON.stringify(parsed));
+			return parsed;
 		},
 	
 		action(userPrompt, successCallback, failureCallback, retryCount = 0) {
+			if (!openAIHistory.apiKey) {
+				pushOutput(`You need an OpenAI API key for this feature\n`+
+					`Please enter "/ set openaikey <your API key>"\n`+
+					`in the console before proceeding`);
+				return;
+			}
+
 			pushOutput(`User: ${userPrompt}\n`);
 			openAIChat.sendPrompt(userPrompt).then(parsed => {
 				parsed.comments.forEach((comment) => {updateOutput(`Comment: ${comment}`)});
@@ -278,30 +330,18 @@ export function ConsoleView(props) {
 					return;
 				}
 				const cmd = lines.shift();
-				performCommand(cmd, async (result) => {	
-					if (result) {
-						if (typeof result === 'string') {
-							updateOutput(`✅ ${cmd} =>\n ${result}`)
-						}
-						else {
-							updateOutput(
-								`✅  ${cmd} =>\n ${JSON.stringify(result[0].results)}`
-							);
-						}
-					}
-					// if (onSuccess) {
-					// 	onSuccess(cmd, result[0]?.results);
-					// }
-					runNext();
-				}, async (error) => {
+				const cmdError = async (error) => {
 					const message = stringifyError(error);
 					updateOutput(`❌ Error in: ${cmd}\n${message}`);
-					if (retryCount++ >= 2) {
+					if (retryCount++ >= 5) {
 						updateOutput("⚠️ Too many errors. Aborting.");
 						if (onFailure) onFailure(cmd, message);
 						return;
 					}
-
+					function sleep(ms) {
+						return new Promise(resolve => setTimeout(resolve, ms));
+					}					
+					await sleep(50000);
 					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
 					console.log(retryPrompt);
 					openAIHistory.pushHistory("user", retryPrompt);
@@ -313,7 +353,26 @@ export function ConsoleView(props) {
             updateOutput("❌ Assistant retry failed.");
           }
 					return;
-				});
+				}
+
+				performCommand(cmd, async (result) => {	
+					if (cmd.match(/''[^']/)) {
+						cmdError('Illegal command separation');
+						return;
+					}
+					if (result) {
+						if (typeof result === 'string') {
+							updateOutput(`✅ ${cmd} =>\n ${result}`)
+						}
+						else {
+							const output = result?.[0]?.results || '';
+							updateOutput(
+								`✅  ${cmd} =>\n ${JSON.stringify(output)}`
+							);
+						}
+					}
+					runNext();
+				}, cmdError);
 			};
 	
 			runNext();
@@ -426,6 +485,7 @@ export function ConsoleView(props) {
 							onChange: (event) => {
 								inputTarget = event.target.value;
 								setTarget(event.target.value);
+								inputRef.current?.focus();
 							},
 						},
 						e('option', { value: 'OpenAI' }, 'OpenAI'),
