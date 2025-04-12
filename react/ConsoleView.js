@@ -67,18 +67,10 @@ const consoleStacks = {
 	},
 }
 
-const openAIHistory = {
-	chatHistory: [],
+const openAIValues = {
+	previousResponseId: null,
 	promptTemplate: ``,
 	apiKey: '',
-
-	init() {
-		openAIHistory.chatHistory = [{ role: "system", content: openAIHistory.promptTemplate }];
-	},
-
-	pushHistory(role, content) {
-		openAIHistory.chatHistory.push({ role, content });
-	},
 };
 
 let inputTarget = 'Console';
@@ -129,7 +121,7 @@ export function ConsoleView(props) {
 	}
 
 	if (target === 'OpenAI') {
-		if (!openAIHistory.promptTemplate) {
+		if (!openAIValues.promptTemplate) {
 			fetch('../ai/openai/APIcontext.txt').then(response => {
 				if (!response.ok) {
 					throw new Error(`HTTP error! status: ${response.status}`);
@@ -137,17 +129,16 @@ export function ConsoleView(props) {
 				return response.text();
 			})
 			.then(text => {
-				openAIHistory.promptTemplate = text;
-				openAIHistory.init();
+				openAIValues.promptTemplate = text;
 			}).catch(error => {
 				pushOutput(`Could not fetch system prompt\n${error}`);
 			});
 		}
-		if (!openAIHistory.apiKey) {
+		if (!openAIValues.apiKey) {
 			props.actions.doCommand(
 				'/ aikey openai',
 				(results) => {
-					openAIHistory.apiKey = results?.[0]?.results;
+					openAIValues.apiKey = results?.[0]?.results;
 			});
 		}
 	}
@@ -258,24 +249,38 @@ export function ConsoleView(props) {
 	}
 
 	const openAIChat = {
-		outputs: [],
 		async sendPrompt(promptText) {
 			// const mock = await import("../ai/openai/mockAssistant.js");
 			// return mock.runAssistant(promptText);
 
-			openAIHistory.pushHistory("user", promptText);
-			const response = await fetch("https://api.openai.com/v1/chat/completions", {
+			const headers = {
+				"Authorization": `Bearer ${openAIValues.apiKey}`,
+				"Content-Type": "application/json"
+			};
+	
+			const body = {
+				model: "gpt-4o",
+				input: []
+			};
+		
+			if (!openAIValues.previousResponseId) {
+				// First call → include system prompt and user prompt
+				body.input.push(
+					{ role: "system", content: openAIValues.promptTemplate },
+					{ role: "user", content: promptText }
+				);
+			} else {
+				// Follow-up call → reference last response, only include user correction
+				body.previous_response_id = openAIValues.previousResponseId;
+				body.input.push({ role: "user", content: promptText });
+			}
+	
+			const response = await fetch("https://api.openai.com/v1/responses", {
 				method: "POST",
-				headers: {
-					"Authorization": `Bearer ${openAIHistory.apiKey}`,
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({
-					model: "gpt-4o",
-					messages: openAIHistory.chatHistory,
-					temperature: 0.3
-				})
+				headers,
+				body: JSON.stringify(body)
 			});
+
 			if (response.status === 429) {
 				const body = await response.text();
 				console.error("❌ 429 Too Many Requests", body);
@@ -284,27 +289,27 @@ export function ConsoleView(props) {
 			}
 			
 			const data = await response.json();
-			let parsed;
+			openAIValues.previousResponseId = data.id;
+			const raw = data.output[0].content[0].text;
+			if (!raw) {
+				updateOutput("⚠️ No assistant output found.");
+				return;
+			}
+			// Remove code block formatting
+			const clean = raw.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+	
 			try {
-				const raw = data.choices[0].message.content;
-
-				// Remove code block formatting
-				const cleaned = raw.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
-				console.log(cleaned);
-				parsed = JSON.parse(cleaned);
-				if (!Array.isArray(parsed.commands)) throw new Error("Missing 'commands'");
-				if (!Array.isArray(parsed.comments)) parsed.comments = [];
+				const parsed = JSON.parse(clean);
+				return parsed;
 			} catch (err) {
-				updateOutput("⚠️ Assistant response not in expected JSON format.");
-				updateOutput(data.choices[0].message.content);
+				updateOutput("❌ Failed to parse assistant response:");
+				updateOutput(raw);
 				throw err;
 			}
-			openAIHistory.pushHistory("assistant", JSON.stringify(parsed));
-			return parsed;
 		},
 	
 		action(userPrompt, successCallback, failureCallback, retryCount = 0) {
-			if (!openAIHistory.apiKey) {
+			if (!openAIValues.apiKey) {
 				pushOutput(`You need an OpenAI API key for this feature\n`+
 					`Please enter "/ set openaikey <your API key>"\n`+
 					`in the console before proceeding`);
@@ -324,48 +329,53 @@ export function ConsoleView(props) {
 		async executeCommands(commandsBlock, originalPrompt, onSuccess, onFailure, retryCount = 0) {
 			const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
 	
-			const runNext = async () => {
+				const runNext = async () => {
 				if (lines.length === 0) {
 					onSuccess('Done');
 					return;
 				}
 				const cmd = lines.shift();
-				const cmdError = async (error) => {
-					const message = stringifyError(error);
+				const cmdError = async (result) => {
+					const message = (typeof result === 'string') ? result : result?.message;
 					updateOutput(`❌ Error in: ${cmd}\n${message}`);
-					if (retryCount++ >= 5) {
-						updateOutput("⚠️ Too many errors. Aborting.");
+					if (retryCount >= 2) {
+						updateOutput("⚠️ Retry limit reached.");
 						if (onFailure) onFailure(cmd, message);
 						return;
 					}
+	
+					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
 					function sleep(ms) {
 						return new Promise(resolve => setTimeout(resolve, ms));
 					}					
 					await sleep(50000);
-					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
-					console.log(retryPrompt);
-					openAIHistory.pushHistory("user", retryPrompt);
 					try {
-						const retry = await openAIChat.sendPrompt(retryPrompt);
-						retry.comments.forEach((comment) => {updateOutput(comment)});
+						const retry = await this.sendPrompt(retryPrompt);
+						retry.comments.forEach(pushOutput);
 						this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
-					}catch (err) {
-            updateOutput("❌ Assistant retry failed.");
-          }
+					} catch (err) {
+						updateOutput("❌ Assistant retry failed.");
+					}
 					return;
 				}
-
-				performCommand(cmd, async (result) => {	
+	
+					performCommand(cmd, async (result) => {
 					if (cmd.match(/''[^']/)) {
-						cmdError('Illegal command separation');
-						return;
+						result.error = true;
+						result.message = 'Illegal command separation';
 					}
-					if (result) {
+
+					if (result.error) {
+						cmdError(result);
+						return
+					}
+	
+					if (result.v) {
+						const output = result.v;
 						if (typeof result === 'string') {
 							updateOutput(`✅ ${cmd} =>\n ${result}`)
 						}
 						else {
-							const output = result?.[0]?.results || '';
 							updateOutput(
 								`✅  ${cmd} =>\n ${JSON.stringify(output)}`
 							);
@@ -374,10 +384,9 @@ export function ConsoleView(props) {
 					runNext();
 				}, cmdError);
 			};
-	
+
 			runNext();
-		}
-		
+		}	
 	};
 
 	let commandAction, successCallBack, failCallBack;

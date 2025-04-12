@@ -18,7 +18,7 @@ Respond with a **JSON object** in the following format:
 ✔️ Use ONLY valid commands in the `commands` list
 ✔️ Use `comments` to describe what the assistant is doing
 ❌ Do NOT return Markdown or text outside the JSON
-✅ The `commands` array must contain only Math Minion commands that could be run via performCommand
+✅ The `commands` array must contain only Math Minion commands
 
 # Command Structure:
 	## Format
@@ -680,7 +680,7 @@ Respond with a **JSON object** in the following format:
 					optimizer.x
 
 			⚠️ After setting both `countFormula` and `optFormula`, you MUST enable the optimizer with:
-    		 	`.set usEnabled true`
+    		 	`.set isEnabled true`
   			Otherwise, no optimization will be performed.
   			
 		formulas:
@@ -695,7 +695,7 @@ Respond with a **JSON object** in the following format:
 
 
 		properties:
-			usEnabled: if true the optimizer will try to find a minimum for optFormula.
+			isEnabled: if true the optimizer will try to find a minimum for optFormula.
 		
 		parameters:
 			x: The output array.
