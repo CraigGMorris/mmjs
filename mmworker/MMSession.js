@@ -242,6 +242,7 @@ class MMSession extends MMParent {
 		this.savedLastNewsId = '(lastNews)';
 		this.savedStorageVersionId = '(storageVersion)';
 		this.openAIKey = '(openAIKey)';
+		this.anthropicKey = '(anthropicKey)';
 		this.lastNews = '20250320b';
 		this.newSession();
 		this.couchError = null;
@@ -1259,6 +1260,9 @@ class MMSession extends MMParent {
 				case 'openai':
 					command.results = await this.storage.load(this.openAIKey);
 					return;
+				case 'claude':
+					command.results = await this.storage.load(this.anthropicKey);
+					return;
 				default:
 					this.setError('No AI model', {model: args[0]});
 			}
@@ -1273,6 +1277,18 @@ class MMSession extends MMParent {
 					}
 					else {
 						await this.storage.save(this.openAIKey, key);
+						command.results = 'key saved';
+					}
+					return;
+				}
+				case 'claude': {
+					let key = args[1];
+					if (key.toLowerCase() === 'x') {
+						await this.storage.save(this.anthropicKey, '');
+						command.results = 'key cleared';
+					}
+					else {
+						await this.storage.save(this.anthropicKey, key);
 						command.results = 'key saved';
 					}
 					return;

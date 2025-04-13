@@ -73,6 +73,12 @@ const openAIValues = {
 	apiKey: '',
 };
 
+const claudeValues = {
+	previousResponseId: null,
+	promptTemplate: ``,
+	apiKey: '',
+};
+
 let inputTarget = 'Console';
 
 /**
@@ -139,6 +145,28 @@ export function ConsoleView(props) {
 				'/ aikey openai',
 				(results) => {
 					openAIValues.apiKey = results?.[0]?.results;
+			});
+		}
+	}
+	else 	if (target === 'Claude') {
+		if (!openAIValues.promptTemplate) {
+			fetch('../ai/openai/APIcontext.txt').then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.text();
+			})
+			.then(text => {
+				claudeValues.promptTemplate = text;
+			}).catch(error => {
+				pushOutput(`Could not fetch system prompt\n${error}`);
+			});
+		}
+		if (!claudeValues.apiKey) {
+			props.actions.doCommand(
+				'/ aikey claude',
+				(results) => {
+					claudeValues.apiKey = results?.[0]?.results;
 			});
 		}
 	}
@@ -311,7 +339,7 @@ export function ConsoleView(props) {
 		action(userPrompt, successCallback, failureCallback, retryCount = 0) {
 			if (!openAIValues.apiKey) {
 				pushOutput(`You need an OpenAI API key for this feature\n`+
-					`Please enter "/ set openaikey <your API key>"\n`+
+					`Please enter "/ aikey openai <your API key>"\n`+
 					`in the console before proceeding`);
 				return;
 			}
@@ -389,6 +417,161 @@ export function ConsoleView(props) {
 		}	
 	};
 
+	const claudeChat = {
+		async sendPrompt(promptText) {
+			// const mock = await import("../ai/anthropic/mockAssistant.js");
+			// return mock.runAssistant(promptText);
+	
+			const headers = {
+				"x-api-key": `${claudeValues.apiKey}`,
+				"Content-Type": "application/json",
+				"anthropic-version": "2023-06-01",
+				"anthropic-dangerous-direct-browser-access": "true"
+			};
+	
+			const body = {
+				model: "claude-3-7-sonnet-20250219",
+				max_tokens: 4000
+			};
+		
+			if (!claudeValues.conversationHistory) {
+				// First call → initialize conversation history with system prompt and user prompt
+				claudeValues.conversationHistory = [
+					{ role: "user", content: promptText }
+				];
+				
+				// Add system prompt as a separate field, not part of messages array
+				body.system = claudeValues.promptTemplate;
+			} else {
+				// Follow-up call → add new user message to existing conversation
+				claudeValues.conversationHistory.push({ role: "user", content: promptText });
+			}
+			
+			// Always send the full conversation history
+			body.messages = claudeValues.conversationHistory;
+	
+			const response = await fetch("https://api.anthropic.com/v1/messages", {
+				method: "POST",
+				headers,
+				body: JSON.stringify(body)
+			});
+	
+			if (response.status === 429) {
+				const body = await response.text();
+				console.error("❌ 429 Too Many Requests", body);
+				updateOutput(`❌ ${body}`);
+				return;
+			}
+			
+			const data = await response.json();
+			
+			// Store the assistant's response in conversation history for context
+			if (data.content && data.content.length > 0) {
+				claudeValues.conversationHistory.push({
+					role: "assistant",
+					content: data.content[0].text
+				});
+			}
+			
+			const raw = data.content?.[0]?.text;
+			if (!raw) {
+				updateOutput("⚠️ No assistant output found.");
+				return;
+			}
+			// Remove code block formatting
+			const clean = raw.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+	
+			try {
+				const parsed = JSON.parse(clean);
+				return parsed;
+			} catch (err) {
+				updateOutput("❌ Failed to parse assistant response:");
+				updateOutput(raw);
+				throw err;
+			}
+		},
+	
+		action(userPrompt, successCallback, failureCallback, retryCount = 0) {
+			if (!claudeValues.apiKey) {
+				pushOutput(`You need an Anthropic API key for this feature\n`+
+					`Please enter "/ aikey claude <your API key>"\n`+
+					`in the console before proceeding`);
+				return;
+			}
+	
+			pushOutput(`User: ${userPrompt}\n`);
+			claudeChat.sendPrompt(userPrompt).then(parsed => {
+				parsed.comments.forEach((comment) => {updateOutput(`Comment: ${comment}`)});
+				updateOutput('');
+				claudeChat.executeCommands(parsed.commands, userPrompt, successCallback, failureCallback, retryCount);
+			}).catch(err => {
+				updateOutput(`❌ Failed to parse assistant response: ${err.message}`);
+			});
+		},
+	
+		async executeCommands(commandsBlock, originalPrompt, onSuccess, onFailure, retryCount = 0) {
+			const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
+	
+			const runNext = async () => {
+				if (lines.length === 0) {
+					onSuccess('Done');
+					return;
+				}
+				const cmd = lines.shift();
+				const cmdError = async (result) => {
+					const message = (typeof result === 'string') ? result : result?.message;
+					updateOutput(`❌ Error in: ${cmd}\n${message}`);
+					if (retryCount >= 2) {
+						updateOutput("⚠️ Retry limit reached.");
+						if (onFailure) onFailure(cmd, message);
+						return;
+					}
+	
+					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
+					function sleep(ms) {
+						return new Promise(resolve => setTimeout(resolve, ms));
+					}				   
+					await sleep(5000); // Reduced sleep time as Claude doesn't need as much delay
+					try {
+						const retry = await this.sendPrompt(retryPrompt);
+						retry.comments.forEach(pushOutput);
+						this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
+					} catch (err) {
+						updateOutput("❌ Assistant retry failed.");
+					}
+					return;
+				}
+	
+				performCommand(cmd, async (result) => {
+					if (cmd.match(/''[^']/)) {
+						result.error = true;
+						result.message = 'Illegal command separation';
+					}
+	
+					if (result.error) {
+						cmdError(result);
+						return
+					}
+	
+					if (result.v) {
+						const output = result.v;
+						if (typeof result === 'string') {
+							updateOutput(`✅ ${cmd} =>\n ${result}`)
+						}
+						else {
+							updateOutput(
+								`✅	${cmd} =>\n ${JSON.stringify(output)}`
+							);
+						}
+					}
+					runNext();
+				}, cmdError);
+			};
+	
+			runNext();
+		}
+	};
+
 	let commandAction, successCallBack, failCallBack;
 	switch(target) {
 
@@ -405,6 +588,15 @@ export function ConsoleView(props) {
 			}
 			failCallBack = (error) => {console.log(`OpenAI Fail`);}
 			break;
+		
+			case 'Claude':
+			commandAction = claudeChat.action;
+			successCallBack = (result) => {
+				updateOutput(result);
+			}
+			failCallBack = (error) => {console.log(`Claude Fail`);}
+			break;			
+
 		default:
 			alert('invalid input target in console - this is a bug');
 			break;
@@ -498,6 +690,7 @@ export function ConsoleView(props) {
 							},
 						},
 						e('option', { value: 'OpenAI' }, 'OpenAI'),
+						e('option', { value: 'Claude' }, 'Claude'),
 						e('option', { value: 'Console' }, 'Console')
 				)
 			),
