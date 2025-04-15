@@ -34,6 +34,143 @@ const useEffect = React.useEffect;
 	formulaEditor: 1,
 });
 
+/**
+ * ImportMenuView
+ * used to select the session to import in an imported model
+ */
+function ImportMenuView(props) {
+	const [sessionPaths, setSessionPaths] = useState([]);
+	const [rootFolder, setRootFolder] = useState('');
+
+	useEffect(() => {
+		if (sessionPaths.length === 0) {
+			props.actions.doCommand(`/ listsessions`, (results) => {
+				setSessionPaths(results[0].results.paths);
+			});
+		}
+	}, [sessionPaths, props.actions]);
+
+	useEffect(() => {
+		props.setImportSource(rootFolder);
+	}, [rootFolder]);
+	
+	let t = props.t;
+	let sessionList = []
+	if (rootFolder.length > 0) {
+		let cmp = e(
+			'div', {
+				className: 'model__import-back-button',
+				key: '+__back__',
+			},
+			e(
+				'div', {
+					className: 'sessions__entry-name',
+					onClick: () => {
+						const parentFolder = rootFolder.replace(/[^/]+\/$/, '');
+						setRootFolder(parentFolder);
+					},
+				},
+				'Back'
+			),
+		);
+		sessionList.push(cmp);
+	}
+
+	let key = 0;
+
+	if (!sessionPaths) {
+		return null;
+	}
+
+	const foundFolders = new Set();
+	const regex = new RegExp('^' + rootFolder + '.*?/');
+	for (let path of sessionPaths) {
+		let showPath = true;
+		if (path.startsWith('(')) {  // skip (autosave) and perhaps others
+			showPath = false;
+		}
+		else if (!path.startsWith(rootFolder)) {
+			showPath = false;
+		}
+		else {
+			// check for folders
+			const match = path.match(regex);
+			if (match) {
+				path = match[0];
+				// has folder already been found?
+				let found = false;
+				for (let folder of foundFolders) {
+					if (path.startsWith(folder)) {
+						found = true;
+						break
+					}
+				}
+				if (!found) {
+					// add a folder entry
+					foundFolders.add(path);
+					// hide the normal entry and add a folder one
+					showPath = false;
+					let cmp = e(
+						'div', {
+							className: 'sessions__entry',
+							key: key++,
+						},
+						e(
+							'div', {
+								className: 'sessions__folder-name',
+								value: path,
+								onClick: () => {
+									setRootFolder(path);
+								},
+							},
+							path
+						),
+					)
+					sessionList.push(cmp);
+				}
+				else {
+					// hide other folder sessions
+					showPath = false;
+				}
+			}
+			else {
+				// hide other folder sessions
+				showPath = true;
+			}
+		}
+
+		if (showPath) {
+			let cmp = e(
+				'div', {
+					className: 'sessions__entry',
+					key: key++,
+				},
+				e(
+					'div', {
+						className: 'sessions__entry-name',
+						value: path,
+						onClick: () => {
+							props.actions.doCommand(`${props.currentModel} import ${path}`, () => {
+								props.actions.updateView(props.viewInfo.stackIndex);
+								props.setShowingImportMenu(false);
+							})
+						},
+					},
+					path.substring(rootFolder.length)
+				),
+			)
+			sessionList.push(cmp);
+		}
+	}
+	let listSection = e(
+		'div', {
+			id: 'model__sessions-list',
+			key: 'list'
+		},
+		sessionList
+	);
+	return listSection;
+}
 
 /**
  * ModelView
@@ -47,6 +184,7 @@ export function ModelView(props) {
 	const [importSource, setImportSource] = useState('');
 	const [indexToolName, setIndexToolName] = useState('');
 	const [display, setDisplay] = useState(ModelDisplay.model);
+	const [showingImportMenu, setShowingImportMenu] = useState(false);
 
 	const editOptions = {}
 	useEffect(() => {
@@ -137,6 +275,17 @@ export function ModelView(props) {
 	}
 
 	let viewComponent;
+	const importMenu = showingImportMenu ? e(ImportMenuView, {
+		id: 'model__import-menu',
+		actions: props.actions,
+		viewInfo: props.viewInfo,
+		updateView: props.updateView,
+		currentModel: props.viewInfo.path,
+		setImportSource: setImportSource,
+		setShowingImportMenu: (v) => setShowingImportMenu(v),
+		t: t,
+	}) : null;
+
 	switch (display) {
 		case ModelDisplay.formulaEditor: {
 			viewComponent = e(
@@ -171,11 +320,14 @@ export function ModelView(props) {
 								id: 'model__import-source',
 								key: 'importSource'
 							},
-							e(
-								'div', {
-									id: 'model__import-label'
-								},
-								t('react:modelImportLabel')
+							e('div', null,
+								e('button', {
+									id: 'model__import-button',
+									onClick: () => {
+										setShowingImportMenu(!showingImportMenu);
+									}
+								}, importSource ? importSource : 'Select model to import'),
+								importMenu,
 							),
 							e(
 								'button', {
@@ -188,28 +340,11 @@ export function ModelView(props) {
 								},
 								t('react:modelMakeLocal')
 							),
-							e(
-								'input', {
-									id: 'model__import-input',
-									value: importSource,
-									onChange: (event) => {
-										setImportSource(event.target.value);
-									},
-									onKeyDown: (event) => {
-										// watches for Enter and sends command when it see it
-										if (event.code == 'Enter') {
-											props.actions.doCommand(`${results.path} import ${importSource}`, () => {
-												props.actions.updateView(props.viewInfo.stackIndex);
-											})
-										}
-									}
-								}
-							)
 						)
 					)
 				}
 				
-					const indexToolInput = e(
+				const indexToolInput = e(
 					'input', {
 						id: 'model__indextool-input',
 						value: indexToolName,
@@ -229,32 +364,33 @@ export function ModelView(props) {
 					}
 				)
 
-				fields.push(e(
-						// rendered html
-						'iframe', {
-							id: 'htmlpage__iframe',
+				if (!showingImportMenu) {
+					fields.push(e(
+							// rendered html
+							'iframe', {
+							id: 'htmlpage__iframe-import',
 							srcDoc: results.html,
 							sandbox: 'allow-scripts allow-modals allow-popups',
 							key: 'iframe',
 						},
-					)
-				);
+					));
 	
-				const indexToolFields = e(
-					'div', {
-						id: 'model__indextool-fields',
-						key: '_indextool',
-						title: t('react:modelIndexToolTitle'),
-					},
-					e(
+					const indexToolFields = e(
 						'div', {
-							id: 'model__indextool-label',
+							id: 'model__indextool-fields',
+							key: '_indextool',
+							title: t('react:modelIndexToolTitle'),
 						},
-						t('react:modelIndexToolLabel')
-					),
-					indexToolInput
-				);
-				fields.push(indexToolFields);	
+						e(
+							'div', {
+								id: 'model__indextool-label',
+							},
+							t('react:modelIndexToolLabel')
+						),
+						indexToolInput
+					);
+					fields.push(indexToolFields);
+				}
 			}
 			viewComponent = fields;
 		}

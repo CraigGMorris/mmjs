@@ -901,6 +901,12 @@ a:hover {
 	width: 100%;
 }
 
+#htmlpage__iframe-import {
+	height: calc(var(--info-height) - 120px);
+	width: 100%;
+}
+
+
 #graph__button-fields {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -1271,9 +1277,8 @@ a:hover {
 #model__import-source {
 	display: grid;
 	grid-template-columns: 1fr 100px;
-	grid-template-rows: var(--input--height) var(--input--height);
-	grid-template-areas: "label makelocal"
-		"source source";
+	grid-template-rows: var(--input--height);
+	grid-template-areas: "label makelocal";
 	grid-gap: 5px;
 	padding: 5px 2px 5px 2px;
 	border-bottom: solid 2px;
@@ -1285,12 +1290,20 @@ a:hover {
 	padding-left: 5px;
 }
 
-#model__import-makelocal {
-	grid-area: makelocal;
+#model__import-button {
+	grid-area: label;
 }
 
-#model__import-input {
-	grid-area: source
+#model__sessions-list {
+	/* grid-area: menu-start / list-start / list-end / list-end; */
+	grid-area: display-area;
+	height: calc(var(--info-height) - 100px);
+	margin-top: 20px;
+	overflow: auto;
+}
+
+#model__import-makelocal {
+	grid-area: makelocal;
 }
 
 #model__indextool-fields {
