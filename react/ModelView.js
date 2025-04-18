@@ -150,9 +150,10 @@ function ImportMenuView(props) {
 						className: 'sessions__entry-name',
 						value: path,
 						onClick: () => {
-							props.actions.doCommand(`${props.currentModel} import ${path}`, () => {
+							props.actions.doCommand(`${props.currentModel} import /${path}`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);
 								props.setShowingImportMenu(false);
+								props.updateDiagram(true);
 							})
 						},
 					},
@@ -281,6 +282,7 @@ export function ModelView(props) {
 		viewInfo: props.viewInfo,
 		updateView: props.updateView,
 		currentModel: props.viewInfo.path,
+		updateDiagram: props.updateDiagram,
 		setImportSource: setImportSource,
 		setShowingImportMenu: (v) => setShowingImportMenu(v),
 		t: t,
