@@ -69,6 +69,9 @@ class MMImportModelInfo {
 	initFromSaved(saved) {
 		this.sessionName = saved.name;
 		this.inputFormulas = saved.inputs;
+		if (saved.childImportFormulas) {
+			this.childImportFormulas = saved.childImportFormulas;
+		}
 	}
 }
 
@@ -844,6 +847,12 @@ class MMModel extends MMTool {
 		if (this.importInfo) {
 			this.determineImportInputFormulas();
 			o.import = this.importInfo.saveObject();
+			const childImportFormulas = {};
+			this.getChildImportFormulas('', childImportFormulas);
+			if (Object.keys(childImportFormulas).length) {
+				o.import.childImportFormulas = childImportFormulas;
+				// console.log('childImportFormulas', childImportFormulas);
+			}
 		}
 		else {
 			let tools = [];
@@ -861,14 +870,23 @@ class MMModel extends MMTool {
 		return o;
 	}
 
-	/**
-	 * @method initFromSaved - initialize from stored object
-	 * @param {Object} saved 
-	 */
+	getChildImportFormulas(parentName,childImportFormulas) {
+		for (const toolName in this.children) {
+			const tool = this.children[toolName];
+			if (tool instanceof MMTool) {
+				if (tool.importInfo) {
+					tool.determineImportInputFormulas();
+					childImportFormulas[`${parentName}.${toolName}`] = tool.importInfo.inputFormulas;
+					tool.getChildImportFormulas(`${parentName}.${toolName}`, childImportFormulas);
+				}
+			}
+		}
+		return childImportFormulas;
+	}
 	async initFromSaved(saved) {
 		super.initFromSaved(saved);
 		if (saved.Objects) {
-			this.constructToolsFromSaved(saved.Objects);
+			await this.constructToolsFromSaved(saved.Objects);
 		}
 		else {
 			if (saved.import) {
@@ -901,7 +919,8 @@ class MMModel extends MMTool {
 	 * @method constructToolsFromSaved
 	 * @param {Object} savedTools
 	 */
-	constructToolsFromSaved(savedTools) {
+	async constructToolsFromSaved(savedTools) {
+		 //console.log(`constructToolsFromSaved ${this.name}`);
 		theMMSession.pushModel(this);
 		for (let tool of savedTools) {
 			const name = tool.name;
@@ -920,7 +939,7 @@ class MMModel extends MMTool {
 			}
 			else {
 				let newTool = toolType.factory(name, this);
-				newTool.initFromSaved(tool);
+				await newTool.initFromSaved(tool);
 			}
 		}
 		theMMSession.popModel();
@@ -1419,7 +1438,8 @@ class MMModel extends MMTool {
 		if (importInfo === null) { // make it local
 			this.importInfo = importInfo;
 			return;
-		}	
+		}
+		// console.log(`setImportInfo ${this.name} ${JSON.stringify(importInfo)}`);
 	
 		if (!this.parent || this.importInfo == importInfo) {
 			return;  // can't set on root
@@ -1463,49 +1483,94 @@ class MMModel extends MMTool {
 		}
 		const parentImportInfo = parentWithImport ? parentWithImport.importInfo : null;
 
-		// get the session from local storage
+		// get the session folder for the current session
+		const sessionFolder = theMMSession.storePath.match(/\//) ? theMMSession.storePath.replace(/\/[^/]+$/,'/') : '';
+		let isAbsolute = false;
 		if (importName.startsWith('/')) {
-			// absolute path - just strip leading slash
+			// strip off leading /
 			importName = importName.substring(1);
-			importInfo.importPath = importName.replace(/\/[^/]+$/,'/');
+			// see if it is relative to the session folder
+			if (importName.startsWith(sessionFolder)) {
+				// remove the store path
+				importName = importName.substring(sessionFolder.length);
+				importInfo.importPath = sessionFolder;
+				importInfo.sessionName = importName;
+			}
+			else {
+				// it will be an absolute path
+				isAbsolute = true;
+				// add leading / bacto the session name
+				importInfo.sessionName = '/' + importName;
+				// see it import name is a folder path
+				if (importName.match(/\//)) {
+					// separate the folder path from the file name
+					importInfo.importPath = importName.replace(/\/[^/]+$/,'/');
+					importName = importName.replace(/.*\//,'');		
+				}
+				else {
+					importInfo.importPath = '';
+				}
+			}
 		}
-		else if (parentImportInfo) {
-			// has ancestor import - use its import path
-			importName = parentImportInfo.importPath + importName;
-			importInfo.importPath = parentImportInfo.importPath;
-		}
-		else if (theMMSession.storePath.match(/\//) ){
-			// relative - prepend current session folder
-			importInfo.importPath = theMMSession.storePath.replace(/\/[^/]+$/,'/');
-			importName = importInfo.importPath + importName;
-		}
-		else if (importName.match(/\//)) {
-			importInfo.importPath = importName.replace(/\/[^/]+$/,'/');
-		}
-		else {
-			importInfo.importPath = '';
+		if (!isAbsolute) {
+			importInfo.sessionName = importName;
+			// see it import name is a folder path
+			if (importName.match(/\//)) {
+				// separate the folder path from the file name
+				importInfo.importPath = sessionFolder + importName.replace(/\/[^/]+$/,'/');
+				importName = importName.replace(/.*\//,'');		
+			}
+			else {
+				importInfo.importPath = sessionFolder;
+			}
+			if (parentImportInfo) {
+				// has ancestor import - use its import path
+				importInfo.importPath = parentImportInfo.importPath;
+			}	
 		}
 
-		const savedJson = await theMMSession.storage.load(importName);
+		const savedJson = await theMMSession.storage.load(importInfo.importPath + importName);
 		if (!savedJson) {
 			this.setError('mmcmd:sessionImportNotFound', {name: importName, path: this.getPath()});
+			this.importInfo = importInfo;
 			return;
 		}
+		this.importInfo = importInfo;
 
 		removeCurrentContents();
 
-		this.importInfo = importInfo;
 		try {
 			const savedCase = JSON.parse(savedJson)
 			const savedTools = savedCase.RootModel.Objects;
 			if (savedTools) {
-				this.constructToolsFromSaved(savedTools);
+				await this.constructToolsFromSaved(savedTools);
 				if (importInfo.inputFormulas) {
 					for (const expName of Object.keys(importInfo.inputFormulas)) {
 						const exp = this.childNamed(expName);
-						exp.formula.formula = importInfo.inputFormulas[expName];
+						if (exp) {
+							exp.formula.formula = importInfo.inputFormulas[expName];
+						}
 					}
 					importInfo.inputFormulas = null;
+				}
+				if (importInfo.childImportFormulas) {
+					for (const childPath of Object.keys(importInfo.childImportFormulas)) {
+						const childNames = childPath.split('.');
+						childNames.shift();
+						let child = this;
+						for (const childName of childNames) {
+							child = child.childNamed(childName);
+						}
+						if (child) {
+							const inputFormulas = importInfo.childImportFormulas[childPath];
+							for (const expName of Object.keys(inputFormulas)) {
+								const exp = child.childNamed(expName);
+								if (exp) {
+									exp.formula.formula = inputFormulas[expName];
+								}
+							}
+						}
+					}
 				}
 			}
 		}

@@ -152,7 +152,7 @@ export class Diagram extends React.Component {
 							let scale =  ( widthScale < heightScale ) ? widthScale : heightScale;
 							scale = Math.min(3.0, Math.max(0.2, scale));
 							newState['scale'] = scale;
-							const yOffset = modelInfo.import != null ? 100 : 45; 
+							const yOffset = 45; 
 							newState['translate'] = {x: -minX + 30.0 / scale, y: -minY + yOffset /scale};
 						}
 					}
@@ -947,7 +947,7 @@ export class Diagram extends React.Component {
 							className: 'diagram__import-warning',
 							key: 'import1',
 							x: 20,
-							y: 50,
+							y: this.props.diagramBox.height - 50,
 						},
 						this.props.t('react:dgmImportWarning1', {source: this.state.import})
 					),
@@ -956,7 +956,7 @@ export class Diagram extends React.Component {
 							className: 'diagram__import-warning',
 							key: 'import2',
 							x: 20,
-							y: 75,
+							y: this.props.diagramBox.height - 25,
 						},
 						this.props.t('react:dgmImportWarning2', {source: this.state.import})
 					)
