@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2025.03.20b";
+const VERSION = "2025.04.17";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
