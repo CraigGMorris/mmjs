@@ -1038,6 +1038,9 @@ class MMSession extends MMCommandParent {
 
 			let newFolderPath = "";
 			let newFolderName = folderName;
+			if (!folderName.endsWith('/')) {
+				newFolderName += '/';
+			}
 			if (folderName === 'root/') {
 				newFolderName = 'All Imported/';
 			}
@@ -1052,14 +1055,14 @@ class MMSession extends MMCommandParent {
 					let n = 2;
 					newFolderPath = rootPath + newFolderName;
 					while (pathAlreadyUsed(newFolderPath)) {
-						newFolderPath =  newfolderName + `-${n++}`;
+						newFolderPath =  newFolderName + `-${n++}`;
 					}
 					break;
 				}
 			}
 
 			for (const path of Object.keys(sessions)) {
-				const fullPath = newFolderPath + path;
+				const fullPath = newFolderPath + (path.startsWith('/') ? path.substring(1) : path);
 				await this.storage.save(fullPath, sessions[path]);
 			}
 		}
