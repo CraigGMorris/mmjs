@@ -77,6 +77,7 @@ const claudeValues = {
 	previousResponseId: null,
 	promptTemplate: ``,
 	apiKey: '',
+	chatHistory: [],
 };
 
 let inputTarget = 'Console';
@@ -88,6 +89,9 @@ export function ConsoleView(props) {
 	const [output, setOutput] = useState(consoleStacks.output.show());
 	const [input, setInput] = useState('');
 	const [target, setTarget] = useState(inputTarget);
+	const [isWaiting, setIsWaiting] = useState(false);
+	const [isSleeping, setIsSleeping] = useState(false);
+	const [isDone, setIsDone] = useState(false);
 	const t = props.t;
 	const inputRef = React.useRef(null);
 	const isMounted = React.useRef(false);
@@ -104,6 +108,13 @@ export function ConsoleView(props) {
 			isMounted.current = false;
 		};
 	}, []);
+
+	React.useEffect(() => {
+		console.log(`isDone: ${isDone}`);
+		if (isDone) {
+			props.actions.toggleConsole();
+		}
+	}, [isDone]);
 
 	const pushOutput = (s) => {
 		consoleStacks.output.push(s);
@@ -268,7 +279,6 @@ export function ConsoleView(props) {
 					});
 				}
 				props.updateDiagram();
-				// props.actions.toggleConsole();
 			};
 			r.readAsText(f);
 		} else { 
@@ -302,12 +312,13 @@ export function ConsoleView(props) {
 				body.previous_response_id = openAIValues.previousResponseId;
 				body.input.push({ role: "user", content: promptText });
 			}
-	
+			setIsWaiting(true);
 			const response = await fetch("https://api.openai.com/v1/responses", {
 				method: "POST",
 				headers,
 				body: JSON.stringify(body)
 			});
+			setIsWaiting(false);
 
 			if (response.status === 429) {
 				const body = await response.text();
@@ -357,12 +368,13 @@ export function ConsoleView(props) {
 		async executeCommands(commandsBlock, originalPrompt, onSuccess, onFailure, retryCount = 0) {
 			const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
 	
-				const runNext = async () => {
+			const runNext = async () => {
 				if (lines.length === 0) {
 					onSuccess('Done');
 					return;
 				}
 				const cmd = lines.shift();
+				updateOutput(`Cmd: ${cmd}`);
 				const cmdError = async (result) => {
 					const message = (typeof result === 'string') ? result : result?.message;
 					updateOutput(`❌ Error in: ${cmd}\n${message}`);
@@ -375,11 +387,13 @@ export function ConsoleView(props) {
 					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
 					function sleep(ms) {
 						return new Promise(resolve => setTimeout(resolve, ms));
-					}					
+					}
+					setIsSleeping(true);
 					await sleep(50000);
+					setIsSleeping(false);
 					try {
 						const retry = await this.sendPrompt(retryPrompt);
-						retry.comments.forEach(pushOutput);
+						retry.comments.forEach(updateOutput);
 						this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
 					} catch (err) {
 						updateOutput("❌ Assistant retry failed.");
@@ -387,7 +401,7 @@ export function ConsoleView(props) {
 					return;
 				}
 	
-					performCommand(cmd, async (result) => {
+				performCommand(cmd, async (result) => {
 					if (cmd.match(/''[^']/)) {
 						result.error = true;
 						result.message = 'Illegal command separation';
@@ -414,7 +428,7 @@ export function ConsoleView(props) {
 			};
 
 			runNext();
-		}	
+		}
 	};
 
 	const claudeChat = {
@@ -518,6 +532,7 @@ export function ConsoleView(props) {
 					return;
 				}
 				const cmd = lines.shift();
+				updateOutput(`Cmd: ${cmd}`);
 				const cmdError = async (result) => {
 					const message = (typeof result === 'string') ? result : result?.message;
 					updateOutput(`❌ Error in: ${cmd}\n${message}`);
@@ -530,11 +545,11 @@ export function ConsoleView(props) {
 					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
 					function sleep(ms) {
 						return new Promise(resolve => setTimeout(resolve, ms));
-					}				   
-					await sleep(5000); // Reduced sleep time as Claude doesn't need as much delay
+					}					
+					await sleep(5000);
 					try {
 						const retry = await this.sendPrompt(retryPrompt);
-						retry.comments.forEach(pushOutput);
+						retry.comments.forEach(updateOutput);
 						this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
 					} catch (err) {
 						updateOutput("❌ Assistant retry failed.");
@@ -543,11 +558,6 @@ export function ConsoleView(props) {
 				}
 	
 				performCommand(cmd, async (result) => {
-					if (cmd.match(/''[^']/)) {
-						result.error = true;
-						result.message = 'Illegal command separation';
-					}
-	
 					if (result.error) {
 						cmdError(result);
 						return
@@ -560,14 +570,14 @@ export function ConsoleView(props) {
 						}
 						else {
 							updateOutput(
-								`✅	${cmd} =>\n ${JSON.stringify(output)}`
+								`✅  ${cmd} =>\n ${JSON.stringify(output)}`
 							);
 						}
 					}
 					runNext();
 				}, cmdError);
 			};
-	
+
 			runNext();
 		}
 	};
@@ -585,8 +595,14 @@ export function ConsoleView(props) {
 			commandAction = openAIChat.action;
 			successCallBack = (result) => {
 				updateOutput(result);
+				props.updateDiagram(true);
+				setIsDone(true);
+				// props.actions.toggleConsole();
 			}
-			failCallBack = (error) => {console.log(`OpenAI Fail`);}
+			failCallBack = (error) => {
+				console.log(`OpenAI Fail`);
+				updateOutput(`❌ OpenAI Failed: ${error}`);
+			}
 			break;
 		
 			case 'Claude':
@@ -601,6 +617,10 @@ export function ConsoleView(props) {
 			alert('invalid input target in console - this is a bug');
 			break;
 	}
+
+	let inputPlaceholder = isSleeping ?
+		'🤖 Pausing for rate limit...' : isWaiting ? 
+			'🤖 Thinking...' : t('react:consoleReadPlaceHolder');
 
 	let mainElement = e(
 		'div', {
@@ -617,7 +637,7 @@ export function ConsoleView(props) {
 			'textarea', {
 				id: 'console__input',
 				value: input || '',
-				placeholder: t('react:consoleReadPlaceHolder'),
+				placeholder: inputPlaceholder,
 				ref: inputRef,
 				onChange: event => {
 					//keeps input field in sync
