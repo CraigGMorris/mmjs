@@ -58,29 +58,29 @@ Respond with a **JSON object** in the following format:
 		  - `MMGraph` uses `addaxis`, `removeaxis`, `x1 set formula`, etc.
 		  - `MMSession` uses `pushmodel`, `popmodel`
 		  - `MMTool` uses `addtool`, `set`, etc.
+			- `/ pushmodel mySubModel`
+			- `/ popmodel`
+
 		
 		❌ Incorrect:
 		  - `MMGraph remove y1_2` (no `remove` verb defined for `MMGraph`)
-		  - `MMModel pushmodel MySubModel` (only `MMSession` owns `pushmodel`)
+		  - `MMModel pushmodel MySubModel` (only `MMSession` owns `pushmodel` and `popmodel`)
+			- `/.root pushmodel MySubModel` (only `MMSession` owns `pushmodel` and `popmodel`)
 
 	## Arguments
 		This is a string with one or more argument values separated by spaces.
 		If there are no required arguments for the action, this field is omitted.
 		The last argument in the string can contain spaces and extend over multiple lines.
 	
-	## Command separation	
-	If more than one command is given, then commands are split by lines starting with three single quotes.	
-	Example:
-		. addtool Expression frodo 100 50
-		'''.frodo.formula set formula 12 m
-		
 	## Command_rules:
 		- Before executing or suggesting a command, resolve the subject path to an object.
 		- Look up that object’s class (and its superclasses).
 		- Only use verbs defined under that class or its superclasses.
 		- ❌ Do not assume that root-level `/` can be used to create models or tools.
 		✅ Only models (e.g., `.`) support `addtool`.
-
+		- There must be spaces between the subject and verb as well as between the verb and each parameter
+		- ❌ .addtool Expression fred
+		- ✅ . addtool Expression fred
 
 # Program Structure:
 	MM has an object oriented structure.
@@ -435,6 +435,17 @@ Respond with a **JSON object** in the following format:
 						
 						- **Any other content**  
 							→ The content will be interpreted as a string and assigned to the formula of a new `MMExpression` tool
+			usageMote:
+				When adding tools to a model, only use a maximum of three columns, with x coordinates of 100, 200 and 300.
+				There can be as many rows as need, but keep the diagram compact by using a spacing of 25 for y coordinates (i.e. 100, 125, 150 etc)
+
+			usageNote:
+				When asked to create a model, always create it in the current model (.) and then push the model and add the tools to solve the problem.
+				Example:
+					. addtool Model newModelName
+					/ pushmodel newModelName
+					(add the tools and formulas for the problem)
+					/ popmodel
 
 	MMExpression:
 		extends: MMTool
@@ -1101,7 +1112,7 @@ Formulas:
 			desc: Returns a string or numeric matrix with r rows and c columns with all elements initialized to the value of i. If only two arguments are supplied, they are assumed to be r and i with the number of columns being 1.
 			
 			func: {cell roffset, coffset}
-			desc: This function is only valid when used by a formula in the matrix object. It returns the value of a matrix cell, which is offset from the current cell by roffset and coffset. Thus {cell -3, 1} when evaluated for a cell at row 10 and column 4, would return the value of the cell at row 7 and column 5.
+			desc: This function is only valid when used by a formula in the matrix tool. It is not valid in an Expression or any other tool. It returns the value of a matrix cell, which is offset from the current cell by roffset and coffset. Thus {cell -3, 1} when evaluated for a cell at row 10 and column 4, would return the value of the cell at row 7 and column 5.
 			
 			func: {col}
 			desc: This function is only valid when used by a formula in the matrix object. Returns the column number for the cell that is evaluating the function.
@@ -1137,7 +1148,7 @@ Formulas:
 			desc: Returns a value with the same number of elements as a, but arranged with ncols. Values are arranged on a row by row basis. The ncols value must divide evenly into the total number elements in a.
 			
 			func: {row}
-			desc: This function is only valid when used by a formula in the matrix object. Returns the row number for the cell that is evaluating the function.
+			desc: This function is only valid when used by a formula in the matrix tool. It is not valid in an Expression or any other tool. Returns the row number for the cell that is evaluating the function.
 			
 			func: {tr a}
 			desc: Returns the transposition of a (i.e. the rows and columns are reversed). Short form of transpose. If a is a table value, then a table value will be returned that is displayed with the columns being rows and rows being columns. This just for display and does not affect how the value is referenced or how functions and operations act upon it.
