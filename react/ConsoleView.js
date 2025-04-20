@@ -71,13 +71,14 @@ const openAIValues = {
 	previousResponseId: null,
 	promptTemplate: ``,
 	apiKey: '',
+	model: 'gpt-4.1',
+	rateWait: 60000,
 };
 
 const claudeValues = {
 	previousResponseId: null,
 	promptTemplate: ``,
 	apiKey: '',
-	chatHistory: [],
 };
 
 let inputTarget = 'Console';
@@ -112,7 +113,7 @@ export function ConsoleView(props) {
 	React.useEffect(() => {
 		console.log(`isDone: ${isDone}`);
 		if (isDone) {
-			props.actions.toggleConsole();
+			// props.actions.toggleConsole();
 		}
 	}, [isDone]);
 
@@ -297,7 +298,7 @@ export function ConsoleView(props) {
 			};
 	
 			const body = {
-				model: "gpt-4o",
+				model: openAIValues.model,
 				input: []
 			};
 		
@@ -346,8 +347,64 @@ export function ConsoleView(props) {
 				throw err;
 			}
 		},
+
+		async runQueryCommands(commands, maxRetries = 2) {
+			const results = {};
+		
+			for (let i = 0; i < commands.length; i++) {
+				let cmd = commands[i];
+				updateOutput(`🟡 Running query: ${cmd}`);
+		
+				let result;
+				let attempt = 0;
+				while (attempt <= maxRetries) {
+					await performCommand(cmd, (success) => {
+						result = success;
+						updateOutput(`✅ Query result: ${cmd} => ${JSON.stringify(result)}`);
+					},
+					(error) => {
+						updateOutput(`❌ Error in query: ${cmd}\n${error.message}`);
+						result = { error: error.message };
+					});
+					if (!result?.error) {
+						results[cmd] = result;
+						break;
+					}
+
+					updateOutput(`❌ Query failed (attempt ${attempt + 1}): ${result.message}`);
+					attempt++;
+		
+					if (attempt <= maxRetries) {
+						setIsSleeping(true);
+						await new Promise(r => setTimeout(r, openAIValues.rateWait));
+						setIsSleeping(false);
+		
+						const retryPrompt = `The following query command failed:
+${cmd}
+Error: ${result.message}
+Please suggest a corrected version. Respond ONLY with a JSON array of valid MM query commands.`;
+		
+						const correction = await openAIChat.sendPrompt(retryPrompt);
+						try {
+							const suggestions = JSON.parse(correction.output?.[0]?.content?.[0]?.text || "[]");
+							if (Array.isArray(suggestions) && suggestions.length > 0) {
+								updateOutput(`🔁 Assistant suggested retry: ${suggestions[0]}`);
+								cmd = suggestions[0];
+							} else {
+								updateOutput("⚠️ Assistant did not return a valid query array. Skipping retry.");
+								break;
+							}
+						} catch (err) {
+							updateOutput("❌ Failed to parse assistant retry suggestion.");
+							break;
+						}
+					}
+				}
+			}
+			return results;
+		},
 	
-		action(userPrompt, successCallback, failureCallback, retryCount = 0) {
+		async action(userPrompt, successCallback, failureCallback, retryCount = 0) {
 			if (!openAIValues.apiKey) {
 				pushOutput(`You need an OpenAI API key for this feature\n`+
 					`Please enter "/ aikey openai <your API key>"\n`+
@@ -356,16 +413,29 @@ export function ConsoleView(props) {
 			}
 
 			pushOutput(`User: ${userPrompt}\n`);
-			openAIChat.sendPrompt(userPrompt).then(parsed => {
+			try {
+				const parsed = await openAIChat.sendPrompt(userPrompt);
 				parsed.comments.forEach((comment) => {updateOutput(`Comment: ${comment}`)});
 				updateOutput('');
+				if (parsed.query) {
+					const queryResult = await openAIChat.runQueryCommands(parsed.query);
+					const followup = await openAIChat.sendPrompt(
+						`Here are the results of your requested queries:\n${JSON.stringify({ queryResponse: queryResult })}`
+					);
+				}
+				
 				openAIChat.executeCommands(parsed.commands, userPrompt, successCallback, failureCallback, retryCount);
-			}).catch(err => {
+			}
+			catch(err) {
 				updateOutput(`❌ Failed to parse assistant response: ${err.message}`);
-			});
+			};
 		},
 	
 		async executeCommands(commandsBlock, originalPrompt, onSuccess, onFailure, retryCount = 0) {
+			if (!commandsBlock) {
+				onSuccess('Done');
+				return;
+			}
 			const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
 	
 			const runNext = async () => {
@@ -385,16 +455,27 @@ export function ConsoleView(props) {
 					}
 	
 					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
-					function sleep(ms) {
-						return new Promise(resolve => setTimeout(resolve, ms));
+					async function sleep(m) {
+						setIsSleeping(true);
+						await new Promise(r => setTimeout(r, openAIValues.rateWait));
+						setIsSleeping(false);
 					}
-					setIsSleeping(true);
-					await sleep(50000);
-					setIsSleeping(false);
+					await sleep();
 					try {
 						const retry = await this.sendPrompt(retryPrompt);
 						retry.comments.forEach(updateOutput);
-						this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
+						if (retry.query) {
+							const queryResult = await openAIChat.runQueryCommands(retry.query);
+							const followup = await openAIChat.sendPrompt(
+								`Here are the results of your requested queries:\n${JSON.stringify({ queryResponse: queryResult })}`
+							);
+							console.log(`followup retryCount: ${retryCount}`);
+							this.executeCommands(followup.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
+						}
+						else {
+							console.log(`retry retryCount: ${retryCount}`);
+							this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
+						}
 					} catch (err) {
 						updateOutput("❌ Assistant retry failed.");
 					}
@@ -596,8 +677,10 @@ export function ConsoleView(props) {
 			successCallBack = (result) => {
 				updateOutput(result);
 				props.updateDiagram(true);
-				setIsDone(true);
-				// props.actions.toggleConsole();
+				if (isMounted.current) {
+					setIsDone(true);
+					// props.actions.toggleConsole();
+				}
 			}
 			failCallBack = (error) => {
 				console.log(`OpenAI Fail`);

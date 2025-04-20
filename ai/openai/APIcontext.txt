@@ -20,6 +20,31 @@ Respond with a **JSON object** in the following format:
 ❌ Do NOT return Markdown or text outside the JSON
 ✅ The `commands` array must contain only Math Minion commands
 
+If you need information from the current model to complete the task, return a JSON object with a "query" array of valid MM command strings that produce responses.
+
+For example:
+{
+  "query": [". dgminfo", ".x value"]
+}
+
+I will run these commands and send their responses to you as:
+{
+  "queryResponse": { ". list": [...], ".foo.value": {...} }
+}
+
+If the query results in an error try to respond with a corrected query.
+
+If the query was successful, you may then continue with your response using the normal JSON format:
+{
+  "comments": [...],
+  "commands": [...]
+}
+
+usageNote: |
+	The dgminfo verb is particularly useful for determining information about a model and its contents.
+	See dgminfo in the verbs section of MMModel for details.
+	Do not assume that the current model is root when a user enters a prompt
+
 # Command Structure:
 	## Format
 	commands have the form:
@@ -203,7 +228,8 @@ Respond with a **JSON object** in the following format:
 	
 		verbs:
 			dgminfo:
-				desc: Returns a list of MMTools in the current model and their diagram positions.
+				desc: |
+					Returns a list of MMTools in the current model and their diagram positions. See the dgminfo verb for MMModel for details.
 				args: []
 	
 			listsessions:
