@@ -2054,6 +2054,7 @@ class Plot3D extends React.Component {
 		for (let xNumber = 0; xNumber < info.xInfo.length; xNumber++) {
 			const xValue = info.xInfo[xNumber];
 			const lineOpacity = info.xInfo[xAxisIndex] === xValue ? 1 : 0.5;
+			if (!xValue.value) { break; }
 			let xValues = Float64Array.from(xValue.values);
 			const lineClass = `svg_line_${xNumber+1}`;
 			lineColor = lineColors[colorNumber++ % nColors];
@@ -2064,6 +2065,7 @@ class Plot3D extends React.Component {
 			xValues = multiply(subtract(xValues, scaledMinX), scaleForX);
 
 			const yValue = xValue.yInfo[0];
+			if (!yValue.value) { break; }
 			let yValues = Float64Array.from(yValue.values);
 			const minY = yValue.minValue;
 			const maxY = yValue.maxValue;
@@ -2072,6 +2074,7 @@ class Plot3D extends React.Component {
 			yValues = multiply(subtract(yValues, scaledMinY), scaleForY);
 
 			const zValue = xValue.zInfo;
+			if (!zValue.value) { break; }
 			let zValues = Float64Array.from(zValue.values);
 			const lineType = zValue.lineType;
 			const minZ = zValue.minValue;
