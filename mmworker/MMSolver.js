@@ -521,6 +521,9 @@ class MMSolver extends MMTool {
 								}
 								for (let j = 0; j < arraySize && eqnNo < fxCount; j++, eqnNo++) {
 									fx[eqnNo] = value.values[ j ];
+									if (isNaN(fx[eqnNo])) {
+										throw(this.t('mmcmd:solverCalcFailure'), {path: this.getPath()});
+									}
 									// console.log(`fx${eqnNo} ${fx[eqnNo]}`);
 								}
 							}
