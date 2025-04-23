@@ -891,7 +891,7 @@ class MMModel extends MMTool {
 		else {
 			if (saved.import) {
 				const importInfo = new MMImportModelInfo();
-				importInfo.initFromSaved(saved.import);
+				await importInfo.initFromSaved(saved.import);
 				// check for recursion
 				let parent = this.parent;
 				const lcImportName = theMMSession.storePath + '/' + importInfo.sessionName.toLowerCase();
@@ -939,6 +939,7 @@ class MMModel extends MMTool {
 			}
 			else {
 				let newTool = toolType.factory(name, this);
+				// console.log(`newTool ${newTool.name} ${JSON.stringify(tool)}`);
 				await newTool.initFromSaved(tool);
 			}
 		}
