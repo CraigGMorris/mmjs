@@ -544,30 +544,43 @@ usageNote: |
 	MMGraph:
 		extends: MMTool
 		typeName: Graph
-		desc: >
-			A graphing tool that allows plotting one or more y-axis series against a single x-axis.
-			Additional x-axes and corresponding y-axes can be added. If there's only one x-axis and one y-axis,
-			a z-axis may be added for 3D plotting.
-	
-			Rules and axis generation behavior:
-			- `x1` and `y1_1` are created automatically when a graph is added.
-			- `addaxis x` creates the next numbered x-axis and a linked y-axis (`yN_1`). If a z-axis exists, a `zN` is also created.
-			- `addaxis y` adds a new y-axis to the highest-numbered x-axis (e.g., `y2_2`).
-			- `addaxis z` can only be used if there is a single x and single y axis.
-	
-			Each axis (x, y, z) is an `MMFormula` child and must have its formula set via:
-			  `.axisName set formula Expression`
-	
-			Naming pattern:
-			  - `xN`: Nth x-axis
-			  - `yN_M`: Mth y-axis linked to xN
-			  - `zN`: z-axis linked to xN (only if yN_1 exists and is sole y-axis)
-	
-			Note:
-			- Assign formulas to `x1` and `y1_1` immediately after adding.
-			- Always use `addaxis` before referencing `y1_2`, `y2_1`, `z2`, etc.
-			- Graphs should generally be made visible with:
-				`.MyGraph set isOutput true`
+desc: >
+  A graphing tool that allows plotting one or more y-axis series against a single x-axis.
+  Additional x-axes and corresponding y-axes can be added. 
+
+  **IMPORTANT:**
+  - A **z-axis can only exist if the graph has exactly one x-axis and exactly one y-axis**.
+  - If a z-axis is present for a given x-axis, **that x-axis must not have more than one y-axis**.
+  - **Do not add a second y-axis (e.g., `y1_2`) if a z-axis is present on `x1`**.
+
+  This configuration enables 3D plotting, where:
+    - `x1` is the x-axis
+    - `y1_1` is the only y-axis
+    - `z1` is the z-axis
+
+  Adding a second y-axis (like `y1_2`) or second z-axis **requires creating a new x-axis first** (e.g., via `addaxis x`).
+
+  Axis creation rules:
+  - `x1` and `y1_1` are created automatically when a graph is added.
+  - `addaxis x` creates the next numbered x-axis (`xN`) and a linked y-axis (`yN_1`). If a z-axis exists, a `zN` is also created.
+  - `addaxis y` adds a new y-axis (`yN_M`) to the current highest-numbered x-axis.
+  - `addaxis z` may only be called if there is exactly one x-axis and one y-axis — no exceptions.
+
+  Axis naming pattern:
+    - `xN`: Nth x-axis
+    - `yN_M`: Mth y-axis for xN
+    - `zN`: z-axis for xN (only if yN_1 exists, and is the only y for xN)
+
+  Axis formulas must be set via:
+    `.axisName.formula set formula Expression`
+
+  usageNote:
+  - Always assign formulas to `x1` and `y1_1` immediately after adding a graph.
+  - Use `addaxis` before referencing `y1_2`, `y2_1`, `z2`, etc.
+  - **If an x-axis has a z-axis, it MUST have exactly one y-axis. Never add a second y for it.**
+  - To graph additional z series, use `addaxis x` and create new x, y, z axes.
+  - Graphs should generally be made visible with:
+    `.MyGraph set isOutput true`
 	
 		formulas:
 			# Automatically or manually created axis formulas. Naming follows xN, yN_M, zN, min*/max* patterns.
