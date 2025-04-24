@@ -67,13 +67,19 @@ const consoleStacks = {
 	},
 }
 
-const openAIValues = {
-	previousResponseId: null,
-	promptTemplate: ``,
-	apiKey: '',
-	model: 'gpt-4.1',
-	rateWait: 60000,
-};
+class openAI {
+	constructor() {
+		this.previousResponseId = null;
+		this.promptTemplate = ``;
+		this.apiKey = '';
+		this.model = 'gpt-4.1';
+		this.rateWait = 60000;
+		this.retryCount = 0;
+		this.maxRetries = 2;
+	}
+}
+
+const openAIValues = new openAI();
 
 const claudeValues = {
 	previousResponseId: null,
@@ -92,7 +98,6 @@ export function ConsoleView(props) {
 	const [target, setTarget] = useState(inputTarget);
 	const [isWaiting, setIsWaiting] = useState(false);
 	const [isSleeping, setIsSleeping] = useState(false);
-	const [isDone, setIsDone] = useState(false);
 	const t = props.t;
 	const inputRef = React.useRef(null);
 	const isMounted = React.useRef(false);
@@ -100,6 +105,7 @@ export function ConsoleView(props) {
 
 	React.useEffect(() => {
 		isMounted.current = true;
+		console.log(`isMounted}`);
 		setOutput(consoleStacks.output.show());
 		setTarget(inputTarget);
 	
@@ -107,15 +113,9 @@ export function ConsoleView(props) {
 	
 		return () => {
 			isMounted.current = false;
+			console.log(`unmounted`);
 		};
 	}, []);
-
-	React.useEffect(() => {
-		console.log(`isDone: ${isDone}`);
-		if (isDone) {
-			// props.actions.toggleConsole();
-		}
-	}, [isDone]);
 
 	const pushOutput = (s) => {
 		consoleStacks.output.push(s);
@@ -126,9 +126,7 @@ export function ConsoleView(props) {
 
 	const updateOutput = (s) => {
 		consoleStacks.output.update(s);
-		if (isMounted.current) {
-			setOutput(consoleStacks.output.show());
-		}
+		setOutput(consoleStacks.output.show());
 	}
 
 	function stringifyError(error) {
@@ -390,6 +388,9 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 							if (Array.isArray(suggestions) && suggestions.length > 0) {
 								updateOutput(`🔁 Assistant suggested retry: ${suggestions[0]}`);
 								cmd = suggestions[0];
+								setIsSleeping(true);
+								await new Promise(r => setTimeout(r, openAIValues.rateWait));
+								setIsSleeping(false);
 							} else {
 								updateOutput("⚠️ Assistant did not return a valid query array. Skipping retry.");
 								break;
@@ -404,7 +405,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 			return results;
 		},
 	
-		async action(userPrompt, successCallback, failureCallback, retryCount = 0) {
+		async action(userPrompt, successCallback, failureCallback) {
 			if (!openAIValues.apiKey) {
 				pushOutput(`You need an OpenAI API key for this feature\n`+
 					`Please enter "/ aikey openai <your API key>"\n`+
@@ -414,6 +415,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 
 			pushOutput(`User: ${userPrompt}\n`);
 			try {
+				openAIValues.retryCount = 0;
 				const parsed = await openAIChat.sendPrompt(userPrompt);
 				parsed.comments.forEach((comment) => {updateOutput(`Comment: ${comment}`)});
 				updateOutput('');
@@ -424,14 +426,14 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 					);
 				}
 				
-				openAIChat.executeCommands(parsed.commands, userPrompt, successCallback, failureCallback, retryCount);
+				openAIChat.executeCommands(parsed.commands, userPrompt, successCallback, failureCallback);
 			}
 			catch(err) {
 				updateOutput(`❌ Failed to parse assistant response: ${err.message}`);
 			};
 		},
 	
-		async executeCommands(commandsBlock, originalPrompt, onSuccess, onFailure, retryCount = 0) {
+		async executeCommands(commandsBlock, originalPrompt, onSuccess, onFailure) {
 			if (!commandsBlock) {
 				onSuccess('Done');
 				return;
@@ -446,13 +448,14 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 				const cmd = lines.shift();
 				updateOutput(`Cmd: ${cmd}`);
 				const cmdError = async (result) => {
-					const message = (typeof result === 'string') ? result : result?.message;
+					const message = (typeof result === 'string') ? result : JSON.stringify(result);
 					updateOutput(`❌ Error in: ${cmd}\n${message}`);
-					if (retryCount >= 2) {
+					if (openAIValues.retryCount >= 2) {
 						updateOutput("⚠️ Retry limit reached.");
 						if (onFailure) onFailure(cmd, message);
 						return;
 					}
+					openAIValues.retryCount++;
 	
 					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
 					async function sleep(m) {
@@ -473,8 +476,8 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 							this.executeCommands(followup.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
 						}
 						else {
-							console.log(`retry retryCount: ${retryCount}`);
-							this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
+							console.log(`retry retryCount: ${openAIValues.retryCount}`);
+							this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure);
 						}
 					} catch (err) {
 						updateOutput("❌ Assistant retry failed.");
@@ -665,35 +668,33 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 
 	let commandAction, successCallBack, failCallBack;
 	switch(target) {
-
 		case 'Console':
 			commandAction = performCommand;
 			successCallBack = consoleCallBack;
 			failCallBack = (error) => { pushOutput(stringifyError(error)) };
 			break;
 
-		case 'OpenAI':
+		case 'OpenAI': {
 			commandAction = openAIChat.action;
 			successCallBack = (result) => {
 				updateOutput(result);
 				props.updateDiagram(true);
-				if (isMounted.current) {
-					setIsDone(true);
 					// props.actions.toggleConsole();
 				}
-			}
 			failCallBack = (error) => {
 				console.log(`OpenAI Fail`);
 				updateOutput(`❌ OpenAI Failed: ${error}`);
 			}
 			break;
+		}
 		
-			case 'Claude':
+		case 'Claude': {
 			commandAction = claudeChat.action;
 			successCallBack = (result) => {
 				updateOutput(result);
 			}
 			failCallBack = (error) => {console.log(`Claude Fail`);}
+		}
 			break;			
 
 		default:
@@ -704,6 +705,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 	let inputPlaceholder = isSleeping ?
 		'🤖 Pausing for rate limit...' : isWaiting ? 
 			'🤖 Thinking...' : t('react:consoleReadPlaceHolder');
+	console.log(`inputPlaceholder: ${inputPlaceholder}`);
 
 	let mainElement = e(
 		'div', {
