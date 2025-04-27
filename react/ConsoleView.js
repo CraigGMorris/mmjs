@@ -97,7 +97,6 @@ export function ConsoleView(props) {
 	const [input, setInput] = useState('');
 	const [target, setTarget] = useState(inputTarget);
 	const [isWaiting, setIsWaiting] = useState(false);
-	const [isSleeping, setIsSleeping] = useState(false);
 	const t = props.t;
 	const inputRef = React.useRef(null);
 	const isMounted = React.useRef(false);
@@ -105,7 +104,7 @@ export function ConsoleView(props) {
 
 	React.useEffect(() => {
 		isMounted.current = true;
-		console.log(`isMounted}`);
+		// console.log(`isMounted}`);
 		setOutput(consoleStacks.output.show());
 		setTarget(inputTarget);
 	
@@ -113,9 +112,16 @@ export function ConsoleView(props) {
 	
 		return () => {
 			isMounted.current = false;
-			console.log(`unmounted`);
+			// console.log(`unmounted`);
 		};
 	}, []);
+
+	React.useEffect(() => {
+		const textarea = document.getElementById('console__result');
+		if (textarea) {
+			textarea.scrollTop = textarea.scrollHeight;
+		}
+	}, [output]);	
 
 	const pushOutput = (s) => {
 		consoleStacks.output.push(s);
@@ -135,6 +141,29 @@ export function ConsoleView(props) {
 	:
 		t(JSON.stringify(error, null, ' '));
 	}
+
+	function showCountdownTimer(delayMs, onComplete) {
+		const totalSeconds = Math.ceil(delayMs / 1000);
+		let secondsLeft = totalSeconds;
+	
+		const intervalId = setInterval(() => {
+			if(isMounted.current) {
+			setInput(`Waiting for rate limit: ${secondsLeft}s...`);
+			}
+			secondsLeft--;
+	
+			if (secondsLeft < 0) {
+				clearInterval(intervalId);
+				if(isMounted.current) {
+					setInput("");
+				}
+				if (typeof onComplete === "function") {
+					onComplete();
+				}
+			}
+		}, 1000);
+	}
+	
 
 	if (target === 'OpenAI') {
 		if (!openAIValues.promptTemplate) {
@@ -311,13 +340,27 @@ export function ConsoleView(props) {
 				body.previous_response_id = openAIValues.previousResponseId;
 				body.input.push({ role: "user", content: promptText });
 			}
-			setIsWaiting(true);
+
+			// ⏳ Wait if less than 60 seconds since last call
+			const now = Date.now();
+			const last = openAIValues.lastPromptTime || 0;
+			const elapsed = now - last;
+			const delay = Math.max(0, 61000 - elapsed);
+			if (delay > 0) {
+				console.log(`🕒 Waiting ${Math.round(delay / 1000)}s to avoid rate limit...`);
+				await new Promise(resolve => {
+					showCountdownTimer(delay, resolve);
+				});
+			}
+			openAIValues.lastPromptTime = Date.now();
+			console.log(`prompt  time: ${new Date().toISOString()}\n${promptText}`);
+			if(isMounted.current) { setIsWaiting(true); }
 			const response = await fetch("https://api.openai.com/v1/responses", {
 				method: "POST",
 				headers,
 				body: JSON.stringify(body)
 			});
-			setIsWaiting(false);
+			if(isMounted.current) { setIsWaiting(false); }
 
 			if (response.status === 429) {
 				const body = await response.text();
@@ -337,9 +380,20 @@ export function ConsoleView(props) {
 			const clean = raw.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
 	
 			try {
-				const parsed = JSON.parse(clean);
+				let parsed = JSON.parse(clean);
+				parsed.comments.forEach((comment) => {updateOutput(`Comment: ${comment}`)});
+				updateOutput('');
+				let maxQueries = 3;
+				while (parsed.query && maxQueries > 0) {
+					const queryResult = await openAIChat.runQueryCommands(parsed.query);
+					parsed = await openAIChat.sendPrompt(
+						`Here are the results of your requested queries:\n${JSON.stringify({ queryResponse: queryResult })}`
+					);
+					maxQueries--;
+				}
 				return parsed;
-			} catch (err) {
+			}
+			catch (err) {
 				updateOutput("❌ Failed to parse assistant response:");
 				updateOutput(raw);
 				throw err;
@@ -373,10 +427,6 @@ export function ConsoleView(props) {
 					attempt++;
 		
 					if (attempt <= maxRetries) {
-						setIsSleeping(true);
-						await new Promise(r => setTimeout(r, openAIValues.rateWait));
-						setIsSleeping(false);
-		
 						const retryPrompt = `The following query command failed:
 ${cmd}
 Error: ${result.message}
@@ -388,9 +438,6 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 							if (Array.isArray(suggestions) && suggestions.length > 0) {
 								updateOutput(`🔁 Assistant suggested retry: ${suggestions[0]}`);
 								cmd = suggestions[0];
-								setIsSleeping(true);
-								await new Promise(r => setTimeout(r, openAIValues.rateWait));
-								setIsSleeping(false);
 							} else {
 								updateOutput("⚠️ Assistant did not return a valid query array. Skipping retry.");
 								break;
@@ -416,17 +463,15 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 			pushOutput(`User: ${userPrompt}\n`);
 			try {
 				openAIValues.retryCount = 0;
-				const parsed = await openAIChat.sendPrompt(userPrompt);
+				const pathPrompt = `Current path: ${props.viewInfo.path}\n`;
+				const parsed = await openAIChat.sendPrompt(pathPrompt + userPrompt);
 				parsed.comments.forEach((comment) => {updateOutput(`Comment: ${comment}`)});
 				updateOutput('');
-				if (parsed.query) {
-					const queryResult = await openAIChat.runQueryCommands(parsed.query);
-					const followup = await openAIChat.sendPrompt(
-						`Here are the results of your requested queries:\n${JSON.stringify({ queryResponse: queryResult })}`
-					);
-				}
 				
-				openAIChat.executeCommands(parsed.commands, userPrompt, successCallback, failureCallback);
+				openAIChat.executeCommands(parsed.commands, userPrompt, 
+					(result) => {
+						successCallback(result)
+					}, failureCallback);
 			}
 			catch(err) {
 				updateOutput(`❌ Failed to parse assistant response: ${err.message}`);
@@ -439,7 +484,6 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 				return;
 			}
 			const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
-	
 			const runNext = async () => {
 				if (lines.length === 0) {
 					onSuccess('Done');
@@ -458,12 +502,6 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 					openAIValues.retryCount++;
 	
 					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
-					async function sleep(m) {
-						setIsSleeping(true);
-						await new Promise(r => setTimeout(r, openAIValues.rateWait));
-						setIsSleeping(false);
-					}
-					await sleep();
 					try {
 						const retry = await this.sendPrompt(retryPrompt);
 						retry.comments.forEach(updateOutput);
@@ -472,12 +510,12 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 							const followup = await openAIChat.sendPrompt(
 								`Here are the results of your requested queries:\n${JSON.stringify({ queryResponse: queryResult })}`
 							);
-							console.log(`followup retryCount: ${retryCount}`);
-							this.executeCommands(followup.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
+							// console.log(`followup retryCount: ${retryCount}`);
+							await this.executeCommands(followup.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
 						}
 						else {
 							console.log(`retry retryCount: ${openAIValues.retryCount}`);
-							this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure);
+							await this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure);
 						}
 					} catch (err) {
 						updateOutput("❌ Assistant retry failed.");
@@ -515,156 +553,153 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 		}
 	};
 
-	const claudeChat = {
-		async sendPrompt(promptText) {
-			// const mock = await import("../ai/anthropic/mockAssistant.js");
-			// return mock.runAssistant(promptText);
 	
-			const headers = {
-				"x-api-key": `${claudeValues.apiKey}`,
-				"Content-Type": "application/json",
-				"anthropic-version": "2023-06-01",
-				"anthropic-dangerous-direct-browser-access": "true"
-			};
+	// const claudeChat = {
+	// 	async sendPrompt(promptText) {
+	// 		// const mock = await import("../ai/anthropic/mockAssistant.js");
+	// 		// return mock.runAssistant(promptText);
 	
-			const body = {
-				model: "claude-3-7-sonnet-20250219",
-				max_tokens: 4000
-			};
+	// 		const headers = {
+	// 			"x-api-key": `${claudeValues.apiKey}`,
+	// 			"Content-Type": "application/json",
+	// 			"anthropic-version": "2023-06-01",
+	// 			"anthropic-dangerous-direct-browser-access": "true"
+	// 		};
+	
+	// 		const body = {
+	// 			model: "claude-3-7-sonnet-20250219",
+	// 			max_tokens: 4000
+	// 		};
 		
-			if (!claudeValues.conversationHistory) {
-				// First call → initialize conversation history with system prompt and user prompt
-				claudeValues.conversationHistory = [
-					{ role: "user", content: promptText }
-				];
+	// 		if (!claudeValues.conversationHistory) {
+	// 			// First call → initialize conversation history with system prompt and user prompt
+	// 			claudeValues.conversationHistory = [
+	// 				{ role: "user", content: promptText }
+	// 			];
 				
-				// Add system prompt as a separate field, not part of messages array
-				body.system = claudeValues.promptTemplate;
-			} else {
-				// Follow-up call → add new user message to existing conversation
-				claudeValues.conversationHistory.push({ role: "user", content: promptText });
-			}
+	// 			// Add system prompt as a separate field, not part of messages array
+	// 			body.system = claudeValues.promptTemplate;
+	// 		} else {
+	// 			// Follow-up call → add new user message to existing conversation
+	// 			claudeValues.conversationHistory.push({ role: "user", content: promptText });
+	// 		}
 			
-			// Always send the full conversation history
-			body.messages = claudeValues.conversationHistory;
+	// 		// Always send the full conversation history
+	// 		body.messages = claudeValues.conversationHistory;
 	
-			const response = await fetch("https://api.anthropic.com/v1/messages", {
-				method: "POST",
-				headers,
-				body: JSON.stringify(body)
-			});
+	// 		const response = await fetch("https://api.anthropic.com/v1/messages", {
+	// 			method: "POST",
+	// 			headers,
+	// 			body: JSON.stringify(body)
+	// 		});
 	
-			if (response.status === 429) {
-				const body = await response.text();
-				console.error("❌ 429 Too Many Requests", body);
-				updateOutput(`❌ ${body}`);
-				return;
-			}
+	// 		if (response.status === 429) {
+	// 			const body = await response.text();
+	// 			console.error("❌ 429 Too Many Requests", body);
+	// 			updateOutput(`❌ ${body}`);
+	// 			return;
+	// 		}
 			
-			const data = await response.json();
+	// 		const data = await response.json();
 			
-			// Store the assistant's response in conversation history for context
-			if (data.content && data.content.length > 0) {
-				claudeValues.conversationHistory.push({
-					role: "assistant",
-					content: data.content[0].text
-				});
-			}
+	// 		// Store the assistant's response in conversation history for context
+	// 		if (data.content && data.content.length > 0) {
+	// 			claudeValues.conversationHistory.push({
+	// 				role: "assistant",
+	// 				content: data.content[0].text
+	// 			});
+	// 		}
 			
-			const raw = data.content?.[0]?.text;
-			if (!raw) {
-				updateOutput("⚠️ No assistant output found.");
-				return;
-			}
-			// Remove code block formatting
-			const clean = raw.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+	// 		const raw = data.content?.[0]?.text;
+	// 		if (!raw) {
+	// 			updateOutput("⚠️ No assistant output found.");
+	// 			return;
+	// 		}
+	// 		// Remove code block formatting
+	// 		const clean = raw.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
 	
-			try {
-				const parsed = JSON.parse(clean);
-				return parsed;
-			} catch (err) {
-				updateOutput("❌ Failed to parse assistant response:");
-				updateOutput(raw);
-				throw err;
-			}
-		},
+	// 		try {
+	// 			const parsed = JSON.parse(clean);
+	// 			return parsed;
+	// 		} catch (err) {
+	// 			updateOutput("❌ Failed to parse assistant response:");
+	// 			updateOutput(raw);
+	// 			throw err;
+	// 		}
+	// 	},
 	
-		action(userPrompt, successCallback, failureCallback, retryCount = 0) {
-			if (!claudeValues.apiKey) {
-				pushOutput(`You need an Anthropic API key for this feature\n`+
-					`Please enter "/ aikey claude <your API key>"\n`+
-					`in the console before proceeding`);
-				return;
-			}
+	// 	action(userPrompt, successCallback, failureCallback, retryCount = 0) {
+	// 		if (!claudeValues.apiKey) {
+	// 			pushOutput(`You need an Anthropic API key for this feature\n`+
+	// 				`Please enter "/ aikey claude <your API key>"\n`+
+	// 				`in the console before proceeding`);
+	// 			return;
+	// 		}
 	
-			pushOutput(`User: ${userPrompt}\n`);
-			claudeChat.sendPrompt(userPrompt).then(parsed => {
-				parsed.comments.forEach((comment) => {updateOutput(`Comment: ${comment}`)});
-				updateOutput('');
-				claudeChat.executeCommands(parsed.commands, userPrompt, successCallback, failureCallback, retryCount);
-			}).catch(err => {
-				updateOutput(`❌ Failed to parse assistant response: ${err.message}`);
-			});
-		},
+	// 		pushOutput(`User: ${userPrompt}\n`);
+	// 		claudeChat.sendPrompt(userPrompt).then(parsed => {
+	// 			parsed.comments.forEach((comment) => {updateOutput(`Comment: ${comment}`)});
+	// 			updateOutput('');
+	// 			claudeChat.executeCommands(parsed.commands, userPrompt, successCallback, failureCallback, retryCount);
+	// 		}).catch(err => {
+	// 			updateOutput(`❌ Failed to parse assistant response: ${err.message}`);
+	// 		});
+	// 	},
 	
-		async executeCommands(commandsBlock, originalPrompt, onSuccess, onFailure, retryCount = 0) {
-			const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
+	// 	async executeCommands(commandsBlock, originalPrompt, onSuccess, onFailure, retryCount = 0) {
+	// 		const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
 	
-			const runNext = async () => {
-				if (lines.length === 0) {
-					onSuccess('Done');
-					return;
-				}
-				const cmd = lines.shift();
-				updateOutput(`Cmd: ${cmd}`);
-				const cmdError = async (result) => {
-					const message = (typeof result === 'string') ? result : result?.message;
-					updateOutput(`❌ Error in: ${cmd}\n${message}`);
-					if (retryCount >= 2) {
-						updateOutput("⚠️ Retry limit reached.");
-						if (onFailure) onFailure(cmd, message);
-						return;
-					}
+	// 		const runNext = async () => {
+	// 			if (lines.length === 0) {
+	// 				onSuccess('Done');
+	// 				return;
+	// 			}
+	// 			const cmd = lines.shift();
+	// 			updateOutput(`Cmd: ${cmd}`);
+	// 			const cmdError = async (result) => {
+	// 				const message = (typeof result === 'string') ? result : result?.message;
+	// 				updateOutput(`❌ Error in: ${cmd}\n${message}`);
+	// 				if (retryCount >= 2) {
+	// 					updateOutput("⚠️ Retry limit reached.");
+	// 					if (onFailure) onFailure(cmd, message);
+	// 					return;
+	// 				}
 	
-					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
-					function sleep(ms) {
-						return new Promise(resolve => setTimeout(resolve, ms));
-					}					
-					await sleep(5000);
-					try {
-						const retry = await this.sendPrompt(retryPrompt);
-						retry.comments.forEach(updateOutput);
-						this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
-					} catch (err) {
-						updateOutput("❌ Assistant retry failed.");
-					}
-					return;
-				}
+	// 				const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
+	// 				try {
+	// 					const retry = await this.sendPrompt(retryPrompt);
+	// 					retry.comments.forEach(updateOutput);
+	// 					this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
+	// 				} catch (err) {
+	// 					updateOutput("❌ Assistant retry failed.");
+	// 				}
+	// 				return;
+	// 			}
 	
-				performCommand(cmd, async (result) => {
-					if (result.error) {
-						cmdError(result);
-						return
-					}
+	// 			performCommand(cmd, async (result) => {
+	// 				if (result.error) {
+	// 					cmdError(result);
+	// 					return
+	// 				}
 	
-					if (result.v) {
-						const output = result.v;
-						if (typeof result === 'string') {
-							updateOutput(`✅ ${cmd} =>\n ${result}`)
-						}
-						else {
-							updateOutput(
-								`✅  ${cmd} =>\n ${JSON.stringify(output)}`
-							);
-						}
-					}
-					runNext();
-				}, cmdError);
-			};
+	// 				if (result.v) {
+	// 					const output = result.v;
+	// 					if (typeof result === 'string') {
+	// 						updateOutput(`✅ ${cmd} =>\n ${result}`)
+	// 					}
+	// 					else {
+	// 						updateOutput(
+	// 							`✅  ${cmd} =>\n ${JSON.stringify(output)}`
+	// 						);
+	// 					}
+	// 				}
+	// 				runNext();
+	// 			}, cmdError);
+	// 		};
 
-			runNext();
-		}
-	};
+	// 		runNext();
+	// 	}
+	// };
 
 	let commandAction, successCallBack, failCallBack;
 	switch(target) {
@@ -688,24 +723,21 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 			break;
 		}
 		
-		case 'Claude': {
-			commandAction = claudeChat.action;
-			successCallBack = (result) => {
-				updateOutput(result);
-			}
-			failCallBack = (error) => {console.log(`Claude Fail`);}
-		}
-			break;			
+	// 	case 'Claude': {
+	// 		commandAction = claudeChat.action;
+	// 		successCallBack = (result) => {
+	// 			updateOutput(result);
+	// 		}
+	// 		failCallBack = (error) => {console.log(`Claude Fail`);}
+	// 	}
+	// 		break;			
 
 		default:
 			alert('invalid input target in console - this is a bug');
 			break;
 	}
 
-	let inputPlaceholder = isSleeping ?
-		'🤖 Pausing for rate limit...' : isWaiting ? 
-			'🤖 Thinking...' : t('react:consoleReadPlaceHolder');
-	console.log(`inputPlaceholder: ${inputPlaceholder}`);
+	let inputPlaceholder = isWaiting ? '🤖 Thinking...' : t('react:consoleReadPlaceHolder');
 
 	let mainElement = e(
 		'div', {
@@ -795,7 +827,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 							},
 						},
 						e('option', { value: 'OpenAI' }, 'OpenAI'),
-						e('option', { value: 'Claude' }, 'Claude'),
+						// e('option', { value: 'Claude' }, 'Claude'),
 						e('option', { value: 'Console' }, 'Console')
 				)
 			),

@@ -43,7 +43,8 @@ If the query was successful, you may then continue with your response using the 
 usageNote: |
 	The dgminfo verb is particularly useful for determining information about a model and its contents.
 	See dgminfo in the verbs section of MMModel for details.
-	Do not assume that the current model is root when a user enters a prompt
+	To find the children of an object use the list verb
+		Example:  .optimizer list
 
 # Command Structure:
 	## Format
@@ -340,21 +341,29 @@ usageNote: |
 
 		usageNote: >
 			In any formula defined within a tool, the `$` symbol can be used as a shortcut for the tool's own name.
-			In any formula, the `$` symbol refers to the **tool that owns the formula** — not any tool it references. 
-			
-			For example, within a tool named `myOde`, the formula:
-				$.t + 1 s
-			is equivalent to:
-				myOde.t + 1 s
-			
-			This only substitutes the **tool’s own name** — not its full path.  
-			So if the tool is located at `/.root.sub.myOde`, then `$` → `myOde`, **not** the full path.
-			
-			This can be especially useful in deeply nested models or when copying formulas between tools.
-			⚠️ The `$` symbol may only be used inside formulas.
-			It is not valid in:
-				- Subject paths (e.g., `/.$.addtool` is invalid)
-				- Property names.
+
+			✅ `$` always refers to the **tool that owns the current formula**.
+			❌ `$` does **not** refer to other tools or their contents.
+			❌ Do **not** write `$.y.Angle`, `$.x`, or any other field after `$`.
+
+			Example:
+				If the tool is named `myOde`, then:
+					$.t + 1 s  →  means  myOde.t + 1 s
+
+			❗ `$` cannot be used in:
+				- References to other tools
+				- Nested paths (like `$.anything`)
+				- `table`, `lookup`, or other multi-tool functions
+
+			In functions like `{table angleTool, t, y, ...}`, always write full tool names, not `$`.
+
+			✨ Use `$` only when the formula is directly referring to a property of its own tool.
+
+			Invalid:
+				{table `Angle`, $.y.Velocity, `Velocity`, -g/l * {sin $.y.Angle} - (c/(l*m))*$.y.Velocity}
+
+			Correct:
+				{table `Angle`, t, `Velocity`, -g/l * {sin Angle} - (c/(l*m))*Velocity}			
 	
 	MMModel:
 		extends: MMParent
@@ -570,9 +579,6 @@ desc: >
     - `xN`: Nth x-axis
     - `yN_M`: Mth y-axis for xN
     - `zN`: z-axis for xN (only if yN_1 exists, and is the only y for xN)
-
-  Axis formulas must be set via:
-    `.axisName.formula set formula Expression`
 
   usageNote:
   - Always assign formulas to `x1` and `y1_1` immediately after adding a graph.
@@ -795,6 +801,9 @@ desc: >
 				the initial value table at t = 0.
 			dy: >
 				a table of the same form as y0, containing the derivatives (dy/dt) of myOde.y matched by column order.
+				- NOTE: the odesolver does not like self references in its dy formula. Use a discrete expression to calculate dy and reference it here.
+					For instance the calculation could be in an Expression named derivative and the dy formula could be set to just derivative.
+				
 			endT: >
 				The termination value for t. The integration will be from t=0 to t=endT.
 			nextT: >
@@ -820,7 +829,7 @@ desc: >
 					.myOde addrecorded
 					.myOde.r2 set formula theta
 				The $ can be used as a synonym for the ode solver name.
-				A single-quoted label like 'Time is interpreted as the column name for the recorded value.
+				A single-quoted label like 'Time is interpreted as the column name for the recorded value. Always label recorded values with strings compatible with tool names.
 				The ode.table parameter will be return a table with one column for each recorded value.
 
 		properties:
@@ -888,7 +897,101 @@ desc: >
 		2. Add any recorded formulas (e.g. time, position, etc.)
 		3. Use the `run` verb or rely on `shouldAutoRun = true`
 	Use the `$` symbol as a shorthand for the solver’s name in formulas.
-						
+
+	MMMatrix:
+		extends: MMTool
+		typeName: Matrix
+		
+		desc: >
+			While all MMValues are matrices, even if a 1x1, the MMMatrix tool exists for those cases where there is
+			a need to have separate formulas for individual cells, rows or columns. A simple example might be calculating
+			compounding interest by referencing the cell about as in {cell -1,0} * ( 1 + interest / 12).
+			The {cell r, c} function returns the value of a cell r rows and c columns greater than the current cell.
+			The {row} and {column} functions return the indicies of the current cell.
+
+			Note: while cell values can have units, the unit type must be the same for all cells and the actual
+			calculations in the cells will be in SI units.
+
+			Formulas are assigned using the `setcell` verb:
+				.theMatrix setcell row column formula
+
+			Examples:
+			- `.theMatrix setcell 2 3 x + y` sets the formula specifically for cell [2,3].
+			- `.theMatrix setcell 2 0 x^2` sets a formula for **row 2** (applies to all columns of row 2 unless a cell formula exists).
+			- `.theMatrix setcell 0 3 sin(x)` sets a formula for **column 3** (applies to all rows at column 3 unless a cell or row formula exists).
+			- `.theMatrix setcell 0 0 0` sets a **default formula** (applies to any cell not otherwise defined).
+
+			⚙️ Formula Assignment Rules:
+			- If `row != 0` and `col != 0`, the formula applies **only to that single cell**.
+			- If `row != 0` and `col == 0`, the formula applies to **all columns** in the specified row.
+			- If `row == 0` and `col != 0`, the formula applies to **all rows** in the specified column.
+			- If `row == 0` and `col == 0`, the formula is a **global fallback** used if no other formulas apply.
+
+			📏 Formula Evaluation Precedence:
+			When evaluating a given cell:
+			1. If a formula is set directly for the [row, column], use it.
+			2. Else, if a formula is set for the same column (`row 0, column N`), use it.
+			3. Else, if a formula is set for the same row (`row N, column 0`), use it.
+			4. Else, if a global default formula (`row 0, column 0`) exists, use it.
+			5. Otherwise, the cell remains undefined.
+
+			🛠️ Tips:
+			- Setting a row or column formula fills all matching cells **except** those where a more specific formula has been explicitly set.
+			- Use the global formula carefully to handle sparsely-defined matrices or to provide a fallback expression.
+			- Always set explicit formulas for critical cells if precision matters.
+
+		usageNote: >
+			- Row and column indices start from 1.
+			- Use `0` in row or column to target entire rows, columns, or default global behavior.
+			- The `setcell` verb must always be followed by three arguments: row, column, formula.
+
+		properties:
+			displayUnitName:
+				desc: The conversion unit to use when displaying the expression’s value.
+	
+			format:
+				desc: >
+					String specifying the format used for displaying the value.
+					See the MMExpression format property for details.
+
+		parameters:
+			nrow: number of rows in the matrix.
+			ncol: number of columns in the matrix.
+			r_c: >
+				The value of the element at row number r and column number c, where r and c are numbers. e.g. 3_4
+			solved: 1 if the matrix has successfully been calculated, 0 otherwise.
+			table: returns the matrix contents as a table value. The column names will just be the column numbers.
+
+		verbs:
+			setcell:
+				desc: >
+					Directly sets the formula for a cell.
+				args:
+					- row number of the cell
+					- column number of the cell
+					- the formula to be used
+				
+			setrowcount:
+				desc: >
+					directly sets the formula for the number of rows in the matrix
+				args: the number of rows the matrix will have
+
+				example:
+						.theMatrix setrowcount n + 1
+
+			setcolumncount:
+				desc: >
+					directly sets the formula for the number of columns in the matrix
+				args: the number of columns the matrix will have
+
+				example:
+						.theMatrix setcolumncount n * 2
+
+			value:
+				desc: Returns the matrix's calculated value in JSON format.
+				args: []
+
+
 Formulas:
 	desc: >
 		Formulas manipulate values using operators and functions to produce MMValues.
@@ -968,6 +1071,7 @@ Formulas:
 			When suggesting formulas, only include the right-hand side.	 
 			✅ Correct: `a + b^2`	
 			❌ Incorrect: `myValue = a + b^2`
+			Formulas can contain new lines and tabs. Use them with long formulas to improve readability.
 
 		
 		If a function is missing from the following list, do not assume it exists.
