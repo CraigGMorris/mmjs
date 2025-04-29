@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2025.04.29";
+const VERSION = "2025.04.29b";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
@@ -209,6 +209,7 @@ const APP_STATIC_RESOURCES = [
 	"react/ToolView.js",
 	"react/UnitsView.js",
 	"react/mmjs.css",
+	"ai/openai/APIcontext.txt",
 ];
 
 // On install, cache the static resources

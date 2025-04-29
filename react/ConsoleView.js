@@ -168,7 +168,9 @@ export function ConsoleView(props) {
 
 	if (target === 'OpenAI') {
 		if (!openAIValues.promptTemplate) {
-			fetch('../ai/openai/APIcontext.txt').then(response => {
+			// Determine the base path from the current location
+			const basePath = window.location.pathname.split('/').slice(0, -1).join('/');	
+			fetch(`${basePath}/ai/openai/APIcontext.txt`).then(response => {
 				if (!response.ok) {
 					throw new Error(`HTTP error! status: ${response.status}`);
 				}
