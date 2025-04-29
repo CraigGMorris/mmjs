@@ -22,7 +22,7 @@ const useState = React.useState;
 
 const consoleStacks = {
 	output: {
-		page: [['Results:']],
+		page: [['...']],
 		maxCount: 100,
 		currentPage: 0,
 		show() {
@@ -149,7 +149,7 @@ export function ConsoleView(props) {
 	
 		const intervalId = setInterval(() => {
 			if(isMounted.current) {
-			setInput(`Waiting for rate limit: ${secondsLeft}s...`);
+			setInput(t('react:consoleWaitingForRateLimit', { seconds: secondsLeft }));
 			}
 			secondsLeft--;
 	
@@ -179,7 +179,7 @@ export function ConsoleView(props) {
 			.then(text => {
 				openAIValues.promptTemplate = text;
 			}).catch(error => {
-				pushOutput(`Could not fetch system prompt\n${error}`);
+				pushOutput(t('react:consoleCouldNotFetchSystemPrompt', { error }));
 			});
 		}
 		if (!openAIValues.apiKey) {
@@ -201,7 +201,7 @@ export function ConsoleView(props) {
 			.then(text => {
 				claudeValues.promptTemplate = text;
 			}).catch(error => {
-				pushOutput(`Could not fetch system prompt\n${error}`);
+				pushOutput(t('react:consoleCouldNotFetchSystemPrompt', { error:error }));
 			});
 		}
 		if (!claudeValues.apiKey) {
@@ -345,16 +345,16 @@ export function ConsoleView(props) {
 				const cmds = contents.split(`\n'''`);
 				pushOutput('');
 				for (const cmd of cmds) {
-					updateOutput(`Command: ${cmd}`);
+					updateOutput(t('react:consoleCommand', { cmd:cmd }));
 					await commandAction(cmd, (result) => {
-						updateOutput(`=> ${result?.[0]?.results}`)
+						updateOutput(t('react:consoleCommandResult', { result: result?.[0]?.results }))
 					});
 				}
 				props.updateDiagram();
 			};
 			r.readAsText(f);
 		} else { 
-			alert("Failed to load file");
+			alert(t('react:consoleFailedToLoadFile'));
 		}
 	}
 
@@ -407,10 +407,10 @@ export function ConsoleView(props) {
 
 			if (response.status === 429) {
 				const text = await response.text();
-				updateOutput("❌ 429 Too Many Requests", text);
+				updateOutput(t('react:consoleTooManyRequests'), text);
 				if (openAIValues.resetCount < 2) {
 					openAIValues.resetCount++;
-					updateOutput(`❌ Rate limit exceeded. Resetting assistant...`);	
+					updateOutput(t('react:consoleRateLimitExceeded'));	
 					openAIValues.previousResponseId = null;
 					await doCommandPromise('. dgmInfo', async (result) => {
 						let dgminfo = result?.[0].results;
@@ -418,7 +418,7 @@ export function ConsoleView(props) {
 							dgminfo = JSON.stringify(dgminfo, null, 2);
 						}
 						catch (err) {
-							updateOutput("❌ Failed to stringify dgminfo.");
+							updateOutput(t('react:consoleFailedToStringify'));
 							return;
 						}
 						const resetPrompt = `Rate limit reset\nCurrent model dgminfo:\n${dgminfo}`;
@@ -426,7 +426,7 @@ export function ConsoleView(props) {
 					});
 				}
 				else {
-					updateOutput("❌ Reset limit exceeded.");
+					updateOutput(t('react:consoleResetLimitExceeded'));
 				}
 				return;
 			}
@@ -436,7 +436,7 @@ export function ConsoleView(props) {
 			const raw = data.output[1].content[0].text;	// o4-mini
 			// const raw = data.output[0].content[0].text;	// gpt-4.1	
 			if (!raw) {
-				updateOutput("⚠️ No assistant output found.");
+				updateOutput(t('react:consoleNoAssistantOutput'));
 				return;
 			}
 			// Remove code block formatting
@@ -444,7 +444,7 @@ export function ConsoleView(props) {
 	
 			try {
 				let parsed = JSON.parse(clean);
-				updateOutput('Comments:')
+				updateOutput(t('react:consoleComments'))
 				parsed?.comments?.forEach((comment) => {updateOutput(`${comment}\n`)});
 				updateOutput('');
 				let maxQueries = 3;
@@ -469,16 +469,16 @@ export function ConsoleView(props) {
 		
 			for (let i = 0; i < commands.length; i++) {
 				let cmd = commands[i];
-				updateOutput(`🟡 Running query: ${cmd}`);
+				updateOutput(t('react:consoleRunningQuery', { cmd }));
 		
 				let result;
 				let attempt = 0;
 				while (attempt <= maxRetries) {
 					try {
 						result = await performCommand(cmd)
-						updateOutput(`✅ Query result: ${cmd} => ${JSON.stringify(result)}`);
+						updateOutput(t('react:consoleQueryResult', { cmd:cmd, result: JSON.stringify(result) }));
 					} catch(error) {
-						updateOutput(`❌ Error in query: ${cmd}\n${error.message}`);
+						updateOutput(t('react:consoleErrorInQuery', { cmd:cmd, error: error.message }));
 						result = { error: error.message };
 					}
 					if (!result?.error) {
@@ -486,7 +486,7 @@ export function ConsoleView(props) {
 						break;
 					}
 
-					updateOutput(`❌ Query failed (attempt ${attempt + 1}): ${result.message}`);
+					updateOutput(t('react:consoleQueryFailed', { attempt: attempt + 1, message: result.message }));
 					attempt++;
 		
 					if (attempt <= maxRetries) {
@@ -499,14 +499,14 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 						try {
 							const suggestions = JSON.parse(correction.output?.[0]?.content?.[0]?.text || "[]");
 							if (Array.isArray(suggestions) && suggestions.length > 0) {
-								updateOutput(`🔁 Assistant suggested retry: ${suggestions[0]}`);
+								updateOutput(t('react:consoleAssistantSuggestedRetry', { suggestion: suggestions[0] }));
 								cmd = suggestions[0];
 							} else {
-								updateOutput("⚠️ Assistant did not return a valid query array. Skipping retry.");
+								updateOutput(t('react:consoleNoValidQueryArray'));
 								break;
 							}
 						} catch (err) {
-							updateOutput("❌ Failed to parse assistant retry suggestion.");
+							updateOutput(t('react:consoleFailedToParseRetry'));
 							break;
 						}
 					}
@@ -517,36 +517,34 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 	
 		async action(userPrompt, successCallback, failureCallback) {
 			if (!openAIValues.apiKey) {
-				pushOutput(`You need an OpenAI API key for this feature\n`+
-					`Please enter "/ aikey openai <your API key>"\n`+
-					`in the console before proceeding`);
+				pushOutput(t('react:consoleNeedOpenAIApiKey'));
 				return;
 			}
 
-			pushOutput(`User: ${userPrompt}\n`);
+			pushOutput(t('react:consoleUserPrompt', { prompt: userPrompt }));
 			try {
 				openAIValues.retryCount = 0;
-				const pathPrompt = `Current path: ${props.viewInfo.path}\n`;
+				const pathPrompt = t('react:consoleCurrentPath', { path: props.viewInfo.path });
 				const parsed = await openAIChat.sendPrompt(pathPrompt + userPrompt);
 				if (parsed.commands) {
 					try {
 						const result = await openAIChat.executeCommands(parsed.commands, userPrompt);
 						if (result) {
-							console.log('success: Done');
-							successCallback('Done');
+							console.log(t('react:consoleSuccessDone'));
+							successCallback(t('react:consoleSuccessDone'));
 						}
 						else {
-							console.log('unexpected return');
-							failureCallback('Command failed');
+							console.log(t('react:consoleUnexpectedReturn'));
+							failureCallback(t('react:consoleCommandFailed'));
 						}
 					}
 					catch(err) {
-						updateOutput(`❌ Error in executeCommands`);
+						updateOutput(t('react:consoleErrorInExecuteCommands'));
 						failureCallback(err.message);
 					}
 				}
 				else {
-					successCallback('Done');
+					successCallback(t('react:consoleSuccessDone'));
 				}
 			}
 			catch(err) {
@@ -556,7 +554,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 	
 		async executeCommands(commandsBlock, originalPrompt) {
 			if (!commandsBlock) {
-				updateOutput('No commands to execute');
+				updateOutput(t('react:consoleNoCommandsToExecute'));
 				return false;
 			}
 			const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
@@ -566,15 +564,15 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 					return true;
 				}
 				const cmd = lines.shift();
-				updateOutput(`Cmd: ${cmd}`);
+				updateOutput(t('react:consoleCmd', { cmd:cmd }));
 
 				const cmdError = async (result) => {
 					lines.length = 0;
 					const message = (typeof result === 'string') ? result : JSON.stringify(result);
-					updateOutput(`❌ Error in: ${cmd}\n${message}`);
+					updateOutput(t('react:consoleErrorInCmd', { cmd:cmd, message:message }));
 					if (openAIValues.retryCount >= 2) {
-						updateOutput("⚠️ Retry limit reached.");
-						updateOutput(`❌ Error in: ${cmd}\n${message}`);
+						updateOutput(t('react:consoleRetryLimitReached'));
+						updateOutput(t('react:consoleErrorInCmd', { cmd:cmd, message:message }));
 						return false;
 					}
 					openAIValues.retryCount++;
@@ -585,7 +583,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 						const retry = await this.sendPrompt(retryPrompt);
 						return await openAIChat.executeCommands(retry.commands, originalPrompt);
 					} catch (err) {
-						updateOutput("❌ Assistant retry failed.");
+						updateOutput(t('react:consoleAssistantRetryFailed'));
 						throw err;
 					}
 				}
@@ -594,7 +592,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 					const result = await performCommand(cmd);
 					if (cmd.match(/''[^']/)) {
 						result.error = true;
-						result.message = 'Illegal command separation';
+						result.message = t('react:consoleIllegalCommandSeparation');
 					}
 
 					if (result.error) {
@@ -604,12 +602,10 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 					if (result.v) {
 						const output = result.v;
 						if (typeof result === 'string') {
-							updateOutput(`✅ ${cmd} =>\n ${result}`)
+							updateOutput(t('react:consoleCmdSuccess', { cmd:cmd, result:result }))
 						}
 						else {
-							updateOutput(
-								`✅  ${cmd} =>\n ${JSON.stringify(output)}`
-							);
+							updateOutput(t('react:consoleCmdSuccessJson', { cmd:cmd, output: JSON.stringify(output) }))
 						}
 					}
 					const runNextResult = await runNext();
@@ -689,8 +685,8 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 					// props.actions.toggleConsole();
 				}
 			failCallBack = (error) => {
-				console.log(`OpenAI Fail`);
-				updateOutput(`❌ OpenAI Failed: ${error}`);
+				console.log(t('react:consoleOpenAIFail'));
+				updateOutput(t('react:consoleOpenAIFailed', { error }));
 				props.updateDiagram(true);
 			}
 			break;
@@ -707,11 +703,11 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 	// Have deleted the rest as it should be modelled on the OpenAI implementation above.	
 
 		default:
-			alert('invalid input target in console - this is a bug');
+			alert(t('react:consoleInvalidInputTarget'));
 			break;
 	}
 
-	let inputPlaceholder = isWaiting ? '🤖 Thinking...' : t('react:consoleReadPlaceHolder');
+	let inputPlaceholder = isWaiting ? t('react:consoleThinking') : t('react:consoleReadPlaceHolder');
 
 	let mainElement = e(
 		'div', {
