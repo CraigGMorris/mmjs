@@ -526,6 +526,7 @@ usageNote: |
 			isInput:
 				desc: >
 					Boolean. If true, the expression evaluates in the parent model's namespace.
+					Set this to true if you need to access variables in the parent model.
 	
 			showInput:
 				desc: >

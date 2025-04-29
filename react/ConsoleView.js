@@ -105,7 +105,6 @@ export function ConsoleView(props) {
 
 	React.useEffect(() => {
 		isMounted.current = true;
-		console.log(`isMounted: true  isWaiting: ${isWaiting}`);
 		setOutput(consoleStacks.output.show());
 		setTarget(inputTarget);
 	
@@ -113,7 +112,6 @@ export function ConsoleView(props) {
 	
 		return () => {
 			isMounted.current = false;
-			console.log(`unmounted   isWaiting: ${isWaiting}`);
 		};
 	}, []);
 
@@ -458,7 +456,7 @@ export function ConsoleView(props) {
 				return parsed;
 			}
 			catch (err) {
-				updateOutput("❌ Failed to parse assistant response:");
+				updateOutput("❌ sendPrompt: failed to parse assistant response:");
 				updateOutput(raw);
 				throw err;
 			}
@@ -537,10 +535,12 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 						}
 						else {
 							console.log('unexpected return');
+							failureCallback('Command failed');
 						}
 					}
 					catch(err) {
-						updateOutput(`❌ Error in executeCommands: ${err.message}`);
+						updateOutput(`❌ Error in executeCommands`);
+						failureCallback(err.message);
 					}
 				}
 				else {
@@ -548,7 +548,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 				}
 			}
 			catch(err) {
-				updateOutput(`❌ Failed to parse assistant response: ${err.message}`);
+				failureCallback(err.message);
 			};
 		},
 	
@@ -622,7 +622,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 		}
 	};
 
-	
+	// Abandoned Anthropic implementation for now. Just keeping some of it here for reference.
 	// const claudeChat = {
 	// 	async sendPrompt(promptText) {
 	// 		// const mock = await import("../ai/anthropic/mockAssistant.js");
@@ -669,106 +669,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 	// 			return;
 	// 		}
 			
-	// 		const data = await response.json();
-			
-	// 		// Store the assistant's response in conversation history for context
-	// 		if (data.content && data.content.length > 0) {
-	// 			claudeValues.conversationHistory.push({
-	// 				role: "assistant",
-	// 				content: data.content[0].text
-	// 			});
-	// 		}
-			
-	// 		const raw = data.content?.[0]?.text;
-	// 		if (!raw) {
-	// 			updateOutput("⚠️ No assistant output found.");
-	// 			return;
-	// 		}
-	// 		// Remove code block formatting
-	// 		const clean = raw.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
-	
-	// 		try {
-	// 			const parsed = JSON.parse(clean);
-	// 			return parsed;
-	// 		} catch (err) {
-	// 			updateOutput("❌ Failed to parse assistant response:");
-	// 			updateOutput(raw);
-	// 			throw err;
-	// 		}
-	// 	},
-	
-	// 	action(userPrompt, successCallback, failureCallback, retryCount = 0) {
-	// 		if (!claudeValues.apiKey) {
-	// 			pushOutput(`You need an Anthropic API key for this feature\n`+
-	// 				`Please enter "/ aikey claude <your API key>"\n`+
-	// 				`in the console before proceeding`);
-	// 			return;
-	// 		}
-	
-	// 		pushOutput(`User: ${userPrompt}\n`);
-	// 		claudeChat.sendPrompt(userPrompt).then(parsed => {
-	// 			parsed.comments.forEach((comment) => {updateOutput(`Comment: ${comment}`)});
-	// 			updateOutput('');
-	// 			claudeChat.executeCommands(parsed.commands, userPrompt, successCallback, failureCallback, retryCount);
-	// 		}).catch(err => {
-	// 			updateOutput(`❌ Failed to parse assistant response: ${err.message}`);
-	// 		});
-	// 	},
-	
-	// 	async executeCommands(commandsBlock, originalPrompt, onSuccess, onFailure, retryCount = 0) {
-	// 		const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
-	
-	// 		const runNext = async () => {
-	// 			if (lines.length === 0) {
-	// 				onSuccess('Done');
-	// 				return;
-	// 			}
-	// 			const cmd = lines.shift();
-	// 			updateOutput(`Cmd: ${cmd}`);
-	// 			const cmdError = async (result) => {
-	// 				const message = (typeof result === 'string') ? result : result?.message;
-	// 				updateOutput(`❌ Error in: ${cmd}\n${message}`);
-	// 				if (retryCount >= 2) {
-	// 					updateOutput("⚠️ Retry limit reached.");
-	// 					if (onFailure) onFailure(cmd, message);
-	// 					return;
-	// 				}
-	
-	// 				const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
-	// 				try {
-	// 					const retry = await this.sendPrompt(retryPrompt);
-	// 					retry.comments.forEach(updateOutput);
-	// 					this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
-	// 				} catch (err) {
-	// 					updateOutput("❌ Assistant retry failed.");
-	// 				}
-	// 				return;
-	// 			}
-	
-	// 			performCommand(cmd, async (result) => {
-	// 				if (result.error) {
-	// 					cmdError(result);
-	// 					return
-	// 				}
-	
-	// 				if (result.v) {
-	// 					const output = result.v;
-	// 					if (typeof result === 'string') {
-	// 						updateOutput(`✅ ${cmd} =>\n ${result}`)
-	// 					}
-	// 					else {
-	// 						updateOutput(
-	// 							`✅  ${cmd} =>\n ${JSON.stringify(output)}`
-	// 						);
-	// 					}
-	// 				}
-	// 				runNext();
-	// 			}, cmdError);
-	// 		};
-
-	// 		runNext();
-	// 	}
-	// };
+	// 	
 
 	let commandAction, successCallBack, failCallBack;
 	switch(target) {
@@ -800,7 +701,8 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 	// 		}
 	// 		failCallBack = (error) => {console.log(`Claude Fail`);}
 	// 	}
-	// 		break;			
+	// 		break;	
+	// Have deleted the rest as it should be modelled on the OpenAI implementation above.	
 
 		default:
 			alert('invalid input target in console - this is a bug');
