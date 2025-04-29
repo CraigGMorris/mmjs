@@ -72,10 +72,11 @@ class openAI {
 		this.previousResponseId = null;
 		this.promptTemplate = ``;
 		this.apiKey = '';
-		this.model = 'gpt-4.1';
-		this.rateWait = 60000;
+		// this.model = 'gpt-4.1';
+		this.model = 'o4-mini';
 		this.retryCount = 0;
 		this.maxRetries = 2;
+		this.resetCount = 0;
 	}
 }
 
@@ -104,7 +105,7 @@ export function ConsoleView(props) {
 
 	React.useEffect(() => {
 		isMounted.current = true;
-		// console.log(`isMounted}`);
+		console.log(`isMounted: true  isWaiting: ${isWaiting}`);
 		setOutput(consoleStacks.output.show());
 		setTarget(inputTarget);
 	
@@ -112,7 +113,7 @@ export function ConsoleView(props) {
 	
 		return () => {
 			isMounted.current = false;
-			// console.log(`unmounted`);
+			console.log(`unmounted   isWaiting: ${isWaiting}`);
 		};
 	}, []);
 
@@ -128,11 +129,19 @@ export function ConsoleView(props) {
 		if (isMounted.current) {
 			setOutput(consoleStacks.output.show());
 		}
+		else {
+			console.log(`missed pushOutput: ${s}`);
+		}
 	}
 
 	const updateOutput = (s) => {
 		consoleStacks.output.update(s);
-		setOutput(consoleStacks.output.show());
+		if (isMounted.current) {	
+			setOutput(consoleStacks.output.show());
+		}
+		else {
+			console.log(`missed updateOutput: ${s}`);
+		}
 	}
 
 	function stringifyError(error) {
@@ -210,6 +219,17 @@ export function ConsoleView(props) {
 		}
 	}
 
+	const performConsoleCommand = async(userPrompt, successCallback, failureCallback) => {
+		try {
+			const result = await performCommand(userPrompt);
+			consoleCallBack(result);
+		}
+		catch(err) {
+			failureCallback(err);
+		};
+	}
+
+
 	/** function consoleCallBack - called when the worker completes console command
 	 * @param {MMCommand[]} cmds
 	 */
@@ -251,42 +271,80 @@ export function ConsoleView(props) {
 	}
 
 	// Wrapper for doCommand
-	function doCommandPromise(cmd, callBack, errorHandler) {
+	async function doCommandPromise(cmd) {
 		return new Promise((resolve, reject) => {
 			props.actions.doCommand(
 				cmd,
 				(result) => {
-					// Only resolve with callBack if there was no error
+					// Only resolve with result if there was no error
 					if (!result?.error) {
-						resolve(callBack(result));
+						resolve(result);
 					}
 					else {
-						errorHandler(result.error);
-						resolve();
+						reject(result.error);
 					}
 				},
-				errorHandler ?
-					(error) => {
-						errorHandler(error);
-						resolve();
+				(error) => {
+					reject(error);
+				}
+			);
+		});
+	}
+
+	// Wrapper for pushModel
+	async function pushModelPromise(modelName) {
+		return new Promise((resolve, reject) => {
+			props.actions.pushModel(modelName,
+				(result) => {
+					// console.log('pushModelPromise: result', result);
+
+					// Only resolve with result if there was no error
+					if (!result?.error) {
+						resolve(result);
 					}
-					: null
+					else {
+						reject(result.error);
+					}
+				},
+				(error) => {
+					// console.log('pushModelPromise: error', error);
+					reject(error);
+				}
 			);
 		});
 	}
 	
-	const performCommand = async (cmd, callBack, errorHandler) => {
-		if (cmd.trim().match(/^\/\s+popmodel/)) {
-			props.actions.popModel();
-			callBack(`popped Model`);
+	// Wrapper for pushModel
+	async function popModelPromise(modelName) {
+		return new Promise((resolve, reject) => {
+			props.actions.popModel(modelName,
+				(result) => {
+					// Only resolve with result if there was no error
+					if (!result?.error) {
+						resolve(result || 'popped Model');
+					}
+					else {
+						reject(result.error);
+					}
+				},
+				(error) => {
+					reject(error);
+				}
+			);
+		});
+	}		
+	
+	const performCommand = async (cmd) => {
+		if (cmd.trim().match(/^\/\s+popmodel/)) {   	
+			return await popModelPromise();
 		}
 		else if (cmd.trim().match(/^\/\s+pushmodel\s+[A-Za-z][A-Za-z0-9_]+/)) {
 			const parts = cmd.trim().split(/\s+/);
 			const modelName = parts[2];
-			props.actions.pushModel(modelName, callBack, errorHandler);
+			return await pushModelPromise(modelName);
 		}
 		else {
-			await doCommandPromise(cmd, callBack, errorHandler);
+			return await doCommandPromise(cmd);
 		}
 	}
 	
@@ -345,15 +403,13 @@ export function ConsoleView(props) {
 			const now = Date.now();
 			const last = openAIValues.lastPromptTime || 0;
 			const elapsed = now - last;
-			const delay = Math.max(0, 61000 - elapsed);
-			if (delay > 0) {
-				console.log(`🕒 Waiting ${Math.round(delay / 1000)}s to avoid rate limit...`);
-				await new Promise(resolve => {
-					showCountdownTimer(delay, resolve);
-				});
-			}
-			openAIValues.lastPromptTime = Date.now();
-			console.log(`prompt  time: ${new Date().toISOString()}\n${promptText}`);
+			// const delay = Math.max(0, 1000 - elapsed);
+			// if (delay > 0) {
+			// 	// console.log(`🕒 Waiting ${Math.round(delay / 1000)}s to avoid rate limit...`);
+			// 	await new Promise(resolve => {
+			// 		showCountdownTimer(delay, resolve);
+			// 	});
+			// }
 			if(isMounted.current) { setIsWaiting(true); }
 			const response = await fetch("https://api.openai.com/v1/responses", {
 				method: "POST",
@@ -361,17 +417,38 @@ export function ConsoleView(props) {
 				body: JSON.stringify(body)
 			});
 			if(isMounted.current) { setIsWaiting(false); }
+			openAIValues.lastPromptTime = Date.now();
 
 			if (response.status === 429) {
-				const body = await response.text();
-				console.error("❌ 429 Too Many Requests", body);
-				updateOutput(`❌ ${body}`);
+				const text = await response.text();
+				updateOutput("❌ 429 Too Many Requests", text);
+				if (openAIValues.resetCount < 2) {
+					openAIValues.resetCount++;
+					updateOutput(`❌ Rate limit exceeded. Resetting assistant...`);	
+					openAIValues.previousResponseId = null;
+					await doCommandPromise('. dgmInfo', async (result) => {
+						let dgminfo = result?.[0].results;
+						try {
+							dgminfo = JSON.stringify(dgminfo, null, 2);
+						}
+						catch (err) {
+							updateOutput("❌ Failed to stringify dgminfo.");
+							return;
+						}
+						const resetPrompt = `Rate limit reset\nCurrent model dgminfo:\n${dgminfo}`;
+						await openAIChat.sendPrompt(resetPrompt);
+					});
+				}
+				else {
+					updateOutput("❌ Reset limit exceeded.");
+				}
 				return;
 			}
 			
 			const data = await response.json();
 			openAIValues.previousResponseId = data.id;
-			const raw = data.output[0].content[0].text;
+			const raw = data.output[1].content[0].text;	// o4-mini
+			// const raw = data.output[0].content[0].text;	// gpt-4.1	
 			if (!raw) {
 				updateOutput("⚠️ No assistant output found.");
 				return;
@@ -381,7 +458,8 @@ export function ConsoleView(props) {
 	
 			try {
 				let parsed = JSON.parse(clean);
-				parsed.comments.forEach((comment) => {updateOutput(`Comment: ${comment}`)});
+				updateOutput('Comments:')
+				parsed?.comments?.forEach((comment) => {updateOutput(`${comment}\n`)});
 				updateOutput('');
 				let maxQueries = 3;
 				while (parsed.query && maxQueries > 0) {
@@ -410,14 +488,13 @@ export function ConsoleView(props) {
 				let result;
 				let attempt = 0;
 				while (attempt <= maxRetries) {
-					await performCommand(cmd, (success) => {
-						result = success;
+					try {
+						result = await performCommand(cmd)
 						updateOutput(`✅ Query result: ${cmd} => ${JSON.stringify(result)}`);
-					},
-					(error) => {
+					} catch(error) {
 						updateOutput(`❌ Error in query: ${cmd}\n${error.message}`);
 						result = { error: error.message };
-					});
+					}
 					if (!result?.error) {
 						results[cmd] = result;
 						break;
@@ -465,73 +542,77 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 				openAIValues.retryCount = 0;
 				const pathPrompt = `Current path: ${props.viewInfo.path}\n`;
 				const parsed = await openAIChat.sendPrompt(pathPrompt + userPrompt);
-				parsed.comments.forEach((comment) => {updateOutput(`Comment: ${comment}`)});
-				updateOutput('');
-				
-				openAIChat.executeCommands(parsed.commands, userPrompt, 
-					(result) => {
-						successCallback(result)
-					}, failureCallback);
+				if (parsed.commands) {
+					try {
+						const result = await openAIChat.executeCommands(parsed.commands, userPrompt);
+						if (result) {
+							console.log('success: Done');
+							successCallback('Done');
+						}
+						else {
+							console.log('unexpected return');
+						}
+					}
+					catch(err) {
+						updateOutput(`❌ Error in executeCommands: ${err.message}`);
+					}
+				}
+				else {
+					successCallback('Done');
+				}
 			}
 			catch(err) {
 				updateOutput(`❌ Failed to parse assistant response: ${err.message}`);
 			};
 		},
 	
-		async executeCommands(commandsBlock, originalPrompt, onSuccess, onFailure) {
+		async executeCommands(commandsBlock, originalPrompt) {
 			if (!commandsBlock) {
-				onSuccess('Done');
-				return;
+				updateOutput('No commands to execute');
+				return false;
 			}
 			const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
+
 			const runNext = async () => {
 				if (lines.length === 0) {
-					onSuccess('Done');
-					return;
+					return true;
 				}
 				const cmd = lines.shift();
 				updateOutput(`Cmd: ${cmd}`);
+
 				const cmdError = async (result) => {
+					lines.length = 0;
 					const message = (typeof result === 'string') ? result : JSON.stringify(result);
 					updateOutput(`❌ Error in: ${cmd}\n${message}`);
 					if (openAIValues.retryCount >= 2) {
 						updateOutput("⚠️ Retry limit reached.");
-						if (onFailure) onFailure(cmd, message);
-						return;
+						updateOutput(`❌ Error in: ${cmd}\n${message}`);
+						return false;
 					}
 					openAIValues.retryCount++;
+					console.log('cmdError: retryCount', openAIValues.retryCount);
 	
-					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it.`;
+					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it. Remaining commands have been cleared.`;
 					try {
 						const retry = await this.sendPrompt(retryPrompt);
-						retry.comments.forEach(updateOutput);
-						if (retry.query) {
-							const queryResult = await openAIChat.runQueryCommands(retry.query);
-							const followup = await openAIChat.sendPrompt(
-								`Here are the results of your requested queries:\n${JSON.stringify({ queryResponse: queryResult })}`
-							);
-							// console.log(`followup retryCount: ${retryCount}`);
-							await this.executeCommands(followup.commands, originalPrompt, onSuccess, onFailure, retryCount + 1);
-						}
-						else {
-							console.log(`retry retryCount: ${openAIValues.retryCount}`);
-							await this.executeCommands(retry.commands, originalPrompt, onSuccess, onFailure);
-						}
+						return await openAIChat.executeCommands(retry.commands, originalPrompt);
 					} catch (err) {
 						updateOutput("❌ Assistant retry failed.");
+						throw err;
 					}
-					return;
 				}
 	
-				performCommand(cmd, async (result) => {
+				try {
+					console.log('executeCommands: performCommand', cmd);
+					const result = await performCommand(cmd);
+					console.log('executeCommands: result', result);
 					if (cmd.match(/''[^']/)) {
 						result.error = true;
 						result.message = 'Illegal command separation';
 					}
 
 					if (result.error) {
-						cmdError(result);
-						return
+						return await cmdError(result);
 					}
 	
 					if (result.v) {
@@ -545,11 +626,17 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 							);
 						}
 					}
-					runNext();
-				}, cmdError);
+					const runNextResult = await runNext();
+					console.log('executeCommands: runNextResult', runNextResult);
+					return runNextResult;
+				} catch(error) {
+					return cmdError(error);
+				}
 			};
 
-			runNext();
+			const result = await runNext();
+			console.log('executeCommands: result', result);
+			return result;
 		}
 	};
 
@@ -704,7 +791,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 	let commandAction, successCallBack, failCallBack;
 	switch(target) {
 		case 'Console':
-			commandAction = performCommand;
+			commandAction = performConsoleCommand;
 			successCallBack = consoleCallBack;
 			failCallBack = (error) => { pushOutput(stringifyError(error)) };
 			break;
@@ -719,6 +806,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 			failCallBack = (error) => {
 				console.log(`OpenAI Fail`);
 				updateOutput(`❌ OpenAI Failed: ${error}`);
+				props.updateDiagram(true);
 			}
 			break;
 		}
