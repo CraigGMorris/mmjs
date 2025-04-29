@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2025.04.29b";
+const VERSION = "2025.04.29";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
@@ -154,6 +154,10 @@ const APP_STATIC_RESOURCES = [
 	"locales/en/mmcmd.json",
 	"locales/en/mmunit.json",
 	"locales/en/react.json",
+	"locales/de/cmd.json",
+	"locales/de/mmcmd.json",
+	"locales/de/mmunit.json",
+	"locales/de/react.json",
 	"mmworker/MMButton.js",
 	"mmworker/MMCommandPipe.js",
 	"mmworker/MMCommandProcessor.js",

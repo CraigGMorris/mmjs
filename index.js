@@ -24,6 +24,9 @@
 */
 
 import {MMApp} from './react/MMApp.js';
+// Get language from URL query parameter, defaulting to 'en' if not specified
+const urlParams = new URLSearchParams(window.location.search);
+const language = urlParams.get('lng') || 'en';
 
 const e = React.createElement;
 
@@ -31,7 +34,7 @@ i18next
 	.use(i18nextXHRBackend)
 	.init(
 		{
-			lng: 'en',
+			lng: language,
 			fallbackLng: 'en',
 			debug: false,
 			ns: ['cmd', 'mmcmd', 'mmunit', 'react'],
