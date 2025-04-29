@@ -129,18 +129,12 @@ export function ConsoleView(props) {
 		if (isMounted.current) {
 			setOutput(consoleStacks.output.show());
 		}
-		else {
-			console.log(`missed pushOutput: ${s}`);
-		}
 	}
 
 	const updateOutput = (s) => {
 		consoleStacks.output.update(s);
 		if (isMounted.current) {	
 			setOutput(consoleStacks.output.show());
-		}
-		else {
-			console.log(`missed updateOutput: ${s}`);
 		}
 	}
 
@@ -317,20 +311,12 @@ export function ConsoleView(props) {
 	// Wrapper for pushModel
 	async function popModelPromise(modelName) {
 		return new Promise((resolve, reject) => {
-			props.actions.popModel(modelName,
-				(result) => {
-					// Only resolve with result if there was no error
-					if (!result?.error) {
-						resolve(result || 'popped Model');
-					}
-					else {
-						reject(result.error);
-					}
-				},
-				(error) => {
-					reject(error);
-				}
-			);
+			try {
+				props.actions.popModel(modelName);
+				resolve(['popped Model']);
+			} catch(error) {
+				reject(error);
+			}
 		});
 	}		
 	
@@ -603,9 +589,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 				}
 	
 				try {
-					console.log('executeCommands: performCommand', cmd);
 					const result = await performCommand(cmd);
-					console.log('executeCommands: result', result);
 					if (cmd.match(/''[^']/)) {
 						result.error = true;
 						result.message = 'Illegal command separation';
@@ -627,7 +611,6 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 						}
 					}
 					const runNextResult = await runNext();
-					console.log('executeCommands: runNextResult', runNextResult);
 					return runNextResult;
 				} catch(error) {
 					return cmdError(error);
@@ -635,7 +618,6 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 			};
 
 			const result = await runNext();
-			console.log('executeCommands: result', result);
 			return result;
 		}
 	};

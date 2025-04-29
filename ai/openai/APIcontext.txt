@@ -45,6 +45,24 @@ usageNote: |
 	See dgminfo in the verbs section of MMModel for details.
 	To find the children of an object use the list verb
 		Example:  .optimizer list
+	To get all information about a tool use the toolviewinfo verb
+		Example .optimizer toolviewinfo
+
+# Errors
+
+	If any of your commands cause an error during execution:
+	- You will receive the error message along with a request to fix the problem.
+	- All commands issued after the error will be discarded and must be reissued.
+	- You must either:
+		- Correct the existing tools to resolve the error, **or**
+		- Delete any incorrectly created tools and recreate them properly.
+
+	⚠️ Important:
+	- Do not create a new model inside the existing model to try to work around errors.
+	- You must maintain a clean, logically consistent model structure.
+	- Fix mistakes carefully at the tool level or reset and rebuild cleanly if necessary.
+
+	Always treat errors as an opportunity to correct and continue — not to layer over mistakes.
 
 # Command Structure:
 	## Format
@@ -63,16 +81,27 @@ usageNote: |
 		The path resolves to an object of a MMObject derived class.
 		
 		Lines starting with ' are considered comments.
-		
-		### Model Context and Full Paths
-		- When working inside a model using `/ pushmodel`, you can reference tools relative to `.` (e.g., `.MyTool`).
-		- Once you `/ popmodel`, any commands that refer to tools inside a model must use the **full path**, beginning with `/.root.ModelName`.
-		⚠️ Be sure the subject's class or super class defines the verb being used.
 
+	### Model Context and Full Paths
+
+	- When working inside a model using `/ pushmodel`, you must reference tools **relative to `.`** (the current model root).
+	- **Mandatory Rule**: There must be no space between the dot and the tool name.
+		- ✅ Correct: `.speed`, `.acceleration`, `.initialSpeed`
+		- ❌ Incorrect: `. speed`, `. acceleration` (these will fail: space makes the command apply to the model itself, not the tool)
+
+	- **Formal Syntax**: Inside a model context:
+		- Tool reference = `<dot><toolName>`
+		- No whitespace allowed between `.` and the tool name.
+		- Think of `.speed` as one single identifier, not as two words.
+
+	- Once you `/ popmodel`, any commands that refer to tools inside a model must use the **full path**, beginning with `/.root.ModelName`.
+
+	⚠️ Always check that the tool’s class or superclass supports the verb you are using.
 
 	## Verbs
 		The verb designates the action the subject will take.
 		The verb must be defined by the class or a super class of the subject.
+		⚠️ Important: Ensure there is a space between the subject and the verb
 
 		### Command Verb Rules:
 		
@@ -585,6 +614,8 @@ desc: >
   - Use `addaxis` before referencing `y1_2`, `y2_1`, `z2`, etc.
   - **If an x-axis has a z-axis, it MUST have exactly one y-axis. Never add a second y for it.**
   - To graph additional z series, use `addaxis x` and create new x, y, z axes.
+	- Add a comment, using a single quote, to an axis formula to create a label on the graph. For example
+		.myGraph.x1 set formula 0:10 * 1 m 'Length
   - Graphs should generally be made visible with:
     `.MyGraph set isOutput true`
 	
@@ -799,10 +830,23 @@ desc: >
 		formulas:
 			y0: >
 				the initial value table at t = 0.
+			
 			dy: >
-				a table of the same form as y0, containing the derivatives (dy/dt) of myOde.y matched by column order.
-				- NOTE: the odesolver does not like self references in its dy formula. Use a discrete expression to calculate dy and reference it here.
-					For instance the calculation could be in an Expression named derivative and the dy formula could be set to just derivative.
+				A table matching the same structure as y0, containing the derivatives (dy/dt) of myOde.y, matched by column order.
+
+				⚠️ Important:
+				- You must not define dy formulas with self-references inside the ODESolver tool itself.
+				- Always calculate the derivatives (dy/dt) separately in a dedicated Expression tool.
+				- Then set the dy formula to reference only the external Expression result.
+				- You must never define complex dy calculations directly inside the ODESolver.  
+				- All dy calculations must be externalized into a separate Expression tool.  
+				- Direct references to local variables are prohibited. Always use an external result.
+
+				Example:
+				- Create an Expression tool named `derivative` with the appropriate formulas.
+				- Set the dy formula of the ODESolver to simply: `derivative`
+
+				This avoids recursion and allows the ODESolver to operate correctly.
 				
 			endT: >
 				The termination value for t. The integration will be from t=0 to t=endT.
@@ -1035,7 +1079,10 @@ Formulas:
 				- $ is a built-in symbol representing the name of the tool in which the formula appears.
 		
 			NEVER use `'` for quoting strings. Always use double quotes `"..."` for simple strings, or backticks `` `...` `` for strings that contain quotes.
-		
+			NEVER start a tool name with a dot.
+				✅ Correct: Bob.Ted
+				❌ Incorrect: .Bob.Ted
+
 		cell_access:
 			syntax: `a[3,2]` → third row, second column	 
 			use_zero: `0` can be used to reference "all rows" or "all columns"
