@@ -106,12 +106,18 @@ export function ConsoleView(props) {
 	React.useEffect(() => {
 		isMounted.current = true;
 		setOutput(consoleStacks.output.show());
-		setTarget(inputTarget);
-	
+		setTarget(inputTarget);	
 		inputRef.current?.focus();
 	
+		const pollInterval = setInterval(() => {
+			if (!isMounted.current) return;
+			const latest = consoleStacks.output.show();
+			setOutput(prev => (prev !== latest ? latest : prev));
+		}, 1000); // adjust interval if needed
+
 		return () => {
 			isMounted.current = false;
+			clearInterval(pollInterval);
 		};
 	}, []);
 
@@ -400,6 +406,7 @@ export function ConsoleView(props) {
 			const response = await fetch("https://api.openai.com/v1/responses", {
 				method: "POST",
 				headers,
+				temperature: 0.2,
 				body: JSON.stringify(body)
 			});
 			if(isMounted.current) { setIsWaiting(false); }
