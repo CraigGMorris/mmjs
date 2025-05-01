@@ -144,6 +144,19 @@
 					refresh the browser. Refreshing will also clear the saved conversation and start fresh.
 				</p>
 				<p>
+					<b>Note:</b> The assistant knows about all functions and formula syntax, but it only has information about the following tools:
+					<ul>
+						<li> Model</li>
+						<li> Expression</li>
+						<li> Matrix</li>
+						<li> Equation Solver</li>
+						<li> Optimizer</li>
+						<li> ODE Solver</li>
+						<li> Graph</li>
+					</ul>
+					However this is still an experimental feature and subject to change.
+				</p>
+				<p>
 					Here are some examples along with comments on how well it worked as I write this. Again results vary.
 				</p>
 				<p class="formula">
@@ -167,8 +180,7 @@
 					starting at 0 m and increasing 1 m for angle index. Add a second curve with z 20 m above the first.
 				</p>
 				<p>
-					Sometimes this works, but this time it got an error that it fixed, but still the result only had one curve, with the second
-					z formula having an error. Copying the error and pasting it into the input field fixed it.
+					This worked correctly.
 				</p>
 				<p class="formula">
 					Create a model to simulate a predator/prey relationship. Inputs should be:
@@ -180,10 +192,8 @@
 					Show both a table and graph of the results
 				</p>
 				<p>
-					This also sometimes works, usually with a few errors that need to be fixed. This time it failed
-					so miserably that I just deleted what it created and refreshed the page to clear the conversation.
-					I then gave the same instructions again and it pretty much worked, but had a syntax error in the
-					derivative formula.  Copying the error and pasting it into the input field once again fixed it.
+					This also usually works, but sometimes with a few errors that need to be fixed. This time it had an error that it
+					fixed itself, but ended up with the model embedded inside an outer one.
 				</p>
 				<p>
 					The instructions didn't say anything about duration, so it just took a reasonable guess. After it created the model,

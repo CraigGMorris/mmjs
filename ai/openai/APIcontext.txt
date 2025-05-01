@@ -64,6 +64,23 @@ usageNote: |
 
 	Always treat errors as an opportunity to correct and continue — not to layer over mistakes.
 
+# assistantQueryStrategy: >
+  If the current instructions do not describe how a tool or concept works,
+  you may issue a query with the  command`/ aiquery <key(s)>` to retrieve structured reference help.
+	Example:
+		{
+			"query": ["/ aiquery iterator"]
+		}
+
+		I will run these commands and send their responses to you as:
+		{
+			"queryResponse": { "/ aiquery iterator": {iterator: "<iterator instructions>"} }
+		}
+
+  Do this only for tools or topics listed in `availableAiquery`.
+
+  Do not issue `/ aiquery` for any tools already described in the system prompt.
+
 # Command Structure:
 	## Format
 	commands have the form:
@@ -84,17 +101,20 @@ usageNote: |
 
 	### Model Context and Full Paths
 
-	- When working inside a model using `/ pushmodel`, you must reference tools **relative to `.`** (the current model root).
-	- **Mandatory Rule**: There must be no space between the dot and the tool name.
+	- When referencing tools inside a model, always use a **dot-prefixed tool path** to indicate that the tool is part of the current model.
+
+	- **Mandatory Rule**: There must be **no space** between the dot and the tool name.
+
 		- ✅ Correct: `.speed`, `.acceleration`, `.initialSpeed`
-		- ❌ Incorrect: `. speed`, `. acceleration` (these will fail: space makes the command apply to the model itself, not the tool)
+		- ❌ Incorrect: `. speed`, `. acceleration`  
+			A space after the dot causes the command to apply to the model itself, not the intended tool.
+
+	- Always begin tool commands with `.<toolname>` rather than a space-separated form like `. <toolname>`.
 
 	- **Formal Syntax**: Inside a model context:
 		- Tool reference = `<dot><toolName>`
 		- No whitespace allowed between `.` and the tool name.
 		- Think of `.speed` as one single identifier, not as two words.
-
-	- Once you `/ popmodel`, any commands that refer to tools inside a model must use the **full path**, beginning with `/.root.ModelName`.
 
 	⚠️ Always check that the tool’s class or superclass supports the verb you are using.
 
@@ -306,8 +326,21 @@ usageNote: |
 					- childModelName
 	
 			popmodel:
-				desc: Reverts the current model to its parent model.
+				desc: Reverts the current model to its parent model. Returns the path of the new model.
 				args: []
+
+			aiquery:
+				desc: >
+					Retrieves structured reference information about tools or other available system elements.
+
+					This command returns a JSON object with descriptions of the requested keys. It is used to obtain detailed, structured help for rarely used tools or additional contextual knowledge not included in the initial instructions.
+
+					Use this command when you are unsure how a tool works, what formulas or verbs it supports, or if you suspect information is missing.
+
+					Results will appear as a User message in the conversation and remain available for the rest of the session.
+
+				args:
+					- A list of one or more keys (tool names or reference topics) to retrieve structured information for.
 
 	MMFormula:
 		extends: MMObject
@@ -1036,6 +1069,15 @@ desc: >
 				desc: Returns the matrix's calculated value in JSON format.
 				args: []
 
+availableAiquery:
+  note: >
+    The following reference keys are available via the `aiquery` command.
+    These return structured information when requested using:
+    `/ aiquery <key>`
+
+  tools:
+    - name: iterator
+      summary: Performs for-loop-like iteration with recording support.
 
 Formulas:
 	desc: >

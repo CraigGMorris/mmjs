@@ -769,6 +769,7 @@ class MMSession extends MMParent {
 		verbs['remote'] = this.remoteDBCommand;
 		verbs['getmodelstack'] = this.getModelStackCommand;
 		verbs['aikey'] = this.aiKeyCommand;
+		verbs['aiquery'] = this.aiQueryCommand;
 		return verbs;
 	}
 
@@ -796,6 +797,7 @@ class MMSession extends MMParent {
 			remote: 'mmcmd:_sessionRemote',
 			getmodelstack: 'mmcmd:_sessionGetModelStack',
 			aikey: 'mmcmd:_aikey',
+			aiinfo: 'mmcmd:_aiinfo',
 		}[command];
 		if (key) {
 			return key;
@@ -1176,7 +1178,8 @@ class MMSession extends MMParent {
 	async pushModelCommand(command) {
 		const names = command.args.toLowerCase().split('.');
 		let model = this.currentModel;
-		for (const name of names){
+		for (let name of names){
+			name = name.startsWith('.') ? name.substring(1) : name; // remove dot prefix if present
 			model = model?.children[name];
 		}
 		// const model = this.currentModel.childNamed(command.args);
@@ -1301,6 +1304,37 @@ class MMSession extends MMParent {
 			}
 		}
 
+	}
+
+	/**
+	 * @method aiQueryCommand
+	 * verb
+	 * @param {MMCommand} command - returns information about the arguments
+	 */
+	async aiQueryCommand(command) {
+		const args = this.splitArgsString(command.args);
+		if (args.length === 0) {
+			this.setError('mmcmd:_aiquery', {});
+			return;
+		}
+		const results = {};
+		for (const arg of args) {
+			const key = arg.toLowerCase();
+			const workerUrl = self.location.href;// window.location.pathname.split('/').slice(0, -1).join('/');
+			const basePath = workerUrl.split('/').slice(0, -2).join('/');
+			await fetch(`${basePath}/ai/openai/info/${key}.yml`).then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.text();
+			})
+			.then(text => {
+				results[key] = text;
+			}).catch(error => {
+				console.error(error);
+			});
+		}
+		command.results = results;
 	}
 }
 
