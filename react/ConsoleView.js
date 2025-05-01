@@ -300,7 +300,7 @@ export function ConsoleView(props) {
 
 					// Only resolve with result if there was no error
 					if (!result?.error) {
-						resolve(result);
+						resolve([result]);
 					}
 					else {
 						reject(result.error);
@@ -318,8 +318,8 @@ export function ConsoleView(props) {
 	async function popModelPromise(modelName) {
 		return new Promise((resolve, reject) => {
 			try {
-				props.actions.popModel(modelName);
-				resolve(['popped Model']);
+				const newPath = props.actions.popModel(modelName);
+				resolve([newPath]);
 			} catch(error) {
 				reject(error);
 			}

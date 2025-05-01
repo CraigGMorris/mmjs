@@ -633,7 +633,9 @@ export function MMApp(props) {
 					updateView(infoStack.length-1);
 					break;
 			}
-			setViewInfo(infoStack[infoStack.length-1]);
+			const newView = infoStack[infoStack.length-1];
+			setViewInfo(newView);
+			return newView?.path;
 		}
 	},[doCommand, updateView, showConsole]);
 
@@ -708,7 +710,7 @@ export function MMApp(props) {
 				consoleInfo.current = oldTop;
 			}
 		}
-		popView();
+		return popView();
 	},[popView]);
 
 const pushTool = useCallback((toolName, path, toolType) => {
