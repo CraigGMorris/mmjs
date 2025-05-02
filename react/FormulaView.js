@@ -123,7 +123,7 @@ export function FormulaField(props) {
 			'input', {
 				className: 'formula-field__text-display',
 				ref: fieldInputRef,
-				value: formula.slice(0,200) || '',
+				value: formula?.slice(0,200) || '',
 				width: String(props.infoWidth - 25),
 				title: props.t('react:formulaFieldInputHover'),
 				onChange: (event) => {
@@ -166,7 +166,7 @@ export function FormulaField(props) {
 				onFocus: e => {
 					if (!showEditor) {
 						// focus not from clicking in field
-						if (formula.length > 100 || formula.includes('\n')) {
+						if (formula?.length > 100 || formula?.includes('\n')) {
 							if (props.editAction) {
 								e.stopPropagation();
 								props.editAction(editOptions);
@@ -180,7 +180,7 @@ export function FormulaField(props) {
 					}
 				},
 				onPointerDown: () => {
-					if (props.editAction && (formula.length > 100 || formula.includes('\n'))) {
+					if (props.editAction && (formula?.length > 100 || formula?.includes('\n'))) {
 						// set so focus knows it is because of a click in the field
 						// need to get to pointer up where the selection start is known
 						showEditor = true;
