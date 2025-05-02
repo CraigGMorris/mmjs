@@ -390,6 +390,10 @@ class MMDataTable extends MMTool {
 			}
 		}
 
+		if (!options.defaultValue) {
+			options.defaultValue = '0 Fraction';
+		}
+
 		let insertValue;
 		let displayUnit = options.displayUnit;
 		
