@@ -777,7 +777,7 @@ class MMDataTable extends MMTool {
 		for (let column of this.columnArray) {
 			if (!column.isCalculated) {
 				try {
-					const value = columnValues ? columnValues[column.name] : null;
+					const value = columnValues ? columnValues?.[column.name] : null;
 					column.addRow(rowNumber, value);
 				} catch(e) {
 					error = e;
@@ -821,7 +821,7 @@ class MMDataTable extends MMTool {
 	 * command.args should be the the row number
 	 */
 	addRowCommand(command) {
-		let rowNumber, columnValues;
+		let rowNumber = 0, columnValues;
 		if (command.args) {
 			let args = command.args.trim();
 			if (!args.startsWith('{')) { // should be row number
