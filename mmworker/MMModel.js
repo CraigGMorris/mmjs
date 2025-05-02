@@ -1055,7 +1055,10 @@ class MMModel extends MMTool {
 				}
 				const outputId = `o_${this.name}_${output.name}`;
 				chunks.push(`					if (result.${outputId} !== null) {`)
-				chunks.push(`						document.getElementById("${outputId}").innerHTML=result.${outputId};}`);
+				chunks.push(`						const element = document.getElementById("${outputId}")`);
+				chunks.push(`						if (element) {`);
+				chunks.push(`							element.innerHTML=result.${outputId};}`);
+				chunks.push(`						}`);
 			}
 			chunks.push(`				});`);
 			chunks.push('			}')

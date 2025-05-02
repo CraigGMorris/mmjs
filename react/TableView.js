@@ -511,7 +511,7 @@ const pointerMove = useCallback(e => {
 							className: 'result-table__column-label',
 							x: xTextPad,
 							y: y - cellHeight * 0.5,
-							key: `col${column}`,
+							key: `col${row}`,
 						},
 						tableColumn.name
 					);
@@ -521,7 +521,7 @@ const pointerMove = useCallback(e => {
 							className: 'result-table__column-label',
 							x: xTextPad,
 							y: y - cellHeight * 0.1,
-							key: `colUnit${column}`,
+							key: `colUnit${row}`,
 						},
 						tableColumn.dUnit
 					);
@@ -595,7 +595,7 @@ const pointerMove = useCallback(e => {
 				'text', {
 					x: x + xTextPad,
 					y: cellHeight * 0.8,
-					key: `col${column}`
+					key: `colt${column}`
 				},
 				`${(column + columnOrigin + 1)}`
 			);

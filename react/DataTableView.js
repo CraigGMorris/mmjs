@@ -453,7 +453,7 @@ function EditRowView(props) {
 							key: rowN, // need to ensure each formula field is unique when moving through rows
 							applyChanges: (formula) => {
 								const path = props.viewInfo.path;
-								props.actions.doCommand(`${path} setcell ${displayedRow} ${selectedField} ${formula}`,() => {
+								props.actions.doCommand(`${path} setcell ${displayedRow} ${columnNumber + 1} ${formula}`,() => {
 									setEditRowDisplay(DataTableDisplay.editRow);
 									props.actions.updateView(props.viewInfo.stackIndex);
 								})
