@@ -88,7 +88,7 @@ const claudeValues = {
 	apiKey: '',
 };
 
-let inputTarget = 'Console';
+let inputTarget = 'OpenAI';
 
 /**
  * accepts command line inputs and displays result
@@ -319,6 +319,7 @@ export function ConsoleView(props) {
 		return new Promise((resolve, reject) => {
 			try {
 				const newPath = props.actions.popModel(modelName);
+				props.updateDiagram(true);
 				resolve([newPath]);
 			} catch(error) {
 				reject(error);
@@ -559,7 +560,8 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 					}
 				}
 				else {
-					successCallback(t('react:consoleSuccessDone'));
+					updateOutput(t('react:consoleSuccessDone'));
+					// successCallback(t('react:consoleSuccessDone'));
 				}
 			}
 			catch(err) {
@@ -697,8 +699,8 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 			successCallBack = (result) => {
 				updateOutput(result);
 				props.updateDiagram(true);
-					// props.actions.toggleConsole();
-				}
+				props.actions.toggleConsole();
+			}
 			failCallBack = (error) => {
 				console.log(t('react:consoleOpenAIFail'));
 				updateOutput(t('react:consoleOpenAIFailed', { error }));

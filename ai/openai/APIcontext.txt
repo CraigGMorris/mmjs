@@ -104,22 +104,44 @@ usageNote: |
 		
 		Lines starting with ' are considered comments.
 
-	### Model Context and Full Paths
+		### Referencing Tools vs. the Model Itself
 
-	- When referencing tools inside a model, always use a **dot-prefixed tool path** to indicate that the tool is part of the current model.
+		There are two distinct uses of the `.` character in commands:
 
-	- **Mandatory Rule**: There must be **no space** between the dot and the tool name.
+		1. **Tool Path Prefix**  
+			Use a **dot directly followed by a tool name** to reference a tool inside the current model.
 
-		- ✅ Correct: `.speed`, `.acceleration`, `.initialSpeed`
-		- ❌ Incorrect: `. speed`, `. acceleration`  
-			A space after the dot causes the command to apply to the model itself, not the intended tool.
+			- ✅ Correct: `.speed`, `.initialSpeed`
+			- ❌ Incorrect: `. speed`, `. initialSpeed`
 
-	- Always begin tool commands with `.<toolname>` rather than a space-separated form like `. <toolname>`.
+			⚠️ **No space is allowed** between the dot and the tool name.
+			The expression `.speed` is interpreted as a reference to the `speed` tool.
+			If there is a space (like `. speed`), the system interprets it as a command applied to the model itself, not a tool.
 
-	- **Formal Syntax**: Inside a model context:
-		- Tool reference = `<dot><toolName>`
-		- No whitespace allowed between `.` and the tool name.
-		- Think of `.speed` as one single identifier, not as two words.
+		2. **Model Subject**  
+			A single dot **by itself** (i.e. `. addtool`) refers to the current model.
+
+			- ✅ `. addtool Expression e1`
+			- ✅ `. set title "My Model"`
+
+			In this case, `.` is the subject (model), and the verb follows with a space.
+
+		---
+
+		### 🔁 Summary
+
+		| Purpose            | Syntax            | Notes                         |
+		|--------------------|-------------------|-------------------------------|
+		| Reference a tool   | `.toolName`       | No space allowed              |
+		| Act on the model   | `. <verb>`        | Dot is a subject on its own   |
+
+		CRITICAL FORMATTING RULE — NO EXCEPTIONS:
+		If referencing a tool in a command, use `.toolName` with no space.
+		A space after the dot will always cause the command to fail.
+		This is one of the most common and costly errors. Avoid it at all costs.
+
+
+		Think of `.speed` as **an identifier**. Think of `. addtool` as a **command applied to the model**.
 
 	⚠️ Always check that the tool’s class or superclass supports the verb you are using.
 
@@ -896,6 +918,9 @@ desc: >
 					$.t + 1 s
 				where the $ is a synonym for the ode solver's name.
 				This is not the internal solver time step; it only controls how often values are recorded via rN formulas.
+				⚠️ Important:
+					This value must always increment $.t. It cannot be a constant.
+
 			relTol: >
 				This is a measure of the allowed relative errors. Thus the default value of 1e-5 means the errors are controlled to 0.001%. Don't change it unless requested to.
 			absTol: >
@@ -1800,6 +1825,7 @@ Conversion Units:
 		API60
 	
 	Note that the temperature units for degrees C, F and R are represented as "degC", "degF", "degR".
+	The unit degree is an angle, not a temperature.
 	Also a unit "date", converts a float number with the form yyyymmdd.hhmmss into a time value.
 
 	Units must always be preceded by a number
