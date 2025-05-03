@@ -1,0 +1,33 @@
+tool:
+  name: MMMenu
+  type: Menu
+  extends: MMTool
+
+  desc: |
+    MMMenu is a tool that displays a menu of options when displayed in a model view.
+
+  formulas:
+    "options": |
+      Defines the list of selectable items.
+
+      - If the result has a single column:
+          • That column provides both the visible menu text and the selected value.
+
+      - If the result has multiple columns:
+          • The first column is used for the visible menu text.
+          • The second column is used for the selected value.
+
+  parameters:
+    "selected": "Returns the selected value. Equivalent to using the tool name without a parameter."
+    "label": "Returns the label shown in the menu for the selected item."
+
+  properties:
+    "selected": |
+      Set this property to the number of the selected option.
+ 
+  verbs: []
+
+  usageNote: |
+    A common pattern is to use MMMenu to select a label or code, then pass the selected value to another tool.
+    For example, a menu might show `High`, `Medium`, `Low`, but return `3`, `2`, `1` as values.
+    Table columns can be used to provide the menu options.

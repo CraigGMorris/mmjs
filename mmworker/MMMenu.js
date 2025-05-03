@@ -105,7 +105,6 @@ class MMMenu extends MMTool {
 	/** @override */
 		get verbs() {
 			let verbs = super.verbs;
-			verbs['select'] = this.selectCommand;
 			return verbs;
 		}
 	

@@ -19,6 +19,8 @@ Respond with a **JSON object** in the following format:
 ✔️ Use `comments` to describe what the assistant is doing
 ❌ Do NOT return Markdown or text outside the JSON
 ✅ The `commands` array must contain only Math Minion commands
+Always use strict JSON format (double-quoted keys and string values) Do not use JavaScript-style object syntax.
+
 
 If you need information from the current model to complete the task, return a JSON object with a "query" array of valid MM command strings that produce responses.
 
@@ -61,21 +63,24 @@ usageNote: |
 	- Do not create a new model inside the existing model to try to work around errors.
 	- You must maintain a clean, logically consistent model structure.
 	- Fix mistakes carefully at the tool level or reset and rebuild cleanly if necessary.
+	- If you create a new tool to fix an error, delete any tool you created that is no longer used.
 
 	Always treat errors as an opportunity to correct and continue — not to layer over mistakes.
 
 # assistantQueryStrategy: >
   If the current instructions do not describe how a tool or concept works,
   you may issue a query with the  command`/ aiquery <key(s)>` to retrieve structured reference help.
+	If you need to query multiple tools, supply all the keys on a single query command.
 	Example:
 		{
-			"query": ["/ aiquery iterator"]
+			"query": ["/ aiquery iterator database"]
 		}
 
 		I will run these commands and send their responses to you as:
 		{
-			"queryResponse": { "/ aiquery iterator": {iterator: "<iterator instructions>"} }
+			"queryResponse": { "/ aiquery iterator": {"iterator": "<iterator instructions>", "database": "<database instructions>"} }
 		}
+
 
   Do this only for tools or topics listed in `availableAiquery`.
 
@@ -371,6 +376,8 @@ usageNote: |
 			- The `set` verb applies to the MMFormula object and expects `formula` as the property name (i.e., `set formula <formulaText>`).
 			- A common mistake is to try to `set formula` on the tool itself, rather than on its formula child.
 			- Tools may have one or multiple formulas, each with a distinct name (e.g., `formula`, `f1`, `f2`, etc.).
+			- Do not quote formulas unless the formula itself is a string.
+			- Never escape double quotes. Use back-ticks as the enclosing quotes instead.
 			
 			Example:
 				/.root.MyEquationSolver.f2 set formula x^2 - 4
@@ -1078,6 +1085,12 @@ availableAiquery:
   tools:
     - name: iterator
       summary: Performs for-loop-like iteration with recording support.
+		- name: datatable
+			summary: A table tool for storing row-based data with named columns, supporting both fixed and calculated values.
+		- name: button
+			summary: A tool that can be used to trigger actions in the model. When displayed in a model view, it appears as a button.
+		- name: menu
+			summary: A tool that displays a menu of options when displayed in a model view.
 
 Formulas:
 	desc: >
@@ -1129,6 +1142,16 @@ Formulas:
 		cell_access:
 			syntax: `a[3,2]` → third row, second column	 
 			use_zero: `0` can be used to reference "all rows" or "all columns"
+
+	Formula Dependency Rule
+		- Formulas may reference other tools by name (e.g., `Speed`, `InitialHeight`).
+		- You must ensure that **all referenced tools exist** before defining the formula.
+			- ❌ Invalid: Creating a formula that uses `MyInput` before `MyInput` exists.
+			- ✅ Valid: Create `MyInput` first, then create the formula referencing it.
+		- This applies to:
+			- `defaultValue` in `MMDataTable`
+			- `formula` in `MMExpression`, `MMMatrix`, etc.
+			- Any command or argument that sets or evaluates a formula string
 
 	FormulaFunctions:
 		syntax: >

@@ -440,9 +440,17 @@ export function ConsoleView(props) {
 			
 			const data = await response.json();
 			openAIValues.previousResponseId = data.id;
-			const raw = data.output[1].content[0].text;	// o4-mini
-			// const raw = data.output[0].content[0].text;	// gpt-4.1	
+			const outputs = data?.output;
+			let raw;
+			if (outputs) {
+				// not sure how many outputs there will be, so we'll take the first one that has text
+				for (const output of outputs) {
+					raw = output?.content?.[0]?.text;
+					if (raw) break;	// o4-mini
+				}
+			}
 			if (!raw) {
+				console.log(`openAIChat: no assistant output ${JSON.stringify(data)}`);
 				updateOutput(t('react:consoleNoAssistantOutput'));
 				return;
 			}

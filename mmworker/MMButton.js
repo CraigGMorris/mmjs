@@ -114,7 +114,7 @@ class MMButton extends MMTool {
 	/** @override */
 		get verbs() {
 			let verbs = super.verbs;
-			verbs['press'] = this.pressCommand;
+			// verbs['press'] = this.pressCommand;
 			return verbs;
 		}
 	
