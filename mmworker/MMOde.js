@@ -1036,11 +1036,16 @@ class MMOde extends MMTool {
 
 				this.nextRecordNumber++;
 				this.forgetStep();
-				nextT = this.nextTFormula.numberValue();
-				if (!nextT) {
+				const newNextT = this.nextTFormula.numberValue();
+				if (!newNextT) {
 					this.setError('mmcmd:odeRecordTimeError', {path: this.getPath()});
 					break;
 				}
+				if (newNextT.values[0] <= nextT.values[0]) {
+					this.setError('mmcmd:odeRecordTimeUnchanged', {path: this.getPath()});
+					break;
+				}
+				nextT = newNextT;
 				tNext = nextT.values[0];
 				if (tNext > tStop) {
 					tNext = tStop;
