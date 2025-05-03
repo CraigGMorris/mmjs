@@ -131,6 +131,7 @@
 	"odeNextTEndTMismatch": "Next T must have same units as End T for ODE {{path}}",
 	"odeNonumericDy": "Nonnumeric dy in ODE {{path}}",
 	"odeRecordTimeError": "Could not calculate next reporting time in ODE {{path}}",
+	"odeRecordTimeUnchanged": "Next T is not greater than current T in ODE {{path}}",
 	"odeRelTolHasUnits": "Relative tolerance unit must be dimensionless in ODE {{path}}",
 	"odeSetErrorWtFailed": "Set error weight failed in ODE {{path}}",
 	"odeSizeMismatch": "dY has different number of elements than Y\n\nin ODE {{path}}",
