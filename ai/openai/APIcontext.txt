@@ -409,7 +409,9 @@ usageNote: |
 				desc: Type name used in user interface.
 				readOnly: true
 			notes:
-				desc: Textual notes about this tool.
+				desc: >
+					Textual notes about this tool.
+					When setting notes, do not enclose them in quotes.
 			diagramNotes:
 				desc: Boolean. If true, the notes are shown directly on the diagram.
 			htmlNotes:
