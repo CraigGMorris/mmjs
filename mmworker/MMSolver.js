@@ -164,7 +164,7 @@ class MMSolver extends MMTool {
 	}
 
 	get isEnabled() {
-		return this._isEnabled;
+		return this._isEnabled && !theMMSession.noRun;
 	}
 
 	set isEnabled(newValue) {

@@ -121,7 +121,7 @@ class MMOptimizer extends MMTool {
 	}
 
 	get isEnabled() {
-		return this._isEnabled;
+		return this._isEnabled && !theMMSession.noRun;
 	}
 
 	set isEnabled(newValue) {
@@ -653,7 +653,10 @@ class MMOptimizer extends MMTool {
 		for (let iter = 1; iter <= this.maxIterations; iter++) {
 			const now = Date.now();
 			if (now - lastStatusTime > 1000) {
-				this.processor.statusCallBack(this.t('mmcmd:optStatus', {iter: iter, error: fReturn}));
+				if (this.processor.statusCallBack(this.t('mmcmd:optStatus', {iter: iter, error: fReturn}))) {
+					this.isEnabled = false;
+					break;
+				}
 				lastStatusTime = now;
 			}
 

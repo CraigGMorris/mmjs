@@ -279,7 +279,7 @@ class MMOde extends MMTool {
 	}
 
 	get shouldAutoRun() {
-		return this._shouldAutoRun;
+		return this._shouldAutoRun && !theMMSession.noRun;
 	}
 
 	set shouldAutoRun(newValue) {

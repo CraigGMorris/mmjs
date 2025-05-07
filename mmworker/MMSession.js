@@ -295,6 +295,7 @@ class MMSession extends MMParent {
 		this.currentModel = this.rootModel;
 		this.modelStack = [];
 		this.storePath = storePath;
+		this.noRun = false;
 		this.processor.defaultObject = this.rootModel;
 		this.selectedObject = '';
 	}
@@ -302,6 +303,7 @@ class MMSession extends MMParent {
 	get properties() {
 		let d = super.properties;
 		d['storePath'] = {type: MMPropertyType.string, readOnly: false};
+		d['noRun'] = {type: MMPropertyType.boolean, readOnly: false};
 		return d;
 	}
 
