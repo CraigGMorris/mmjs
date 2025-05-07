@@ -7,7 +7,8 @@
 		<script type="text/javascript">
 			window.onload = () => {
 				rtSetupHeading('Something Wrong',{
-					overview: 'Overview',
+					overview: 'Something Went Wrong',
+					waiting: 'Never Ending Calculation',
 					important: 'Important',
 				});
 			};			
@@ -23,8 +24,12 @@
 				<h3>That's not Good</h3>
 				<p>
 					If you get the message that <b>something went wrong</b>, then poor Math Minion is afflicted
-					with a bug in its page rendering. Hopefully you will never see this, but if you do, I definitely
-					<a href="http://www.redtree.com/contact.html">want to hear about it</a>.
+					with a bug in its page rendering. Hopefully you will never see this, it is a
+					bug and I definitely
+					want to hear about it. Please <a href="http://www.redtree.com/contact.html">
+						let me know so I can fix it.
+					</a>
+
 				</p>
 				<p>First though, let's try and get you running again.  Try the following steps:
 				</p>
@@ -52,6 +57,53 @@
 						will try to help
 					</li>
 				</ul>
+			</div>
+			<div id="waiting" class="section">
+				<h3>Never Ending Calculaton</h3>
+				<p>
+					I don't think (??) there is a possibility of an actual infinite loop, but even so it is possible to create
+					a problem whose resolution might take an unacceptable amount of time. While the user interface will
+					remain responsive, the calculation thread will ignore messages from it in such circumstances.
+					Even worse, in some cases the calculation may just start again even if you refresh the browser
+					or quit and relaunch the app.
+				</p>
+				<p>
+					If this happens, switch to the browser if you are using the app and use this URL:
+				</p>
+				<p>
+					<a href="https://mathminion.org/run.html?cmd=/%20new">https://mathminion.org/run.html?cmd=/%20new</a>
+				</p>
+				<p>
+					which should launch Math Minion with a new session. At this point, use the <b>Console</b> button
+					at the bottom of the information view to open the console. Then select <b>Console</b> from the drop
+					down menu at the bottom and enter:
+				</p>
+				<p class="formula">
+					/ set noRun t
+				</p>
+				<p>
+					Note: case counts.
+				</p>
+				<p>
+					This will disable the iterative tools, namely:
+				</p>
+				<ul>
+					<li>Equation Solver</li>
+					<li>Optimizer</li>
+					<li>ODE Solver</li>
+					<li>Iterator</li>
+				</ul>
+				<p>
+					Use the <b>Console</b> button again to toggle off the console and load the
+					problem session and try to reconfigure the problem appropriately. Then return to
+					the console and enter:
+				</p>
+				<p class="formula">
+					/ set noRun f
+				</p>
+				<p>
+					to reenable the tools.
+				</p>
 			</div>
 			<div id="important" class="section">
 				<h3>Important</h3>
