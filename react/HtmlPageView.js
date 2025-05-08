@@ -69,7 +69,9 @@ export function HtmlPageView(props) {
 					if (results && results[0] && results[0].results) {
 						const received = results[0].results;
 						if (received.results) {
+							// send message to the html page
 							source.postMessage(received, '*');
+							props.actions.updateView(props.viewInfo.stackIndex);
 						}
 						if (received.didLoad) {
 							if (received.resetInfo) {
@@ -107,6 +109,7 @@ export function HtmlPageView(props) {
 	}, [updateResults, props.actions, props.viewInfo.stackIndex]);
 
 	useEffect(() => {
+		// handle messages from the html page
 		const handleMessage = (e) => {
 			if (typeof e.data === "string" && e.data.startsWith('htmlPage')) {
 				htmlAction(e);
@@ -132,7 +135,10 @@ export function HtmlPageView(props) {
 		return (formula) => {
 			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
-				setDisplay(HtmlPageDisplay.main);
+				setTimeout(() => {
+					// Chromium browsers seem to need a delay
+					setDisplay(HtmlPageDisplay.main);
+				}, 200);
 			});
 		}
 	}

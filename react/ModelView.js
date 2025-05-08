@@ -196,8 +196,11 @@ export function ModelView(props) {
 
 	useEffect(() => {
 		if (updateResults && updateResults[0]) {
-			setImportSource(updateResults[0].results.importSource || '');
-			setIndexToolName(updateResults[0].results.indexTool || '');
+			setTimeout(() => {	
+				// Chromium browsers seem to need a delay
+				setImportSource(updateResults[0].results.importSource || '');
+				setIndexToolName(updateResults[0].results.indexTool || '');
+			}, 200);
 		}
 	}, [updateResults]);
 
@@ -219,7 +222,9 @@ export function ModelView(props) {
 					if (results && results[0] && results[0].results) {
 						const received = results[0].results;
 						if (received.results) {
+							// send message to the html page
 							source.postMessage(received, '*');
+							props.actions.updateView(props.viewInfo.stackIndex);
 						}
 						if (received.didLoad) {
 							if (received.resetInfo) {
@@ -257,6 +262,7 @@ export function ModelView(props) {
 	}, [updateResults, props.actions, props.viewInfo.stackIndex]);
 
 	useEffect(() => {
+		// handle messages from the html page
 		const handleMessage = (e) => {
 			if (typeof e.data === "string" && e.data.startsWith('htmlPage')) {
 				htmlAction(e);
@@ -271,7 +277,10 @@ export function ModelView(props) {
 	const applyInputChanges = (formula, path) => {
 		props.actions.doCommand(`${path} set formula ${formula}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
-			setDisplay(ModelDisplay.model);
+			setTimeout(() => {
+				// Chromium browsers seem to need a delay
+				setDisplay(ModelDisplay.model);
+			}, 200);
 		});
 	}
 
@@ -301,7 +310,10 @@ export function ModelView(props) {
 					actions: props.actions,
 					editOptions: editOptions,
 					cancelAction: () => {
-						setDisplay(ModelDisplay.model);
+						setTimeout(() => {
+							// Chromium browsers seem to need a delay
+							setDisplay(ModelDisplay.model);
+						}, 200);
 					},
 					applyChanges: (formula) => {
 						applyInputChanges(formula, editOptions.path)
