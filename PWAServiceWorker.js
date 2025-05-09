@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2025.05.08c";
+const VERSION = "2025.05.08";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
@@ -188,8 +188,8 @@ const APP_STATIC_RESOURCES = [
 	"news/MM_News.txt",
 	"offline/i18next.js",
 	"offline/i18nextXHRBackend.js",
-	"offline/react-dom.development.js",
-	"offline/react.development.js",
+	"offline/react-dom.production.min.js",
+	"offline/react.production.min.js",
 	"react/ButtonView.js",
 	"react/Clipboard.js",
 	"react/ConsoleView.js",
