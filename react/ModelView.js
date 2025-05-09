@@ -186,6 +186,7 @@ export function ModelView(props) {
 	const [indexToolName, setIndexToolName] = useState('');
 	const [display, setDisplay] = useState(ModelDisplay.model);
 	const [showingImportMenu, setShowingImportMenu] = useState(false);
+	const [htmlResults, setHtmlResults] = useState(null);
 
 	const editOptions = {}
 	useEffect(() => {
@@ -196,11 +197,9 @@ export function ModelView(props) {
 
 	useEffect(() => {
 		if (updateResults && updateResults[0]) {
-			setTimeout(() => {	
-				// Chromium browsers seem to need a delay
-				setImportSource(updateResults[0].results.importSource || '');
-				setIndexToolName(updateResults[0].results.indexTool || '');
-			}, 200);
+			setImportSource(updateResults[0].results.importSource || '');
+			setIndexToolName(updateResults[0].results.indexTool || '');
+			setHtmlResults(updateResults[0].results.html);
 		}
 	}, [updateResults]);
 
@@ -277,10 +276,7 @@ export function ModelView(props) {
 	const applyInputChanges = (formula, path) => {
 		props.actions.doCommand(`${path} set formula ${formula}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
-			setTimeout(() => {
-				// Chromium browsers seem to need a delay
-				setDisplay(ModelDisplay.model);
-			}, 200);
+			setDisplay(ModelDisplay.model);
 		});
 	}
 
@@ -310,10 +306,7 @@ export function ModelView(props) {
 					actions: props.actions,
 					editOptions: editOptions,
 					cancelAction: () => {
-						setTimeout(() => {
-							// Chromium browsers seem to need a delay
-							setDisplay(ModelDisplay.model);
-						}, 200);
+						setDisplay(ModelDisplay.model);
 					},
 					applyChanges: (formula) => {
 						applyInputChanges(formula, editOptions.path)
@@ -383,7 +376,7 @@ export function ModelView(props) {
 							// rendered html
 							'iframe', {
 							id: 'htmlpage__iframe-import',
-							srcDoc: results.html,
+							srcDoc: htmlResults,
 							sandbox: 'allow-scripts allow-modals allow-popups',
 							key: 'iframe',
 						},

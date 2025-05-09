@@ -135,10 +135,7 @@ export function HtmlPageView(props) {
 		return (formula) => {
 			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
-				setTimeout(() => {
-					// Chromium browsers seem to need a delay
-					setDisplay(HtmlPageDisplay.main);
-				}, 200);
+				setDisplay(HtmlPageDisplay.main);
 			});
 		}
 	}
