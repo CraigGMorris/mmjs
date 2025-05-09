@@ -276,7 +276,10 @@ export function ModelView(props) {
 	const applyInputChanges = (formula, path) => {
 		props.actions.doCommand(`${path} set formula ${formula}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
-			setDisplay(ModelDisplay.model);
+			// setTimeout(() => {
+				// Chromium browsers seem to need a delay
+				setDisplay(ModelDisplay.model);
+			// }, 200);
 		});
 	}
 

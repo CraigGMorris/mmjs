@@ -49,6 +49,7 @@ const HtmlPageDisplay = Object.freeze({
 export function HtmlPageView(props) {
 	const [display, setDisplay] = useState(HtmlPageDisplay.input);
 	const [editOptions, setEditOptions] = useState({});
+	const [htmlResults, setHtmlResults] = useState(null);
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -58,6 +59,15 @@ export function HtmlPageView(props) {
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
+
+	useEffect(() => {
+		if (updateResults && updateResults[0]) {
+			setTimeout(() => {
+				// for some reason Chromium browsers need a short delay
+				setHtmlResults(updateResults[0].results.html);
+			}, 20);
+		}
+	}, [updateResults]);
 
 	const htmlAction = React.useCallback(e => {
 		if (!updateResults.error) {
@@ -190,7 +200,7 @@ export function HtmlPageView(props) {
 				// rendered html
 				'iframe', {
 					id: 'htmlpage__iframe',
-					srcDoc: results.html,
+					srcDoc: htmlResults,
 					sandbox: 'allow-scripts allow-modals allow-popups',
 				},
 			)

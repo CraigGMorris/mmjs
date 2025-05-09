@@ -876,8 +876,10 @@ const pushTool = useCallback((toolName, path, toolType) => {
 	if (viewType !== ViewType.diagram) {
 		let i = infoStack.length-1;
 		previousTitle = i > 0 ? infoStack[i-1].title : '';
-		let keyView = infoViews[viewInfo.viewKey];
-		title = viewInfo.title;
+		// make sure the top view info is what is displayed
+		const topViewInfo = infoStack[i];
+		let keyView = infoViews[topViewInfo.viewKey];
+		title = topViewInfo.title;
 		if (showConsole) {
 			keyView = infoViews['console'];
 		}
@@ -891,10 +893,10 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				}
 			},
 			e(keyView, {
-				key: viewInfo.path,
-				className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
+				key: topViewInfo.path,
+				className: 'mmapp-' + topViewInfo.viewKey.toLowerCase(),
 				actions: actions,
-				viewInfo: viewInfo,
+				viewInfo: topViewInfo,
 				infoWidth: infoWidth,
 				infoHeight: infoHeight,
 				updateDiagram: updateDiagram,
