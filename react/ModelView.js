@@ -197,9 +197,12 @@ export function ModelView(props) {
 
 	useEffect(() => {
 		if (updateResults && updateResults[0]) {
-			setImportSource(updateResults[0].results.importSource || '');
-			setIndexToolName(updateResults[0].results.indexTool || '');
-			setHtmlResults(updateResults[0].results.html);
+			setTimeout(() => {
+				// for some reason Chromium browsers need a short delay
+				setImportSource(updateResults[0].results.importSource || '');
+				setIndexToolName(updateResults[0].results.indexTool || '');
+				setHtmlResults(updateResults[0].results.html);
+			}, 20);
 		}
 	}, [updateResults]);
 
@@ -276,10 +279,7 @@ export function ModelView(props) {
 	const applyInputChanges = (formula, path) => {
 		props.actions.doCommand(`${path} set formula ${formula}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
-			// setTimeout(() => {
-				// Chromium browsers seem to need a delay
 				setDisplay(ModelDisplay.model);
-			// }, 200);
 		});
 	}
 
