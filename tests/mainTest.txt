@@ -4,10 +4,13 @@
 	"DetailWidth": 320,
 	"DeviceWidth": 1024,
 	"UserUnitSets": {},
-	"UserUnits": [],
+	"UserUnits": [
+		null,
+		null
+	],
 	"CaseName": "mainTest",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
+	"SelectedObject": "errorCount",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -21486,15 +21489,15 @@
 					{
 						"name": "errorCount",
 						"Notes": "",
-						"DiagramX": 165,
-						"DiagramY": 165,
+						"DiagramX": 195,
+						"DiagramY": 295,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "{sum {cc\n\tExpression.errorCount,\n\tMatrix.errorCount,\n\tSolver.errorCount,\n\tOde.errorCount,\n\tIterator.errorCount,\n\tOptimizer.errorCount,\n\tGraph.errorCount,\n\tHtmlPage.errorCount\n}}"
+							"Formula": "{sum {cc\n\tExpression.errorCount,\n\tMatrix.errorCount,\n\tSolver.errorCount,\n\tOde.errorCount,\n\tIterator.errorCount,\n\tOptimizer.errorCount,\n\tGraph.errorCount,\n\tHtmlPage.errorCount,\n\timportTests.errorCount\n}}"
 						}
 					},
 					{
@@ -33965,7 +33968,7 @@
 						"name": "htmlPage",
 						"Notes": "Only expected html from page2 is checked as other pages' actions change values",
 						"DiagramX": 85,
-						"DiagramY": 370,
+						"DiagramY": 395,
 						"HideInfo": "n",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -34661,6 +34664,156 @@
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "nTableErrors +\nsTableErrors"
+								}
+							}
+						]
+					},
+					{
+						"name": "ImportTests",
+						"Notes": "",
+						"DiagramX": 85,
+						"DiagramY": 370,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "errorCount",
+								"Notes": "",
+								"DiagramX": 100,
+								"DiagramY": 55,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum \n\t{cc\n\t\t{gt \n\t\t\t{cc\n\t\t\t\t{abs square10.square - 100 kg^2},\n\t\t\t\t{abs square20.square - 400 kg^2}\n\t\t\t\t{abs import2square - 1089 kg^2}\n\t\t\t},\n\t\t\ttolerance * 1 kg^2\n\t\t},\n\t\t{ne import2Result, `Still Okay`},\n\t\t{ne import2MissingX, `not missing`}\n\t}\n}"
+								}
+							},
+							{
+								"name": "tolerance",
+								"Notes": "",
+								"DiagramX": 100,
+								"DiagramY": 25,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "tolerance"
+								},
+								"isInput": "y"
+							},
+							{
+								"name": "Import3",
+								"Notes": "",
+								"DiagramX": 15,
+								"DiagramY": 85,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"import": {
+									"name": "import/importTest3",
+									"inputs": {},
+									"childImportFormulas": {
+										".import3": {},
+										".import3.import2": {
+											"result": "\"Still Okay\""
+										},
+										".import3.import2.square": {
+											"x": "33 kg"
+										},
+										".import3.import2.missingx": {
+											"x1": "\"not missing\""
+										}
+									}
+								}
+							},
+							{
+								"name": "import2Result",
+								"Notes": "",
+								"DiagramX": 15,
+								"DiagramY": 115,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "Import3.import3.import2.result"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "import2Square",
+								"Notes": "",
+								"DiagramX": 15,
+								"DiagramY": 140,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "Import3.import3.import2.square.square"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "import2MissingX",
+								"Notes": "",
+								"DiagramX": 15,
+								"DiagramY": 165,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "Import3.import3.import2.missingx.x1"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "square10",
+								"Notes": "",
+								"DiagramX": 15,
+								"DiagramY": 25,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"import": {
+									"name": "import/square",
+									"inputs": {
+										"x": "10 kg"
+									}
+								}
+							},
+							{
+								"name": "square20",
+								"Notes": "",
+								"DiagramX": 15,
+								"DiagramY": 55,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"import": {
+									"name": "import/square",
+									"inputs": {
+										"x": "20 kg"
+									}
 								}
 							}
 						]
