@@ -243,7 +243,7 @@ class MMSession extends MMParent {
 		this.savedStorageVersionId = '(storageVersion)';
 		this.openAIKey = '(openAIKey)';
 		this.anthropicKey = '(anthropicKey)';
-		this.lastNews = '20250320b';
+		this.lastNews = '20250510';
 		this.newSession();
 		this.couchError = null;
 	}
