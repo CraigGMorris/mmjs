@@ -81,7 +81,6 @@ export function HtmlPageView(props) {
 						if (received.results) {
 							// send message to the html page
 							source.postMessage(received, '*');
-							props.actions.updateView(props.viewInfo.stackIndex);
 						}
 						if (received.didLoad) {
 							if (received.resetInfo) {
