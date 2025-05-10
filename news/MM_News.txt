@@ -10,8 +10,8 @@
 	],
 	"CaseName": "MM_News",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
-	"ModelPath": "/.root.Mar_20_2025",
+	"SelectedObject": "Updates",
+	"ModelPath": "/.root.May_10_2025",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
@@ -27,7 +27,7 @@
 				"name": "Older_Articles",
 				"Notes": "<b>Click here for previous news articles</b>",
 				"DiagramX": 160,
-				"DiagramY": -260,
+				"DiagramY": -255,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"HtmlNotes": "y",
@@ -3378,7 +3378,7 @@
 				"name": "Mar_20_2025",
 				"Notes": "",
 				"DiagramX": 85,
-				"DiagramY": -260,
+				"DiagramY": -225,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"HtmlNotes": "n",
@@ -3806,6 +3806,132 @@
 						"Type": "HTML Form",
 						"Formula": {
 							"Formula": "'\n<style>\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t.quote\n\t{\n\t\tcolor: green;\n\t\tmargin-left: 30px;\n\t}\n\t.main {\n\t\tbackground-color: #f2f2f2;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t}\n</style>\n<div class=\"main\">\n<h3>Update:</h3>\n<p>\nAfter I posted the stuff below, I played around a bit more and discovered that removing web search\ncapability from the ChatGPT tool assistant did not noticeably change its performance. Doing so allows it to be used by free OpenAI accounts, so you no longer need a paid OpenAI account to play with it.\n</p>\n<p>\nSimilarly, the data table tool could be made free by removing its ability to process images as well as text. There are now two links in the <a href=\"./help/chatgpt.html\" target=\"_blank\">Math Minion's Ask ChatGPT help</a>. One for free accounts and one with image capability for paid accounts.\n</p>\n<h3>Math Minion News: Mar 20, 2025</h3>\n<p>\nWow, it seems to have passed since the last news update. I have made occasional unannounced bug fixes during that time, but nothing that seemed to warrant new News. However a rare recent prod from a friend and user has sparked changes that are probably enough to justify an update.\n</p>\n<h3>No More Clipboard Window in Safari</h3>\n<p>\n\tFinally, users of Safari and all browsers on the iPhone, iPad and Vision Pro will no longer need to use that clunky clipboard window to interact with the system clipboard. Note you will probably be asked to allow access when you first try to use this.\n</p>\n<h3>Export File Name Extension</h3>\n<p>\n\tI have changed the file name extension for exported files to \"json\". This doesn't have any impact on reading existing files and indeed you can override the extension in the save dialog if you wish.\n</p>\n<p>\n\tThe files themselves have always been in json format and remain unchanged. I think the original idea behind the txt extension was to emphasis that they were human readable. However most folks know about json now and many text editors apply appropriate syntax colouring to files with the json extension, so the change seemed worthwhile.\n</p>\n<h3>ChatGPT Assistants</h3>\n<p>\n\tIf you happen to have a paid ChatGPT account, there are now a couple of Math Minion assistants implemented as GPTs. Time will tell if these are really useful, but I find them pretty cool to play with.\n</p>\n<h4>Math Minion Tool Assistant</h4>\n<p>\n\tFrom a problem description, this assistant will attempt to create a json representation of the solution using the following Math Minion tools:\n</p>\n<ul>\n\t<li>Model</li>\n\t<li>Expression</li>\n\t<li>Equation Solver</li>\n\t<li>Optimizer</li>\n\t<li>ODE Solver</li>\n</ul>\n<p>\nThis will be suitable for pasting onto the Math Minion diagram. For instance the prompt:\n</p>\n<p class='quote'>\nCreate a model to simulate a predator/prey relationship. Inputs should be:\ninitial populations of predator and prey - default 200 for both\nthe prey growth per period of time in the absence of predators - default 1 per day\nDeath rate of prey per encounter with predators - default 0.003 1/d\nDeath rate of predator in absence of food - default 2 per day\nEfficiency of turning prey into predators - default 1\nShow both a table and graph of the results\n</p>\n<p>\n\tProduced the <span class=\"link\"\n\t\t\t\tonClick=\"mmpost({}, {mm_view: 'PredatorPrey'})\">\n\t\t\t\tPredatorPrey</span> model. In this case no modifications to the result were needed, but results vary from time to time, perhaps depending on whether the AI is having a bad day or missed its digital coffee. Pointing out any mistakes to it will often result in it making an appropriate fix, but it may be faster to just fix it yourself.\n</p>\n<p>\n\tThink of it more as a somewhat dim intern than an expert system. It can save time on simple problems, but will often make mistakes, so its work will need careful checking.\n</p>\n<p>\n\tThis assistant can be accessed by the link below. These links are also available by selecting\n\t<a href=\"./help/chatgpt.html\" target=\"_blank\">Ask ChatGPT</a> from the contents menu in the help.\n</p>\n<p class=\"link\">\n\t\t\t\t\n\t<a href=\"https://chatgpt.com/g/g-67ce2b8302b881918ab06486ed92184d-math-minion-tool-assistant\" target=\"_blank\">Tool Assistant</a>\n</p>\n\n<h4>Math Minion Data Table Assistant</h4>\n<p>\n\tThis assistant will try to create from the given data a Math Minion specific CSV file that when pasted on the diagram will result in a new Data Table tool.  For instance this prompt:\n</p>\n<p class=\"quote\">\n \tJan\tFeb\tMar\tApr\tMay\tJun\tJul\tAug\tSep\tOct\tNov\tDec\tYear\tCode\nDaily Average (°C)\t2.4\t3.2\t5.2\t8.0\t11.6\t14.7\t17.3\t17.2\t13.7\t8.6\t4.4\t2.1\t9.0\tA\nStandard Deviation\t1.9\t1.5\t1.2\t1.1\t1.3\t1.3\t1.1\t1.0\t1.2\t0.9\t1.8\t1.8\t1.3\tA\nDaily Maximum (°C)\t5.5\t7.2\t9.7\t13.2\t17.0\t20.1\t23.0\t23.3\t19.8\t13.1\t7.7\t4.9\t13.7\tA\nDaily Minimum (°C)\t-0.8\t-0.7\t0.7\t2.8\t6.2\t9.3\t11.5\t11.1\t7.6\t4.0\t1.0\t-0.8\t4.3\tA\nExtreme Maximum (°C)\t16.1\t17.5\t20.6\t28.5\t33.2\t36.9\t37.2\t37.8\t31.6\t24.2\t17.8\t15.1\t\t\nDate (yyyy/dd)\t1968/ 20\t1991/ 26\t1965/ 11\t1998/ 30\t1983/ 29\t1982/ 18\t1965/ 31\t1971/ 10\t1988/ 03\t1992/ 01\t1975/ 03\t2005/ 24\t\t\nExtreme Minimum (°C)\t-23.9\t-17.8\t-12.8\t-5.6\t-2.2\t-0.6\t2.2\t1.7\t-2.8\t-9.7\t-20.4\t-18.5\t\t\nDate (yyyy/dd)\t1969/ 30\t1972/ 01\t1976/ 03\t1972/ 03\t1966/ 27+\t1977/ 02\t1971/ 06\t1966/ 29+\t1972/ 27\t1984/ 31\t1985/ 26\t1980/ 07\t\t\n<br>\nOmitting the Year and Code columns, rotate the table so the months are the rows and create a data table\n</p>\n<p>\n\tproduced the <span class=\"link\"\n\t\t\t\tonClick=\"mmpost({}, {mm_view: 'Temperatures'})\">\n\t\t\t\tTemperatures</span> table. Note the instructions to omit columns and rotate the table.\n</p>\n<p>\n\tInput will probably normally be text, but it also works with images of tables and I even had it convert a bar chart successfully by telling it to estimate the values from the bar lengths.\n</p>\n<p>\n\tThis assistant can be accessed by the following link\n</p>\n<p class=\"link\">\n\t\t\t\t\n\t<a href=\"https://chatgpt.com/g/g-67d4d1a5d7c48191bf07e3a0b321c72a-mm-datatable-assistant\" target=\"_blank\">Data Table Assistant</a>\n</p>\n<p>\n\tIf you have a chance to play with these, I would love to <a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">hear how it went</a>.\n\n<h3>Miscellaneous Bug Fixes</h3>\n<p>\n\tAs always there has been a number of minor changes and bug fixes. Many of these were quietly done during the course of the year.\n</p>\n<ul>\n<li>    Added mmHg as synonym for unit mmHg0C</li>\n<li>    Added MagneticFluxDensity units Tesla (T) and Gauss.</li>\n<li>    Added mod and sqrt as conveniece functions for x%n and x^0.5</li>\n<li>    some additional error checking in Graph</li>\n<li>    added error check in MMUnit</li>\n<li>    fix to import problem when imported session wasn't at root</li>\n<li>    removed obsolete reference to mac version from web home page</li>\n<li>    fix to financial example</li>\n<li>    Added an expanded row view to expression table values</li>\n<li>    Fixed problem with copy as table with tables having specified column units</li>\n<li>    Fixed problem with menu tool info view</li>\n<li>    Fixed problem with wheel scrolling in TableView.</li>\n</ul>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>\n</div>"
+						}
+					}
+				]
+			},
+			{
+				"name": "May_10_2025",
+				"Notes": "",
+				"DiagramX": 85,
+				"DiagramY": -255,
+				"HideInfo": "n",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "OpenAI_Key",
+						"Notes": "",
+						"DiagramX": 110,
+						"DiagramY": -135,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'  <style>\n    body {\n      font-family: Arial, sans-serif;\n      line-height: 1.6;\n      max-width: 800px;\n      margin: auto;\n      padding: 20px;\n    }\n    h1, h2 {\n        color: #333;\n      }\n    a {\n      color: #1a73e8;\n      text-decoration: none;\n    }\n    a:hover {\n      text-decoration: underline;\n    }\n    code {\n      background-color: #f5f5f5;\n      padding: 2px 4px;\n      border-radius: 4px;\n      font-family: monospace;\n    }\n    .note {\n      background-color: #fff3cd;\n      border-left: 6px solid #ffeeba;\n      padding: 10px;\n      margin: 20px 0;\n    }\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\n  </style>\n  <h1>🔑 How to Obtain an OpenAI API Key</h1>\n\n  <p>To use this application, you'll need an OpenAI API key. Follow these steps to acquire one:</p>\n\n  <h2>1. Create an OpenAI Account</h2>\n  <ol>\n    <li>Visit the\n    \t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'https://platform.openai.com/signup'})\">\n\t\t\t\tOpenAI Signup Page\n\t\t\t</span>\n      </li>\n    <li>Sign up using your email address and set a password.</li>\n    <li>Verify your email address and phone number as prompted.</li>\n  </ol>\n\n  <h2>2. Access the API Keys Page</h2>\n  <ol>\n    <li>Navigate to the\n    \t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'https://platform.openai.com/account/api-keys'})\">\n\t\t\t\tAPI Keys Page\n\t\t\t</span>.\n    </li>\n    <li>Log in with your OpenAI credentials if prompted.</li>\n  </ol>\n\n  <h2>3. Generate a New API Key</h2>\n  <ol>\n    <li>Click on the <strong>\"Create new secret key\"</strong> button.</li>\n    <li>Optionally, assign a name to your key to help you remember its purpose.</li>\n    <li>Copy the generated key and store it securely. <strong>You won't be able to view it again once you navigate away from the page.</strong></li>\n  </ol>\n\n  <div class=\"note\">\n    <strong>Note:</strong> If you lose your API key, you'll need to generate a new one.\n  </div>\n\n  <h2>4. Secure Your API Key</h2>\n  <ul>\n    <li><strong>Do Not Share:</strong> Treat your API key like a password; keep it confidential.</li>\n    <li><strong>Environment Variables:</strong> Store the key in an environment variable (e.g., <code>OPENAI_API_KEY</code>) to keep it out of your codebase.</li>\n    <li><strong>Avoid Hardcoding:</strong> Never hardcode the API key directly into your application's source code.</li>\n  </ul>\n\n  <h2>5. Understand Usage and Billing</h2>\n  <ul>\n    <li><strong>Free Trial:</strong> New accounts may receive free credits to explore the API.</li>\n    <li><strong>Billing Information:</strong> To continue using the API after the trial, add a payment method in your OpenAI account settings.</li>\n    <li><strong>Usage Monitoring:</strong> Regularly check your usage to avoid unexpected charges.</li>\n  </ul>\n\n  <p>For more detailed information, refer to OpenAI's official documentation: \n\t<span class=\"link\"\n\t\t\tonClick=\"mmpost([], {mm_viewurl: 'https://platform.openai.com/docs/quickstart'})\">\n\t\t\tOpenAI API Quickstart\n\t\t</span>\n  </p>"
+						}
+					},
+					{
+						"name": "intersection",
+						"Notes": "",
+						"DiagramX": 110,
+						"DiagramY": -160,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "x",
+								"Notes": "",
+								"DiagramX": 100,
+								"DiagramY": 100,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "solver.1*50+50"
+								}
+							},
+							{
+								"name": "solver",
+								"Notes": "",
+								"DiagramX": 200,
+								"DiagramY": 100,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Equation Solver",
+								"f0": "(x+5)^2 + 7 - (2000 - 20*x)",
+								"c0": "1",
+								"maxIter": 200,
+								"maxJacobians": 5,
+								"Enabled": "y"
+							},
+							{
+								"name": "xdomain",
+								"Notes": "",
+								"DiagramX": 100,
+								"DiagramY": 200,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "-100:100"
+								}
+							},
+							{
+								"name": "graph",
+								"Notes": "",
+								"DiagramX": 200,
+								"DiagramY": 200,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Graph",
+								"X1": {
+									"v": "xdomain",
+									"vmin": "",
+									"vmax": "",
+									"Y1": {
+										"v": "(xdomain+5)^2 + 7",
+										"vmin": "",
+										"vmax": "",
+										"lineType": 0
+									},
+									"Y2": {
+										"v": "2000 - 20*xdomain",
+										"vmin": "",
+										"vmax": "",
+										"lineType": 0
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "Updates",
+						"Notes": "",
+						"DiagramX": 110,
+						"DiagramY": -185,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<style>\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t.quote\n\t{\n\t\tcolor: green;\n\t\tmargin-left: 30px;\n\t}\n\t.main {\n\t\tbackground-color: #f2f2f2;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t}\n</style>\n<div class=\"main\">\n<h4>May 10, 2025</h4>\n<h3>More AI Fun</h3>\n<p>\n\tI am still intrigued by the potential of AI and as a result Math Minion is now the proud possessor of its very own OpenAI chat interface.\n</p>\n<p>\n\tWhile this can create models for simple problems, much like the GPT version discussed in the last update, it can also get feedback from MM and use that to try and correct errors or learn about a model.\n</p>\n<p>\n\t It also means you can correct it if it makes a mistake or have it make modifications to existing models. Having it add short notes to all the tools in a model is also a neat trick. You can even get it to move the icons on the diagram around to make more space.\n</p>\n<p>\n\tIt can do this because it knows about the underlying command structure that the user interface uses to drive the calculation engine. It uses these commands to instruct MM on what to do or query it about things.\n</p>\n<p>\n\tIn comparison to the GPT version, it also knows more about formula syntax and functions and also about all the tools except for the imported model and the html page.\n</p>\n<p>And sometimes it even gets things right! 😉</p>\n<p>\n\tBut is it really useful? It is far from error free and not terribly quick. I can't say I have used it much for creating models for real problems, but I have used it for some tedious tasks like telling it to create a bunch of input expressions from a list of names.\n</p>\n<p>\n\tAt the very least it is interesting to play with and gives a glimpse of the future. Given how fast AI models are improving, I suspect that future isn't very far away.\n</p>\n<p>\n\tAlas, it isn't free and you need an OpenAI API key in order to use it. You can add as little as $5 to your account and that goes farther than you might think. Telling it:\n</p>\n<p class=\"quote\">\nGiven equations:<br><br>\n\n(x+5)^2 +7<br><br>\n\n2000 - 20*x<br><br>\n\nCreate a model to calculate the intersection of the two curves.<br>\nUse 50 as a guess for x and have x 50 times the solver output.<br>\nAlso create a graph showing the two curves intersecting.\n</p>\n<p>\n\tResulted in the\n\t<span class=\"link\"\n\t\tonClick=\"mmpost({}, {mm_view: 'intersection'})\">\n\t\t\"Intersection\"\n\t</span>\t\n\tmodel and cost me about 6 cents.\n</p>\n<p>\n\tThe model\n\t<span class=\"link\"\n\t\tonClick=\"mmpost({}, {mm_view: 'OpenAI_Key'})\">\n\t\t\"OpenAI_Key\"\n</span> has instructions, generated by ChatGPT, for getting an OpenAI API key.\n</p>\n<h3>Console Changes</h3>\n<p>\n\tI gave the <b>Console</b> view a makeover so it now has the option to either give instructions to the AI or use it to issue commands to Math Minion. I won't go into details here, but there is information about it in the\n\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/console.html'})\">\n\t\t\tConsole help page\n\t\t</span>.\n</p>\n<p>\n\tThe console also now keeps a history of both the commands given and the results. These persist as long as the page/app is open. When the input field has focus, up and down arrows cycle through the commands, while shift-up and shift-down cycle through output frames.\n</p>\n\n<h3>Imported Models</h3>\n<p>\n\tThe imported model tool now has a menu for selecting the session to import. This makes a surprising difference in usability. It also has a number of other fixes to improve robustness.\n</p>\n<h3>Expression in a New Model</h3>\n<p>\n\tA while back I got the bright idea to have an expression created automatically when a new model is added. The idea was that creating an expression is often the first step in building a model. However, I found that wasn't the case as often as I imagined and was often annoyed at having to  delete the expression. New models are again just empty.\n</p>\n<h3>Miscellaneous Bug Fixes etc.</h3>\n<p>\n\tAs always there has been a number of minor changes and bug fixes. Some of these were quietly rolled out since the last update. Also some of the fixes were a result of the AI using commands in ways that wouldn't occur using the program normally.\n</p>\n<ul>\n\t<li>At some point, Chromium browsers started to show blank pages when the model was updated. This is now fixed, I think.</li>\n\t<li>An unrelated model view problem was that it wouldn't update in certain cases. This is also fixed.\t</li>\n\t<li>Added check to ODE solver for NextT not incrementing</li>\n\t<li>Some extra error checking in datatable to protect against bad commands</li>\n\t<li>Added some null value checks to formulaview</li>\n\t<li>Added a default Formula in case a column is added without one.</li>\n\t<li>Fixed bug with adding rows to datatable</li>\n\t<li>Added check in Model HTML generation to ensure element exist before assigning innerHTML</li>\n\t<li>Fix for React key problem in TableView with transposed tables</li>\n\t<li>If fx resulted in a NaN in Solver, an infinite loop could occur</li>\n\t<li>Fixed fatal error when trying to plot 3d graph with missing axis assignments</li>\n\t<li>Fixes to how optimizer handled isEnabled</li>\n\t<li>Fixed problem with wheel scrolling in TableView.</li>\n\t<li>Added a section to the\n\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/somethingwrong.html'})\">\n\t\t\t\t<b><i>Something Wrong</i> help page</b>\n\t\t</span>\n\t\tdescribing how to recover from a long running calculation.</li>\n</ul>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>\n</div>"
 						}
 					}
 				]
