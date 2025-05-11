@@ -392,17 +392,9 @@ export function ConsoleView(props) {
 				body.input.push({ role: "user", content: promptText });
 			}
 
-			// ⏳ Wait if less than 60 seconds since last call
 			const now = Date.now();
 			const last = openAIValues.lastPromptTime || 0;
 			const elapsed = now - last;
-			// const delay = Math.max(0, 1000 - elapsed);
-			// if (delay > 0) {
-			// 	// console.log(`🕒 Waiting ${Math.round(delay / 1000)}s to avoid rate limit...`);
-			// 	await new Promise(resolve => {
-			// 		showCountdownTimer(delay, resolve);
-			// 	});
-			// }
 			if(isMounted.current) { setIsWaiting(true); }
 			const response = await fetch("https://api.openai.com/v1/responses", {
 				method: "POST",
@@ -540,7 +532,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 			pushOutput(t('react:consoleUserPrompt', { prompt: userPrompt }));
 			try {
 				openAIValues.retryCount = 0;
-				const pathPrompt = t('react:consoleCurrentPath', { path: props.viewInfo.path });
+				const pathPrompt = t('You are currently in model ', { path: props.viewInfo.path });
 				const parsed = await openAIChat.sendPrompt(pathPrompt + userPrompt);
 				if (parsed.commands) {
 					try {
@@ -561,7 +553,6 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 				}
 				else {
 					updateOutput(t('react:consoleSuccessDone'));
-					// successCallback(t('react:consoleSuccessDone'));
 				}
 			}
 			catch(err) {
@@ -607,11 +598,6 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 	
 				try {
 					const result = await performCommand(cmd);
-					if (cmd.match(/''[^']/)) {
-						result.error = true;
-						result.message = t('react:consoleIllegalCommandSeparation');
-					}
-
 					if (result.error) {
 						return await cmdError(result);
 					}
