@@ -104,6 +104,19 @@ export function MatrixView(props) {
 		}
 	}, [updateResults])
 
+	useEffect(() => {
+		if (results.value) {
+			if (results.value.t === 't') {
+				const column = results.value?.v?.[currentCell[1] - 1];
+				if (column) {
+					setFormatString(column.format || '');
+				}
+				else {
+					setFormatString('');
+				}
+			}
+		}
+	}, [currentCell])
 
 	if (updateResults.error) {
 		// use empty command just to defer popView
@@ -123,9 +136,26 @@ export function MatrixView(props) {
 		);
 	}
 
-	const valueUnit = (value && value.unit) ? value.unit : '';
-	const unitType = (value && value.unitType) ? value.unitType : '';
-	const unitName = value ? value.unit : '';
+	const isTable = (value && value.t) === 't';
+	let unitType;
+	let valueUnit;
+	if (isTable) {	
+		if (currentCell[1] > 0 && value?.v?.[currentCell[1] - 1]?.v) {
+			const column = value.v[currentCell[1] - 1];
+			const v = column.v;
+			unitType = v.unitType;
+			valueUnit = v.unit;
+		}
+		else {
+			unitType = '';
+			valueUnit = '';
+		}
+	} else {
+		unitType = (value && value.unitType) ? value.unitType : '';
+		valueUnit = (value && value.unit) ? value.unit : '';
+	}
+	const unitName = valueUnit;
+
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 
@@ -174,7 +204,8 @@ export function MatrixView(props) {
 						setDisplay(MatrixDisplay.table);
 					},
 					apply: (unit) => {
-						props.actions.doCommand(`${props.viewInfo.path} set displayUnitName ${unit}`, () => {
+						let cmd = (currentCell[1] > 0) ? `setcolumnunit ${currentCell[1]} ${unit}` : `set displayUnitName ${unit}`;						
+						props.actions.doCommand(`${props.viewInfo.path} ${cmd}`, () => {
 							props.actions.updateView(props.viewInfo.stackIndex);
 							setDisplay(MatrixDisplay.table);
 						});						
@@ -300,7 +331,9 @@ export function MatrixView(props) {
 							},
 							onBlur: () => {
 								// set the expression format
-								const cmd = `${props.viewInfo.path} set format ${formatString}`;
+								const cmd = isTable ?
+									`${props.viewInfo.path} setcolumnformat ${currentCell[1]} ${formatString}` :
+									`${props.viewInfo.path} set format ${formatString}`;
 								props.actions.doCommand(cmd, () => {
 									props.actions.updateView(props.viewInfo.stackIndex);
 								});

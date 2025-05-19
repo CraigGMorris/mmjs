@@ -396,7 +396,12 @@ const pointerMove = useCallback(e => {
 					colorClass = 'tableview__cell--selected';
 				}
 				else if (cellInputs && cellInputs[`${offsetRow}_${offsetColumn}`]) {
-					colorClass = 'tableview__cell--input';
+					if (cellInputs[`${offsetRow}_${offsetColumn}`].state === 'e') {
+						colorClass = 'tableview__cell--error';
+					}
+					else {
+						colorClass = 'tableview__cell--input';
+					}
 				}
 				else {
 					colorClass = 'tableview__cell--' + ((row + rowOrigin) % 2 ? (

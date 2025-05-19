@@ -21,6 +21,7 @@
 	--tableview__value--bgcolor: rgba(238,255,238,1);
 	--tableview__input--color: rgba(254,239,167,1);
 	--tableview__selected-color: rgb(165, 214, 81);
+	--tableview__error--color: rgb(255, 100, 100);
 	--selected__list--bgcolor: rgb(79, 85, 116);
 	--expr-table-row-color: rgb(79, 85, 116);
 	--subtext--color: darkgray;
@@ -48,6 +49,7 @@
 		--tableview__value--stroke-color: black;
 		--tableview__value--bgcolor: rgba(238,255,238,1);
 		--tableview__input--color: rgba(254,239,167,1);	
+		--tableview__error--color: rgb(255, 100, 100);
 		--selected__list--bgcolor: lightgray;
 		--expr-table-row-color: lightgray;
 		--subtext--color: rgb(102, 101, 101);
@@ -1834,6 +1836,10 @@ a:hover {
 
 .tableview__cell--input {
 	fill: var(--tableview__input--color);
+}
+
+.tableview__cell--error {
+	fill: var(--tableview__error--color);
 }
 
 #tableview__string-text, #tableview__scalar-string {

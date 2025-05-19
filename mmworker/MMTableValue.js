@@ -745,6 +745,25 @@ class MMTableValue extends MMValue {
 	}
 
 	/**
+	 * 
+	 * @returns 
+	 */
+	copyOf() {
+		const newColumns = [];
+		for (const column of this.columns) {
+			const newColumn = new MMTableValueColumn({
+				name: column.name,
+				displayUnit: column?.displayUnit?.name,
+				format: column?.format,
+				value: column.value
+			});
+			newColumns.push(newColumn);
+		}
+
+		return new MMTableValue({columns: newColumns});
+	}
+
+	/**
 	 * @method valueForColumnNumber
 	 * @override
 	 * @param {Number} number 
@@ -929,10 +948,7 @@ class MMTableValue extends MMValue {
 		const nc =  this.columnCount;
 		for (let i = 0; i < nc; i++) {
 			const column = this.columns[i];
-			// const displayUnit = (displayUnits && i < displayUnits.length) ? displayUnits[i] : column.displayUnit;
-			const displayUnit = displayUnits ? displayUnits[i + 1] : null;
-			const format = formats ? formats[i + 1] : null;
-			columns.push(column.jsonValue(displayUnit, format));
+			columns.push(column.jsonValue(displayUnits?.[i + 1], formats?.[i + 1]));
 		}
 
 		const returnValue = {

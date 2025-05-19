@@ -479,7 +479,6 @@ class MMExpression extends MMTool {
 			this.forgetCalculated();
 			return;
 		}
-		this.setError('mmcmd:_setColumnUnit', {});
 	}
 
 	/**
