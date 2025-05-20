@@ -90,12 +90,9 @@ export function MatrixView(props) {
 
 	useEffect(() => {
 		const results = updateResults.length ? updateResults[0].results : {};
-		if (results.value && results.value.format) {
-			setFormatString(results.value.format);
-		}
-		else {
-			setFormatString('');
-		}
+		const format = results?.columnFormats?.[currentCell[1]] || results?.columnFormats?.[0] || '';
+		setFormatString(format);
+
 		if (results.columnCountFormula) {
 			setColumnCountFormula(results.columnCountFormula);
 		}
@@ -105,17 +102,8 @@ export function MatrixView(props) {
 	}, [updateResults])
 
 	useEffect(() => {
-		if (results.value) {
-			if (results.value.t === 't') {
-				const column = results.value?.v?.[currentCell[1] - 1];
-				if (column) {
-					setFormatString(column.format || '');
-				}
-				else {
-					setFormatString('');
-				}
-			}
-		}
+		const format = results?.columnFormats?.[currentCell[1]] || results?.columnFormats?.[0] || '';
+		setFormatString(format);
 	}, [currentCell])
 
 	if (updateResults.error) {
@@ -137,24 +125,8 @@ export function MatrixView(props) {
 	}
 
 	const isTable = (value && value.t) === 't';
-	let unitType;
-	let valueUnit;
-	if (isTable) {	
-		if (currentCell[1] > 0 && value?.v?.[currentCell[1] - 1]?.v) {
-			const column = value.v[currentCell[1] - 1];
-			const v = column.v;
-			unitType = v.unitType;
-			valueUnit = v.unit;
-		}
-		else {
-			unitType = '';
-			valueUnit = '';
-		}
-	} else {
-		unitType = (value && value.unitType) ? value.unitType : '';
-		valueUnit = (value && value.unit) ? value.unit : '';
-	}
-	const unitName = valueUnit;
+	let unitType = results.columnUnitType[currentCell[1]] || results.columnUnitType[0];
+	const unitName = results.columnUnits[currentCell[1]] || results.columnUnits[0];
 
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
@@ -204,7 +176,7 @@ export function MatrixView(props) {
 						setDisplay(MatrixDisplay.table);
 					},
 					apply: (unit) => {
-						let cmd = (currentCell[1] > 0) ? `setcolumnunit ${currentCell[1]} ${unit}` : `set displayUnitName ${unit}`;						
+						let cmd = `setcolumnunit ${currentCell[1]} ${unit}`;						
 						props.actions.doCommand(`${props.viewInfo.path} ${cmd}`, () => {
 							props.actions.updateView(props.viewInfo.stackIndex);
 							setDisplay(MatrixDisplay.table);
@@ -312,7 +284,7 @@ export function MatrixView(props) {
 								setDisplay(MatrixDisplay.unitPicker);
 							}
 						},
-						`${unitType}: ${valueUnit}`,
+						`${unitType}: ${unitName}`,
 					),
 					e(
 						'input', {

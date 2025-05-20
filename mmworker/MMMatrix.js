@@ -76,7 +76,7 @@ class MMMatrixInputValue {
 
 	resetInput(inputString, owner) {
 		this._input = null;
-		const displayUnit = owner.columnUnits[this.column] || owner.displayUnit;
+		const displayUnit = owner.getColumnUnit(this.column);
 
 		// first check for number and unit separated by spaces
 		const tokens = inputString.split(/\s+/);
@@ -94,19 +94,9 @@ class MMMatrixInputValue {
 					throw(owner.t('mmunit:unknownUnit', {name: unitName}));
 				}
 				if (!MMUnitSystem.areDimensionsEqual(unit.dimensions, displayUnit ? displayUnit.dimensions : null)) {
-					if (this.row === 0 && this.column === 0) {
-						// the * cell - use its units
-						owner.displayUnit = unit;
-					}
-					else if (this.row === 0 && this.column > 0) {
-						// a column header - use the unit assigned to the column
-						owner.setColumnUnit(this.column, unit);
-					}
-					else {
-						this.value = 0.0;
-						this.state = MatrixValueState.error;
-						throw(owner.t('mmcmd:matrixWrongUnitType', {path: owner.getPath(), input: inputString}))
-					}
+					this.value = 0.0;
+					this.state = MatrixValueState.error;
+					throw(owner.t('mmcmd:matrixWrongUnitType', {path: owner.getPath(), input: inputString}))
 				}
 				this.value = unit.convertToBase(value);
 				return;
@@ -119,7 +109,7 @@ class MMMatrixInputValue {
 		if (!isNaN(value)) {
 			if (displayUnit) {
 				this.value = displayUnit.convertToBase(value);
-				inputString = `${inputString} ${displayUnit.name}`;
+				// inputString = `${inputString} ${displayUnit.name}`;
 			}
 			else {
 				this.value = value;
@@ -134,9 +124,13 @@ class MMMatrixInputValue {
 		formula.formula = inputString;
 		this._input = formula;
 		this.state = MatrixValueState.formula;
-		// if (this.row === 0 &&  owner.columnUnits?.[this.column]) {
-		// 	owner.setColumnUnit(this.column, null);
-		// }
+	}
+
+	// check the the inputstring has the same unit type as the column unit
+	checkInputUnit(owner) {
+		if (this.state === MatrixValueState.string) {
+			this.resetInput(this._input, owner);
+		}
 	}
 
 	get input() {
@@ -160,7 +154,7 @@ class MMMatrixInputValue {
 	 * @param {MMMatrix} owner 
 	 */
 	numberValue(owner) {
-		const displayUnit = owner.columnUnits[this.column] || owner.displayUnit;
+		const displayUnit = owner.getColumnUnit(this.column);
 
 		if (this.state === MatrixValueState.formula) {
 			let value = this._input.value();
@@ -179,17 +173,12 @@ class MMMatrixInputValue {
 
 				const dimensions = displayUnit?.dimensions;
 				if (!MMUnitSystem.areDimensionsEqual(value.unitDimensions, dimensions)) {
-					if (this.row === 0) {
-						owner.setColumnUnit(this.column, theMMSession.unitSystem.defaultUnitWithDimensions(value.unitDimensions));
-					}
-					else {
-						this._input = this._input.formula;
-						this.state = MatrixValueState.error;
-						owner.setWarning('mmcmd:matrixWrongUnitType', {
-							path: owner.getPath(),
-							input: this._input
-						});
-					}
+					this._input = this._input.formula;
+					this.state = MatrixValueState.error;
+					owner.setWarning('mmcmd:matrixWrongUnitType', {
+						path: owner.getPath(),
+						input: this._input
+					});
 				}
 
 				return value;
@@ -237,9 +226,10 @@ class MMMatrix extends MMTool {
 		super(name, parentModel, 'Matrix');
 		this.cellInputs = {};
 		this.value = null;
-		this.displayUnit = null; // the unit assigned to origin cell used for all columns that don't have a unit assigned
-		this.columnUnits = [];	// units assigned to each column. Can have null entries for columns that don't have a unit assigned
-														// if the columnUnits array is empty, the calculated value will be a MMNumberValue, otherwise it will be a MMTableValue
+		this.columnUnits = [theMMSession.unitSystem.unitNamed('Fraction')];
+		// units assigned to each column. Can have null entries for columns that don't have a unit assigned
+		// the unit type for the origin cell will be used for all columns that don't have a unit assigned
+		// if only the origin cell has a unit assigned, the calculated value will be a MMNumberValue, otherwise it will be a MMTableValue
 		this.columnFormats = []; // formats assigned to each column. Can have null entries for columns that don't have a format assigned
 		this.calculatedColumnCount = 1;
 		this.rowCountFormula = new MMFormula('rowCount', this);
@@ -292,44 +282,7 @@ class MMMatrix extends MMTool {
 	/** @override */
 	get properties() {
 		let d = super.properties;
-		d['displayUnitName'] = {type: MMPropertyType.string, readOnly: false};
-		d['format'] = {type: MMPropertyType.string, readOnly: false}; // for display
 		return d;
-	}
-
-	get displayUnitName() {
-		return (this.displayUnit) ? this.displayUnit.name : null;
-	}
-
-	set displayUnitName(unitName) {
-		if (!unitName) {
-			if (this.displayUnit) {
-				this.displayUnit = null;
-				this.refreshRequestors();
-			}
-		}
-		else {
-			if (!this.displayUnit || this.displayUnit.name !== unitName) {
-				const unit = theMMSession.unitSystem.unitNamed(unitName);
-				if (!unit) {
-					throw(this.t('mmunit:unknownUnit', {name: unitName}));
-				}
-				this.displayUnit = unit;
-				this.refreshRequestors();
-			}
-		}
-	}
-
-	get format() {``
-		return this._format;
-	}
-
-	set format(format) {
-		this._format = format;
-		if (this.value && this.value.displayFormat !== format) {
-			this.value.displayFormat = format;
-		}
-		this.refreshRequestors();
 	}
 
 	/**
@@ -359,6 +312,9 @@ class MMMatrix extends MMTool {
 		results['columnCountFormula'] = this.columnCountFormula.formula;
 		results['rowCount'] = this.rowCount;
 		results['columnCount'] = this.columnCount;
+		results['columnUnits'] = this.columnUnits.map(unit => unit?.name);
+		results['columnUnitType'] = this.columnUnits.map(unit => unit?.name ? theMMSession.unitSystem.typeNameForUnitNamed(unit.name) : null);
+		results['columnFormats'] = this.columnFormats;
 		if (!this.value && !this.isCalculating) {
 			this.calculateValue();
 		}
@@ -391,10 +347,11 @@ class MMMatrix extends MMTool {
 		let json = {}
 		if (this.value) {
 			if (this.value instanceof MMTableValue) {
-				json = this.value.jsonValue(this.columnUnits, this.columnFormats);
+				const formats = this.columnFormats.map(format => format ? format : this.columnFormats[0]);
+				json = this.value.jsonValue(this.columnUnits, formats);
 			}
 			else {
-				json = this.value.jsonValue(this.displayUnit);
+				json = this.value.jsonValue(this.columnUnits[0]);
 			}
 		}
 		return json;
@@ -423,25 +380,25 @@ class MMMatrix extends MMTool {
 	}
 
 	/**
-	 * @override refreshRequestors
+	 * @method refreshRequestors
 	 * essentially forgetCalculated without recalculating value
 	 * used for unit and format change
 	 */
-	refreshRequestors() {
-		if (!this.forgetRecursionBlockIsOn) {
-			try {
-				this.forgetRecursionBlockIsOn = true;
-				for (const requestor of this.valueRequestors) {
-					requestor.forgetCalculated();
-				}
-				this.valueRequestors.clear();
-				super.forgetCalculated();
-			}
-			finally {
-				this.forgetRecursionBlockIsOn = false;
-			}
-		}
-	}
+	// refreshRequestors() {
+	// 	if (!this.forgetRecursionBlockIsOn) {
+	// 		try {
+	// 			this.forgetRecursionBlockIsOn = true;
+	// 			for (const requestor of this.valueRequestors) {
+	// 				requestor.forgetCalculated();
+	// 			}
+	// 			this.valueRequestors.clear();
+	// 			super.forgetCalculated();
+	// 		}
+	// 		finally {
+	// 			this.forgetRecursionBlockIsOn = false;
+	// 		}
+	// 	}
+	// }
 
 	/**
 	 * @method inputSources
@@ -471,14 +428,10 @@ class MMMatrix extends MMTool {
 	saveObject() {
 		let o =   super.saveObject();
 		o['Type'] = 'Matrix';
-		if (this.displayUnit) {
-			o['unit'] = this.displayUnit.name;
-		}
 		if (this.columnUnits.length > 0) {
 			o['columnUnits'] = this.columnUnits.map(unit => unit?.name);
 		}
 
-		if (this.format) { o['format'] = this.format; }
 		if (this.columnFormats.length > 0) {
 			o['columnFormats'] = this?.columnFormats;
 		}
@@ -503,25 +456,21 @@ class MMMatrix extends MMTool {
 		const unitName = saved.unit;
 		try {
 			if (unitName) {
-				this.displayUnit = theMMSession.unitSystem.unitNamed(unitName);
+				this.columnUnits[0] = theMMSession.unitSystem.unitNamed(unitName);
 			}
-		}
-		catch(e) {
-			this.caughtException(e);
-			this.displayUnit = null;
-		}
-
-		try {
-			if (saved.columnUnits) {
+			else if (saved.columnUnits) {
 				this.columnUnits = saved.columnUnits.map(unitName => theMMSession.unitSystem.unitNamed(unitName));
 			}
+			else {
+				this.columnUnits = [theMMSession.unitSystem.unitNamed('Fraction')];
+			}
 		}
 		catch(e) {
 			this.caughtException(e);
-			this.columnUnits = [];
+			this.columnUnits = [theMMSession.unitSystem.unitNamed('Fraction')];
 		}
 
-		if (saved.format) { this.format = saved.format; }
+		if (saved.format) { this.columnFormats[0] = saved.format; }
 		if (saved.columnFormats) {
 			this.columnFormats = saved.columnFormats;
 		}
@@ -577,7 +526,6 @@ class MMMatrix extends MMTool {
 				}
 				catch(e) {
 					this.setWarning('mmcmd:matrixRowCountHasUnit', {formula: this.rowCountFormula.formula})
-//					throw(this.t('mmcmd:matrixRowCountHasUnit', {formula: this.rowCountFormula.formula}));
 					countValue = null;
 				}
 			}
@@ -613,9 +561,8 @@ class MMMatrix extends MMTool {
 				let value = countValue.valueAtRowColumn(1, 1);
 				if (value > 0) {
 					this.calculatedColumnCount = value;
-					if (this.columnUnits.length - 1 > value) { // -1 because of origin cell
-						this.setColumnUnit(value, null);
-					}
+					this.columnUnits.length = value + 1; // +1 for origin cell
+					this.columnFormats.length = value + 1;
 				}
 			}
 		}
@@ -681,20 +628,27 @@ class MMMatrix extends MMTool {
 	setColumnUnit(column, unit) {
 		if (unit) {
 			this.columnUnits[column] = unit;
-			this.forgetCalculated();
 		}
 		else {
-			this.columnUnits[column] = null;
-			// check for at least one column with a unit
-			for (let i = 0; i < this.columnUnits.length; i++) {
-				if (this.columnUnits[i]) {
-					return;
-				}
+			if (column === 0) {
+				this.columnUnits[0] = theMMSession.unitSystem.unitNamed('Fraction');
 			}
-			this.columnUnits = [];
+			else {
+				this.columnUnits[column] = null;
+			}
 		}
+		this.forgetCalculated();
 	}
 
+	/**
+	 * @method getColumnUnit
+	 * @param {Number} column
+	 * @returns {MMUnit}
+	 */
+		getColumnUnit(column) {
+			return this.columnUnits[column] || this.columnUnits[0];
+		}
+	
 	/** @method setColumnUnitCommand
 	 * set unit for a column
 	 * @param {MMCommand} command
@@ -702,21 +656,30 @@ class MMMatrix extends MMTool {
 	 */
 
 	setColumnUnitCommand(command) {
-		const indicesMatch = command.args.match(/^\d+\s+\S+/);
-		if (indicesMatch) {
-			const parts = indicesMatch[0].split(/\s+/,2);
-			if (parts.length >= 2) {
-				const column = Number(parts[0]);
-				const unitName = parts[1];
-				if (isNaN(column) || column < 1 || column > this.columnCount) {
-					throw(this.t('mmcmd:matrixColumnNumberError', { path: this.getPath(), args: command.args }));
+		const parts = command.args.split(/\s+/);
+		if (parts.length >= 1) {
+			const column = Number(parts[0]);
+			const unitName = parts[1];
+			if (isNaN(column) || column < 0 || column > this.columnCount) {
+				throw(this.t('mmcmd:matrixColumnNumberError', { path: this.getPath(), args: command.args }));
+			}
+			try {
+				if (this.columnUnits[column]?.name !== unitName) {
+					if (unitName) {
+						this.setColumnUnit(column, theMMSession.unitSystem.unitNamed(unitName));
+					}
+					else if (column > 0) {
+						this.setColumnUnit(column, null);
+					}
 				}
-				try {
-					this.setColumnUnit(column, theMMSession.unitSystem.unitNamed(unitName));
+				for (const input of Object.values(this.cellInputs)) {
+					if (input.column === column) {
+						input.checkInputUnit(this);
+					}
 				}
-				catch(e) {
-					this.setWarning('mmcmd:matrixSetColumnUnitError', {path: this.getPath(), args: command.args});
-				}
+			}
+			catch(e) {
+				this.setWarning('mmcmd:matrixSetColumnUnitError', {path: this.getPath(), args: command.args});
 			}
 		}
 	}
@@ -727,17 +690,14 @@ class MMMatrix extends MMTool {
 	 * @param {String} format
 	 */
 	setColumnFormatCommand(command) {
-		const indicesMatch = command.args.match(/^\d+\s+\S+/);
-		if (indicesMatch) {
-			const parts = indicesMatch[0].split(/\s+/,2);
-			if (parts.length >= 2) {
-				const column = Number(parts[0]);
-				const format = parts[1];
-				if (isNaN(column) || column < 1 || column > this.columnCount) {
-					throw(this.t('mmcmd:matrixColumnNumberError', { path: this.getPath(), args: command.args }));
-				}
-				this.columnFormats[column] = format;
+		const parts = command.args.split(/\s+/);
+		if (parts.length >= 1) {
+			const column = Number(parts[0]);
+			const format = parts[1];
+			if (isNaN(column) || column < 0 || column > this.columnCount) {
+				throw(this.t('mmcmd:matrixColumnNumberError', { path: this.getPath(), args: command.args }));
 			}
+			this.columnFormats[column] = format;
 		}
 	}
 
@@ -759,13 +719,6 @@ class MMMatrix extends MMTool {
 			}
 			if (inputValue.state === MatrixValueState.error || inputValue.input !== inputString) {
 				inputValue.setInput(inputString, this);
-				if (column === 0) {
-					// default cell may have changed matrix units - reset all inputs to clear errors
-					for (const key in this.cellInputs) {
-						const v = this.cellInputs[key];
-						v.resetInput(v.input, this);
-					}
-				}
 				this.forgetCalculated();
 			}
 		}
@@ -790,11 +743,18 @@ class MMMatrix extends MMTool {
 			}
 
 			this.recursionCount = 0;
-			const dimensions = this.columnUnits.length ? null : this?.displayUnit?.dimensions;
-			this.value = new MMNumberValue(rowCount, columnCount, dimensions);
-			if (this.format) {
-				this.value.displayFormat = this.format;
+			// check to see if any columns have a unit assigned
+			let hasUnits = false;
+			for (let column = 1; column <= columnCount; column++) {
+				if (this.columnUnits[column]) {
+					hasUnits = true;
+				}
 			}
+
+			const dimensions = hasUnits ? null : this?.columnUnits?.[0]?.dimensions;
+			
+			// a unitless number value is used for the calculations
+			this.value = new MMNumberValue(rowCount, columnCount, dimensions);
 			this.knowns = [];
 
 			for (let column = 1; column <= columnCount; column++) {
@@ -823,10 +783,10 @@ class MMMatrix extends MMTool {
 					}
 				}
 			}
-			if (this.columnUnits.length > 0) {
+			if (hasUnits) {
 				const columnValues = [];
 				for (let column = 1; column <= columnCount; column++) {
-					const columnDimensions = this.columnUnits?.[column]?.dimensions || this.displayUnit?.dimensions;
+					const columnDimensions = this.columnUnits?.[column]?.dimensions || this.columnUnits[0]?.dimensions;
 					const value = new MMNumberValue(rowCount, 1, columnDimensions);
 					for (let row = 1; row <= rowCount; row++) {
 						value.setValue(this.value.valueAtRowColumn(row, column), row, 1);
@@ -843,7 +803,7 @@ class MMMatrix extends MMTool {
 					}
 					const columnValue = new MMTableValueColumn({
 						name: name,
-						displayUnit: this.columnUnits[column]?.name || this.displayUnitName,
+						displayUnit: this.columnUnits[column]?.name || this.columnUnits[0]?.name,
 						value: value
 					});
 					columnValues.push(columnValue);
@@ -955,11 +915,9 @@ class MMMatrix extends MMTool {
 	 */
 	numberValueAtOffsets(rowOffset, columnOffset) {
 		const value = this.numberValue(this.currentRow + rowOffset, this.currentColumn + columnOffset);
-		if (value && this.columnUnits.length > 0) {
-			const columnUnit = this.columnUnits[this.currentColumn + columnOffset];
-			if (columnUnit) {
-				value.setUnitDimensions(columnUnit.dimensions);
-			}
+		const columnUnit = this.columnUnits[this.currentColumn + columnOffset] || this.columnUnits[0];
+		if (columnUnit) {
+			value?.setUnitDimensions(columnUnit.dimensions);
 		}
 		return value;
 	}
@@ -977,15 +935,17 @@ class MMMatrix extends MMTool {
 		const returnValue = (v) => {
 			if (v) {
 				if (v instanceof MMNumberValue) {
+					const displayUnit = this.columnUnits[this.currentColumn] || this.columnUnits[0];
+					const format = this.columnFormats[this.currentColumn] || this.columnFormats[0];
 					if (
-						(this.displayUnit && this.displayUnit !== v.displayUnit) ||
-						(this.format && this.format !== v.format)
+						(displayUnit && displayUnit !== v.displayUnit) ||
+						(format && format !== v.format)
 					)
 					{
 						v = v.copyOf();
 						if (v instanceof MMNumberValue) {
-							v.displayUnit = this.displayUnit;
-							v.displayFormat = this.format;
+							v.displayUnit = displayUnit;
+							v.displayFormat = format;
 						}
 					}
 					return v;
@@ -1068,7 +1028,7 @@ class MMMatrix extends MMTool {
 					}
 					const tableColumn = new MMTableValueColumn({
 						name:`${column}`,
-						displayUnit: this.displayUnitName,
+						displayUnit: this.columnUnits[0]?.name,
 						value: columnValue
 					});
 					a.push(tableColumn);
