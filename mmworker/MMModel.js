@@ -348,7 +348,7 @@ class MMModel extends MMTool {
 	 * @method restoreTool - adds a tool from json - for undo
 	 * @param {Object} tool - from json
 	 */
-	restoreTool(tool) {
+	async restoreTool(tool) {
 		const name = tool.name;
 		const typeName = tool.Type
 			.replace('ODE Solver','Ode')
@@ -361,7 +361,7 @@ class MMModel extends MMTool {
 			throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: tool.Type}));
 		}
 		let newTool = toolType.factory(name, this);
-		newTool.initFromSaved(tool);
+		await newTool.initFromSaved(tool);
 	}
 
 	/**
@@ -370,11 +370,11 @@ class MMModel extends MMTool {
 	 * command.args should be the undo json
 	 * in the form  /.x restoretool  followed by the json text
 	 */
-	restoreToolCommand(command) {
+	async restoreToolCommand(command) {
 		const savedTools = JSON.parse(command.args);
 
 		for (let saved of savedTools) {
-			this.restoreTool(saved);
+			await this.restoreTool(saved);
 		}
 		const names = savedTools.map(t => t.name);
 		command.undo = `${this.getPath()} removetool ${names.join(' ')}`
@@ -583,7 +583,7 @@ class MMModel extends MMTool {
 	 * command.args should be the tool x y toolJson
 	 * in the form  /.x paste x y  followed by the json text
 	 */
-	pasteCommand(command) {
+	async pasteCommand(command) {
 		const indicesMatch = command.args.match(/^-*?[\d.]+\s+-*?[\d.]+\s+/);
 		if (indicesMatch) {
 			const parts = indicesMatch[0].split(/\s+/,2);
@@ -668,7 +668,7 @@ class MMModel extends MMTool {
 									toolInfo.name = `${name}_${number++}`;
 								}
 								names.push(toolInfo.name);
-								this.restoreTool(toolInfo);
+								await this.restoreTool(toolInfo);
 							}
 							command.undo = `${this.getPath()} removetool ${names.join(' ')}`
 						}
@@ -1418,7 +1418,7 @@ class MMModel extends MMTool {
 			const undoCommand = this.makeImportUndo();
 			const restoreInfo = JSON.parse(command.args);
 			const importToRestore = new MMImportModelInfo();
-			importToRestore.initFromSaved(restoreInfo);
+			await importToRestore.initFromSaved(restoreInfo);
 			await this.setImportInfo(importToRestore);
 			command.undo = undoCommand;
 			command.results = importToRestore;
