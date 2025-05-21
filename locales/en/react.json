@@ -76,7 +76,7 @@
 	"dataRowPrevButton": "⬆︎",
 	"dataRowTitle": "Record {{row}} of {{nr}}{{allNr}}",
 	"dataUpdateButton": "Update",
-	"dgmButtonAddExpr": "Add Expresion",
+	"dgmButtonAddExpr": "Add Expression",
 	"dgmButtonAddModel": "Add Model",
 	"dgmButtonAddDisplay": "Add Display Tool",
 	"dgmButtonAddTool": "Add Calculation Tool",
