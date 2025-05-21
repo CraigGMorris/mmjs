@@ -28,7 +28,7 @@
 	"consoleFailedToStringify": "❌ Failed to stringify dgminfo.",
 	"consoleInvalidInputTarget": "invalid input target in console - this is a bug",
 	"consoleNeedOpenAIApiKey": "You need an OpenAI API key for this feature\nPlease enter \"/ aikey openai <your API key>\"\nin the console before proceeding",
-	"consoleNoAssistantOutput": "⚠️ No assistant output found.",
+	"consoleNoAssistantOutput": "⚠️ No assistant output found.\n{{msg}}",
 	"consoleNoCommandsToExecute": "No commands to execute",
 	"consoleNoValidQueryArray": "⚠️ Assistant did not return a valid query array. Skipping retry.",
 	"consoleOpenAIFail": "OpenAI Fail",
