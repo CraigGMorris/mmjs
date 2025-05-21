@@ -549,6 +549,8 @@ export class SessionsView extends React.Component {
 								// add a folder entry
 								foundFolders.add(path);
 								// hide the normal entry and add a folder one
+								// strip off the root folder
+								const displayPath = path.replace(rootFolder, '');
 								showPath = false;
 								let cmp = e(
 									'div', {
@@ -566,7 +568,7 @@ export class SessionsView extends React.Component {
 												})
 											},
 										},
-										path
+										displayPath
 									),
 									e(
 										'div', {
