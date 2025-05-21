@@ -444,7 +444,7 @@ export function ConsoleView(props) {
 			}
 			if (!raw) {
 				console.log(`openAIChat: no assistant output ${JSON.stringify(data)}`);
-				updateOutput(t('react:consoleNoAssistantOutput'));
+				updateOutput(t('react:consoleNoAssistantOutput', { msg: JSON.stringify(data) }));
 				return;
 			}
 			// Remove code block formatting
