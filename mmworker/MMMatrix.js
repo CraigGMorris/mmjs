@@ -296,6 +296,11 @@ class MMMatrix extends MMTool {
 		p.push('nrows');
 		p.push('ncols');
 		p.push('1_1');
+		if (this.value instanceof MMTableValue) {
+			for (let i = 0; i < this.columnCount; i++) {
+				p.push(this.value.columnHeader(i+1));
+			}
+		}
 		return p;
 	}
 
@@ -889,6 +894,8 @@ class MMMatrix extends MMTool {
 		}
 
 		this.recursionCount++;
+		const savedRow = this.currentRow;
+		const savedColumn = this.currentColumn;
 		this.currentRow = row;
 		this.currentColumn = column;
 		let inputValue = this.cellInputs[`${row}_${column}`];
@@ -904,6 +911,8 @@ class MMMatrix extends MMTool {
 
 		const rv = inputValue?.numberValue(this);
 		this.recursionCount--;
+		this.currentRow = savedRow;
+		this.currentColumn = savedColumn;
 		return rv;
 	}
 
