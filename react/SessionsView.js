@@ -225,7 +225,7 @@ export class SessionsView extends React.Component {
 		let clipSession = async (path) => {
 			await this.props.actions.doCommand(
 				`/ getjson ${path}`,
-				(results) => {
+				async (results) => {
 					let json;
 					if (path.endsWith('/')) {
 						json = JSON.stringify(results[0].results, null, '\t');
@@ -233,7 +233,12 @@ export class SessionsView extends React.Component {
 					else {
 						json = results[0].results;
 					}
-					writeClipboard(json);
+					try {
+						await writeClipboard(json);
+					}
+					catch (error) {
+						alert(`Clip Session Error ${error}`);
+					}
 					this.setState({menuPath: ''});
 				}
 			)
@@ -385,7 +390,9 @@ export class SessionsView extends React.Component {
 					id: 'sessions__menu-clip',
 					key: 'menu-clip',
 					className: 'sessions__menu-button',
-					onClick: () => {
+					onPointerUp: (e) => {
+						e.stopPropagation();
+						e.preventDefault();
 						clipSession(this.state.menuPath);
 					},
 				},
