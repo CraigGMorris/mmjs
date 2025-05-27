@@ -356,7 +356,7 @@ class MMMatrix extends MMTool {
 				json = this.value.jsonValue(this.columnUnits, formats);
 			}
 			else {
-				json = this.value.jsonValue(this.columnUnits[0]);
+				json = this.value.jsonValue(this.columnUnits[0], this.columnFormats[0]);
 			}
 		}
 		return json;
@@ -762,8 +762,8 @@ class MMMatrix extends MMTool {
 			this.value = new MMNumberValue(rowCount, columnCount, dimensions);
 			this.knowns = [];
 
-			for (let column = 1; column <= columnCount; column++) {
-				for (let row = 1; row <= rowCount; row++) {
+			for (let row = 1; row <= rowCount; row++) {
+				for (let column = 1; column <= columnCount; column++) {
 					let offset = (row-1)*this.columnCount + column-1
 					if (!this.knowns[offset]) {
 						let number = null;
@@ -883,7 +883,7 @@ class MMMatrix extends MMTool {
 			return null;
 		}
 
-		if (this.recursionCount > (this.rowCount + this.columnCount)) {
+		if (this.recursionCount > (this.rowCount * this.columnCount)) {
 			this.setWarning('mmcmd:matrixNestingError', {path: this.getPath()});
 			return null;
 		}
@@ -910,6 +910,10 @@ class MMMatrix extends MMTool {
 		}
 
 		const rv = inputValue?.numberValue(this);
+		if (rv) {
+			this.value.setValue(rv.valueAtCount(0), row, column);
+			this.knowns[offset] = true;
+		}
 		this.recursionCount--;
 		this.currentRow = savedRow;
 		this.currentColumn = savedColumn;

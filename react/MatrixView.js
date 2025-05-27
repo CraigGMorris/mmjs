@@ -303,9 +303,7 @@ export function MatrixView(props) {
 							},
 							onBlur: () => {
 								// set the expression format
-								const cmd = isTable ?
-									`${props.viewInfo.path} setcolumnformat ${currentCell[1]} ${formatString}` :
-									`${props.viewInfo.path} set format ${formatString}`;
+								const cmd = `${props.viewInfo.path} setcolumnformat ${currentCell[1]} ${formatString}`;
 								props.actions.doCommand(cmd, () => {
 									props.actions.updateView(props.viewInfo.stackIndex);
 								});

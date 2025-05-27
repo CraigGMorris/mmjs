@@ -10,8 +10,8 @@
 	],
 	"CaseName": "MM_News",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "Updates",
-	"ModelPath": "/.root.May_10_2025",
+	"SelectedObject": "May_26_2025",
+	"ModelPath": "/.root.Older_Articles.May_26_2025",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
@@ -37,8 +37,8 @@
 					{
 						"name": "News_20211010",
 						"Notes": "",
-						"DiagramX": 155,
-						"DiagramY": -160,
+						"DiagramX": 225,
+						"DiagramY": -135,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -345,8 +345,8 @@
 					{
 						"name": "News_20210910",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": -160,
+						"DiagramX": 225,
+						"DiagramY": -110,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -724,7 +724,7 @@
 						"name": "News_20210703",
 						"Notes": "",
 						"DiagramX": 225,
-						"DiagramY": -185,
+						"DiagramY": -85,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -750,8 +750,8 @@
 					{
 						"name": "News_20210621",
 						"Notes": "",
-						"DiagramX": 155,
-						"DiagramY": -185,
+						"DiagramX": 225,
+						"DiagramY": -60,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -790,8 +790,8 @@
 					{
 						"name": "News_20220121",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": -135,
+						"DiagramX": 225,
+						"DiagramY": -185,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1362,7 +1362,7 @@
 						"name": "News_20220226",
 						"Notes": "",
 						"DiagramX": 155,
-						"DiagramY": -135,
+						"DiagramY": -10,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1740,8 +1740,8 @@
 					{
 						"name": "News_20220324",
 						"Notes": "",
-						"DiagramX": 225,
-						"DiagramY": -135,
+						"DiagramX": 155,
+						"DiagramY": -35,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1814,14 +1814,14 @@
 						"isOutput": "y",
 						"Type": "HTML Form",
 						"Formula": {
-							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.link {color: blue;}\n\t\t\t.date {\n\t\t\t\tfont-size: 14pt;\n\t\t\t\tcolor: blue;\n\t\t\t}\n\t\t\t.article {\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n \t\t\t}\n\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>Math Minion News Articles</h3>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Mar_17_2024'});\">March 17 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>2D Plot display revamp</li>\n\t\t\t\t<li>Initial information pane size</li>\n\t\t\t\t<li>Progressive web app updates</li>\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Feb_20_2024'});\">February 20 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Import and rename changes</li>\n\t\t\t\t<li>Progressive web app bug fix</li>\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Feb_12_2024'});\">February 12 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Progressive web app</li>\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Feb_02_2024'});\">February 02 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Format descriptors for date unit types</li>\n\t\t\t\t<li>Notes on Safari storage</li>\n\t\t\t\t<li>Transferring sessions using ExportAll</li>\n\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Jan_2024_News'});\">January 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Improvements to load speed</li>\n\t\t\t\t<li>End of line comments in formulas</li>\n\t\t\t\t<li>Index operator and Model references</li>\n\t\t\t\t<li>Miscellaneous other fixes and improvements</li>\n\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Oct_2023_News'});\">October 2023 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>A number of changes to make importing and exporting long\n\t\t\t\tstrings easier.</li>\n\t\t\t\t<li>Added JSON parsing features.</li>\n\t\t\t\t<li>The table function can now create a table value directly from a CSV string.</li>\n\t\t\t\t<li>Conversely a new csv function creates a CSV string from a table value.</li>\n\t\t\t\t<li>Other minor stuff.</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Aug_2023_News'});\">August 2023 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Units almost never need to be in quotes anymore.</li>\n\t\t\t\t<li>Numerous small changes to the user interface.</li>\n\t\t\t\t<li>There is now a print icon for model views.</li>\n\t\t\t\t<li>Various improvements to formula editing and unit selection.</li>\n\t\t\t\t<li>Numerous other changes and bug fixes.</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Dec_2022_News'});\">December 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>CSV Argument for Table Function</li>\n\t\t\t\t<li>Retrieving Local Files</li>\n\t\t\t\t<li>Pasting JSON</li>\n\t\t\t\t<li>Default Model View</li>\n\t\t\t\t<li>Eval Arrays</li>\n\t\t\t\t<li>Added an isNaN Function</li>\n\t\t\t\t<li>Tool Value Arrays</li>\n\t\t\t\t<li>Model toolnames Parameter</li>\n\t\t\t\t<li>Other Changes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Sept_2022_News'});\">September 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Formula Editor Completions</li>\n\t\t\t\t<li>Axis Zooming on Graphs</li>\n\t\t\t\t<li>Back Tick Quoting</li>\n\t\t\t\t<li>Constants with Number Bases</li>\n\t\t\t\t<li>\"Contains\" Select Operator</li>\n\t\t\t\t<li>Multiple Select Terms</li>\n\t\t\t\t<li>Sortling On Columns</li>\n\t\t\t\t<li>New Options for Table Function</li>\n\t\t\t\t<li>Column Names and Append</li>\n\t\t\t\t<li>Transposing Tables</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Aug_2022_News'});\">August 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Model View</li>\n\t\t\t\t<li>New Display Tools (Menu and Button)</li>\n\t\t\t\t<li>Formatting Improvements</li>\n\t\t\t\t<li>Videos</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220324'});\">2022-03-24 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Graph changes</li>\n\t\t\t\t<li>Html page tool changes</li>\n\t\t\t\t<li>A couple of new functions</li>\n\t\t\t\t<li>Result colouring for expression icons</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220226'});\">2022-02-26 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Added a filter field to the <a href=\"help/datatable.html#infoview\" target=\"_blank\">Data Table view</a></li>\n\t\t\t\t<li>Data table columns can now be presented as <a href=\"help/datatable.html#coleditor\" target=\"_blank\">menus</a></li>\n\t\t\t\t<li>Html pages can now issue <a href=\"help/htmlpage.html#cmd\" target=\"_blank\">commands</a> directly to the calculation engine.</li>\n\t\t\t\t<li>Miscellaneous changes and fixes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220121'});\">2022-01-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>It is now possible to add calculated columns to data tables.</li>\n\t\t\t\t<li>Data table rows can now be edited and browsed in a new\n\t\t\t\t<a href=\"help/datatable.html#roweditor\" target=\"_blank\">row editor</a></li>\n\t\t\t\t<li>Enhancements to the Htmlpage tool.</li>\n\t\t\t\t<li>Added notes as a formula parameter to all tools.</li>\n\t\t\t\t<li>Added an import button to the clipboard view.</li>\n\t\t\t\t<li>Added scroll wheel (two finger trackpad drag) scrolling for table views.</li>\n\t\t\t\t<li>Improvements to the append, select, sumcols, mincols, and maxcols functions</li>\n\t\t\t\t<li>Added <b>dollar</b> as a dimensionless unit</li>\n\t\t\t\t<li>Miscellaneous other fixes and changes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211207'});\">2021-12-07 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Changes to Session Storage</li>\n\t\t\t\t<li><a href=\"help/couchdb.html\" target=\"_blank\">CouchDB Integration</a></li>\n\t\t\t\t<li><a href=\"help/mmserver.html\" target=\"_blank\">Running a MM Server</a></li>\n\t\t\t\t<li>MM App Removed from App Store</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211010'});\">2021-10-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Yet Another News Iteration</li>\n\t\t\t\t<li>HTML Page Fixes and Upgrades</li>\n\t\t\t\t<li>Printing and PDFs</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210910'});\">2021-09-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Select Function Features</li>\n\t\t\t\t<li>Table Value Enhancements</li>\n\t\t\t\t<li>Miscellaneous Fixes etc.</li>\n\t\t\t\t<li>Coolprop molar density flashes</li>\n\t\t\t\t<li>Updated Getting Started</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210703'});\">2021-07-03 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>CoolMM - Math Minion + Coolprop</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210621'});\">2021-06-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New News</li>\n\t\t\t\t<li>Server Address Changes (Again)</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Feedback</h3>\n\t\t\t<p>\n\t\t\t\tAs always, any and all feedback or questions are encouraged and appreciated.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./examples/htmlpage.css\"\n\t\t\ttype=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t\t.link {color: blue;}\n\t\t\t.date {\n\t\t\t\tfont-size: 14pt;\n\t\t\t\tcolor: blue;\n\t\t\t}\n\t\t\t.article {\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n \t\t\t}\n\n\t\t</style>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t\t<h3>Math Minion News Articles</h3>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'May_26_2025'});\">May 26 2025 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Conversion units allowed for individual matrix tool columns</li>\n\t\t\t\t<li>Session view changes</li>\n\t\t\t\t<li>Fixes for copying and pasting nested imported models</li>\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'May_10_2025'});\">May 10 2025 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Redesign of console tab</li>\n\t\t\t\t<li>Built in OpenAI chat that can manipulate MM</li>\n\t\t\t\t<li>Menu added for selecting the source session for imported models</li>\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Mar_20_2025'});\">March 20 2025 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Safari clipboard changes</li>\n\t\t\t\t<li>Changed default file name extension to json</li>\n\t\t\t\t<li>Created ChatGPT assistants</li>\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Mar_17_2024'});\">March 17 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>2D Plot display revamp</li>\n\t\t\t\t<li>Initial information pane size</li>\n\t\t\t\t<li>Progressive web app updates</li>\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Feb_20_2024'});\">February 20 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Import and rename changes</li>\n\t\t\t\t<li>Progressive web app bug fix</li>\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Feb_12_2024'});\">February 12 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Progressive web app</li>\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Feb_02_2024'});\">February 02 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Format descriptors for date unit types</li>\n\t\t\t\t<li>Notes on Safari storage</li>\n\t\t\t\t<li>Transferring sessions using ExportAll</li>\n\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Jan_2024_News'});\">January 2024 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Improvements to load speed</li>\n\t\t\t\t<li>End of line comments in formulas</li>\n\t\t\t\t<li>Index operator and Model references</li>\n\t\t\t\t<li>Miscellaneous other fixes and improvements</li>\n\t\t\t\t\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Oct_2023_News'});\">October 2023 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>A number of changes to make importing and exporting long\n\t\t\t\tstrings easier.</li>\n\t\t\t\t<li>Added JSON parsing features.</li>\n\t\t\t\t<li>The table function can now create a table value directly from a CSV string.</li>\n\t\t\t\t<li>Conversely a new csv function creates a CSV string from a table value.</li>\n\t\t\t\t<li>Other minor stuff.</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Aug_2023_News'});\">August 2023 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Units almost never need to be in quotes anymore.</li>\n\t\t\t\t<li>Numerous small changes to the user interface.</li>\n\t\t\t\t<li>There is now a print icon for model views.</li>\n\t\t\t\t<li>Various improvements to formula editing and unit selection.</li>\n\t\t\t\t<li>Numerous other changes and bug fixes.</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Dec_2022_News'});\">December 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>CSV Argument for Table Function</li>\n\t\t\t\t<li>Retrieving Local Files</li>\n\t\t\t\t<li>Pasting JSON</li>\n\t\t\t\t<li>Default Model View</li>\n\t\t\t\t<li>Eval Arrays</li>\n\t\t\t\t<li>Added an isNaN Function</li>\n\t\t\t\t<li>Tool Value Arrays</li>\n\t\t\t\t<li>Model toolnames Parameter</li>\n\t\t\t\t<li>Other Changes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Sept_2022_News'});\">September 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Formula Editor Completions</li>\n\t\t\t\t<li>Axis Zooming on Graphs</li>\n\t\t\t\t<li>Back Tick Quoting</li>\n\t\t\t\t<li>Constants with Number Bases</li>\n\t\t\t\t<li>\"Contains\" Select Operator</li>\n\t\t\t\t<li>Multiple Select Terms</li>\n\t\t\t\t<li>Sortling On Columns</li>\n\t\t\t\t<li>New Options for Table Function</li>\n\t\t\t\t<li>Column Names and Append</li>\n\t\t\t\t<li>Transposing Tables</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: \n\t\t\t'Aug_2022_News'});\">August 2022 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Model View</li>\n\t\t\t\t<li>New Display Tools (Menu and Button)</li>\n\t\t\t\t<li>Formatting Improvements</li>\n\t\t\t\t<li>Videos</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220324'});\">2022-03-24 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Graph changes</li>\n\t\t\t\t<li>Html page tool changes</li>\n\t\t\t\t<li>A couple of new functions</li>\n\t\t\t\t<li>Result colouring for expression icons</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220226'});\">2022-02-26 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Added a filter field to the <a href=\"help/datatable.html#infoview\" target=\"_blank\">Data Table view</a></li>\n\t\t\t\t<li>Data table columns can now be presented as <a href=\"help/datatable.html#coleditor\" target=\"_blank\">menus</a></li>\n\t\t\t\t<li>Html pages can now issue <a href=\"help/htmlpage.html#cmd\" target=\"_blank\">commands</a> directly to the calculation engine.</li>\n\t\t\t\t<li>Miscellaneous changes and fixes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20220121'});\">2022-01-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>It is now possible to add calculated columns to data tables.</li>\n\t\t\t\t<li>Data table rows can now be edited and browsed in a new\n\t\t\t\t<a href=\"help/datatable.html#roweditor\" target=\"_blank\">row editor</a></li>\n\t\t\t\t<li>Enhancements to the Htmlpage tool.</li>\n\t\t\t\t<li>Added notes as a formula parameter to all tools.</li>\n\t\t\t\t<li>Added an import button to the clipboard view.</li>\n\t\t\t\t<li>Added scroll wheel (two finger trackpad drag) scrolling for table views.</li>\n\t\t\t\t<li>Improvements to the append, select, sumcols, mincols, and maxcols functions</li>\n\t\t\t\t<li>Added <b>dollar</b> as a dimensionless unit</li>\n\t\t\t\t<li>Miscellaneous other fixes and changes</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211207'});\">2021-12-07 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Changes to Session Storage</li>\n\t\t\t\t<li><a href=\"help/couchdb.html\" target=\"_blank\">CouchDB Integration</a></li>\n\t\t\t\t<li><a href=\"help/mmserver.html\" target=\"_blank\">Running a MM Server</a></li>\n\t\t\t\t<li>MM App Removed from App Store</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20211010'});\">2021-10-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>Yet Another News Iteration</li>\n\t\t\t\t<li>HTML Page Fixes and Upgrades</li>\n\t\t\t\t<li>Printing and PDFs</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210910'});\">2021-09-10 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New Select Function Features</li>\n\t\t\t\t<li>Table Value Enhancements</li>\n\t\t\t\t<li>Miscellaneous Fixes etc.</li>\n\t\t\t\t<li>Coolprop molar density flashes</li>\n\t\t\t\t<li>Updated Getting Started</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210703'});\">2021-07-03 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>CoolMM - Math Minion + Coolprop</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"article\">\n\t\t\t<div class=\"date\" onClick=\"mmpost([],{mm_view: 'News_20210621'});\">2021-06-21 (Tap to view)</div>\n\t\t\t<ul>\n\t\t\t\t<li>New News</li>\n\t\t\t\t<li>Server Address Changes (Again)</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div class=\"section\">\n\t\t\t<h3>Feedback</h3>\n\t\t\t<p>\n\t\t\t\tAs always, any and all feedback or questions are encouraged and appreciated.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
 						}
 					},
 					{
 						"name": "Aug_2022_News",
 						"Notes": "<b>New Model Information Views</b>\n\nThe views for models have been completely redesigned, with the motivation being to provide a means of generating simple forms, reports etc., without needing any knowledge of HTML.\n\nIn that spirit, this article is just the view for this model and what you are reading right now its notes. In addition to the <b>Show on Diagram</b> button, the notes editor for a tool now has a <b>Show in Model HTML</b> button. Model notes are shown at the top of its own view.\n\n<i>Okay, I cheated a bit by including some very basic tags to highlight things. Notes can contain some simple HTML tags like these, but nothing too fancy.</i>\n\nAny tool in a model can be set to have its results shown on the model's view. This is done by checking the <b>Display</b> check box beside its name on the tool's view. What is displayed will depend on what type of tool it is.\n\nExpressions now have a check box labeled <b>Display Input</b>, which if checked will cause an input field to appear in the model view. This allows you to enter or edit an expression's formula right from the model view. This expression (<b>Weight</b>) has that box checked, so an input field for it will appear below. It does not have its <b>Display</b> box checked though, so the calculated value will not be shown. In this case that will normally just be an entered constant.\n\nThe <b>Energy</b> expression does have its <b>Display</b> box checked, so its result is displayed, but not its formula. It also has its notes shown.  You can set these in any combination and even have only the notes appear.\n\nRather than a lengthy explanation like this, a more normal use for notes would be something like:",
-						"DiagramX": 85,
-						"DiagramY": -110,
+						"DiagramX": 155,
+						"DiagramY": -60,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -2036,7 +2036,7 @@
 						"name": "Sept_2022_News",
 						"Notes": "",
 						"DiagramX": 155,
-						"DiagramY": -110,
+						"DiagramY": -85,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2356,7 +2356,7 @@
 					{
 						"name": "Dec_2022_News",
 						"Notes": "",
-						"DiagramX": 225,
+						"DiagramX": 155,
 						"DiagramY": -110,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
@@ -2641,7 +2641,7 @@
 						"name": "Oct_2023_News",
 						"Notes": "",
 						"DiagramX": 155,
-						"DiagramY": -80,
+						"DiagramY": -160,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2789,8 +2789,8 @@
 					{
 						"name": "Aug_2023_News",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": -80,
+						"DiagramX": 155,
+						"DiagramY": -135,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2803,8 +2803,8 @@
 					{
 						"name": "Jan_2024_News",
 						"Notes": "",
-						"DiagramX": 225,
-						"DiagramY": -80,
+						"DiagramX": 155,
+						"DiagramY": -185,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3061,7 +3061,7 @@
 						"name": "Feb_02_2024",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -55,
+						"DiagramY": -10,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3206,8 +3206,8 @@
 					{
 						"name": "Feb_12_2024",
 						"Notes": "",
-						"DiagramX": 155,
-						"DiagramY": -55,
+						"DiagramX": 85,
+						"DiagramY": -35,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3220,8 +3220,8 @@
 					{
 						"name": "Feb_20_2024",
 						"Notes": "",
-						"DiagramX": 225,
-						"DiagramY": -55,
+						"DiagramX": 85,
+						"DiagramY": -60,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3235,7 +3235,7 @@
 						"name": "Mar_17_2024",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -30,
+						"DiagramY": -85,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3371,476 +3371,12 @@
 								}
 							}
 						]
-					}
-				]
-			},
-			{
-				"name": "Mar_20_2025",
-				"Notes": "",
-				"DiagramX": 85,
-				"DiagramY": -225,
-				"HideInfo": "n",
-				"DiagramNotes": "n",
-				"HtmlNotes": "n",
-				"isOutput": "y",
-				"Type": "Model",
-				"diagramScale": 1,
-				"Objects": [
-					{
-						"name": "PredatorPrey",
-						"Notes": "This model simulates a predator-prey relationship using the Lotka-Volterra equations.",
-						"DiagramX": 100,
-						"DiagramY": 30,
-						"HideInfo": "n",
-						"DiagramNotes": "n",
-						"HtmlNotes": "n",
-						"isOutput": "y",
-						"Type": "Model",
-						"diagramScale": 1,
-						"Objects": [
-							{
-								"name": "preyInit",
-								"Notes": "Initial prey population",
-								"DiagramX": 20,
-								"DiagramY": 50,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "200 count"
-								},
-								"isInput": "y",
-								"showInput": "y"
-							},
-							{
-								"name": "predatorInit",
-								"Notes": "Initial predator population",
-								"DiagramX": 20,
-								"DiagramY": 90,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "200 count"
-								},
-								"isInput": "y",
-								"showInput": "y"
-							},
-							{
-								"name": "preyGrowth",
-								"Notes": "Prey growth rate per day in absence of predators",
-								"DiagramX": 20,
-								"DiagramY": 130,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "1 1/d"
-								},
-								"isInput": "y",
-								"showInput": "y"
-							},
-							{
-								"name": "preyDeath",
-								"Notes": "Prey death rate per predator encounter",
-								"DiagramX": 20,
-								"DiagramY": 170,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "0.003 1/d"
-								},
-								"isInput": "y",
-								"showInput": "y"
-							},
-							{
-								"name": "predatorDeath",
-								"Notes": "Predator death rate in absence of food",
-								"DiagramX": 20,
-								"DiagramY": 210,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "2 1/d"
-								},
-								"isInput": "y",
-								"showInput": "y"
-							},
-							{
-								"name": "predatorEfficiency",
-								"Notes": "Efficiency of turning prey into predators",
-								"DiagramX": 20,
-								"DiagramY": 250,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "1"
-								},
-								"isInput": "y",
-								"showInput": "y"
-							},
-							{
-								"name": "y0",
-								"Notes": "Initial population values",
-								"DiagramX": 100,
-								"DiagramY": 50,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "{table `Prey`, preyInit, `Predator`, predatorInit}"
-								}
-							},
-							{
-								"name": "dy",
-								"Notes": "Change in population per time step",
-								"DiagramX": 100,
-								"DiagramY": 90,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "{table `Prey`, ODE.y.Prey*(preyGrowth - preyDeath*ODE.y.Predator), `Predator`, ODE.y.Predator*(predatorEfficiency*preyDeath*ODE.y.Prey - predatorDeath)}"
-								}
-							},
-							{
-								"name": "ODE",
-								"Notes": "ODE solver for predator-prey model",
-								"DiagramX": 100,
-								"DiagramY": 130,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "ODE Solver",
-								"y0Formula": {
-									"Formula": "y0"
-								},
-								"dyFormula": {
-									"Formula": "dy"
-								},
-								"nextTFormula": {
-									"Formula": "$.t + 1 d"
-								},
-								"endTFormula": {
-									"Formula": "100 d"
-								},
-								"relTolFormula": {
-									"Formula": "1.0e-5"
-								},
-								"absTolFormula": {
-									"Formula": "1.0e-10*{baseunit $.y}"
-								},
-								"recFormulas": [
-									{
-										"Formula": "$.t 'Time"
-									},
-									{
-										"Formula": "ODE.y.Prey 'Prey Population"
-									},
-									{
-										"Formula": "ODE.y.Predator 'Predator Population"
-									}
-								],
-								"AutoRun": "y"
-							},
-							{
-								"name": "ResultsTable",
-								"Notes": "Simulation results",
-								"DiagramX": 100,
-								"DiagramY": 170,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"isOutput": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "ODE.table"
-								}
-							},
-							{
-								"name": "ResultsGraph",
-								"Notes": "Graph of predator and prey populations over time",
-								"DiagramX": 100,
-								"DiagramY": 210,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"isOutput": "y",
-								"Type": "Graph",
-								"X1": {
-									"v": "ODE.table.Time 'Time",
-									"vmin": "",
-									"vmax": "",
-									"unit": "d",
-									"Y1": {
-										"v": "ODE.table.Prey_Population 'Prey",
-										"vmin": "",
-										"vmax": "",
-										"lineType": 0
-									},
-									"Y2": {
-										"v": "ODE.table.Predator_Population 'Predator",
-										"vmin": "",
-										"vmax": "",
-										"lineType": 0
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Temperatures",
-						"Notes": "",
-						"DiagramX": 100,
-						"DiagramY": 65,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "n",
-						"isOutput": "y",
-						"Type": "Data Table",
-						"Columns": [
-							{
-								"name": "Month",
-								"displayUnit": "string",
-								"sValues": [
-									"Jan",
-									"Feb",
-									"Mar",
-									"Apr",
-									"May",
-									"Jun",
-									"Jul",
-									"Aug",
-									"Sep",
-									"Oct",
-									"Nov",
-									"Dec"
-								],
-								"defaultValue": ""
-							},
-							{
-								"name": "Daily Average (°C)",
-								"displayUnit": "degC",
-								"nValues": [
-									275.54999999999995,
-									276.34999999999997,
-									278.34999999999997,
-									281.15,
-									284.75,
-									287.84999999999997,
-									290.45,
-									290.34999999999997,
-									286.84999999999997,
-									281.75,
-									277.54999999999995,
-									275.25
-								],
-								"unitDimensions": "0 0 0 0 1 0 0",
-								"defaultValue": "0 degC"
-							},
-							{
-								"name": "Standard Deviation",
-								"displayUnit": "degC",
-								"nValues": [
-									275.04999999999995,
-									274.65,
-									274.34999999999997,
-									274.25,
-									274.45,
-									274.45,
-									274.25,
-									274.15,
-									274.34999999999997,
-									274.04999999999995,
-									274.95,
-									274.95
-								],
-								"unitDimensions": "0 0 0 0 1 0 0",
-								"defaultValue": "0 degC"
-							},
-							{
-								"name": "Daily Maximum (°C)",
-								"displayUnit": "degC",
-								"nValues": [
-									278.65,
-									280.34999999999997,
-									282.84999999999997,
-									286.34999999999997,
-									290.15,
-									293.25,
-									296.15,
-									296.45,
-									292.95,
-									286.25,
-									280.84999999999997,
-									278.04999999999995
-								],
-								"unitDimensions": "0 0 0 0 1 0 0",
-								"defaultValue": "0 degC"
-							},
-							{
-								"name": "Daily Minimum (°C)",
-								"displayUnit": "degC",
-								"nValues": [
-									272.34999999999997,
-									272.45,
-									273.84999999999997,
-									275.95,
-									279.34999999999997,
-									282.45,
-									284.65,
-									284.25,
-									280.75,
-									277.15,
-									274.15,
-									272.34999999999997
-								],
-								"unitDimensions": "0 0 0 0 1 0 0",
-								"defaultValue": "0 degC"
-							},
-							{
-								"name": "Extreme Maximum (°C)",
-								"displayUnit": "degC",
-								"nValues": [
-									289.25,
-									290.65,
-									293.75,
-									301.65,
-									306.34999999999997,
-									310.04999999999995,
-									310.34999999999997,
-									310.95,
-									304.75,
-									297.34999999999997,
-									290.95,
-									288.25
-								],
-								"unitDimensions": "0 0 0 0 1 0 0",
-								"defaultValue": "0 degC"
-							},
-							{
-								"name": "Extreme Maximum Date",
-								"displayUnit": "date",
-								"nValues": [
-									-61516800,
-									667526400,
-									-151804800,
-									893894400,
-									423014400,
-									393206400,
-									-139536000,
-									50630400,
-									589248000,
-									717897600,
-									163036800,
-									1135382400
-								],
-								"unitDimensions": "0 0 1 0 0 0 0",
-								"defaultValue": "0 date"
-							},
-							{
-								"name": "Extreme Minimum (°C)",
-								"displayUnit": "degC",
-								"nValues": [
-									249.24999999999997,
-									255.34999999999997,
-									260.34999999999997,
-									267.54999999999995,
-									270.95,
-									272.54999999999995,
-									275.34999999999997,
-									274.84999999999997,
-									270.34999999999997,
-									263.45,
-									252.74999999999997,
-									254.64999999999998
-								],
-								"unitDimensions": "0 0 0 0 1 0 0",
-								"defaultValue": "0 degC"
-							},
-							{
-								"name": "Extreme Minimum Date",
-								"displayUnit": "date",
-								"nValues": [
-									-29030400,
-									65750400,
-									194659200,
-									68428800,
-									-113616000,
-									234057600,
-									47606400,
-									-110764800,
-									67996800,
-									449539200,
-									478224000,
-									331776000
-								],
-								"unitDimensions": "0 0 1 0 0 0 0",
-								"defaultValue": "0 date"
-							}
-						],
-						"Filter": {
-							"Formula": ""
-						}
 					},
 					{
 						"name": "Mar_20_2025",
 						"Notes": "",
-						"DiagramX": 5,
-						"DiagramY": 30,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "n",
-						"isOutput": "y",
-						"Type": "HTML Form",
-						"Formula": {
-							"Formula": "'\n<style>\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t.quote\n\t{\n\t\tcolor: green;\n\t\tmargin-left: 30px;\n\t}\n\t.main {\n\t\tbackground-color: #f2f2f2;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t}\n</style>\n<div class=\"main\">\n<h3>Update:</h3>\n<p>\nAfter I posted the stuff below, I played around a bit more and discovered that removing web search\ncapability from the ChatGPT tool assistant did not noticeably change its performance. Doing so allows it to be used by free OpenAI accounts, so you no longer need a paid OpenAI account to play with it.\n</p>\n<p>\nSimilarly, the data table tool could be made free by removing its ability to process images as well as text. There are now two links in the <a href=\"./help/chatgpt.html\" target=\"_blank\">Math Minion's Ask ChatGPT help</a>. One for free accounts and one with image capability for paid accounts.\n</p>\n<h3>Math Minion News: Mar 20, 2025</h3>\n<p>\nWow, it seems to have passed since the last news update. I have made occasional unannounced bug fixes during that time, but nothing that seemed to warrant new News. However a rare recent prod from a friend and user has sparked changes that are probably enough to justify an update.\n</p>\n<h3>No More Clipboard Window in Safari</h3>\n<p>\n\tFinally, users of Safari and all browsers on the iPhone, iPad and Vision Pro will no longer need to use that clunky clipboard window to interact with the system clipboard. Note you will probably be asked to allow access when you first try to use this.\n</p>\n<h3>Export File Name Extension</h3>\n<p>\n\tI have changed the file name extension for exported files to \"json\". This doesn't have any impact on reading existing files and indeed you can override the extension in the save dialog if you wish.\n</p>\n<p>\n\tThe files themselves have always been in json format and remain unchanged. I think the original idea behind the txt extension was to emphasis that they were human readable. However most folks know about json now and many text editors apply appropriate syntax colouring to files with the json extension, so the change seemed worthwhile.\n</p>\n<h3>ChatGPT Assistants</h3>\n<p>\n\tIf you happen to have a paid ChatGPT account, there are now a couple of Math Minion assistants implemented as GPTs. Time will tell if these are really useful, but I find them pretty cool to play with.\n</p>\n<h4>Math Minion Tool Assistant</h4>\n<p>\n\tFrom a problem description, this assistant will attempt to create a json representation of the solution using the following Math Minion tools:\n</p>\n<ul>\n\t<li>Model</li>\n\t<li>Expression</li>\n\t<li>Equation Solver</li>\n\t<li>Optimizer</li>\n\t<li>ODE Solver</li>\n</ul>\n<p>\nThis will be suitable for pasting onto the Math Minion diagram. For instance the prompt:\n</p>\n<p class='quote'>\nCreate a model to simulate a predator/prey relationship. Inputs should be:\ninitial populations of predator and prey - default 200 for both\nthe prey growth per period of time in the absence of predators - default 1 per day\nDeath rate of prey per encounter with predators - default 0.003 1/d\nDeath rate of predator in absence of food - default 2 per day\nEfficiency of turning prey into predators - default 1\nShow both a table and graph of the results\n</p>\n<p>\n\tProduced the <span class=\"link\"\n\t\t\t\tonClick=\"mmpost({}, {mm_view: 'PredatorPrey'})\">\n\t\t\t\tPredatorPrey</span> model. In this case no modifications to the result were needed, but results vary from time to time, perhaps depending on whether the AI is having a bad day or missed its digital coffee. Pointing out any mistakes to it will often result in it making an appropriate fix, but it may be faster to just fix it yourself.\n</p>\n<p>\n\tThink of it more as a somewhat dim intern than an expert system. It can save time on simple problems, but will often make mistakes, so its work will need careful checking.\n</p>\n<p>\n\tThis assistant can be accessed by the link below. These links are also available by selecting\n\t<a href=\"./help/chatgpt.html\" target=\"_blank\">Ask ChatGPT</a> from the contents menu in the help.\n</p>\n<p class=\"link\">\n\t\t\t\t\n\t<a href=\"https://chatgpt.com/g/g-67ce2b8302b881918ab06486ed92184d-math-minion-tool-assistant\" target=\"_blank\">Tool Assistant</a>\n</p>\n\n<h4>Math Minion Data Table Assistant</h4>\n<p>\n\tThis assistant will try to create from the given data a Math Minion specific CSV file that when pasted on the diagram will result in a new Data Table tool.  For instance this prompt:\n</p>\n<p class=\"quote\">\n \tJan\tFeb\tMar\tApr\tMay\tJun\tJul\tAug\tSep\tOct\tNov\tDec\tYear\tCode\nDaily Average (°C)\t2.4\t3.2\t5.2\t8.0\t11.6\t14.7\t17.3\t17.2\t13.7\t8.6\t4.4\t2.1\t9.0\tA\nStandard Deviation\t1.9\t1.5\t1.2\t1.1\t1.3\t1.3\t1.1\t1.0\t1.2\t0.9\t1.8\t1.8\t1.3\tA\nDaily Maximum (°C)\t5.5\t7.2\t9.7\t13.2\t17.0\t20.1\t23.0\t23.3\t19.8\t13.1\t7.7\t4.9\t13.7\tA\nDaily Minimum (°C)\t-0.8\t-0.7\t0.7\t2.8\t6.2\t9.3\t11.5\t11.1\t7.6\t4.0\t1.0\t-0.8\t4.3\tA\nExtreme Maximum (°C)\t16.1\t17.5\t20.6\t28.5\t33.2\t36.9\t37.2\t37.8\t31.6\t24.2\t17.8\t15.1\t\t\nDate (yyyy/dd)\t1968/ 20\t1991/ 26\t1965/ 11\t1998/ 30\t1983/ 29\t1982/ 18\t1965/ 31\t1971/ 10\t1988/ 03\t1992/ 01\t1975/ 03\t2005/ 24\t\t\nExtreme Minimum (°C)\t-23.9\t-17.8\t-12.8\t-5.6\t-2.2\t-0.6\t2.2\t1.7\t-2.8\t-9.7\t-20.4\t-18.5\t\t\nDate (yyyy/dd)\t1969/ 30\t1972/ 01\t1976/ 03\t1972/ 03\t1966/ 27+\t1977/ 02\t1971/ 06\t1966/ 29+\t1972/ 27\t1984/ 31\t1985/ 26\t1980/ 07\t\t\n<br>\nOmitting the Year and Code columns, rotate the table so the months are the rows and create a data table\n</p>\n<p>\n\tproduced the <span class=\"link\"\n\t\t\t\tonClick=\"mmpost({}, {mm_view: 'Temperatures'})\">\n\t\t\t\tTemperatures</span> table. Note the instructions to omit columns and rotate the table.\n</p>\n<p>\n\tInput will probably normally be text, but it also works with images of tables and I even had it convert a bar chart successfully by telling it to estimate the values from the bar lengths.\n</p>\n<p>\n\tThis assistant can be accessed by the following link\n</p>\n<p class=\"link\">\n\t\t\t\t\n\t<a href=\"https://chatgpt.com/g/g-67d4d1a5d7c48191bf07e3a0b321c72a-mm-datatable-assistant\" target=\"_blank\">Data Table Assistant</a>\n</p>\n<p>\n\tIf you have a chance to play with these, I would love to <a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">hear how it went</a>.\n\n<h3>Miscellaneous Bug Fixes</h3>\n<p>\n\tAs always there has been a number of minor changes and bug fixes. Many of these were quietly done during the course of the year.\n</p>\n<ul>\n<li>    Added mmHg as synonym for unit mmHg0C</li>\n<li>    Added MagneticFluxDensity units Tesla (T) and Gauss.</li>\n<li>    Added mod and sqrt as conveniece functions for x%n and x^0.5</li>\n<li>    some additional error checking in Graph</li>\n<li>    added error check in MMUnit</li>\n<li>    fix to import problem when imported session wasn't at root</li>\n<li>    removed obsolete reference to mac version from web home page</li>\n<li>    fix to financial example</li>\n<li>    Added an expanded row view to expression table values</li>\n<li>    Fixed problem with copy as table with tables having specified column units</li>\n<li>    Fixed problem with menu tool info view</li>\n<li>    Fixed problem with wheel scrolling in TableView.</li>\n</ul>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>\n</div>"
-						}
-					}
-				]
-			},
-			{
-				"name": "May_10_2025",
-				"Notes": "",
-				"DiagramX": 85,
-				"DiagramY": -255,
-				"HideInfo": "n",
-				"DiagramNotes": "n",
-				"HtmlNotes": "n",
-				"isOutput": "y",
-				"Type": "Model",
-				"diagramScale": 1,
-				"Objects": [
-					{
-						"name": "OpenAI_Key",
-						"Notes": "",
-						"DiagramX": 110,
-						"DiagramY": -135,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "n",
-						"isOutput": "y",
-						"Type": "HTML Form",
-						"Formula": {
-							"Formula": "'  <style>\n    body {\n      font-family: Arial, sans-serif;\n      line-height: 1.6;\n      max-width: 800px;\n      margin: auto;\n      padding: 20px;\n    }\n    h1, h2 {\n        color: #333;\n      }\n    a {\n      color: #1a73e8;\n      text-decoration: none;\n    }\n    a:hover {\n      text-decoration: underline;\n    }\n    code {\n      background-color: #f5f5f5;\n      padding: 2px 4px;\n      border-radius: 4px;\n      font-family: monospace;\n    }\n    .note {\n      background-color: #fff3cd;\n      border-left: 6px solid #ffeeba;\n      padding: 10px;\n      margin: 20px 0;\n    }\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\n  </style>\n  <h1>🔑 How to Obtain an OpenAI API Key</h1>\n\n  <p>To use this application, you'll need an OpenAI API key. Follow these steps to acquire one:</p>\n\n  <h2>1. Create an OpenAI Account</h2>\n  <ol>\n    <li>Visit the\n    \t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'https://platform.openai.com/signup'})\">\n\t\t\t\tOpenAI Signup Page\n\t\t\t</span>\n      </li>\n    <li>Sign up using your email address and set a password.</li>\n    <li>Verify your email address and phone number as prompted.</li>\n  </ol>\n\n  <h2>2. Access the API Keys Page</h2>\n  <ol>\n    <li>Navigate to the\n    \t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'https://platform.openai.com/account/api-keys'})\">\n\t\t\t\tAPI Keys Page\n\t\t\t</span>.\n    </li>\n    <li>Log in with your OpenAI credentials if prompted.</li>\n  </ol>\n\n  <h2>3. Generate a New API Key</h2>\n  <ol>\n    <li>Click on the <strong>\"Create new secret key\"</strong> button.</li>\n    <li>Optionally, assign a name to your key to help you remember its purpose.</li>\n    <li>Copy the generated key and store it securely. <strong>You won't be able to view it again once you navigate away from the page.</strong></li>\n  </ol>\n\n  <div class=\"note\">\n    <strong>Note:</strong> If you lose your API key, you'll need to generate a new one.\n  </div>\n\n  <h2>4. Secure Your API Key</h2>\n  <ul>\n    <li><strong>Do Not Share:</strong> Treat your API key like a password; keep it confidential.</li>\n    <li><strong>Environment Variables:</strong> Store the key in an environment variable (e.g., <code>OPENAI_API_KEY</code>) to keep it out of your codebase.</li>\n    <li><strong>Avoid Hardcoding:</strong> Never hardcode the API key directly into your application's source code.</li>\n  </ul>\n\n  <h2>5. Understand Usage and Billing</h2>\n  <ul>\n    <li><strong>Free Trial:</strong> New accounts may receive free credits to explore the API.</li>\n    <li><strong>Billing Information:</strong> To continue using the API after the trial, add a payment method in your OpenAI account settings.</li>\n    <li><strong>Usage Monitoring:</strong> Regularly check your usage to avoid unexpected charges.</li>\n  </ul>\n\n  <p>For more detailed information, refer to OpenAI's official documentation: \n\t<span class=\"link\"\n\t\t\tonClick=\"mmpost([], {mm_viewurl: 'https://platform.openai.com/docs/quickstart'})\">\n\t\t\tOpenAI API Quickstart\n\t\t</span>\n  </p>"
-						}
-					},
-					{
-						"name": "intersection",
-						"Notes": "",
-						"DiagramX": 110,
-						"DiagramY": -160,
+						"DiagramX": 85,
+						"DiagramY": -110,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3849,90 +3385,944 @@
 						"diagramScale": 1,
 						"Objects": [
 							{
-								"name": "x",
-								"Notes": "",
+								"name": "PredatorPrey",
+								"Notes": "This model simulates a predator-prey relationship using the Lotka-Volterra equations.",
 								"DiagramX": 100,
-								"DiagramY": 100,
-								"HideInfo": "y",
+								"DiagramY": 30,
+								"HideInfo": "n",
 								"DiagramNotes": "n",
 								"HtmlNotes": "n",
 								"isOutput": "y",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "solver.1*50+50"
-								}
-							},
-							{
-								"name": "solver",
-								"Notes": "",
-								"DiagramX": 200,
-								"DiagramY": 100,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "Equation Solver",
-								"f0": "(x+5)^2 + 7 - (2000 - 20*x)",
-								"c0": "1",
-								"maxIter": 200,
-								"maxJacobians": 5,
-								"Enabled": "y"
-							},
-							{
-								"name": "xdomain",
-								"Notes": "",
-								"DiagramX": 100,
-								"DiagramY": 200,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"Type": "Expression",
-								"Formula": {
-									"Formula": "-100:100"
-								}
-							},
-							{
-								"name": "graph",
-								"Notes": "",
-								"DiagramX": 200,
-								"DiagramY": 200,
-								"HideInfo": "y",
-								"DiagramNotes": "n",
-								"HtmlNotes": "n",
-								"isOutput": "y",
-								"Type": "Graph",
-								"X1": {
-									"v": "xdomain",
-									"vmin": "",
-									"vmax": "",
-									"Y1": {
-										"v": "(xdomain+5)^2 + 7",
-										"vmin": "",
-										"vmax": "",
-										"lineType": 0
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "preyInit",
+										"Notes": "Initial prey population",
+										"DiagramX": 20,
+										"DiagramY": 50,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "200 count"
+										},
+										"isInput": "y",
+										"showInput": "y"
 									},
-									"Y2": {
-										"v": "2000 - 20*xdomain",
-										"vmin": "",
-										"vmax": "",
-										"lineType": 0
+									{
+										"name": "predatorInit",
+										"Notes": "Initial predator population",
+										"DiagramX": 20,
+										"DiagramY": 90,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "200 count"
+										},
+										"isInput": "y",
+										"showInput": "y"
+									},
+									{
+										"name": "preyGrowth",
+										"Notes": "Prey growth rate per day in absence of predators",
+										"DiagramX": 20,
+										"DiagramY": 130,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "1 1/d"
+										},
+										"isInput": "y",
+										"showInput": "y"
+									},
+									{
+										"name": "preyDeath",
+										"Notes": "Prey death rate per predator encounter",
+										"DiagramX": 20,
+										"DiagramY": 170,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "0.003 1/d"
+										},
+										"isInput": "y",
+										"showInput": "y"
+									},
+									{
+										"name": "predatorDeath",
+										"Notes": "Predator death rate in absence of food",
+										"DiagramX": 20,
+										"DiagramY": 210,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "2 1/d"
+										},
+										"isInput": "y",
+										"showInput": "y"
+									},
+									{
+										"name": "predatorEfficiency",
+										"Notes": "Efficiency of turning prey into predators",
+										"DiagramX": 20,
+										"DiagramY": 250,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "1"
+										},
+										"isInput": "y",
+										"showInput": "y"
+									},
+									{
+										"name": "y0",
+										"Notes": "Initial population values",
+										"DiagramX": 100,
+										"DiagramY": 50,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table `Prey`, preyInit, `Predator`, predatorInit}"
+										}
+									},
+									{
+										"name": "dy",
+										"Notes": "Change in population per time step",
+										"DiagramX": 100,
+										"DiagramY": 90,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{table `Prey`, ODE.y.Prey*(preyGrowth - preyDeath*ODE.y.Predator), `Predator`, ODE.y.Predator*(predatorEfficiency*preyDeath*ODE.y.Prey - predatorDeath)}"
+										}
+									},
+									{
+										"name": "ODE",
+										"Notes": "ODE solver for predator-prey model",
+										"DiagramX": 100,
+										"DiagramY": 130,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "ODE Solver",
+										"y0Formula": {
+											"Formula": "y0"
+										},
+										"dyFormula": {
+											"Formula": "dy"
+										},
+										"nextTFormula": {
+											"Formula": "$.t + 1 d"
+										},
+										"endTFormula": {
+											"Formula": "100 d"
+										},
+										"relTolFormula": {
+											"Formula": "1.0e-5"
+										},
+										"absTolFormula": {
+											"Formula": "1.0e-10*{baseunit $.y}"
+										},
+										"recFormulas": [
+											{
+												"Formula": "$.t 'Time"
+											},
+											{
+												"Formula": "ODE.y.Prey 'Prey Population"
+											},
+											{
+												"Formula": "ODE.y.Predator 'Predator Population"
+											}
+										],
+										"AutoRun": "y"
+									},
+									{
+										"name": "ResultsTable",
+										"Notes": "Simulation results",
+										"DiagramX": 100,
+										"DiagramY": 170,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "ODE.table"
+										}
+									},
+									{
+										"name": "ResultsGraph",
+										"Notes": "Graph of predator and prey populations over time",
+										"DiagramX": 100,
+										"DiagramY": 210,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Graph",
+										"X1": {
+											"v": "ODE.table.Time 'Time",
+											"vmin": "",
+											"vmax": "",
+											"unit": "d",
+											"Y1": {
+												"v": "ODE.table.Prey_Population 'Prey",
+												"vmin": "",
+												"vmax": "",
+												"lineType": 0
+											},
+											"Y2": {
+												"v": "ODE.table.Predator_Population 'Predator",
+												"vmin": "",
+												"vmax": "",
+												"lineType": 0
+											}
+										}
 									}
+								]
+							},
+							{
+								"name": "Temperatures",
+								"Notes": "",
+								"DiagramX": 100,
+								"DiagramY": 65,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "Month",
+										"displayUnit": "string",
+										"sValues": [
+											"Jan",
+											"Feb",
+											"Mar",
+											"Apr",
+											"May",
+											"Jun",
+											"Jul",
+											"Aug",
+											"Sep",
+											"Oct",
+											"Nov",
+											"Dec"
+										],
+										"defaultValue": ""
+									},
+									{
+										"name": "Daily Average (°C)",
+										"displayUnit": "degC",
+										"nValues": [
+											275.54999999999995,
+											276.34999999999997,
+											278.34999999999997,
+											281.15,
+											284.75,
+											287.84999999999997,
+											290.45,
+											290.34999999999997,
+											286.84999999999997,
+											281.75,
+											277.54999999999995,
+											275.25
+										],
+										"unitDimensions": "0 0 0 0 1 0 0",
+										"defaultValue": "0 degC"
+									},
+									{
+										"name": "Standard Deviation",
+										"displayUnit": "degC",
+										"nValues": [
+											275.04999999999995,
+											274.65,
+											274.34999999999997,
+											274.25,
+											274.45,
+											274.45,
+											274.25,
+											274.15,
+											274.34999999999997,
+											274.04999999999995,
+											274.95,
+											274.95
+										],
+										"unitDimensions": "0 0 0 0 1 0 0",
+										"defaultValue": "0 degC"
+									},
+									{
+										"name": "Daily Maximum (°C)",
+										"displayUnit": "degC",
+										"nValues": [
+											278.65,
+											280.34999999999997,
+											282.84999999999997,
+											286.34999999999997,
+											290.15,
+											293.25,
+											296.15,
+											296.45,
+											292.95,
+											286.25,
+											280.84999999999997,
+											278.04999999999995
+										],
+										"unitDimensions": "0 0 0 0 1 0 0",
+										"defaultValue": "0 degC"
+									},
+									{
+										"name": "Daily Minimum (°C)",
+										"displayUnit": "degC",
+										"nValues": [
+											272.34999999999997,
+											272.45,
+											273.84999999999997,
+											275.95,
+											279.34999999999997,
+											282.45,
+											284.65,
+											284.25,
+											280.75,
+											277.15,
+											274.15,
+											272.34999999999997
+										],
+										"unitDimensions": "0 0 0 0 1 0 0",
+										"defaultValue": "0 degC"
+									},
+									{
+										"name": "Extreme Maximum (°C)",
+										"displayUnit": "degC",
+										"nValues": [
+											289.25,
+											290.65,
+											293.75,
+											301.65,
+											306.34999999999997,
+											310.04999999999995,
+											310.34999999999997,
+											310.95,
+											304.75,
+											297.34999999999997,
+											290.95,
+											288.25
+										],
+										"unitDimensions": "0 0 0 0 1 0 0",
+										"defaultValue": "0 degC"
+									},
+									{
+										"name": "Extreme Maximum Date",
+										"displayUnit": "date",
+										"nValues": [
+											-61516800,
+											667526400,
+											-151804800,
+											893894400,
+											423014400,
+											393206400,
+											-139536000,
+											50630400,
+											589248000,
+											717897600,
+											163036800,
+											1135382400
+										],
+										"unitDimensions": "0 0 1 0 0 0 0",
+										"defaultValue": "0 date"
+									},
+									{
+										"name": "Extreme Minimum (°C)",
+										"displayUnit": "degC",
+										"nValues": [
+											249.24999999999997,
+											255.34999999999997,
+											260.34999999999997,
+											267.54999999999995,
+											270.95,
+											272.54999999999995,
+											275.34999999999997,
+											274.84999999999997,
+											270.34999999999997,
+											263.45,
+											252.74999999999997,
+											254.64999999999998
+										],
+										"unitDimensions": "0 0 0 0 1 0 0",
+										"defaultValue": "0 degC"
+									},
+									{
+										"name": "Extreme Minimum Date",
+										"displayUnit": "date",
+										"nValues": [
+											-29030400,
+											65750400,
+											194659200,
+											68428800,
+											-113616000,
+											234057600,
+											47606400,
+											-110764800,
+											67996800,
+											449539200,
+											478224000,
+											331776000
+										],
+										"unitDimensions": "0 0 1 0 0 0 0",
+										"defaultValue": "0 date"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "Mar_20_2025",
+								"Notes": "",
+								"DiagramX": 5,
+								"DiagramY": 30,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<style>\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t.quote\n\t{\n\t\tcolor: green;\n\t\tmargin-left: 30px;\n\t}\n\t.main {\n\t\tbackground-color: #f2f2f2;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t}\n</style>\n<div class=\"main\">\n<h3>Update:</h3>\n<p>\nAfter I posted the stuff below, I played around a bit more and discovered that removing web search\ncapability from the ChatGPT tool assistant did not noticeably change its performance. Doing so allows it to be used by free OpenAI accounts, so you no longer need a paid OpenAI account to play with it.\n</p>\n<p>\nSimilarly, the data table tool could be made free by removing its ability to process images as well as text. There are now two links in the <a href=\"./help/chatgpt.html\" target=\"_blank\">Math Minion's Ask ChatGPT help</a>. One for free accounts and one with image capability for paid accounts.\n</p>\n<h3>Math Minion News: Mar 20, 2025</h3>\n<p>\nWow, it seems to have passed since the last news update. I have made occasional unannounced bug fixes during that time, but nothing that seemed to warrant new News. However a rare recent prod from a friend and user has sparked changes that are probably enough to justify an update.\n</p>\n<h3>No More Clipboard Window in Safari</h3>\n<p>\n\tFinally, users of Safari and all browsers on the iPhone, iPad and Vision Pro will no longer need to use that clunky clipboard window to interact with the system clipboard. Note you will probably be asked to allow access when you first try to use this.\n</p>\n<h3>Export File Name Extension</h3>\n<p>\n\tI have changed the file name extension for exported files to \"json\". This doesn't have any impact on reading existing files and indeed you can override the extension in the save dialog if you wish.\n</p>\n<p>\n\tThe files themselves have always been in json format and remain unchanged. I think the original idea behind the txt extension was to emphasis that they were human readable. However most folks know about json now and many text editors apply appropriate syntax colouring to files with the json extension, so the change seemed worthwhile.\n</p>\n<h3>ChatGPT Assistants</h3>\n<p>\n\tIf you happen to have a paid ChatGPT account, there are now a couple of Math Minion assistants implemented as GPTs. Time will tell if these are really useful, but I find them pretty cool to play with.\n</p>\n<h4>Math Minion Tool Assistant</h4>\n<p>\n\tFrom a problem description, this assistant will attempt to create a json representation of the solution using the following Math Minion tools:\n</p>\n<ul>\n\t<li>Model</li>\n\t<li>Expression</li>\n\t<li>Equation Solver</li>\n\t<li>Optimizer</li>\n\t<li>ODE Solver</li>\n</ul>\n<p>\nThis will be suitable for pasting onto the Math Minion diagram. For instance the prompt:\n</p>\n<p class='quote'>\nCreate a model to simulate a predator/prey relationship. Inputs should be:\ninitial populations of predator and prey - default 200 for both\nthe prey growth per period of time in the absence of predators - default 1 per day\nDeath rate of prey per encounter with predators - default 0.003 1/d\nDeath rate of predator in absence of food - default 2 per day\nEfficiency of turning prey into predators - default 1\nShow both a table and graph of the results\n</p>\n<p>\n\tProduced the <span class=\"link\"\n\t\t\t\tonClick=\"mmpost({}, {mm_view: 'PredatorPrey'})\">\n\t\t\t\tPredatorPrey</span> model. In this case no modifications to the result were needed, but results vary from time to time, perhaps depending on whether the AI is having a bad day or missed its digital coffee. Pointing out any mistakes to it will often result in it making an appropriate fix, but it may be faster to just fix it yourself.\n</p>\n<p>\n\tThink of it more as a somewhat dim intern than an expert system. It can save time on simple problems, but will often make mistakes, so its work will need careful checking.\n</p>\n<p>\n\tThis assistant can be accessed by the link below. These links are also available by selecting\n\t<a href=\"./help/chatgpt.html\" target=\"_blank\">Ask ChatGPT</a> from the contents menu in the help.\n</p>\n<p class=\"link\">\n\t\t\t\t\n\t<a href=\"https://chatgpt.com/g/g-67ce2b8302b881918ab06486ed92184d-math-minion-tool-assistant\" target=\"_blank\">Tool Assistant</a>\n</p>\n\n<h4>Math Minion Data Table Assistant</h4>\n<p>\n\tThis assistant will try to create from the given data a Math Minion specific CSV file that when pasted on the diagram will result in a new Data Table tool.  For instance this prompt:\n</p>\n<p class=\"quote\">\n \tJan\tFeb\tMar\tApr\tMay\tJun\tJul\tAug\tSep\tOct\tNov\tDec\tYear\tCode\nDaily Average (°C)\t2.4\t3.2\t5.2\t8.0\t11.6\t14.7\t17.3\t17.2\t13.7\t8.6\t4.4\t2.1\t9.0\tA\nStandard Deviation\t1.9\t1.5\t1.2\t1.1\t1.3\t1.3\t1.1\t1.0\t1.2\t0.9\t1.8\t1.8\t1.3\tA\nDaily Maximum (°C)\t5.5\t7.2\t9.7\t13.2\t17.0\t20.1\t23.0\t23.3\t19.8\t13.1\t7.7\t4.9\t13.7\tA\nDaily Minimum (°C)\t-0.8\t-0.7\t0.7\t2.8\t6.2\t9.3\t11.5\t11.1\t7.6\t4.0\t1.0\t-0.8\t4.3\tA\nExtreme Maximum (°C)\t16.1\t17.5\t20.6\t28.5\t33.2\t36.9\t37.2\t37.8\t31.6\t24.2\t17.8\t15.1\t\t\nDate (yyyy/dd)\t1968/ 20\t1991/ 26\t1965/ 11\t1998/ 30\t1983/ 29\t1982/ 18\t1965/ 31\t1971/ 10\t1988/ 03\t1992/ 01\t1975/ 03\t2005/ 24\t\t\nExtreme Minimum (°C)\t-23.9\t-17.8\t-12.8\t-5.6\t-2.2\t-0.6\t2.2\t1.7\t-2.8\t-9.7\t-20.4\t-18.5\t\t\nDate (yyyy/dd)\t1969/ 30\t1972/ 01\t1976/ 03\t1972/ 03\t1966/ 27+\t1977/ 02\t1971/ 06\t1966/ 29+\t1972/ 27\t1984/ 31\t1985/ 26\t1980/ 07\t\t\n<br>\nOmitting the Year and Code columns, rotate the table so the months are the rows and create a data table\n</p>\n<p>\n\tproduced the <span class=\"link\"\n\t\t\t\tonClick=\"mmpost({}, {mm_view: 'Temperatures'})\">\n\t\t\t\tTemperatures</span> table. Note the instructions to omit columns and rotate the table.\n</p>\n<p>\n\tInput will probably normally be text, but it also works with images of tables and I even had it convert a bar chart successfully by telling it to estimate the values from the bar lengths.\n</p>\n<p>\n\tThis assistant can be accessed by the following link\n</p>\n<p class=\"link\">\n\t\t\t\t\n\t<a href=\"https://chatgpt.com/g/g-67d4d1a5d7c48191bf07e3a0b321c72a-mm-datatable-assistant\" target=\"_blank\">Data Table Assistant</a>\n</p>\n<p>\n\tIf you have a chance to play with these, I would love to <a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">hear how it went</a>.\n\n<h3>Miscellaneous Bug Fixes</h3>\n<p>\n\tAs always there has been a number of minor changes and bug fixes. Many of these were quietly done during the course of the year.\n</p>\n<ul>\n<li>    Added mmHg as synonym for unit mmHg0C</li>\n<li>    Added MagneticFluxDensity units Tesla (T) and Gauss.</li>\n<li>    Added mod and sqrt as conveniece functions for x%n and x^0.5</li>\n<li>    some additional error checking in Graph</li>\n<li>    added error check in MMUnit</li>\n<li>    fix to import problem when imported session wasn't at root</li>\n<li>    removed obsolete reference to mac version from web home page</li>\n<li>    fix to financial example</li>\n<li>    Added an expanded row view to expression table values</li>\n<li>    Fixed problem with copy as table with tables having specified column units</li>\n<li>    Fixed problem with menu tool info view</li>\n<li>    Fixed problem with wheel scrolling in TableView.</li>\n</ul>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>\n</div>"
 								}
 							}
 						]
 					},
 					{
-						"name": "Updates",
+						"name": "May_10_2025",
 						"Notes": "",
-						"DiagramX": 110,
-						"DiagramY": -185,
-						"HideInfo": "y",
+						"DiagramX": 85,
+						"DiagramY": -135,
+						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
 						"isOutput": "y",
-						"Type": "HTML Form",
-						"Formula": {
-							"Formula": "'\n<style>\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t.quote\n\t{\n\t\tcolor: green;\n\t\tmargin-left: 30px;\n\t}\n\t.main {\n\t\tbackground-color: #f2f2f2;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t}\n</style>\n<div class=\"main\">\n<h4>May 10, 2025</h4>\n<h3>More AI Fun</h3>\n<p>\n\tI am still intrigued by the potential of AI and as a result Math Minion is now the proud possessor of its very own OpenAI chat interface.\n</p>\n<p>\n\tWhile this can create models for simple problems, much like the GPT version discussed in the last update, it can also get feedback from MM and use that to try and correct errors or learn about a model.\n</p>\n<p>\n\t It also means you can correct it if it makes a mistake or have it make modifications to existing models. Having it add short notes to all the tools in a model is also a neat trick. You can even get it to move the icons on the diagram around to make more space.\n</p>\n<p>\n\tIt can do this because it knows about the underlying command structure that the user interface uses to drive the calculation engine. It uses these commands to instruct MM on what to do or query it about things.\n</p>\n<p>\n\tIn comparison to the GPT version, it also knows more about formula syntax and functions and also about all the tools except for the imported model and the html page.\n</p>\n<p>And sometimes it even gets things right! 😉</p>\n<p>\n\tBut is it really useful? It is far from error free and not terribly quick. I can't say I have used it much for creating models for real problems, but I have used it for some tedious tasks like telling it to create a bunch of input expressions from a list of names.\n</p>\n<p>\n\tAt the very least it is interesting to play with and gives a glimpse of the future. Given how fast AI models are improving, I suspect that future isn't very far away.\n</p>\n<p>\n\tAlas, it isn't free and you need an OpenAI API key in order to use it. You can add as little as $5 to your account and that goes farther than you might think. Telling it:\n</p>\n<p class=\"quote\">\nGiven equations:<br><br>\n\n(x+5)^2 +7<br><br>\n\n2000 - 20*x<br><br>\n\nCreate a model to calculate the intersection of the two curves.<br>\nUse 50 as a guess for x and have x 50 times the solver output.<br>\nAlso create a graph showing the two curves intersecting.\n</p>\n<p>\n\tResulted in the\n\t<span class=\"link\"\n\t\tonClick=\"mmpost({}, {mm_view: 'intersection'})\">\n\t\t\"Intersection\"\n\t</span>\t\n\tmodel and cost me about 6 cents.\n</p>\n<p>\n\tThe model\n\t<span class=\"link\"\n\t\tonClick=\"mmpost({}, {mm_view: 'OpenAI_Key'})\">\n\t\t\"OpenAI_Key\"\n</span> has instructions, generated by ChatGPT, for getting an OpenAI API key.\n</p>\n<h3>Console Changes</h3>\n<p>\n\tI gave the <b>Console</b> view a makeover so it now has the option to either give instructions to the AI or use it to issue commands to Math Minion. I won't go into details here, but there is information about it in the\n\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/console.html'})\">\n\t\t\tConsole help page\n\t\t</span>.\n</p>\n<p>\n\tThe console also now keeps a history of both the commands given and the results. These persist as long as the page/app is open. When the input field has focus, up and down arrows cycle through the commands, while shift-up and shift-down cycle through output frames.\n</p>\n\n<h3>Imported Models</h3>\n<p>\n\tThe imported model tool now has a menu for selecting the session to import. This makes a surprising difference in usability. It also has a number of other fixes to improve robustness.\n</p>\n<h3>Expression in a New Model</h3>\n<p>\n\tA while back I got the bright idea to have an expression created automatically when a new model is added. The idea was that creating an expression is often the first step in building a model. However, I found that wasn't the case as often as I imagined and was often annoyed at having to  delete the expression. New models are again just empty.\n</p>\n<h3>Miscellaneous Bug Fixes etc.</h3>\n<p>\n\tAs always there has been a number of minor changes and bug fixes. Some of these were quietly rolled out since the last update. Also some of the fixes were a result of the AI using commands in ways that wouldn't occur using the program normally.\n</p>\n<ul>\n\t<li>At some point, Chromium browsers started to show blank pages when the model was updated. This is now fixed, I think.</li>\n\t<li>An unrelated model view problem was that it wouldn't update in certain cases. This is also fixed.\t</li>\n\t<li>Added check to ODE solver for NextT not incrementing</li>\n\t<li>Some extra error checking in datatable to protect against bad commands</li>\n\t<li>Added some null value checks to formulaview</li>\n\t<li>Added a default Formula in case a column is added without one.</li>\n\t<li>Fixed bug with adding rows to datatable</li>\n\t<li>Added check in Model HTML generation to ensure element exist before assigning innerHTML</li>\n\t<li>Fix for React key problem in TableView with transposed tables</li>\n\t<li>If fx resulted in a NaN in Solver, an infinite loop could occur</li>\n\t<li>Fixed fatal error when trying to plot 3d graph with missing axis assignments</li>\n\t<li>Fixes to how optimizer handled isEnabled</li>\n\t<li>Fixed problem with wheel scrolling in TableView.</li>\n\t<li>Added a section to the\n\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/somethingwrong.html'})\">\n\t\t\t\t<b><i>Something Wrong</i> help page</b>\n\t\t</span>\n\t\tdescribing how to recover from a long running calculation.</li>\n</ul>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>\n</div>"
-						}
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "OpenAI_Key",
+								"Notes": "",
+								"DiagramX": 110,
+								"DiagramY": -135,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'  <style>\n    body {\n      font-family: Arial, sans-serif;\n      line-height: 1.6;\n      max-width: 800px;\n      margin: auto;\n      padding: 20px;\n    }\n    h1, h2 {\n        color: #333;\n      }\n    a {\n      color: #1a73e8;\n      text-decoration: none;\n    }\n    a:hover {\n      text-decoration: underline;\n    }\n    code {\n      background-color: #f5f5f5;\n      padding: 2px 4px;\n      border-radius: 4px;\n      font-family: monospace;\n    }\n    .note {\n      background-color: #fff3cd;\n      border-left: 6px solid #ffeeba;\n      padding: 10px;\n      margin: 20px 0;\n    }\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\n  </style>\n  <h1>🔑 How to Obtain an OpenAI API Key</h1>\n\n  <p>To use this application, you'll need an OpenAI API key. Follow these steps to acquire one:</p>\n\n  <h2>1. Create an OpenAI Account</h2>\n  <ol>\n    <li>Visit the\n    \t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'https://platform.openai.com/signup'})\">\n\t\t\t\tOpenAI Signup Page\n\t\t\t</span>\n      </li>\n    <li>Sign up using your email address and set a password.</li>\n    <li>Verify your email address and phone number as prompted.</li>\n  </ol>\n\n  <h2>2. Access the API Keys Page</h2>\n  <ol>\n    <li>Navigate to the\n    \t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'https://platform.openai.com/account/api-keys'})\">\n\t\t\t\tAPI Keys Page\n\t\t\t</span>.\n    </li>\n    <li>Log in with your OpenAI credentials if prompted.</li>\n  </ol>\n\n  <h2>3. Generate a New API Key</h2>\n  <ol>\n    <li>Click on the <strong>\"Create new secret key\"</strong> button.</li>\n    <li>Optionally, assign a name to your key to help you remember its purpose.</li>\n    <li>Copy the generated key and store it securely. <strong>You won't be able to view it again once you navigate away from the page.</strong></li>\n  </ol>\n\n  <div class=\"note\">\n    <strong>Note:</strong> If you lose your API key, you'll need to generate a new one.\n  </div>\n\n  <h2>4. Secure Your API Key</h2>\n  <ul>\n    <li><strong>Do Not Share:</strong> Treat your API key like a password; keep it confidential.</li>\n    <li><strong>Environment Variables:</strong> Store the key in an environment variable (e.g., <code>OPENAI_API_KEY</code>) to keep it out of your codebase.</li>\n    <li><strong>Avoid Hardcoding:</strong> Never hardcode the API key directly into your application's source code.</li>\n  </ul>\n\n  <h2>5. Understand Usage and Billing</h2>\n  <ul>\n    <li><strong>Free Trial:</strong> New accounts may receive free credits to explore the API.</li>\n    <li><strong>Billing Information:</strong> To continue using the API after the trial, add a payment method in your OpenAI account settings.</li>\n    <li><strong>Usage Monitoring:</strong> Regularly check your usage to avoid unexpected charges.</li>\n  </ul>\n\n  <p>For more detailed information, refer to OpenAI's official documentation: \n\t<span class=\"link\"\n\t\t\tonClick=\"mmpost([], {mm_viewurl: 'https://platform.openai.com/docs/quickstart'})\">\n\t\t\tOpenAI API Quickstart\n\t\t</span>\n  </p>"
+								}
+							},
+							{
+								"name": "intersection",
+								"Notes": "",
+								"DiagramX": 110,
+								"DiagramY": -160,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "x",
+										"Notes": "",
+										"DiagramX": 100,
+										"DiagramY": 100,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "solver.1*50+50"
+										}
+									},
+									{
+										"name": "solver",
+										"Notes": "",
+										"DiagramX": 200,
+										"DiagramY": 100,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Equation Solver",
+										"f0": "(x+5)^2 + 7 - (2000 - 20*x)",
+										"c0": "1",
+										"maxIter": 200,
+										"maxJacobians": 5,
+										"Enabled": "y"
+									},
+									{
+										"name": "xdomain",
+										"Notes": "",
+										"DiagramX": 100,
+										"DiagramY": 200,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "-100:100"
+										}
+									},
+									{
+										"name": "graph",
+										"Notes": "",
+										"DiagramX": 200,
+										"DiagramY": 200,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Graph",
+										"X1": {
+											"v": "xdomain",
+											"vmin": "",
+											"vmax": "",
+											"Y1": {
+												"v": "(xdomain+5)^2 + 7",
+												"vmin": "",
+												"vmax": "",
+												"lineType": 0
+											},
+											"Y2": {
+												"v": "2000 - 20*xdomain",
+												"vmin": "",
+												"vmax": "",
+												"lineType": 0
+											}
+										}
+									}
+								]
+							},
+							{
+								"name": "Updates",
+								"Notes": "",
+								"DiagramX": 110,
+								"DiagramY": -185,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<style>\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t.quote\n\t{\n\t\tcolor: green;\n\t\tmargin-left: 30px;\n\t}\n\t.main {\n\t\tbackground-color: #f2f2f2;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t}\n</style>\n<div class=\"main\">\n<h4>May 10, 2025</h4>\n<h3>More AI Fun</h3>\n<p>\n\tI am still intrigued by the potential of AI and as a result Math Minion is now the proud possessor of its very own OpenAI chat interface.\n</p>\n<p>\n\tWhile this can create models for simple problems, much like the GPT version discussed in the last update, it can also get feedback from MM and use that to try and correct errors or learn about a model.\n</p>\n<p>\n\t It also means you can correct it if it makes a mistake or have it make modifications to existing models. Having it add short notes to all the tools in a model is also a neat trick. You can even get it to move the icons on the diagram around to make more space.\n</p>\n<p>\n\tIt can do this because it knows about the underlying command structure that the user interface uses to drive the calculation engine. It uses these commands to instruct MM on what to do or query it about things.\n</p>\n<p>\n\tIn comparison to the GPT version, it also knows more about formula syntax and functions and also about all the tools except for the imported model and the html page.\n</p>\n<p>And sometimes it even gets things right! 😉</p>\n<p>\n\tBut is it really useful? It is far from error free and not terribly quick. I can't say I have used it much for creating models for real problems, but I have used it for some tedious tasks like telling it to create a bunch of input expressions from a list of names.\n</p>\n<p>\n\tAt the very least it is interesting to play with and gives a glimpse of the future. Given how fast AI models are improving, I suspect that future isn't very far away.\n</p>\n<p>\n\tAlas, it isn't free and you need an OpenAI API key in order to use it. You can add as little as $5 to your account and that goes farther than you might think. Telling it:\n</p>\n<p class=\"quote\">\nGiven equations:<br><br>\n\n(x+5)^2 +7<br><br>\n\n2000 - 20*x<br><br>\n\nCreate a model to calculate the intersection of the two curves.<br>\nUse 50 as a guess for x and have x 50 times the solver output.<br>\nAlso create a graph showing the two curves intersecting.\n</p>\n<p>\n\tResulted in the\n\t<span class=\"link\"\n\t\tonClick=\"mmpost({}, {mm_view: 'intersection'})\">\n\t\t\"Intersection\"\n\t</span>\t\n\tmodel and cost me about 6 cents.\n</p>\n<p>\n\tThe model\n\t<span class=\"link\"\n\t\tonClick=\"mmpost({}, {mm_view: 'OpenAI_Key'})\">\n\t\t\"OpenAI_Key\"\n</span> has instructions, generated by ChatGPT, for getting an OpenAI API key.\n</p>\n<h3>Console Changes</h3>\n<p>\n\tI gave the <b>Console</b> view a makeover so it now has the option to either give instructions to the AI or use it to issue commands to Math Minion. I won't go into details here, but there is information about it in the\n\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/console.html'})\">\n\t\t\tConsole help page\n\t\t</span>.\n</p>\n<p>\n\tThe console also now keeps a history of both the commands given and the results. These persist as long as the page/app is open. When the input field has focus, up and down arrows cycle through the commands, while shift-up and shift-down cycle through output frames.\n</p>\n\n<h3>Imported Models</h3>\n<p>\n\tThe imported model tool now has a menu for selecting the session to import. This makes a surprising difference in usability. It also has a number of other fixes to improve robustness.\n</p>\n<h3>Expression in a New Model</h3>\n<p>\n\tA while back I got the bright idea to have an expression created automatically when a new model is added. The idea was that creating an expression is often the first step in building a model. However, I found that wasn't the case as often as I imagined and was often annoyed at having to  delete the expression. New models are again just empty.\n</p>\n<h3>Miscellaneous Bug Fixes etc.</h3>\n<p>\n\tAs always there has been a number of minor changes and bug fixes. Some of these were quietly rolled out since the last update. Also some of the fixes were a result of the AI using commands in ways that wouldn't occur using the program normally.\n</p>\n<ul>\n\t<li>At some point, Chromium browsers started to show blank pages when the model was updated. This is now fixed, I think.</li>\n\t<li>An unrelated model view problem was that it wouldn't update in certain cases. This is also fixed.\t</li>\n\t<li>Added check to ODE solver for NextT not incrementing</li>\n\t<li>Some extra error checking in datatable to protect against bad commands</li>\n\t<li>Added some null value checks to formulaview</li>\n\t<li>Added a default Formula in case a column is added without one.</li>\n\t<li>Fixed bug with adding rows to datatable</li>\n\t<li>Added check in Model HTML generation to ensure element exist before assigning innerHTML</li>\n\t<li>Fix for React key problem in TableView with transposed tables</li>\n\t<li>If fx resulted in a NaN in Solver, an infinite loop could occur</li>\n\t<li>Fixed fatal error when trying to plot 3d graph with missing axis assignments</li>\n\t<li>Fixes to how optimizer handled isEnabled</li>\n\t<li>Fixed problem with wheel scrolling in TableView.</li>\n\t<li>Added a section to the\n\t\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'help/somethingwrong.html'})\">\n\t\t\t\t<b><i>Something Wrong</i> help page</b>\n\t\t</span>\n\t\tdescribing how to recover from a long running calculation.</li>\n</ul>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>\n</div>"
+								}
+							}
+						]
+					},
+					{
+						"name": "May_26_2025",
+						"Notes": "",
+						"DiagramX": 85,
+						"DiagramY": -160,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "MatrixSolution",
+								"Notes": "",
+								"DiagramX": 155,
+								"DiagramY": -185,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "dt",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": -170,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "60 s"
+										},
+										"format": ".1f"
+									},
+									{
+										"name": "Tambient",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": -145,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "25 degC"
+										},
+										"format": ".2f"
+									},
+									{
+										"name": "hA",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": -120,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "12 W/K"
+										},
+										"format": ".2f"
+									},
+									{
+										"name": "Mass",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": -70,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ".25 kg"
+										}
+									},
+									{
+										"name": "Cp",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": -95,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "4.18 kJ/kg-k"
+										},
+										"format": ".2f"
+									},
+									{
+										"name": "OdeSolution",
+										"Notes": "",
+										"DiagramX": 215,
+										"DiagramY": -90,
+										"HideInfo": "n",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Model",
+										"diagramScale": 1,
+										"Objects": [
+											{
+												"name": "Tambient",
+												"Notes": "",
+												"DiagramX": 125,
+												"DiagramY": -185,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "25 degC"
+												},
+												"format": ".2f"
+											},
+											{
+												"name": "hA",
+												"Notes": "",
+												"DiagramX": 125,
+												"DiagramY": -130,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "12 W/K"
+												},
+												"format": ".2f"
+											},
+											{
+												"name": "Mass",
+												"Notes": "",
+												"DiagramX": 125,
+												"DiagramY": -80,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": ".25 kg"
+												}
+											},
+											{
+												"name": "Cp",
+												"Notes": "",
+												"DiagramX": 125,
+												"DiagramY": -105,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "4.18 kJ/kg-k"
+												},
+												"format": ".2f"
+											},
+											{
+												"name": "dt",
+												"Notes": "",
+												"DiagramX": 125,
+												"DiagramY": -50,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "{table\n\t\"dT\", Q/(mass*Cp),\n\t\"dQ\", Q\n}"
+												}
+											},
+											{
+												"name": "OdeSolver",
+												"Notes": "",
+												"DiagramX": 215,
+												"DiagramY": -155,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"HtmlNotes": "n",
+												"Type": "ODE Solver",
+												"y0Formula": {
+													"Formula": "Y0"
+												},
+												"dyFormula": {
+													"Formula": "dt"
+												},
+												"nextTFormula": {
+													"Formula": "$.t + 5 * {baseunit $.t}"
+												},
+												"endTFormula": {
+													"Formula": "10 min"
+												},
+												"relTolFormula": {
+													"Formula": "1e-5"
+												},
+												"absTolFormula": {
+													"Formula": "1.0e-10*{baseunit $.y}"
+												},
+												"recFormulas": [
+													{
+														"Formula": "$.t'Time"
+													},
+													{
+														"Formula": "T'Temperature"
+													},
+													{
+														"Formula": "Q"
+													},
+													{
+														"Formula": "$.y.Q'Energy_Lost"
+													}
+												],
+												"AutoRun": "y"
+											},
+											{
+												"name": "T",
+												"Notes": "",
+												"DiagramX": 125,
+												"DiagramY": -25,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "OdeSolver.y.T"
+												}
+											},
+											{
+												"name": "Q",
+												"Notes": "",
+												"DiagramX": 125,
+												"DiagramY": 0,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "ha * (Tambient - T)"
+												}
+											},
+											{
+												"name": "Y0",
+												"Notes": "",
+												"DiagramX": 125,
+												"DiagramY": -160,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "{table\n\t\"T\", 90 degC,\n\t\"Q\", 0 kJ\n}"
+												}
+											},
+											{
+												"name": "Table",
+												"Notes": "",
+												"DiagramX": 215,
+												"DiagramY": -95,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"HtmlNotes": "n",
+												"isOutput": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "OdeSolver.table"
+												}
+											},
+											{
+												"name": "Graph",
+												"Notes": "",
+												"DiagramX": 215,
+												"DiagramY": -125,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"HtmlNotes": "n",
+												"isOutput": "y",
+												"Type": "Graph",
+												"X1": {
+													"v": "OdeSolver.Time'Time",
+													"vmin": "",
+													"vmax": "",
+													"Y1": {
+														"v": "OdeSolver.Temperature'Temperature",
+														"vmin": "",
+														"vmax": "",
+														"lineType": 0
+													},
+													"Y2": {
+														"v": "OdeSolver.Energy_lost'Energy Lost",
+														"vmin": "-80 kJ",
+														"vmax": "",
+														"lineType": 0
+													}
+												},
+												"Selected": "0_0",
+												"highlight": "true"
+											}
+										]
+									},
+									{
+										"name": "HeatLoss",
+										"Notes": "",
+										"DiagramX": 215,
+										"DiagramY": -140,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Matrix",
+										"columnUnits": [
+											"s",
+											"min",
+											"degC",
+											"W",
+											"kJ"
+										],
+										"columnFormats": [
+											null,
+											null,
+											null,
+											null,
+											null
+										],
+										"CellInputs": {
+											"0_0": "0",
+											"1_1": "0",
+											"0_1": "{cell -1, 0} + dt 'Time",
+											"1_2": "90 degC",
+											"0_2": "{cell -1, 0} - \n{cell -1, 1}\n/(mass*Cp)*dt 'Temperature",
+											"0_3": "hA * ({cell 0, -1} - Tambient)'Heat_Flow",
+											"1_4": "0",
+											"0_4": "{cell -1, 0} + {cell -1, -1}*dt'Energy_Loss"
+										},
+										"rowCount": "10",
+										"columnCount": "4"
+									},
+									{
+										"name": "Graph",
+										"Notes": "",
+										"DiagramX": 215,
+										"DiagramY": -115,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Graph",
+										"X1": {
+											"v": "HeatLoss.Time'Time",
+											"vmin": "",
+											"vmax": "",
+											"Y1": {
+												"v": "HeatLoss.Temperature'Temperature",
+												"vmin": "",
+												"vmax": "",
+												"lineType": 0
+											}
+										}
+									},
+									{
+										"name": "Overview",
+										"Notes": "Below is a contrived example, suggested by ChatGPT, of using the matrix tool with different units in each column.\n\nIt is a simple model of water cooling. Each new temperature row is calculated from the temperature difference of the row above versus the ambient temperature.\n\nWhile this works and allows Math Minion to solve these kind of step wise problems, in practice there is usually a better way to do it. In this case, using an ODE solver as in the OdeSolution model provides more accurate and easier to understand solution.",
+										"DiagramX": 215,
+										"DiagramY": -170,
+										"HideInfo": "n",
+										"DiagramNotes": "n",
+										"HtmlNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ""
+										}
+									}
+								]
+							},
+							{
+								"name": "Updates",
+								"Notes": "",
+								"DiagramX": 155,
+								"DiagramY": -210,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<style>\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t.quote\n\t{\n\t\tcolor: green;\n\t\tmargin-left: 30px;\n\t}\n\t.main {\n\t\tbackground-color: #f2f2f2;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t}\n</style>\n<div class=\"main\">\n<h4>May 26, 2025</h4>\n<h3>A Small Update</h3>\n<p>\n\tJust a few small changes that seemed worth listing\n</p>\n<h3>Matrix Column Units</h3>\n<p>\n\tThe way conversion units are used in the matrix tool has been changed. Rather than only being able to specify the unit and hence unit type, for the matrix as a whole, you can now assign a different unit to each column.\n</p>\n<p>\n\tAssigning a unit to column 0, the origin cell, will be the default unit for all columns that don't have a unit explicitly set. If only column 0 has a unit, then the calculated value for the matrix will be a number value as it was previously. However if any other column has a unit, the calculated value will be a table value.\n<p>\n<p>\n\tSee the session <span class=\"link\"\n\t\tonClick=\"mmpost({}, {mm_view: 'MatrixSolution'})\">\n\t\t\"MatrixSolution\"\n\t</span>\tfor a contrived example.\n</p>\n<h3>Session View Changes</h3>\n<p>\n\tWhen you navigate into a folder in the session view, the contents no longer have the folder path included in the name.\n</p>\n<p>\n\tI made some changes to the code for the <b>Copy Session</b> option in the sessions view menu. It will now work with Firefox as well as Chromium based browsers, but the opaque security provisions in Safari have defeated all my attempts.  At least there is now an error message when it fails.\n</p>\n<h3>Imported Model Copying</h3>\n<p>\n\tIf you copied and pasted an imported model, which itself contained imported models, the nested models would lose their input formulas.  This has now been fixed and also fixes a problem with undoing deletions of such models.\n</p>\n<h3>Miscellaneous Bug Fixes etc.</h3>\n<ul>\n\t<li>\n\t\tOpenAI now requires users of the o4-mini model that MM uses to verify their identity with picture ID. The generic error MM reported for this now includes the OpenAI message to make it clear what is happening.\t\n\t</li>\n\t<li>\n\t\tMy son pointed out that \"Expression\" in the diagram context menu was misspelled. It is hard to believe I never noticed that before, but it is now fixed.\n\t</ul>\n<p>\n\t<a href=\"http://www.redtree.com/contact.html\" target=\"_blank\">Craig</a>\n</p>\n</div>"
+								}
+							}
+						]
 					}
 				]
 			}
