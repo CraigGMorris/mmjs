@@ -97,6 +97,7 @@ export class Diagram extends React.Component {
 				scale: 1.0,
 				showContext: null,
 				showClipboard: false,				
+				toolHover: null,
 			}
 		}
 
@@ -641,6 +642,10 @@ export class Diagram extends React.Component {
 				highlight = true;
 			}
 
+			const setToolHover = (toolName) => {
+				this.setState({toolHover: toolName});
+			}
+
 			const cmp = e(ToolIcon, {
 				t: t,
 				key: toolName,
@@ -654,6 +659,7 @@ export class Diagram extends React.Component {
 				viewTool: this.props.actions.viewTool,
 				updateView: this.props.actions.updateView,
 				dimmed: this.state.selectedObject && toolName !== this.state.selectedObject,
+				setToolHover: setToolHover,
 				showContext: (shouldShow) => {
 					this.setState({
 						showContext: shouldShow,
@@ -797,12 +803,13 @@ export class Diagram extends React.Component {
 				const key = `${requestorName}->${toolName}`;
 				let connectColor = this.state.selectedObject ? 'grey' : 'black';
 				let strokeWidth = 1;
-				if (this.state.selectedObject) {
-					if (requestorName === this.state.selectedObject) {
+				const highlightName = this.state.toolHover || this.state.selectedObject;
+				if (highlightName) {
+					if (requestorName === highlightName) {
 						connectColor = 'blue'
 						strokeWidth = 2;
 					}
-					else if (toolName === this.state.selectedObject) {
+					else if (toolName === highlightName) {
 						connectColor = 'green';
 						strokeWidth = 2;
 					}
@@ -1399,6 +1406,8 @@ class ToolIcon extends React.Component {
 		this.onPointerDown = this.onPointerDown.bind(this);
 		this.onPointerUp = this.onPointerUp.bind(this);
 		this.onPointerMove = this.onPointerMove.bind(this);
+		this.onPointerEnter = this.onPointerEnter.bind(this);
+		this.onPointerLeave = this.onPointerLeave.bind(this);
 	}
 
 	componentWillUnmount() {
@@ -1488,6 +1497,16 @@ class ToolIcon extends React.Component {
 			this.panSum += Math.abs(deltaX) + Math.abs(deltaY);
 			this.props.draggedTo( e.clientX, e.clientY);
 		}
+	}
+
+	onPointerEnter(e) {
+		console.log('onPointerEnter');
+		this.props.setToolHover(this.props.info.name);
+	}
+	
+	onPointerLeave(e) {
+		console.log('onPointerLeave');
+		this.props.setToolHover(null);
 	}
 
 	render() {
@@ -1719,6 +1738,8 @@ class ToolIcon extends React.Component {
 			e(
 				'rect', {
 					onPointerDown: this.onPointerDown,
+					onPointerEnter: this.onPointerEnter,
+					onPointerLeave: this.onPointerLeave,
 					x: (x + translate.x)*scale,
 					y: (y + translate.y)*scale,
 					width: objectWidth*scale,
