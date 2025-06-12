@@ -378,7 +378,7 @@ export function ModelView(props) {
 					fields.push(e(
 							// rendered html
 							'iframe', {
-							id: 'htmlpage__iframe-import',
+							id: results.importSource ? 'htmlpage__iframe-import' : 'htmlpage__iframe',
 							srcDoc: htmlResults,
 							sandbox: 'allow-scripts allow-modals allow-popups',
 							key: 'iframe',

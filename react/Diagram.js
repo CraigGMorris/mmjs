@@ -1500,12 +1500,12 @@ class ToolIcon extends React.Component {
 	}
 
 	onPointerEnter(e) {
-		console.log('onPointerEnter');
+		// console.log('onPointerEnter');
 		this.props.setToolHover(this.props.info.name);
 	}
 	
 	onPointerLeave(e) {
-		console.log('onPointerLeave');
+		// console.log('onPointerLeave');
 		this.props.setToolHover(null);
 	}
 
