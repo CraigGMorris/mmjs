@@ -1292,6 +1292,9 @@ class MMModel extends MMTool {
 				}
 			}
 		}
+		else if (toolName === 'formulae') {
+			value = MMStringValue.scalarValue(this.formulae());
+		}
 		else {
 			// check for search type prefix
 			let type = 'name';
@@ -1305,7 +1308,7 @@ class MMModel extends MMTool {
 			}
 			// check for wild card characters
 			// Replace '*' in the pattern with '.*' to create a regular expression
-			const regexPattern = new RegExp("^" + toolName.split("*").join(".*") + "$");
+			const regexPattern = new RegExp("^" + toolName.split("*").join(".*") + "$", 'm');
 			const tools = [];
 			const children = this.positionSortedChildren()
 			for (const child of children) {
@@ -1588,5 +1591,92 @@ class MMModel extends MMTool {
 			const expr = new MMExpression(exprName, this);
 			expr.formula.formula = "'" + savedJson;
 		}
+	}
+
+	/**
+	 * @method formulae
+	 * @returns String contains html listing of formulae
+	 */
+	formulae(isChild) {
+		const chunks = [];
+		if (!isChild) {
+			chunks.push(`<style>
+				.formula-list__path {
+					font-size: 1.2em;
+					font-weight: bold;
+				}
+				.formula-list__fname {
+					font-size: 1.1em;
+					font-weight: bold;
+				}
+				.formula-list__formula {
+					font-size: 1em;
+				}
+			</style>`);
+			chunks.push(`<script>
+				document.addEventListener('click', e => {
+					const a = e.target.closest('a[href^="#"]');
+					if (!a) return;
+					e.preventDefault();
+					const id = a.hash.slice(1);
+					document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+				});
+				</script>`)
+		}
+		const tools = [...(Object.values(this.children))]
+		tools.sort((a, b) => a.name.localeCompare(b.name));
+
+		const reverseLookup = {};
+
+		// First pass: for each tool, for each input source, record that tool as a dependent
+		tools.forEach(tool => {
+			tool.inputSources().forEach(inputSource => {
+				const key = inputSource.name;
+				if (!reverseLookup[key]) {
+					reverseLookup[key] = [];
+				}
+				reverseLookup[key].push(tool);
+			});
+		});
+
+		for (const tool of tools) {
+			if(tool instanceof MMTool) {
+				const formulaList = tool.formulaList();
+				if (formulaList.length || tool instanceof MMModel) {
+					const path = tool.getPath().substring(7);
+					const id = path.replace(/[^a-zA-Z0-9]/g, '_');
+					chunks.push(`<h4 class="formula-list__path" id="${id}">${path}</h4>`);
+					if (tool instanceof MMModel) {
+						chunks.push(tool.formulae(true));
+					}
+					else {
+						for (const formula of tool.formulaList()) {
+							chunks.push(`<div class="formula-list__fname">${formula.name}</div>`);
+							chunks.push(`<pre class="formula-list__formula"><code>${formula.formula}</code></pre>`);
+						}						
+					}
+					const inputs = tool.inputSources();
+					if (inputs.size) {
+						chunks.push('<h4>Inputs</h4>');
+						for (const input of inputs) {
+							const inputId = input.getPath().substring(7).replace(/[^a-zA-Z0-9]/g, '_');
+							chunks.push(`<div class="formula-list__reference"><a href="#${inputId}">${input.getPath()}</a></div>`);
+						}
+					}
+
+					const references = reverseLookup[tool.name];
+					if (references) {
+						chunks.push('<h4>References</h4>');
+						for (const reference of references) {
+							const refId = reference.getPath().substring(7).replace(/[^a-zA-Z0-9]/g, '_');
+							chunks.push(`<div class="formula-list__reference"><a href="#${refId}">${reference.getPath()}</a>	</div>`);
+						}
+					}
+
+					chunks.push('<hr>');
+				}
+			}
+		}
+		return chunks.join('\n');
 	}
 }

@@ -97,6 +97,25 @@ class MMOde extends MMTool {
 	}
 
 	/**
+	 * @method formulaList
+	 * @returns [] contains formulae contained by this tool and its children
+	 */
+	formulaList() {
+		const formulae = [
+			this.initialYFormula,
+			this.derivativeFormula,
+			this.nextTFormula,
+			this.endTFormula,
+			this.relTolFormula,
+			this.absTolFormula,
+		];
+		for (const formula of this.recordedValueFormulas) {
+			formulae.push(formula);
+		}
+		return formulae;
+	}
+
+	/**
 	 * @method toolViewInfo
 	 * @override
 	 * @param {MMCommand} command

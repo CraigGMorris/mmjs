@@ -1671,7 +1671,10 @@ Formulas:
 			
 			func: {numeric x}
 			desc: Returns a numeric matrix value of x. If x is already numeric it is simply returned. A string value must be parseable by the javascript parseFloat function. If x is string value, then an attempt is made to interpret its values as numbers and if that isn't possible, a zero is used in its place. If x is a table value, then all of the columns must be of the same unit dimensions. String columns are ignored.
-			
+
+			func: {parent}
+			desc: Returns the model that is the parent of the tool that contains the formula.
+
 			func: {rand nr, nc}
 			desc: Creates a matrix with nr rows and nc columns and with all elements set to random numbers between 0 and 1. If the column argument is omitted, it is assumed to be 1 and if both arguments are omitted, they are both assumed to be 1.
 			

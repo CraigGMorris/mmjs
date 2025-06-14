@@ -336,6 +336,13 @@ class MMOptimizer extends MMTool {
 		return sources;
 	}
 
+	/**
+	 * @method formulaList
+	 * @returns [] contains formulae contained by this tool and its children
+	 */
+	formulaList() {
+		return [this.fxFormula, this.countFormula];
+	}
 
 	/**
 	 * @method toolViewInfo

@@ -673,6 +673,19 @@ class MMSolver extends MMTool {
 	}
 
 	/**
+	 * @method formulaList
+	 * @returns [] contains formulae contained by this tool and its children
+	 */
+	formulaList() {
+		const formulae = [this.maxIterFormula, this.maxJacobianFormula];
+		for (const func of this.functions) {
+			formulae.push(func.errorFormula);
+			formulae.push(func.countFormula);
+		}
+		return formulae;
+	}
+
+	/**
 	 * @method changedFormula
 	 * @override
 	 * @param {MMFormula} formula

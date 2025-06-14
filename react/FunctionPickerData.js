@@ -1158,6 +1158,10 @@
 							</p>`,
 					},
 					{
+						f: "{parent}",
+						desc: "Returns the model that is the parent of the tool that contains the formula.",
+					},
+					{
 						f: "{rand nr, nc}",
 						desc: `<p>
 								Creates a matrix with <b>nr</b> rows and <b>nc</b> columns and with all elements set to random

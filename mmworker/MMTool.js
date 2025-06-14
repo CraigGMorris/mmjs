@@ -392,6 +392,14 @@ class MMTool extends MMParent {
 	}
 
 	/**
+	 * @method formulaList
+	 * @returns [] contains formulae contained by this tool and its children
+	 */
+	formulaList() {
+		return [];
+	}
+
+	/**
 	 * @method saveObject
 	 * @returns {Object} object that can be converted to json for save file
 	 */

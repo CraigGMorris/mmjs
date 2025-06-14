@@ -426,6 +426,22 @@ class MMMatrix extends MMTool {
 	}
 
 	/**
+	 * @method formulaList
+	 * @returns [] contains formulae contained by this tool and its children
+	 */
+	formulaList() {
+		const formulae = [this.columnCountFormula, this.rowCountFormula];
+		for (const key in this.cellInputs) {
+			const input = this.cellInputs[key];
+			const formula = input.formula;
+			if (formula) {
+				formulae.push(formula);
+			}
+		}
+		return formulae;
+	}
+
+	/**
 	 * @method saveObject
 	 * @override
 	 * @returns {Object} object that can be converted to json for save file

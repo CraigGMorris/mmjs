@@ -227,6 +227,7 @@ const MMFormulaFactory = (token, formula) => {
 		'int': (f) => {return new MMGenericSingleFunction(f, Math.trunc)},
 		'mod': (f) => {return new MMModFunction(f)},
 		'numeric': (f) => {return new MMNumericFunction(f)},
+		'parent': (f) => {return new MMParentFunction(f)},
 		'rand': (f) => {return new MMRandFunction(f)},
 		'round': (f) => {return new MMGenericSingleFunction(f, (x) => {
 			return Math.trunc(x + 0.5 * Math.sign(x))
@@ -4336,6 +4337,22 @@ class MMWFetchFunction extends MMMultipleArgumentFunction {
 		return MMStringValue.scalarValue(request.responseText);
 	}
 }
+
+class MMParentFunction extends MMFunctionOperator {
+	processArguments(operandStack) {
+		if (operandStack.length > 0 && operandStack[operandStack.length - 1] instanceof MMOperandMarker) {
+			operandStack.pop()
+			return true;
+		}
+		return false;
+	}
+
+	value() {
+
+		return MMToolValue.toolArrayValue([this.formula.parent.parent]);
+	}
+}
+
 
 /**
  * @class MMFormula

@@ -295,7 +295,7 @@ class MMExpression extends MMTool {
 					}
 					break;
 				case 'formula':
-					if (this.formula.formula) {
+					if (this.formula.formula != null) {
 						rv = MMStringValue.scalarValue(this.formula.formula);
 					}
 					break;
@@ -378,6 +378,14 @@ class MMExpression extends MMTool {
 			this.formula.addInputSourcesToSet(sources);
 		}
 		return sources;
+	}
+
+	/**
+	 * @method formulaList
+	 * @returns [] contains formulae contained by this tool and its children
+	 */
+	formulaList() {
+		return [this.formula];
 	}
 
 	/**

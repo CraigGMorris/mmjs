@@ -155,7 +155,32 @@
 					<li><b>html</b> - a html code representation of the tool.</li>
 					<li><b>notes</b> - the notes for the tool</li>
 					<li><b>myname</b> - the name of the tool</li>
+					<li><b>formulae</b> - an html string listing all of the formulae in the model, along with their
+						inputs and the tools that reference them. Note that the inputs and references won't be complete
+						for any tools that are not yet evaluated.
+					</li>
 				</ul>
+				<p>
+					You can also use special index strings to retrieve and array of tool values from the model.
+					For instance:
+				</p>
+				<p class="formula">{parent}["f*"]</p>
+				<p>
+					would return an array of all of the tools in the model that have names starting with "f".
+				</p>
+				<p>
+					You can also use the prefixes "type:" and "notes:" to retrieve an array of tools of a
+					specific type or with a specific notes string.  For instance:
+				</p>
+				<p class="formula">{parent}["type:exp*"]</p>
+				<p>
+					would return an array of all of the expressions in the model.
+				</p>
+				<p class="formula">{parent}["notes:*heat*"]</p>
+				<p>
+					would return an array of all of the tools in the model that have notes containing the string
+					"heat" anywhere in the note.
+				</p>
 			</div>
 		</div>
 	</body>

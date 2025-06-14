@@ -467,6 +467,24 @@ class MMIterator extends MMTool {
 		return sources;
 	}
 
+	/**
+	 * @method formulaList
+	 * @returns [] contains formulae contained by this tool and its children
+	 */
+	formulaList() {
+		const formulae = [
+			this.whileFormula,
+			this.initialXFormula,
+			this.nextXFormula,
+		];
+		for (const formula of this.recordedValueFormulas) {
+			formulae.push(formula);
+		}
+		return formulae;
+	}
+
+
+
 	/** @override */
 	get properties() {
 		let d = super.properties;
