@@ -5,6 +5,8 @@
 	"DeviceWidth": 1024,
 	"UserUnitSets": {},
 	"UserUnits": [
+		null,
+		null,
 		"squash = 1e8 N/acre"
 	],
 	"CaseName": "Getting Started",
@@ -361,6 +363,9 @@
 								"HtmlNotes": "y",
 								"isOutput": "y",
 								"Type": "Matrix",
+								"columnUnits": [
+									"Fraction"
+								],
 								"CellInputs": {
 									"0_0": "{if {if {eq {row} 1}, {eq {col}, $.ncol},0},\n  1,\n  {if {row}-1,\n    {if {lt {col}, $.ncol},\n      {cell -1,1} + {cell -1, 0},\n      {cell -1, 0}},\n    0\n  }\n}",
 									"1_100": "1"
@@ -2719,7 +2724,7 @@
 								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": ""
+									"Formula": "aModel[\"notes:\"]"
 								},
 								"showInput": "y"
 							},
@@ -5240,7 +5245,9 @@
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Matrix",
-										"unit": "m",
+										"columnUnits": [
+											"m"
+										],
 										"CellInputs": {
 											"0_0": "0 m",
 											"3_2": "5 m",
@@ -5263,7 +5270,9 @@
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Matrix",
-										"unit": "N",
+										"columnUnits": [
+											"N"
+										],
 										"CellInputs": {
 											"0_0": "0 N",
 											"2_1": "2 N",
@@ -5367,15 +5376,19 @@
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Matrix",
-										"unit": "dollar",
+										"columnUnits": [
+											"dollar"
+										],
+										"columnFormats": [
+											"10.2f"
+										],
 										"CellInputs": {
 											"0_0": "0",
 											"0_1": "{cell -1,0} * ( 1 + interest / 12)",
 											"1_1": "initial * (1 + interest/12)"
 										},
 										"rowCount": "10 * 12",
-										"columnCount": "1",
-										"format": "10.2f"
+										"columnCount": "1"
 									},
 									{
 										"name": "yearlySavings",
@@ -5428,6 +5441,9 @@
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Matrix",
+										"columnUnits": [
+											"Fraction"
+										],
 										"CellInputs": {
 											"0_0": "{rand} "
 										},
@@ -5487,6 +5503,9 @@
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Matrix",
+										"columnUnits": [
+											"Fraction"
+										],
 										"CellInputs": {
 											"0_0": "{row} + {col}/10"
 										},
@@ -5503,6 +5522,9 @@
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Matrix",
+										"columnUnits": [
+											"Fraction"
+										],
 										"CellInputs": {
 											"0_0": "{row}*10 + {col}/100"
 										},
@@ -5577,6 +5599,9 @@
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Matrix",
+										"columnUnits": [
+											"Fraction"
+										],
 										"CellInputs": {
 											"0_0": "{row} + {col} / 10",
 											"0_2": "{cell -1, 0} + {row}",
@@ -5656,6 +5681,9 @@
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Matrix",
+										"columnUnits": [
+											"Fraction"
+										],
 										"CellInputs": {
 											"0_0": "{if {gt {row}, {col}},\n  1,\n  matrix[ {row}, {col} ]\n}\n' select 1 if row number is greater than column number, otherwise the corresponding value from the matrix object is used.\n\nNote the use of the single quote to append a comment to the end of a formula.\n"
 										},
@@ -5704,6 +5732,9 @@
 								"HtmlNotes": "y",
 								"isOutput": "y",
 								"Type": "Matrix",
+								"columnUnits": [
+									"Fraction"
+								],
 								"CellInputs": {
 									"0_0": "{row} * {col} ",
 									"0_2": "{row} * 100",
@@ -5735,6 +5766,12 @@
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Matrix",
+										"columnUnits": [
+											"Fraction"
+										],
+										"columnFormats": [
+											"10.2f"
+										],
 										"CellInputs": {
 											"0_0": "{row} + {col} / 10",
 											"0_2": "{cell -1, 0} + {row}",
@@ -5742,8 +5779,7 @@
 											"3_0": "100 * {col}^2"
 										},
 										"rowCount": "5",
-										"columnCount": "4",
-										"format": "10.2f"
+										"columnCount": "4"
 									},
 									{
 										"name": "Notes2",
@@ -6681,7 +6717,9 @@
 										"HtmlNotes": "y",
 										"isOutput": "y",
 										"Type": "Matrix",
-										"unit": "1/s",
+										"columnUnits": [
+											"1/s"
+										],
 										"CellInputs": {
 											"0_0": "0 1/s",
 											"2_1": "-{cell -1, 0} - {cell 1, 0}",
