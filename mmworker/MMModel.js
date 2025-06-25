@@ -1608,9 +1608,14 @@ class MMModel extends MMTool {
 				.formula-list__fname {
 					font-size: 1.1em;
 					font-weight: bold;
+					margin: 0.1em;
 				}
 				.formula-list__formula {
 					font-size: 1em;
+					margin: 0.1em;
+				}
+				h4 {
+					margin: 0.1em;
 				}
 			</style>`);
 			chunks.push(`<script>
