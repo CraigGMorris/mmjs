@@ -2400,7 +2400,7 @@ class MMIsNanFunction extends MMSingleValueFunction {
 		if (v) {
 			return v.genericMonadic((n) => {
 				return isNaN(n) ? 1 : 0;
-			});
+			}, true);
 		}
 	}
 
