@@ -262,39 +262,37 @@ class MMModel extends MMTool {
 					newTool.position = {x: 10, y: 10}
 				}
 				else {
-					// position newTool under right most tools
-					let maxX = -10000000, maxY = -10000000;
-					// find right most
+					// position newTool under left most tools
+					let minX = 10000000, maxY = -10000000;
+					// find left most and bottom most
 					for (const key in this.children) {
 						const tool = this.children[key];
 						if (tool instanceof MMTool && tool !== newTool) {
-							maxX = Math.max(maxX, tool.position.x);
+							minX = Math.min(minX, tool.position.x);
+							maxY = Math.max(maxY, tool.position.y);
 						}
 					}
 
-					// find bottom most of right most icons
-					for (const key in this.children) {
-						const tool = this.children[key];
-						if (tool instanceof MMTool && tool !== newTool) {
-							if (tool.position.x === maxX) {
-								maxY = Math.max(maxY, tool.position.y);
-							}
-						}
-					}
-
-					// now check for overlap and if so move farther right
+					// now check if there is room to the right of the bottom - left most tool
+					let useRightColumn = true;
 					for (const key in this.children) {
 						const tool = this.children[key];
 						if (tool instanceof MMTool && tool !== newTool) {
 							const y = tool.position.y
-							if (y > maxY && y < maxY + 55 && tool.position.x >= maxX - 65) {
-								maxX = tool.position.x + 70;
+							if (y > maxY - 30 && tool.position.x > minX) {
+								useRightColumn = false;
 								break;
 							}
 						}
 					}
 
-					newTool.position = {x: maxX, y: maxY + 30};
+					if (useRightColumn) {
+						minX += 150;
+					}
+					else {
+						maxY += 30;
+					}
+					newTool.position = {x: minX, y: maxY};
 				}
 			}
 			if (isImport) {

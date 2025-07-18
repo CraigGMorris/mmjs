@@ -480,7 +480,6 @@ usageNote: |
 				args:
 					- typeName of the tool's class
 					- name to be used for the expression.
-					- x and y coordinates of the tool icon on the parent Model diagram. Icons should be presented in no more than 3 columns separated by 100 for X and 40 for Y.
 			removetool:
 				desc: remove one or more tools from the model
 				args:
