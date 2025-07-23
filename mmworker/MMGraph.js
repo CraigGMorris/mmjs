@@ -658,7 +658,7 @@ class MMGraphX extends MMGraphAxis {
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
-class MMGraph extends MMTool {
+export class MMGraph extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel

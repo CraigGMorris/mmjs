@@ -30,7 +30,7 @@
  * display tool for a menu value
  */
 // eslint-disable-next-line no-unused-vars
-class MMMenu extends MMTool {
+export class MMMenu extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel

@@ -26,7 +26,7 @@
 	 * @member {string} warning - undefined if no warning
 	 * @member {Object} results 
 */
-class MMCommand {
+export class MMCommand {
 	/**
 	 * @param {string} expression
 	 */
@@ -42,7 +42,7 @@ class MMCommand {
  * @member {Object} args
  * @member {MMCommandMessage} child - optional
  */
-/* export */ class MMCommandMessage {
+export class MMCommandMessage {
 	/** @constructs
 	 * @param {string} msgKey
 	 * @param {Object} args
@@ -64,7 +64,7 @@ class MMCommand {
  * @member {string} currentExpression
  * @member {function} statusCallBack - (message: string) => void
 */
-class MMCommandProcessor {
+export class MMCommandProcessor {
 	/** @constructs */
 	constructor() {
 		this.root = undefined;
@@ -315,7 +315,7 @@ class MMCommandProcessor {
  * @readonly
  * @enum {string}
  */
-/* export */ const MMPropertyType = Object.freeze({
+export const MMPropertyType = Object.freeze({
 	string: 'string',
 	int: 'int',
 	float: 'float',
@@ -338,7 +338,7 @@ class MMCommandProcessor {
  *	@member {Object} verbs - [string]: (string) => any
  *	@member {MMCommand} _command
 */
-/* export */ class MMObject {
+export class MMObject {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMParent} parent
@@ -738,7 +738,7 @@ class MMCommandProcessor {
 /** @class MMParent
  * @member {Object} children - {string: MMObject}
 */
-/* export */ class MMParent extends MMObject {
+export class MMParent extends MMObject {
 
 	/**
 	 * @constructor

@@ -44,7 +44,7 @@
  * @member {boolean} diagramNotes;
  */
 // eslint-disable-next-line no-unused-vars
-class MMTool extends MMParent {
+export class MMTool extends MMParent {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel

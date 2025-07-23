@@ -28,7 +28,7 @@
  * @extends MMValue
  */
 // eslint-disable-next-line no-unused-vars
-class MMJsonValue extends MMValue {
+export class MMJsonValue extends MMValue {
 	/** @constructor
 	 * @param {String|Object} jsonOrObject
 	*/

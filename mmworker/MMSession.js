@@ -17,13 +17,12 @@
 */
 'use strict';
 
+import { MMParent, MMPropertyType, MMCommandMessage } from './MMCommandProcessor.js';
+
 /* global
-	MMParent:readonly
 	MMUnitSystem:readonly
-	MMPropertyType:readonly
 	MMModel:readonly
 	MMExpression:readonly
-	MMCommandMessage:readonly
 	MMMatrix:readonly
 	MMDataTable:readonly
 	MMSolver:readonly
@@ -41,7 +40,7 @@
  * @member {number} x
  * @member {number} y
  */
-class MMPoint {
+export class MMPoint {
 	constructor(x, y) {
 		this.x = x;
 		this.y = y;
@@ -51,7 +50,7 @@ class MMPoint {
 /**
  * @class MMIndexedDBStorage - original indexedDB persistent storage for session
  */
-class MMIndexedDBStorage  {
+export class MMIndexedDBStorage  {
 	constructor() {
 		this.isSetup = false;
 		this._exists = true;
@@ -226,7 +225,7 @@ class MMIndexedDBStorage  {
  * @member {MMIndexedDBStorage} storage
  */
 // eslint-disable-next-line no-unused-vars
-class MMSession extends MMParent {
+export class MMSession extends MMParent {
 	// session creation and storage commands
 
 	/**
@@ -1340,7 +1339,7 @@ class MMSession extends MMParent {
 	}
 }
 
-const MMToolTypes = {
+export const MMToolTypes = {
 	'Model': {
 		factory: (name, parent) => { return new MMModel(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:modelDisplayName'),

@@ -39,7 +39,7 @@
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
-class MMOde extends MMTool {
+export class MMOde extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel

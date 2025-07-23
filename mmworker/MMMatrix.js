@@ -217,7 +217,7 @@ class MMMatrixInputValue {
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
-class MMMatrix extends MMTool {
+export class MMMatrix extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel

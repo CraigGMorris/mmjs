@@ -30,7 +30,7 @@
  * all calculation values are derived from this
  */
 // eslint-disable-next-line no-unused-vars
-class MMValue {
+export class MMValue {
 	/** @constructor
 	* @param {Number} rowCount
 	* @param {Number} columnCount

@@ -28,7 +28,7 @@
  * @member {String[]} _values
  */
 // eslint-disable-next-line no-unused-vars
-class MMStringValue extends MMValue {
+export class MMStringValue extends MMValue {
 	/** @constructor
 	 * @param {Number} rowCount
 	 * @param {Number} columnCount

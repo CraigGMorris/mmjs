@@ -32,7 +32,7 @@
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
-class MMIterator extends MMTool {
+export class MMIterator extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel

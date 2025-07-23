@@ -42,7 +42,7 @@
  * @readonly
  * @enum {string}
  */
-const MMFunctionResult = Object.freeze({
+export const MMFunctionResult = Object.freeze({
 	all: 0,
 	rows: 1,
 	columns: 2
@@ -1058,7 +1058,7 @@ class MMSubtractOperator extends MMDyadicOperator {
  * @class MMMultiplyOperator
  * @extends MMDyadicOperator
  */
-class MMMultiplyOperator extends MMDyadicOperator {
+export class MMMultiplyOperator extends MMDyadicOperator {
 	/**
 	 * @override operationOn
 	 * @param {MMNumberValue} firstValue;
@@ -1082,7 +1082,7 @@ class MMMultiplyOperator extends MMDyadicOperator {
  * @class MMDivideOperator
  * @extends MMDyadicOperator
  */
-class MMDivideOperator extends MMDyadicOperator {
+export class MMDivideOperator extends MMDyadicOperator {
 	/**
 	 * @override operationOn
 	 * @param {MMNumberValue} firstValue;
@@ -4362,7 +4362,7 @@ class MMParentFunction extends MMFunctionOperator {
  * @member {boolean} isInError
  */
 // eslint-disable-next-line no-unused-vars
-class MMFormula extends MMObject {
+export class MMFormula extends MMObject {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMTool} parentTool

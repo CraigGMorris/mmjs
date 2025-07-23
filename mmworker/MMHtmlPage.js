@@ -83,7 +83,7 @@ const mminputs = (idNames) => {
 /**
  * @class MMHtmlPageProcessor
  */
-class MMHtmlPageProcessor {
+export class MMHtmlPageProcessor {
 	constructor(parentTool) {
 		// formula have to have a tool as parent, so rudely paste them onto it
 		this.parent = parentTool
@@ -716,7 +716,7 @@ class MMHtmlPageProcessor {
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
-class MMHtmlPage extends MMTool {
+export class MMHtmlPage extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel

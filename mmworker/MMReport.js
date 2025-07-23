@@ -29,7 +29,7 @@ MMTableValue:readonly
 * options is dictionary of options
 * tool is MMTool
 */
-var MMReport = {
+export const MMReport = {
 	separator: (options) => {
 		if (options.sep) {
 			return options.sep;

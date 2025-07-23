@@ -36,7 +36,7 @@
  * @member {MMValue} _value
  * @member {String} format
  */
-class MMTableValueColumn {
+export class MMTableValueColumn {
 	/** @method exceptionWith
 	 * throws a MMCommandMessage
 	 * @param {string} key	for i18n
@@ -555,7 +555,7 @@ class MMTableValueColumn {
  * @extends MMValue
  */
 // eslint-disable-next-line no-unused-vars
-class MMTableValue extends MMValue {
+export class MMTableValue extends MMValue {
 	/**
 	 * @constructor
 	 * @param {Object} context

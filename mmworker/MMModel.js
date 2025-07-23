@@ -82,7 +82,7 @@ class MMImportModelInfo {
  * @member {boolean} isMissingObject
  */
 // eslint-disable-next-line no-unused-vars
-class MMModel extends MMTool {
+export class MMModel extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel

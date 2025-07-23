@@ -33,7 +33,7 @@
  * @readonly
  * @enum {string}
  */
-const MMDyadicUnitAction = Object.freeze({
+export const MMDyadicUnitAction = Object.freeze({
 	none: '?',
 	equal: '=',
 	multiply: '*',
@@ -48,7 +48,7 @@ const MMDyadicUnitAction = Object.freeze({
  * @member {Float64Array} _values
  */
 // eslint-disable-next-line no-unused-vars
-class MMNumberValue extends MMValue {
+export class MMNumberValue extends MMValue {
 	/** @constructor
 	 * @param {Number} rowCount
 	 * @param {Number} columnCount

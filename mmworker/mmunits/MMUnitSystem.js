@@ -27,7 +27,7 @@
 /**
  * @enum {number} MMDimensionType
  */
-const MMUnitDimensionType = Object.freeze({
+export const MMUnitDimensionType = Object.freeze({
 	LENGTH: 0,
 	MASS: 1,
 	TIME: 2,
@@ -80,7 +80,7 @@ const MMUnitDateType = Object.freeze({
  * @member {MMUnitsContainer} units
  */
 // eslint-disable-next-line no-unused-vars
-class MMUnitSystem extends MMParent {
+export class MMUnitSystem extends MMParent {
 	/** @static areDimensionsEqual
 	 * @param {Number[]} dim1
 	 * @param {Number[]} dim2
@@ -434,7 +434,7 @@ class MMUnitSystem extends MMParent {
  * 		non master units are user units that will not be disturbed when the program is updated
  * @member {MMUnitSystem} unitSystem;
  */
-class MMUnit extends MMObject {
+export class MMUnit extends MMObject {
 
 	/** @static compoundRegex
 	 * compound unit operators
@@ -898,7 +898,7 @@ class MMUnit extends MMObject {
  * @member {boolean} isMaster
  * @member {MMUnitSystem} unitSystem
  */
-class MMUnitSet extends MMObject {
+export class MMUnitSet extends MMObject {
 		/** @constructor
 	 * @param {string} name
 	 * @param {MMUnitSetsContainer} setsContainer
@@ -1162,7 +1162,7 @@ class MMUnitSet extends MMObject {
  * key is dimensionString, value is array of units with those dimensions
  * @member {MMUnitSystem} unitSystem;
  */
-class MMUnitsContainer extends MMParent {
+export class MMUnitsContainer extends MMParent {
 	/**
 	 * @constructor
 	 * @param {MMUnitSystem} unitSystem - parent
@@ -1587,7 +1587,7 @@ class MMUnitsContainer extends MMParent {
  * @member {MMUnitSet} defaultSet;
  * @member {MMUnitSystem} unitSystem;
  */
-class MMUnitSetsContainer extends MMParent {
+export class MMUnitSetsContainer extends MMParent {
 	/**
 	 * @constructor
 	 * @param {MMUnitSystem} unitSystem - parent

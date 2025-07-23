@@ -268,7 +268,7 @@ class MMDataTableColumn extends MMObject {
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
-class MMDataTable extends MMTool {
+export class MMDataTable extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel

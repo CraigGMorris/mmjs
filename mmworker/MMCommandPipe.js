@@ -26,22 +26,66 @@ export class MMCommandPipe {
 	/** @constructor */
 	constructor() {
 		if (window.Worker) { // Check if Browser supports the Worker api.
-			this.cmdWorker = new Worker("./mmworker/MMCommandWorker.js");
+			this.cmdWorker = new Worker("./mmworker/MMCommandWorker.js", { type: 'module' });
+			this.isReady = false;
+			this.pendingCommands = [];
+			
+			// Set up message handler
+			this.cmdWorker.onmessage = (e) => {
+				const data = e.data;
+				
+				// Handle ready signal
+				if (data.verb === 'ready') {
+					console.log('Worker is ready');
+					this.isReady = true;
+					
+					// Process any pending commands
+					while (this.pendingCommands.length > 0) {
+						const { command, callBack } = this.pendingCommands.shift();
+						this._sendCommand(command, callBack);
+					}
+					return;
+				}
+				
+				// Handle error signal
+				if (data.verb === 'error') {
+					console.error('Worker error:', data.results);
+					return;
+				}
+				
+				// Handle normal command results
+				if (this.currentCallBack) {
+					this.currentCallBack(data);
+				}
+			};
 		}
 		else {
 			alert('No worker support');
 		}
 	}
+	
 	/** @method doCommand
 	 * @param {string} command
 	 * @param {function} callBack
 	 */
 	doCommand(command, callBack) {
 		// console.log(`pipe ${command.cmdString}`);
-		this.cmdWorker.postMessage(command); // Sending message as an array to the worker
-
-		this.cmdWorker.onmessage = function(e) {
-			callBack(e.data);
+		
+		if (!this.isReady) {
+			// Queue the command until worker is ready
+			this.pendingCommands.push({ command, callBack });
+			return;
 		}
+		
+		this._sendCommand(command, callBack);
+	}
+	
+	/** @private @method _sendCommand
+	 * @param {string} command
+	 * @param {function} callBack
+	 */
+	_sendCommand(command, callBack) {
+		this.currentCallBack = callBack;
+		this.cmdWorker.postMessage(command);
 	}
 }
