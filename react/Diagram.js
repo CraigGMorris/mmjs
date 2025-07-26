@@ -63,7 +63,8 @@ const ContextMenuType = Object.freeze({
 	none: 'none',
 	background: 'bg',
 	tool: 'tool',
-	addTool: 'add',
+	addTool: 'addTool',
+	addDisplayTool: 'addDisplay',
 	selection: 'sel',
 });
 
@@ -79,6 +80,8 @@ export class Diagram extends React.Component {
 		this.panSum = 0;
 		this.eventCache = [];
 		this.pinch = 0;
+		this.maxIcons = 300;
+
 		const savedState = props.dgmStateStack.pop();
 		if (savedState) {
 			// if the diagram is being reconstructed after an expand, use the pushed state
@@ -94,6 +97,7 @@ export class Diagram extends React.Component {
 				scale: 1.0,
 				showContext: null,
 				showClipboard: false,				
+				toolHover: null,
 			}
 		}
 
@@ -127,7 +131,11 @@ export class Diagram extends React.Component {
 						let maxY = -1.e6;
 						let minX = 1.e6;
 						let minY = 1.e6;
+						let iconCount = 0;
 						for (const toolName in modelInfo.tools) {
+							if (iconCount++ >= this.maxIcons) {
+								break;
+							}
 							const toolInfo  = modelInfo.tools[toolName];
 							const position = toolInfo.position;
 							maxX = (position.x > maxX ) ? position.x : maxX;
@@ -143,11 +151,9 @@ export class Diagram extends React.Component {
 							const widthScale = (box.width -30) / ( maxX - minX );
 							const heightScale = (box.height - 40) / ( maxY - minY);
 							let scale =  ( widthScale < heightScale ) ? widthScale : heightScale;
-							if ( scale > 3.0 ) {
-								scale = 3.0;
-							}
+							scale = Math.min(3.0, Math.max(0.2, scale));
 							newState['scale'] = scale;
-							const yOffset = modelInfo.import != null ? 100 : 40; 
+							const yOffset = 45; 
 							newState['translate'] = {x: -minX + 30.0 / scale, y: -minY + yOffset /scale};
 						}
 					}
@@ -577,7 +583,7 @@ export class Diagram extends React.Component {
 			const clientY = (eCache[0].y + eCache[1].y) / 2;
 
 			this.setState((state) => {
-				const newScale = Math.max(0.1, state.scale * ratio);
+				const newScale = Math.min(5.0, Math.max(0.2, state.scale * ratio));
 				const newTranslate = {
 					x: clientX/newScale - clientX/state.scale + state.translate.x,
 					y: clientY/newScale - clientY/state.scale + state.translate.y
@@ -602,7 +608,7 @@ export class Diagram extends React.Component {
 		const pageY = e.pageY;
 		this.setState((state) => {
 			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 10*state.scale);
-			const newScale = Math.max(0.1, state.scale - rate / 100);
+			const newScale = Math.min(5.0, Math.max(0.2, state.scale - rate / 100));
 			const newTranslate = {
 				x: pageX/newScale - pageX/state.scale + state.translate.x,
 				y: pageY/newScale - pageY/state.scale + state.translate.y
@@ -624,11 +630,20 @@ export class Diagram extends React.Component {
 		const ty = this.state.translate.y;
 		let toolList = [];
 		let connectList = [];
+		let iconCount = 0;
 		for (const toolName in tools) {
+			if (iconCount++ >= this.maxIcons) {
+				break;
+			}
+
 			const toolInfo  = tools[toolName];
 			let highlight = false;
 			if (this.state.dragSelection && this.state.dragSelection.has(toolInfo.name)) {
 				highlight = true;
+			}
+
+			const setToolHover = (toolName) => {
+				this.setState({toolHover: toolName});
 			}
 
 			const cmp = e(ToolIcon, {
@@ -644,6 +659,7 @@ export class Diagram extends React.Component {
 				viewTool: this.props.actions.viewTool,
 				updateView: this.props.actions.updateView,
 				dimmed: this.state.selectedObject && toolName !== this.state.selectedObject,
+				setToolHover: setToolHover,
 				showContext: (shouldShow) => {
 					this.setState({
 						showContext: shouldShow,
@@ -787,12 +803,13 @@ export class Diagram extends React.Component {
 				const key = `${requestorName}->${toolName}`;
 				let connectColor = this.state.selectedObject ? 'grey' : 'black';
 				let strokeWidth = 1;
-				if (this.state.selectedObject) {
-					if (requestorName === this.state.selectedObject) {
+				const highlightName = this.state.toolHover || this.state.selectedObject;
+				if (highlightName) {
+					if (requestorName === highlightName) {
 						connectColor = 'blue'
 						strokeWidth = 2;
 					}
-					else if (toolName === this.state.selectedObject) {
+					else if (toolName === highlightName) {
 						connectColor = 'green';
 						strokeWidth = 2;
 					}
@@ -826,6 +843,20 @@ export class Diagram extends React.Component {
 		}
 
 		let textList = [];
+		const toolCount = tools ? Object.keys(tools).length : 0;
+		if (toolCount > this.maxIcons) {
+			textList.push(
+				e(
+					'text', {
+						className: 'diagram__maxicons_warning',
+						key: 'maxicons',
+						x: (this.props.diagramBox.width - (this.props.isTwoPane ? 180 : 130))/2,
+						y: 40,
+					},
+					this.props.t('react:dgmMaxIconsWarnign', {max: this.maxIcons, count: toolCount})
+				)
+			)
+		}
 		if (this.state.path) {
 			const pathParts = this.state.path.split('.');
 			const nameHeaderX = (this.props.diagramBox.width - (this.props.isTwoPane ? 180 : 130))/2;
@@ -912,6 +943,7 @@ export class Diagram extends React.Component {
 						y: 30,
 						setRightPaneWidth: this.props.setRightPaneWidth,
 						rightPaneWidth: this.props.rightPaneWidth,
+						diagramWidth: this.props.diagramBox.width,
 					})
 				);
 			}
@@ -922,7 +954,7 @@ export class Diagram extends React.Component {
 							className: 'diagram__import-warning',
 							key: 'import1',
 							x: 20,
-							y: 50,
+							y: this.props.diagramBox.height - 50,
 						},
 						this.props.t('react:dgmImportWarning1', {source: this.state.import})
 					),
@@ -931,7 +963,7 @@ export class Diagram extends React.Component {
 							className: 'diagram__import-warning',
 							key: 'import2',
 							x: 20,
-							y: 75,
+							y: this.props.diagramBox.height - 25,
 						},
 						this.props.t('react:dgmImportWarning2', {source: this.state.import})
 					)
@@ -941,9 +973,47 @@ export class Diagram extends React.Component {
 
 		let contextMenu;
 		if (this.state.showContext) {
+			const addTool = (type) => {
+				const position = this.state.showContext.info;
+				this.props.actions.doCommand(`${this.state.path} addtool ${type} ${position.x} ${position.y}`, (results) => {
+					this.setState({showContext: null});
+					const toolName = results[0].results;
+					if (type === 'Import') {
+						type = 'Model';
+					}
+					if (type === 'Model') {
+						this.props.actions.pushModel(toolName);
+					}
+					else {
+						this.props.actions.viewTool(toolName, type);
+					}
+				})
+				this.setState({showContext: null});
+			}
+
 			switch (this.state.showContext.type) {
 				case ContextMenuType.background: {
 					const menu = [
+						{
+							text: this.props.t('react:dgmButtonMenuClose'),
+							action: () => {
+								this.setState({
+									showContext: null
+								})
+							}
+						},
+						{
+							text: this.props.t('react:dgmButtonAddExpr'),
+							action: () => {
+								addTool('Expression');
+							}
+						},
+						{
+							text: this.props.t('react:dgmButtonAddModel'),
+							action: () => {
+								addTool('Model');
+							}
+						},
 						{
 							text: this.props.t('react:dgmButtonAddTool'),
 							action: () => {
@@ -956,11 +1026,22 @@ export class Diagram extends React.Component {
 							}
 						},
 						{
+							text: this.props.t('react:dgmButtonAddDisplay'),
+							action: () => {
+								this.setState({
+									showContext: {
+										type: ContextMenuType.addDisplayTool,
+										info: this.state.showContext.info,
+									}
+								})
+							}
+						},
+						{
 							text: this.props.t('react:dgmButtonPaste'),
 							action: () => {
 								readClipboard().then(clipText => {
 									const position = this.state.showContext.info;
-									this.props.actions.doCommand(`__blob__${this.state.path} paste ${position.x} ${position.y}__blob__${clipText}`, () => {
+									this.props.actions.doCommand(`${this.state.path} paste ${position.x} ${position.y} ${clipText}`, () => {
 										this.setState({showContext: null});
 										this.props.actions.updateView();
 									});
@@ -970,7 +1051,7 @@ export class Diagram extends React.Component {
 						{
 							text: this.props.t('react:dgmButtonHelp'),
 							action: () => {
-								window.open(`./help/getstarted.html`,'MM Help');
+								window.open(`./help/helppage.html`,'MM Help');
 								this.setState({showContext: null});
 								this.props.actions.updateView();
 					}
@@ -1076,33 +1157,20 @@ export class Diagram extends React.Component {
 					break;
 
 				case ContextMenuType.addTool: {
-					const addTool = (type) => {
-						const position = this.state.showContext.info;
-						this.props.actions.doCommand(`${this.state.path} addtool ${type} ${position.x} ${position.y}`, (results) => {
-							this.setState({showContext: null});
-							const toolName = results[0].results;
-							if (type === 'Import') {
-								type = 'Model';
-							}
-							if (type === 'Model') {
-								this.props.actions.pushModel(toolName);
-							}
-							else {
-								this.props.actions.viewTool(toolName, type);
-							}
-						})
-						this.setState({showContext: null});
-					}
-
 					contextMenu = e(
 						ContextMenu, {
 							key: 'add',
 							t: t,
 							menu: [
 								{
-									text: this.props.t('mmcmd:exprDisplayName'),
+									text: this.props.t('react:dgmButtonMenuBack'),
 									action: () => {
-										addTool('Expression');
+										this.setState({
+											showContext: {
+												type: ContextMenuType.background,
+												info: this.state.showContext.info,
+											}
+										})
 									}
 								},
 								{
@@ -1115,12 +1183,6 @@ export class Diagram extends React.Component {
 									text: this.props.t('mmcmd:matrixDisplayName'),
 									action: () => {
 										addTool('Matrix');
-									}
-								},
-								{
-									text: this.props.t('mmcmd:modelDisplayName'),
-									action: () => {
-										addTool('Model');
 									}
 								},
 								{
@@ -1148,24 +1210,6 @@ export class Diagram extends React.Component {
 									}
 								},
 								{
-									text: this.props.t('mmcmd:graphDisplayName'),
-									action: () => {
-										addTool('Graph');
-									}
-								},
-								{
-									text: this.props.t('mmcmd:htmlPageDisplayName'),
-									action: () => {
-										addTool('HtmlPage');
-									}
-								},
-								{
-									text: this.props.t('mmcool:flashDisplayName'),
-									action: () => {
-										addTool('Flash');
-									}
-								},
-								{
 									text: this.props.t('mmcmd:modelImportDisplayName'),
 									action: () => {
 										addTool('Import');
@@ -1177,7 +1221,54 @@ export class Diagram extends React.Component {
 				}
 					break;
 				
-				case ContextMenuType.selection: {
+					case ContextMenuType.addDisplayTool: {
+						contextMenu = e(
+							ContextMenu, {
+								key: 'adddisplay',
+								t: t,
+								menu: [
+									{
+										text: this.props.t('react:dgmButtonMenuBack'),
+										action: () => {
+											this.setState({
+												showContext: {
+													type: ContextMenuType.background,
+													info: this.state.showContext.info,
+												}
+											})
+										}
+									},
+									{
+										text: this.props.t('mmcmd:graphDisplayName'),
+										action: () => {
+											addTool('Graph');
+										}
+									},
+									{
+										text: this.props.t('mmcmd:htmlPageDisplayName'),
+										action: () => {
+											addTool('HtmlPage');
+										}
+									},
+									{
+										text: this.props.t('mmcmd:buttonDisplayName'),
+										action: () => {
+											addTool('Button');
+										}
+									},
+									{
+										text: this.props.t('mmcmd:menuDisplayName'),
+										action: () => {
+											addTool('Menu');
+										}
+									},
+								]
+							}
+						)
+					}
+						break;
+
+					case ContextMenuType.selection: {
 					const copyTools = (deleteAfterCopy) => {
 						const sel = this.toolsInBox(this.state.selectionBox, this.state.tools);
 						const names = [];
@@ -1221,6 +1312,14 @@ export class Diagram extends React.Component {
 							key: 'sel',
 							t: t,
 							menu: [
+								{
+									text: this.props.t('react:dgmButtonMenuClose'),
+									action: () => {
+										this.setState({
+											showContext: null
+										})
+									}
+								},
 								{
 									text: this.props.t('react:dgmButtonDeleteSel'),
 									action: deleteTools
@@ -1307,6 +1406,8 @@ class ToolIcon extends React.Component {
 		this.onPointerDown = this.onPointerDown.bind(this);
 		this.onPointerUp = this.onPointerUp.bind(this);
 		this.onPointerMove = this.onPointerMove.bind(this);
+		this.onPointerEnter = this.onPointerEnter.bind(this);
+		this.onPointerLeave = this.onPointerLeave.bind(this);
 	}
 
 	componentWillUnmount() {
@@ -1398,6 +1499,16 @@ class ToolIcon extends React.Component {
 		}
 	}
 
+	onPointerEnter(e) {
+		// console.log('onPointerEnter');
+		this.props.setToolHover(this.props.info.name);
+	}
+	
+	onPointerLeave(e) {
+		// console.log('onPointerLeave');
+		this.props.setToolHover(null);
+	}
+
 	render() {
 		let t = this.props.t;
 		const info = this.props.info;
@@ -1419,7 +1530,8 @@ class ToolIcon extends React.Component {
 			Optimizer: 'rgba(237,212,217,.8)',
 			Graph: 'rgba(224,247,247,.8)',
 			HtmlPage: 'rgba(217,204,230,.8)',
-			Flash: 'rgba(252,167,175,.8)',
+			Button: 'rgba(239,239,255,.8)',
+			Menu: 'rgba(255, 255, 255, .8)'
 		}
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;
@@ -1534,19 +1646,26 @@ class ToolIcon extends React.Component {
 		if (info.notes && info.notes.length) {
 			if (info.diagramNotes) {
 				const lines = info.notes.split('\n');
-				let maxLineChars = 25;
+				let maxLineChars = 30;
 				let wrappedLines = [];
 				for (let line of lines) {
 					let words = line.split(' ');
 					let wrappedLineWords = [];
 					let wrappedLineLength = 0;
 					for (let word of words) {
-						wrappedLineWords.push(word);
-						wrappedLineLength += word.length + 1;
-						if (wrappedLineLength > maxLineChars) {
+						if (wrappedLineLength && wrappedLineLength + word.length >= maxLineChars) {
 							wrappedLines.push(wrappedLineWords.join(' '));
 							wrappedLineWords = [];
 							wrappedLineLength = 0;
+						}
+						if (word.length > maxLineChars) {
+							wrappedLines.push(word.substring(0, maxLineChars));
+							wrappedLineWords = [];
+							wrappedLineLength = 0;
+						}
+						else {
+							wrappedLineWords.push(word);
+							wrappedLineLength += word.length + 1;	
 						}
 					}
 					if (wrappedLineWords.length) {
@@ -1619,6 +1738,8 @@ class ToolIcon extends React.Component {
 			e(
 				'rect', {
 					onPointerDown: this.onPointerDown,
+					onPointerEnter: this.onPointerEnter,
+					onPointerLeave: this.onPointerLeave,
 					x: (x + translate.x)*scale,
 					y: (y + translate.y)*scale,
 					width: objectWidth*scale,
@@ -1862,8 +1983,6 @@ class Divider extends React.Component {
 		this.onPointerDown = this.onPointerDown.bind(this);
 		this.onPointerUp = this.onPointerUp.bind(this);
 		this.onPointerMove = this.onPointerMove.bind(this);
-		this.setRightPaneWidth = props.setRightPaneWidth;
-		this.rightPaneWidth = props.rightPaneWidth;
 	}
 
 	onPointerDown(e) {
@@ -1877,10 +1996,15 @@ class Divider extends React.Component {
 		if (this.dividerPointer) {
 			e.stopPropagation();
 			e.preventDefault();
-			const newX = this.rightPaneWidth + this.dividerPointer - e.clientX;
-			if (newX > 320) {
-				this.rightPaneWidth = newX;
-				this.setRightPaneWidth(newX);
+			const change = this.dividerPointer - e.clientX;
+			const newX = this.props.rightPaneWidth + change;
+			const newDiagramWidth = this.props.diagramWidth - change;
+			if (newX < 320) {
+				this.props.setRightPaneWidth(320);
+				this.dividerPointer = e.clientX;
+			}
+			else if (newX > 320 && newDiagramWidth > 50) {
+				this.props.setRightPaneWidth(newX);
 				this.dividerPointer = e.clientX;
 			}
 		}		
@@ -1902,6 +2026,7 @@ class Divider extends React.Component {
 				pointerEvents: 'auto',
 				fill: 'blue',
 				font: '30px sans-serif',
+				cursor: 'col-resize'
 			},
 			x: this.props.x,
 			y: this.props.y,

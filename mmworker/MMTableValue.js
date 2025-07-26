@@ -34,9 +34,9 @@
  * @member {String} name
  * @member {MMUnit} _displayUnit
  * @member {MMValue} _value
- * @member {String} _format
+ * @member {String} format
  */
-class MMTableValueColumn {
+export class MMTableValueColumn {
 	/** @method exceptionWith
 	 * throws a MMCommandMessage
 	 * @param {string} key	for i18n
@@ -59,7 +59,7 @@ class MMTableValueColumn {
 		if (context.name) {
 			this.name = context.name;
 			this._value = context.value;
-			this.format = null;
+			this.format = context.format;
 			if (this._value) {
 				if (this._value instanceof MMNumberValue) {
 					if (context.displayUnit) {
@@ -95,7 +95,7 @@ class MMTableValueColumn {
 				}
 			}
 		}
-		else {
+		else if (context.column) {
 			const column = context.column;
 			this.name = column.name;
 			this._displayUnit = column.displayUnit;
@@ -529,24 +529,23 @@ class MMTableValueColumn {
 	 * @method jsonValue
 	 * @override
 	 * @param {MMUnit} displayUnit
+	 * @param {String} format
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
-	jsonValue(displayUnit) {
+	jsonValue(displayUnit, format) {
 		if (!displayUnit) {
 			displayUnit = this._displayUnit;
 			if (!displayUnit && this._value.unitDimensions) {
 				displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(this._value.unitDimensions);
 			}
 		}
-		const displayUnitName = (displayUnit) ? displayUnit.name : '';
+		const displayUnitName = (displayUnit) ? displayUnit.displayName : '';
 		return {
 			t: 'tc',
 			name: this.name,
 			dUnit: displayUnitName,
-			format: this.format,
+			format: format ? format : this.format,
 			v: this._value.jsonValue(displayUnit),
-			// nr: this._value.rowCount,
-			// nc: 1
 		}
 	}
 }
@@ -556,7 +555,7 @@ class MMTableValueColumn {
  * @extends MMValue
  */
 // eslint-disable-next-line no-unused-vars
-class MMTableValue extends MMValue {
+export class MMTableValue extends MMValue {
 	/**
 	 * @constructor
 	 * @param {Object} context
@@ -564,14 +563,14 @@ class MMTableValue extends MMValue {
 	 * can optionally have a rowNumbers MMNumberValue containing the rows from columns to include
 	 */
 	constructor(context) {
-		if (context.columns) {
-			const initWithColumns = (columns) => {
-				this.columns = Array.from(columns)  // create copy
-				this._nameDictionary = {};
-				for (const column of this.columns) {
-					this._nameDictionary[column.lowerCaseName] = column;
-				}
+		const initWithColumns = (columns) => {
+			this.columns = Array.from(columns)  // create copy
+			this._nameDictionary = {};
+			for (const column of this.columns) {
+				this._nameDictionary[column.lowerCaseName] = column;
 			}
+		}
+		if (context.columns) {
 			const columns = context.columns;
 			const nColumns = columns ? columns.length : 0;
 			if (context.rowNumbers) {
@@ -595,9 +594,173 @@ class MMTableValue extends MMValue {
 				initWithColumns(columns);
 			}
 		}
+		else if (context.csv) {
+			/*
+				csv - with three definition lines at top
+
+				table,en   where the character after table is
+				the csv separator and en is the language code
+
+				name1","name2" ... column names using csv separator
+
+				"Fraction","Fraction" ... column display unitss using csv separator
+			*/
+			const csv = context.csv.trim();
+			let i = 0;
+			let line;
+			let re = new RegExp('.*?[\\r\\n]+');
+			const exceptionWith = (key, args) => {
+				let msg = new MMCommandMessage(key, args);
+				throw(msg);
+			}
+		
+			const getLine = (i, re) => {
+				let match = csv.substring(i).match(re);
+				if (!match) {
+					exceptionWith('mmcmd:tableBadCsvHeader', {path: context.path});
+				}
+				let line = match[0];
+				i += match.index + line.length;
+				return [i, line];
+			}
+			[i, line] = getLine(i, re);
+			if (!line) {
+				exceptionWith('mmcmd:tableBadCsvHeader', {path: context.path});
+			}
+			let csvSeparator = ',';
+			let locale = 'en';
+			if (line.length >= 7) {
+				csvSeparator = line[5];
+				locale = line.substring(6).trim();
+			}
+			let n = 1.1;
+			const decimalSeparator = n.toLocaleString(locale).substring(1,2);
+	
+			[i, line] = getLine(i, re);
+			if (!line) {
+				exceptionWith('mmcmd:tableBadCsvHeader', {path: context.path});
+			}
+			const columnNames = line.trim().split(csvSeparator);
+	
+			[i, line] = getLine(i, re);
+			if (!line) {
+				exceptionWith('mmcmd:tableBadCsvHeader',  {path: context.path});
+			}
+			const unitNames = line.trim().split(csvSeparator);
+	
+			if (unitNames.length !== columnNames.length) {
+				exceptionWith('mmcmd:tableCsvColumnCountsDiffer',  {path: context.path});
+			}
+	
+			const columns = [];
+			const columnData = [];
+			const csvColumnCount = columnNames.length;
+			const uniqueNames = new Set();
+			const includeColumn = [];
+			if (csvColumnCount === 0) {
+				super(0,0);
+				return;
+			}
+			for (let i = 0; i < csvColumnCount; i++) {
+				let columnName = columnNames[i];
+				columnName = columnName.substring(1,columnName.length -1);  // strip off the quotes
+				let unitName = unitNames[i];
+				unitName = unitName.substring(1,unitName.length -1);  // strip off the quotes
+				if (!uniqueNames.has(columnName)) {
+					const column = new MMTableValueColumn({
+						name: columnName,
+						displayUnit: unitName
+					});
+					columns.push(column);
+					columnData.push([]);
+					uniqueNames.add(columnName);
+					includeColumn.push(true);
+				}
+				else {
+					includeColumn.push(false);
+				}
+			}
+			const columnCount = uniqueNames.size;
+	
+			re = new RegExp('".*?"|[^' + csvSeparator + '"\\n]*','ms');
+			let match = csv.substring(i).match(re);
+			let columnNumber = 0;
+			let csvColumnNumber = 0;
+			const csvLength = csv.length;
+			while (match && i <= csvLength) {
+				let token = match[0];
+				i += match.index + token.length;
+				if (includeColumn[csvColumnNumber]) {
+					const column = columns[columnNumber];
+	
+					if (token.startsWith('"')) {
+						token = token.substring(1,token.length - 1); // strip quotes
+					}					
+					if (column.isString) {
+						columnData[columnNumber].push(token);
+					}
+					else {
+						if (token.length) {
+							if (decimalSeparator !== '.') {
+								token = token.replace(decimalSeparator, '.');
+							}
+							else {
+								token = token.replace(/,/g, '');
+							}
+						}
+						else {
+							token = 0;
+						}
+						columnData[columnNumber].push(token);
+					}
+					columnNumber = (columnNumber + 1) % columnCount;
+				}
+				csvColumnNumber = (csvColumnNumber + 1) % csvColumnCount;
+				i++;
+				match = csv.substring(i).match(re);
+			}
+	
+			let rowCount = columnData[0].length;
+			for (let i = 1; i < columnCount; i++) {
+				if (columnData[i].length !== rowCount) {
+					theMMSession.setWarning('mmcmd:tableCsvRowCountsDiffer', {
+						path: context.path,
+						column: i,
+						ilength: columnData[i].length,
+						rowcount: rowCount
+					});
+					rowCount = Math.min(columnData[i].length, rowCount);
+				}
+			}
+			for (let i = 0; i < columnCount; i++) {
+				columns[i].updateFromStringArray(columnData[i]);
+			}
+			super(rowCount, columnCount);
+			initWithColumns(columns);
+
+		}
 		else {
 			super(0,0);
 		}
+	}
+
+	/**
+	 * 
+	 * @returns 
+	 */
+	copyOf() {
+		const newColumns = [];
+		for (const column of this.columns) {
+			const newColumn = new MMTableValueColumn({
+				name: column.name,
+				displayUnit: column?.displayUnit?.name,
+				format: column?.format,
+				value: column.value
+			});
+			newColumns.push(newColumn);
+		}
+
+		return new MMTableValue({columns: newColumns});
 	}
 
 	/**
@@ -692,7 +855,10 @@ class MMTableValue extends MMValue {
 				}
 			}
 			if (rvColumns.length === 1) {
-				return rvColumns[0].value.valueForIndexRowColumn(rowIndex, MMNumberValue.scalarValue(1));
+				const v = rvColumns[0].value.valueForIndexRowColumn(rowIndex, MMNumberValue.scalarValue(1));
+				v.displayUnit = rvColumns[0]._displayUnit;
+				v.displayFormat = rvColumns[0].format;
+				return v;
 			}
 			else if (rvColumns.length > 1) {
 				return new MMTableValue({
@@ -723,10 +889,11 @@ class MMTableValue extends MMValue {
 	 * @param {Number} rowNumber
 	 * @param {Number} columnNumber
 	 * @param {MMUnit} outUnit
+	 * @param {String} format
 	 * @returns {String}
 	 */
 	// eslint-disable-next-line no-unused-vars
-	stringForRowColumnUnit(rowNumber, columnNumber, outUnit) {
+	stringForRowColumnUnit(rowNumber, columnNumber, outUnit, format) {
 		const column = this.columns[columnNumber - 1];
 
 		if (!outUnit) {
@@ -736,32 +903,64 @@ class MMTableValue extends MMValue {
 			outUnit = column.value.defaultUnit;
 		}
 
-		return column.value.stringForRowColumnUnit(rowNumber, 1, outUnit);
+		if (!format) {
+			format = column.format;
+		}
+
+		return column.value.stringForRowColumnUnit(rowNumber, 1, outUnit, format);
 	}
 
+	/**
+	 * @method stringForRowColumnUnit
+	 * @param {Number} rowNumber
+	 * @param {Number} columnNumber
+	 * @param {MMUnit} outUnit
+	 * @param {String} format
+	 * @returns {String}
+	 */
+	// eslint-disable-next-line no-unused-vars
+	stringForRowColumnWithUnit(rowNumber, columnNumber, outUnit, format) {
+		const column = this.columns[columnNumber - 1];
+
+		if (!outUnit) {
+			outUnit = column.displayUnit;
+		}
+		if (!outUnit) {
+			outUnit = column.value.defaultUnit;
+		}
+
+		if (!format) {
+			format = column.format;
+		}
+
+		return column.value.stringForRowColumnWithUnit(rowNumber, 1, outUnit, format);
+	}
 
 	/**
 	 * @method jsonValue
 	 * @override
 	 * @param {MMUnit[]} displayUnits
+	 * @param {String[]} formats
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
-	jsonValue(displayUnits) {
+	jsonValue(displayUnits, formats) {
 		let columns = [];
 		const nc =  this.columnCount;
 		for (let i = 0; i < nc; i++) {
 			const column = this.columns[i];
-			// const displayUnit = (displayUnits && i < displayUnits.length) ? displayUnits[i] : column.displayUnit;
-			const displayUnit = displayUnits ? displayUnits[i + 1] : null;
-			columns.push(column.jsonValue(displayUnit));
+			columns.push(column.jsonValue(displayUnits?.[i + 1], formats?.[i + 1]));
 		}
 
-		return {
+		const returnValue = {
 			t: 't',
 			v: columns,
 			nr: this.rowCount,
 			nc: this.columnCount
 		}
+		if (this.isTransposed) {
+			returnValue.isTransposed = true;
+		}
+		return returnValue;
 	}
 
 	/**
@@ -874,6 +1073,7 @@ class MMTableValue extends MMValue {
 				const newColumn = new MMTableValueColumn({
 					name: column.name,
 					displayUnit: column.displayUnit ? column.displayUnit.name : null,
+					format: column.format,
 					value: selectedValues
 				});
 				newColumns.push(newColumn);
@@ -902,7 +1102,7 @@ class MMTableValue extends MMValue {
 		for (let selectorNumber = 0; selectorNumber < selectors.valueCount; selectorNumber++) {
 			let selectorValue = selectors.values[selectorNumber];
 			selectorValue = selectorValue.replace(/[^|&]+/g,'$&\n');
-			for (let selector of selectorValue.split('\n')) {
+			for (let selector of selectorValue.split(/[\n,]/)) {
 				selector = selector.trim();
 				if (!selector) {
 					continue;
@@ -916,7 +1116,7 @@ class MMTableValue extends MMValue {
 				else if (selector[0] === '&') {
 					selector = selector.substring(1).trim();
 				}
-				const nameMatch = selector.match(/^[^!<=>]+/);
+				const nameMatch = selector.match(/^[^!<=>?]+/);
 				if (!nameMatch) { syntaxError(selectorValue); }
 				const columnName = nameMatch[0].trim();
 				const column = this.columnNamed(columnName);
@@ -951,6 +1151,9 @@ class MMTableValue extends MMValue {
 					if (valueParts.length > 1) {
 						// assume unit
 						const unit = theMMSession.unitSystem.unitNamed(valueParts[1]);
+						if (!MMUnitSystem.areDimensionsEqual(unit.dimensions, columnValue.unitDimensions)) {
+							this.exceptionWith('mmcmd:tableSelectUnitMismatch', {term: selectorValue})
+						}
 						if (unit) {
 							findValue = unit.convertToBase(findValue);
 						}
@@ -958,6 +1161,12 @@ class MMTableValue extends MMValue {
 							this.exceptionWith('mmunit:unknownUnit', {name: valueParts[1]});
 						}
 					}
+					else {
+						if (!MMUnitSystem.areDimensionsEqual(columnValue.unitDimensions)) {
+							this.exceptionWith('mmcmd:tableSelectUnitMismatch', {term: selectorValue})
+						}
+					}
+
 				}
 				else {
 					findValue = valueString.toLowerCase();
@@ -970,7 +1179,8 @@ class MMTableValue extends MMValue {
 					'<': (a, b) => {return a < b ? 1 : 0;},
 					'>': (a, b) => {return a > b ? 1 : 0;},
 					'<=': (a, b) => {return a <= b ? 1 : 0;},
-					'>=': (a, b) => {return a >= b ? 1 : 0;}
+					'>=': (a, b) => {return a >= b ? 1 : 0;},
+					'?': (a, b) => {return a.includes(b);}
 				}[opString];
 
 				for (let i = 0; i < this.rowCount; i++) {

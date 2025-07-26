@@ -12,6 +12,7 @@
 					infoview: 'Information View',
 					addrow: 'Add Row',
 					addcol: 'Add Column',
+					filter: 'Filter Rows',
 					tablecells: 'Table Display',
 					tableheaders: 'Table Display Headers',
 					coleditor: 'Column Definition Editor',
@@ -25,6 +26,7 @@
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
@@ -50,7 +52,7 @@
 				<p>
 					There is an exception though, in that you can create data table columns whose
 					values are calculated by a single formula. This is really just a display
-					convenience that makes it easy display some calculated results, usually involving
+					convenience that makes it easy to display some calculated results, usually involving
 					values from other columns, along side the data columns. For instance you might have
 					a calculated column displaying the result of adding other columns together.
 				</p>
@@ -59,7 +61,7 @@
 				<h3>Columns (Fields)</h3>
 				<p>
 					Unlike the <a href="matrix.html">matrix</a> tool, each column of a data table
-					has a name and columns can have a different unit types or can even contain textual
+					has a name and columns can have different unit types or can even contain textual
 					information.  In this way columns behave much like the fields of a database table,
 					with the rows being the records. Columns will normally be data columns, but it is
 					possible to define a calculated column if desired.
@@ -98,7 +100,7 @@
 				<h3>Add Row</h3>
 				<p>
 					The <b>Add Row</b> button will add a new row to the bottom of the the table, with default
-					values set as defined by the column definition and open a
+					values set as defined by the column definition. It will also  open a
 					<a href="#roweditor">row editor</a> where you can modify those values.
 					The <b>Add Row</b> button is disabled if there isn't at least one column defined.
 				</p>
@@ -106,7 +108,7 @@
 			<div id="addcol" class="section">
 				<h3>Add Column</h3>
 				<p>
-					The <b>Add Column</b> will display the <a href="#coleditor">column definition editor</a> with
+					The <b>Add Column</b> button will display the <a href="#coleditor">column definition editor</a> with
 					some default values.  Change these as appropriate and tap the <b>Add Column</b> button in that
 					view to create a new column.
 				</p>
@@ -118,13 +120,14 @@
 				</p>
 			</div>
 			<div id="filter" class="section">
-				<h3>Filter</h3>
+				<h3>Filter Rows</h3>
 				<p>
 					If a <a href="formula.html">formula</a> is supplied for the filter
 					<a href="formulaeditor.html#fields">formula field</a>, only the rows matching the filter
 					will be shown. The result of the formula should either be a string, as shown below, or a
-					boolean array the with rows to be shown being true. See the description of the arguments
-					for the <b>select function</b> in the
+					boolean array the with the rows to be shown being true. See the description of the arguments
+					for the <b>select function</b> <a href="./functions.html#Lookupfunctions">here</a>
+					or in the
 					<a href="formulaeditor.html#fbrowser">function browser</a> for more detail.
 				</p>
 				<img src="datatablefilter.png" alt="Filtered Data Table info view"/>
@@ -210,7 +213,7 @@
 
 				</p>
 				<p>
-					Tapping on header cell for an existing column, will bring up the editor with the fields 
+					Tapping on the header cell for an existing column, will bring up the editor with the fields 
 					filled in with the existing values and with some different buttons:
 				</p>
 				<img src="datatablecoledit2.png" alt="Column Definition Editor"/>
@@ -290,7 +293,7 @@
 					</p>
 					<p>
 						For instance if you wanted to add a column named <b>Next</b> where every
-						value was was one day greater than the <b>Date</b> column, the initial value
+						value was one day greater than the <b>Date</b> column, the initial value
 						formula could be:
 					</p>
 					<p class="formula">
@@ -377,7 +380,7 @@ $.hours * clients.rate[
 					<h3>Format</h3>
 					<p>
 						You can use this field to format numeric columns. The format string is styled on
-						C format string and typically is of the form:
+						C format strings and typically is of the form:
 					</p>
 					<p class="formula">
 						%12.4f
@@ -387,18 +390,36 @@ $.hours * clients.rate[
 						decimal point in normal floating point format. In Math Minion, the percent sign is
 						optional.
 					</p>
-					<p>An <b>e</b> can be used instead
-						of the <b>f</b> for exponential format and you can even show numbers with an arbitrary
+					<p>
+						If <b>c</b> is used instead of <b>f</b>, the numbers will have commas added (e.g. 1,234,567.89).  
+					</p>
+					<p>An <b>e</b> can be used instead of the <b>f</b> for exponential format (e.g. 1.23457e+6).
+					</p>
+					<p>
+						You can even show numbers with an arbitrary
 						base between 2 and 36.  For instance a value could be represented in hex with
-						<b>14.16x</b>.  Note it is also permissable to omit the size number, i.e.
+						<b>14.16x</b>.
+					</p>
+					<p>
+						For the date units (date, dated, datem), you can use a <b>/</b> or <b>-</b>
+						and that character will be used to separate the month, day and year. If the
+						dated or datem units are being used, prefix the whole format with a <b>d</b>
+						or <b>m</b> so it is the last four digits that are grouped as the year.
+					</p>
+					<p>
+						Note it is also permissable to omit the size number, i.e.
 						<b>.2f</b> would be fine and the number would just be right justified.
+					</p>
+					<p>
+						The columns in the examples here have formats appropriate for dates, hours
+						and dollars.
 					</p>
 				</div>
 			</div>
 			<div id="roweditor" class="section">
 				<h3>Row Editor</h3>
 				<p>
-					When add a row or you tap on any cell in a row, other than the row number, the 
+					When you add a row or tap on any cell in a row, other than the row number, the 
 					row editor with appear:
 				</p>
 				<img src="datatablerowedit.png" alt="Row editor">
@@ -421,7 +442,7 @@ $.hours * clients.rate[
 				<div class="subsection">
 					<h3>Add</h3>
 					<p>
-						Adds a new row after the current row and display it in the editor. Note that
+						Adds a new row after the current row and displays it in the editor. Note that
 						while the <b>Add Row</b> button on the main data table page always adds the row
 						to the end of the table, this allows you to insert a row into the table.
 					</p>
@@ -429,7 +450,7 @@ $.hours * clients.rate[
 				<div class="subsection">
 					<h3>Delete</h3>
 					<p>
-						Deletes the displayed row and displayes the next one.
+						Deletes the displayed row and displays the next one.
 					</p>
 				</div>
 				<div class="subsection">
@@ -565,7 +586,10 @@ table,en
 					<li><b>table</b> - also returns a table value.</li>
 					<li><b>nrow</b> - number of rows in the table.</li>
 					<li><b>ncol</b> - number of columns in the table.</li>
-				</ul>
+					<li><b>html</b> - a html code representation of the tool.</li>
+					<li><b>notes</b> - the notes for the tool</li>
+					<li><b>myname</b> - the name of the tool</li>
+			</ul>
 			</div>
 		</div>
 	</body>

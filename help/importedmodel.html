@@ -6,18 +6,19 @@
 		<script type="text/javascript" src="help.js"></script>
 		<script type="text/javascript">
 			window.onload = () => {
-				rtSetupHeading('Model',{
+				rtSetupHeading('Imported Model',{
 					overview: 'Overview',
 					importing: 'Importing',
 					parameters: 'Formula Parameters',
 				});
 			};			
 		</script>	
-		<title>Model</title>
+		<title>Imported Model</title>
 	</head>
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
@@ -61,8 +62,11 @@
 				</p>
 				<img src="imported.png" alt="Source Session Section">
 				<p>
-					The name of the session whose root model is the template should be entered into
-					the input field (PSCalc in the example).
+					Clicking on the "Select model to import" button will open a menu that lists
+					all the stored sessions.  Selecting one will cause the that session
+					to be imported into imported model tool. If a session has already been selected,
+					its path will be displayed on the button. Clicking on the button and selecting a different
+					session will cause the imported model to be updated to the new session.
 				</p>
 				<p>
 					The <b>Make Local</b> button changes the imported model to a normal

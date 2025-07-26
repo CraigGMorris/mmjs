@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Menu',{
+					overview: 'Overview',
+					info: 'Information View',
+					option: 'Options',
+					menu: 'Menu',
+					selected: 'Selected Value',
+					paramters: 'Formula Parametes',
+				});
+			};			
+		</script>	
+		<title>Menu</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="menubody"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					The menu tool lets you place a drop down menu onto a model
+					information view or an html page.
+				</p>
+			</div>
+			<div id="info" class="section">
+				<h3>Information View</h3>
+				<img src="menu.png" alt="Menu Information View">
+				<p>
+					The fields are:
+				</p>
+				<div id="options" class="subsection">
+					<h3>Options</h3>
+					<p>
+						A formula field that defines the optons that can be selected from the menu. If the result
+						has only a single column, then the values in that column will be used for both the displayed
+						options in the drop down and for the selected value.
+					</p>
+					<p>
+						If the result has two or more columns, then the first column is used for the menu display and
+						the second column of the corresponding selected row will be the selected value. In the example
+						above, the first column of <b>customertable</b> is client names, while the second are charge
+						rates in dollar/h. Thus selecting <b>Bill</b> results in the corresponding charge rate of
+						<b>100 dollar/h</b>.
+					</p>
+				</div>
+				<div id="menu" class="subsection">
+					<h3>Menu</h3>
+					<p>
+						While primarily intended for display on model or html page information views,
+						the selection can be also be made directly on the menu's information view.
+					</p>
+				</div>
+				<div id="selected" class="subsection">
+					<h3>Selected Value</h3>
+					<p>
+						The value associated with the current selection. This is the value returned by
+						referencing the menu without a parameter.
+					</p>
+				</div>
+			<div id="parameters" class="section">
+				<h3>Formula Parameters</h3>
+				<p class="reminder">Parameters that can be accessed in the form a.b where a is the tool name and b is the parameter name.</p>
+				<ul>
+					<li><b>selected</b> - the value associated with the selected menu item. Same as no parameter.</li>
+					<li><b>label</b> - the label shown in the menu for the selected item.</li>
+					<li><b>html</b> - a html code representation of the tool.</li>
+					<li><b>notes</b> - the notes for the tool</li>
+					<li><b>myname</b> - the name of the tool</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>

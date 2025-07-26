@@ -1,0 +1,228 @@
+Additional Math Minion tools.
+
+Graph
+produces 2D and 3D plots
+It should have the json fields:
+"Type": "Graph"
+"isOutput": "y"
+
+It should also have one or more X axis fields, named X1, X2 etc.
+Each X axis is an object containing fields:
+"v": a formula resulting in the x values. If the formula is followed by a ' the text following the ' is used as the axis label.
+"vmin": a formula for the minimum x range. Can be "" for autoscaling.
+"vmax": a formula for the maximum x range. Can be "" for autoscaling.
+optionally it can contain a "unit": field with the conversion unit to use for display.
+Each X axis will contain one or more Y axis fields, named Y1, Y2, etc.
+Each Y axis is an object containing fields:
+"lineType": 0
+"v": a formula resulting in the y values. If the formula is followed by a ' the text following the ' is used as the axis label.
+"vmin": a formula for the minimum y range. Can be "" for autoscaling.
+"vmax": a formula for the maximum y range. Can be "" for autoscaling.
+optionally it can contain a "unit": field with the conversion unit to use for display.
+
+Example:
+
+{"CopyObjects": [
+	{
+		"name": "After202404",
+		"Notes": "",
+		"DiagramX": 230,
+		"DiagramY": 210,
+		"HideInfo": "y",
+		"DiagramNotes": "n",
+		"HtmlNotes": "n",
+		"isOutput": "y",
+		"Type": "Graph",
+		"X1": {
+			"v": "Records.date'Date",
+			"vmin": "",
+			"vmax": "",
+			"unit": "date",
+			"Y1": {
+				"v": "Records.Temp'Temp",
+				"vmin": "",
+				"vmax": "",
+				"lineType": 0
+			},
+			"Y2": {
+				"v": "Records.Rain_fall'Rain",
+				"vmin": "0 mm",
+				"vmax": "1600 mm",
+				"unit": "mm",
+				"lineType": 0
+			}
+		},
+		"Selected": "0_0",
+		"highlight": "true"
+	}
+]}
+
+Equation Solver
+attempts to find values of x that satisfy one or more functions f(x)=0
+The starting point for all x values is 0 and the functions should be scaled so the solution falls between -1 and 1.
+The output values are available as parameters 1, 2 etc as in mySolver.1. These are used in formulas in other tools to calculate the function values.
+
+It should have the JSON fields:
+"Type": "Equation Solver"
+"maxIter": 200
+"maxJacobians": 5
+"Enabled": "y"
+It should also have fields "f0": and "c0:" where f0 is the formula calculating the function value and c0 is the array length of f0 (normally 1). The function value is usually calculated in other tools and they are referenced in the f0 formula.
+Additional function formulas can be added as f1 c1, f2 c2 etc. pairs.
+Example:
+{"CopyObjects": [
+	{
+		"name": "IRR_Model",
+		"Notes": "This model calculates the internal rate of return (IRR) for a series of cash flows.",
+		"DiagramX": 15,
+		"DiagramY": 50,
+		"HideInfo": "y",
+		"DiagramNotes": "n",
+		"HtmlNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "cashflows",
+				"Notes": "Cash flow series",
+				"DiagramX": 20,
+				"DiagramY": 50,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{cc -70000, 12000, 15000, 18000, 21000, 26000}"
+				}
+			},
+			{
+				"name": "guess",
+				"Notes": "Initial estimate for IRR",
+				"DiagramX": 20,
+				"DiagramY": 90,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "0.1"
+				}
+			},
+			{
+				"name": "irr_solver",
+				"Notes": "Solves for IRR",
+				"DiagramX": 100,
+				"DiagramY": 50,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Equation Solver",
+				"f0": "{sum cashflows / (1 + irr)^(1:6)}",
+				"c0": "1",
+				"maxIter": 200,
+				"maxJacobians": 5,
+				"Enabled": "y"
+			},
+			{
+				"name": "IRR",
+				"Notes": "Computed Internal Rate of Return",
+				"DiagramX": 100,
+				"DiagramY": 90,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "irr_solver.1+guess"
+				}
+			}
+		]
+	}
+]}
+
+
+Optimizer
+manipulates one or more output values to minimize a function using those values.
+It should have the JSON fields:
+"Type": "Optimizer"
+"optFormula": {
+	"Formula": "(1.0 - x)^2.0 + 100.0*(y - x*x)^2.0"
+},
+"countFormula": {
+	"Formula": "2"
+},
+"outputs": [
+	0,
+	0
+]
+optFormula calculates the value to be minimized.
+countFormula determines how many outputs there are
+outputs should be an array of zeros countFormula long.
+
+The output values are available as parameters 1, 2 etc as in myOpt.1. These are used in formulas in other tools to calculate the function values.
+
+
+Ordinary Differential Equation Solver
+Numerically integrates dy/dt given an initial value y0 and a calculated dy. It varies its y and t parameters.
+
+It should have the JSON fields:
+"Type": "ODE Solver"
+"AutoRun": "y"
+"relTolFormula": {
+	"Formula": "1.0e-5"
+},
+"absTolFormula": {
+	"Formula": "1.0e-10*{baseunit $.y}"
+}
+the fields above should be included as shown.
+"y0Formula": {
+	"Formula": "y0"
+}
+"dyFormula": {
+	"Formula": "dy"
+}
+The y0Formula and dyFormula should calculate the y0 and dy values.
+Always calculate dy in an expression, not directly in dyFormula
+✅ Correct:
+
+{
+    "name": "dy",
+    "Formula": {
+        "Formula": "{table `Prey`, ODE.y.Prey*(preyGrowth - preyDeath*ODE.y.Predator), `Predator`, ODE.y.Predator*(predatorEfficiency*preyDeath*ODE.y.Prey - predatorDeath)}"
+    }
+}
+Then, the ODE Solver should reference this Expression:
+"dyFormula": {
+    "Formula": "dy"
+}
+
+❌ Incorrect: Using y0 inside dyFormula.
+
+"dyFormula": {
+    "Formula": "{table `Prey`, y0.Prey*(preyGrowth - preyDeath*y0.Predator), `Predator`, y0.Predator*(predatorEfficiency*preyDeath*y0.Prey - predatorDeath)}"
+}
+
+Use an expression to define y0 and use it in y0Formula
+
+"recFormulas": [
+	{
+		"Formula": "$.t 'Time"
+	},
+	{
+		"Formula": "Theta"
+	}
+]
+"nextTFormula": {
+	"Formula": "$.t + 0.1 s"
+},
+"endTFormula": {
+	"Formula": "10 s"
+}
+recFormulas is an array of formulas that will be evaluated at intervals determined by the nextTFormula. These values constitute the output of the tool and will be available from parameter "table".
+If the recFormulas include a ' character, everything after it will be used as the column name with any spaces replaces by _ characters. This will be the table used to reference the table column.
+e.g. ode.table.time
+ 
+The $.t term evaluates to the current value of t. Do not use it anywhere else.
+
+

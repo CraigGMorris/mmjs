@@ -9,9 +9,10 @@
 				rtSetupHeading('Model',{
 					overview: 'Overview',
 					namespace: 'Name Space',
-					ioexpr: 'Input and Output Expressions',
+					ioexpr: 'Input Expressions',
 					info: 'Information View',
-					indextool: 'Index Tool',
+					print: 'Printing the View',
+					defaultview: 'Default View',
 					parameters: 'Formula Parameters',
 				});
 			};			
@@ -21,15 +22,16 @@
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
-					A model is simply a container for other <a href="tools.html">calculation tools</a>.
+					A model is simply a container for other <a href="tools.html">tools</a>.
 					These are displayed as icons on the model's <a href="diagram.html">diagram view</a>.
 				</p>
 				<p>
 					Every Math Minion session has one root model, but it can contain other models,
-					which in turn can also contain models.
+					which in turn can also contain models and so forth.
 				</p>
 					Tapping on the icon for a model in the <a href="diagram.html">diagram</a> will
 					switch the diagram and <a href="infoview.html">information view</a> to that
@@ -50,14 +52,7 @@
 				</p>
 			</div>
 			<div id="ioexpr" class="section">
-				<h3>Input and Output Expressions</h3>
-				<p>
-					Models can only communicate with other models by means of
-					<a href="expression.html">expressions</a> that have been designated as input and/or
-					output.  This is done by means of the
-					<a href="expression.html#incheck">check boxes</a> on the
-					<a href="expression.html">expression</a> information view.
-				</p>
+				<h3>Input Expressions</h3>
 				<p>
 					An input <a href="expression.html">expression</a> operates in the namespace of
 					the parent model, but its result is available in its containing model.  This
@@ -65,10 +60,14 @@
 					the parent, but its result can be used by other tools in its own model.
 				</p>
 				<p>
-					The result of an output <a href="expression.html">expression</a> can be accessed
-					by formulas in the parent model by appending a dot and its name to its model name.
-					Thus if an output expression called "result" was in a model called "calc", then a
-					formula in a tool in the model containing "calc" could reference "result" as:
+					An expression is set to be an input by checking the 	<a href="expression.html#incheck">
+					<b>Model Input check box</b></a> on an expression's information view.
+				</p>
+				<p>
+					The result of any <a href="expression.html">expression</a> or other tool in a child
+					model can be accessed by formulas in the parent model by appending a dot and its name
+					to its model name. Thus if an  expression called "result" was in a model called "calc",
+					then a formula in a tool in the model containing "calc" could reference "result" as:
 				</p>
 				<p class="formula">calc.result</p>
 			</div>
@@ -76,82 +75,112 @@
 				<h3>Information View</h3>
 				<p>
 					The information view for the circle model from the Getting Started session looks
-					like this:
+					like this (after scrolling by the included overview):
 				</p>
 				<img src="model.png" alt="Model Information View">
 				<p>
-					When first created, the information view for a model will only contain the name
-					and notes fields, but as you add tools to the model up to three sections will appear
-					as in this example. The tools the model contains are listed in the appropriate sections:
-				</p>
-				<ul>
-					<li>
-						<b>Inputs</b> - contains any <a href="expression.html">expressions</a> that have
-						their <a href="expression.html#incheck">input boxes</a> checked.
-					</li>
-					<li>
-						<b>Outputs</b> - contains any <a href="expression.html">expressions</a> that have
-						their <a href="expression.html#outcheck">output boxes</a> checked.
-					</li>
-					<li>
-						<b>Internal Tools</b> - all other tools
-					</li>
-				</ul>
-				<p>
-					Input and output sections will show the name, formula and a result summary for
-					each expression, but the internal tools section only shows the tool type and
-					tool name.
+					If none of the tools in the model have any display boxes checked, then
+					the information view will just display a list of the tools in the model.
+					However as you add tools to the model, any that have their display box
+					checked will appear in the model's information view instead.
 				</p>
 				<p>
-					In all cases tapping on a tool row, other than inside an input's
-					<a href="formulaeditor.html#fields">formula field</a>, will show that tool's
+					In a tool's <a href="notes.html">notes view</a>, you can
+					also set that the notes should appear above its display in the model view.
+				</p>
+				<p>
+					An expression can also be told to include an input field in the model view, where it's value
+					can be directly set.
+				</p>
+				<p>
+					In the view above, all three have been set for the <b>radius</b> expression, so the note
+					appears, followed by an input field and then the result of evaluating the input.
+				</p>
+				<p>
+					Below that, just the results of the <b>circumference</b> and <b>area</b> calculations are
+					shown, and below those are the notes and plot of the <b>xyplot</b>
+					<a href="graph.html"></a> tool.
+				</p>
+				<p>
+					In this way you can create simple forms, reports or summaries for the calculations
+					performed by a model.
+				</p>
+				<p>
+					In all cases tapping on a tool name, will show that tool's
 					<a href="infoview.html">information view</a> and select its icon on the
 					<a href="diagram.html">diagram.</a>  If the selected tool is a model the
 					diagram will switch to showing that model. You can use the back button at
 					the top left to return to the original model information view.
 				</p>
 				<p>
-					The order that tools are displayed within each section is determined
-					by their horizontal position on the model diagram, with ties being determined
-					by the vertical position.
+					The order that tools are displayed is determined by their horizontal position
+					on the model diagram, with ties being determined by the vertical position.
 				</p>
 			</div>
-			<div id="indextool" class="section">
-				<h3>Index Tool</h3>
+			<div id="print" class="section">
+				<h3>Printing the View</h3>
+				At the top left of the view there is a small non-scrolling printer icon
+				and tapping on that will bring up a print dialog for printing the view.				
+			</div>
+			<div id="defaultview" class="section">
+				<h3>Default View</h3>
 				<p>
 					It is possible to set a specific tool in the model to always be displayed in
 					the information view when the model is first opened. Enter the name of this tool
-					in the <b>Index Tool</b> input field at the bottom of the information view.
+					in the <b>Default View</b> input field at the bottom of the information view. 
 				</p>
 				<p>
-					In the model above, the Htmlpage <b>Circle_Overview</b> will appear whenever the
-					<b>circle</b> model is entered. The back button at the upper left of the information
-					view can be used to return to the model's informaton view.
-				</p>
-				<p>
-					Empty the field 1f you wish to return to having only the model information
+					Empty the field 1f you wish to return to having the model information
 					displayed when the model is first opened, 
 				</p>
 			</div>
 			<div id="parameters" class="section">
 				<h3>Formula Parameters</h3>		
-				<p class="reminder">Parameters can be accessed with the form a.b where a is the model and b is the parameter</p>
+				<p class="reminder">Parameters can be accessed with the form a.b where a is the model
+					and b is the parameter</p>
 				<p>
-					As described above, all expressions contained in the model that have their output switch on are available as formula parameters.
+					All tools contained in the model are available as
+					formula parameters and that tool's parameters will be available by extending
+					the dot notation.  For instance, in the example above, a tool in
+					the <b>A_Simple_Calc</b> model could use the formula
+				</p>
+				<p class="formula">circle.xyplot.x</p>
+				<p>
+					to retrieve an array of the x coordinate values from the xyplot graph in the circle model.
 				</p>
 				<p>
-					If the value of the expression is a reference to another tool, then that tool's parameters will be available by extending the dot notation.  For instance, let's say a model named "m" has an output expression named "date" which has a formula:
+					The following will match only if the model does not contain a tool with a matching name.
 				</p>
-				<p class="formula">table</p>
+				<ul>
+					<li><b>html</b> - a html code representation of the tool.</li>
+					<li><b>notes</b> - the notes for the tool</li>
+					<li><b>myname</b> - the name of the tool</li>
+					<li><b>formulae</b> - an html string listing all of the formulae in the model, along with their
+						inputs and the tools that reference them. Note that the inputs and references won't be complete
+						for any tools that are not yet evaluated.
+					</li>
+				</ul>
 				<p>
-					where "table is the name of a <a href="datatable.html">data table</a>, which has a column named "Date".  Then
+					You can also use special index strings to retrieve and array of tool values from the model.
+					For instance:
 				</p>
-				<p class="formula">
-					m.table.date
+				<p class="formula">{parent}["f*"]</p>
+				<p>
+					would return an array of all of the tools in the model that have names starting with "f".
 				</p>
 				<p>
-					would return an array with that column's contents.
-				</p>						
+					You can also use the prefixes "type:" and "notes:" to retrieve an array of tools of a
+					specific type or with a specific notes string.  For instance:
+				</p>
+				<p class="formula">{parent}["type:exp*"]</p>
+				<p>
+					would return an array of all of the expressions in the model.
+				</p>
+				<p class="formula">{parent}["notes:*heat*"]</p>
+				<p>
+					would return an array of all of the tools in the model that have notes containing the string
+					"heat" anywhere in the note.
+				</p>
 			</div>
 		</div>
 	</body>

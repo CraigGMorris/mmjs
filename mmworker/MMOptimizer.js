@@ -22,6 +22,9 @@
 	MMFormula:readonly
 	MMPropertyType:readonly
 	MMNumberValue:readonly
+	MMTableValue:readonly
+	MMTableValueColumn:readonly
+	MMStringValue:readonly
 */
 
 /**
@@ -29,7 +32,7 @@
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
-class MMOptimizer extends MMTool {
+export class MMOptimizer extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
@@ -118,7 +121,7 @@ class MMOptimizer extends MMTool {
 	}
 
 	get isEnabled() {
-		return this._isEnabled;
+		return this._isEnabled && !theMMSession.noRun;
 	}
 
 	set isEnabled(newValue) {
@@ -158,7 +161,6 @@ class MMOptimizer extends MMTool {
 			this.commonXi = new Float64Array(n);
 		}
 		this.isOptimized = false;
-		this.isEnabled = false;
 		if (!this.isLoadingCase) {
 			this.forgetCalculated();
 		}
@@ -209,6 +211,7 @@ class MMOptimizer extends MMTool {
 	 */
 	resetCommand(command) {
 		this.resetOutputs();
+		this.isEnabled = false;
 		command.results = 'reset done';
 	}
 
@@ -231,7 +234,6 @@ class MMOptimizer extends MMTool {
 		if (this.isInError && this.isEnabled ) {
 			this.isInError = false;
 			this.resetOutputs();
-			this.isEnabled = true;
 		}
 		else {
 			this.isInError = false;
@@ -282,13 +284,37 @@ class MMOptimizer extends MMTool {
 		}
 
 		if(lcDescription === 'x') {
-				const n = this._numberOfOutputs;
-				const v = new MMNumberValue(n, 1);
-				for (let i = 0; i < n; i++) {
-					v.values[i] = this.outputs[i];
-				}
-				return returnValue(v);
+			const n = this._numberOfOutputs;
+			const v = new MMNumberValue(n, 1);
+			for (let i = 0; i < n; i++) {
+				v.values[i] = this.outputs[i];
 			}
+			return returnValue(v);
+		}
+
+		if (lcDescription === 'table') {
+			const fx = this.fxFormula.value();
+			const names = ['fx'];
+			const values = [fx ? fx.stringWithUnit() : '---']
+			const outputs = Array.from(this.outputs);
+			const n = outputs.length;
+			for (let i = 0; i < n; i++) {
+				names.push(`x${i + 1}`);
+				values.push(outputs[i].toString());
+			}
+			const nameColumn = new MMTableValueColumn({
+				name: ' ',
+				value: MMStringValue.stringArrayValue(names)
+			})
+			const valueColumn = new MMTableValueColumn({
+				name: 'v',
+				value: MMStringValue.stringArrayValue(values)
+			})
+			const table = new MMTableValue({
+				columns: [nameColumn, valueColumn]
+			})
+			return returnValue(table);
+		}
 
 		const outputNumber = parseInt(lcDescription);
 		if (!isNaN(outputNumber) && outputNumber > 0 && outputNumber <= this._numberOfOutputs) {
@@ -310,6 +336,13 @@ class MMOptimizer extends MMTool {
 		return sources;
 	}
 
+	/**
+	 * @method formulaList
+	 * @returns [] contains formulae contained by this tool and its children
+	 */
+	formulaList() {
+		return [this.fxFormula, this.countFormula];
+	}
 
 	/**
 	 * @method toolViewInfo
@@ -627,7 +660,10 @@ class MMOptimizer extends MMTool {
 		for (let iter = 1; iter <= this.maxIterations; iter++) {
 			const now = Date.now();
 			if (now - lastStatusTime > 1000) {
-				this.processor.statusCallBack(this.t('mmcmd:optStatus', {iter: iter, error: fReturn}));
+				if (this.processor.statusCallBack(this.t('mmcmd:optStatus', {iter: iter, error: fReturn}))) {
+					this.isEnabled = false;
+					break;
+				}
 				lastStatusTime = now;
 			}
 
@@ -694,6 +730,7 @@ class MMOptimizer extends MMTool {
 		if (this.isRunning || this.isLoadingCase) {
 			return;
 		}
+		this.numberOfOutputs; // ensure this has been evaluated
 		this.isOptimized = false;
 		this.isRunning = true;
 		try {

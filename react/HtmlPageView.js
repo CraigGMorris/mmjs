@@ -49,6 +49,7 @@ const HtmlPageDisplay = Object.freeze({
 export function HtmlPageView(props) {
 	const [display, setDisplay] = useState(HtmlPageDisplay.input);
 	const [editOptions, setEditOptions] = useState({});
+	const [htmlResults, setHtmlResults] = useState(null);
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -59,16 +60,26 @@ export function HtmlPageView(props) {
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
 
+	useEffect(() => {
+		if (updateResults && updateResults[0]) {
+			setTimeout(() => {
+				// for some reason Chromium browsers need a short delay
+				setHtmlResults(updateResults[0].results.html);
+			}, 20);
+		}
+	}, [updateResults]);
+
 	const htmlAction = React.useCallback(e => {
 		if (!updateResults.error) {
 			const results = updateResults.length ? updateResults[0].results : {};
 			if (results.path) {
 				const source = e.source
 				const message = e.data.substring(8)
-				props.actions.doCommand(`__blob__${results.path} htmlaction__blob__${message}`, (results) => {
+				props.actions.doCommand(`${results.path} htmlaction ${message}`, (results) => {
 					if (results && results[0] && results[0].results) {
 						const received = results[0].results;
 						if (received.results) {
+							// send message to the html page
 							source.postMessage(received, '*');
 						}
 						if (received.didLoad) {
@@ -91,6 +102,11 @@ export function HtmlPageView(props) {
 							// console.log('updating');
 							props.actions.updateView(props.viewInfo.stackIndex);
 						}
+						else if (received.viewurl) {
+							const page = received.viewurl.name;
+							window.open(page);
+							//window.open(`help/${page.toLowerCase()}.html`,'MM Help');
+						}
 						else {
 							props.actions.updateDiagram();
 						}
@@ -102,6 +118,7 @@ export function HtmlPageView(props) {
 	}, [updateResults, props.actions, props.viewInfo.stackIndex]);
 
 	useEffect(() => {
+		// handle messages from the html page
 		const handleMessage = (e) => {
 			if (typeof e.data === "string" && e.data.startsWith('htmlPage')) {
 				htmlAction(e);
@@ -125,7 +142,7 @@ export function HtmlPageView(props) {
 	const applyChanges = () => {
 		const path = `${results.path}.Formula`;
 		return (formula) => {
-			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
+			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(HtmlPageDisplay.main);
 			});
@@ -141,6 +158,7 @@ export function HtmlPageView(props) {
 				t: t,
 				viewInfo: props.viewInfo,
 				infoWidth: props.infoWidth,
+				infoHeight: props.infoHeight,
 				actions: props.actions,
 				editOptions: editOptions,
 				cancelAction: () => {
@@ -153,7 +171,7 @@ export function HtmlPageView(props) {
 	else {
 		displayComponent = e(
 			'div', {
-				key: 'htmppage',
+				key: 'htmlpage',
 				id: 'htmlpage',
 			},
 			e(
@@ -181,7 +199,7 @@ export function HtmlPageView(props) {
 				// rendered html
 				'iframe', {
 					id: 'htmlpage__iframe',
-					srcDoc: results.html,
+					srcDoc: htmlResults,
 					sandbox: 'allow-scripts allow-modals allow-popups',
 				},
 			)

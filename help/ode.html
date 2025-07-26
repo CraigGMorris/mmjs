@@ -30,11 +30,12 @@
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 						<h3>Overview</h3>
 						<p>
 							The ODE solver is used to integrate a set of one or more ordinary differential
-							equations (ODE). An ODE is function with a single independent variable and a
+							equations (ODE). An ODE is a function with a single independent variable and a
 							derivative with respect to that variable.
 						</p>
 						<p>			
@@ -105,7 +106,7 @@
 						<div id="addrec" class="subsection">
 							<h3>Add Recording Button</h3>
 							<p>
-								This adds a <b>Recorded Value</b>> row to the bottom of the input table.
+								This adds a <b>Recorded Value</b> row to the bottom of the input table.
 							</p>
 							<p>
 								The formula entered into this row will be evaluated at each NextT value of T
@@ -261,7 +262,7 @@
 								1.0e-10*{baseunit $.y}
 							</p>
 							<p>
-								which ensures to correct unit is used.
+								which ensures the correct unit is used.
 							</p>
 						</div>
 					</div>
@@ -284,6 +285,9 @@
 								<p>If comments are used on the recorded value formulas, they will be used as the column names, otherwise the formula itself will be.</p>
 								<p>If a recorded value has multiple columns, these will be included with "_n" appended to the recorded value name, where n is the column number.</p>
 							</li>
+							<li><b>html</b> - a html code representation of the tool.</li>
+							<li><b>notes</b> - the notes for the tool</li>
+							<li><b>myname</b> - the name of the tool</li>
 						</ul>
 					</div>
 				</div>

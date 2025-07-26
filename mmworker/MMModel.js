@@ -29,6 +29,10 @@
 	MMNumberValue:readonly
 	MMStringValue:readonly
 	MMTableValue:readonly
+	MMButton:readonly
+	MMMenu:readonly
+	MMGraph:readonly
+	MMHtmlPageProcessor:readonly
 */
 
 /**
@@ -65,6 +69,9 @@ class MMImportModelInfo {
 	initFromSaved(saved) {
 		this.sessionName = saved.name;
 		this.inputFormulas = saved.inputs;
+		if (saved.childImportFormulas) {
+			this.childImportFormulas = saved.childImportFormulas;
+		}
 	}
 }
 
@@ -75,15 +82,17 @@ class MMImportModelInfo {
  * @member {boolean} isMissingObject
  */
 // eslint-disable-next-line no-unused-vars
-class MMModel extends MMTool {
+export class MMModel extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Model');
+		this.htmlProcessor = new MMHtmlPageProcessor(this)
 		this.nextToolNumber = 1;
 		this.isMissingObject = false;
+		this.lastDefaultUnitSetName = '';
 	}
 
 	/** @override */
@@ -100,6 +109,8 @@ class MMModel extends MMTool {
 		verbs['import'] = this.importCommand;
 		verbs['makelocal'] = this.makeLocalCommand;
 		verbs['restoreimport'] = this.restoreImportCommand;
+		verbs['htmlaction'] = this.actionCommand;
+		verbs['test'] = this.testCommand;
 
 		return verbs;
 	}
@@ -156,8 +167,16 @@ class MMModel extends MMTool {
 		for (const name in this.children) {
 			const child = this.children[name];
 			if (child instanceof MMTool) {
-				p.push(name + '.');
+				p.push(child.name + '.');
 			}
+		}
+		// note these will be removed by the MMTools parameter preview
+		// if the path is blank. This counts on them being last in the list
+		if (!this.children.toolnames) {
+			p.push('toolnames');
+		}
+		if (!this.children.tools) {
+			p.push('tools');
 		}
 		return p;
 	}
@@ -216,10 +235,12 @@ class MMModel extends MMTool {
 		}
 
 		if (!name) {
-			name = `x${this.nextToolNumber++}`;
+			const baseName = (typeName === 'Expression') ? 'x' : typeName;
+			let n = 2;
+			name = baseName + '1';
 			while ( this.childNamed(name) ) {
-				name = `x${this.nextToolNumber++}`;
-			}	
+				name = `${baseName}${n++}`;
+			}
 		}
 		let isImport = false;
 		if (typeName === 'Import') {
@@ -236,32 +257,51 @@ class MMModel extends MMTool {
 				newTool.position = position;
 			}
 			else {
-				let maxX = 10, maxY = 10;
-				for (const key in this.children) {
-					const tool = this.children[key];
-					if (tool instanceof MMTool) {
-						if (tool.position.y > maxY) {
-							maxY = tool.position.y;
-							maxX = tool.position.x;
-						}
-						else if (tool.position.y == maxY && tool.position.x > maxX) {
-							maxX = tool.position.x;
-						}
-					}
-				}
-
-				if (maxX < 500) {
-					newTool.position = {x: maxX + 70, y: maxY};
+				if (Object.keys(this.children).length === 1) {
+					// no previous tools
+					newTool.position = {x: 10, y: 10}
 				}
 				else {
-					newTool.position = {x: 10, y: maxY + 30};
+					// position newTool under left most tools
+					let minX = 10000000, maxY = -10000000;
+					// find left most and bottom most
+					for (const key in this.children) {
+						const tool = this.children[key];
+						if (tool instanceof MMTool && tool !== newTool) {
+							minX = Math.min(minX, tool.position.x);
+							maxY = Math.max(maxY, tool.position.y);
+						}
+					}
+
+					// now check if there is room to the right of the bottom - left most tool
+					let useRightColumn = true;
+					for (const key in this.children) {
+						const tool = this.children[key];
+						if (tool instanceof MMTool && tool !== newTool) {
+							const y = tool.position.y
+							if (y > maxY - 30 && tool.position.x > minX) {
+								useRightColumn = false;
+								break;
+							}
+						}
+					}
+
+					if (useRightColumn) {
+						minX += 150;
+					}
+					else {
+						maxY += 30;
+					}
+					newTool.position = {x: minX, y: maxY};
 				}
 			}
 			if (isImport) {
 				newTool.importInfo = new MMImportModelInfo('');
 			}
+			newTool.justAdded = true;
 			command.results = name;
 			command.undo = this.getPath() + ' removetool ' + name;
+			this.forgetCalculated();
 		}
 	}
 
@@ -296,15 +336,17 @@ class MMModel extends MMTool {
 		}
 		if (savedTools.length) {
 			const json = JSON.stringify(savedTools);
-			command.undo = `__blob__${this.getPath()} restoretool__blob__${json}`;
+			command.undo = `${this.getPath()} restoretool ${json}`;
 		}
+		this.htmlProcessor.clearCache();
+		this.forgetCalculated();
 	}
 
 	/**
 	 * @method restoreTool - adds a tool from json - for undo
 	 * @param {Object} tool - from json
 	 */
-	restoreTool(tool) {
+	async restoreTool(tool) {
 		const name = tool.name;
 		const typeName = tool.Type
 			.replace('ODE Solver','Ode')
@@ -317,20 +359,20 @@ class MMModel extends MMTool {
 			throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: tool.Type}));
 		}
 		let newTool = toolType.factory(name, this);
-		newTool.initFromSaved(tool);
+		await newTool.initFromSaved(tool);
 	}
 
 	/**
 	 * @method restoreToolCommand
 	 * @param {MMCommand} command
 	 * command.args should be the undo json
-	 * in the form __blob__/.x restoretool__blob__ followed by the json text
+	 * in the form  /.x restoretool  followed by the json text
 	 */
-	restoreToolCommand(command) {
+	async restoreToolCommand(command) {
 		const savedTools = JSON.parse(command.args);
 
 		for (let saved of savedTools) {
-			this.restoreTool(saved);
+			await this.restoreTool(saved);
 		}
 		const names = savedTools.map(t => t.name);
 		command.undo = `${this.getPath()} removetool ${names.join(' ')}`
@@ -356,6 +398,163 @@ class MMModel extends MMTool {
 		command.results = json;
 	}
 
+	contentsFromJsonObject(obj) {
+		const makeExpression = (name) => {
+			const toolType = MMToolTypes["Expression"];
+			return toolType.factory(name, this);
+		}
+
+		const makeModel = (name, contents) => {
+			const toolType = MMToolTypes["Model"];
+			const model = toolType.factory(name, this);
+			model.contentsFromJsonObject(contents);
+			return model;
+		}
+
+		const autoPosition = (tool) => {
+			const n = Object.keys(this.children).length - 1;
+			if (n === 0) {
+				tool.position = {x: 10, y: 10}
+			}
+			else {
+				const toolsPerRow = 10;
+				const row = (n / toolsPerRow - 0.5).toFixed();
+				const column = n % toolsPerRow;
+				tool.position = {
+					x: 10 + column * 70,
+					y: 10 + row * 30
+				}
+			}
+		}
+	
+
+		for (const childName of Object.keys(obj)) {
+			const child = obj[childName];
+			if (typeof(child) === 'string') {
+				const expr = makeExpression(childName);
+				if (expr) {
+					autoPosition(expr);
+					expr.formula.formula = "'" + child;
+				}		
+			}
+			else if (typeof(child) === 'number') {
+				const expr = makeExpression(childName);
+				if (expr) {
+					autoPosition(expr);
+					expr.formula.formula = child.toString();
+				}		
+			}
+			else if (child instanceof Array ) {
+				if (child.length === 0) {
+					continue;
+				}
+				const first = child[0];
+				const parts = [];
+				if (typeof(first) === 'string') {
+					parts.push('{cc `' + first + '`');
+					for (let i = 1; i < child.length; i++) {
+						parts.push(',`'+ child[i] + '`');
+					}
+					parts.push('}')
+					const expr = makeExpression(childName);
+					if (expr) {
+						autoPosition(expr);
+						expr.formula.formula = parts.join('');
+					}
+				}
+				else if (typeof(first) === 'number') {
+					parts.push('{cc `' + first.toString() + '`');
+					for (let i = 1; i < child.length; i++) {
+						parts.push(',`'+ child[i].toString() + '`');
+					}
+					parts.push('}')
+					const expr = makeExpression(childName);
+					if (expr) {
+						autoPosition(expr);
+						expr.formula.formula = parts.join('');
+					}
+				}
+				else {
+					// Array of objects - use first as template to make a table with
+					// each of its children being a column. If one of them isn't a scalar
+					// string or number, then just create an expression with json string
+					const columnValues = [];
+					let dataOkay = true;
+					for (const columnName of Object.keys(first)) {
+						const columnFirst = first[columnName];
+						if (typeof(columnFirst) === 'string') {
+							columnValues.push({name: columnName, type: 'string', values: []});
+						}
+						else if (typeof(columnFirst) === 'number') {
+							columnValues.push({name: columnName, type: 'number', values: []});
+						}
+						else {
+							dataOkay = false;
+							break;
+						}
+					}
+					for (let i = 0; dataOkay && i < child.length; i++) {
+						const element = child[i];
+						for (let j = 0; dataOkay && j < columnValues.length; j++) {
+							const columnValue = columnValues[j];
+							const value = element[columnValue.name];
+							if (typeof(value) === columnValue.type) {
+								columnValue.values.push(value);
+							}
+							else {
+								dataOkay = false;
+							}
+						} 
+					}
+					if (dataOkay) {
+						const toolType = MMToolTypes["DataTable"];
+						const table = toolType.factory(childName, this);
+						autoPosition(table);
+
+						// add columns
+						for (const v of columnValues) {
+							const options = {
+								name: v.name,
+							};
+							if (v.type === 'string') {
+								options.displayUnit = 'string';
+								options.defaultValue = '""';
+							}
+							else {
+								options.defaultValue = '"0"';
+							}
+							table.addColumn(JSON.stringify(options));
+						}
+
+						// add rows
+						for (const rowValue of child) {
+							table.addRow(0, rowValue);
+						}
+					}
+					else {
+						const expr = makeExpression(childName);
+						if (expr) {
+							autoPosition(expr);
+							expr.formula.formula = "'" + JSON.stringify(child, null, '\t');
+						}				
+					}
+				}
+			}
+			else if (child && typeof(child) === 'object') {
+				const model = makeModel(childName, child);
+				if (model) {
+					autoPosition(model);
+				}
+			}
+		}
+	}
+
+	// testing method - place to easily try things out
+	async testCommand(command) {
+		let results = ['test function for model']
+		command.results = results;
+	}
+
 	/** @method copyAsTableCommand
 	 * returns text representation of tools table value
 	 * @param {MMCommand} command
@@ -368,7 +567,7 @@ class MMModel extends MMTool {
 		}
 		const toolName = command.args;
 		const tool = this.childNamed(toolName);
-		if (tool) {
+		if (tool instanceof MMTool) {
 			const tableValue = tool.valueDescribedBy('table');
 			if (tableValue) {
 				command.results = MMReport.forToolValue(tool, tableValue, null, {isTableCopy: true});
@@ -380,9 +579,9 @@ class MMModel extends MMTool {
 	 * @method pasteCommand
 	 * @param {MMCommand} command
 	 * command.args should be the tool x y toolJson
-	 * in the form __blob__/.x paste x y__blob__ followed by the json text
+	 * in the form  /.x paste x y  followed by the json text
 	 */
-	pasteCommand(command) {
+	async pasteCommand(command) {
 		const indicesMatch = command.args.match(/^-*?[\d.]+\s+-*?[\d.]+\s+/);
 		if (indicesMatch) {
 			const parts = indicesMatch[0].split(/\s+/,2);
@@ -415,6 +614,7 @@ class MMModel extends MMTool {
 				}
 				else if (json.startsWith('table')) {
 					// starts with word table - assume table csv
+					const tableValue = new MMTableValue({csv: json});
 					let toolType = MMToolTypes["DataTable"];
 					if(!toolType) {
 						throw(this.t('mmcmd:modelInvalidToolType', {name: "Unknown", typeName: "DataTable"}));
@@ -426,7 +626,7 @@ class MMModel extends MMTool {
 					let newTool = toolType.factory(name, this);
 					if (newTool) {
 						newTool.position = new MMPoint(originX, originY);
-						newTool.initFromCsv(json);
+						newTool.initFromTableValue(tableValue);
 						command.results = true;
 					}
 				}
@@ -466,7 +666,7 @@ class MMModel extends MMTool {
 									toolInfo.name = `${name}_${number++}`;
 								}
 								names.push(toolInfo.name);
-								this.restoreTool(toolInfo);
+								await this.restoreTool(toolInfo);
 							}
 							command.undo = `${this.getPath()} removetool ${names.join(' ')}`
 						}
@@ -483,13 +683,25 @@ class MMModel extends MMTool {
 								tool = saved.RootModel;
 								tool.name = name;
 							}
-							else if (saved.name) {
-								// just a single tool - probably copied from app based minion
-								name = saved.name;
-								tool = saved;
-							}
+							// else if (saved.name) {
+							// 	// just a single tool - probably copied from app based minion
+							// 	name = saved.name;
+							// 	tool = saved;
+							// }
 							else {
-								return; // invalid object
+								// try making model from json
+								const toolType = MMToolTypes["Model"];
+								let name = `x${this.nextToolNumber++}`;
+								while ( this.childNamed(name) ) {
+									name = `x${this.nextToolNumber++}`;
+								}	
+								let model = toolType.factory(name, this);
+								if (model) {
+									model.position = new MMPoint(originX, originY);
+									model.contentsFromJsonObject(saved);
+								}
+								return;
+								// return; // invalid object
 							}
 							tool.DiagramX = originX;
 							tool.DiagramY = originY;
@@ -577,18 +789,21 @@ class MMModel extends MMTool {
 					requestors.push(source.name);
 				}
 			}
+			const notes = tool.notes ? tool.notes.replace(/<\/*\w+>/g,'') : '';
 			let toolInfo = {
 				toolTypeName: tool.className.substring(2),
 				name: tool.name,
 				position: tool.position,
 				requestors: requestors,
-				notes: tool.notes,
+				notes: notes,
 				diagramNotes: tool.diagramNotes,
 			}
 			if (tool instanceof MMExpression) {
 				toolInfo['formula'] = tool.formula.formula;
 				if (tool.cachedValue) {
-					const v = tool.cachedValue.stringWithUnit(tool.displayUnit);
+					const unit = tool.displayUnit || tool.cachedValue.displayUnit;
+					const format = tool.format || tool.cachedValue.displayFormat;
+					const v = tool.cachedValue.stringWithUnit(unit, format);
 					if (v) {
 						toolInfo['result'] = v;
 						toolInfo['resultType'] =
@@ -630,6 +845,12 @@ class MMModel extends MMTool {
 		if (this.importInfo) {
 			this.determineImportInputFormulas();
 			o.import = this.importInfo.saveObject();
+			const childImportFormulas = {};
+			this.getChildImportFormulas('', childImportFormulas);
+			if (Object.keys(childImportFormulas).length) {
+				o.import.childImportFormulas = childImportFormulas;
+				// console.log('childImportFormulas', childImportFormulas);
+			}
 		}
 		else {
 			let tools = [];
@@ -643,22 +864,32 @@ class MMModel extends MMTool {
 			o.Objects = tools;
 		}
 
+		this.htmlProcessor.saveObject(o);
 		return o;
 	}
 
-	/**
-	 * @method initFromSaved - initialize from stored object
-	 * @param {Object} saved 
-	 */
+	getChildImportFormulas(parentName,childImportFormulas) {
+		for (const toolName in this.children) {
+			const tool = this.children[toolName];
+			if (tool instanceof MMTool) {
+				if (tool.importInfo) {
+					tool.determineImportInputFormulas();
+					childImportFormulas[`${parentName}.${toolName}`] = tool.importInfo.inputFormulas;
+					tool.getChildImportFormulas(`${parentName}.${toolName}`, childImportFormulas);
+				}
+			}
+		}
+		return childImportFormulas;
+	}
 	async initFromSaved(saved) {
 		super.initFromSaved(saved);
 		if (saved.Objects) {
-			this.constructToolsFromSaved(saved.Objects);
+			await this.constructToolsFromSaved(saved.Objects);
 		}
 		else {
 			if (saved.import) {
 				const importInfo = new MMImportModelInfo();
-				importInfo.initFromSaved(saved.import);
+				await importInfo.initFromSaved(saved.import);
 				// check for recursion
 				let parent = this.parent;
 				const lcImportName = theMMSession.storePath + '/' + importInfo.sessionName.toLowerCase();
@@ -679,13 +910,15 @@ class MMModel extends MMTool {
 		if (saved.indexTool) {
 			this.indexTool = saved.indexTool;
 		}
+		this.htmlProcessor.initFromSaved(saved);
 	}
 
 	/**
 	 * @method constructToolsFromSaved
 	 * @param {Object} savedTools
 	 */
-	constructToolsFromSaved(savedTools) {
+	async constructToolsFromSaved(savedTools) {
+		 //console.log(`constructToolsFromSaved ${this.name}`);
 		theMMSession.pushModel(this);
 		for (let tool of savedTools) {
 			const name = tool.name;
@@ -704,10 +937,268 @@ class MMModel extends MMTool {
 			}
 			else {
 				let newTool = toolType.factory(name, this);
-				newTool.initFromSaved(tool);
+				// console.log(`newTool ${newTool.name} ${JSON.stringify(tool)}`);
+				await newTool.initFromSaved(tool);
 			}
 		}
 		theMMSession.popModel();
+	}
+
+	positionSort(a, b) {
+		// sort by position with left most first and  ties broken by
+		// top most first
+		const posA = a.position;
+		const posB = b.position;
+		if (posA.x < posB.x) {
+			return -1
+		}
+		if (posA.x > posB.x) {
+			return 1;
+		}
+		if (posA.y < posB.y) {
+			return -1;
+		}
+		if (posA.y > posB.y) {
+			return 1
+		}
+		return 0;	
+	}
+
+	positionSortedChildren() {
+		const tools = []
+		for (const t of Object.values(this.children)) {
+			if (t instanceof MMTool) {
+				tools.push(t);
+			}
+		}
+		return tools.sort(this.positionSort);
+	}
+
+	htmlInfo() {
+		const results = {};
+		const inputs = [];
+		const outputs = [];
+		const objects = [];
+		for (const key in this.children) {
+			const tool = this.children[key];
+			if (!(tool instanceof MMTool)) {
+				continue;
+			}
+			if (tool.showInput && tool.typeName === 'Expression') {
+				inputs.push(tool);
+			}
+			if (tool.isOutput) {
+					outputs.push(tool);
+			}
+			objects.push(tool);
+		}
+
+		results.inputs = inputs.sort(this.positionSort);
+		results.outputs = outputs.sort(this.positionSort);
+		results.objects = objects.sort(this.positionSort);
+		return results;
+	}
+
+	/**
+	 * @method htmlValue
+	 * @returns {String}
+	 */
+	htmlValue(requestor, isMyNameSpace) {
+		const results = this.htmlInfo(requestor);
+		const onNameClick = `on${this.name}NameClick`;
+		const chunks = [];
+		if (isMyNameSpace) {
+			chunks.push('		<div class="model-form">');
+		}
+		else {
+			chunks.push('		<div class="model-form model-form-nested">');
+		}
+		const keyPressed = this.name + '_keyPressed';
+		const changedInput = this.name + '_changedInput';
+		let isAnyOutput = false;
+		chunks.push('		<script>');
+		const pathParts = [];
+		if (this !== theMMSession.currentModel) {
+			pathParts.push(this.name);
+			let parent = this.parent;
+			while (parent && parent !== theMMSession.currentModel) {
+				pathParts.push(parent.name);
+				parent = parent.parent;
+			}
+		}
+		const pathPrefix = pathParts.length ? pathParts.reverse().join('.') + '.' : '';
+		if (results.inputs.length) {
+			isAnyOutput = true;
+			chunks.push(`			const ${keyPressed} = (e) => {
+					if (e.key === 'Enter') {
+						e.target.blur();
+					}
+				}
+				const ${changedInput} = (e, oldValue) => {
+					const value = e.target.value;
+					const inputId = e.target.id;
+					const inputName = inputId.substring(${this.name.length + 1});
+					mmpost([], {`);
+			chunks.push('					mm_cmd: `.' + pathPrefix + '${inputName}.formula set formula ${value}`,');
+			chunks.push('					mm_undo:`.' + pathPrefix + '${inputName}.formula set formula ${oldValue}`,');
+			for (const output of results.outputs) {
+				isAnyOutput = true;
+				const outputId = `o_${this.name}_${output.name}`;
+				chunks.push(`					${outputId}: "{html ${pathPrefix}${output.name}}",`);
+			}
+			chunks.push('					},(result) => {');
+			for (const output of results.outputs) {
+				if (output instanceof MMButton || output instanceof MMMenu) {
+					continue;
+				}
+				const outputId = `o_${this.name}_${output.name}`;
+				chunks.push(`					if (result.${outputId} !== null) {`)
+				chunks.push(`						const element = document.getElementById("${outputId}")`);
+				chunks.push(`						if (element) {`);
+				chunks.push(`							element.innerHTML=result.${outputId};}`);
+				chunks.push(`						}`);
+			}
+			chunks.push(`				});`);
+			chunks.push('			}')
+		}
+		chunks.push(`	${onNameClick} = (name) => {`);
+		chunks.push(`		mmpost([], {mm_push: '${pathPrefix}'+name});`);
+		chunks.push('		}');
+		chunks.push('		</script>');
+		chunks.push('		<div class="model-form__objects">')
+		if (isMyNameSpace) {
+			chunks.push('	  <div class="model-form__print" onClick="window.print();">&nbsp;🖨️</div>')
+		}
+		for (let object of results.objects) {
+			if (object.htmlNotes && object.notes) {
+				isAnyOutput = true;
+				chunks.push(`<div class="model-form__notes" onClick="${onNameClick}('${object.name}')">${object.notes}</div>`);
+			}	
+			if (object.showInput) {
+				isAnyOutput = true;
+				const input = object;
+				chunks.push(`				<div class="model-form__input-row">`);
+				chunks.push(`				<div class="model-form__input-name" onClick="${onNameClick}('${input.name}')">${input.name}</div>`);
+
+				let formula = '';
+				if (input.formula && input.formula.formula) {
+					formula = input.formula.formula.replaceAll('"', '&quot;');
+				}
+				if (formula.startsWith("'")) {
+					formula = '&quot;' + formula.substring(1) +'&quot;';
+				}
+				if (formula.indexOf('\n') !== -1) {
+					chunks.push(`<div id="${this.name}_${input.name}" class="model-form__multiline-formula"  onClick="${onNameClick}('${input.name}')">${formula}</div>`);				}
+				else {
+					chunks.push(`				<div class="model-form__input">
+					<input id="${this.name}_${input.name}"
+					value="${formula}" onKeyUp="${keyPressed}(event)" onBlur="${changedInput}(event, '${formula}')"></div>`);
+				}
+				chunks.push('		</div>');
+			}
+			if (object.isOutput) {
+				isAnyOutput = true;
+				const output = object;
+				let value;
+				if (output instanceof MMMenu) {
+					value = output.valueDescribedBy('self')
+				}
+				else {
+					value = output.valueDescribedBy('', requestor);
+				}
+				const outputId = 'o_' + this.name + '_' + output.name;
+				const enableClick =  output instanceof MMGraph ?
+					` style="cursor:pointer;" onClick="${onNameClick}('${object.name}')"` : '';
+
+				if (value) {
+					if (value instanceof MMToolValue) {
+						const nValues = value.valueCount;
+						let headerDone = false;
+						for (let i = 0; i < nValues; i++) {
+							const toolValue = value.values[i];
+							if (toolValue instanceof MMButton) {
+								chunks.push(toolValue.htmlValue(requestor));
+							}
+							else if (toolValue instanceof MMMenu) {
+								chunks.push(`<div class="model-form__input-row">`);
+								chunks.push(`<div class="model-form__input-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
+								chunks.push(`<div id="${outputId}" class="model-form__input">${toolValue.htmlValue(requestor)}</div>`);
+								chunks.push('</div>');	
+							}
+							else {
+								if (!headerDone) {
+									chunks.push(`<div class="model-form__output-tool">`);
+									chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
+								}
+								let displayValue;
+								if (toolValue === this) {
+									displayValue = this.name;
+								}
+								else {
+									displayValue = toolValue.htmlValue(requestor);
+								}
+								chunks.push(`<div id="${outputId}" class="model-form__output_value"${enableClick}>${displayValue}</div>`);
+								if (!headerDone) {
+									chunks.push('</div>');	
+									headerDone = true;
+								}
+							}
+						}
+					}
+					else if (value.valueCount <= 1 && !(value instanceof MMTableValue)) {
+						chunks.push(`<div class="model-form__output-row">`);
+						chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
+						chunks.push(`<div id="${outputId}" class="model-form__output-value model-form__1output-value">${value.htmlValue(requestor)}</div>`);
+						chunks.push('</div>');	
+					}
+					else {
+						chunks.push(`<div class="model-form__output-table">`);
+						chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
+						chunks.push(`<div id="${outputId}" class="model-form__output-value">${value.htmlValue(requestor)}</div>`);
+						chunks.push('</div>');	
+					}
+				}
+				else {
+					chunks.push(`<div class="model-form__output-row">`);
+					chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
+					chunks.push(`<div id="${outputId}" class="model-form__output-value"></div>`);
+					chunks.push('</div>');	
+				}
+			}
+		}
+
+		if (!isAnyOutput) {
+			chunks.push('<div class="model-form__default">');
+			for (const object of results.objects) {
+				chunks.push(`<div class="model-form__default-name" onClick="${onNameClick}('${object.name}')">${object.typeName}: ${object.name}</div>`);
+			}
+			chunks.push('</div>');
+		}
+		chunks.push('</div>')
+		return chunks.join('\n');
+	}
+
+	/**
+	 * @method actionCommand
+	 * @param {MMCommand} command
+	 */
+	async actionCommand(command) {
+		command.results = await this.htmlProcessor.action(command.args);
+		await this.session.autoSaveSession();
+		if (command.results.undo) {
+			command.undo = command.results.undo;
+		}
+		if (command.results.error) {
+			command.error = command.results.error;
+		}
+	}
+
+	/**
+	 * @method rawHtml
+	 * @returns {String}
+	 */
+	rawHtml() {
+		return this.htmlValue(null, true);
 	}
 
 	/**
@@ -718,84 +1209,18 @@ class MMModel extends MMTool {
 	async toolViewInfo(command) {
 		await super.toolViewInfo(command);
 		this.session.selectedObject = '';
-		const inputs = [];
-		const outputs = [];
-		const others = [];
-		for (const key in this.children) {
-			const tool = this.children[key];
-			if (tool.typeName === 'Expression') {
-				if (tool.isInput) {
-					let value = tool.valueForRequestor();
-					if (value) {
-						value = value.stringWithUnit(tool.displayUnit);
-					}
-					else {
-						value = '?';
-					}
-					inputs.push({
-						name: tool.name,
-						formula: tool.formula.formula,
-						value: value,
-					})
-				}
-				else if (tool.isOutput) {
-					let value = tool.valueForRequestor();
-					if (value) {
-						value = value.stringWithUnit(tool.displayUnit);
-					}
-					else {
-						value = '?';
-					}
-					outputs.push({
-						name: tool.name,
-						value: value,
-					})
-				}
-				else {
-					others.push({
-						name: tool.name,
-						type: tool.typeName,				
-					})
-				}
-			}
-			else {
-				others.push({
-					name: tool.name,
-					type: tool.typeName,				
-				});
-			}
-		}
-
-		const positionSort = (a, b) => {
-			// sort by position with left most first and  ties broken by
-			// top most first
-			const posA = this.childNamed(a.name).position;
-			const posB = this.childNamed(b.name).position;
-			if (posA.x < posB.x) {
-				return -1
-			}
-			if (posA.x > posB.x) {
-				return 1;
-			}
-			if (posA.y < posB.y) {
-				return -1;
-			}
-			if (posA.y > posB.y) {
-				return 1
-			}
-			return 0;	
-		}
-
 		const results = command.results;
-		results.inputs = inputs.sort(positionSort);
-		results.outputs = outputs.sort(positionSort);
-		results.others = others.sort(positionSort);
 		if (this.importInfo) {
 			results.importSource = this.importInfo.sessionName;
 		}
 		if (this.indexTool) {
 			results.indexTool = this.indexTool;
 		}
+		if (this.lastDefaultUnitSetName !== theMMSession.unitSystem.sets.defaultSetName) {
+			this.lastDefaultUnitSetName = theMMSession.unitSystem.sets.defaultSetName;
+			this.htmlProcessor.clearCache();
+		}
+		results.html = this.htmlProcessor.htmlForRequestor();
 	}
 
 	/**
@@ -823,6 +1248,7 @@ class MMModel extends MMTool {
 			}
 			command.undo = undoParts.join(' ');
 		}
+		this.htmlProcessor.clearCache();
 	}
 
 		/**
@@ -840,16 +1266,91 @@ class MMModel extends MMTool {
 			return MMToolValue.scalarValue(this);
 		}
 		const toolNameParts = description.split('.');
-		const toolName = toolNameParts.shift().toLowerCase();
+		let toolName = toolNameParts.shift().toLowerCase();
 		const restOfPath = toolNameParts.join('.');
 		const tool = this.children[toolName];
 		if (tool instanceof MMTool) {
 			value = tool.valueDescribedBy(restOfPath, requestor);
 		}
-		else {
-			value = super.valueDescribedBy(description, requestor);
+		else if (toolName === 'html') {
+			return MMStringValue.scalarValue(this.htmlValue());
 		}
+		else if (toolName === 'toolnames') {
+			const names = this.positionSortedChildren().map( t => t.name);
+			if (names.length) {
+				value = MMStringValue.stringArrayValue(names);
+			}
+		}
+		else if (toolName === 'tools') {
+			const tools = this.positionSortedChildren();
+			if (tools.length) {
+				value = MMToolValue.toolArrayValue(tools);
+				if (restOfPath && restOfPath.length) {
+					value = value.valueDescribedBy(restOfPath, requestor);
+				}
+			}
+		}
+		else if (toolName === 'formulae') {
+			value = MMStringValue.scalarValue(this.formulae());
+		}
+		else {
+			// check for search type prefix
+			let type = 'name';
+			if (toolName.startsWith('type:')) {
+				type = 'className';
+				toolName = toolName.substring(5);
+			}
+			else if (toolName.startsWith('notes:')) {
+				type = 'notes';
+				toolName = toolName.substring(6);
+			}
+			// check for wild card characters
+			// Replace '*' in the pattern with '.*' to create a regular expression
+			const regexPattern = new RegExp("^" + toolName.split("*").join(".*") + "$", 'm');
+			const tools = [];
+			const children = this.positionSortedChildren()
+			for (const child of children) {
+				// if search for class name, remove the leading MM
+				const testValue = type === "className" ? child.className.substring(2) : child[type];
+				if (regexPattern.test(testValue.toLowerCase())) {
+					tools.push(child);
+				}
+			}
+			if (tools.length) {
+				value = MMToolValue.toolArrayValue(tools);
+				if (restOfPath && restOfPath.length) {
+					value = value.valueDescribedBy(restOfPath, requestor);
+				}
+			}		
+			else {
+				value = super.valueDescribedBy(description, requestor);
+			}
+		}
+		if (requestor && value) {
+			this.addRequestor(requestor);
+		}
+
 		return value;
+	}
+
+	/**
+	 * @override forgetCalculated
+	 */
+	forgetCalculated() {
+		if (!this.forgetRecursionBlockIsOn) {
+			this.forgetRecursionBlockIsOn = true;
+			try {
+				for (let requestor of this.valueRequestors) {
+					requestor.forgetCalculated();
+				}
+				this.valueRequestors.clear();
+				this.htmlProcessor.clearCache();
+				super.forgetCalculated();
+			}
+			finally {
+				this.forgetRecursionBlockIsOn = false;
+			}
+		}
 	}
 
 	/**
@@ -873,7 +1374,7 @@ class MMModel extends MMTool {
 	makeImportUndo() {
 		const savedImport = this.importInfo ? this.importInfo.saveObject() : null;
 		if (savedImport) {
-			return `__blob__${this.getPath()} restoreimport__blob__${JSON.stringify(savedImport)}`;
+			return `${this.getPath()} restoreimport ${JSON.stringify(savedImport)}`;
 		}
 		else {
 			return `${this.getPath()} makelocal`;
@@ -910,7 +1411,7 @@ class MMModel extends MMTool {
 	 * @method restoreImportCommand
 	 * @param {MMCommand} command
 	 * command.args should be the undo json
-	 * in the form __blob__/.x restoreimport__blob__ followed by the json text
+	 * in the form  /.x restoreimport  followed by the json text
 	 * if importInfo previously existed, or just restoremport if none did
 	 */
 	async restoreImportCommand(command) {
@@ -918,7 +1419,7 @@ class MMModel extends MMTool {
 			const undoCommand = this.makeImportUndo();
 			const restoreInfo = JSON.parse(command.args);
 			const importToRestore = new MMImportModelInfo();
-			importToRestore.initFromSaved(restoreInfo);
+			await importToRestore.initFromSaved(restoreInfo);
 			await this.setImportInfo(importToRestore);
 			command.undo = undoCommand;
 			command.results = importToRestore;
@@ -942,7 +1443,8 @@ class MMModel extends MMTool {
 		if (importInfo === null) { // make it local
 			this.importInfo = importInfo;
 			return;
-		}	
+		}
+		// console.log(`setImportInfo ${this.name} ${JSON.stringify(importInfo)}`);
 	
 		if (!this.parent || this.importInfo == importInfo) {
 			return;  // can't set on root
@@ -986,49 +1488,94 @@ class MMModel extends MMTool {
 		}
 		const parentImportInfo = parentWithImport ? parentWithImport.importInfo : null;
 
-		// get the session from local storage
+		// get the session folder for the current session
+		const sessionFolder = theMMSession.storePath.match(/\//) ? theMMSession.storePath.replace(/\/[^/]+$/,'/') : '';
+		let isAbsolute = false;
 		if (importName.startsWith('/')) {
-			// absolute path - just strip leading slash
+			// strip off leading /
 			importName = importName.substring(1);
-			importInfo.importPath = importName.replace(/\/[^/]+$/,'/');
+			// see if it is relative to the session folder
+			if (importName.startsWith(sessionFolder)) {
+				// remove the store path
+				importName = importName.substring(sessionFolder.length);
+				importInfo.importPath = sessionFolder;
+				importInfo.sessionName = importName;
+			}
+			else {
+				// it will be an absolute path
+				isAbsolute = true;
+				// add leading / bacto the session name
+				importInfo.sessionName = '/' + importName;
+				// see it import name is a folder path
+				if (importName.match(/\//)) {
+					// separate the folder path from the file name
+					importInfo.importPath = importName.replace(/\/[^/]+$/,'/');
+					importName = importName.replace(/.*\//,'');		
+				}
+				else {
+					importInfo.importPath = '';
+				}
+			}
 		}
-		else if (parentImportInfo) {
-			// has ancestor import - use its import path
-			importName = parentImportInfo.importPath + importName;
-			importInfo.importPath = parentImportInfo.importPath;
-		}
-		else if (theMMSession.storePath.match(/\//) ){
-			// relative - prepend current session folder
-			importInfo.importPath = theMMSession.storePath.replace(/\/[^/]+$/,'/');
-			importName = importInfo.importPath + importName;
-		}
-		else if (importName.match(/\//)) {
-			importInfo.importPath = importName.replace(/\/[^/]+$/,'/');
-		}
-		else {
-			importInfo.importPath = '';
+		if (!isAbsolute) {
+			importInfo.sessionName = importName;
+			// see it import name is a folder path
+			if (importName.match(/\//)) {
+				// separate the folder path from the file name
+				importInfo.importPath = sessionFolder + importName.replace(/\/[^/]+$/,'/');
+				importName = importName.replace(/.*\//,'');		
+			}
+			else {
+				importInfo.importPath = sessionFolder;
+			}
+			if (parentImportInfo) {
+				// has ancestor import - use its import path
+				importInfo.importPath = parentImportInfo.importPath;
+			}	
 		}
 
-		const savedJson = await theMMSession.storage.load(importName);
+		const savedJson = await theMMSession.storage.load(importInfo.importPath + importName);
 		if (!savedJson) {
 			this.setError('mmcmd:sessionImportNotFound', {name: importName, path: this.getPath()});
+			this.importInfo = importInfo;
 			return;
 		}
+		this.importInfo = importInfo;
 
 		removeCurrentContents();
 
-		this.importInfo = importInfo;
 		try {
 			const savedCase = JSON.parse(savedJson)
 			const savedTools = savedCase.RootModel.Objects;
 			if (savedTools) {
-				this.constructToolsFromSaved(savedTools);
+				await this.constructToolsFromSaved(savedTools);
 				if (importInfo.inputFormulas) {
 					for (const expName of Object.keys(importInfo.inputFormulas)) {
 						const exp = this.childNamed(expName);
-						exp.formula.formula = importInfo.inputFormulas[expName];
+						if (exp) {
+							exp.formula.formula = importInfo.inputFormulas[expName];
+						}
 					}
 					importInfo.inputFormulas = null;
+				}
+				if (importInfo.childImportFormulas) {
+					for (const childPath of Object.keys(importInfo.childImportFormulas)) {
+						const childNames = childPath.split('.');
+						childNames.shift();
+						let child = this;
+						for (const childName of childNames) {
+							child = child.childNamed(childName);
+						}
+						if (child) {
+							const inputFormulas = importInfo.childImportFormulas[childPath];
+							for (const expName of Object.keys(inputFormulas)) {
+								const exp = child.childNamed(expName);
+								if (exp) {
+									exp.formula.formula = inputFormulas[expName];
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -1042,5 +1589,97 @@ class MMModel extends MMTool {
 			const expr = new MMExpression(exprName, this);
 			expr.formula.formula = "'" + savedJson;
 		}
+	}
+
+	/**
+	 * @method formulae
+	 * @returns String contains html listing of formulae
+	 */
+	formulae(isChild) {
+		const chunks = [];
+		if (!isChild) {
+			chunks.push(`<style>
+				.formula-list__path {
+					font-size: 1.2em;
+					font-weight: bold;
+				}
+				.formula-list__fname {
+					font-size: 1.1em;
+					font-weight: bold;
+					margin: 0.1em;
+				}
+				.formula-list__formula {
+					font-size: 1em;
+					margin: 0.1em;
+				}
+				h4 {
+					margin: 0.1em;
+				}
+			</style>`);
+			chunks.push(`<script>
+				document.addEventListener('click', e => {
+					const a = e.target.closest('a[href^="#"]');
+					if (!a) return;
+					e.preventDefault();
+					const id = a.hash.slice(1);
+					document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+				});
+				</script>`)
+		}
+		const tools = [...(Object.values(this.children))]
+		tools.sort((a, b) => a.name.localeCompare(b.name));
+
+		const reverseLookup = {};
+
+		// First pass: for each tool, for each input source, record that tool as a dependent
+		tools.forEach(tool => {
+			tool.inputSources().forEach(inputSource => {
+				const key = inputSource.name;
+				if (!reverseLookup[key]) {
+					reverseLookup[key] = [];
+				}
+				reverseLookup[key].push(tool);
+			});
+		});
+
+		for (const tool of tools) {
+			if(tool instanceof MMTool) {
+				const formulaList = tool.formulaList();
+				if (formulaList.length || tool instanceof MMModel) {
+					const path = tool.getPath().substring(7);
+					const id = path.replace(/[^a-zA-Z0-9]/g, '_');
+					chunks.push(`<h4 class="formula-list__path" id="${id}">${path}</h4>`);
+					if (tool instanceof MMModel) {
+						chunks.push(tool.formulae(true));
+					}
+					else {
+						for (const formula of tool.formulaList()) {
+							chunks.push(`<div class="formula-list__fname">${formula.name}</div>`);
+							chunks.push(`<pre class="formula-list__formula"><code>${formula.formula}</code></pre>`);
+						}						
+					}
+					const inputs = tool.inputSources();
+					if (inputs.size) {
+						chunks.push('<h4>Inputs</h4>');
+						for (const input of inputs) {
+							const inputId = input.getPath().substring(7).replace(/[^a-zA-Z0-9]/g, '_');
+							chunks.push(`<div class="formula-list__reference"><a href="#${inputId}">${input.getPath()}</a></div>`);
+						}
+					}
+
+					const references = reverseLookup[tool.name];
+					if (references) {
+						chunks.push('<h4>References</h4>');
+						for (const reference of references) {
+							const refId = reference.getPath().substring(7).replace(/[^a-zA-Z0-9]/g, '_');
+							chunks.push(`<div class="formula-list__reference"><a href="#${refId}">${reference.getPath()}</a>	</div>`);
+						}
+					}
+
+					chunks.push('<hr>');
+				}
+			}
+		}
+		return chunks.join('\n');
 	}
 }

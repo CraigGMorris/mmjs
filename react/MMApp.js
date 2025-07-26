@@ -33,7 +33,9 @@ import {OptimizerView} from './OptimizerView.js';
 import {IteratorView} from './IteratorView.js';
 import {GraphView} from './GraphView.js';
 import {FormulaEditor} from './FormulaView.js';
-import { HtmlPageView } from './HtmlPageView.js';
+import {HtmlPageView} from './HtmlPageView.js';
+import {ButtonView} from './ButtonView.js';
+import {MenuView} from './MenuView.js';
 import {FlashView} from './FlashView.js';
 
 const e = React.createElement;
@@ -114,7 +116,18 @@ class ErrorBoundary extends React.Component {
 				this.props.handleBoundraryError();
 //				this.setState({ hasError: false });
 			}
-      return e('h1', {}, 'Something went wrong');
+      return e(
+				'div', {},
+				e('h3', {}, 'Uh oh, something went wrong'),
+				e('span', {},
+					'Please ',
+					e('a', {
+						href: './help/somethingwrong.html',
+						target: '_blank',
+					}, 'click here'),
+					' for information on how to recover'
+				),
+			)
     }
 
     return this.props.children; 
@@ -122,11 +135,95 @@ class ErrorBoundary extends React.Component {
 }
 
 /**
+ * MMFormatValue
+ * @param {Number | String} v 
+ * @param {String} format 
+ * @returns {String}
+ */
+export function MMFormatValue(v, format) {
+	if (typeof v === 'string') {
+		return v;
+	}
+	else if (typeof v === 'number') {
+		if (format) {
+			let leadingPadChar = ' ';
+			const parts = format.split('.');	// split on decimal point, if there is one
+			let width = 14;
+			let prefix = '';  // character before wisth for date format
+			format = parts[parts.length - 1];
+			if (parts.length && parts[0].length) {
+				prefix = parts[0].substring(0,1);
+				const widthField = parts[0].replace(/[^\d]+/,'');
+				if (widthField.length) {
+					width = parseInt(widthField);
+					if (widthField.startsWith('0')) {
+						leadingPadChar = '0';
+					}
+				}
+			}
+			let precision = parseInt(format);
+			let precisionDefined = true;
+			if (isNaN(precision) || precision < 0 || precision > 36) {
+				precision = 8;
+				precisionDefined = false;
+			}
+			let s = ''
+			const type = format.slice(-1)  // last character should be format type
+			switch (type) {
+				case 'c':
+				case 'f':
+					s = v.toFixed(precision);
+					if (type === 'c') {
+						const [whole, decimals] = s.split('.');
+						s = whole.replace(/\B(?=(\d{3})+(?!\d))/g,',') + (decimals ? '.' + decimals : '');
+					}
+					break;
+				case 'e':
+					s = v.toExponential(precision);
+					break;
+				case 'r':
+				case 'x':
+					s = `${precision}r` + v.toString(precision);
+					break;
+				case '/':
+				case '-':
+					// Create a Date object
+					const sParts = v.toFixed(6).padStart(15,'0').split('.');
+					const sTime = sParts[1] // skip time colons so string fits in table box
+					const regex = prefix === 'd' || prefix === 'm' ?
+						/(\d\d)(\d\d)(\d\d\d\d)/ :
+						/(\d\d\d\d)(\d\d)(\d\d)/;
+					const sDate = sParts[0].replace(regex, `$1${type}$2${type}$3`);
+					if (!precisionDefined) {
+						precision = 0;
+					}
+					s = sDate + ' ' + sTime.substring(0, precision);
+					break;
+			}
+			if (width > s.length) {
+				s = s.padStart(width, leadingPadChar);
+			}
+			return s;
+		}
+		const absV = Math.abs(v);
+		if (absV !== 0 && (absV >= 100000000 || absV < 1e-3)) {
+			return v.toExponential(8).padStart(14);
+		}
+		else {
+			return v.toFixed(5).padStart(14);
+		}
+	}
+	else {
+		return '???';
+	}
+}
+
+/**
  * MMApp
  * the main Math Minion window
  */
 export function MMApp(props) {
-	let t = props.t;
+	const t = props.t;
 
 	// {Object} infoViews - classes of info views used to construct the react component appearing in the info view
 	const infoViews = {
@@ -148,6 +245,8 @@ export function MMApp(props) {
 		'Optimizer': OptimizerView,
 		'Graph': GraphView,
 		'HtmlPage': HtmlPageView,
+		'Button' : ButtonView,
+		'Menu' : MenuView,
 		'Flash': FlashView,
 	}
 
@@ -166,11 +265,13 @@ export function MMApp(props) {
 	const [docHeight, setDocHeight] = useState(document.documentElement.clientHeight - 16);
 	const [docWidth, setDocWidth] = useState(document.documentElement.clientWidth - 16);
 	const twoPane = docWidth >= 640;
+	const defaultRightPaneWidth = Math.max(320, docWidth/2);
 	const [allow2Pane, setAllow2Pane] = useState(twoPane);
-	const [viewType, setViewType] = useState(twoPane ? ViewType.twoPanes : ViewType.diagram);
-	const [rightPaneWidth, setRightPaneWidth] = useState(320);
+	const [viewType, setViewType] = useState(twoPane ? ViewType.twoPanes : ViewType.info);
+	const [rightPaneWidth, setRightPaneWidth] = useState(defaultRightPaneWidth);
 	const [viewInfo, setViewInfo] = useState(initialInfo);
 	const [statusMessage, setStatusMessage] = useState('');
+	const [showConsole, setShowConsole] = useState(false);
 
 	const diagramRef = React.useRef(null);
 
@@ -178,7 +279,8 @@ export function MMApp(props) {
 		const setSize = () => {
 			const docElement = document.documentElement;
 			const newDocHeight = docElement.clientHeight - 16;
-			const newDocWidth = docElement.clientWidth - 16;
+			const newDocWidth = docElement.clientWidth - 8;
+			const rightPercent = rightPaneWidth/docWidth;
 			setDocHeight(newDocHeight);
 			setDocWidth(newDocWidth);
 			document.body.style.height = `${newDocHeight}px`;
@@ -187,6 +289,15 @@ export function MMApp(props) {
 			setAllow2Pane(twoPane);
 			if (viewType !== ViewType.info) {
 				setViewType(twoPane ? ViewType.twoPanes : ViewType.diagram);
+			}
+			if(twoPane && rightPaneWidth !== 320) {
+				const newRPWidth = newDocWidth * rightPercent;
+				if (newRPWidth > 320) {
+					setRightPaneWidth(newRPWidth);
+				}
+				else {
+					setRightPaneWidth(320);
+				}
 			}
 		};
 		setSize();
@@ -247,13 +358,13 @@ export function MMApp(props) {
 	}, [viewType]);
 
 	/** resetInfoStack
+	 * clears all views and optionally fills infoStack with new view state
+	 * - called when new case loaded
 	 * @param {string} rootName
 	 * @param {string} resetInfo - optional object containing modelStack,
 	 * an array of model names to be pushed to the info stack and
 	 * an optional selectedTool containing information
 	 * for a tool in the top most model to be viewed immediately
-	 * clears all views and optionally fills infoStack with new view state
-	 * - called when new case loaded
 	 */
 	const resetInfoStack = useCallback((rootName, resetInfo) => {
 		let path = `/.${rootName}`;
@@ -261,7 +372,7 @@ export function MMApp(props) {
 			title: rootName,
 			path: path,
 			stackIndex: 0,
-			updateCommands: '',
+			updateCommands: `${path} toolViewInfo`,
 			updateResults: [],
 			viewKey: 'Model',
 		};
@@ -299,9 +410,13 @@ export function MMApp(props) {
 				};
 				infoStack.push(infoState);		
 			}
+			if (resetInfo.new && !allow2Pane) { 
+				setViewType(ViewType.diagram);
+			}
 		}
 		setViewInfo(infoState);
 		while(dgmStateStack.pop());
+		updateView();
 	},[]);
 
 	/**
@@ -497,39 +612,53 @@ export function MMApp(props) {
 			switch (oldTop.viewKey) {
 				case 'Model':
 					doCommand('/ popmodel', () => {
+						let rescale = false;
 						if (dgmStateStack.length) {
 							const dgmState = dgmStateStack.pop();
 							if (dgmState && diagramRef.current) {
 								diagramRef.current.setState(dgmState);
 							}
-							updateView(infoStack.length-1, false);
 						}
 						else {
-							updateView(infoStack.length-1, true);
+							rescale = true;
 						}
+						updateView(infoStack.length-1, rescale);
 					});
 					break;
 
-				case 'console':
-					consoleInfo.current = oldTop;
-					updateView(infoStack.length-1);
-					break;
+				// case 'console':
+				// 	consoleInfo.current = oldTop;
+				// 	updateView(infoStack.length-1);
+				// 	break;
 				
 				default:
 					updateView(infoStack.length-1);
 					break;
 			}
-			setViewInfo(infoStack[infoStack.length-1]);
+			const newView = infoStack[infoStack.length-1];
+			setViewInfo(newView);
+			return newView?.path;
 		}
-	},[doCommand, updateView]);
+	},[doCommand, updateView, showConsole]);
 
 	/**
 	 * pushModel
 	 * pushes model named on to the diagram and infoview
 	 * @param {String} modelName 
 	 */
-	const pushModel = useCallback((modelName) => {
+	const pushModel = useCallback((modelName, successCallBack, failCallBack) => {
 		doCommand(`/ pushmodel ${modelName}`, (cmds) => {
+			if (cmds[0].error) {
+				if (failCallBack) {
+					failCallBack(cmds[0].error);
+				}
+				return;
+			}
+			else {
+				if (successCallBack) {
+					successCallBack(cmds?.[0]?.results?.path);
+				}
+			}
 			if (diagramRef.current) {
 				dgmStateStack.push({...diagramRef.current.state});
 			}
@@ -569,7 +698,7 @@ export function MMApp(props) {
 				}
 				updateDiagram(true);
 			}
-		});
+		}, failCallBack);
 	},[doCommand, updateDiagram]);
 
 	/**
@@ -583,7 +712,7 @@ export function MMApp(props) {
 				consoleInfo.current = oldTop;
 			}
 		}
-		popView();
+		return popView();
 	},[popView]);
 
 const pushTool = useCallback((toolName, path, toolType) => {
@@ -638,13 +767,14 @@ const pushTool = useCallback((toolName, path, toolType) => {
 	}, [updateView, pushTool]);
 
 	/**
-	 * pushConsole
+	 * toggleConsole
 	 * pushes the console onto the info view
 	 */
-	const pushConsole = useCallback(() => {
-		infoStack.push(consoleInfo.current);
-		setViewInfo(consoleInfo.current);
-		setStateViewType(viewType === ViewType.diagram ? ViewType.info : viewType)
+	const toggleConsole = useCallback(() => {
+		setShowConsole(prev => !prev);
+		// infoStack.push(consoleInfo.current);
+		// setViewInfo(consoleInfo.current);
+		// setStateViewType(viewType === ViewType.diagram ? ViewType.info : viewType)
 	}, [viewType, setStateViewType]);
 
 	/**
@@ -729,6 +859,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 		updateView: updateView,
 		updateDiagram: updateDiagram,
 		renameTool: renameTool,
+		toggleConsole: toggleConsole,
 	};
 	
 	let previousTitle = '';
@@ -747,7 +878,13 @@ const pushTool = useCallback((toolName, path, toolType) => {
 	if (viewType !== ViewType.diagram) {
 		let i = infoStack.length-1;
 		previousTitle = i > 0 ? infoStack[i-1].title : '';
-		title = viewInfo.title;
+		// make sure the top view info is what is displayed
+		const topViewInfo = infoStack[i];
+		let keyView = infoViews[topViewInfo.viewKey];
+		title = topViewInfo.title;
+		if (showConsole) {
+			keyView = infoViews['console'];
+		}
 		const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 		infoView = e(
 			'div', {
@@ -757,11 +894,11 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					height: infoHeight,
 				}
 			},
-			e(infoViews[viewInfo.viewKey], {
-				key: viewInfo.path,
-				className: 'mmapp-' + viewInfo.viewKey.toLowerCase(),
+			e(keyView, {
+				key: topViewInfo.path,
+				className: 'mmapp-' + topViewInfo.viewKey.toLowerCase(),
 				actions: actions,
-				viewInfo: viewInfo,
+				viewInfo: topViewInfo,
 				infoWidth: infoWidth,
 				infoHeight: infoHeight,
 				updateDiagram: updateDiagram,
@@ -838,6 +975,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				'button', {
 					id:'info-tools__expand-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					onClick: () => {
 						switch (viewType) {
 							case ViewType.twoPanes:
@@ -861,16 +999,12 @@ const pushTool = useCallback((toolName, path, toolType) => {
 			e('button', {
 				id:'info-tools__undo-button',
 				className: 'info-tools__button',
+				tabIndex: -1,
 				disabled: !undoStack.length,
 				onClick: () => {
 					let undo = undoStack.pop();
 					if (undo) {
-						if (undo.startsWith('__blob__')) {
-							undo = undo.replace(/^__blob__/,'__blob__undo ');
-						}
-						else {
-							undo = 'undo ' + undo;
-						}
+						undo = 'undo ' + undo;
 						doCommand(undo, () => {
 							updateView(infoStack.length - 1);
 							updateDiagram();
@@ -884,16 +1018,12 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					'button', {
 					id:'info-tools__redo-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					disabled: !redoStack.length,
 					onClick: () => {
 						let redo = redoStack.pop();
 						if (redo) {
-							if (redo.startsWith('__blob__')) {
-								redo = redo.replace(/^__blob__/,'__blob__redo ');
-							}
-							else {
-								redo = 'redo ' + redo;
-							}
+							redo = 'redo ' + redo;
 							doCommand(redo, () => {
 								updateView(infoStack.length - 1);
 								updateDiagram();
@@ -907,6 +1037,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				'button', {
 					id:'info-tools__unit-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					disabled: viewKeys.has('units'),
 					onClick: () => {
 						pushView('units', 'react:unitsTitle');
@@ -918,9 +1049,10 @@ const pushTool = useCallback((toolName, path, toolType) => {
 				'button', {
 					id:'info-tools__console-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					disabled: viewKeys.has('console'),
 					onClick: () => {
-						pushConsole();
+						toggleConsole();
 					}
 				},
 				t('react:infoButtonConsole')
@@ -929,6 +1061,7 @@ const pushTool = useCallback((toolName, path, toolType) => {
 					'button', {
 					id:'info-tools__sessions-button',
 					className: 'info-tools__button',
+					tabIndex: -1,
 					disabled: viewKeys.has('sessions'),
 					onClick: () => {
 						pushView('sessions', 'react:sessionsTitle', {rootFolder: ''});

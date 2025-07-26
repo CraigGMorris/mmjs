@@ -65,6 +65,7 @@ export function GraphView(props) {
 	const [editOptions, setEditOptions] = useState({});
 	const [unitLineName, setUnitLineName] = useState('x1');
 	const [unitType, setUnitType] = useState('');
+	const [unitName, setUnitName] = useState('');
 	const [plotInfo, setPlotInfo] = useState('');
  
 	const updateResults = props.viewInfo.updateResults;
@@ -109,7 +110,7 @@ export function GraphView(props) {
 	const applyChanges = (name) => {
 		const path = `${results.path}.${name}`;
 		return (formula) => {
-			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
+			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(DisplayType.input);
 			});
@@ -125,6 +126,7 @@ export function GraphView(props) {
 				t: t,
 				viewInfo: props.viewInfo,
 				infoWidth: props.infoWidth,
+				infoHeight: props.infoHeight,
 				actions: props.actions,
 				editOptions: editOptions,
 				cancelAction: () => {
@@ -141,6 +143,7 @@ export function GraphView(props) {
 				t: props.t,
 				actions: props.actions,
 				unitType: unitType,
+				unitName: unitName,
 				cancel: () => {
 					setDisplay(DisplayType.input);
 				},
@@ -271,6 +274,7 @@ export function GraphView(props) {
 							className: 'graph__display-unit',
 							onClick: () => {
 								setUnitType(value.unitType);
+								setUnitName(value.unit),
 								setUnitLineName(name);
 								setDisplay(DisplayType.unitPicker);
 							}
@@ -362,6 +366,7 @@ export function GraphView(props) {
 				e(
 					'button', {
 						id: 'graph__addx-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addaxis x`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);
@@ -373,6 +378,7 @@ export function GraphView(props) {
 				e(
 					'button', {
 						id: 'graph__addy-button',
+						tabIndex: -1,
 						disabled: !results.enableY,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addaxis y`, () => {
@@ -385,6 +391,7 @@ export function GraphView(props) {
 				e(
 					'button', {
 						id: 'graph__addz-button',
+						tabIndex: -1,
 						disabled: !results.enableZ,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addaxis z`, () => {
@@ -397,6 +404,7 @@ export function GraphView(props) {
 				e(
 					'button', {
 						id: 'graph__plot-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} plotInfo`, (infoResults) => {
 								setPlotInfo(infoResults[0].results);
@@ -478,7 +486,7 @@ const convertDateValue = (seconds, unit) => {
 			result = month * 1000000. + day * 10000.0 + year;
 			break;
 	}
-	result += date.getUTCHours() / 100.0 + date.getUTCMinutes() / 10000. + date.getUTCSeconds() / 1000000.0;
+	// result += date.getUTCHours() / 100.0 + date.getUTCMinutes() / 10000. + date.getUTCSeconds() / 1000000.0;
 	if (isBC) {
 		result = -result;
 	}
@@ -494,8 +502,23 @@ const convertDateValue = (seconds, unit) => {
 class Plot2D extends React.Component {
 	constructor(props) {
 		super(props);
-		this.height = 500.0;
+		let lineCount = 0;
+		const info = this.props.info;
+		for (const x of info.xInfo) {
+			lineCount += x.yInfo.length;
+		}
+		this.yLegendSpacing = 20;
+		this.yLegendHeight = Math.floor((lineCount - 1)/3) * this.yLegendSpacing;
+
+		this.height = 500.0;// + this.yLegendHeight;
 		this.width = 500.0;
+		this.leftMargin = 90;
+		this.rightMargin = 10;
+		this.topMargin = 40 + this.yLegendHeight;
+		this.bottomMargin = 60;
+		this.plotWidth = this.width - this.leftMargin - this.rightMargin;
+		this.plotHeight = this.height - this.topMargin - this.bottomMargin;
+
 		this.panSum = 0;
 		this.eventCache = [];
 		this.pinch = 0;
@@ -510,9 +533,11 @@ class Plot2D extends React.Component {
 		else {
 			initialState = this.checkAxis(0,0,0,0);
 		}
-		initialState.scale = 1;
+		initialState.xScale = 1;
+		initialState.yScale = 1;
 		initialState.translate =  {x: 0, y: 0};
 		initialState.cursorPosition = null;
+		initialState.highlightTrace = info.xInfo.highlightTrace;
 		this.state = initialState;
 
 		this.onPointerDown = this.onPointerDown.bind(this);
@@ -564,7 +589,7 @@ class Plot2D extends React.Component {
 			this.node.addEventListener('pointerup', this.onPointerUp);
 			e.target.setPointerCapture(e.pointerId);
 		}
-		this.setState((state) => {
+		this.setState(() => {
 			return {
 				cursorPosition: null
 			}
@@ -580,28 +605,73 @@ class Plot2D extends React.Component {
 				const t = new Date().getTime();
 				if (t - this.pointerStartTime > 500) {
 					// reset to home
+					const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY})
+					let isScalingX = true;
+					let isScalingY = true;
+					if (svgPoint.y > this.height-40) {
+						isScalingY = false;
+					}
+					else if (svgPoint.x < 40) {
+						isScalingX = false;
+					}
+			
 					this.setState({
-						scale: 1.0,
-						translate: {x: 0, y: 0}
+						xScale: isScalingX ? 1.0 : this.state.xScale,
+						yScale: isScalingY ? 1.0 : this.state.yScale,
+						translate: (isScalingX && isScalingY) ? { x: 0, y: 0 } :
+						{
+							x: isScalingX ? 0 : this.state.translate.x, 
+							y: isScalingY ? 0 : this.state.translate.y
+						}
 					})
 				}
 				else {
-					const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY})
-					if (svgPoint.y > this.height - 40) {
-						this.incrementXAxis();
-					}
-					else if (svgPoint.x < 40) {
-						this.incrementYAxis();
-					}
-					else if (svgPoint.y < 40 && svgPoint.x > 400) {
+					const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY});
+					if (svgPoint.y > this.height - 40 && svgPoint.x > this.width - 50) {
 						e.target.releasePointerCapture(e.pointerId);
 						this.node.removeEventListener('pointermove', this.onPointerMove);
 						this.node.removeEventListener('pointerup', this.onPointerUp);	
 						this.props.setDisplay(DisplayType.input);
 						return;
 					}
+					else if (svgPoint.y < this.yLegendHeight + 2 * this.yLegendSpacing) {
+						const row = Math.floor(svgPoint.y / this.yLegendSpacing) + 1;
+						const col = Math.floor(svgPoint.x * 3 / this.width) + 1;
+						const traceNumber = (row - 1) * 3 + col;
+						let traceCount = 0;
+						const xInfo = this.props.info.xInfo;
+						const nX = xInfo.length;
+						for (let xNumber = 0; xNumber < nX; xNumber++) {
+							const x = xInfo[xNumber];
+							if (traceCount + x.yInfo.length >= traceNumber) {
+								const yNumber = traceNumber - traceCount - 1;
+								const y = x.yInfo[yNumber];
+								if (xNumber === this.state.xAxisIndex && yNumber === this.state.yAxisIndex) {
+									this.setState((state) => {
+										return {
+											highlightTrace: !state.highlightTrace
+										}
+									});			
+								} else {
+									this.setState((state) => {
+										const newState = this.checkAxis(xNumber, yNumber,
+												this.state.xAxisIndex, this.state.yAxisIndex
+											);
+										newState.highlightTrace = true;
+										return newState;
+									});
+								}
+								this.props.actions.doCommand(`${this.props.viewInfo.path} sethighlight ${this.state.highlightTrace}`, () => {
+								});
+		
+								break;
+							}
+							traceCount += x.yInfo.length;
+						}
+					}
 					else {
-						const scale = this.state.scale;
+						const xScale = this.state.xScale;
+						const yScale = this.state.yScale;
 						const translate = this.state.translate;
 						const axisX = this.props.info.xInfo[this.state.xAxisIndex];
 						const axisY = axisX.yInfo[this.state.yAxisIndex];
@@ -610,21 +680,21 @@ class Plot2D extends React.Component {
 						const xSpan = (axisX.maxLabel - axisX.minLabel)
 						const ySpan = (axisY.maxLabel - axisY.minLabel)
 
-						const xLabelTranslate = -xSpan * (translate.x / this.width) / scale;
-						const yLabelTranslate = ySpan * translate.y / height / scale;
+						const xLabelTranslate = -xSpan * (translate.x / this.plotWidth) / xScale;
+						const yLabelTranslate = ySpan * translate.y / this.plotHeight / yScale;
 
-						let xValue = (axisX.minLabel + xLabelTranslate) + xSpan * svgPoint.x / width / scale;
+						let xValue = (axisX.minLabel + xLabelTranslate) + xSpan * (svgPoint.x - this.leftMargin) / this.plotWidth / xScale;
 						const xIsDate = (axisX.unit === 'date' || axisX.unit === 'dated' || axisX.unit === 'datem');
 						if (xIsDate) {
 							xValue = convertDateValue(xValue, axisX.unit);
 						}
 
-						let yValue = (axisY.maxLabel + yLabelTranslate) - ySpan * svgPoint.y / height / scale;
+						let yValue = (axisY.maxLabel + yLabelTranslate) - ySpan * (svgPoint.y - this.topMargin) / this.plotHeight / yScale;
 						const yIsDate = (axisY.unit === 'date' || axisY.unit === 'dated' || axisY.unit === 'datem');
 						if (yIsDate) {
 							yValue = convertDateValue(yValue, axisY.unit);
 						}
-						this.setState((state) => {
+						this.setState(() => {
 							return {
 								cursorPosition: {x: xValue, y: yValue}
 							}
@@ -696,13 +766,15 @@ class Plot2D extends React.Component {
 			}
 
 			this.setState((state) => {
-				const newScale = Math.max(0.1, state.scale * ratio);
+				const newXScale = Math.max(0.01, state.xScale * ratio);
+				const newYScale = Math.max(0.01, state.yScale * ratio);
 				const newTranslate = {
-					x: state.translate.x + (this.width/2 - state.translate.x) * (1 - newScale/state.scale),
-					y: state.translate.y + (this.height/2 - state.translate.y) * (1 - newScale/state.scale)
+					x: state.translate.x + (this.width/2 - state.translate.x) * (1 - newXScale/state.xScale),
+					y: state.translate.y + (this.height/2 - state.translate.y) * (1 - newYScale/state.yScale)
 				}
 				return {
-					scale: newScale,
+					xScale: newXScale,
+					yScale: newYScale,
 					translate: newTranslate
 				}
 			})	
@@ -713,15 +785,27 @@ class Plot2D extends React.Component {
 		e.preventDefault();
 		e.stopPropagation();
 		const deltaY = e.deltaY;
+		const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY})
+		let isScalingX = true;
+		let isScalingY = true;
+		if (svgPoint.y > this.height-40) {
+			isScalingY = false;
+		}
+		else if (svgPoint.x < 40) {
+			isScalingX = false;
+		}
+
 		this.setState((state) => {
-			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 10*state.scale);
-			const newScale = Math.max(0.1, state.scale + rate / 100);
+			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 5*(state.xScale + state.yScale));
+			const newXScale = isScalingX ? Math.max(0.01, state.xScale + rate / 100) : state.xScale;
+			const newYScale = isScalingY ?  Math.max(0.01, state.yScale + rate / 100) : state.yScale;
 			const newTranslate = {
-				x: state.translate.x + (this.width/2 - state.translate.x) * (1 - newScale/state.scale),
-				y: state.translate.y + (this.height/2 - state.translate.y) * (1 - newScale/state.scale)
+				x: state.translate.x + (svgPoint.x - state.translate.x) * (1 - newXScale/state.xScale),
+				y: state.translate.y + (svgPoint.y - state.translate.y) * (1 - newYScale/state.yScale)
 			}
 			return {
-				scale: newScale,
+				xScale: newXScale,
+				yScale: newYScale,
 				translate: newTranslate
 			};
 		});
@@ -759,14 +843,10 @@ class Plot2D extends React.Component {
 	 * @method checkAxis
 	 * check to ensure selected axis isn't hidden. If so move to first unhidden
 	 */
-	 checkAxis(xAxisIndex, yAxisIndex, currentXAxis, currentYAxis) {
+	checkAxis(xAxisIndex, yAxisIndex, currentXAxis, currentYAxis) {
 		const nXValues = this.props.info.xInfo.length;
 		let xIndex = xAxisIndex % nXValues
 		let nXChecked = 0;
-		let rv = {	// if one not found, return original
-			xAxisIndex: xAxisIndex,
-			yAxisIndex: yAxisIndex
-		}
 		while (nXChecked++ < nXValues) {
 			const x = this.props.info.xInfo[xIndex];
 			const nYValues = x.yInfo.length;
@@ -795,48 +875,30 @@ class Plot2D extends React.Component {
 		}
 	}
 
-
-	/**
-	 * @method incrementXAxis
-	 */
-	incrementXAxis() {
-		this.setState((state) => {
-			const nXValues = this.props.info.xInfo.length;
-			const newIndex = (state.xAxisIndex + 1) % nXValues;
-			return this.checkAxis(newIndex, 0, state.xAxisIndex, state.yAxisIndex);
-		});
-	}
-
-	/**
-	 * @method incrementYAxis
-	 */
-	incrementYAxis() {
-		this.setState((state) => {
-			const x = this.props.info.xInfo[state.xAxisIndex];
-			const nYValues = x.yInfo.length;
-			let yAxisIndex = (state.yAxisIndex + 1) % nYValues;
-			while (yAxisIndex < nYValues - 1 && x.yInfo[yAxisIndex].lineType === MMGraphLineType.hidden) {
-				yAxisIndex++;
-			}
-			if (nYValues > 1) {
-				return this.checkAxis(state.xAxisIndex, yAxisIndex, state.xAxisIndex, state.yAxisIndex);
-			}
-		})
-	}
-
 	render() {
 		const height = this.height;
 		const width = this.width;
+		const leftMargin = this.leftMargin;
+		const rightMargin = this.rightMargin;
+		const topMargin = this.topMargin;
+		const bottomMargin = this.bottomMargin;
+		const plotWidth = this.plotWidth;
+		const plotHeight = this.plotHeight;
+
 		const viewBox = [0, 0, width, height];
 		const info = this.props.info;
 		const xAxisIndex = this.state.xAxisIndex;
 		const yAxisIndex = this.state.yAxisIndex;
-		const scale = this.state.scale;
+		const xScale = this.state.xScale;
+		const yScale = this.state.yScale;
 		const translate = this.state.translate;
 
 		let axisX = info.xInfo[xAxisIndex];
 
-		const lineColors =  ['Blue', '#009900', 'Brown', 'Orange', 'Purple', '#e60000', '#cccc00'];
+		const lineColors = [
+			'Blue', '#009900', 'Brown', '#E58231', 'Purple', '#e60000', '#7D8F9B',
+			'#9076C7', '#4994EC', '#684D43',
+		];
 		const nColors = lineColors.length;
 
 		let colorStart = 0;
@@ -844,27 +906,30 @@ class Plot2D extends React.Component {
 			const x = info.xInfo[i];
 			colorStart += x.yInfo.length;
 		}
-		let lineColor = lineColors[xAxisIndex % nColors];
+		colorStart += yAxisIndex;
+		let lineColor = lineColors[colorStart % nColors];
 
 		const elements = [
 			e(
 				'text', {
 					id: 'graph__x-title',
 					key: 'xTitle',
-					x: width - 10,
-					y: height - 25,
+					x: leftMargin + plotWidth/2,
+					y: plotHeight + topMargin + 30,
 					stroke: lineColor,
 					fill: lineColor,
-					textAnchor: 'end',
+					textAnchor: 'middle',
 				},
-				axisX.title + (axisX.unit ? ` (${axisX.unit})` : '')
+				axisX.title + (axisX.unit &&
+					axisX.unit !== 'Fraction' &&
+					axisX.unit !=='String' ? ` (${axisX.unit})` : '')
 			),
 			e(
 				'text', {
 					id: 'graph__edit-link',
 					key: 'edit',
 					x: width - 10,
-					y: 25,
+					y: height - 15,
 					stroke: 'blue',
 					fill: 'blue',
 					textAnchor: 'end',
@@ -878,20 +943,16 @@ class Plot2D extends React.Component {
 				if (labelValue != 0.0 && (Math.abs(labelValue) > 100000000.0 || Math.abs(labelValue) < 0.01)) {
 					return labelValue.toExponential(2);
 				}
-				else if (labelValue >= 1000000.0) {
+				else if (Math.abs(labelValue) >= 100000.0) {
+					// regex trims trailing zeros
 					return labelValue.toFixed(0).trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
 				}
 				else {
-					return labelValue.toFixed(3).trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
+					const decimals = 5 - Math.max(1, Math.floor(Math.log10(Math.abs(labelValue))))
+					return labelValue.toFixed(decimals).trim().replace(/(\.\d[^0]*)(0+$)/,'$1');
 				}
 			}
 	
-			const xLabelCount = 5;
-			let step = width / (xLabelCount - 1);
-			let labelStep = (axisX.maxLabel - axisX.minLabel) / (xLabelCount - 1);
-			const xLabelTranslate = (axisX.minLabel - axisX.maxLabel) * (translate.x / width) / scale;
-			const xIsDate = (axisX.unit === 'date' || axisX.unit === 'dated' || axisX.unit === 'datem');
-
 			const gridFormat = (key, x1, x2, y1, y2) => {
 				return e(
 					'line', {
@@ -907,99 +968,130 @@ class Plot2D extends React.Component {
 			}
 
 			const xLabelElements = [];
+			const isXString = axisX.unit === 'String'
+			const xLabelCount = isXString ? axisX.values.length : 5;
+			let step = plotWidth / (xLabelCount - 1);
+			let labelStep = (axisX.maxLabel - axisX.minLabel) / (xLabelCount - 1);
+			const xLabelTranslate = (axisX.minLabel - axisX.maxLabel) * (translate.x / plotWidth) / xScale;
+			const xIsDate = (axisX.unit === 'date' || axisX.unit === 'dated' || axisX.unit === 'datem');
+
 			for (let i = 0; i < xLabelCount; i++) {
-				const centerX = i * step;
-				xLabelElements.push(gridFormat(`${axisX.name}_${i}`, centerX, centerX, height, 0.0));
-				
-				let anchor;
-				let labelX = centerX;
-				if (i === 0) {
-					anchor = 'start';
-					labelX = 5.0;
+				const centerX = i * step + leftMargin;
+				if (!isXString) {
+					xLabelElements.push(gridFormat(`${axisX.name}_${i}`, centerX, centerX, topMargin, topMargin + plotHeight));
 				}
-				else if (i === xLabelCount - 1) {
-					anchor = 'end';
+
+				let labelX = centerX;
+				let labelValue;
+				if (isXString) {
+					labelValue = axisX.values[i];
+					const labelY = height - this.bottomMargin + 15;
+					xLabelElements.push(e(
+						'text', {
+							className: 'graph__svg-xlabel',
+							key: i,
+							x: labelX,
+							y: labelY,
+							stroke: lineColor,
+							fill: lineColor,
+							fontSize: '10pt',
+							textAnchor: 'end',
+							transform: `rotate(-40, ${labelX}, ${labelY})`
+						}, labelValue)
+					)
 				}
 				else {
-					anchor = 'middle';
+					let anchor;
+					if (i === 0) {
+						anchor = 'start';
+						labelX = leftMargin;
+					}
+					else if (i === xLabelCount - 1) {
+						anchor = 'end';
+					}
+					else {
+						anchor = 'middle';
+					}	
+					labelValue = (axisX.minLabel + xLabelTranslate) + i * labelStep / xScale;
+					if (xIsDate) {
+						labelValue = convertDateValue(labelValue, axisX.unit);
+					}
+					xLabelElements.push(e(
+						'text', {
+							className: 'graph__svg-xlabel',
+							key: i,
+							x: labelX,
+							y: height - this.bottomMargin + 15,
+							stroke: lineColor,
+							fill: lineColor,
+							textAnchor: anchor,
+						}, labelText(labelValue))
+					)
 				}
-				let labelValue = (axisX.minLabel + xLabelTranslate) + i * labelStep / scale;
-				if (xIsDate) {
-					labelValue = convertDateValue(labelValue, axisX.unit);
-				}
-				xLabelElements.push(e(
-					'text', {
-						className: 'graph__svg-xlabel',
-						key: i,
-						x: labelX,
-						y: height - 5,
-						stroke: lineColor,
-						fill: lineColor,
-						textAnchor: anchor,
-					}, labelText(labelValue))
-				)
 			}
 
 			const yLabelElements = [];
 			let y = axisX.yInfo[yAxisIndex];
 			const yLabelCount = 5;
 			labelStep = (y.maxLabel - y.minLabel) / (yLabelCount - 1);
-			const yLabelTranslate = (y.maxLabel - y.minLabel) * (translate.y / height) / scale;
+			const yLabelTranslate = (y.maxLabel - y.minLabel) * (translate.y / plotHeight) / yScale;
 
-			lineColor = lineColors[(yAxisIndex + colorStart) % nColors];
-			step = height / ( yLabelCount - 1);
+			step = plotHeight / ( yLabelCount - 1);
 			for (let i = 0; i < yLabelCount; i++) {
-				const centerY = i * step;
-				yLabelElements.push(gridFormat(`${y.name}_${i}`, 0.0, width, centerY, centerY));
+				const centerY = i * step + topMargin;
+				yLabelElements.push(gridFormat(`${y.name}_${i}`, leftMargin,
+					width - rightMargin, centerY, centerY));
 				
-				const labelValue = (y.maxLabel + yLabelTranslate) - i * labelStep / scale;
+				const labelValue = (y.maxLabel + yLabelTranslate) - i * labelStep / yScale;
 				let yLabelText = labelText(labelValue);
-				if (i === 0) {
-					if (y.title ) {
-						yLabelText += ' '+ y.title;
-					}
-					if (y.unit) {
-						yLabelText += ` (${y.unit})`;
-					}
-				}
 				let labelY = centerY - 5.0;
 				if (i === 0) {
-					labelY = 20.0;
-				}
-				else if (i === yLabelCount - 1) {
-					labelY -= 20.0;
+					labelY = topMargin + 20.0;
 				}
 				yLabelElements.push(e(
 					'text', {
 						className: 'graph__svg-ylabel',
 						key: i,
-						x: 5,
+						x: leftMargin - 5,
 						y: labelY,
 						stroke: lineColor,
 						fill: lineColor,
-						textAnchor: 'start'
+						textAnchor: 'end'
 					}, yLabelText
 				));
 			}
 
 			if (this.state.cursorPosition) {
+				let cursorX, cursorY;
+				if (isXString) {
+					const index = Math.floor(this.state.cursorPosition.x + 0.5) - 1;
+					if (index >= 0 && index < axisX.values.length) {
+						cursorX = axisX.values[index];
+					}
+					else {
+						cursorX = '';
+					}
+				}
+				else {
+					cursorX = labelText(this.state.cursorPosition.x);
+				}
 				elements.push(e(
 					'text', {
 						className: 'graph__svg-xyCursor',
 						key: 'cursorX',
 						x: width - 200,
-						y: 25,
-							stroke: lineColor,
+						y: this.topMargin + 15,
+						stroke: lineColor,
 						fill: lineColor,
 						textAnchor: 'start',
-					}, labelText(this.state.cursorPosition.x))
+					}, cursorX)
 				);
 				elements.push(e(
 					'text', {
 						className: 'graph__svg-xyCursor',
 						key: 'cursorY',
 						x: width - 100,
-						y: 25,
+						y: this.topMargin + 15,
 						stroke: lineColor,
 						fill: lineColor,
 						textAnchor: 'start',
@@ -1007,13 +1099,12 @@ class Plot2D extends React.Component {
 				)
 
 			}
-	
-	
 
 			// lines
 			const lines = [];
 			const xCount = info.xInfo.length;
 			let colorNumber = 0;
+			let yTitleNumber = 0;
 			for (let xNumber = 0; xNumber < xCount; xNumber++) {
 				const x = info.xInfo[xNumber];
 				const xValues = x.values;
@@ -1026,12 +1117,12 @@ class Plot2D extends React.Component {
 				const maxX = x.maxValue;
 				const columnCount = x.columnCount || 1;
 				const rowCount = nPoints / columnCount;
-
-				const scaleForX = (minX === maxX) ? 0.1 : scale * width / (maxX - minX);
+				const xLineScale = isXString ? 1 : xScale;
+				const scaleForX = (minX === maxX) ? 0.1 : xLineScale * plotWidth / (maxX - minX);
 
 				for (let lineNumber = 0; lineNumber < nLines; lineNumber++) {
 					const y = x.yInfo[lineNumber];
-					
+
 					let yValues = y.values;
 					if (!yValues) {
 						continue;
@@ -1041,26 +1132,25 @@ class Plot2D extends React.Component {
 						const n = Math.min(nPoints, yValues.length);
 						const minY = y.minValue;
 						const maxY = y.maxValue;
-						const scaleForY = (minY == maxY) ? 0.1 : scale * height / (maxY - minY);
+						const scaleForY = (minY == maxY) ? 0.1 : yScale * plotHeight / (maxY - minY);
 						
+						lineColor = lineColors[colorNumber++ % nColors];
+						let opacity = !this.state.highlightTrace || y === axisX.yInfo[yAxisIndex] ? 1 : .5;
+						const strokeWidth = isXString ? 10 : 1;
 						for (let col = 0; col < columnCount; col++) {
 							const lineClass = `graph__svg_line_${y.name}-${col}`;
-							lineColor = lineColors[colorNumber++ % nColors];
 							const path = [];
-
+							let barLabel;
 							for (let row = 0; row < rowCount; row++) {
 								const pointCount = row*columnCount + col;
 								if (pointCount < n) {
-									const xPoint = xValues[pointCount];
+									const xPoint = isXString ? pointCount + 1 : xValues[pointCount];
 									const yPoint = yValues[pointCount];
 									
-									// const scaledY = (-(yPoint - minY) * scaleForY + height + translate.y).toFixed(5);
-									// const scaledY0 = (minY * scaleForY + height).toFixed(5);
-									const scaledY = ((maxY - yPoint) * scaleForY + translate.y).toFixed(5);
-									const scaledY0 = (maxY * scaleForY).toFixed(5);
-
-									const scaledX = ((xPoint - minX) * scaleForX + translate.x).toFixed(5);
-
+									const scaledY = (topMargin + (maxY - yPoint) * scaleForY + translate.y).toFixed(5);
+									const scaledY0 = (topMargin + plotHeight).toFixed(5);
+									const translateX = isXString ? 0 : translate.x;
+									const scaledX = (leftMargin + (xPoint - minX) * scaleForX + translateX).toFixed(5);
 									switch(lineType) {
 										case MMGraphLineType.bar:
 										case MMGraphLineType.barWithDot: 
@@ -1071,7 +1161,7 @@ class Plot2D extends React.Component {
 											// fall through and add dot as well for barWithDot
 											
 										case MMGraphLineType.dot:
-											path.push(`M ${scaledX} ${scaledY} m -1 0 a 1,1 0 1,0 2,0 a 1,1 0 1,0 -2,0`);
+											path.push(`M ${scaledX} ${scaledY} m -3 0 a 3,3 0 1,0 6,0 a 3,3 0 1,0 -6,0`);
 											break;
 
 										case MMGraphLineType.hidden:
@@ -1085,17 +1175,16 @@ class Plot2D extends React.Component {
 												path.push(`L ${scaledX} ${scaledY}`);
 											}
 											break;
-									}		
+									}
 								}
 							}															
-							let fill, opacity;
+							let fill;
 							if (lineType === MMGraphLineType.dot || lineType === MMGraphLineType.barWithDot) {
 								fill = lineColor;
 							}
 							else {
 								fill = 'none';
 							}
-							opacity = y === axisX.yInfo[yAxisIndex] ? 1 : .5;
 							elements.push(e(
 								'path', {
 									className: lineClass,
@@ -1103,10 +1192,43 @@ class Plot2D extends React.Component {
 									stroke: lineColor,
 									fill: fill,
 									opacity: opacity,
+									strokeWidth: strokeWidth,
 									d: path.join(' '),
 								}
-							))
+							));
+							if (isXString) {
+								elements.push(barLabel);
+							}
 						}
+						let yTitle = y.title;
+						if (y.unit && y.unit !== 'Fraction') {
+							yTitle += ` (${y.unit})`;
+						}
+						let titleAnchor = 'start';
+						let titleX = 25;
+						let titleY = (Math.floor(yTitleNumber/3) + 1) * this.yLegendSpacing;
+						const column = yTitleNumber % 3;
+						if (column === 1) {
+							titleX = leftMargin + plotWidth/2;
+							titleAnchor = 'middle';
+						}	else if (column === 2) {
+							titleX = leftMargin + plotWidth;
+							titleAnchor = 'end';
+						}
+
+						elements.push(e(
+							'text', {
+								className: 'graph__ytitle',
+								key: `ytitle${yTitleNumber}`,
+								x: titleX,
+								y: titleY,
+								stroke: lineColor,
+								fill: lineColor,
+								opacity: opacity,
+								textAnchor: titleAnchor,
+							}, yTitle)
+						);
+						yTitleNumber++;
 					}
 				}
 			}
@@ -1256,15 +1378,15 @@ class Plot3D extends React.Component {
 				}
 				else {
 					const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY})
-					if (svgPoint.y > this.height - 40) {
-						this.incrementXAxis();
-					}
-					else if (!this.isRotating && svgPoint.y < 40 && svgPoint.x > 400) {
+					if (!this.isRotating && svgPoint.y > this.height - 40 && svgPoint.x > this.width - 50) {
 						e.target.releasePointerCapture(e.pointerId);
 						this.node.removeEventListener('pointermove', this.onPointerMove);
 						this.node.removeEventListener('pointerup', this.onPointerUp);	
 						this.props.setDisplay(DisplayType.input);
 						return;
+					}
+					else if (svgPoint.y > this.height - 40) {
+						this.incrementXAxis();
 					}
 				}
 			}
@@ -1362,7 +1484,7 @@ class Plot3D extends React.Component {
 			}
 
 			this.setState((state) => {
-				const newScale = Math.max(0.1, state.pinchScale * ratio);
+				const newScale = Math.max(0.01, state.pinchScale * ratio);
 				return {
 					pinchScale: newScale,
 				}
@@ -1376,7 +1498,7 @@ class Plot3D extends React.Component {
 		const deltaY = e.deltaY;
 		this.setState((state) => {
 			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 10*state.pinchScale);
-			const newScale = Math.max(0.1, state.pinchScale + rate/100);
+			const newScale = Math.max(0.01, state.pinchScale + rate/100);
 			return {
 				pinchScale: newScale,
 			};
@@ -1414,13 +1536,12 @@ class Plot3D extends React.Component {
 	/**
 	 * @method checkAxis
 	 */
-	 checkAxis(xAxisIndex, currentXAxis) {
+	checkAxis(xAxisIndex, currentXAxis) {
 		const nXValues = this.props.info.xInfo.length;
 		let xIndex = xAxisIndex % nXValues
 		let nChecked = 0;
 		while (nChecked++ < nXValues) {
 			const x = this.props.info.xInfo[xIndex];
-			const z = x.zInfo;
 			if (x.zInfo.lineType !== MMGraphLineType.hidden) {
 				if (xIndex !== currentXAxis) {
 					this.props.actions.doCommand(`${this.props.viewInfo.path} setselected ${xIndex}`, () => {
@@ -1471,7 +1592,7 @@ class Plot3D extends React.Component {
 					id: 'graph__edit-link',
 					key: 'edit',
 					x: width - 10,
-					y: 25,
+					y: height - 15,
 					stroke: 'blue',
 					fill: 'blue',
 					textAnchor: 'end',
@@ -1933,6 +2054,7 @@ class Plot3D extends React.Component {
 		for (let xNumber = 0; xNumber < info.xInfo.length; xNumber++) {
 			const xValue = info.xInfo[xNumber];
 			const lineOpacity = info.xInfo[xAxisIndex] === xValue ? 1 : 0.5;
+			if (!xValue.values) { break; }
 			let xValues = Float64Array.from(xValue.values);
 			const lineClass = `svg_line_${xNumber+1}`;
 			lineColor = lineColors[colorNumber++ % nColors];
@@ -1943,6 +2065,7 @@ class Plot3D extends React.Component {
 			xValues = multiply(subtract(xValues, scaledMinX), scaleForX);
 
 			const yValue = xValue.yInfo[0];
+			if (!yValue.values) { break; }
 			let yValues = Float64Array.from(yValue.values);
 			const minY = yValue.minValue;
 			const maxY = yValue.maxValue;
@@ -1951,6 +2074,7 @@ class Plot3D extends React.Component {
 			yValues = multiply(subtract(yValues, scaledMinY), scaleForY);
 
 			const zValue = xValue.zInfo;
+			if (!zValue.values) { break; }
 			let zValues = Float64Array.from(zValue.values);
 			const lineType = zValue.lineType;
 			const minZ = zValue.minValue;

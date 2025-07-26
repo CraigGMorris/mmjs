@@ -9,11 +9,13 @@
 				rtSetupHeading('Expression',{
 					overview: 'Overview',
 					inputs: 'Inputs',
-					incheck: 'In Checkbox',
-					outcheck: 'Out Checkbox',
+					incheck: 'Model Input Checkbox',
+					displayin: 'Display Input Checkbox',
 					formula: 'Formula Field',
 					unit: 'Display Unit',
+					format: 'Format',
 					calculated: 'Calculated Value',
+					table: "Table Values",
 					parameters: 'Formula Parameters'
 				});
 			};			
@@ -23,6 +25,7 @@
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
@@ -30,67 +33,60 @@
 					or constant in your calculation.
 				</p>
 				<p>
-					It's name can be used in other formulas to represent the value it calculates.  Thus if
-					an expression named <b>speed</b> has a formula that is just:
+					For example, the expression below is named "distance" and has the formula
 				</p>
 				<p class="formula">
-					100 kph
-				</p>
-				<p>
-					and a second expression <b>distance</b> has a formula:
-				</p>
-				<p>
 					speed * 2 h
 				</p>
 				<p>
-					The value of <b>distance</b> will be 200 km.
+					where "speed" is another expression which calculates a 5x2 matrix of
+					velocities with the formula:
 				</p>
-				<p>If instead of a scalar, <b>speed</b> was a 2x2 matrix of <b>kph</b> values:
-				<table class="formula">
-					<tr><td>25</td><td>50</td></tr>
-					<tr><td>75</td><td>100</td></tr>
-				</table>
-				</p>
-				<p>
-					then the <a href="infoview.html">information view</a> for the <b>distance</b> expression
-					would look like:
+				<p class="formula">
+					{redim 1:10 * 10 kph, 2}
 				</p>
 				<img src="expression.png" alt="Expression info view"/>
 				<p>
-					Tapping on <b>Length: m</b> and selecting <b>km</b> as the display unit would result in:
+					The default unit for length when using the SI
+					<a href="units.html#sets">unit set</a> is metres, but
+					we can make this easier to read by tapping where it says <b>Length: m</b>
+					and selecting <b>km</b> as the display unit from the resulting display. We can also add a format to
+					only show one decimal place.
 				</p>
 				<img src="expression2.png" alt="Expression info view"/>
 			</div>
 			<div id="inputs" class="section">
 				<h3>Inputs</h3>
 				<div class="subsection">
-					In addition to the name field and notes button, an expression has:
+					In addition to the <a href="infoview.html">standard name field, display check box and notes button</a>, an expression
+					has:
 				</div>
 				<div id="incheck" class="subsection">
-					<h3>In Checkbox</h3>
+					<h3>Model Input Checkbox</h3>
 					<p>
 						When checked, this designates that the expression is considered to be an input for the
 						<a href="model.html">model</a> that contains it.
 					</p>
 					<p>
-						This means it will appear in the input section of the
-						<a href="model.html">information view</a> of the model's parent model.
-					</p>
-					<p>
-						Also any values it references will be from the parent model, rather than the model
+						This means any values it references will be from the parent model, rather than the model
 						that contains it (unless there is no parent model, because the expression is in
 						the root model).
 					</p>
 				</div>
-				<div id="outcheck" class="subsection">
-					<h3>Out Checkbox</h3>
+				<div id="displayin" class="subsection">
+					<h3>Display Input</h3>
 					<p>
-						When on, the value calculated by this expression will appear in the output section
-						of the <a href="model.html">information view</a> of the model that owns it.
+						When on, an input field will appear on the <a href="model.html">information view</a>
+						of the model that owns it. allowing this expressions value to be set directly from that
+						view.
 					</p>
+				</div>
+				<div id="addexpr" class="subsection">
+					<h3>Add Expression (+Exp)</h3>
 					<p>
-						Also this expression will be available as a parameter of the owning model that can be
-						accessed in <a href="formula.html">formulas</a>.
+						Since expressions are so commonly used, this button is provided to immediately
+						add a new expression without having to go to the diagram. The icon for the new
+						expression will be automatically placed on the diagram.
 					</p>
 				</div>
 				<div id="formula" class="subsection">
@@ -98,6 +94,11 @@
 					<p>
 						The <a href="formulaeditor.html#fields">formula field</a> has the
 						<a href="formula.html">formula</a> that defines the value of the expression.
+					</p>
+					<p>
+						Tapping the <b>⤢</b> symbol to the right of the field will open a
+						<a href="formulaeditor.html">formula editor</a> which has helpful tools for
+						composing a longer or more complex formula.
 					</p>
 					<p>
 						Tapping on the equal sign to the left of the formula field will cause the expression
@@ -116,48 +117,98 @@
 					<p>
 						If you wish to display the value with a different unit, tap on the unit to open a 
 						<a href="formulaeditor.html#ubrowser">unit browser</a> where you can select a different one.
-						In the image above this has been done to display the results in <b>km</b>>, rather than the default
-						<b>m/s</b> of the <b>SI</b> <a href="units.html#sets">unit set</a> used by this session.
 					</p>
 					<p>
 						Note that setting the display unit does not change the formula or the value it
 						calculates, but merely how it is displayed. However the display unit must match
 						the type of the value calculated by the formula.
 					</p>
+				</div>
+				<div id="format" class="subsection">
+					<h3>Format</h3>
 					<p>
-						If the result of evaluating the formula is a
-						<a href="minionvalue.html#table">table value</a>, then the unit field will normally
-						be blank and the unit browser will be disabled, since different columns might have
-						different units.
+						If the expression result is a number, then there will be a format field to the right
+						of the unit field. The format string is of
+						the form:
 					</p>
-					<img src="tablevalue.png" alt="Expression table value"/>
-					<p>
-						However if you tap on the column name header in the calculated value grid,
-						the <a href="formulaeditor.html#ubrowser">unit browser</a> will be displayed to
-						let you select a display unit for that column.
+					<p class="formula">
+						12.4f
 					</p>
 					<p>
-						Note that the default unit for a table value is defined by the original table
-						definition.
+						which says the field should be 12 characters wide with 4 characters after the
+						decimal point in normal fixed point format.
+					</p>
+					<p>
+						An <b>e</b> can be used instead of the <b>f</b> for exponential format and a
+						<b>c</b> can be used for a fixed point format with commas.
+					</p>
+					<p>
+						 You can even show numbers with an arbitrary base between 2 and 36.
+						 For instance a value could be represented in hex with
+						<b>14.16r</b> (or the equivalent <b>14.16x</b>).
+					</p>
+					<p>
+						Note it is also permissable to omit the size number, i.e.
+						<b>.2f</b> would be fine and the number would just be right justified.
 					</p>
 				</div>
 				<div id="calculated" class="section">
 					<h3>Calculated Value</h3>
 					<p>
-						The lower part of the view displays the result of the calculation as a matrix or
-						table.  If the display won't fit in the window, you can scroll it both horizontally
-						and vertically by dragging it. Dragging on the row or column headers will scroll
-						rapidly.
+						The lower part of the view normally displays the result of the calculation in a
+						table.  The table can be scrolled both horizontally and vertically by dragging any cell.
+						Dragging on the row or column headers will rapidly scroll.
 					</p>
 					<p>
-						Tapping on a cell will show the contents of the cell in a large text area in a new
-						view. For a number value, this allows you to see greater precision as well as copy
-						the value to the clipboard.  For string values, which might be far larger than can
-						be displayed in a cell, it allows you to see the whole string in a scrollable view
-						as well as copying all or part of it to the clipboard.  Tapping the <b>Done</b>
-						button on this view will return to the main view.
+						Tapping on a cell of a number or string value will show the contents of
+						the cell in a large text area in a new view. For a number value this
+						allows you to copy the value to the clipboard and if
+						a format hasn't been assigned, it will be shown with high precision.
+					</p>
+					<p>
+						For string values with more than one element, the text values might be far
+						larger than can be displayed in a cell, so this allows you to see the whole
+						string in a scrollable view as well as copying all or part of it to the clipboard.
+						Tapping the <b>Done</b> button on this view will return to the main view.
+					</p>
+					<p>
+						For the special case of a
+						<a href="minionvalue.html#json">json object</a>
+						or string with just one element,
+						the entire text is displayed in a scrollable text view
+						instead of the normal table. An <b>Export</b> button will also appear
+						in the area above the text and tapping it will open a file save dialog
+						allowing you to save the text to a file on your device.
 					</p>
 				</div>
+			</div>
+			<div id="table" class="subsection">
+				<h3>Table Values</h3>
+				<p>
+					If the result of evaluating the formula is a
+					<a href="minionvalue.html#table">table value</a>, here defined by the formula
+				</p>
+				<p class="formula">
+					{table "Speed", speed, "Distance", distance}
+				</p>
+				<p>then the unit and format fields
+					 will be absent since different columns might have different units.
+				</p>
+				<p>
+					However if you tap on the column name header in the calculated value grid, the unit
+					and format fields will reappear and apply to that column.
+				</p>
+				<img src="tablevalue.png" alt="Expression table value"/>
+				<p>
+					Note that the default unit for a table value is defined by the original table
+					definition.
+				</p>
+				<p>
+					Tapping on a cell of a table value will result in an expanded display of the
+					cell's row. Buttons enable moving to the next or previous rows as well as
+					jumping to the first or last row.
+				</p>
+				<img src="exprowvalue.png" alt="Expression table row value"/>
 			</div>
 			<div id="parameters" class="section">
 				<h3>Formula Parameters</h3>
@@ -179,7 +230,13 @@
 					<li><b>table</b> - regardless of the result type, it will be returned as a table value.</li>
 					<li><b>hasValue</b> - returns 1 if a value can be calculated for the expression
 						formula or 0 if not.</li>
-				</ul>
+					<li><b>html</b> - a html code representation of the tool.</li>
+					<li><b>notes</b> - the notes for the tool</li>
+					<li><b>myname</b> - the name of the tool</li>
+					<li><b>table</b> - a table representation of the value, with the column
+						names just being the column numbers.
+					</li>
+					</ul>
 			</div>
 		</div>
 	</body>

@@ -22,6 +22,7 @@
 	MMNumberValue:readonly
 	MMStringValue:readonly
 	theMMSession:readonly
+	MMTableValue:readonly
 */
 
 /**
@@ -29,7 +30,7 @@
  * all calculation values are derived from this
  */
 // eslint-disable-next-line no-unused-vars
-class MMValue {
+export class MMValue {
 	/** @constructor
 	* @param {Number} rowCount
 	* @param {Number} columnCount
@@ -322,37 +323,85 @@ class MMValue {
 	 * @returns {String}
 	 */
 	htmlValue() {
+		let unit = this.displayUnit || this.defaultUnit;
 		let rv;
 		if (this.valueCount === 0) {
 			rv = '';
 		}
-		else if (this.valueCount == 1) {
-			rv = this.stringForRowColumnWithUnit(1, 1, this.defaultUnit);
+		else if (this.valueCount == 1 && !(this instanceof MMTableValue)) {
+			try {
+				rv = this.stringForRowColumnWithUnit(1, 1, unit, this.displayFormat).trim();
+			}
+			catch(e) {
+				rv = '???';
+			}
 		}
 		else {
 			const lines = [];
 			let unitName = '&nbsp';
-			if (this.defaultUnit && this.defaultUnit.name) {
-				unitName = this.defaultUnit.name;
+			if (unit && unit.name && unit.name !== 'Fraction') {
+				unitName = unit.name;
 			}
-			lines.push('\n<table>');
-			lines.push(`\t<tr class="row0">\n\t\t<th class="col0">${unitName}</th>`);
-			for (let column = 1; column <= this.columnCount; column++) {
-				let header = this.columnHeader(column);
-				const unitName = this.columnDisplayUnitName(column);
-				if (unitName) {
-					header += `<br>${unitName}`
-				}
-				lines.push(`\t\t<th class="col${column}">${header}</th>`);
+			const maxColumn = Math.min(200, this.columnCount);
+			const maxRow = Math.floor(Math.min(40000/maxColumn, this.rowCount));
+			if (maxRow < this.rowCount || maxColumn < this.columnCount) {
+				lines.push(`\n(${maxRow} x${maxColumn}) of (${this.rowCount} x${this.columnCount})`);
 			}
-			lines.push('\t</tr>');
-			for (let row = 1; row <= this.rowCount; row++) {
-				lines.push(`<tr class="row{$row}">\n\t\t<th class="col0">${row}</th>`)
-				for (let column = 1; column <= this.columnCount; column++) {
-					const v = this.stringForRowColumnUnit(row, column, this.defaultUnit);
-					lines.push(`\t\t<td class="col${column}">${v}</td>`)
+			if (this instanceof MMTableValue) {
+				lines.push('\n<table class="tvalue">')
+			}
+			else {
+				lines.push('\n<table>');
+			}
+			if (this.isTransposed) {
+				lines.push(`\t<tr class="row0">\n\t\t<th class="col0">${unitName}</th>`);
+				for (let row = 1; row <= maxRow; row++) {
+					lines.push(`\t<th class="col0">${row}</th>`)
 				}
 				lines.push('\t</tr>');
+				for (let column = 1; column <= maxColumn; column++) {
+					let header = this.columnHeader(column);
+					const unitName = this.columnDisplayUnitName(column);
+					if (unitName) {
+						header += `<br>${unitName}`
+					}
+					lines.push(`<tr class="row{$column}">`)
+					lines.push(`\t\t<th class="row0">${header}</th>`);
+					for (let row = 1; row <= maxRow; row++) {
+						try {
+							const v = this.stringForRowColumnUnit(row, column, unit, this.displayFormat);
+							lines.push(`\t\t<td class="col${row}">${v}</td>`)
+						}
+						catch(e) {
+							lines.push(`\t\t<td class="col${row}">???</td>`)
+						}
+					}
+				}
+			}
+			else {
+				lines.push(`\t<tr class="row0">\n\t\t<th class="col0">${unitName}</th>`);
+				for (let column = 1; column <= maxColumn; column++) {
+					let header = this.columnHeader(column);
+					const unitName = this.columnDisplayUnitName(column);
+					if (unitName) {
+						header += `<br>${unitName}`
+					}
+					lines.push(`\t\t<th class="col${column}">${header}</th>`);
+				}
+				lines.push('\t</tr>');
+				for (let row = 1; row <= maxRow; row++) {
+					lines.push(`<tr class="row{$row}">\n\t\t<th class="col0">${row}</th>`)
+					for (let column = 1; column <= maxColumn; column++) {
+						try {
+							const v = this.stringForRowColumnUnit(row, column, unit, this.displayFormat);
+							lines.push(`\t\t<td class="col${column}">${v}</td>`)
+						}
+						catch(e) {
+							lines.push(`\t\t<td class="col${column}">???</td>`)
+						}
+					}
+					lines.push('\t</tr>');
+				}
 			}
 			lines.push('</table>\n');
 			rv = lines.join('\n');
@@ -541,7 +590,7 @@ class MMValue {
 		for (let selectorNumber = 0; selectorNumber < selectors.valueCount; selectorNumber++) {
 			let selectorValue = selectors.values[selectorNumber];
 			selectorValue = selectorValue.replace(/[^|&]+/g,'$&\n');
-			for (let selector of selectorValue.split('\n')) {
+			for (let selector of selectorValue.split(/[\n,]/)) {
 				selector = selector.trim();
 				if (!selector) {
 					continue;
@@ -555,7 +604,7 @@ class MMValue {
 				else if (selector[0] === '&') {
 					selector = selector.substring(1).trim();
 				}
-				const columnMatch = selector.match(/^[^!<=>]+/);
+				const columnMatch = selector.match(/^[^!<=>?*]+/);
 				if (!columnMatch) { syntaxError(selectorValue); }
 				const columnNumber = parseFloat(columnMatch[0].trim());
 				if (isNaN(columnNumber) || columnNumber > this.columnCount) {
@@ -604,7 +653,12 @@ class MMValue {
 					'<': (a, b) => {return a < b ? 1 : 0;},
 					'>': (a, b) => {return a > b ? 1 : 0;},
 					'<=': (a, b) => {return a <= b ? 1 : 0;},
-					'>=': (a, b) => {return a >= b ? 1 : 0;}
+					'>=': (a, b) => {return a >= b ? 1 : 0;},
+					'?': (a, b) => {return a.includes(b);},
+					'*': (a, b) => {
+						const re =  new RegExp(b);
+						return a.match(re) ? 1 : 0;
+					}
 				}[opString];
 
 				for (let i = 0; i < this.rowCount; i++) {

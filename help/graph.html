@@ -42,6 +42,7 @@
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
@@ -59,10 +60,9 @@
 					together they would represent the 100 coordinate pairs of the points to be plotted.
 				</p>
 				<p>
-					When a new graph is created or a graph icon on the diagram is tapped, the information
-					view described below will be presented.  However if the graph inputs are already
-					defined, the plot will be immediately displayed.  Tap the edit button at the upper
-					right if you wish to modify the inputs.
+					When a new graph is created a view for defining the graph inputs will be displayed.
+					However if the graph inputs are already defined, the actual plot will be displayed.
+					Tap the <b>Edit</b> button at the lower right of plat to return to the input view.
 				</p>
 			</div>
 			<div id="types" class="section">
@@ -79,7 +79,7 @@
 					floor of the cube and the <b>Z</b> axis on the vertical.
 				</p>
 				<p>
-					You cannot mix <b>X</b> sections that are 2D and 3D and each section of a
+					You cannot mix <b>X</b> sections that are 2D and 3D. Also each section of a
 					3D plot will have exactly one <b>X</b>, <b>Y</b> and <b>Z</b> value.
 				</p>
 				<p>
@@ -108,6 +108,11 @@
 					can have matrices, in which case each matching column will be plotted as a
 					separate line.  The X and Y matrices should have the same size.
 				</p>
+				<p>
+					The <b>X</b> array can be an array of strings in which case the <b>Y</b>
+					value will be plotted against that string value. This is mainly useful for
+					small bar charts.
+				</p>
 			</div>
 			<div id="values3d" class="subsection">
 				<h3>3D Values</h3>
@@ -135,7 +140,7 @@
 			<div id="info" class="section">
 				<h3>Information View</h3>
 				<p>
-					The information view will appear when you first create a new graph tool.
+					The input view will appear when you first create a new graph tool.
 					It allows you to define the data which will be plotted, in the form of
 					arrays for the <b>X</b>, <b>Y</b> and, if applicable, <b>Z</b> values.
 				</p>
@@ -144,11 +149,11 @@
 					to render a plot, then the plot will appear instead of the information view.
 				</p>
 				<p>
-					Tap on the <b>Edit</b> button in the upper right of the plot to see to the
-					information view.
+					Tap on the <b>Edit</b> button in the lower right of the plot to see to the
+					input view.
 				</p>
 				<p>
-					The image below is the information view for a 2D plot where two different
+					The image below is the input view for a 2D plot where two different
 					<b>Y</b> lines are plotted against the same <b>X</b> values (defined in
 					the expression <b>angles</b> as <b>0:72 * 10 degree</b>). The y lines are
 					just the sine and cosine of those X values.
@@ -171,7 +176,7 @@
 					<b>X</b> and one <b>Y</b> definition.
 				</p>
 				<p>
-					Each definition has <a href="formulaeditor#fields">formula fields</a> for the
+					Each definition has <a href="formulaeditor.html#fields">formula fields</a> for the
 					axis formula and for the minimum and maximum values to use for that axis on a plot,
 					and tappable fields for the display unit, deleting the axis and in some cases for
 					the line type.  
@@ -182,7 +187,7 @@
 						This formula should resolve to the array of values for the axis.
 					</p>
 					<p>
-						On the plot, an axis will normally be labeled with the full formula that generates
+						On the plot, an axis will by default be labeled with the full formula that generates
 						it, but if the formula ends with a comment (i.e. a <b>'</b> character followed by
 						some text), then the label will only consist of the text following the comment
 						character.
@@ -253,9 +258,9 @@
 			<div id="plotview" class="section">
 				<h3>Plot View</h3>
 				<p>
-					When you tap the <b>Plot</b> button on the information view, the data will be
+					When you tap the <b>Plot</b> button on the input view, the data will be
 					presented in a plot view.
-					Tap the <b>Edit</b> button to return to the information view.
+					Tap the <b>Edit</b> button to return to the input view.
 				</p>
 				<p>
 					This view will also automatically be displayed when a graph icon on the diagram
@@ -275,30 +280,37 @@
 					<div id="axes2d" class="subsection">
 						<h3>2D Axes</h3>
 						<p>
-							When a plot has more than one set of <b>X</b> or </b>Y</b> values, the axis labels
-							will only represent one at a time.  If there is more than one set of <b>X</b> values,
-							a tap on the X axis label will switch to the next set or cycle back to the first if
-							the last one is currently displayed.  The <b>X</b> and <b>Y</b> axis labels will
-							change to reflect the new set.
-						</p>
-						<p>	
-							When the current <b>X</b> axis has more than one <b>Y</b> value, tapping on any Y
-							axis label will switch the <b>Y</b> axis labels to the values of the next Y line.
+							Diffenet traces are plotted in different colours and at the top of the
+							plot is a legend of the <b>Y</b> titles in the matching color.
 						</p>
 						<p>
-							The colour of the <b>Y</b> axis labels will always match the colour of the plotted
-							values that they represent and those will be bolder than other curves.
+							While ideally all X-Y lines will have the same axis values, there may be
+							times when you choose to have different values. Tapping on a legend value
+							will switch the axis values to correspond with that trace's minimum and
+							maximum setting and change the axis label colours to match the trace.
+						</p>
+						<p>
+							In addition all the other traces will be faded a bit to make the selected
+							one stand out. Tapping on the selected legend again will remove this dimming.
 						</p>
 					</div>
 					<div id="zoom2d" class="subsection">
 						<h3>2D Zooming</h3>
 						<p>
 							You can zoom in and out on the graph using a pinch gesture on a trackpad or screen as
-							appropriate.  If you are using a mouse, then the centre scroll ball/wheel/gesture
-							will zoom in and out. Two finger scrolling on a trackpad should work too.
+							appropriate.
+						</p>
+						<p>
+							If you are using a mouse, then the centre scroll ball/wheel/gesture
+							will zoom in and out. Two finger scrolling on a trackpad may work too, depending on
+							your system and settings. If you hover over the x or y axis while scrolling,
+							just that axis will be zoomed.
 						</p>
 						<p>
 							The axis labels will adjust their values appropriately.
+						</p>
+						<p>
+							A long press on the plot will reset the zoom to its default value.
 						</p>
 					</div>
 					<div id="pan2d" class="subsection">
@@ -306,14 +318,11 @@
 						<p>
 							Simply drag the graph around to pan it back and forth and up and down.
 						</p>
-						<p>
-							The axis labels will adjust their values appropriately.
-						</p>
 					</div>
 					<div id="coord2d" class="subsection">
 						<h3>2D Coordinates</h3>
 						<p>
-							Tapping on the graph, away from the axis select zones, will show the tap position
+							Tapping on the graph, away from the legend, will show the tap position
 							coordinates of the currently selected curve at the upper right of the graph.
 						</p>
 					</div>
@@ -321,7 +330,8 @@
 						<h3>2D Rescale &amp; Center</h3>
 						<p>
 							Tap and hold on the plot for a second and then release to have it return to
-							its original scaling and position.
+							its original scaling and position. If you do this over the x or y axis, then
+							just that axis will be rescaled and repositioned.
 						</p>
 					</div>
 				</div>
@@ -441,6 +451,9 @@
 					<li><b>svg</b> - a string value containing a Scalable Vector Graphics representation
 						of the plot.  Note that almost every element has a class name assigned, making
 						it easy to use CSS in HTML to change colors, line thickness, fonts etc.</li>
+					<li><b>html</b> - a html code representation of the tool.</li>
+					<li><b>notes</b> - the notes for the tool</li>
+					<li><b>myname</b> - the name of the tool</li>
 				</ul>
 			</div>
 		</div>

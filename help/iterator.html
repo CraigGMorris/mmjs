@@ -27,6 +27,7 @@
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
@@ -192,7 +193,7 @@
 					<h3>Recorded Value</h3>
 					<p>
 						There is a row for each recorded value formula that has been added (see the
-						<a href="addrec">Add Recorded</a> button above).
+						<a href="#addrec">Add Recorded</a> button above).
 					</p>
 					<p>
 						These formulas will be evaluated on each iteration and the newly calculated
@@ -214,8 +215,11 @@
 					<li><b>nextX</b> - the result of evaluating the <b>Next X</b> formula</li>
 					<li><b>solved</b> - 1 if the loop has successfully completed, 0 otherwise.</li>
 					<li><b>Rn</b> - the array, or matrix, of recorded values corresponding to the recorded value formula number n.  If the formula for a recorded value is followed by a single quote and a name, that name can also be used as a parameter to access the recorded value array.</li>
-					<li><b>n</b> - where n is a digit corresponding to a recorded value formula number.  Returns the last value of recorded value array.  Essentially this is the previously recorded value for that formula.  If <b>i</b> is 1, then a scalar value of 0 is returned. </li>
+					<li><b>n</b> - where n is a digit corresponding to a recorded value formula number.  Returns the last value of the recorded value array.  Essentially this is the previously recorded value for that formula.  If <b>i</b> is 1, then a scalar value of 0 is returned. </li>
 					<li><b>table</b> - returns a table value where each recorded value array is in a column of the table.  If comments are used on the recorded value formulas, they will be used as the column names, otherwise the formula itself will be.</li>
+					<li><b>html</b> - a html code representation of the tool.</li>
+					<li><b>notes</b> - the notes for the tool</li>
+					<li><b>myname</b> - the name of the tool</li>
 				</ul>
 			</div>
 		</div>

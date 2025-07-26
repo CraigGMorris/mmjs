@@ -4,87 +4,181 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="keywords" content="spreadsheet, calculator, database">
+	<meta name="description" content="Multipurpose tool for math and spreadsheet like calculaations">
 	<title>Math Minion</title>
-	<link rel="stylesheet" href="./help/help.css">
-	<link rel="icon" type="image/png" href="./favicon32.png">
-	<style>
-		#menu {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1fr;
-		grid-gap: 5px;
-		border-bottom: solid 1px black;
-		padding-bottom: 5px;
-		margin-bottom: 10px;
-	}
-	#menu div {
-		padding-left: 20px;
-	}
+	<link rel="stylesheet" href="./react/mmjs.css">
+	<link rel="stylesheet" href="mmsite.css">
+	<link rel="icon" type="image/png" href="./minion.svg">
 
-	.center {
-		text-align: center;
-	}
-	</style>
 </head>	
 
 <body>
 	<div id="page">
-		<div id="title">Math Minion</div>
+		<div id="title"><span>Math Minion</span></div>
 		<div id="menu">
 			<div id="run"><a href="run.html">Run</a>
 			</div>
-			<div id="help"><a href="help/getstarted.html">Help</a></div>
+			<div id="help"><a href="help/helppage.html">Help</a></div>
 		</div>
 		<p>
-			(<b>NOTE</b>: this software is at the testing stage.  There will be bugs
-			and the <a href="http://www.redtree.com/contact.html">reporting</a> of them would be appreciated)
-		</p>
-		<p>
-			Math Minion is a general purpose calculation tool that runs completely in the
+			<b>Math Minion</b> is a general purpose calculation tool that runs completely in the
 			browser and is completely
 			<a href="help/freeprivate.html">free and private</a>.
 		</p>
-		<div class="center"><img src="screenshot.png" alt="Screen shot"></div>
-		<p>	
-			It combines a <a href="help/diagram.html">mind map</a> style diagram of the
-			relationships between a range of <a href="help/tools.html">calculation tools</a>,
-			with a <a href="help/formula.html">formula system</a> that operates transparently
-			on scalars, arrays and matrices. It also includes a
-			<a href="help/units.html">comprehensive conversion unit system</a> 
-			that performs dimensional analysis on all calculations.
-		</p>	
 		<p>
-			Best of all, if you have a reasonably recent browser and can wait a few seconds for
-			it to load, you can try it right now by tapping on <a href="run.html">Run</a>.
+			While it does have many high powered mathmatical tools, it can also just be used as
+			a fancy calculator or a more adept, transparent and powerful way of performing many
+			of the tasks usually done in <b>spreadsheets</b>
+			and smallish <b>databases</b>.
 		</p>
-		<h4>Math Minion and CoolProp</h4>
-		<p>A version of Math Minion is now available that has a fluid flash tool based
-			on the open source <a href="http://coolprop.org">CoolProp</a> property package.
-			You can run it at <a href="http://coolmm.mathminion.org">coolmm.mathminion.org</a>,
-			but please be patient, for there is a lot of code to download.  It has examples with
-			fairly detailed explanations and of course help for the flash tool.
-		</p>
-		<p>
-			The source code is in the
-			<a href="https://github.com/CraigGMorris/mmjs">GitHub repository</a> as branch
-			<b>coolmm</b>.
-		</p>
+		<div class="slideshow-container fade">
 
-		<h4>Known Problems</h4>
+			<!-- Full images with numbers and message Info -->
+			<div class="slide">
+				<img src="screenshots/surfaceplot.png" alt="Screen shot">
+				<div class="info">
+					<div class="back" onclick="plusSlides(-1)">&#10094;</div>
+					<div>
+						Of course it can do math things like this surface plot.
+					</div>
+					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
+				</div>
+			</div>
+		
+			<div class="slide">
+				<img src="screenshots/timesheet.png" alt="Screen shot">
+				<div class="info">
+					<div class="back" onclick="plusSlides(-1)">&#10094;</div>
+					<div>
+						It can also do small (say less than a million records) database chores, like this
+						timesheet example.
+					</div>
+					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
+				</div>
+			</div>
+		
+			<div class="slide">
+				<img src="screenshots/pv.png" alt="Screen shot">
+				<div class="info">
+					<div class="back" onclick="plusSlides(-1)">&#10094;</div>
+					<div>
+						Inputs and results can be arranged on the model view to easily create simple
+						forms and reports.
+					</div>
+					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
+				</div>
+			</div>
+		
+			<div class="slide">
+				<img src="screenshots/strings.png" alt="Screen shot">
+				<div class="info">
+					<div class="back" onclick="plusSlides(-1)">&#10094;</div>
+					<div>
+						Quite large strings or arrays of strings can also be processed. Here the
+						function browser's javascript code is massaged into html for viewing in the
+						HTML tool. The HTML tool can also be used for more elaborate forms and reports.
+					</div>
+					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
+				</div>
+			</div>
+		
+			<div class="slide">
+				<img src="screenshots/predator.png" alt="Screen shot">
+				<div class="info">
+					<div class="back" onclick="plusSlides(-1)">&#10094;</div>
+					<div>
+						Of course there are math tools for things like integrating differential equations,
+						such as in this classic predator/prey example, as well as optimizing, function solving
+						and even a (seldom needed) iterator.
+					</div>
+					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
+				</div>
+			</div>
+		
+			<div class="slide">
+				<img src="screenshots/orbits.png" alt="Screen shot">
+				<div class="info">
+					<div class="back" onclick="plusSlides(-1)">&#10094;</div>
+					<div>
+						When things get more complicated, adding notes to the tools and grouping
+						calculations into nested models can be helpful. Notes can also be displayed
+						on the model view.
+					</div>
+					<div class="forward" onclick="plusSlides(1)">&#10095;</div>
+				</div>
+			</div>
+		</div>
+		<h3>Features</h3>
 		<ul>
+			<li>a <a href="help/formula.html">formula system</a> that operates transparently
+				on scalars, arrays and matrices
+			</li>
 			<li>
-				<b>iPad Mouse and Trackpad</b><br>
-					There is some strange behaviour when you mix trackpad (or mouse) use with touch dragging
-					or pinching on the screen. The latter will always work, but disables the trackpad on the
-					diagram, graphs and result tables. Also pinch zooming on the trackpad doesn't work and
-					should be avoided. Use the + and - zoom icons on the diagram instead.  Reloading will
-					restore things.				
-				<p>
-					Any thoughts on the cause of this would be most welcome.
-				</p>
+				a range of <a href="help/tools.html">calculation tools</a> including function
+				and differential equation solvers, optimizer, data tables and more.
+			</li>
+			<li>
+				a <a href="help/diagram.html">mind map style diagram</a> of the
+				relationships between the calculation tools.
+			</li>
+			<li>
+				a <a href="help/units.html">comprehensive conversion unit system</a> 
+				that performs dimensional analysis such that it knows dividing a btu/h value by a
+				voltage results in amps, but adding a litre and a pound would be an error.
 			</li>
 		</ul>
+		<p>
+			Best of all, if you have a reasonably recent browser and can wait a bit for
+			it to load, you can try it right now by tapping on <a href="run.html">Run</a>. 
+			It will load its <a href="help/getstarted.html">Getting Started</a> session
+			which has lots of explanations and examples.
+		</p>
+		<h3>News</h3>
+		<p>
+			The best way to view news is in the MM_News session right in Math Minion as it
+			can demonstrat discuss features.  Run Math Minion with the lastest version by
+			<a href="./run.html?cmd=/%20loadurl%20../news/MM_News.txt">clicking here</a>.
+		</p>
+		<p>
+			If you use Facebook, there is a <a href="https://www.facebook.com/MathMinion">
+			Math Minion page</a> where I will post news summaries.
+		</p>
+		<p>
+			I would also be happy to send email notifications when something new is posted.
+			Just <a href="https://redtree.com/contact.html">let me know</a>.
+		</p>
+		<h3>Source</h3>
+		<p>
+			The source code is in a
+			<a href="https://github.com/CraigGMorris/mmjs">GitHub repository</a>.
+		</p>
+
 	</div>
  </body>
+ <script>
+	 var slidePosition = 1;
+		SlideShow(slidePosition);
 
+		// forward/Back controls
+		function plusSlides(n) {
+			SlideShow(slidePosition += n);
+		}
+
+		//  images controls
+		function currentSlide(n) {
+			SlideShow(slidePosition = n);
+		}
+
+		function SlideShow(n) {
+			let i;
+			const slides = document.getElementsByClassName("slide");
+			if (n > slides.length) {slidePosition = 1}
+			if (n < 1) {slidePosition = slides.length}
+			for (i = 0; i < slides.length; i++) {
+					slides[i].style.display = "none";
+			}
+			slides[slidePosition-1].style.display = "block";
+		} 
+ </script>
 </html>

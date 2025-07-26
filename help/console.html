@@ -8,8 +8,11 @@
 			window.onload = () => {
 				rtSetupHeading('Console',{
 					overview: 'Overview',
+					using: 'Using the Console',
 					structure: 'Program Structure',
-					view: 'Console View',
+					view: 'Console Mode',
+					commands: 'Commands',
+					openai: 'OpenAI Mode',
 				});
 			};			
 		</script>	
@@ -18,67 +21,198 @@
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
-					The console is mainly used for development and debugging and so can probably be
-					ignored otherwise.  For those still reading I will provide a brief overview, starting
-					with a few words about Math Minion's internal structure.
+					The console is a text-based interface for interacting with Math Minion. It has two modes selected by the
+					button at the bottom of the information view:
+					<ul>
+						<li>
+							Console: This is a text-based interface for interacting with Math Minion by means of the commands the Math Minion user interface uses
+							communicate with the Math Minion calculation engine.  Most users will never use this mode.
+						</li>
+						<li>OpenAI: This is an experimental chat interface using OpenAI's API. It can be asked to create models to solve problems or do
+							things like annotating tools. It's ability to succeed at the requested task is rather variable.
+						</li>
+					</ul>
+				</p>
+			</div>
+			<div id="using" class="section">
+				<h3>Using the Console</h3>
+				<p>
+					To open the console, tap the button at the bottom of the information view. Tapping it again will close the console.
+					Note that unlike other views, the console is not pushed on top of the current information view, but rather just sits
+					overtop of it.
+				</p>
+				<p>
+					Regardless of which mode is selected, you just enter your commands or instructions into the input field at the bottom of the console.
+					When you press the <b>Enter</b> key, the input is submitted and the results are displayed in the text area above.
+				</p>
+				<p>
+					If you wish to enter multi-line input, you can use the <b>Shift-Enter</b> key to move to the next line.
+				</p>
+				<p>
+					Use the up and down arrow keys to navigate the history of commands.
+				</p>
+				<p>
+					Each input creates a new page of output.  You can use the <b>Shift-Up</b> and <b>Shift-`Down</b> arrow keys to navigate between pages.
+				</p>
+				<p>
+					You can also use the <b>Read Command File</b> button to read a file of commands.
+				</p>
+				<p>
+					<b>Note:</b> The console button at the bottom of the information view is a toggle.
+					Tap it to see the console view and tap it again to hide the view.
 				</p>
 			</div>
 			<div id="structure" class="section">
-				<h3>Program Structure</h3>
+				<h3>A Note on Program Structure</h3>
 				<p>
 					When Math Minion runs, all the calculations take place in a separate process called a
 					web worker and all the user interaction and display occurs in the main program. The
 					main program communicates with the calculation engine by passing it text commands.  When
 					the engine completes the command, it sends a message back to the main program containing
-					text in the form of JSON.  The interface uses these replys to construct what you see.
+					text in the form of JSON.  The interface uses these replies to construct what you see.
 				</p>
 			</div>
 			<div id="view" class="section">
-				<h3>Console View</h3>
+				<h3>Console Mode</h3>
 				<p>
-					The console allows you to directly type commands and have them sent to calculation
-					process and display the corresponding results.
+					When in console mode, the commands you enter are sent directly to the calculation
+					process and and the results it returns are displayed in the text area above. For example:
+				</p>
+				<p class="formula">
+					.Records get notes
 				</p>
 				<p>
-					It only has three fields:
+					would return the notes for the Records tool.
+				</p>
+				<div id="commands" class="subsection">
+					<h3>Commands</h3>
+					<p>
+						Commands take the form of a subject path, followed by an action, possibly followed by an
+						object or other action parameter.  If the subject path is omitted, the default
+						subject is used.
+					</p>
+					<p>
+						The top of the subject tree is the session, which has the path "<b>/</b>".  Children are
+						separated by dots, so "<b>/.root</b>" is the root model and "<b>/.root.x</b>" is the tool
+						named <b>x</b> in root.
+					</p>
+					<p>
+						At start up, the default subject is root and if a path does not start with "<b>/</b>", it
+						will be relative to the default subject.  Thus "<b>.x</b>" would also refer to the tool named
+						<b>x</b> in the root model, unless the default subject has been changed. In Math Minion, the
+						current subject is the model being viewed in the diagram unless changed with the <b>cd</b>
+						command.
+					</p>
+					<p>
+						The command <b>help</b> will list the commands the subject understands.  If the help
+						command is followed by one of those commands, a very brief usage message will be
+						displayed.
+					</p>
+					<p>
+						You can also looked at the <a href="../ai/openai/APIcontext.txt">instructions</a> for the AI assistant. They are a bit verbose, but contain detailed information. There are also specific instructions for less common tools:
+					</p>
 					<ul>
-						<li>A large, uneditable text area where the results are displayed.</li>
-						<li>An input field where you type a command.</li>
-						<li>A <b>Read Command File</b> button, which will let you select a file of
-						commands to be executed.</li>
+						<li><a href="../ai/openai/info/button.yml">Button</a></li>
+						<li><a href="../ai/openai/info/datatable.yml">Data Table</a></li>
+						<li><a href="../ai/openai/info/iterator.yml">Iterator</a></li>
+						<li><a href="../ai/openai/info/menu.yml">Menu</a></li>
 					</ul>
-				</p>
+				</div>
 			</div>
-			<div id="commands" class="section">
-				<h3>Commands</h3>
+			<div id="openai" class="section">
+				<h3>OpenAI Mode</h3>
 				<p>
-					Commands take the form of a subject path, followed by an action, possibly followed by an
-					object or other action parameter.  If the subject path is omitted, the default
-					subject is used.
+					NOTE: Using this feature will require having an OpenAI account and an OpenAI API key.
+					This can be obtained from <a href="https://platform.openai.com/api-keys">https://platform.openai.com/api-keys</a>,
+					but it is a paid service and will incur a cost. However you only need to add a few dollars to your account and
+					$10 will go a long way.
 				</p>
 				<p>
-					The top of the subject tree is the session, which has the path "<b>/</b>".  Children are
-					separated by dots, so "<b>/.root</b>" is the root model and "<b>/.root.x</b>" is the tool
-					named <b>x</b> in root.
+					How useful this is may be questionable, but it is a fun way to play with AI.
 				</p>
 				<p>
-					At start up, the default subject is root and if a path does not start with "<b>/</b>", it
-					will be relative to the default subject.  Thus "<b>.x</b>" would also refer to the tool named
-					<b>x</b> in the root model, unless the default subject has been changed. In Math Minion, the
-					current subject is the model being viewed in the diagram unless changed with the <b>cd</b>
-					command.
+					When in OpenAI mode, the instructions you enter are sent to OpenAI's API, which returns comments and usually commands.
+					The commands are sent to the Math Minion engine for execution. Both the comments and commands are displayed in the
+					text area above.
 				</p>
 				<p>
-					The command <b>help</b> will list the commands the subject understands.  If the help
-					command is followed by one of those commands, a very brief usage message will be
-					displayed.
+					If executing a command returns an error, it will try a couple of times to fix it before giving up. If there are problems
+					with the solution it created, you can ask it to fix them, although it is often easier to just fix them yourself.
 				</p>
 				<p>
-					A command history is maintained while the console is open and can be navigated with the
-					up and down arrows on the keyboard.
+					How well it works is variable and while it sometimes is surprisingly bright, other times it is rather dim. The same instructions
+					will often produce different results.
+				</p>
+				<p>
+					It can be a bit slow, so be patient. If it encounters an error and tries to fix it, the "thinking" indicator in the input field
+					may disappear, but either a "Done" or Failed message will appear in the text area when it is finished. If you want to abort it, just
+					refresh the browser. Refreshing will also clear the saved conversation and start fresh.
+				</p>
+				<p>
+					The assistant's instructions includes all functions and formula syntax and how to
+					create and manipulate all Math Minion tools, with the exception of the HTML page and imported model tools.
+				</p>
+				<p>
+					Here are some examples along with comments on how well it worked as I write this. Again results vary.
+				</p>
+				<p class="formula">
+					I need an Expression that is 200 elements long that toggles between 0 and 1
+				</p>
+				<p>
+					This usually works well.
+				</p>
+				<p class="formula">
+					Given equations:<br>
+					3*x-cos(y*z)-0.5 = 0<br>
+					x^2 -81*(y+0.1)^2 + sin(z) +1.06 = 0<br>
+					Exp(-x*y) +20*z+ (10*pi -3)/3 = 0<br>
+					Create a model that determines the values of x, y and z.
+				</p>
+				<p>
+					This worked correctly except it didn't create a model, but created the tools in the current model.
+				</p>
+				<p class="formula">
+					For angles 0 to 720 degrees in 10 degree increments, create a 3d plot with x being sin angles, y being cos angles and z
+					starting at 0 m and increasing 1 m for angle index. Add a second curve with z 20 m above the first.
+				</p>
+				<p>
+					This worked correctly.
+				</p>
+				<p class="formula">
+					Create a model to simulate a predator/prey relationship. Inputs should be:
+					initial populations of predator and prey - default 200 for both
+					the prey growth per period of time in the absence of predators - default 1 per day
+					Death rate of prey per encounter with predators - default 0.003 1/d
+					Death rate of predator in absence of food - default 2 per day
+					Efficiency of turning prey into predators - default 1
+					Show both a table and graph of the results
+				</p>
+				<p>
+					This also usually works, but sometimes with a few errors that need to be fixed. This time it had an error that it
+					fixed itself, but ended up with the model embedded inside an outer one.
+				</p>
+				<p>
+					The instructions didn't say anything about duration, so it just took a reasonable guess. After it created the model,
+					I told it:
+				</p>
+				<p class="formula">
+					change the run time to 10 days and the recording period to 1 hour.
+				</p>
+				<p>
+					which it did correctly.
+				</p>
+				<p>
+					I have found doing things like asking it to examine a model and then add appropriate notes
+					to the tools often works pretty well as does things like asking it to arrange the diagram
+					icons into two columns or some such.
+				</p>
+				<p>
+					The bottom line is that it is fun to play with and might even be a time saver. The jury is still out,
+					but given the rapid improvements in AI, that isn't going to be the case for long.
 				</p>
 			</div>
 		</div>

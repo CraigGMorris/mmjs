@@ -1,0 +1,75 @@
+tool:
+  name: MMIterator
+  type: Iterator
+  extends: MMTool
+
+  desc: |
+    MMIterator performs loop calculations similar to a programming `for` loop.
+    It can be used to simulate iterative processes or build result tables when array/matrix operations are insufficient.
+
+    The iterator has three core components:
+    1. `initialX` — defines the starting value of the loop variable `x`
+    2. `whileX` — controls whether the loop should continue (evaluated before each step)
+    3. `nextX` — updates the loop variable after each iteration
+
+    On each iteration:
+    - The loop variable `x` is updated
+    - A loop counter `i` is incremented
+    - Any active recorded value formulas (`r1`, `r2`, etc.) are evaluated and saved into arrays
+
+    MMIterator is useful for controlled iteration with conditionals and derived recording, such as building tables or simulating step-by-step transformations.
+
+  formulas:
+    initialX: "Initial value of `x`. Evaluated once before the first iteration."
+    nextX: "Defines how `x` is updated after each iteration."
+    while: |
+      This formula is evaluated before each iteration.
+      If it returns `null` or a value with element [1,1] equal to 0, the loop stops.
+      It may reference `$.i` (iteration count) and `$.x` (loop variable).
+      Example: `{le $.i, 10}`
+    rN: |
+      Recorded value formulas. N is a positive integer (e.g., `r1`, `r2`).
+      Evaluated on each iteration. Values are appended to parameter arrays `Rn` and `table`.
+      Formulas are added via the `addrecorded` verb.
+
+  parameters:
+    i: "Current iteration count, starting at 1."
+    x: "Current value of the loop variable."
+    initX: "Result of evaluating `initialX`."
+    while: "Last result of `whileX`."
+    nextX: "Result of evaluating `nextX`."
+    solved: "1 if iteration completed successfully, 0 otherwise."
+    Rn: "Array storing recorded values for each `rN` formula."
+    n: |
+      Most recently recorded value for `rN`.
+      Returns 0 if `i == 1`.
+    table: "Matrix of recorded values (columns = r1, r2, etc.)."
+
+  properties:
+    shouldAutoRun:
+      desc: "If true, the iterator reruns when values change. Default: false - need set to true to run automatically."
+
+  verbs:
+    reset:
+      desc: |
+        Resets the iterator to its initial state and clears prior calculations.
+        If `shouldAutoRun` is true, iteration will resume immediately.
+      args: []
+
+    addrecorded:
+      desc: |
+        Adds a new recorded formula (rN), evaluated each iteration.
+        Results stored in `Rn` and added to `table`.
+      args: []
+
+    removerecorded:
+      desc: |
+        Removes a recorded formula `rN`, where N is the index provided.
+      args:
+        - N: "The number (e.g., 1 for `r1`) of the formula to remove."
+
+  usageNote: |
+    Use the `$` symbol in formulas to refer to this tool’s fields:
+    - `$.x` → current loop variable
+    - `$.i` → current loop index
+    Use `addrecorded` to collect values and retrieve them through `Rn` or `table` after iteration.

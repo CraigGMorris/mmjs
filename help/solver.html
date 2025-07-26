@@ -23,6 +23,7 @@
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
@@ -98,7 +99,7 @@
 						abandons its attempt with a warning..
 					</p>
 					<p>
-						For a multiple value problem, you can also specify maximum number of iterations
+						For a multiple value problem, you can also specify the maximum number of iterations
 						per jacobian reevaluation. This is ignored for a single value problem.
 					</p>
 					<p>
@@ -147,7 +148,7 @@
 							</p>
 						</li>
 						<li>
-							<b>nx</b> - when an function is added to a solver, a corresponding array of x values
+							<b>nx</b> - when a function is added to a solver, a corresponding array of x values
 							will be created and will be accessible to other tools as a parameter of the solver.
 							The size of this array will initially be 1 (i.e a scalar), but you can change
 							the size by using this <a href="formulaeditor.html#fields">formula field.</a>.
@@ -178,6 +179,9 @@
 						the value - e.g. f2</li>
 					<li><b>cn</b> - the array size (count) for output n and function n - e.g. c3</li>
 					<li><b>solved</b> - 1 if the optimization has completed successfully, otherwise empty</li>
+					<li><b>html</b> - a html code representation of the tool.</li>
+					<li><b>notes</b> - the notes for the tool</li>
+					<li><b>myname</b> - the name of the tool</li>
 				</ul>
 			</div>
 		</div>

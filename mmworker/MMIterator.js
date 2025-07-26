@@ -22,6 +22,7 @@
 	MMFormula:readonly
 	MMPropertyType:readonly
 	MMNumberValue:readonly
+	MMStringValue:readonly
 	MMTableValueColumn:readonly
 	MMTableValue:readonly
 */
@@ -31,7 +32,7 @@
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
-class MMIterator extends MMTool {
+export class MMIterator extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
@@ -157,6 +158,10 @@ class MMIterator extends MMTool {
 		for (let i = 0; i < count; i++) {
 			const formula = this.recordedValueFormulas[i];
 			const recValue = formula.value();
+			if (recValue instanceof MMTableValue) {
+				this.setError('mmcmd:recordTableError', {number: i + 1, path: this.getPath()});
+				return false;
+			}
 			const a = this.recordedValues[i];
 			if (recValue) {
 				a.push(recValue.copyOf());
@@ -247,7 +252,13 @@ class MMIterator extends MMTool {
 			if (aLength) {
 				const first = a[0];
 				const firstLength = first.valueCount;
-				const ov = new MMNumberValue(aLength, firstLength, first.unitDimensions);
+				let ov;
+				if (first instanceof MMNumberValue) {
+					ov = new MMNumberValue(aLength, firstLength, first.unitDimensions);
+				}
+				else if (first instanceof MMStringValue) {
+					ov = new MMStringValue(aLength, firstLength);
+				}
 				for (let row = 0; row < aLength; row++) {
 					const v = a[row];
 					if (v.valueCount !== firstLength) {
@@ -310,16 +321,26 @@ class MMIterator extends MMTool {
 				if (v.columnCount > 1) {
 					for (let cNumber = 1; cNumber <= v.columnCount; cNumber++) {
 						const name = columnName + `_${cNumber}`;
-						const column = new MMTableValueColumn({
-							name: name, displayUnit: v.defaultUnit.name, value: v.valueForColumnNumber(cNumber)
-						});
+						const options = {
+							name: name,
+							value: v.valueForColumnNumber(cNumber)
+						}
+						if (v.defaultUnit) {
+							options.displayUnit = v.defaultUnit.name;
+						} 
+						const column = new MMTableValueColumn(options);
 						columns.push(column);
 					}
 				}
 				else {
-					const column = new MMTableValueColumn({
-						name: columnName, displayUnit: v.defaultUnit.name, value: v
-					});
+					const options = {
+						name: columnName,
+						value: v
+					}
+					if (v.defaultUnit) {
+						options.displayUnit = v.defaultUnit.name;
+					} 
+				const column = new MMTableValueColumn(options);
 					columns.push(column);
 				}
 			}
@@ -446,6 +467,24 @@ class MMIterator extends MMTool {
 		return sources;
 	}
 
+	/**
+	 * @method formulaList
+	 * @returns [] contains formulae contained by this tool and its children
+	 */
+	formulaList() {
+		const formulae = [
+			this.whileFormula,
+			this.initialXFormula,
+			this.nextXFormula,
+		];
+		for (const formula of this.recordedValueFormulas) {
+			formulae.push(formula);
+		}
+		return formulae;
+	}
+
+
+
 	/** @override */
 	get properties() {
 		let d = super.properties;
@@ -454,7 +493,7 @@ class MMIterator extends MMTool {
 	}
 
 	get shouldAutoRun() {
-		return this._shouldAutoRun;
+		return this._shouldAutoRun && !theMMSession.noRun;
 	}
 
 	set shouldAutoRun(newValue) {
@@ -546,7 +585,7 @@ class MMIterator extends MMTool {
 			const saveForUndo = {n: recNumber, f: this.recordedValueFormulas[recNumber - 1].formula};
 			this.removeRecordedValue(recNumber);
 			const undoString = JSON.stringify(saveForUndo);
-			command.undo = `__blob__${this.getPath()} restorerecorded__blob__${undoString}`;
+			command.undo = `${this.getPath()} restorerecorded ${undoString}`;
 			command.results = 'removed recorded';
 		}
 		else {

@@ -33,7 +33,7 @@
  * @readonly
  * @enum {string}
  */
-const MMDyadicUnitAction = Object.freeze({
+export const MMDyadicUnitAction = Object.freeze({
 	none: '?',
 	equal: '=',
 	multiply: '*',
@@ -48,7 +48,7 @@ const MMDyadicUnitAction = Object.freeze({
  * @member {Float64Array} _values
  */
 // eslint-disable-next-line no-unused-vars
-class MMNumberValue extends MMValue {
+export class MMNumberValue extends MMValue {
 	/** @constructor
 	 * @param {Number} rowCount
 	 * @param {Number} columnCount
@@ -241,11 +241,49 @@ class MMNumberValue extends MMValue {
 	}
 
 	/**
+	 * @method format
+	 * @param {MMStringValue} format 
+	 * @param {MMUnit} unit 
+	 */
+	format(format, unit) {
+		const f = MMUnitSystem.format;
+		if (unit) {
+			this.checkUnitDimensionsAreEqualTo(unit.dimensions);
+		}
+		const rv = format.dyadicStringResult(this);
+		const rowCount = rv.rowCount;
+		const columnCount = rv.columnCount;
+		const rvValues = rv._values;
+		const formatRowCount = format.rowCount;
+		const formatColumnCount = format.columnCount
+		const formatValues = format._values;
+		const vValues = this._values;
+		const vRowCount = this.rowCount;
+		const vColumnCount = this.columnCount;
+		for (let i = 0; i < rowCount;  i++) {
+			const rFormat = i % formatRowCount;
+			const rValue = i % vRowCount;
+			for (let j = 0; j < columnCount; j++) {
+				const cFormat = j % formatColumnCount;
+				const cValue = j % vColumnCount;
+				const fmt = formatValues[rFormat * formatColumnCount + cFormat];
+				let v = vValues[rValue * vColumnCount + cValue];
+				if (unit) {
+					v = unit.convertFromBase(v);
+				}
+				rvValues[i * columnCount + j] = f(v, fmt);
+			}
+		}
+		return rv;	
+	}
+
+	/**
 	 * @method stringUsingUnit
 	 * @param {MMUnit} outUnit - can be nil
+	 * @param {String} format (optional)
 	 * @returns {String}
 	 */
-	stringUsingUnit(outUnit) {
+	stringUsingUnit(outUnit, format) {
 		if(!outUnit) {
 			outUnit = this.defaultUnit;
 		}
@@ -256,17 +294,18 @@ class MMNumberValue extends MMValue {
 
 		let value = this._values[0];
 		if(this.valueCount == 1) {
-			return outUnit.stringForValue(value);
+			return outUnit.stringForValue(value, format);
 		}
-		return `${outUnit.stringForValue(value)}...[${this.rowCount},${this.columnCount}]`;
+		return `${outUnit.stringForValue(value, format)}...[${this.rowCount},${this.columnCount}]`;
 	}
 
 	/**
 	 * @method stringWithUnit
 	 * @param {MMUnit} outUnit - can be nil
+	 * @param {String} format (optional)
 	 * @returns {String}
 	 */
-	stringWithUnit(outUnit) {
+	stringWithUnit(outUnit, format) {
 		if(!outUnit || !MMUnitSystem.areDimensionsEqual(this.unitDimensions, outUnit.dimensions)) {
 			outUnit = this.defaultUnit;
 		}
@@ -277,9 +316,9 @@ class MMNumberValue extends MMValue {
 
 		let value = this._values[0];
 		if(this.valueCount == 1) {
-			return outUnit.stringForValueWithUnit(value);
+			return outUnit.stringForValueWithUnit(value, format);
 		}
-		return `${outUnit.stringForValueWithUnit(value)}...[${this.rowCount},${this.columnCount}]`;
+		return `${outUnit.stringForValueWithUnit(value, format)}...[${this.rowCount},${this.columnCount}]`;
 	}
 
 	/**
@@ -288,9 +327,10 @@ class MMNumberValue extends MMValue {
 	 * @param {Number} row
 	 * @param {Number} column
 	 * @param {MMUnit} outUnit
+	 * @param {String} format (optional)
 	 * @returns {String}
 	 */
-	stringForRowColumnUnit(row, column, outUnit) {
+	stringForRowColumnUnit(row, column, outUnit, format) {
 		this.checkBounds(row, column);
 		let value = this._values[(row - 1)*this.columnCount + column - 1];
 		if (!outUnit) {
@@ -299,7 +339,7 @@ class MMNumberValue extends MMValue {
 		if (!outUnit) {
 			outUnit = this.defaultUnit;
 		}
-		return outUnit.stringForValue(value);
+		return outUnit.stringForValue(value, format);
 	}
 
 	/**
@@ -308,9 +348,10 @@ class MMNumberValue extends MMValue {
 	 * @param {Number} row
 	 * @param {Number} column
 	 * @param {MMUnit} outUnit
+	 * @param {String} format (optional)
 	 * @returns {String}
 	 */
-	stringForRowColumnWithUnit(row, column, outUnit) {
+	stringForRowColumnWithUnit(row, column, outUnit, format) {
 		this.checkBounds(row, column);
 		let value = this._values[(row - 1)*this.columnCount + column - 1];
 		if (!outUnit) {
@@ -320,7 +361,7 @@ class MMNumberValue extends MMValue {
 			outUnit = this.defaultUnit;
 		}
 
-		return outUnit.stringForValueWithUnit(value);
+		return outUnit.stringForValueWithUnit(value, format);
 	}
 
 	/**
@@ -609,6 +650,19 @@ class MMNumberValue extends MMValue {
 		for (let i = 0; i < count; i++) {
 			const v = this._values[i];
 			rv._values[i] = v >= 0 ? v : -v;
+		}
+		return rv;
+	}
+
+	/** @method sqrt - returns square root value for real
+	 * @returns {MMNumberValue}
+	 */
+	sqrt() {
+		let rv = this.monadicResultWithUnitDimensions(this.unitDimensions);
+		const count = this.valueCount;
+		for (let i = 0; i < count; i++) {
+			const v = this._values[i];
+			rv._values[i] = Math.sqrt(v);
 		}
 		return rv;
 	}
@@ -2090,10 +2144,14 @@ class MMNumberValue extends MMValue {
 	 * @method jsonValue
 	 * @override
 	 * @param {MMUnit} displayUnit
+	 * @param {String} format
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
-	jsonValue(displayUnit) {
+	jsonValue(displayUnit, format) {
 		let rv = {}
+		if (!displayUnit) {
+			displayUnit = this.displayUnit;
+		}
 		if (!displayUnit) {
 			displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(this.unitDimensions);
 		}
@@ -2104,6 +2162,12 @@ class MMNumberValue extends MMValue {
 		else {
 			rv['v'] = Array.from(this._values);
 			rv['unit'] = theMMSession.unitSystem.baseUnitWithDimensions(this.unitDimensions).name;
+		}
+		if (!format) {
+			format = this.displayFormat;
+		}
+		if (format) {
+			rv["format"] = format;
 		}
 		rv['unitType'] = theMMSession.unitSystem.sets.defaultSet.typeNameForDimensions(this.unitDimensions);
 		rv['t'] = 'n';

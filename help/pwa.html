@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Progressive Web App',{
+					pwa: 'What is a PWA',
+					install: "Install as an App",
+					help: "Help in Standalone App"
+				});
+			};			
+		</script>	
+		<title>Progressive Web App</title>
+	</head>
+	
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="menubody"></div>
+			<div id="pwa" class="section">
+				<h3>Progressive Web Apps</h3>
+				<p>
+					Math Minion is configured as a progressive web app (PWA), which brings
+					a number of benefits:
+				</p>
+				<ul>
+					<li>
+						A PWA can be installed to operate as a standalone app. It still runs in
+						the browser, but in a clean window of its own and with an application icon
+						that you can use to launch it, just like a regular app.
+					</li>
+					<li>
+						All of its source is cached on your device, which means it loads
+						quickly and can be used offline.
+					</li>
+					<li>
+						If the server source code is updated, the cached code will automatically
+						be updated when the app is run and the device is online.
+					</li>
+				</ul>
+			</div>
+			<div id="install" class="section">
+				<h3>Installing as an App</h3>
+				<p>
+					While most of the benefits of being a PWA are realized even if you
+					don't install it as an app, you may appreciate the cleaner interface
+					and ability to launch from an icon. How you install will depend on
+					the browser and device you use, but here are some that I have tried.
+				</p>
+				<p><b>Desktop Chromium Browsers</b><br>
+					These browsers, including Google Chrome, MS Edge, Brave and others,
+					have a small icon at the right of the address bar when a web app
+					can be installed. Hover over it and a tooltip saying something like
+					"App available. Install Math Minion". Just click on it and follow the
+					instructions.
+				</p>
+				<p><b>Safari on a Mac</b><br>
+					While running Math Minion in the browser, click on the share icon
+					on the top bar and select <b>Add to Dock</b>.
+					This will place a Math Minion icon on the dock and clicking on it will
+					launch a standalone version of Math Minion. As far as I know, there is
+					no way to have this icon anywhere else.
+				</p>
+				<p><b>iOS and iPadOS Devices</b><br>
+					While running Math Minion in a browser, tap on the share icon and
+					scroll down and select <b>Add to Home Screen</b>. This will place
+					a Math Minion icon on the home screen. It can be moved or put in
+					a folder like any other app icon.
+				</p>
+				<p><b>Android</b><br>
+					I don't have an Android device to try this on, but from what I have read,
+					depending on browser and device, a button saying something like
+					<b>Install</b> or <b>Add to Home Screen</b> will appear.
+				</p>
+				<p><b>Firefox</b><br>
+					Firefox does not support installing web apps on desktop computers. It
+					reportedly does on iOS and Android, but I haven't tested it.
+				</p>
+				<p>
+					If you have information that would improve these notes,
+					<a href="https://redtree.com/contact.html">please let me know</a>.
+				</p>
+		</div>
+		<div id="help" class="section">
+			<h3>Help in Standalone App</h3>
+			<p>
+				Note that when you tap on one of Math Minion's help
+				buttons in the standalone app, the help opens in 
+				a new tab or window in the browser, rather than in a new app window.
+			</p>
+		</div>
+	</body>
+</html>

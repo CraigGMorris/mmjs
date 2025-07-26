@@ -7,8 +7,8 @@
 	"UserUnits": [],
 	"CaseName": "McCabe Thiele",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
-	"ModelPath": "/.root",
+	"SelectedObject": "idealStgs",
+	"ModelPath": "/.root.idealStgs",
 	"RootModel": {
 		"name": "root",
 		"Notes": "This is a partial port of a McCabe Thiele Excel spreadsheet written by my good friend, Marco Satyro, for teaching purposes.\n\nThe spreadsheet made extensive use of the VBA programming language and my purpose was to see if Math Minion could implement the key aspects of the calculations just using its formulas.\n\nThe math and science behind this are all Marco's and the errors and omissions I undoubtedly introduced are all mine.",
@@ -16,6 +16,7 @@
 		"DiagramY": -12321,
 		"HideInfo": "n",
 		"DiagramNotes": "n",
+		"HtmlNotes": "n",
 		"Type": "Model",
 		"diagramScale": 1,
 		"Objects": [
@@ -26,6 +27,7 @@
 				"DiagramY": 45,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Model",
 				"diagramScale": 1,
 				"Objects": [
@@ -35,110 +37,118 @@
 						"DiagramY": 35.66666030883789,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "46.068"
 						},
-						"isInput": "y",
-						"isOutput": "y"
+						"isInput": "y"
 					},
 					{
 						"name": "A",
-						"Notes": "Antoine coefficient",
-						"DiagramX": 17.66666984558105,
-						"DiagramY": 73.33332824707031,
+						"Notes": "Antoine coefficients",
+						"DiagramX": 20,
+						"DiagramY": 60,
 						"HideInfo": "y",
-						"DiagramNotes": "n",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "90.2"
 						},
-						"isInput": "y",
-						"isOutput": "y"
+						"isInput": "y"
 					},
 					{
 						"name": "B",
 						"Notes": "Antoine coefficient",
-						"DiagramX": 21,
-						"DiagramY": 98.33332824707031,
+						"DiagramX": 20,
+						"DiagramY": 90,
 						"HideInfo": "y",
-						"DiagramNotes": "n",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "-4290 \"k\""
 						},
-						"isInput": "y",
-						"isOutput": "y"
+						"isInput": "y"
 					},
 					{
 						"name": "C",
 						"Notes": "Antoine coefficient",
-						"DiagramX": 20.33333015441895,
-						"DiagramY": 124.3332977294922,
+						"DiagramX": 20,
+						"DiagramY": 120,
 						"HideInfo": "y",
-						"DiagramNotes": "n",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "-33.7"
 						},
-						"isInput": "y",
-						"isOutput": "y"
+						"isInput": "y"
 					},
 					{
 						"name": "D",
 						"Notes": "Antoine coefficient",
-						"DiagramX": 21.33333015441895,
-						"DiagramY": 153.3332977294922,
+						"DiagramX": 20,
+						"DiagramY": 150,
 						"HideInfo": "y",
-						"DiagramNotes": "n",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": ".0321 \"1/k\""
 						},
-						"isInput": "y",
-						"isOutput": "y"
+						"isInput": "y"
 					},
 					{
 						"name": "E",
 						"Notes": "Antoine coefficient",
-						"DiagramX": 23.66666030883789,
-						"DiagramY": 176,
+						"DiagramX": 20,
+						"DiagramY": 180,
 						"HideInfo": "y",
-						"DiagramNotes": "n",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "-1.24e-5 \"1/k^2\""
 						},
-						"isInput": "y",
-						"isOutput": "y"
+						"isInput": "y"
 					},
 					{
 						"name": "TMax",
 						"Notes": "Antoine coefficient",
-						"DiagramX": 23.66666030883789,
-						"DiagramY": 201,
+						"DiagramX": 20,
+						"DiagramY": 210,
 						"HideInfo": "y",
-						"DiagramNotes": "n",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "243.1 degc"
 						},
-						"isInput": "y",
-						"isOutput": "y"
+						"isInput": "y"
 					},
 					{
 						"name": "TMin",
 						"Notes": "Antoine coefficient",
-						"DiagramX": 22.66666984558105,
-						"DiagramY": 225.6667022705078,
+						"DiagramX": 20,
+						"DiagramY": 240,
 						"HideInfo": "y",
-						"DiagramNotes": "n",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "-114.1"
 						},
-						"isInput": "y",
-						"isOutput": "y"
+						"isInput": "y"
 					}
 				]
 			},
@@ -149,6 +159,7 @@
 				"DiagramY": 85,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Model",
 				"diagramScale": 1,
 				"Objects": [
@@ -159,6 +170,7 @@
 						"DiagramY": 40,
 						"HideInfo": "n",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
 						"Objects": [
@@ -168,110 +180,118 @@
 								"DiagramY": 35.66666030883789,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "46.068"
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "A",
-								"Notes": "Antoine coefficient",
-								"DiagramX": 17.66666984558105,
-								"DiagramY": 73.33332824707031,
+								"Notes": "Antoine coefficients",
+								"DiagramX": 20,
+								"DiagramY": 60,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "90.1669"
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "B",
 								"Notes": "Antoine coefficient",
-								"DiagramX": 21,
-								"DiagramY": 98.33332824707031,
+								"DiagramX": 20,
+								"DiagramY": 90,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "-4294.2 \"k\""
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "C",
 								"Notes": "Antoine coefficient",
-								"DiagramX": 20.33333015441895,
-								"DiagramY": 124.3332977294922,
+								"DiagramX": 20,
+								"DiagramY": 120,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "-33.66"
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "D",
 								"Notes": "Antoine coefficient",
-								"DiagramX": 21.33333015441895,
-								"DiagramY": 153.3332977294922,
+								"DiagramX": 20,
+								"DiagramY": 150,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": ".032092 \"1/k\""
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "E",
 								"Notes": "Antoine coefficient",
-								"DiagramX": 23.66666030883789,
-								"DiagramY": 176,
+								"DiagramX": 20,
+								"DiagramY": 180,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "-1.237e-5 \"1/k^2\""
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "TMax",
 								"Notes": "Antoine coefficient",
-								"DiagramX": 23.66666030883789,
-								"DiagramY": 201,
+								"DiagramX": 20,
+								"DiagramY": 210,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "243.1 degc"
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "TMin",
 								"Notes": "Antoine coefficient",
-								"DiagramX": 22.66666984558105,
-								"DiagramY": 225.6667022705078,
+								"DiagramX": 20,
+								"DiagramY": 240,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "-114.1"
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							}
 						]
 					},
@@ -282,6 +302,7 @@
 						"DiagramY": 75,
 						"HideInfo": "n",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Model",
 						"diagramScale": 1,
 						"Objects": [
@@ -291,110 +312,118 @@
 								"DiagramY": 35.66666030883789,
 								"HideInfo": "y",
 								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "18.015"
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "A",
-								"Notes": "Antoine coefficient",
-								"DiagramX": 17.66666984558105,
-								"DiagramY": 73.33332824707031,
+								"Notes": "Antoine coefficients",
+								"DiagramX": 20,
+								"DiagramY": 65,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "28.9854"
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "B",
 								"Notes": "Antoine coefficient",
-								"DiagramX": 21,
-								"DiagramY": 98.33332824707031,
+								"DiagramX": 20,
+								"DiagramY": 95,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "-3152.2 \"k\""
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "C",
 								"Notes": "Antoine coefficient",
-								"DiagramX": 20.33333015441895,
-								"DiagramY": 124.3332977294922,
+								"DiagramX": 20,
+								"DiagramY": 125,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "-7.3037"
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "D",
 								"Notes": "Antoine coefficient",
-								"DiagramX": 21.33333015441895,
-								"DiagramY": 153.3332977294922,
+								"DiagramX": 20,
+								"DiagramY": 155,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "2.4247e-9 \"1/k\""
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "E",
 								"Notes": "Antoine coefficient",
-								"DiagramX": 23.66666030883789,
-								"DiagramY": 176,
+								"DiagramX": 20,
+								"DiagramY": 185,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "1.809e-6 \"1/k^2\""
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "TMax",
 								"Notes": "Antoine coefficient",
-								"DiagramX": 23.66666030883789,
-								"DiagramY": 201,
+								"DiagramX": 20,
+								"DiagramY": 215,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "374 degc"
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							},
 							{
 								"name": "TMin",
 								"Notes": "Antoine coefficient",
-								"DiagramX": 22.66666984558105,
-								"DiagramY": 225.6667022705078,
+								"DiagramX": 20,
+								"DiagramY": 245,
 								"HideInfo": "y",
-								"DiagramNotes": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"isOutput": "y",
 								"Type": "Expression",
 								"Formula": {
 									"Formula": ".01"
 								},
-								"isInput": "y",
-								"isOutput": "y"
+								"isInput": "y"
 							}
 						]
 					}
@@ -407,6 +436,7 @@
 				"DiagramY": 85,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Model",
 				"diagramScale": 1,
 				"Objects": [
@@ -417,6 +447,7 @@
 						"DiagramY": 40,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "1 \"kpa\" * 10^(cmp1.a + cmp1.b/t + cmp1.c*{ln t/1 \"k\"}/{ln 10} + cmp1.d*t + cmp1.e*t^2)"
@@ -429,11 +460,13 @@
 						"DiagramY": 40,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "cmps.etoh"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y"
 					},
 					{
 						"name": "t",
@@ -442,11 +475,11 @@
 						"DiagramY": 130,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "350 \"k\" + solver.1 * 10 \"k\""
 						},
-						"isOutput": "y",
 						"displayUnit": "K"
 					},
 					{
@@ -456,6 +489,7 @@
 						"DiagramY": 70,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "1 \"kpa\" * 10^(cmp2.a + cmp2.b/t + cmp2.c*{ln t/1 \"k\"}/{ln 10} + cmp2.d*t + cmp2.e*t^2)"
@@ -468,11 +502,13 @@
 						"DiagramY": 70,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "cmps.water"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y"
 					},
 					{
 						"name": "nPoints",
@@ -480,6 +516,7 @@
 						"DiagramY": 165,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "100"
@@ -491,11 +528,11 @@
 						"DiagramY": 190,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "0:npoints/npoints"
-						},
-						"isOutput": "y"
+						}
 					},
 					{
 						"name": "x2",
@@ -503,6 +540,7 @@
 						"DiagramY": 220,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "1 - x1"
@@ -515,10 +553,12 @@
 						"DiagramY": 245,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "1.542301"
-						}
+						},
+						"showInput": "y"
 					},
 					{
 						"name": "a21",
@@ -527,10 +567,12 @@
 						"DiagramY": 275,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "0.907031"
-						}
+						},
+						"showInput": "y"
 					},
 					{
 						"name": "g1",
@@ -538,11 +580,11 @@
 						"DiagramY": 225,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{exp x2^2 *\n   (a12 + 2*x1*(a21 - a12))\n}"
-						},
-						"isOutput": "y"
+						}
 					},
 					{
 						"name": "g2",
@@ -550,11 +592,11 @@
 						"DiagramY": 255,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{exp x1^2 * (a21 + 2 * x2 * (a12 - a21))}"
-						},
-						"isOutput": "y"
+						}
 					},
 					{
 						"name": "f",
@@ -562,6 +604,7 @@
 						"DiagramY": 100,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{ln x1 * g1 * pv1 / p + x2 * g2 * pv2 / p}"
@@ -573,10 +616,12 @@
 						"DiagramY": 105,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "151.9875 kpa"
-						}
+						},
+						"showInput": "y"
 					},
 					{
 						"name": "solver",
@@ -585,6 +630,7 @@
 						"DiagramY": 135,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Equation Solver",
 						"f0": "f",
 						"c0": "npoints+1",
@@ -598,11 +644,11 @@
 						"DiagramY": 175,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "g1 * pv1 * x1 / p"
-						},
-						"isOutput": "y"
+						}
 					},
 					{
 						"name": "xyGraph",
@@ -610,6 +656,8 @@
 						"DiagramY": 200,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Graph",
 						"X1": {
 							"v": "x1",
@@ -637,6 +685,7 @@
 				"DiagramY": 85,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Graph",
 				"X1": {
 					"v": "bubpt.x1",
@@ -663,6 +712,7 @@
 				"DiagramY": 165,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": "0.0001955857"
@@ -675,6 +725,7 @@
 				"DiagramY": 130,
 				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
 					"Formula": ".8385901792"
@@ -686,6 +737,7 @@
 				"DiagramY": 130,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Matrix",
 				"CellInputs": {
 					"0_0": "0",
@@ -702,6 +754,7 @@
 				"DiagramY": 155,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
+				"HtmlNotes": "n",
 				"Type": "Model",
 				"diagramScale": 1,
 				"Objects": [
@@ -712,11 +765,13 @@
 						"DiagramY": 90,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "bubpt"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y"
 					},
 					{
 						"name": "xd",
@@ -725,11 +780,13 @@
 						"DiagramY": 30,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "xd"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y"
 					},
 					{
 						"name": "xb",
@@ -738,11 +795,13 @@
 						"DiagramY": 60,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "xb"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y"
 					},
 					{
 						"name": "rr",
@@ -751,11 +810,13 @@
 						"DiagramY": 155,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "4.61"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y"
 					},
 					{
 						"name": "lov",
@@ -764,6 +825,7 @@
 						"DiagramY": 190,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "rr/(rr+1)"
@@ -776,6 +838,7 @@
 						"DiagramY": 55,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "xd - lov * xd"
@@ -788,18 +851,21 @@
 						"DiagramY": 120,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": ".20679087"
-						}
+						},
+						"showInput": "y"
 					},
 					{
 						"name": "xf",
 						"Notes": "Intersection of feed line and rectification line",
 						"DiagramX": 90,
-						"DiagramY": 200,
+						"DiagramY": 205,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "(yf - arect)/lov"
@@ -812,6 +878,7 @@
 						"DiagramY": 90,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "(yf - xb) / (xf - xb)"
@@ -821,9 +888,10 @@
 						"name": "ast",
 						"Notes": "The x=0 intercept of the stripping line",
 						"DiagramX": 90,
-						"DiagramY": 300,
+						"DiagramY": 305,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "yf - lbovb * xf"
@@ -835,6 +903,7 @@
 						"DiagramY": 150,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Matrix",
 						"CellInputs": {
 							"0_0": "0",
@@ -852,6 +921,7 @@
 						"DiagramY": 150,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Matrix",
 						"CellInputs": {
 							"0_0": "0",
@@ -867,6 +937,7 @@
 						"DiagramY": 190,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Matrix",
 						"CellInputs": {
 							"0_0": "0",
@@ -883,6 +954,8 @@
 						"DiagramY": 175,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Graph",
 						"X1": {
 							"v": "bubpt.x1",
@@ -944,7 +1017,8 @@
 								"vmax": "",
 								"lineType": 0
 							}
-						}
+						},
+						"Selected": "0_0"
 					},
 					{
 						"name": "rectline",
@@ -952,6 +1026,7 @@
 						"DiagramY": 30,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Matrix",
 						"CellInputs": {
 							"0_0": "0",
@@ -968,6 +1043,7 @@
 						"DiagramY": 125,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Matrix",
 						"CellInputs": {
 							"0_0": "yf",
@@ -980,9 +1056,10 @@
 					{
 						"name": "stripLine",
 						"DiagramX": 90,
-						"DiagramY": 275,
+						"DiagramY": 280,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Matrix",
 						"CellInputs": {
 							"0_0": "0",
@@ -997,9 +1074,10 @@
 					{
 						"name": "feedStage",
 						"DiagramX": 90,
-						"DiagramY": 240,
+						"DiagramY": 245,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int\n  {lookup -xf,\n    -stgxy[(1:nStages), 1],\n    1:nStages\n  } + 1\n}"
@@ -1012,10 +1090,12 @@
 						"DiagramY": 220,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "25"
-						}
+						},
+						"showInput": "y"
 					}
 				]
 			},
@@ -1026,6 +1106,7 @@
 				"DiagramY": 45,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Model",
 				"diagramScale": 1,
 				"Objects": [
@@ -1036,6 +1117,7 @@
 						"DiagramY": 55,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{sum (curveY - ymean)^2}"
@@ -1048,6 +1130,7 @@
 						"DiagramY": 145,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Optimizer",
 						"optFormula": {
 							"Formula": "{sum (poly - curveY)^2}"
@@ -1075,6 +1158,7 @@
 						"DiagramY": 55,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{sum curveY} / {nrows curveY}"
@@ -1087,6 +1171,7 @@
 						"DiagramY": 85,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{sum (curveY - poly)^2}"
@@ -1099,11 +1184,12 @@
 						"DiagramY": 75,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "1 - sserr / sstot"
-						},
-						"isOutput": "y"
+						}
 					},
 					{
 						"name": "poly",
@@ -1112,6 +1198,7 @@
 						"DiagramY": 195,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{sumrows\n  {transpose opt.x} *\n  curveX^exp\n}"
@@ -1123,6 +1210,8 @@
 						"DiagramY": 120,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Graph",
 						"X1": {
 							"v": "curveX",
@@ -1160,10 +1249,12 @@
 						"DiagramY": 165,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "10"
-						}
+						},
+						"showInput": "y"
 					},
 					{
 						"name": "exp",
@@ -1172,6 +1263,7 @@
 						"DiagramY": 200,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{transpose 0:(nterms-1)}"
@@ -1184,11 +1276,13 @@
 						"DiagramY": 85,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "bubpt.x1"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y"
 					},
 					{
 						"name": "curveY",
@@ -1197,11 +1291,13 @@
 						"DiagramY": 125,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "bubpt.y1"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y"
 					},
 					{
 						"name": "coefficients",
@@ -1210,11 +1306,12 @@
 						"DiagramY": 110,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "opt.x"
-						},
-						"isOutput": "y"
+						}
 					}
 				]
 			}

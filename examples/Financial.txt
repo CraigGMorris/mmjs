@@ -4,10 +4,13 @@
 	"DetailWidth": 320,
 	"DeviceWidth": 1024,
 	"UserUnitSets": {},
-	"UserUnits": [],
+	"UserUnits": [
+		null,
+		null
+	],
 	"CaseName": "Financial",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "PV_Form",
+	"SelectedObject": "",
 	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
@@ -15,106 +18,735 @@
 		"DiagramY": 80,
 		"HideInfo": "n",
 		"DiagramNotes": "n",
+		"HtmlNotes": "n",
 		"Type": "Model",
 		"diagramScale": 1,
 		"Objects": [
 			{
-				"name": "pv",
-				"Notes": "Calculates the present value for  a series of payments made at regular intervals with\n a given interest rate.",
-				"DiagramX": -5,
-				"DiagramY": 0,
+				"name": "PeriodicIRR",
+				"Notes": "<b>Periodic IRR</b>\nCalculates the internal rate of return for a series of cash flows that occur at regular intervals.",
+				"DiagramX": 90,
+				"DiagramY": 20,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "Payments",
+						"Notes": "Cash flows in order of the periods    At least one payment must be negative and one positive.",
+						"DiagramX": 20,
+						"DiagramY": 45,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{cc -70000, 12000, 15000, 18000, 21000, 26000}"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "Guess",
+						"Notes": "A guess for the rate of return",
+						"DiagramX": 20,
+						"DiagramY": 95,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ".1"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "error",
+						"DiagramX": 110,
+						"DiagramY": 75,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{sum Payments / (1 + rate )^(0:({nrows Payments} - 1))}"
+						}
+					},
+					{
+						"name": "solver",
+						"DiagramX": 110,
+						"DiagramY": 45,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Equation Solver",
+						"f0": "error * 1e10",
+						"c0": "1",
+						"maxIter": 200,
+						"maxJacobians": 5,
+						"Enabled": "y"
+					},
+					{
+						"name": "rate",
+						"Notes": "The IRR",
+						"DiagramX": 110,
+						"DiagramY": 105,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "solver.1 + guess "
+						}
+					}
+				]
+			},
+			{
+				"name": "Payments",
+				"Notes": "<b>Payments</b>\nCalculates the payment made each period for a present value, number of payments and and interest rate giving a defined future value.\n\nThe total payments, interest and principal for each period are also calculated.",
+				"DiagramX": 0,
+				"DiagramY": 90,
+				"HideInfo": "n",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
 				"Type": "Model",
 				"diagramScale": 1,
 				"Objects": [
 					{
 						"name": "pmt",
 						"Notes": "The payment made each period.",
-						"DiagramX": 25,
+						"DiagramX": 165,
+						"DiagramY": -50,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "(-Present_Value *(1 + rate) ^ Number_Pmts + Future_Value ) /\n(( 1 + rate * Payment_Type ) *\n((1 + rate )^ Number_Pmts - 1) /\nrate)"
+						},
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					},
+					{
+						"name": "TotalPaid",
+						"Notes": "The total of all payments by period.\n",
+						"DiagramX": 165,
+						"DiagramY": -20,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "pmt * 1:Number_Pmts"
+						},
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					},
+					{
+						"name": "principalPaid",
+						"Notes": "     Cumulative principal paid by period",
+						"DiagramX": 165,
 						"DiagramY": 95,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "{eval pv_form.pmt}"
+							"Formula": "-Present_Value +\n((-pmt * ( 1 + rate * Payment_Type ) *\n((1 + rate )^ pmtsLeft- 1) / rate ) + Future_Value) /\n(1 + rate) ^ pmtsLeft"
 						},
-						"isInput": "y"
+						"displayUnit": "dollar",
+						"format": "10.2f"
 					},
 					{
-						"name": "rate",
+						"name": "pmtsLeft",
+						"Notes": "Number of remaining payments",
+						"DiagramX": 165,
+						"DiagramY": 175,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "Number_Pmts - 1:Number_Pmts"
+						},
+						"format": "10.0f"
+					},
+					{
+						"name": "InterestPaid",
+						"Notes": "Cumulative Interest Paid by period\n",
+						"DiagramX": 165,
+						"DiagramY": 20,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "pmt * 1:Number_Pmts + principalPaid"
+						},
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					},
+					{
+						"name": "PeriodInterest",
+						"Notes": "Amount of interest paid each period\n",
+						"DiagramX": 165,
+						"DiagramY": 135,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "InterestPaid - {cc 0, InterestPaid[1:(Number_Pmts-1)]}"
+						},
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					},
+					{
+						"name": "PeriodPrincipal",
+						"Notes": "Amount of principal paid each period\n",
+						"DiagramX": 165,
+						"DiagramY": 60,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "PrincipalPaid - {cc 0, PrincipalPaid[1:(Number_Pmts-1)]}"
+						},
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					},
+					{
+						"name": "Table",
+						"DiagramX": 165,
+						"DiagramY": 210,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{table\n\t{cc\n\t\t\"Pmt No\",\n\t\t\"Total Paid\",\n\t\t\"Principal Paid\",\n\t\t\"interest Paid\",\n\t\t\"Period Principal\",\n\t\t\"Period Interest\"\n\t},\n\t1:Number_Pmts,\n\tTotalPaid,\n\tPrincipalPaid,\n\tInterestPaid,\n\tPeriodPrincipal,\n\tPeriodInterest\n}"
+						},
+						"tableUnits": {
+							"2": "dollar",
+							"3": "dollar",
+							"4": "dollar",
+							"5": "dollar",
+							"6": "dollar"
+						},
+						"tableFormats": [
+							null,
+							"10.0f",
+							"10.2f",
+							"10.2f",
+							"10.2f",
+							"10.2f",
+							"10.2f"
+						]
+					},
+					{
+						"name": "Present_Value",
+						"Notes": "The present value.",
+						"DiagramX": 25,
+						"DiagramY": -50,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "600000"
+						},
+						"isInput": "y",
+						"showInput": "y",
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					},
+					{
+						"name": "Rate",
+						"Notes": "The interest rate per period.",
+						"DiagramX": 25,
+						"DiagramY": -15,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "1.95 \"%\" / 12"
+						},
+						"isInput": "y",
+						"showInput": "y",
+						"displayUnit": "%"
+					},
+					{
+						"name": "Number_Pmts",
+						"Notes": "The number of payment periods.",
+						"DiagramX": 25,
+						"DiagramY": 20,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "30*12"
+						},
+						"isInput": "y",
+						"showInput": "y",
+						"format": "10.0f"
+					},
+					{
+						"name": "Payment_Type",
+						"Notes": "Payments made at:",
+						"DiagramX": 25,
+						"DiagramY": 65,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Menu",
+						"optionsFormula": {
+							"Formula": "{table {cc \"Label\", \"value\"},\n\t{cc\n\t\t\"End of Period\",\n\t\t\"Start of Period\"\n\t},\n\t{cc 1, 0}\n}"
+						},
+						"selected": 1
+					},
+					{
+						"name": "Future_Value",
+						"Notes": "The future value.  For a loan, this is typically 0.",
+						"DiagramX": 25,
+						"DiagramY": 100,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "0"
+						},
+						"isInput": "y",
+						"showInput": "y",
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					}
+				]
+			},
+			{
+				"name": "PresentValue",
+				"Notes": "<b>PresentValue</b>\nCalculates the present value for  a series of payments made at regular intervals with a given interest rate.",
+				"DiagramX": 0,
+				"DiagramY": -35,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "Number_Pmts",
+						"Notes": "The number of payment periods.",
+						"DiagramX": 25,
+						"DiagramY": 20,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "20 * 12"
+						},
+						"showInput": "y",
+						"format": "10.0f"
+					},
+					{
+						"name": "Payment_Amt",
+						"Notes": "The payment made each period.",
+						"DiagramX": 25,
+						"DiagramY": 55,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "500 dollar"
+						},
+						"showInput": "y",
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					},
+					{
+						"name": "Future_Value",
+						"Notes": "The future value.  That is the remaining value of after all the payments have been made.  For a loan, this would typically be 0.",
+						"DiagramX": 115,
+						"DiagramY": -15,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "0"
+						},
+						"showInput": "y",
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					},
+					{
+						"name": "Present_Value",
+						"Notes": "The present value.",
+						"DiagramX": 115,
+						"DiagramY": 55,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "(-payment_amt *\n\t(1 + rate * payment_type )\n\t* ((1 + rate )^Number_Pmts - 1)\n\t/ rate\n\t+ future_value\n) /\n(1 + rate) ^ Number_Pmts"
+						},
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					},
+					{
+						"name": "Payment_Type",
+						"Notes": "Payments made at:",
+						"DiagramX": 115,
+						"DiagramY": 20,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Menu",
+						"optionsFormula": {
+							"Formula": "{table {cc \"Label\", \"value\"},\n\t{cc\n\t\t\"End of Period\",\n\t\t\"Start of Period\"\n\t},\n\t{cc 1, 0}\n}"
+						},
+						"selected": 1
+					},
+					{
+						"name": "Rate",
+						"Notes": "Calculate the present value for  a series of payments made at regular intervals with a given interest rate.",
+						"DiagramX": 25,
+						"DiagramY": -15,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "0.08 / 12"
+						},
+						"showInput": "y",
+						"displayUnit": "%"
+					}
+				]
+			},
+			{
+				"name": "FutureValue",
+				"Notes": "<b>FutureValue</b>\nCalculates the future value for  a series of payments made at \nregular intervals with a given interest rate.",
+				"DiagramX": 0,
+				"DiagramY": 25,
+				"HideInfo": "n",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "fv",
+						"Notes": "The future value.  That is the remaining value of after all the payments have been made.",
+						"DiagramX": 145,
+						"DiagramY": 45,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "-Present_Value * (1 + rate) ^ Number_Pmts  -\nPayment_Amt * \n(1 + rate * Payment_Type) *\n((1 + rate )^ Number_Pmts - 1) /\nrate"
+						},
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					},
+					{
+						"name": "Payment_Type",
+						"Notes": "Payments made at:",
+						"DiagramX": 145,
+						"DiagramY": 15,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Menu",
+						"optionsFormula": {
+							"Formula": "{table {cc \"Label\", \"value\"},\n\t{cc\n\t\t\"End of Period\",\n\t\t\"Start of Period\"\n\t},\n\t{cc 1, 0}\n}"
+						},
+						"selected": 1
+					},
+					{
+						"name": "Present_Value",
+						"Notes": "The present value.",
+						"DiagramX": 25,
+						"DiagramY": -20,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "0"
+						},
+						"isInput": "y",
+						"showInput": "y",
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					},
+					{
+						"name": "Rate",
 						"Notes": "The interest rate per period.",
 						"DiagramX": 25,
 						"DiagramY": 15,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "{eval pv_form.rate}"
+							"Formula": "12 \"%\" / 12"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y",
+						"displayUnit": "%",
+						"format": "10.2f"
 					},
 					{
-						"name": "type",
-						"Notes": "The payment type:\n0 if payments are made at the end of the period.\n1 if payments are made at the beginning of the period.",
-						"DiagramX": 25,
-						"DiagramY": 180,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{eval pv_form.type}"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "nPmt",
+						"name": "Number_Pmts",
 						"Notes": "The number of payment periods.",
 						"DiagramX": 25,
 						"DiagramY": 55,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "{eval pv_form.nPmt}"
+							"Formula": "12"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y",
+						"format": "10.0f"
 					},
 					{
-						"name": "fv",
-						"Notes": "The future value.  That is the remaining value of after all the payments have been made.  For a loan, this would typically be 0.",
-						"DiagramX": 25,
-						"DiagramY": 130,
+						"name": "Payment_Amt",
+						"Notes": "The payment made each period.",
+						"DiagramX": 145,
+						"DiagramY": -20,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "{eval pv_form.fv}"
+							"Formula": "-1000"
 						},
-						"isInput": "y"
-					},
-					{
-						"name": "pv",
-						"Notes": "The present value.",
-						"DiagramX": 155,
-						"DiagramY": 15,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "(-pmt * ( 1 + rate * type ) * ((1 + rate )^ nPmt - 1) / rate + fv) /\n(1 + rate) ^ nPmt"
-						},
-						"isOutput": "y"
+						"isInput": "y",
+						"showInput": "y",
+						"displayUnit": "dollar",
+						"format": "10.2f"
 					}
 				]
 			},
 			{
-				"name": "DBDeprec",
-				"Notes": "Calculates depreciation using the fixed declining balance method.",
-				"DiagramX": 180,
-				"DiagramY": 105,
+				"name": "IRR",
+				"Notes": "<b>IRR</b>\nCalculates the internal rate of return for a series of cash flows at defined dates.",
+				"DiagramX": 90,
+				"DiagramY": -35,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "Dates",
+						"Notes": "An array of dates on which payments will be made.",
+						"DiagramX": 20,
+						"DiagramY": 45,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "CashFlows.date"
+						},
+						"displayUnit": "date"
+					},
+					{
+						"name": "Payments",
+						"Notes": "Payments corresponding to the Dates array.    At least one payment must be negative and one positive.",
+						"DiagramX": 20,
+						"DiagramY": 85,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "CashFlows.Payment"
+						}
+					},
+					{
+						"name": "Guess",
+						"Notes": "A guess for the rate of return",
+						"DiagramX": 20,
+						"DiagramY": 140,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ".1"
+						},
+						"showInput": "y"
+					},
+					{
+						"name": "error",
+						"DiagramX": 110,
+						"DiagramY": 70,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{sum Payments / (1 + rate )^((dates - dates[1])/1 year)}"
+						}
+					},
+					{
+						"name": "solver",
+						"DiagramX": 110,
+						"DiagramY": 45,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Equation Solver",
+						"f0": "error * 1e10",
+						"c0": "1",
+						"maxIter": 200,
+						"maxJacobians": 5,
+						"Enabled": "y"
+					},
+					{
+						"name": "rate",
+						"Notes": "The IRR",
+						"DiagramX": 110,
+						"DiagramY": 95,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "solver.1/2 + guess"
+						}
+					},
+					{
+						"name": "CashFlows",
+						"Notes": "Table of cash flows for Internal Rate of Return calculation.  In this case the values are taken from the XIRR example for Excel.",
+						"DiagramX": -65,
+						"DiagramY": 45,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Data Table",
+						"Columns": [
+							{
+								"name": "Date",
+								"displayUnit": "date",
+								"format": "10.0f",
+								"nValues": [
+									1199145600,
+									1204329600,
+									1225324800,
+									1234656000,
+									1238544000
+								],
+								"unitDimensions": "0 0 1 0 0 0 0",
+								"defaultValue": "Payment_Date"
+							},
+							{
+								"name": "Payment",
+								"displayUnit": "dollar",
+								"format": "10.2f",
+								"nValues": [
+									-10000,
+									2750,
+									4250,
+									3250,
+									2750
+								],
+								"unitDimensions": "0 0 0 0 0 0 0",
+								"defaultValue": "payment_amt"
+							}
+						],
+						"Filter": {
+							"Formula": ""
+						}
+					},
+					{
+						"name": "Payment_Date",
+						"Notes": "",
+						"DiagramX": -65,
+						"DiagramY": 100,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "20090401 date"
+						},
+						"showInput": "y",
+						"displayUnit": "date",
+						"format": "10.0f"
+					},
+					{
+						"name": "Payment_Amt",
+						"Notes": "",
+						"DiagramX": -65,
+						"DiagramY": 125,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "2750 dollar"
+						},
+						"showInput": "y",
+						"displayUnit": "dollar",
+						"format": "10.2f"
+					},
+					{
+						"name": "Add_Payment",
+						"Notes": "",
+						"DiagramX": -65,
+						"DiagramY": 150,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Button",
+						"action": "addrow",
+						"targetFormula": {
+							"Formula": "'CashFlows"
+						},
+						"labelFormula": {
+							"Formula": "'Add Payment"
+						}
+					}
+				]
+			},
+			{
+				"name": "DBDepreciation",
+				"Notes": "<b>DBDepreciation</b>\nCalculates depreciation using the fixed declining balance method.",
+				"DiagramX": 175,
+				"DiagramY": -35,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
 				"Type": "Model",
 				"diagramScale": 1,
 				"Objects": [
@@ -125,11 +757,15 @@
 						"DiagramY": 30,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "1e6"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y",
+						"displayUnit": "dollar",
+						"format": "12.2f"
 					},
 					{
 						"name": "Salvage",
@@ -138,11 +774,15 @@
 						"DiagramY": 65,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "100000"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y",
+						"displayUnit": "dollar",
+						"format": "12.2f"
 					},
 					{
 						"name": "Life",
@@ -151,11 +791,14 @@
 						"DiagramY": 105,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "6"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y",
+						"format": "10.1f"
 					},
 					{
 						"name": "Month",
@@ -164,10 +807,12 @@
 						"DiagramY": 140,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "7"
-						}
+						},
+						"showInput": "y"
 					},
 					{
 						"name": "iter",
@@ -175,6 +820,7 @@
 						"DiagramY": 30,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Iterator",
 						"whileFormula": {
 							"Formula": "{le $.i  life + 1}"
@@ -204,6 +850,7 @@
 						"DiagramY": 80,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "cost * rate * month / 12"
@@ -215,6 +862,7 @@
 						"DiagramY": 155,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int (1 - ((salvage / cost) ^ (1 / life)))*10^rValue + 0.5} /  10^rValue"
@@ -226,6 +874,7 @@
 						"DiagramY": 55,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{if {eq iter.i, 1 }, first,\n\t{if {eq iter.i, life + 1}, last, middle}\n}"
@@ -237,6 +886,7 @@
 						"DiagramY": 105,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "(cost - {sum iter.each}) * rate"
@@ -248,6 +898,7 @@
 						"DiagramY": 130,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "(cost - {sum iter.each}) * rate * (12 - month) / 12"
@@ -259,11 +910,14 @@
 						"DiagramY": 30,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "iter.each"
 						},
-						"isOutput": "y"
+						"displayUnit": "dollar",
+						"format": "12.2f"
 					},
 					{
 						"name": "Round",
@@ -272,11 +926,14 @@
 						"DiagramY": 180,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "3"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y",
+						"format": "10.0f"
 					},
 					{
 						"name": "rValue",
@@ -284,6 +941,7 @@
 						"DiagramY": 180,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{max {min round, 8}, 1}"
@@ -292,12 +950,13 @@
 				]
 			},
 			{
-				"name": "VDBDeprec",
-				"Notes": "Calculates double declining balance depreciation when factor is 2, but this can be adjusted as necessary.\n\nIf switch is not zero, then it will switch to straight line depreciation as the declining balance drops lower than straight line depreciation.",
-				"DiagramX": 180,
-				"DiagramY": 150,
+				"name": "VDBDepreciation",
+				"Notes": "<b>VDBDepreciation</b>\nCalculates double declining balance depreciation when factor is 2, but this can be adjusted as necessary.\n\nIf <b>Switch</b> is turned on, then it will switch to straight line depreciation as the declining balance drops lower than straight line depreciation.",
+				"DiagramX": 175,
+				"DiagramY": 20,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
+				"HtmlNotes": "y",
 				"Type": "Model",
 				"diagramScale": 1,
 				"Objects": [
@@ -308,11 +967,15 @@
 						"DiagramY": -25,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "2400"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y",
+						"displayUnit": "dollar",
+						"format": "12.2f"
 					},
 					{
 						"name": "Salvage",
@@ -321,11 +984,15 @@
 						"DiagramY": 10,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "300"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y",
+						"displayUnit": "dollar",
+						"format": "12.2f"
 					},
 					{
 						"name": "Life",
@@ -334,11 +1001,14 @@
 						"DiagramY": 50,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "10"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y",
+						"format": "10.0f"
 					},
 					{
 						"name": "iter",
@@ -346,6 +1016,7 @@
 						"DiagramY": 5,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Iterator",
 						"whileFormula": {
 							"Formula": "{le $.i  life}"
@@ -378,6 +1049,7 @@
 						"DiagramY": 60,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{min (cost) * (factor/life), (cost - salvage )}"
@@ -386,9 +1058,10 @@
 					{
 						"name": "DDB",
 						"DiagramX": 250,
-						"DiagramY": 65,
+						"DiagramY": 60,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{if {eq iter.i, 1 }, first, middle\n}"
@@ -400,23 +1073,11 @@
 						"DiagramY": 85,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{min (cost - sum) * (factor/life), (cost - salvage - sum)}"
 						}
-					},
-					{
-						"name": "depreciation",
-						"Notes": "Depreciation by period",
-						"DiagramX": 250,
-						"DiagramY": -25,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "iter.each"
-						},
-						"isOutput": "y"
 					},
 					{
 						"name": "Factor",
@@ -425,24 +1086,14 @@
 						"DiagramY": 90,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "2"
 						},
-						"isInput": "y"
-					},
-					{
-						"name": "Switch",
-						"Notes": "If true, then switch to straight line depreciation when the depreciation is greater than the declining balance depreciation\n",
-						"DiagramX": 30,
-						"DiagramY": 130,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "1"
-						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y",
+						"format": "10.0f"
 					},
 					{
 						"name": "this",
@@ -450,6 +1101,7 @@
 						"DiagramY": 35,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{if {lt ddb, straight} * switch, straight, ddb,}"
@@ -461,585 +1113,54 @@
 						"DiagramY": -25,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{if {gt iter.i, 1},\n\t (cost - salvage - sum)/{max 1, (life - iter.i +1)},\n\t0\n}"
 						}
 					},
 					{
-						"name": "sum",
+						"name": "Switch",
+						"Notes": "Switch to straight line depreciation when the depreciation is greater than the declining balance depreciation?",
+						"DiagramX": 30,
+						"DiagramY": 135,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Menu",
+						"optionsFormula": {
+							"Formula": "{table {cc \"Label\", \"Value\"}\n\t{cc \"Switch\", \"Don't Switch\"}\n\t{cc 1, 0}\n}"
+						},
+						"selected": 0
+					},
+					{
+						"name": "Sum",
 						"DiagramX": 250,
 						"DiagramY": 20,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{sum iter.each}"
 						}
-					}
-				]
-			},
-			{
-				"name": "PeriodicIRR",
-				"Notes": "Calculates the internal rate of return for a series of cash flows that occur at regular intervals.",
-				"DiagramX": 180,
-				"DiagramY": 55,
-				"HideInfo": "n",
-				"DiagramNotes": "y",
-				"Type": "Model",
-				"diagramScale": 1,
-				"Objects": [
-					{
-						"name": "Payments",
-						"Notes": "Cash flows in order of the periods    At least one payment must be negative and one positive.",
-						"DiagramX": 20,
-						"DiagramY": 45,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "IRR_Payments"
-						},
-						"isInput": "y"
 					},
 					{
-						"name": "Guess",
-						"Notes": "A guess for the rate of return",
-						"DiagramX": 20,
-						"DiagramY": 95,
+						"name": "Depreciation",
+						"Notes": "Depreciation by period",
+						"DiagramX": 250,
+						"DiagramY": -25,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": ".1"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "error",
-						"DiagramX": 110,
-						"DiagramY": 75,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{sum Payments / (1 + rate )^(0:({nrows Payments} - 1))}"
+							"Formula": "iter.each"
 						}
-					},
-					{
-						"name": "solver",
-						"DiagramX": 110,
-						"DiagramY": 45,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"Type": "Equation Solver",
-						"f0": "error * 1e10",
-						"c0": "1",
-						"maxIter": 200,
-						"maxJacobians": 5,
-						"Enabled": "y"
-					},
-					{
-						"name": "rate",
-						"Notes": "The IRR",
-						"DiagramX": 110,
-						"DiagramY": 105,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "solver.1 + guess "
-						},
-						"isOutput": "y"
 					}
 				]
-			},
-			{
-				"name": "fv",
-				"Notes": "Calculates the future value for  a series of payments made at regular intervals with a given interest rate.\n\nLook inside the model for the input descriptions.",
-				"DiagramX": -5,
-				"DiagramY": 55,
-				"HideInfo": "n",
-				"DiagramNotes": "y",
-				"Type": "Model",
-				"diagramScale": 1,
-				"Objects": [
-					{
-						"name": "pmt",
-						"Notes": "The payment made each period.",
-						"DiagramX": 25,
-						"DiagramY": 95,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "-1000"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "rate",
-						"Notes": "The interest rate per period.",
-						"DiagramX": 25,
-						"DiagramY": 15,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "12 \"%\" / 12"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "type",
-						"Notes": "The payment type:\n0 if payments are made at the end of the period.\n1 if payments are made at the beginning of the period.",
-						"DiagramX": 25,
-						"DiagramY": 130,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "0"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "nPmt",
-						"Notes": "The number of payment periods.",
-						"DiagramX": 25,
-						"DiagramY": 55,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "12"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "pv",
-						"Notes": "The present value.",
-						"DiagramX": 25,
-						"DiagramY": -20,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "0"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "fv",
-						"Notes": "The future value.  That is the remaining value of after all the payments have been made.",
-						"DiagramX": 175,
-						"DiagramY": -20,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "-pv * (1 + rate) ^ nPmt  -\npmt * ( 1 + rate * type ) * ((1 + rate )^ nPmt - 1) / rate\n"
-						},
-						"isOutput": "y"
-					}
-				]
-			},
-			{
-				"name": "PV_Form",
-				"Notes": "        Present Value Form\n",
-				"DiagramX": -5,
-				"DiagramY": -40,
-				"HideInfo": "y",
-				"DiagramNotes": "y",
-				"Type": "HTML Form",
-				"Formula": {
-					"Formula": "'<html lang=\"en\">\n\t<head>\n\t\t<title>Present Value</title>\n\t\t<meta name=\"viewport\" content=\"initial-scale=1.0\">\n\t\t<style>\nbody {\n\tbackground-color: #EEFFEE;\n}\n\n\n/* Tables\n * --------------------------------------------------------------------- */\n\n\ttable {\n\t\tborder-top:     0px solid #ddd;\n\t\tborder-left:    0px solid #ddd;\n\t\tmargin-top: 0px;\n\t\tmargin-bottom: 0.5em;\n\t\twidth:300px;\n\t\tfont-size: x-large;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t}\n\tth,td {\n\t\tborder-bottom:  0px solid #ddd;\n\t\tborder-right:   0px solid #ddd;\n\t\tvertical-align: top;\n\t}\n/* Default Classes\n * --------------------------------------------------------------------- */\n\n\tp.title, a.title, div.title {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 2.0em;\n\t\ttext-align: center;\n\t\tmargin-bottom: 0px;\n\t}\n\n\tp.subtitle {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 1.1em;\n\t}\n\t\t\n\t.center {\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\ttext-align: center;\n\t}\n\t\n\t.input {\n\t\twidth: 100%;\n\t\tfont-size: large;\n\t}\n\n\tbutton {\n\t\tfont-size: large;\n\t\tmargin-left: 10px;\n\t\tmargin-right: 10px;\n\t}\n\n\t.result {\n\t\ttext-align: center;\n\t\tfont-size: x-large;\n\t}\t\t\n\n\t.inputlabel {\n\t\tfont-size: 1em;\n\t\twhite-space:nowrap;\n\t\tpadding-right: 10px;\n\t}\n\t\n\t.desccell {\n\t\tbackground-color: #E8F8FF;\n\t\tfont-size: 0.8em;\n\t\tfont-style: italic;\n\t\ttext-align: left;\n\t\tborder: 1px solid #000;\n\t\tpadding: 5px;\n\t}\n\n\t#maindesc {\n\t\tbackground-color: #E8F8FF;\n\t\tfont-size: large;\n\t\tfont-style: italic;\n\t\ttext-align: left;\n\t\tborder: 1px solid #000;\n\t\tpadding: 5px;\n\t\twidth: 300px;\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t}\n\t\n\t.selected td.inputlabel {\n\t\tcolor: #00F;\n\t}\n\t\n\t.inputrow {\n\t\ttext-align: left;\n\t}\n\t\t</style>\n\t\t<script  type=\"text/javascript\">\n\t\t\twindow.onload = function() {\n\t\t\t\tconst mainDescription = document.getElementById('maindesc');\n\n\t\t\t\tconst setHidden = (descriptions, newState) => {\n\t\t\t\t\tfor (const desc of descriptions) {\n\t\t\t\t\t\tdesc.hidden = newState;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tsetHidden(document.getElementsByClassName('inputdesc'), true);\n\t\t\t\tmainDescription.hidden = false;\n\n\t\t\t\tconst removeClassFromAll = (className) => {\n\t\t\t\t\tconst elements = document.getElementsByClassName(className);\n\t\t\t\t\tfor (const element of elements) {\n\t\t\t\t\t\telement.classList.remove(className);\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tvar clickFunction = (event) => {\n\t\t\t\t\tsetHidden(document.getElementsByClassName('inputdesc'), true);\n\t\t\t\t\tvar desc = event.target;\n\t\t\t\t\tvar row = desc.parentElement.parentElement;\n\t\t\t\t\tif (row.classList.contains('selected')) {\n\t\t\t\t\t\tremoveClassFromAll('selected');\n\t\t\t\t\t}\n\t\t\t\t\telse {\n\t\t\t\t\t\tremoveClassFromAll('selected');\n\t\t\t\t\t\trow.classList.add('selected');\n\t\t\t\t\t\trow.nextElementSibling.hidden = false\n\t\t\t\t\t}\n\t\t\t\t};\n\t\t\t\t\n\t\t\t\tfor (const element of document.getElementsByClassName('inputdesc')) {\n\t\t\t\t\telement.addEventListener('click', clickFunction);\n\t\t\t\t}\n\t\t\t\tfor (const element of document.getElementsByClassName('inputrow')) {\n\t\t\t\t\telement.addEventListener('click', clickFunction);\n\t\t\t\t}\n\t\t\t\tdocument.getElementById('title').addEventListener('click', () => {\n\t\t\t\t\tsetHidden(document.getElementsByClassName('inputdesc'), true);\n\t\t\t\t\tmainDescription.hidden = false;\n\t\t\t\t})\n\t\t\t}\n\n\t\t\tconst calculate = () => {\n\t\t\t\tmmpost({\n\t\t\t\t\trate: document.getElementById('rate').value,\n\t\t\t\t\tnPmt: document.getElementById('npmt').value,\n\t\t\t\t\tpmt: document.getElementById('pmt').value,\n\t\t\t\t\tfv: document.getElementById('fv').value,\n\t\t\t\t\ttype: document.getElementById('type').value,\n\t\t\t\t});\n\t\t\t}\n\t\t</script>\n\t</head>\n\t<body>\n\t\t<p id=\"title\" class=\"title\">Present Value</p>\n\t\t<p id=\"maindesc\" class=\"inputdesc\">Calculates the present value for  a series of payments made at regular intervals with\n a given interest rate.</p>\n\t\t<table class=\"center\">\n\t\t\t<tr class=\"inputrow\"><td class=\"inputlabel\"><span class=\"rowlabel\">Rate</span></td>\n\t\t\t\t<td><input type=\"text\" id=\"rate\" value=\"<mm>$.rate</mm>\" class=\"input\"></td>\n\t\t\t</tr>\n\t\t\t<tr class=\"inputdesc\">\n\t\t\t\t<td colspan=\"2\" class=\"desccell\">The interest rate per period as a fraction.</td>\n\t\t\t</tr>\n\t\t\t<tr class=\"inputrow\"><td class=\"inputlabel\"><span class=\"rowlabel\">Number Pmts</span>\n\t\t\t\t<td class=\"inputcell\"><input type=\"text\" id=\"npmt\" value=\"<mm>$.npmt</mm>\" class=\"input\"></td>\n\t\t\t</tr>\n\t\t\t<tr class=\"inputdesc\">\n\t\t\t\t<td colspan=\"2\" class=\"desccell\">The number of payment periods.</td>\n\t\t\t</tr>\n\t\t\t<tr class=\"inputrow\"><td class=\"inputlabel\"><span class=\"rowlabel\">Pmt Amount</span>\n\t\t\t\t<td><input type=\"text\" id=\"pmt\" value=\"<mm>$.pmt</mm>\" class=\"input\"></td>\n\t\t\t</tr>\n\t\t\t<tr class=\"inputdesc\">\n\t\t\t\t<td colspan=\"2\" class=\"desccell\">The payment made each period.</td>\n\t\t\t</tr>\n\t\t\t<tr class=\"inputrow\"><td class=\"inputlabel\"><span class=\"rowlabel\">Future Value</span>\n\t\t\t\t<td><input type=\"text\" id=\"fv\" value=\"<mm>$.fv</mm>\" class=\"input\">\n\t\t\t\t</td>\n\t\t\t</tr>\n\t\t\t<tr class=\"inputdesc\">\n\t\t\t\t<td colspan=\"2\" class=\"desccell\">That is the remaining value of after all the payments have been made.  For a loan, this would typically be 0.</td>\n\t\t\t</tr>\n\t\t\t<tr class=\"inputrow\"><td class=\"inputlabel\"><span class=\"rowlabel\">Pmt Type</span>\n\t\t\t\t<td><input type=\"text\" id=\"type\" value=\"<mm>$.type</mm>\" class=\"input\"></td>\n\t\t\t</tr>\n\t\t\t<tr class=\"inputdesc\">\n\t\t\t\t<td colspan=\"2\" class=\"desccell\">\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li>0 if payments are made at the end of the period.</li>>\n\t\t\t\t\t\t<li>1 if payments are made at the beginning of the period.</li>\n\t\t\t\t\t</ul>\n\t\t\t\t</td>\n\t\t\t</tr>\n\t\t</table>\n\t\t<div class=\"center\">\n\t\t\t<button onclick=\"calculate();\"\n\t\t\t\ttitle=\"Calculate PV\">Calculate</button>\n\t\t</div>\n\t\t<p class=\"result\">\n\t\t\tPresent Value = <mm>pv.pv</mm><br>\n\t\t</p>\n\t</body>\n</html>"
-				},
-				"inputs": {
-					"npmt": "20 * 12",
-					"rate": "0.08 / 12",
-					"fv": "0",
-					"type": "0",
-					"pmt": 500
-				},
-				"f0": "$.rate",
-				"f1": "$.npmt",
-				"f2": "$.pmt",
-				"f3": "$.fv",
-				"f4": "$.type",
-				"f5": "pv.pv"
-			},
-			{
-				"name": "CashFlows",
-				"Notes": "Table of cash flows for Internal Rate of Return calculation.  In this case the values are taken from the XIRR example for Excel.",
-				"DiagramX": 90,
-				"DiagramY": -40,
-				"HideInfo": "y",
-				"DiagramNotes": "y",
-				"Type": "Data Table",
-				"Columns": [
-					{
-						"name": "Date",
-						"displayUnit": "date",
-						"nValues": [
-							1199145600,
-							1204329600,
-							1225324800,
-							1234656000,
-							1238544000
-						],
-						"unitDimensions": "0 0 1 0 0 0 0",
-						"defaultValue": "{mktime IRR_Form.date}"
-					},
-					{
-						"name": "Payment",
-						"displayUnit": "Fraction",
-						"nValues": [
-							-10000,
-							2750,
-							4250,
-							3250,
-							2750
-						],
-						"unitDimensions": "0 0 0 0 0 0 0",
-						"defaultValue": "{eval irr_Form.payment}"
-					}
-				]
-			},
-			{
-				"name": "IRR_Form",
-				"Notes": "           IRR Value Form\n",
-				"DiagramX": 180,
-				"DiagramY": -40,
-				"HideInfo": "y",
-				"DiagramNotes": "y",
-				"Type": "HTML Form",
-				"Formula": {
-					"Formula": "'<html lang=\"en\">\n\t<head>\n\t\t<title>IRR</title>\n\t\t<meta name=\"viewport\" content=\"initial-scale=1.0\">\n\t\t<style>\nbody {\n\tbackground-color: #EEFFEE;\n}\n\n/* Tables\n * --------------------------------------------------------------------- */\n\n\ttable {\n\t\tborder-top:     0px solid #ddd;\n\t\tborder-left:    0px solid #ddd;\n\t\tmargin-top: 0px;\n\t\tmargin-bottom: 0.5em;\n\t\twidth:300px;\n\t\tfont-size: x-large;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t}\n\tth,td {\n\t\tborder-bottom:  0px solid #ddd;\n\t\tborder-right:   0px solid #ddd;\n\t\tvertical-align: top;\n\t}\n/* Default Classes\n * --------------------------------------------------------------------- */\n\n\tp.title, a.title, div.title {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 2.0em;\n\t\ttext-align: center;\n\t\tmargin-bottom: 0px;\n\t}\n\n\tp.subtitle {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 1.7em;\n\t}\n\t\t\n\t.center {\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\ttext-align: center;\n\t}\n\t\n\t.input {\n\t\twidth: 100%;\n\t\tfont-size: large;\n\t}\n\n\tbutton {\n\t\tfont-size: large;\n\t\tmargin-left: 10px;\n\t\tmargin-right: 10px;\n\t}\n\n\t.result {\n\t\ttext-align: center;\n\t\tfont-size: x-large;\n\t}\t\t\n\n\t.inputlabel {\n\t\tfont-size: 1em;\n\t\twhite-space:nowrap;\n\t\tpadding-right: 10px;\n\t}\n\t\n\t.desccell {\n\t\tbackground-color: #E8F8FF;\n\t\tfont-size: 0.8em;\n\t\tfont-style: italic;\n\t\ttext-align: left;\n\t\tborder: 1px solid #000;\n\t\tpadding: 5px;\n\t}\n\n\t#maindesc {\n\t\tbackground-color: #E8F8FF;\n\t\tfont-size: large;\n\t\tfont-style: italic;\n\t\ttext-align: left;\n\t\tborder: 1px solid #000;\n\t\tpadding: 5px;\n\t\twidth: 300px;\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t}\n\t\n\t.selected td.inputlabel {\n\t\tcolor: #00F;\n\t}\n\t\n\t.inputrow {\n\t\ttext-align: left;\n\t}\n\t\n\t#payments {\n\t\tbackground-color: white;\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\ttext-align: center;\n\t\tborder: 1px solid black;\n\t}\n\t\n\t.guess {\n\t\tmargin-top: 10px;\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\ttext-align: center;\n\t\tfont-size: 1.5em;\n\t}\n\t\n\t.guess input {\n\t\twidth: 4em;\n\t\tmargin-left: 1em;\n\t}\n\t\t</style>\n\t\t<script  type=\"text/javascript\">\n\t\t\twindow.onload = function() {\n\t\t\t\tdocument.getElementById('maindesc').hidden = false;\n\t\t\t\t\n\t\t\t\tconst dates = [ <mm>{join {fmt \"%.0f\", {date CashFlows.date}}, \",\"}</mm> ];\n\t\t\t\tconst pmts = [ <mm>{join {fmt \"%.2f\", CashFlows.payment}, \",\"}</mm> ];\n\t\t\t\tconst payments = document.getElementById('payments');\n\t\t\t\tfor ( i = 0; i < dates.length; i++ ) {\n\t\t\t\t\tcreateRow(dates[i], pmts[i]);\n\t\t\t\t}\n\t\t\t\tpayments.addEventListener('click', tableFunction);\n\t\t\t};\n\n\t\t\tconst createRow = (date, payment) => {\n\t\t\t\tconst row = payments.insertRow(-1);  // add to end of table\n\t\t\t\t\tconst dateCell = row.insertCell(0);\n\t\t\t\t\tconst dateText = document.createTextNode(date);\n  \t\t\t\tdateCell.appendChild(dateText);\n\t\t\t\t\tconst pmtCell = row.insertCell(1);\n\t\t\t\t\tconst pmtText = document.createTextNode(payment);\n  \t\t\t\tpmtCell.appendChild(pmtText);\n\t\t\t}\n\n\t\t\tfunction tableFunction() {\n\t\t\t\tmmpost({}, {mm_push: 'cashflows'});\n\t\t\t}\n\t\t\tconst addRow = () => {\n\t\t\t\tmmpost({\n\t\t\t\t\tdate: document.getElementById('date').value,\n\t\t\t\t\tpayment: document.getElementById('payment').value,\n\t\t\t\t\tlastUpdate: Date.now()\n\t\t\t\t}, {\n\t\t\t\t\tmm_addrow: 'cashflows',\n\t\t\t\t\tmm_update: true,\n\t\t\t\t});\n\t\t\t}\n\t\t</script>\n\t</head>\n\t<body>\n\t\t<p class=\"title\">Internal Rate of Return</p>\n\t\t<p id=\"maindesc\" class=\"inputdesc\">Calculates the internal rate of return for a series of cash flows at defined dates.</p>\n\t\t<table id=\"payments\">\n\t\t\t<tr><th>Date</th><th>Payment</th></tr>\n\t\t</table>\n\n\t\t<p class=\"result\">\n\t\t\tIRR = <mm>irr.rate</mm><br>\n\t\t</p>\n\t\t<input type=\"hidden\" name=\"guess\" value=\"<mm>$.guess</mm>\">\n\t\t<table class=\"center\">\n\t\t\t<tr class=\"inputrow\"><td class=\"inputlabel\"><span class=\"rowlabel\">Date</span></td>\n\t\t\t\t<td><input type=\"text\" id=\"date\" value=\"<mm>{fmt \"%8.0f\" {int {date {now}+{timezone}}}}</mm>\" class=\"input\"></td>\n\t\t\t</tr>\n\t\t\t<tr class=\"inputrow\"><td class=\"inputlabel\"><span class=\"rowlabel\">Payment</span>\n\t\t\t\t<td class=\"inputcell\"><input type=\"text\" id=\"payment\" value=\"0\" class=\"input\"></td>\n\t\t\t</tr>\n\t\t</table>\n\t\t<div class=\"center\">\n\t\t\t<button id=\"addpayment\"\n\t\t\t\tonClick=\"addRow()\"\n\t\t\t\tname=\"mm_addrow\" type=\"submit\"\n\t\t\t\tvalue=\"CashFlows\">Add Payment</button>\n\t\t</div>\n\t\t<div class=\"guess\">\n\t\t\t<button id=\"guessbutton\" type=\"submit\"\n\t\t\t\tonClick=\"mmpost({guess: document.getElementById('guess').value})\">Change Guess</button>\n\t\t\t<input type=\"text\" id=\"guess\" value=\"<mm>$.guess</mm>\">\n\t\t</div>\n\t</body>\n</html>"
-				},
-				"inputs": {
-					"guess": 0.1,
-					"date": 20210608,
-					"payment": 2000,
-					"lastupdate": 1623211894528
-				},
-				"f0": "{join {fmt \"%.0f\", {date CashFlows.date}}, \",\"}",
-				"f1": "{join {fmt \"%.2f\", CashFlows.payment}, \",\"}",
-				"f2": "irr.rate",
-				"f3": "$.guess",
-				"f4": "{fmt \"%8.0f\" {int {date {now}+{timezone}}}}",
-				"f5": "$.guess",
-				"f6": "{fmt \"%8.0f\" {int {date {now}+{timezone}}}}",
-				"f7": "$.guess",
-				"f8": "irr.rate",
-				"f9": "$.guess",
-				"f10": "{fmt \"%8.0f\" {int {date {now}+{timezone}}}}",
-				"f11": "$.guess"
-			},
-			{
-				"name": "IRR",
-				"Notes": "Calculates the internal rate of return for a series of cash flows at defined dates.",
-				"DiagramX": 180,
-				"DiagramY": 5,
-				"HideInfo": "n",
-				"DiagramNotes": "y",
-				"Type": "Model",
-				"diagramScale": 1,
-				"Objects": [
-					{
-						"name": "Dates",
-						"Notes": "An array of dates on which payments will be made.",
-						"DiagramX": 20,
-						"DiagramY": 45,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "CashFlows.date"
-						},
-						"isInput": "y",
-						"displayUnit": "date"
-					},
-					{
-						"name": "Payments",
-						"Notes": "Payments corresponding to the Dates array.    At least one payment must be negative and one positive.",
-						"DiagramX": 20,
-						"DiagramY": 85,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "CashFlows.Payment"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "Guess",
-						"Notes": "A guess for the rate of return",
-						"DiagramX": 20,
-						"DiagramY": 140,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{eval irr_form.guess}"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "error",
-						"DiagramX": 110,
-						"DiagramY": 70,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{sum Payments / (1 + rate )^((dates - dates[1])/ 365 d)}"
-						}
-					},
-					{
-						"name": "solver",
-						"DiagramX": 110,
-						"DiagramY": 45,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"Type": "Equation Solver",
-						"f0": "error * 1e10",
-						"c0": "1",
-						"maxIter": 200,
-						"maxJacobians": 5,
-						"Enabled": "y"
-					},
-					{
-						"name": "rate",
-						"Notes": "The IRR",
-						"DiagramX": 110,
-						"DiagramY": 95,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "solver.1/2 + guess"
-						},
-						"isOutput": "y"
-					}
-				]
-			},
-			{
-				"name": "IRR_Payments",
-				"Notes": "Series of payments - taken from the Excel IRR example.",
-				"DiagramX": 90,
-				"DiagramY": 55,
-				"HideInfo": "y",
-				"DiagramNotes": "y",
-				"Type": "Expression",
-				"Formula": {
-					"Formula": "{cc -70000,\n12000,\n15000,\n18000,\n21000,\n26000}\n"
-				}
-			},
-			{
-				"name": "Payments",
-				"Notes": "Calculates the payment made each period for a present value, number of payments and and interest rate giving a defined future value.\n\nThe total payments, interest and principal for each period are also calculated.",
-				"DiagramX": -5,
-				"DiagramY": 125,
-				"HideInfo": "n",
-				"DiagramNotes": "y",
-				"Type": "Model",
-				"diagramScale": 1,
-				"Objects": [
-					{
-						"name": "pmt",
-						"Notes": "The payment made each period.",
-						"DiagramX": 165,
-						"DiagramY": -50,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "(-pv *(1 + rate) ^ nPmt + fv ) /\n(( 1 + rate * type ) * ((1 + rate )^ nPmt - 1) / rate) "
-						},
-						"isOutput": "y"
-					},
-					{
-						"name": "rate",
-						"Notes": "The interest rate per period.",
-						"DiagramX": 25,
-						"DiagramY": -15,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "9 \"%\" / 12"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "type",
-						"Notes": "The payment type:\n0 if payments are made at the end of the period.\n1 if payments are made at the beginning of the period.",
-						"DiagramX": 25,
-						"DiagramY": 60,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "0"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "nPmt",
-						"Notes": "The number of payment periods.",
-						"DiagramX": 25,
-						"DiagramY": 20,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "30*12"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "pv",
-						"Notes": "The present value.",
-						"DiagramX": 25,
-						"DiagramY": -50,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "125000"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "TotalPaid",
-						"Notes": "The total of all payments by period.\n",
-						"DiagramX": 165,
-						"DiagramY": -20,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "pmt * 1:nPmt"
-						},
-						"isOutput": "y"
-					},
-					{
-						"name": "principalPaid",
-						"Notes": "     Cumulative principal paid by period",
-						"DiagramX": 165,
-						"DiagramY": 95,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "-pv + ((-pmt * ( 1 + rate * type ) * ((1 + rate )^ pmtsLeft- 1) / rate ) + fv) /\n(1 + rate) ^ pmtsLeft"
-						},
-						"isOutput": "y"
-					},
-					{
-						"name": "pmtsLeft",
-						"Notes": "Number of remaining payments",
-						"DiagramX": 165,
-						"DiagramY": 175,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "nPmt - 1:nPmt"
-						}
-					},
-					{
-						"name": "InterestPaid",
-						"Notes": "Cumulative Interest Paid by period\n",
-						"DiagramX": 165,
-						"DiagramY": 20,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "pmt * 1:nPmt + principalPaid"
-						},
-						"isOutput": "y"
-					},
-					{
-						"name": "fv",
-						"Notes": "The future value.  For a loan, this is typically 0.",
-						"DiagramX": 25,
-						"DiagramY": 120,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "0"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "PeriodInterest",
-						"Notes": "Amount of interest paid each period\n",
-						"DiagramX": 165,
-						"DiagramY": 135,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "InterestPaid - {cc 0, InterestPaid[1:(nPmt-1)]}"
-						},
-						"isOutput": "y"
-					},
-					{
-						"name": "PeriodPrincipal",
-						"Notes": "Amount of principal paid each period\n",
-						"DiagramX": 165,
-						"DiagramY": 60,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "PrincipalPaid - {cc 0, PrincipalPaid[1:(nPmt-1)]}"
-						},
-						"isOutput": "y"
-					},
-					{
-						"name": "Table",
-						"DiagramX": 165,
-						"DiagramY": 210,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{table\n\t{cc\n\t\t\"Pmt No\",\n\t\t\"Total Paid\",\n\t\t\"Principal Paid\",\n\t\t\"interest Paid\",\n\t\t\"Period Principal\",\n\t\t\"Period Interest\"\n\t},\n\t1:nPmt,\n\tTotalPaid,\n\tPrincipalPaid,\n\tInterestPaid,\n\tPeriodPrincipal,\n\tPeriodInterest\n}"
-						},
-						"isOutput": "y"
-					}
-				]
-			},
-			{
-				"name": "Payment_Table",
-				"Notes": "The table output of the Payments model collects the other outputs into a table.",
-				"DiagramX": 90,
-				"DiagramY": 125,
-				"HideInfo": "y",
-				"DiagramNotes": "y",
-				"Type": "Expression",
-				"Formula": {
-					"Formula": "Payments.table"
-				}
-			},
-			{
-				"name": "x2",
-				"Notes": "",
-				"DiagramX": 275,
-				"DiagramY": -30,
-				"HideInfo": "y",
-				"DiagramNotes": "n",
-				"Type": "Expression",
-				"Formula": {
-					"Formula": "irr_form.guess"
-				},
-				"displayUnit": "date"
 			}
 		]
 	}

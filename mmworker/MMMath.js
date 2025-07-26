@@ -20,7 +20,7 @@
 // low level functions that operate on scalar values and that the
 // language Math library does not supply
 
-const MMMath = {
+export const MMMath = {
 
 	// low level complex calculation functions
 	// all argments and returns are 2 value arrays [re, img]

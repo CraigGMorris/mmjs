@@ -22,8 +22,8 @@
 	"_read": "read commands from file\n\nUsage: read filePath\n",
 	"_renameto": "renames the subject\n\nUsage: renameto newName\n",
 	"_set": "sets a property value or removes if value not given\n\nUsage: set propertyName [propertyValue]\n",	
-	"_createchild": "Usage: createchild className childName",
 	"_list": "list the children of subject\n\nUsage: list [pattern_to_match_in_name]\n",
-	"_removechild": "deletes the named child from subject\n\nUsage: removechild pathToChild\n"
+	"_removechild": "deletes the named child from subject\n\nUsage: removechild pathToChild\n",
+	"_sessionGetModelStack": "gets an array of names of models in stack"
 
 }

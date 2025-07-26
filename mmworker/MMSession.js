@@ -17,14 +17,12 @@
 */
 'use strict';
 
+import { MMParent, MMPropertyType, MMCommandMessage } from './MMCommandProcessor.js';
+
 /* global
-	MMCommandParent:readonly
 	MMUnitSystem:readonly
-	MMPropertyType:readonly
 	MMModel:readonly
-	MMStringValue:readonly
 	MMExpression:readonly
-	MMCommandMessage:readonly
 	MMMatrix:readonly
 	MMDataTable:readonly
 	MMSolver:readonly
@@ -33,11 +31,12 @@
 	MMOptimizer:readonly
 	MMGraph:readonly
 	MMHtmlPage:readonly
+	MMButton:readonly
+	MMMenu:readonly
 	theMMSession:readonly
 	MMToolValue:readonly
 	MMFlash:readonly
 	MMFormula:readonly
-	PouchDB:readonly
 */
 
 /** @class MMPoint
@@ -45,7 +44,7 @@
  * @member {number} x
  * @member {number} y
  */
-class MMPoint {
+export class MMPoint {
 	constructor(x, y) {
 		this.x = x;
 		this.y = y;
@@ -55,7 +54,7 @@ class MMPoint {
 /**
  * @class MMIndexedDBStorage - original indexedDB persistent storage for session
  */
-class MMIndexedDBStorage  {
+export class MMIndexedDBStorage  {
 	constructor() {
 		this.isSetup = false;
 		this._exists = true;
@@ -98,6 +97,7 @@ class MMIndexedDBStorage  {
 	 * @param {String} json - json representation of session
 	 */
 	async save(path, json) {
+		path = path.trim();
 		let storage = this;
 		await this.setup();
 		return new Promise((resolve, reject) =>  {
@@ -176,6 +176,20 @@ class MMIndexedDBStorage  {
 	}
 
 	/**
+	 * @emethod areTheSame
+	 * @param {String} firstPath
+	 * @param {String} secondPath
+	 */
+	async areTheSame(firstPath, secondPath) {
+		const first = await this.load(firstPath);
+		if (!first) {
+			return false;
+		}
+		const second = await this.load(secondPath);
+		return (first == second);
+	}
+
+	/**
 	 * @method listSessions
 	 */
 	async listSessions() {
@@ -203,98 +217,8 @@ class MMIndexedDBStorage  {
 }
 
 /**
- * @class MMPouchDBStorage - persistent storage for session using pouchdb
- */
-class MMPouchDBStorage {
-	/**
-	 * @method save
-	 * @param {String} path - persistent storage path
-	 * @param {String} json - json representation of session
-	*/
-	constructor() {
-		this.db = new PouchDB('MMSessions', {auto_compaction: true});
-		this.revs = {};
-	}
-
-	async save(path, json) {
-		const record = {
-			_id: path,
-			_rev: this.revs[path],
-			json: json
-		}
-		// console.log(`saving ${path} rev ${record._rev}`);
-		const result = await this.db.put(record);
-		// console.log(`saved ${path} rev ${result.rev}`);
-		this.revs[path] = result.rev;
-		return result.json;	
-	}
-
-	/**
-	 * @method load
-	 * @param {String} path - persistent storage path
-	 */
-	async load(path) {
-		try {
-			const result = await this.db.get(path);
-			this.revs[path] = result._rev;
-			return result.json;
-		}
-		catch(e) {
-			console.log(e.message);
-			return;
-		}
-	}
-
-	/**
-	 * @emethod copy
-	 * @param {String} oldPath
-	 * @param {String} newPath
-	 */
-	async copy(oldPath, newPath) {
-		let session = await this.load(oldPath);
-		if (session) {
-			await this.save(newPath, session);
-			return newPath;
-		}
-	}
-	
-	/**
-	 * @method delete
-	 * @param {String} path - persistent storage path to delete
-	*/
-	async delete(path) {
-		const doc = await this.db.get(path, {conflicts: true});
-		if (doc._conflicts) {
-			for (let conflictRev of doc._conflicts) {
-				await this.db.remove(doc._id, conflictRev);
-			}
-		}
-		await this.db.remove(doc._id, doc._rev);
-		delete this.revs[path];
-	}
-
-	/**
-	 * @method listSessions
-	 */
-	async listSessions() {
-		const result = await this.db.allDocs();
-		if (result) {
-			const docIds = [];
-			for (const row of result.rows) {
-				docIds.push(row.id);
-				this.revs[row.id] = row.value.rev;
-			}
-			// const docIds = result.rows.map(row => row.id);
-			return docIds;
-		}
-
-		return [];
-	}
-}
-
-/**
  * @class MMSession - base Math Minion class
- * @extends MMCommandParent
+ * @extends MMParent
  * @member {MMUnitSystem} unitSystem
  * @member {MMModel} rootModel
  * @member {MMModel} currentModel
@@ -302,10 +226,10 @@ class MMPouchDBStorage {
  * @member {string} storePath - path to persistent storage
  * @member {MMPoint} unknownPosition
  * @member {MMPoint} nextToolLocation
- * @member {MMPouchDBStorage} pouchStorage
+ * @member {MMIndexedDBStorage} storage
  */
 // eslint-disable-next-line no-unused-vars
-class MMSession extends MMCommandParent {
+export class MMSession extends MMParent {
 	// session creation and storage commands
 
 	/**
@@ -316,10 +240,13 @@ class MMSession extends MMCommandParent {
 		super('session',  processor, 'MMSession');
 		// construct the unit system - it will add itself to my children
 		new MMUnitSystem(this);
-		this.storage = new MMPouchDBStorage();
+		this.storage = new MMIndexedDBStorage();
 		this.savedLastPathId = '(lastPath)';
 		this.savedLastNewsId = '(lastNews)';
-		this.lastNews = '20220324';
+		this.savedStorageVersionId = '(storageVersion)';
+		this.openAIKey = '(openAIKey)';
+		this.anthropicKey = '(anthropicKey)';
+		this.lastNews = '20250526';
 		this.newSession();
 		this.couchError = null;
 	}
@@ -369,8 +296,9 @@ class MMSession extends MMCommandParent {
 		this.nextToolLocation = this.unknownPosition;
 		this.rootModel = MMToolTypes['Model'].factory('root', this);
 		this.currentModel = this.rootModel;
-		this.modelStack = [this.currentModel];
+		this.modelStack = [];
 		this.storePath = storePath;
+		this.noRun = false;
 		this.processor.defaultObject = this.rootModel;
 		this.selectedObject = '';
 	}
@@ -378,6 +306,7 @@ class MMSession extends MMCommandParent {
 	get properties() {
 		let d = super.properties;
 		d['storePath'] = {type: MMPropertyType.string, readOnly: false};
+		d['noRun'] = {type: MMPropertyType.boolean, readOnly: false};
 		return d;
 	}
 
@@ -418,7 +347,7 @@ class MMSession extends MMCommandParent {
 		this.nextToolLocation = this.unknownPosition;
 		this.rootModel = rootModel;
 		this.currentModel = rootModel;
-		this.modelStack = [rootModel];
+		this.modelStack = [];
 		if (!storePath) {
 			this.storePath = saveObject.CaseName;
 		}
@@ -585,36 +514,33 @@ class MMSession extends MMCommandParent {
 		}
 	}
 
-	async importOldStorage(indexedDB) {
-		const paths = await indexedDB.listSessions();
-		for (const path of paths) {
-			// console.log(`importing ${path}`);
-			const session = await indexedDB.load(path);
-			await this.storage.save(path, session);
-		}
-	}
-
 	/** @method loadAutoSaved
 	 * load the autosaved session from persistent storage
 	 */
 	async loadAutoSaved() {
-		const indexedDB = new MMIndexedDBStorage();
-		const sessionPaths = await this.storage.listSessions();
-		if (sessionPaths.length === 0) {
-			await this.importOldStorage(indexedDB);
+		const storageVersion = await this.storage.load(this.savedStorageVersionId);
+		// console.log(`storage version ${storageVersion}`);
+		if (!storageVersion) {
+			// await this.importOldStorage();
+			await this.storage.save(this.savedStorageVersionId, '1');
 		}
-		this.remoteCouch = await indexedDB.load('(remoteCouch)');
-		this.couchDBSync();
+		// this.remoteCouch = await indexedDB.load('(remoteCouch)');
+		// this.couchDBSync();
 		try {
 			this.isLoadingCase = true;
 			this.newSession();
 			const lastNews = await this.storage.load(this.savedLastNewsId);
-			const lastPath = await indexedDB.load(this.savedLastPathId);
+			const lastPath = await this.storage.load(this.savedLastPathId);
 			const newsUrl = '../news/MM_News.txt';
 			if (
 				(lastNews && lastNews != this.lastNews) ||
 				(!lastNews && lastPath)
 			) {
+				// let things settle before loading news
+				function sleepAsync(ms) {
+					return new Promise(resolve => setTimeout(resolve, ms));
+				}
+				await sleepAsync(1000);
 				const returnValue = await this.loadUrl(newsUrl);
 				await this.storage.save(this.savedLastNewsId, this.lastNews);
 				return returnValue;
@@ -685,6 +611,22 @@ class MMSession extends MMCommandParent {
 		}
 	}
 
+	/** @method deleteAllSessions
+	 * delete every session from the permenent storage
+	 */
+	async deleteAllSessions() {
+		const sessionPaths = await this.storage.listSessions();
+		for (const existingPath of sessionPaths) {
+			if (!existingPath.startsWith('(')) {
+				await this.storage.delete(existingPath);
+				if (this.storePath === existingPath) {
+					this.storePath = '(unnamed)';
+					await this.saveLastSessionPath()
+				}
+			}
+		}
+	}
+
 	/** @method copySession
 	 * make a copy of the session in persistent storage
 	 * @param {string} oldPath - the path to load from
@@ -739,6 +681,7 @@ class MMSession extends MMCommandParent {
 	 * @param {string} newPath - the path for the copy
 	 */
 	async renameSession(oldPath, newPath) {
+		newPath = newPath.trim();
 		if (oldPath.endsWith('/')) {
 			if (!newPath.endsWith('/')) {
 				newPath += '/';
@@ -749,14 +692,22 @@ class MMSession extends MMCommandParent {
 			const sessionPaths = await this.storage.listSessions();
 			const setOfPaths = new Set(sessionPaths);
 			for (const existingPath of sessionPaths) {
+				let theSame = false;
 				if (existingPath.startsWith(oldPath)) {
 					let newSessionPath = newPath + existingPath.substring(oldPath.length);
 					let n = 2;
-					while (setOfPaths.has(newSessionPath)) {
-						newSessionPath = newPath + `copy-${n++}/` +existingPath.substring(oldPath.length);
+					if (setOfPaths.has(newSessionPath)) {
+						theSame = await this.storage.areTheSame(newSessionPath, existingPath);
+						if (!theSame) {
+							do {
+								newSessionPath = newPath + `All_Replaced-${n++}/` +existingPath.substring(oldPath.length);
+							} while (setOfPaths.has(newSessionPath))
+						}
 					}
 					try {
-						await this.storage.copy(existingPath, newSessionPath);
+						if (!theSame) {
+							await this.storage.copy(existingPath, newSessionPath);
+						}
 						await this.storage.delete(existingPath);
 					}
 					catch(e) {
@@ -814,12 +765,16 @@ class MMSession extends MMCommandParent {
 		verbs['loadurl'] = this.loadUrlCommand;
 		verbs['copy'] = this.copySessionCommand;
 		verbs['delete'] = this.deleteSessionCommand;
+		verbs['deleteallsessions'] = this.deleteAllSessionsCommand;
 		verbs['rename'] = this.renameSessionCommand;
 		verbs['getjson'] = this.getJsonCommand;
 		verbs['pushmodel'] = this.pushModelCommand;
 		verbs['popmodel'] = this.popModelCommand;
 		verbs['import'] = this.importCommand;
 		verbs['remote'] = this.remoteDBCommand;
+		verbs['getmodelstack'] = this.getModelStackCommand;
+		verbs['aikey'] = this.aiKeyCommand;
+		verbs['aiquery'] = this.aiQueryCommand;
 		return verbs;
 	}
 
@@ -838,11 +793,16 @@ class MMSession extends MMCommandParent {
 			save: 'mmcmd:_sessionSave',
 			copy: 'mmcmd:_sessionCopy',
 			delete: 'mmcmd:_sessionDelete',
+			deleteAllSessions: 'mmcmd:_sessionDeleteAll',
+			rename: 'mmcmd:_sessionRename',
 			getjson: 'mmcmd:_sessionGetJson',
 			pushmodel: 'mmcmd:_sessionPushModel',
 			popmodel: 'mmcmd:_sessionPopModel',
 			import: 'mmcmd:_sessionImport',
-			remote: 'mmcmd:_sessionRemote'
+			remote: 'mmcmd:_sessionRemote',
+			getmodelstack: 'mmcmd:_sessionGetModelStack',
+			aikey: 'mmcmd:_aikey',
+			aiinfo: 'mmcmd:_aiinfo',
 		}[command];
 		if (key) {
 			return key;
@@ -895,11 +855,11 @@ class MMSession extends MMCommandParent {
 	async listSessionsCommand(command) {
 		const result = await this.storage.listSessions();
 		command.results = {paths: result, currentPath: this.storePath};
-		const indexedDB = new MMIndexedDBStorage();
-		const remote = await indexedDB.load('(remoteCouch)');
-		if (remote) {
-			command.results.remote = remote.split('@')[1];
-		}
+		// const indexedDB = new MMIndexedDBStorage();
+		// const remote = await indexedDB.load('(remoteCouch)');
+		// if (remote) {
+		// 	command.results.remote = remote.split('@')[1];
+		// }
 	}
 
 	/**
@@ -973,6 +933,20 @@ class MMSession extends MMCommandParent {
 			return;
 		}
 		let result = await this.deleteSession(command.args);
+		command.results = `deleted: ${result}`;
+	}
+
+	/**
+	 * @method deleteAllSessionsCommand
+	 * verb
+	 * @param {MMCommand} command
+	 */
+	async deleteAllSessionsCommand(command) {
+		if (!indexedDB) {
+			this.setError('mmcmd:noIndexedDB', {});
+			return;
+		}
+		let result = await this.deleteAllSessions(command.args);
 		command.results = `deleted: ${result}`;
 	}
 
@@ -1071,33 +1045,58 @@ class MMSession extends MMCommandParent {
 		if (json.startsWith('{"folderName":')) {
 			// importing a folder archive
 			const archive = JSON.parse(json);
+			const folderName = archive.folderName;
 			const sessions = archive.sessions;
 
-			let n = 2;
-			let newFolderPath = rootPath + archive.folderName;
-			while (pathAlreadyUsed(newFolderPath)) {
-				newFolderPath =  archive.folderName + `-${n++}`;
+			let newFolderPath = "";
+			let newFolderName = folderName;
+			if (!folderName.endsWith('/')) {
+				newFolderName += '/';
+			}
+			if (folderName === 'root/') {
+				newFolderName = 'All Imported/';
+			}
+			else if (rootPath === '') {
+				// if importing into root and folder isn't root
+				// then set the path to folderName in case there aren't any other sessions
+				newFolderPath = folderName;
+			}
+			for (const path of existingPaths) {
+				// see if there are any real sessions
+				if (!path.startsWith('(')) {
+					let n = 2;
+					newFolderPath = rootPath + newFolderName;
+					while (pathAlreadyUsed(newFolderPath)) {
+						newFolderPath =  newFolderName + `-${n++}`;
+					}
+					break;
+				}
 			}
 
 			for (const path of Object.keys(sessions)) {
-				const fullPath = newFolderPath + path;
+				const fullPath = newFolderPath + (path.startsWith('/') ? path.substring(1) : path);
 				await this.storage.save(fullPath, sessions[path]);
 			}
-
 		}
 		else {
 			// assume session import
 			try {
 				new MMUnitSystem(this);  // clear any user units and sets
-				const returnValue = await this.initializeFromJson(json);
-				let storePath = rootPath + this.storePath;
-				let n = 2;
-				while (pathAlreadyUsed(storePath)) {
-					storePath = rootPath + this.storePath + `-${n++}`;
+				this.isLoadingCase = true;
+				try {
+					const returnValue = await this.initializeFromJson(json);
+					let storePath = rootPath + this.storePath;
+					let n = 2;
+					while (pathAlreadyUsed(storePath)) {
+						storePath = rootPath + this.storePath + `-${n++}`;
+					}
+					await this.saveSession(storePath);
+					returnValue.storePath = this.storePath;
+					command.results = returnValue;
+					}
+				finally {
+					this.isLoadingCase = false;
 				}
-				await this.saveSession(storePath);
-				returnValue.storePath = this.storePath;
-				command.results = returnValue;
 			}
 			catch(e) {
 				const msg = (typeof e === 'string') ? e : e.message;
@@ -1157,11 +1156,11 @@ class MMSession extends MMCommandParent {
 	 * command.args should contain the url (including name and pw) of the couchDB to sync with
 	 * an empty argument will turn off syncing
 	 */
-	async remoteDBCommand(command) {
-		this.remoteCouch = command.args;
-		const indexedDB = new MMIndexedDBStorage();
-		await indexedDB.save('(remoteCouch)', this.remoteCouch);
-	}
+	// async remoteDBCommand(command) {
+	// 	this.remoteCouch = command.args;
+	// 	const indexedDB = new MMIndexedDBStorage();
+	// 	await indexedDB.save('(remoteCouch)', this.remoteCouch);
+	// }
 
 	/**
 	 * @method diagramInfo
@@ -1182,10 +1181,19 @@ class MMSession extends MMCommandParent {
 	 * command.results contains name new current model
 	 */
 	async pushModelCommand(command) {
-		const model = this.currentModel.childNamed(command.args);
+		const names = command.args.toLowerCase().split('.');
+		let model = this.currentModel;
+		for (let name of names){
+			name = name.startsWith('.') ? name.substring(1) : name; // remove dot prefix if present
+			model = model?.children[name];
+		}
+		// const model = this.currentModel.childNamed(command.args);
 		if (model instanceof MMModel) {
 			this.pushModel(model);
 			await this.autoSaveSession();
+		}
+		else {
+			this.setError('mmcmd:sessionPushModelFailed', {path: command.args});
 		}
 
 		command.results = {path: this.currentModel.getPath()};
@@ -1213,7 +1221,26 @@ class MMSession extends MMCommandParent {
 			this.popModel();
 		}
 		await this.autoSaveSession();
-		command.results = this.currentModel.getPath();
+		command.results = {path: this.currentModel.getPath()};
+		const indexToolName = this.currentModel.indexTool;
+		if (indexToolName) {
+			const indexTool = this.currentModel.childNamed(indexToolName);
+			if (indexTool) {
+				command.results.indexTool = indexToolName;
+				command.results.indexToolType = indexTool.typeName;
+			}
+		}
+	}
+
+	/**
+	 * @method getModelStackCommand
+	 * verb
+	 * @param {MMCommand} command - returns model stack array
+	 */
+	async getModelStackCommand(command) {
+		let modelStack = this.modelStack.map(m => m.name);
+		modelStack.push(this.currentModel.name);
+		command.results = {modelStack: modelStack};
 	}
 
 	// testing method - place to easily try things out
@@ -1223,9 +1250,100 @@ class MMSession extends MMCommandParent {
 
 		command.results = results;
 	}
+
+	/**
+	 * @method aikeyCommand
+	 * verb
+	 * @param {MMCommand} command - sets, gets or clears aikey
+	 */
+	async aiKeyCommand(command) {
+		if (!indexedDB) {
+			this.setError('mmcmd:noIndexedDB', {});
+			return;
+		}
+		const args = this.splitArgsString(command.args);
+		if (args.length === 0) {
+			this.setError('mmcmd:_aikey', {});
+			return;
+		}
+		else if (args.length === 1) {
+			switch (args[0].toLowerCase()) {
+				case 'openai':
+					command.results = await this.storage.load(this.openAIKey);
+					return;
+				case 'claude':
+					command.results = await this.storage.load(this.anthropicKey);
+					return;
+				default:
+					this.setError('No AI model', {model: args[0]});
+			}
+		}
+		else {
+			switch (args[0].toLowerCase()) {
+				case 'openai': {
+					let key = args[1];
+					if (key.toLowerCase() === 'x') {
+						await this.storage.save(this.openAIKey, '');
+						command.results = 'key cleared';
+					}
+					else {
+						await this.storage.save(this.openAIKey, key);
+						command.results = 'key saved';
+					}
+					return;
+				}
+				case 'claude': {
+					let key = args[1];
+					if (key.toLowerCase() === 'x') {
+						await this.storage.save(this.anthropicKey, '');
+						command.results = 'key cleared';
+					}
+					else {
+						await this.storage.save(this.anthropicKey, key);
+						command.results = 'key saved';
+					}
+					return;
+				}
+				default:
+					this.setError('No AI model', {model: args[0]});
+			}
+		}
+
+	}
+
+	/**
+	 * @method aiQueryCommand
+	 * verb
+	 * @param {MMCommand} command - returns information about the arguments
+	 */
+	async aiQueryCommand(command) {
+		const args = this.splitArgsString(command.args);
+		if (args.length === 0) {
+			this.setError('mmcmd:_aiquery', {});
+			return;
+		}
+		const results = {};
+		for (const arg of args) {
+			const key = arg.toLowerCase();
+			const workerUrl = self.location.href;// window.location.pathname.split('/').slice(0, -1).join('/');
+			const basePath = workerUrl.split('/').slice(0, -2).join('/');
+			await fetch(`${basePath}/ai/openai/info/${key}.yml`).then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.text();
+			})
+			.then(text => {
+				results[key] = text;
+			}).catch(error => {
+				console.error(error);
+			});
+		}
+		command.results = results;
+	}
 }
 
-const MMToolTypes = {
+export const MMToolTypes = {
 	'Model': {
 		factory: (name, parent) => { return new MMModel(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:modelDisplayName'),
@@ -1265,6 +1383,14 @@ const MMToolTypes = {
 	"HtmlPage": {
 		factory: (name, parent) => {return new MMHtmlPage(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:htmlPageDisplayName'),
+	},
+	"Button": {
+		factory: (name, parent) => {return new MMButton(name, parent)},
+		displayName: new MMCommandMessage('mmcmd:buttonDisplayName'),
+	},
+	"Menu": {
+		factory: (name, parent) => {return new MMMenu(name, parent)},
+		displayName: new MMCommandMessage('mmcmd:menuDisplayName'),
 	},
 	"Flash": {
 		factory: (name, parent) => {return new MMFlash(name, parent)},

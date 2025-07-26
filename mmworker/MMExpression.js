@@ -27,6 +27,7 @@
 	MMToolValue:readonly
 	MMTableValue:readonly
 	MMTableValueColumn:readonly
+	MMJsonValue: readonly
 	MMPropertyType:readonly
 	MMUnitSystem:readonly
 	MMFlash:readonly
@@ -38,7 +39,7 @@
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
-class MMExpression extends MMTool {
+export class MMExpression extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
@@ -50,15 +51,15 @@ class MMExpression extends MMTool {
 		this.displayUnit = null;		// MMUnit - for number values
 		this.tableUnits = null;		// dictionary of optional table column display MMUnits 
 		this._isInput = false;			// boolean
-		this._isOutput = false;			// boolean
 	}
 
 	/** @override */
 	get properties() {
 		let d = super.properties;
 		d['isInput'] = {type: MMPropertyType.boolean, readOnly: false};
-		d['isOutput'] = {type: MMPropertyType.boolean, readOnly: false};
+		d['showInput'] = {type: MMPropertyType.boolean, readOnly: false};
 		d['displayUnitName'] = {type: MMPropertyType.string, readOnly: false};  // for scalar displayUnit
+		d['format'] = {type: MMPropertyType.string, readOnly: false}; // for scalar display
 		return d;
 	}
 
@@ -82,19 +83,27 @@ class MMExpression extends MMTool {
 		}
 	}
 	
-	get isOutput() {
-		return this._isOutput;
+	get showInput() {
+		return this._showInput;
 	}
 
-	set isOutput(newValue) {
-		this._isOutput = (newValue) ? true : false;
+	set showInput(newValue) {
+		let newInput = (newValue) ? true : false;
+
+		if (newInput !== this._showInput ) {
+			this._showInput = newInput;
+			this.parent.forgetCalculated();
+		}
 	}
-	
+
 	get displayUnitName() {
 		return (this.displayUnit) ? this.displayUnit.name : null;
 	}
 
 	set displayUnitName(unitName) {
+		if (this.displayUnit && this.displayUnit.name === unitName) {
+			return;
+		}
 		this.tableUnits = null;
 		if (!unitName) {
 			this.displayUnit = null;
@@ -106,6 +115,16 @@ class MMExpression extends MMTool {
 			}
 			this.displayUnit = unit;
 		}
+		this.forgetCalculated();
+	}
+
+	get format() {
+		return this._format;
+	}
+
+	set format(format) {
+		this._format = format;
+		this.forgetCalculated();
 	}
 
 	/**
@@ -126,6 +145,7 @@ class MMExpression extends MMTool {
 		let verbs = super.verbs;
 		verbs['value'] = this.valueCommand;
 		verbs['setcolumnunit'] = this.setColumnUnitCommand;
+		verbs['setcolumnformat'] = this.setColumnFormatCommand;
 		return verbs;
 	}
 
@@ -137,7 +157,8 @@ class MMExpression extends MMTool {
 	getVerbUsageKey(command) {
 		let key = {
 			value: 'mmcmd:_toolValue',
-			setcolumnunit: 'mmcmd?exprSetColumnUnit',
+			setcolumnunit: 'mmcmd:_exprSetColumnUnit',
+			setcolumnformat: 'mmcmd:_exprSetColumnFormat',
 		}[command];
 		if (key) {
 			return key;
@@ -154,9 +175,20 @@ class MMExpression extends MMTool {
 	 */
 	parameters() {
 		let p = super.parameters();
-		p.push('table.');
+		p.push('table');
 		p.push('hasValue');
 		p.push('formula');
+		const v = this.valueForRequestor();
+		if (v instanceof MMTableValue) {
+			for (const column of v.columns) {
+				p.push(column.name);
+			}
+		}
+		else if (v instanceof MMToolValue) {
+			if (v._values && v._values[0]) {
+				p = v._values[0].parameters();
+			}
+		}
 		return p;
 	}
 
@@ -169,6 +201,41 @@ class MMExpression extends MMTool {
 	valueForRequestor(requestor) {
 		if (!this.cachedValue) {
 			this.cachedValue = this.formula.value();
+			if (this.cachedValue instanceof MMTableValue) {
+				if (this.tableFormats) {
+					const tv = this.cachedValue;
+					for (let i in this.tableFormats) {
+						if (tv.columns[i-1]) {
+							tv.columns[i-1].format = this.tableFormats[i];
+						}
+					}
+				}
+				if (this.tableUnits) {
+					const tv = this.cachedValue;
+					for (let i in this.tableUnits) {
+						if (tv.columns[i-1]) {
+							tv.columns[i-1].displayUnit = this.tableUnits[i];
+						}
+					}
+				}
+			}
+			else if (this.cachedValue instanceof MMNumberValue) {
+				if (
+					this.format && this.format !== this.cachedValue.displayFormat ||
+					this.displayUnit && this.displayUnit !== this.cachedValue.displayFormat
+				) {
+					this.cachedValue = this.cachedValue.copyOf();
+					if (this.format) {
+						this.cachedValue.displayFormat = this.format;
+					}
+					if (this.displayUnit && MMUnitSystem.areDimensionsEqual(
+							this.displayUnit.dimensions,
+							this.cachedValue.unitDimensions))
+					{
+						this.cachedValue.displayUnit = this.displayUnit;
+					}
+				}
+			}
 		}
 		if (requestor && this.cachedValue) {
 			this.addRequestor(requestor);
@@ -189,6 +256,7 @@ class MMExpression extends MMTool {
 				this.valueRequestors.clear();
 				super.forgetCalculated();
 				this.cachedValue = null;
+				this.formula.parseFormula();
 			}
 			finally {
 				this.forgetRecursionBlockIsOn = false;
@@ -203,33 +271,41 @@ class MMExpression extends MMTool {
 	 * @returns {MMValue}
 	 */
 	valueDescribedBy(description, requestor) {
+		let rv = null;	// return value
+		if (this.formula && this.formula.formula && this.formula.formula.startsWith('$')) {
+			// any reference to self will be recursive - see if Tool can handle it.
+			return super.valueDescribedBy(description, requestor);
+		}
 		let value = this.valueForRequestor(requestor);
 		if (description) {
 			const lcDescription = description.toLowerCase();
 			switch (lcDescription) {
 				case 'hasvalue':
-					this.addRequestor(requestor);
 					if (value) {
-						value = MMNumberValue.scalarValue(1);
+						rv = MMNumberValue.scalarValue(1);
 					}
 					else {
-						value = MMNumberValue.scalarValue(0);
+						rv = MMNumberValue.scalarValue(0);
+					}
+					break;
+				case "value":
+					if (value instanceof MMToolValue) {
+						rv = value.valueDescribedBy(description, requestor); 
+					}
+					else {
+						rv = value;
 					}
 					break;
 				case 'formula':
-					if (this.formula.formula) {
-						this.addRequestor(requestor);
-						value = MMStringValue.scalarValue(this.formula.formula);
-					}
-					else {
-						value = null;
+					if (this.formula.formula != null) {
+						rv = MMStringValue.scalarValue(this.formula.formula);
 					}
 					break;
 				case 'table':
 					if (!(value instanceof MMTableValue)) {
 						if (value instanceof MMToolValue) {
 							const tool = value._values[0];
-							value = tool.valueDescribedBy(description, requestor);
+							rv = tool.valueDescribedBy(description, requestor);
 						}
 						else {
 							const columnCount = value.columnCount;
@@ -250,33 +326,50 @@ class MMExpression extends MMTool {
 								});
 								columns.push(column);
 							}
-							value = new MMTableValue({columns: columns});
+							rv = new MMTableValue({columns: columns});
 						}
 					}
-					break;
-				case 'notes':
-					value = super.valueDescribedBy(description, requestor);
+					else {
+						rv = value;
+					}
 					break;
 
 				default: {
-					if (value instanceof MMToolValue) {
-						let tool = value.valueAtRowColumn(1,1);
-						value = tool.valueDescribedBy(description, requestor);
-					}
-					else if (value instanceof MMTableValue) {
+					if (value instanceof MMTableValue) {
 						const column = value.columnNamed(description);
-						value = column ? column.value : null;
+						rv = column ? column.value : null;
+						if (rv && column) {
+							if (column.format) {
+								rv.displayFormat = column.format;
+							}
+							if (column.displayUnit) {
+								rv.displayUnit = column.displayUnit;
+							}
+						}
+					}
+					else if (value instanceof MMToolValue) {
+						rv = value.valueDescribedBy(description, requestor);
+					}
+					else if (value instanceof MMJsonValue) {
+						rv = value.valueForDescription(description);
 					}
 					else if (value instanceof MMFlashPhaseValue) {
 						value = value.valueDescribedBy(description, requestor);
 					}
-					if (!value) {
-						value = super.valueDescribedBy(description, requestor);
+					if (!rv) {
+						rv = super.valueDescribedBy(description, requestor);
 					}
 				}
 			}
 		}
-		return value;
+		else {
+			rv = value;
+		}
+
+		if (rv && requestor) {
+			this.addRequestor(requestor);
+		}
+		return rv;
 	}
 
 		/**
@@ -293,6 +386,14 @@ class MMExpression extends MMTool {
 	}
 
 	/**
+	 * @method formulaList
+	 * @returns [] contains formulae contained by this tool and its children
+	 */
+	formulaList() {
+		return [this.formula];
+	}
+
+	/**
 	 * @method toolViewInfo
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view
@@ -304,9 +405,9 @@ class MMExpression extends MMTool {
 		results['formulaName'] = 'formula';
 		results['formula'] = this.formula.formula;
 		results['isInput'] = this._isInput;
-		results['isOutput'] = this._isOutput;
+		results['showInput'] = this._showInput;
 		results['value'] = this.jsonValue();
-		if (this._isInput && this.parent.parent) {
+		if (this._isInput && this.parent.parent && this.parent.parent instanceof MMModel) {
 			results['modelPath'] = this.parent.parent.getPath();
 		}
 	}
@@ -315,6 +416,20 @@ class MMExpression extends MMTool {
 		let value = this.valueForRequestor();
 		let json = {}
 		if (value) {
+			let displayUnit;
+			let formats;
+			if (value instanceof MMTableValue) {
+				displayUnit = this.tableUnits;
+				formats = this.tableFormats;
+			}
+			else {
+				displayUnit = this.displayUnit || this.cachedValue.displayUnit;
+				formats = this.cachedValue.displayFormat;
+				if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, value.unitDimensions)) {
+					displayUnit = null;  // display unit is wrong type - ignore and use default
+				}
+			}
+			json = value.jsonValue(displayUnit, formats);
 			if (value._values && value._values[0] instanceof MMFlash) {
 				json = value.values[0].displayTable();
 			}
@@ -330,6 +445,26 @@ class MMExpression extends MMTool {
 			}
 		}
 		return json;
+	}
+
+	/**
+	 * @method htmlValue
+	 * @returns {String}
+	 */
+	htmlValue(requestor) {
+		const value = this.valueForRequestor();
+		if (value instanceof MMToolValue) {
+			const lines = [];
+			for (const v of value.values) {
+				if (v) {
+					lines.push(v.typeName + ': ' + v.name + '<br>');
+				}
+			}
+			return lines.join('\n');
+		}
+		else {
+			return super.htmlValue(requestor);
+		}
 	}
 
 	/**
@@ -355,18 +490,48 @@ class MMExpression extends MMTool {
 				if (!this.tableUnits) {
 					this.tableUnits = {};
 				}
-				this.tableUnits[parts[0]] = unit;
-				this.displayUnit = null;
-				command.results = parts[1];
+				if (this.tableUnits[parts[0]] != unit) {
+					this.tableUnits[parts[0]] = unit;
+					this.displayUnit = null;
+					command.results = parts[1];
+					this.forgetCalculated();
+				}
 				return;
 			}
 		}
 		else if (this.tableUnits && this.tableUnits[parts[0]]) {
 			delete this.tableUnits[parts[0]];
 			command.results = '';
+			this.forgetCalculated();
 			return;
 		}
-		this.setError('mmcmd:_setColumnUnit', {});
+	}
+
+	/**
+	 * @method setColumnFormatCommand
+	 * @param {MMCommand} command
+	 * command.args should contain columnNumber formatString
+	 * command.results = format
+	 */
+	setColumnFormatCommand(command) {
+		const parts = command.args.split(/\s/);
+		if (parts.length === 2) {
+			if (!this.tableFormats) {
+				this.tableFormats = [];
+			}
+			if (this.tableFormats[parts[0]] != parts[1]) {
+				this.tableFormats[parts[0]] = parts[1];
+				this.forgetCalculated();
+			}
+			command.results = parts[1];
+			return;
+		}
+		else if (this.tableFormats && this.tableFormats[parts[0]]) {
+			delete this.tableFormats[parts[0]];
+			this.forgetCalculated();
+			command.results = '';
+			return;
+		}
 	}
 
 /**
@@ -393,7 +558,7 @@ class MMExpression extends MMTool {
 		o['Type'] = 'Expression';
 		o['Formula'] = {'Formula': this.formula.formula};
 		if (this._isInput)			{ o['isInput'] = 'y'; }
-		if (this._isOutput)			{ o['isOutput'] = 'y'; }
+		if (this._showInput)			{ o['showInput'] = 'y'; }
 		if (this.displayUnit)		{ o['displayUnit'] = this.displayUnit.name; }
 		if (this.tableUnits) {
 			const units = {};
@@ -402,6 +567,8 @@ class MMExpression extends MMTool {
 			});
 			o['tableUnits'] = units;
 		}
+		if (this.tableFormats) { o['tableFormats'] = this.tableFormats; }
+		if (this.format) { o['format'] = this.format; }
 		return o;
 	}
 
@@ -414,7 +581,7 @@ class MMExpression extends MMTool {
 		super.initFromSaved(saved);
 		this.formula.formula = saved.Formula.Formula;
 		this.isInput = (saved.isInput === 'y');
-		this.isOutput = (saved.isOutput === 'y');
+		this.showInput = (saved.showInput === 'y');
 		if (saved.displayUnit) {
 			this.displayUnit = theMMSession.unitSystem.unitNamed(saved.displayUnit);
 		}
@@ -427,5 +594,7 @@ class MMExpression extends MMTool {
 				}
 			});
 		}
+		if (saved.tableFormats) { this.tableFormats = saved.tableFormats; }
+		if (saved.format) { this.format = saved.format; }
 	}
 }

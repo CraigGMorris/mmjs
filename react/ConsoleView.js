@@ -20,25 +20,220 @@
 const e = React.createElement;
 const useState = React.useState;
 
+const consoleStacks = {
+	output: {
+		page: [['...']],
+		maxCount: 100,
+		currentPage: 0,
+		show() {
+			return this.page[this.currentPage].join('\n');
+		},
+		push(s) {
+			this.page.push([s]);
+			while (this.page.length > this.maxCount) {
+				this.page.shift();
+			}
+			this.currentPage = this.page.length - 1;
+		},
+		update(s) {
+			this.page[this.currentPage].push(s);
+		},
+		scroll(nLines) {
+			let n = this.currentPage + nLines;
+			this.currentPage = Math.min(Math.max(n, 0), this.page.length -1);
+			}
+	},
+	input: {
+		page: [''],
+		maxCount: 100,
+		currentPage: 0,
+		show() {
+			return this.page[this.currentPage];
+		},
+		push(s) {
+			if (this.page.length < 2 || this.page[this.page.length-2] !== s) {
+				this.page[this.page.length-1] = s;
+				this.page.push('');
+				while (this.page.length > this.maxCount) {
+					this.page.shift();
+				}
+				this.currentPage = this.page.length - 1;
+			}
+		},
+		scroll(nLines, input) {
+			let n = this.currentPage + nLines;
+			this.currentPage = Math.min(Math.max(n, 0), this.page.length -1);
+			}
+	},
+}
+
+class openAI {
+	constructor() {
+		this.previousResponseId = null;
+		this.promptTemplate = ``;
+		this.apiKey = '';
+		// this.model = 'gpt-4.1';
+		this.model = 'o4-mini';
+		this.retryCount = 0;
+		this.maxRetries = 2;
+		this.resetCount = 0;
+	}
+}
+
+const openAIValues = new openAI();
+
+const claudeValues = {
+	previousResponseId: null,
+	promptTemplate: ``,
+	apiKey: '',
+};
+
+let inputTarget = 'OpenAI';
+
 /**
  * accepts command line inputs and displays result
  */
 export function ConsoleView(props) {
-	const [output, setOutput] = useState('');
+	const [output, setOutput] = useState(consoleStacks.output.show());
 	const [input, setInput] = useState('');
+	const [target, setTarget] = useState(inputTarget);
+	const [isWaiting, setIsWaiting] = useState(false);
 	const t = props.t;
 	const inputRef = React.useRef(null);
-	const inputStackRef = React.useRef([]);
-	const inputStackPos = React.useRef(0);
+	const isMounted = React.useRef(false);
+	const targetRef = React.useRef(null);
 
 	React.useEffect(() => {
-		inputRef.current.focus();
+		isMounted.current = true;
+		setOutput(consoleStacks.output.show());
+		setTarget(inputTarget);	
+		inputRef.current?.focus();
+	
+		const pollInterval = setInterval(() => {
+			if (!isMounted.current) return;
+			const latest = consoleStacks.output.show();
+			setOutput(prev => (prev !== latest ? latest : prev));
+		}, 1000); // adjust interval if needed
+
+		return () => {
+			isMounted.current = false;
+			clearInterval(pollInterval);
+		};
 	}, []);
 
-	/** function callBack - called when the worker completes command
+	React.useEffect(() => {
+		const textarea = document.getElementById('console__result');
+		if (textarea) {
+			textarea.scrollTop = textarea.scrollHeight;
+		}
+	}, [output]);	
+
+	const pushOutput = (s) => {
+		consoleStacks.output.push(s);
+		if (isMounted.current) {
+			setOutput(consoleStacks.output.show());
+		}
+	}
+
+	const updateOutput = (s) => {
+		consoleStacks.output.update(s);
+		if (isMounted.current) {	
+			setOutput(consoleStacks.output.show());
+		}
+	}
+
+	function stringifyError(error) {
+		return error?.msgKey ? 
+		t(error.msgKey, error.args)
+	:
+		t(JSON.stringify(error, null, ' '));
+	}
+
+	function showCountdownTimer(delayMs, onComplete) {
+		const totalSeconds = Math.ceil(delayMs / 1000);
+		let secondsLeft = totalSeconds;
+	
+		const intervalId = setInterval(() => {
+			if(isMounted.current) {
+			setInput(t('react:consoleWaitingForRateLimit', { seconds: secondsLeft }));
+			}
+			secondsLeft--;
+	
+			if (secondsLeft < 0) {
+				clearInterval(intervalId);
+				if(isMounted.current) {
+					setInput("");
+				}
+				if (typeof onComplete === "function") {
+					onComplete();
+				}
+			}
+		}, 1000);
+	}
+	
+
+	if (target === 'OpenAI') {
+		if (!openAIValues.promptTemplate) {
+			// Determine the base path from the current location
+			const basePath = window.location.pathname.split('/').slice(0, -1).join('/');	
+			fetch(`${basePath}/ai/openai/APIcontext.txt`).then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.text();
+			})
+			.then(text => {
+				openAIValues.promptTemplate = text;
+			}).catch(error => {
+				pushOutput(t('react:consoleCouldNotFetchSystemPrompt', { error }));
+			});
+		}
+		if (!openAIValues.apiKey) {
+			props.actions.doCommand(
+				'/ aikey openai',
+				(results) => {
+					openAIValues.apiKey = results?.[0]?.results;
+			});
+		}
+	}
+	else 	if (target === 'Claude') {
+		if (!openAIValues.promptTemplate) {
+			fetch('../ai/openai/APIcontext.txt').then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.text();
+			})
+			.then(text => {
+				claudeValues.promptTemplate = text;
+			}).catch(error => {
+				pushOutput(t('react:consoleCouldNotFetchSystemPrompt', { error:error }));
+			});
+		}
+		if (!claudeValues.apiKey) {
+			props.actions.doCommand(
+				'/ aikey claude',
+				(results) => {
+					claudeValues.apiKey = results?.[0]?.results;
+			});
+		}
+	}
+
+	const performConsoleCommand = async(userPrompt, successCallback, failureCallback) => {
+		try {
+			const result = await performCommand(userPrompt);
+			consoleCallBack(result);
+		}
+		catch(err) {
+			failureCallback(err);
+		};
+	}
+
+
+	/** function consoleCallBack - called when the worker completes console command
 	 * @param {MMCommand[]} cmds
 	 */
-	let callBack = cmds => {
+	let consoleCallBack = cmds => {
 		let lines = [];
 		const getOutput = (r) => {
 			let cmdOutput = r;
@@ -46,18 +241,20 @@ export function ConsoleView(props) {
 				if (cmdOutput.verb == 'help' && cmdOutput.args) {
 					cmdOutput = t(cmdOutput.results.msgKey, cmdOutput.results.args);
 				}
-				else if (cmdOutput.verb == 'error' && cmdOutput.results.msgKey) {
-					cmdOutput = t(cmdOutput.results.msgKey, cmdOutput.results.args);
-				}
 				else {
-					cmdOutput = JSON.stringify(cmdOutput, null, ' ');
+					cmdOutput = stringifyError(cmdOutput.results)
 				}
 			}
 			lines.push(cmdOutput);
 		
 		}
 		for (let r of cmds) {
-			getOutput(r);
+			if (r.error) {
+				lines.push(stringifyError(r.error));
+			}
+			else {
+				getOutput(r);
+			}
 		}
 
 		if (cmds.error) {
@@ -68,9 +265,80 @@ export function ConsoleView(props) {
 		if (lines.length > 100000) {
 			lines = lines.substr(0, 100000) + '\nTRUNCATED at 100000 chars';
 		}
-		setOutput(lines);
+		pushOutput(lines);
 
 		props.updateDiagram();
+	}
+
+	// Wrapper for doCommand
+	async function doCommandPromise(cmd) {
+		return new Promise((resolve, reject) => {
+			props.actions.doCommand(
+				cmd,
+				(result) => {
+					// Only resolve with result if there was no error
+					if (!result?.error) {
+						resolve(result);
+					}
+					else {
+						reject(result.error);
+					}
+				},
+				(error) => {
+					reject(error);
+				}
+			);
+		});
+	}
+
+	// Wrapper for pushModel
+	async function pushModelPromise(modelName) {
+		return new Promise((resolve, reject) => {
+			props.actions.pushModel(modelName,
+				(result) => {
+					// console.log('pushModelPromise: result', result);
+
+					// Only resolve with result if there was no error
+					if (!result?.error) {
+						resolve([result]);
+					}
+					else {
+						reject(result.error);
+					}
+				},
+				(error) => {
+					// console.log('pushModelPromise: error', error);
+					reject(error);
+				}
+			);
+		});
+	}
+	
+	// Wrapper for pushModel
+	async function popModelPromise(modelName) {
+		return new Promise((resolve, reject) => {
+			try {
+				const newPath = props.actions.popModel(modelName);
+				props.updateDiagram(true);
+				resolve([newPath]);
+			} catch(error) {
+				reject(error);
+			}
+		});
+	}		
+	
+	const performCommand = async (cmd) => {
+		if (cmd.trim().match(/^\/\s+popmodel/)) {   	
+			return await popModelPromise();
+		}
+		else if (cmd.trim().match(/^\/\s+pushmodel\s+[A-Za-z][A-Za-z0-9_]+/)) {
+			const parts = cmd.trim().split(/\s+/);
+			const modelName = parts[2];
+			return await pushModelPromise(modelName);
+		}
+		else {
+			return await doCommandPromise(cmd);
+		}
 	}
 	
 	let readCommandFile = event => {
@@ -79,17 +347,372 @@ export function ConsoleView(props) {
 
 		if (f) {
 			let r = new FileReader();
-			r.onload = (e) => { 
-				let contents = e.target.result;
-				props.actions.doCommand(contents, callBack);
+			r.onload = async (e) => { 
+				const contents = e.target.result;
+				const cmds = contents.split(`\n'''`);
+				pushOutput('');
+				for (const cmd of cmds) {
+					updateOutput(t('react:consoleCommand', { cmd:cmd }));
+					await commandAction(cmd, (result) => {
+						updateOutput(t('react:consoleCommandResult', { result: result?.[0]?.results }))
+					});
+				}
+				props.updateDiagram();
 			};
 			r.readAsText(f);
 		} else { 
-			alert("Failed to load file");
+			alert(t('react:consoleFailedToLoadFile'));
 		}
 	}
+
+	const openAIChat = {
+		async sendPrompt(promptText) {
+			// const mock = await import("../ai/openai/mockAssistant.js");
+			// return mock.runAssistant(promptText);
+
+			const headers = {
+				"Authorization": `Bearer ${openAIValues.apiKey}`,
+				"Content-Type": "application/json"
+			};
 	
-	return e(
+			const body = {
+				model: openAIValues.model,
+				input: []
+			};
+		
+			if (!openAIValues.previousResponseId) {
+				// First call → include system prompt and user prompt
+				body.input.push(
+					{ role: "system", content: openAIValues.promptTemplate },
+					{ role: "user", content: promptText }
+				);
+			} else {
+				// Follow-up call → reference last response, only include user correction
+				body.previous_response_id = openAIValues.previousResponseId;
+				body.input.push({ role: "user", content: promptText });
+			}
+
+			const now = Date.now();
+			const last = openAIValues.lastPromptTime || 0;
+			const elapsed = now - last;
+			if(isMounted.current) { setIsWaiting(true); }
+			const response = await fetch("https://api.openai.com/v1/responses", {
+				method: "POST",
+				headers,
+				temperature: 0.2,
+				body: JSON.stringify(body)
+			});
+			if(isMounted.current) { setIsWaiting(false); }
+			openAIValues.lastPromptTime = Date.now();
+
+			if (response.status === 429) {
+				const text = await response.text();
+				updateOutput(t('react:consoleTooManyRequests'), text);
+				if (openAIValues.resetCount < 2) {
+					openAIValues.resetCount++;
+					updateOutput(t('react:consoleRateLimitExceeded'));	
+					openAIValues.previousResponseId = null;
+					await doCommandPromise('. dgmInfo', async (result) => {
+						let dgminfo = result?.[0].results;
+						try {
+							dgminfo = JSON.stringify(dgminfo, null, 2);
+						}
+						catch (err) {
+							updateOutput(t('react:consoleFailedToStringify'));
+							return;
+						}
+						const resetPrompt = `Rate limit reset\nCurrent model dgminfo:\n${dgminfo}`;
+						await openAIChat.sendPrompt(resetPrompt);
+					});
+				}
+				else {
+					updateOutput(t('react:consoleResetLimitExceeded'));
+				}
+				return;
+			}
+			
+			const data = await response.json();
+			openAIValues.previousResponseId = data.id;
+			const outputs = data?.output;
+			let raw;
+			if (outputs) {
+				// not sure how many outputs there will be, so we'll take the first one that has text
+				for (const output of outputs) {
+					raw = output?.content?.[0]?.text;
+					if (raw) break;	// o4-mini
+				}
+			}
+			if (!raw) {
+				console.log(`openAIChat: no assistant output ${JSON.stringify(data)}`);
+				updateOutput(t('react:consoleNoAssistantOutput', { msg: JSON.stringify(data) }));
+				return;
+			}
+			// Remove code block formatting
+			const clean = raw.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+	
+			try {
+				let parsed = JSON.parse(clean);
+				updateOutput(t('react:consoleComments'))
+				parsed?.comments?.forEach((comment) => {updateOutput(`${comment}\n`)});
+				updateOutput('');
+				let maxQueries = 3;
+				while (parsed.query && maxQueries > 0) {
+					const queryResult = await openAIChat.runQueryCommands(parsed.query);
+					parsed = await openAIChat.sendPrompt(
+						`Here are the results of your requested queries:\n${JSON.stringify({ queryResponse: queryResult })}`
+					);
+					maxQueries--;
+				}
+				return parsed;
+			}
+			catch (err) {
+				updateOutput("❌ sendPrompt: failed to parse assistant response:");
+				updateOutput(raw);
+				throw err;
+			}
+		},
+
+		async runQueryCommands(commands, maxRetries = 2) {
+			const results = {};
+		
+			for (let i = 0; i < commands.length; i++) {
+				let cmd = commands[i];
+				updateOutput(t('react:consoleRunningQuery', { cmd }));
+		
+				let result;
+				let attempt = 0;
+				while (attempt <= maxRetries) {
+					try {
+						result = await performCommand(cmd)
+						updateOutput(t('react:consoleQueryResult', { cmd:cmd, result: JSON.stringify(result) }));
+					} catch(error) {
+						updateOutput(t('react:consoleErrorInQuery', { cmd:cmd, error: error.message }));
+						result = { error: error.message };
+					}
+					if (!result?.error) {
+						results[cmd] = result;
+						break;
+					}
+
+					updateOutput(t('react:consoleQueryFailed', { attempt: attempt + 1, message: result.message }));
+					attempt++;
+		
+					if (attempt <= maxRetries) {
+						const retryPrompt = `The following query command failed:
+${cmd}
+Error: ${result.message}
+Please suggest a corrected version. Respond ONLY with a JSON array of valid MM query commands.`;
+		
+						const correction = await openAIChat.sendPrompt(retryPrompt);
+						try {
+							const suggestions = JSON.parse(correction.output?.[0]?.content?.[0]?.text || "[]");
+							if (Array.isArray(suggestions) && suggestions.length > 0) {
+								updateOutput(t('react:consoleAssistantSuggestedRetry', { suggestion: suggestions[0] }));
+								cmd = suggestions[0];
+							} else {
+								updateOutput(t('react:consoleNoValidQueryArray'));
+								break;
+							}
+						} catch (err) {
+							updateOutput(t('react:consoleFailedToParseRetry'));
+							break;
+						}
+					}
+				}
+			}
+			return results;
+		},
+	
+		async action(userPrompt, successCallback, failureCallback) {
+			if (!openAIValues.apiKey) {
+				pushOutput(t('react:consoleNeedOpenAIApiKey'));
+				return;
+			}
+
+			pushOutput(t('react:consoleUserPrompt', { prompt: userPrompt }));
+			try {
+				openAIValues.retryCount = 0;
+				const pathPrompt = t('You are currently in model ', { path: props.viewInfo.path });
+				const parsed = await openAIChat.sendPrompt(pathPrompt + userPrompt);
+				if (parsed.commands) {
+					try {
+						const result = await openAIChat.executeCommands(parsed.commands, userPrompt);
+						if (result) {
+							console.log(t('react:consoleSuccessDone'));
+							successCallback(t('react:consoleSuccessDone'));
+						}
+						else {
+							console.log(t('react:consoleUnexpectedReturn'));
+							failureCallback(t('react:consoleCommandFailed'));
+						}
+					}
+					catch(err) {
+						updateOutput(t('react:consoleErrorInExecuteCommands'));
+						failureCallback(err.message);
+					}
+				}
+				else {
+					updateOutput(t('react:consoleSuccessDone'));
+				}
+			}
+			catch(err) {
+				failureCallback(err.message);
+			};
+		},
+	
+		async executeCommands(commandsBlock, originalPrompt) {
+			if (!commandsBlock) {
+				updateOutput(t('react:consoleNoCommandsToExecute'));
+				return false;
+			}
+			const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
+
+			const runNext = async () => {
+				if (lines.length === 0) {
+					return true;
+				}
+				const cmd = lines.shift();
+				updateOutput(t('react:consoleCmd', { cmd:cmd }));
+
+				const cmdError = async (result) => {
+					lines.length = 0;
+					const message = (typeof result === 'string') ? result : JSON.stringify(result);
+					updateOutput(t('react:consoleErrorInCmd', { cmd:cmd, message:message }));
+					if (openAIValues.retryCount >= 2) {
+						updateOutput(t('react:consoleRetryLimitReached'));
+						updateOutput(t('react:consoleErrorInCmd', { cmd:cmd, message:message }));
+						return false;
+					}
+					openAIValues.retryCount++;
+					console.log('cmdError: retryCount', openAIValues.retryCount);
+	
+					const retryPrompt = `Original request: ${originalPrompt}\nThat command failed:\n${cmd}\nError: ${message}\nPlease fix it. Remaining commands have been cleared.`;
+					try {
+						const retry = await this.sendPrompt(retryPrompt);
+						return await openAIChat.executeCommands(retry.commands, originalPrompt);
+					} catch (err) {
+						updateOutput(t('react:consoleAssistantRetryFailed'));
+						throw err;
+					}
+				}
+	
+				try {
+					const result = await performCommand(cmd);
+					if (result.error) {
+						return await cmdError(result);
+					}
+	
+					if (result.v) {
+						const output = result.v;
+						if (typeof result === 'string') {
+							updateOutput(t('react:consoleCmdSuccess', { cmd:cmd, result:result }))
+						}
+						else {
+							updateOutput(t('react:consoleCmdSuccessJson', { cmd:cmd, output: JSON.stringify(output) }))
+						}
+					}
+					const runNextResult = await runNext();
+					return runNextResult;
+				} catch(error) {
+					return cmdError(error);
+				}
+			};
+
+			const result = await runNext();
+			return result;
+		}
+	};
+
+	// Abandoned Anthropic implementation for now. Just keeping some of it here for reference.
+	// const claudeChat = {
+	// 	async sendPrompt(promptText) {
+	// 		// const mock = await import("../ai/anthropic/mockAssistant.js");
+	// 		// return mock.runAssistant(promptText);
+	
+	// 		const headers = {
+	// 			"x-api-key": `${claudeValues.apiKey}`,
+	// 			"Content-Type": "application/json",
+	// 			"anthropic-version": "2023-06-01",
+	// 			"anthropic-dangerous-direct-browser-access": "true"
+	// 		};
+	
+	// 		const body = {
+	// 			model: "claude-3-7-sonnet-20250219",
+	// 			max_tokens: 4000
+	// 		};
+		
+	// 		if (!claudeValues.conversationHistory) {
+	// 			// First call → initialize conversation history with system prompt and user prompt
+	// 			claudeValues.conversationHistory = [
+	// 				{ role: "user", content: promptText }
+	// 			];
+				
+	// 			// Add system prompt as a separate field, not part of messages array
+	// 			body.system = claudeValues.promptTemplate;
+	// 		} else {
+	// 			// Follow-up call → add new user message to existing conversation
+	// 			claudeValues.conversationHistory.push({ role: "user", content: promptText });
+	// 		}
+			
+	// 		// Always send the full conversation history
+	// 		body.messages = claudeValues.conversationHistory;
+	
+	// 		const response = await fetch("https://api.anthropic.com/v1/messages", {
+	// 			method: "POST",
+	// 			headers,
+	// 			body: JSON.stringify(body)
+	// 		});
+	
+	// 		if (response.status === 429) {
+	// 			const body = await response.text();
+	// 			console.error("❌ 429 Too Many Requests", body);
+	// 			updateOutput(`❌ ${body}`);
+	// 			return;
+	// 		}
+			
+	// 	
+
+	let commandAction, successCallBack, failCallBack;
+	switch(target) {
+		case 'Console':
+			commandAction = performConsoleCommand;
+			successCallBack = consoleCallBack;
+			failCallBack = (error) => { pushOutput(stringifyError(error)) };
+			break;
+
+		case 'OpenAI': {
+			commandAction = openAIChat.action;
+			successCallBack = (result) => {
+				updateOutput(result);
+				props.updateDiagram(true);
+				props.actions.toggleConsole();
+			}
+			failCallBack = (error) => {
+				console.log(t('react:consoleOpenAIFail'));
+				updateOutput(t('react:consoleOpenAIFailed', { error }));
+				props.updateDiagram(true);
+			}
+			break;
+		}
+		
+	// 	case 'Claude': {
+	// 		commandAction = claudeChat.action;
+	// 		successCallBack = (result) => {
+	// 			updateOutput(result);
+	// 		}
+	// 		failCallBack = (error) => {console.log(`Claude Fail`);}
+	// 	}
+	// 		break;	
+	// Have deleted the rest as it should be modelled on the OpenAI implementation above.	
+
+		default:
+			alert(t('react:consoleInvalidInputTarget'));
+			break;
+	}
+
+	let inputPlaceholder = isWaiting ? t('react:consoleThinking') : t('react:consoleReadPlaceHolder');
+
+	let mainElement = e(
 		'div', {
 			id: 'console',
 		},
@@ -101,10 +724,10 @@ export function ConsoleView(props) {
 			}
 		),
 		e(
-			'input', {
+			'textarea', {
 				id: 'console__input',
 				value: input || '',
-				placeholder: t('react:consoleReadPlaceHolder'),
+				placeholder: inputPlaceholder,
 				ref: inputRef,
 				onChange: event => {
 					//keeps input field in sync
@@ -112,60 +735,99 @@ export function ConsoleView(props) {
 					setInput(value);				
 				},
 				onKeyDown: event => {
-					if (event.code == 'Enter') {
-						// watches for Enter and sends command when it see it
-						props.actions.doCommand(input, callBack);
-						const stackLength = inputStackRef.current.length;
-						if (stackLength === 0 || inputStackRef.current[stackLength - 1] !== input) {
-							inputStackRef.current.push(input);
+					if (event.code == 'Enter' && !event.shiftKey) {
+						event.preventDefault();
+						if (input) {
+							// watches for Enter and sends command when it see it
+							commandAction(input, successCallBack, failCallBack);
+							consoleStacks.input.push(input);
+							setInput('');
 						}
-						inputStackPos.current = inputStackRef.current.length;
-						setInput('');
+					}
+					else if (event.code === 'ArrowUp') {
+						event.stopPropagation();
+						event.preventDefault();
+						if (event.shiftKey) {
+							// change results frame
+							consoleStacks.output.scroll(-1);
+							setOutput(consoleStacks.output.show());
 						}
-						else if (event.code === 'ArrowUp') {
-							event.stopPropagation();
-							event.preventDefault();					
-							let pos = inputStackPos.current;
-							if (pos > 0) {
-								setInput(inputStackRef.current[--pos]);
-								inputStackPos.current = pos;
-							}
+						else {
+							// scroll through command history	
+							consoleStacks.input.scroll(-1);
+							setInput(consoleStacks.input.show());		
 						}
-						else if (event.code === 'ArrowDown') {
-							event.stopPropagation();
-							event.preventDefault();					
-							let pos = inputStackPos.current;
-							const currentLength = inputStackRef.current.length
-							if (pos < currentLength - 1) {
-								setInput(inputStackRef.current[++pos]);
-								inputStackPos.current = pos;
-							}
-							else {
-								setInput('');
-								inputStackPos.current = inputStackRef.current.length;
-							}
+					}
+					else if (event.code === 'ArrowDown') {
+						event.stopPropagation();
+						event.preventDefault();					
+						if (event.shiftKey) {
+							// change results frame
+							consoleStacks.output.scroll(1);
+							setOutput(consoleStacks.output.show());
+						}
+						else {
+							consoleStacks.input.scroll(1)
+							setInput(consoleStacks.input.show())
+						}
 					}
 				}
 			}
-		),
+		)
+	);
+	
+	return e(
+		'div', {
+			id: 'console__main',
+		},
+		mainElement,
 		e(
 			'div', {
-				id: 'console__read-file',
+				id: 'console__footer',
 			},
 			e(
-				'label', {
-					id: 'console__read-file-label',
-					className: 'input-file-button',
+				'div', {
+					id: 'console__toggle'
 				},
-				t('react:consoleReadCommands'),
 				e(
-					'input', {
-						id: 'console__read-file-input',
-						type: 'file',
-						onChange:  readCommandFile,
-					}
-				),	
+					'select', {
+							value: target,
+							ref: targetRef,
+							onChange: (event) => {
+								inputTarget = event.target.value;
+								setTarget(event.target.value);
+								inputRef.current?.focus();
+							},
+						},
+						e('option', { value: 'OpenAI' }, 'OpenAI'),
+						// e('option', { value: 'Claude' }, 'Claude'),
+						e('option', { value: 'Console' }, 'Console')
+				)
 			),
+			e(
+				'div', {
+					id: 'console__read-file',
+				},
+				e(
+					'label', {
+						id: 'console__read-file-label',
+						className: 'input-file-button',
+					},
+					t('react:consoleReadCommands'),
+					e(
+						'input', {
+							id: 'console__read-file-input',
+							type: 'file',
+							onChange:  readCommandFile,
+						}
+					),	
+				),
+			),
+			e(
+				'div', {
+					id: 'console__spare'
+				}
+			)
 		)
 	);
 }

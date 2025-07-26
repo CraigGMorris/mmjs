@@ -1,0 +1,146 @@
+:root {
+	--sides--color: rgb(47, 47, 46);
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--sides--color: rgb(255, 253, 225);
+	}
+}
+
+body {
+	background-color: var(--sides--color)  !important;
+}
+
+img {max-width: 95%; }
+
+p img       { float: none; }
+img.no_padding {padding:0;margin:0}
+
+.img-right {
+	float: right;
+	margin: 0 0 .5em .5em;
+}
+em { font-weight:bold; }
+.img-left {
+	float: left;
+	margin: 0 .5em .5em 0;
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+li {
+	padding: 5px;
+}
+
+#page {
+	max-width: 600px;
+	min-height: 600px;
+	background-color: var(--body--bgcolor);
+	margin: auto;
+	padding: 5px;
+	border: solid 1px var(--border--color);
+}
+
+#heading {
+	position: sticky;
+	top: 0;
+	background-color: rgb(255, 253, 225);
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 30px;
+	grid-template-areas: "title title";
+	grid-gap: 5px;
+	padding-bottom: 5px;
+}
+
+#title {
+	grid-area: title;
+	font-size: larger;
+	padding-bottom: 5px;
+	color: var(--title--color);
+	border-bottom: solid 1px var(--border--color);
+}
+
+#title span {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+* {box-sizing:border-box}
+
+#menu {
+display: grid;
+grid-template-columns: 1fr 1fr;
+grid-template-rows: 1fr;
+grid-gap: 5px;
+border-bottom: solid 1px var(--border--color);
+padding-bottom: 5px;
+margin-bottom: 10px;
+}
+
+#help {
+	margin-right: 10px;
+	display: flex;
+	justify-content: right;
+}
+
+#run {
+	margin-left: 10px;
+	display: flex;
+	justify-content: left;
+}
+
+/* Slideshow container */
+.slideshow-container {
+max-width: 600px;
+position: relative;
+margin: auto;
+}
+
+/* Make the images invisible by default */
+.slide {
+display: none;
+}
+
+.slide img {
+display: block;
+margin-left: auto;
+margin-right: auto;
+}
+
+/* forward & Back buttons */
+.back, .forward {
+cursor: pointer;
+color: grey;
+font-weight: bold;
+font-size: 24px;
+transition: 0.4s ease;
+	user-select: none;
+}
+
+/* Place the "forward button" to the right */
+/* .forward {
+right: 0;
+border-radius: 4px 0 0 4px;
+} */
+
+/*when the user hovers,add a black background with some little opacity */
+.back:hover, .forward:hover {
+color: rgba(0,200,0,1);
+}
+
+/* Caption Info */
+.info {
+/* color: #e3e3e3; */
+display: grid;
+grid-template-columns: 20px 1fr 20px;
+font-size: 16px;
+padding: 10px 14px;
+bottom: 10px;
+width: 100%;
+text-align: center;
+}

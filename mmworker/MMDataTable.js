@@ -18,7 +18,7 @@
 'use strict';
 
 /* global
-	MMCommandObject: readonly
+	MMObject: readonly
 	MMTool:readonly
 	MMTableValueColumn:readonly
 	MMTableValue:readonly
@@ -32,9 +32,9 @@
 
 /**
  * @class MMDataTableColumn
- * @extends MMCommandObject
+ * @extends MMObject
  */
-class MMDataTableColumn extends MMCommandObject {
+class MMDataTableColumn extends MMObject {
 	/**
 	 * @constructor
 	 * @param {MMDataTable} table - owner
@@ -52,11 +52,13 @@ class MMDataTableColumn extends MMCommandObject {
 		this.isCalculated = options.isCalculated;
 		this.isMenu = options.isMenu;
 		this.displayUnitName = displayUnitName;
-		this.format = options.format;
+		this._format = options.format;
 		if (!this.isCalculated) {
 			this._columnValue = new MMTableValueColumn({
 				name: options.name,
+				value: options.value,
 				displayUnit: displayUnitName,
+				format: this.format,
 			});
 			if (!options.defaultValue && !this._columnValue.isString) {
 				this.defaultFormula.formula = `0 ${this._columnValue.displayUnit.name}`;
@@ -85,7 +87,8 @@ class MMDataTableColumn extends MMCommandObject {
 		}
 		this._columnValue = new MMTableValueColumn({
 			name: this.name,
-			value: calculatedValue
+			value: calculatedValue,
+			format: this.format
 		});
 		if (this.displayUnitName) {
 			this._columnValue.displayUnit = this.displayUnitName;
@@ -120,6 +123,10 @@ class MMDataTableColumn extends MMCommandObject {
 
 	set format(newValue) {
 		this._format = newValue;
+		if (!theMMSession.isLoadingCase) {
+			this.columnValue.format = newValue;
+			this.forgetCalculated();
+		}
 	}
 
 	/**
@@ -261,7 +268,7 @@ class MMDataTableColumn extends MMCommandObject {
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
-class MMDataTable extends MMTool {
+export class MMDataTable extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
@@ -289,6 +296,7 @@ class MMDataTable extends MMTool {
 			verbs['removerows'] = this.removeRowsCommand;
 			verbs['restorecolumn'] = this.restoreColumnCommand;
 			verbs['restorerows'] = this.restoreRowsCommand;
+			verbs['undorestorerows'] = this.undoRestoreRowsCommand;
 			verbs['setcell'] = this.setCellCommand;
 			verbs['movecolumn'] =this.moveColumnCommand;
 			return verbs;
@@ -307,8 +315,8 @@ class MMDataTable extends MMTool {
 				undoaddrow:			'mmcmd:_tableUndoAddRow',
 				removecolumn: 	'mmcmd:_tableRemoveColumn',
 				removerows:			'mmcmd:_tableRemoveRows',
-				restorecolumn:	'mmcmd?tableRestoreColumn',
-				restorerows:		'mmcmd?tableRestoreRows',
+				restorecolumn:	'mmcmd:_tableRestoreColumn',
+				restorerows:		'mmcmd:_tableRestoreRows',
 				setcell:				'mmcmd:_tableSetCell',
 				movecolumn:			'mmcmd:_tableMoveColumn',
 			}[command];
@@ -380,6 +388,10 @@ class MMDataTable extends MMTool {
 				this.setError('mmcmd:tableDuplicateColumnName', {name: options.name, path: this.getPath()});
 				return;
 			}
+		}
+
+		if (!options.defaultValue) {
+			options.defaultValue = '0 Fraction';
 		}
 
 		let insertValue;
@@ -565,7 +577,7 @@ class MMDataTable extends MMTool {
 			if (Object.values(undoOptions).length > 1) {
 				command.results = undoOptions.name;
 				const undoString = JSON.stringify(undoOptions);
-				command.undo = `__blob__${this.getPath()} updatecolumn__blob__${undoString}`;
+				command.undo = `${this.getPath()} updatecolumn ${undoString}`;
 			}
 		}
 	}
@@ -622,7 +634,7 @@ class MMDataTable extends MMTool {
 			const columnJson = JSON.stringify(savedColumn);
 			let columnNumber = this.columnArray.indexOf(column);
 			super.removeChildNamedCommand(command);
-			command.undo = `__blob__${this.getPath()} restorecolumn ${columnNumber+1}__blob__${columnJson}`;
+			command.undo = `${this.getPath()} restorecolumn ${columnNumber+1} ${columnJson}`;
 		}
 		else {
 			this.setError('mmcmd:tableBadColumnName', {path: this.getPath(), name: name});
@@ -659,7 +671,7 @@ class MMDataTable extends MMTool {
 	 * @method restoreColumnCommand
 	 * @param {MMCommand} command
 	 * command.args should be the the column number followed by the undo json
-	 * in the form __blob__/.x restorecolumn 1__blob__ followed by the json text
+	 * in the form  /.x restorecolumn 1  followed by the json text
 	 */
 	restoreColumnCommand(command) {
 		const indicesMatch = command.args.match(/^\d+\s+/);
@@ -765,7 +777,7 @@ class MMDataTable extends MMTool {
 		for (let column of this.columnArray) {
 			if (!column.isCalculated) {
 				try {
-					const value = columnValues ? columnValues[column.name] : null;
+					const value = columnValues ? columnValues?.[column.name] : null;
 					column.addRow(rowNumber, value);
 				} catch(e) {
 					error = e;
@@ -809,7 +821,7 @@ class MMDataTable extends MMTool {
 	 * command.args should be the the row number
 	 */
 	addRowCommand(command) {
-		let rowNumber, columnValues;
+		let rowNumber = 0, columnValues;
 		if (command.args) {
 			let args = command.args.trim();
 			if (!args.startsWith('{')) { // should be row number
@@ -857,7 +869,7 @@ class MMDataTable extends MMTool {
 		const oldInputs = this.removeRows([rowNumber], true);
 		if (Object.keys(oldInputs).length) {
 			const inputsJson = JSON.stringify(oldInputs);
-			command.undo = `__blob__${this.getPath()} restorerows__blob__${inputsJson}`;
+			command.undo = `${this.getPath()} restorerows ${inputsJson}`;
 		}
 	}
 
@@ -898,16 +910,16 @@ class MMDataTable extends MMTool {
 	 * @param {MMCommand} command
 	 * command.args should be the the row number(s)
 	 */
-	removeRowsCommand(command) {
+	removeRowsCommand(command, ignoreFilter=false) {
 		const argParts = command.args.split(/\s/);
 		const rowNumbers = argParts.map(arg => {
 			const n = parseInt(arg);
 			return isNaN(n) ? 0 : n;
 		})
-		const oldInputs = this.removeRows(rowNumbers);
+		const oldInputs = this.removeRows(rowNumbers, ignoreFilter);
 		if (Object.keys(oldInputs).length) {
 			const inputsJson = JSON.stringify(oldInputs);
-			command.undo = `__blob__${this.getPath()} restorerows__blob__${inputsJson}`;
+			command.undo = `${this.getPath()} restorerows ${inputsJson}`;
 		}
 	}
 
@@ -939,7 +951,16 @@ class MMDataTable extends MMTool {
 		const rowNumbers = Object.keys(inputs);
 		this.restoreRows(inputs);
 		command.results = {rowNumbers: rowNumbers}
-		command.undo = `${this.getPath()} removerows ${rowNumbers.join(' ')}`;
+		command.undo = `${this.getPath()} undorestorerows ${rowNumbers.join(' ')}`;
+	}
+
+	/**
+	 * @method undoRestoreRowsCommand
+	 * @param {MMCommand} command
+	 * command.args should be the the row number(s)
+	 */
+	undoRestoreRowsCommand(command) {
+		this.removeRowsCommand(command, true); // ignore filter
 	}
 
 	/**
@@ -1026,130 +1047,23 @@ class MMDataTable extends MMTool {
 		}
 	}
 
-	/** @method initFromCsv
-	 * @param {String} csv - with three definition lines at top
-	 * table en   where en is language code
-	 * "name1","name2" ... column names
-	 * "Fraction","Fraction" ... column display units
+	/**
+	 * @method initFromTableValue
+	 * @param {MMTableValue} tableValue 
 	 */
-	initFromCsv(csv) {
-		let i = 0;
-		let line;
-		let re = new RegExp('.*?\\n');
-		const getLine = (i, re) => {
-			let match = csv.substring(i).match(re);
-			if (!match) {
-				this.setError('mmcmd:tableBadCsvHeader', {path: this.getPath()});
-				return [null, null];
-			}
-			let line = match[0];
-			i += match.index + line.length;
-			return [i, line];
-		}
-		[i, line] = getLine(i, re);
-		if (!line) { return; }
-		let csvSeparator = ',';
-		let locale = 'en';
-		if (line.length >= 7) {
-			csvSeparator = line[5];
-			locale = line.substring(6).trim();
-		}
-		let n = 1.1;
-		const decimalSeparator = n.toLocaleString(locale).substring(1,2);
-
-		[i, line] = getLine(i, re);
-		if (!line) {return;}
-		const columnNames = line.trim().split(csvSeparator);
-
-		[i, line] = getLine(i, re);
-		if (!line) {return;}
-		const unitNames = line.trim().split(csvSeparator);
-
-		if (unitNames.length !== columnNames.length) {
-			this.setError('mmcmd:tableCsvColumnCountsDiffer', {path: this.getPath()});
-			return;
-		}
-
-		const columns = this.columnArray;
-		const columnData = [];
-		const csvColumnCount = columnNames.length;
-		const uniqueNames = new Set();
-		const includeColumn = [];
-		if (csvColumnCount === 0) {return;}
-		for (let i = 0; i < csvColumnCount; i++) {
-			let columnName = columnNames[i];
-			columnName = columnName.substring(1,columnName.length -1);  // strip off the quotes
-			let unitName = unitNames[i];
-			unitName = unitName.substring(1,unitName.length -1);  // strip off the quotes
-			if (!uniqueNames.has(columnName)) {
-				const column = new MMDataTableColumn(this, {
-					name: columnName,
-					displayUnit: unitName
-				});
-				columns.push(column);
-				columnData.push([]);
-				uniqueNames.add(columnName);
-				includeColumn.push(true);
-			}
-			else {
-				includeColumn.push(false);
-			}
-		}
-		const columnCount = uniqueNames.size;
-
-		re = new RegExp('".*?"|[^' + csvSeparator + '"\\n]*','ms');
-		let match = csv.substring(i).match(re);
-		let columnNumber = 0;
-		let csvColumnNumber = 0;
-		const csvLength = csv.length;
-		while (match && i <= csvLength) {
-			let token = match[0];
-			i += match.index + token.length;
-			if (includeColumn[csvColumnNumber]) {
-				const column = columns[columnNumber];
-
-				if (token.startsWith('"')) {
-					token = token.substring(1,token.length - 1); // strip quotes
-				}					
-				if (column.columnValue.isString) {
-					columnData[columnNumber].push(token);
-				}
-				else {
-					if (token.length) {
-						if (decimalSeparator !== '.') {
-							token = token.replace(decimalSeparator, '.');
-						}
-						else {
-							token = token.replace(/,/g, '');
-						}
-					}
-					else {
-						token = 0;
-					}
-					columnData[columnNumber].push(token);
-				}
-				columnNumber = (columnNumber + 1) % columnCount;
-			}
-			csvColumnNumber = (csvColumnNumber + 1) % csvColumnCount;
-			i++;
-			match = csv.substring(i).match(re);
-		}
-
-		let rowCount = columnData[0].length;
-		for (let i = 1; i < columnCount; i++) {
-			if (columnData[i].length !== rowCount) {
-				this.setWarning('mmcmd:tableCsvRowCountsDiffer', {
-					path: this.getPath(),
-					column: i,
-					ilength: columnData[i].length,
-					rowcount: rowCount
-				});
-				rowCount = Math.min(columnData[i].length, rowCount);
-			}
-		}
-		this.rowCount = rowCount;
-		for (let i = 0; i < columnCount; i++) {
-			columns[i].columnValue.updateFromStringArray(columnData[i]);
+	initFromTableValue(tableValue) {
+		const nColumns = tableValue.columnCount;
+		this.rowCount = tableValue.rowCount;
+		for (let i = 0; i < nColumns; i++) {
+			const valueColumn = tableValue.columns[i];
+			const value = valueColumn.value ? valueColumn.value.copyOf() : null;
+			const dataColumn = new MMDataTableColumn(this, {
+				name: valueColumn.name,
+				value: value,
+				displayUnit: valueColumn.displayUnit,
+				format: valueColumn.format,
+			});
+			this.columnArray.push(dataColumn);
 		}
 	}
 

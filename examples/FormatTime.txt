@@ -5,16 +5,17 @@
 	"DeviceWidth": 1024,
 	"UserUnitSets": {},
 	"UserUnits": [],
-	"CaseName": "TimeParts",
+	"CaseName": "FormatTime",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
-	"ModelPath": "/.root",
+	"SelectedObject": "TimeParts",
+	"ModelPath": "/.root.TimeParts",
 	"RootModel": {
 		"name": "root",
 		"DiagramX": -12321,
 		"DiagramY": -12321,
 		"HideInfo": "n",
 		"DiagramNotes": "n",
+		"HtmlNotes": "n",
 		"Type": "Model",
 		"diagramScale": 1,
 		"Objects": [
@@ -23,23 +24,29 @@
 				"Notes": "This model accepts a time value, in seconds since the beginning of 1970, and calculates integer values for the different date and time parts as well as formatted date and time strings.",
 				"DiagramX": 35,
 				"DiagramY": 40,
-				"HideInfo": "n",
+				"HideInfo": "y",
 				"DiagramNotes": "y",
+				"HtmlNotes": "n",
 				"Type": "Model",
 				"diagramScale": 1,
 				"Objects": [
 					{
 						"name": "time",
 						"Notes": "Time to process",
-						"DiagramX": 90,
-						"DiagramY": 10,
+						"DiagramX": 95,
+						"DiagramY": 75,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "{now}"
+							"Formula": "{now} + {timezone}"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y",
+						"displayUnit": "date",
+						"format": "14.6f"
 					},
 					{
 						"name": "Year",
@@ -48,11 +55,12 @@
 						"DiagramY": 10,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int date / 10000}"
-						},
-						"isOutput": "y"
+						}
 					},
 					{
 						"name": "Month",
@@ -60,19 +68,21 @@
 						"DiagramY": 40,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int date /100 - year*100}"
-						},
-						"isOutput": "y"
+						}
 					},
 					{
 						"name": "date",
 						"Notes": "Convert the time (in seconds since 1970) into a structured date and time.",
-						"DiagramX": 90,
-						"DiagramY": 40,
+						"DiagramX": 95,
+						"DiagramY": 115,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{date time}"
@@ -84,11 +94,12 @@
 						"DiagramY": 65,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int date - year * 10000 - month * 100}"
-						},
-						"isOutput": "y"
+						}
 					},
 					{
 						"name": "Hour",
@@ -96,11 +107,12 @@
 						"DiagramY": 90,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int hhmmss / 10000}"
-						},
-						"isOutput": "y"
+						}
 					},
 					{
 						"name": "hhmmss",
@@ -109,6 +121,7 @@
 						"DiagramY": 170,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int (date - {int date}) * 1000000 + 0.5}"
@@ -120,11 +133,12 @@
 						"DiagramY": 115,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{int (hhmmss - hour * 10000) / 100}"
-						},
-						"isOutput": "y"
+						}
 					},
 					{
 						"name": "Second",
@@ -132,11 +146,12 @@
 						"DiagramY": 145,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "hhmmss - hour * 10000 - minute * 100"
-						},
-						"isOutput": "y"
+						}
 					},
 					{
 						"name": "MonthName",
@@ -145,11 +160,12 @@
 						"DiagramY": 80,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{cc \"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"jun\", \"Jul\", \"Aug\", \"Sep\", \"Oct\", \"Nov\", \"Dec\"}[ month]"
-						},
-						"isOutput": "y"
+						}
 					},
 					{
 						"name": "DateStr",
@@ -158,11 +174,12 @@
 						"DiagramY": 10,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "MonthName + {fmt \" %2.0f\", day} + {fmt \", %4.0f\", year}"
-						},
-						"isOutput": "y"
+							"Formula": "MonthName +\n{fmt \" %2.0f\", day} +\n\", \"+\n{fmt \", %4.0f\", year}"
+						}
 					},
 					{
 						"name": "TimeStr",
@@ -171,11 +188,25 @@
 						"DiagramY": 45,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "{fmt \"%2.0f\", hour} + \":\" +\n\t{fmt \"%02.0f\", minute} + \":\" +\n\t{fmt \"%02.0f\", second}"
-						},
-						"isOutput": "y"
+						}
+					},
+					{
+						"name": "Overview",
+						"Notes": "This model accepts a time value, in seconds since the beginning of 1970, and calculates integer values for the different date and time parts as well as formatted date and time strings.",
+						"DiagramX": 95,
+						"DiagramY": 10,
+						"HideInfo": "n",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ""
+						}
 					}
 				]
 			}

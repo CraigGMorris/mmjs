@@ -6,102 +6,43 @@
 		<script type="text/javascript" src="help.js"></script>
 		<script type="text/javascript">
 			window.onload = () => {
-				rtSetupHeading('Getting Started',{
-					help: 'Help Pages',
-					basics: 'Basics',
+				rtSetupHeading('Getting Started Session',{
 					getstart: 'Getting Started',
-					examples: 'Examples',
 				});
 			};			
 		</script>	
-		<title>Getting Started</title>
+		<title>Getting Started Session</title>
 	</head>
 	
 	<body>
 		<div id="page">
 			<div id="heading"></div>
-			<div id="welcome" class="section">
-				<p>
-					Welcome to Math Minion, my quirky take on a general purpose calculation
-					tool. It is a <b><a href="freeprivate.html">free and private</a></b> javascript app
-					that runs locally in your web browser.
-				</p>
-			</div>
-			<div id="help" class="section">
-				<h3>Help Pages</h3>
-				<p>
-					The top of all help pages start with <b>Section Menu</b> and <b>Help Contents</b>.
-					Tapping on <b>Section Menu</b> will expand to a set of links for quickly jumping to
-					a section of the current page. Tapping on <b>Help Contents</b> will reveal a list
-					of links to all the available help pages.
-				</p>
-				<p>
-					If you are new to Math Minion, checking out the
-					<a href="tutorial.html"><b>tutorial</b></a>
-					might be a good place to start once you have waded through the stuff on
-					this Getting Started page.
-				</p>
-				<p>
-					If you can't find the answer in the documentation, or if you have any questions or
-					comments, please <a href="http://www.redtree.com/contact.html">contact me</a>.
-				</p>
-			</div>
-			<div id="basics" class="section">
-				<h3>Basics</h3>
-				<p>
-					Math Minion consists of a <a href="model.html">model</a>, represented by a
-					<a href="diagram.html">diagram</a>, on to which you can plop various
-					<a href="tools.html">calculation tools</a>, the details of which are displayed
-					in an <a href="infoview.html">information view</a>.
-				<p>
-				<p>
-					The most common tool is an <a href="expression.html">expression</a>, which contains
-					a single <a href="formula.html">formula</a> that evaluates to a
-					<a href="minionvalue.html">minion value</a>.
-				</p>
-				<p>
-					You can use the name of an expression in another formula to represent its calculated
-					value. Thus if expression <b>a</b> has formula
-				</p>
-				<p class="formula">2 + 2</p>
-				<p>
-					and expression <b>b</b>'s formula is
-				</p>
-				<p class="formula">a * 2</p>
-				<p>
-					then <b>b</b>'s value would be 8.
-				</p>
-				<p>
-					Note that a model can contain other models, which will have their own diagrams
-					and set of tools.  In this way you can encapsulate larger problems into more
-					manageable chunks.
-				</p>
-			</div>
+			<div id="menubody"></div>
 			<div id="getstart" class="section">
 				<h3>Getting Started Session</h3>
 				<p>
 					The first time you run Math Minion, a <b>Getting Started</b> session
-					("session" is what I call a Math Minion document) will have been automatically
-					loaded.  
+					("session" is what I call a Math Minion document) will be automatically
+					loaded. 
 				</p>
 				<p>
-					If the browser's display is sufficiently wide, the diagram for the session's
-					root model will appear to the left, with an
-					<a href="infoview.html">information view</a> to the right.
-					On a narrow display, such as a phone, you have to switch between the
-					<a href="diagram.html">diagram</a> and the
-					<a href="infoview.html">information view</a> by tapping on the button at the lower left
-					of the display.
-				</p>
-				<p>
-					The Getting Started session contains examples of most of the key
-					<a href="tools.html">tools</a> and features in Math Minion and has extensive
-					<a href="notes.html">notes</a> explaining their use. It is an excellent place
+					It is is a heavily commented guide as well as a
+					demonstration of Math Minion's features and tools.  It is an excellent place
 					to browse and try things out.
 				</p>
 				<p>
 					Don't worry about screwing it up, for you can always create a new copy by
-					copying the command:
+					clicking on this link:
+				</p>
+				<p>
+					<b>Note</b> this will erase any changes you
+					have made to the current Getting Started session
+				</p>
+				<p>
+					<a href="../run.html?cmd=/%20loadurl%20../help/Getting%20Started.txt">New Getting Started</a>
+				</p>
+				<p>
+					If that doesn't work for some reason, try copying the command:
 				</p>
 				<p class="formula">
 					/ loadurl ../help/Getting Started.txt
@@ -110,17 +51,6 @@
 					and then clicking on the <b>Console</b> button at the bottom of any
 					<a href="infoview.html">information view</a>. Paste the command
 					into the input field and hit return to create a fresh copy.
-					(<b>Note</b> this will erase any changes you
-					have made to the current Getting Started session)
-				</p>
-			</div>
-			<div id="examples" class="section">
-				<h3>Examples</h3>
-				<p>
-					In addition to the <a href="tutorial.html">tutorial</a> and
-					<b>Getting Started Session</b>, there are a number of
-					<a href="http://www.redtree.com/mmexamples">examples</a> available which illustrate
-					various features of Math Minion.
 				</p>
 			</div>
 		</div>

@@ -26,7 +26,7 @@
 	 * @member {string} warning - undefined if no warning
 	 * @member {Object} results 
 */
-class MMCommand {
+export class MMCommand {
 	/**
 	 * @param {string} expression
 	 */
@@ -42,7 +42,7 @@ class MMCommand {
  * @member {Object} args
  * @member {MMCommandMessage} child - optional
  */
-/* export */ class MMCommandMessage {
+export class MMCommandMessage {
 	/** @constructs
 	 * @param {string} msgKey
 	 * @param {Object} args
@@ -58,13 +58,13 @@ class MMCommand {
 }
 
 /** @class MMCommandProcessor
- * @member {MMCommandParent} root
+ * @member {MMParent} root
  * @member {boolean} useLineContinuation - if true, an underscore at line end means concatenate next line
- * @member {MMCommandObject} defaultObject
+ * @member {MMObject} defaultObject
  * @member {string} currentExpression
  * @member {function} statusCallBack - (message: string) => void
 */
-class MMCommandProcessor {
+export class MMCommandProcessor {
 	/** @constructs */
 	constructor() {
 		this.root = undefined;
@@ -74,14 +74,14 @@ class MMCommandProcessor {
 		this.statusCallBack = undefined;
 	}
 
-	/**  @param {MMCommandParent} root - MMCommandParent */
+	/**  @param {MMParent} root - MMParent */
 	setRoot(root) {
 		this.root = root;
 		this.defaultObject = root;
 	}
 
 	/**  @param {string} path
-	 * @returns {MMCommandObject} MMCommandObject at path
+	 * @returns {MMObject} MMObject at path
 	 */
 	setDefaultToPath(path) {
 		let newObject = this.getObjectFromPath(path);
@@ -163,7 +163,8 @@ class MMCommandProcessor {
 		return true;
 	}
 
-	/** @param {string} commands
+	/** 
+	 * @param {string} commands
 	 * commands is normally an object containing a cmdString and an id, but it can be just a plain string
 	 * cmdString (or the plain string) can be made up of many commands separated by newline or semicolon
 	 * characters.  This function splits them up and processes them one at a time and returns the
@@ -178,26 +179,12 @@ class MMCommandProcessor {
 			results.timeoutId = commands.timeoutId;
 			commands = commands.cmdString;
 		}
+		// console.log(commands);
 		try {
 			commands = commands.trim();
 			if (commands.length > 0) {
-				if (commands.startsWith('__blob__')) {
-					// the command has subject and verb surrounded by '__blob__' with everything
-					// following the second __blob__ being a single argument
-					let endBlob = commands.indexOf('__blob__',7);
-					let subjectAndVerb = commands.substring(8, endBlob);
-					let arg = commands.substring(endBlob + 8);
-					let action = new MMCommand(subjectAndVerb + ' ' + arg);
-					if (await this.processCommand(action)) {
-						results.push(action);
-					}
-					return results;
-				}
-				// cmds are separated by either \n or ;
-				// two ; are replaced by a single one
-				commands = commands.replace(/([^;]);([^;])/,'$1\n$2');
-				commands = commands.replace(/;;/, ';');
-				let cmdLines = commands.split('\n');
+				// cmds are separated by '''\n
+				let cmdLines = commands.split(`\n'''`);
 				let continuedCmd = '';
 				for( let cmd of cmdLines) {
 					if (cmd.startsWith("'") && !continuedCmd) {  // comment
@@ -207,12 +194,12 @@ class MMCommandProcessor {
 					if (this.useLineContinuation) {
 						continuedCmd = '';
 						if (cmd.endsWith('__')) {
-							cmd = cmd.substr(0, cmd.length-1);   // escaped end underscore - leave one behind
+							cmd = cmd.slice(0, -1);   // escaped end underscore - leave one behind
 						}
 						else {
 							if (cmd.endsWith('_')) {
-								continuedCmd = cmd.substr(0, cmd.length-1) + '\n';
-								continue;
+									continuedCmd = cmd.slice(0, -1);
+									continue;
 							}
 						}
 					}
@@ -257,13 +244,13 @@ class MMCommandProcessor {
 			let secondQuotePos = expression.indexOf(firstChar, 1);
 			if (secondQuotePos >= 0) {
 				return [
-					expression.slice(1,secondQuotePos).trim(),
-					expression.substr(secondQuotePos+1).trim()
+					expression.slice(1, secondQuotePos).trim(),
+					expression.slice(secondQuotePos + 1).trim()
 				];
 			}
 			else {
 				// no closing quote, return everything after the first quote
-				return [expression.substr(1).trim()];
+				return [expression.slice(1).trim()];
 			}
 		}
 
@@ -271,8 +258,8 @@ class MMCommandProcessor {
 		let firstSpacePos = expression.indexOf(' ');
 		if (firstSpacePos >= 0) {
 			return [
-				expression.slice(0,firstSpacePos).trim(),
-				expression.substr(firstSpacePos + 1).trim()
+				expression.slice(0, firstSpacePos).trim(),
+				expression.slice(firstSpacePos + 1).trim()
 			];
 		}
 		else {
@@ -282,14 +269,14 @@ class MMCommandProcessor {
 
 	/**
 	 * @param {string} path 
-	 * @param {MMCommandObject} startObject 
-	 * @returns {MMCommandObject} returns found object or nil
+	 * @param {MMObject} startObject 
+	 * @returns {MMObject} returns found object or nil
 	 */
 	followPath(path, startObject) {
 		let parts = path.split('.');
 		let resultObject = startObject;
 		for (let part of parts) {
-			if (part.length > 0 && resultObject instanceof MMCommandParent) {
+			if (part.length > 0 && resultObject instanceof MMParent) {
 				resultObject = resultObject.childNamed(part);
 			}
 			if (!resultObject) {
@@ -301,17 +288,17 @@ class MMCommandProcessor {
 
 	/**
 	 * @param {string} path
-	 * @returns {MMCommandObject} found object or nil
+	 * @returns {MMObject} found object or nil
 	 */
 	getObjectFromPath(path) {
 		if (path.length > 0) {
 			switch(path[0]) {
 				case '.':
-					return this.followPath(path.substr(1), this.defaultObject);
+					return this.followPath(path.slice(1), this.defaultObject);
 				case '/':
-					return this.followPath(path.substr(1), this.root);
+					return this.followPath(path.slice(1), this.root);
 				case '^':
-					return this.followPath(path.substr(1), this.defaultObject.parent);
+					return this.followPath(path.slice(1), this.defaultObject.parent);
 			}
 		}
 		return undefined;
@@ -328,7 +315,7 @@ class MMCommandProcessor {
  * @readonly
  * @enum {string}
  */
-/* export */ const MMPropertyType = Object.freeze({
+export const MMPropertyType = Object.freeze({
 	string: 'string',
 	int: 'int',
 	float: 'float',
@@ -340,21 +327,21 @@ class MMCommandProcessor {
  * @property {boolean} readOnly;
  */
 
-/** @class MMCommandObject
+/** @class MMObject
  *	@member {string} name
  *	@member {string} className
  *	@member {MMCommandProcessor} processor - can be nil
- *	@member {MMCommandParent} parent - can be nil
+ *	@member {MMParent} parent - can be nil
  *	@member {Object} properties - {string: PropertyInfo}
  *	@member {Object} setProperties - {string: PropertyInfo}
  * properties added with set command
  *	@member {Object} verbs - [string]: (string) => any
  *	@member {MMCommand} _command
 */
-/* export */ class MMCommandObject {
+export class MMObject {
 	/** @constructor
 	 * @param {string} name
-	 * @param {MMCommandParent} parent
+	 * @param {MMParent} parent
 	 * @param {string} className
 	*/
 	constructor( name, parent, className) {
@@ -420,7 +407,7 @@ class MMCommandProcessor {
 	 * shortcut translate call
 	 * @param {string} key
 	 * @param {Object} args - optional
-	 * @param {MMCommandObject} child - optional
+	 * @param {MMObject} child - optional
 	 * @returns {string}
 	 */
 	t(key, args, child) {
@@ -518,7 +505,7 @@ class MMCommandProcessor {
 		if (!args) {
 			throw(this.t('cmd:_set'));
 		}
-		let firstSpace = args.indexOf(' ');
+		let firstSpace = args.search(/\s/);
 		let propertyName;
 		let valueString;
 		if (firstSpace == -1) {
@@ -542,7 +529,7 @@ class MMCommandProcessor {
 		}
 		this.setValue(propertyName, valueString);
 		command.results = propertyName + ' = ' + valueString;
-		command.undo = `__blob__${this.getPath()} set ${propertyName}__blob__${oldValue}`;
+		command.undo = `${this.getPath()} set ${propertyName} ${oldValue}`;
 	}
 
 	/** @returns {string} returns path of this object */
@@ -748,15 +735,15 @@ class MMCommandProcessor {
 	}
 }
 
-/** @class MMCommandParent
- * @member {Object} children - {string: MMCommandObject}
+/** @class MMParent
+ * @member {Object} children - {string: MMObject}
 */
-/* export */ class MMCommandParent extends MMCommandObject {
+export class MMParent extends MMObject {
 
 	/**
 	 * @constructor
 	 * @param {string} name 
-	 * @param {Object} anyParam - can be MMCommandProcessor or MMCommandParent
+	 * @param {Object} anyParam - can be MMCommandProcessor or MMParent
 	 * should be MMCommandProcessor for root object, otherwise the parent object
 	 * @param {string} className 
 	 */
@@ -769,7 +756,7 @@ class MMCommandProcessor {
 			cmdProcessor.setRoot(this);			// no parent so this must be root
 			this.children = {};
 		}
-		else if (anyParam instanceof MMCommandParent) {
+		else if (anyParam instanceof MMParent) {
 			super(name, anyParam, className);
 			this.children = {};
 		}
@@ -779,7 +766,6 @@ class MMCommandProcessor {
 	get verbs() {
 		let actions = super.verbs;
 		actions['list'] = this.listChildNames;
-		actions['createchild'] = this.createChildFromArgs;
 		actions['removechild'] = this.removeChildNamedCommand;
 		return actions;
 	}
@@ -792,7 +778,6 @@ class MMCommandProcessor {
 	getVerbUsageKey(command) {
 		let key = {
 			list:					'cmd:_list',
-			createchild:	'cmd:_createchild',
 			removechild:	'cmd:_removechild'
 		}[command];
 		if (key) {
@@ -801,40 +786,6 @@ class MMCommandProcessor {
 		else {
 			return super.getVerbUsageKey(command);
 		}
-	}
-
-	/**
-	 * will be overridden by derived classes
-	 * as implemented here, only useful for testing
-	 * @param {string} className 
-	 * @param {string} name 
-	 * @returns {MMCommandObject} - MMCommandObject created
-	 */
-	createChild(className, name) {
-		switch(className) {
-			case 'MMCommandObject':
-				return new MMCommandObject(name, this, className);
-			case 'MMCommandParent':
-				return new MMCommandParent(name, this, className);
-			default:
-				throw(this.t('cmd:unknownClass', {className: className}));
-		}
-	}
-
-	/**
-	 * @method createChildFromArgs
-	 * parses args string and then calls createChild
-	 * @param {MMCommand} command 
-	 */
-	createChildFromArgs(command) {
-		let argValues = this.splitArgsString(command.args);
-		if (argValues.length < 2) {
-			throw(this.t('cmd:_createchild'));
-		}
-		let name = argValues[1];
-		this.createChild(argValues[0], name);
-		command.results = [this.t('cmd:createdChild', {className: argValues[0], name: argValues[1]})];
-		command.undo = this.getPath() + ' removechild ' + name;			
 	}
 
 	/**
@@ -913,7 +864,7 @@ class MMCommandProcessor {
 	/**
 	 * adds child to the children of this object
 	 * @param {string} name 
-	 * @param {MMCommandObject} child 
+	 * @param {MMObject} child 
 	 */
 	addChild(name, child) {
 		this.children[name.toLowerCase()] = child;
@@ -921,7 +872,7 @@ class MMCommandProcessor {
 
 	/**
 	 * @param {string} name
-	 * @returns {MMCommandObject} - returns child MMCommandObject or nil
+	 * @returns {MMObject} - returns child MMObject or nil
 	 */
 	childNamed(name) {
 		return this.children[name.toLowerCase()];

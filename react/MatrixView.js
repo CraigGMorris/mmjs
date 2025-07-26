@@ -46,8 +46,6 @@ export function MatrixView(props) {
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
 	const results = updateResults.length ? updateResults[0].results : {};
-	const rowCountFormula = results.rowCountFormula;
-	const columnCountFormula = results.columnCountFormula;
 	const rowCount = results.rowCount;
   const columnCount = results.columnCount;
 	const cellInputs = results.cellInputs || [];
@@ -58,8 +56,12 @@ export function MatrixView(props) {
 	const [display, setDisplay] = useState(MatrixDisplay.table);
 	const originInput = cellInputs[currentCell.join('_')];
 	const [editFormula, setEditFormula] = useState(originInput ? originInput.input : '')
+	const [rowCountFormula, setRowCountFormula] = useState(results.rowCountFormula);
+	const [columnCountFormula, setColumnCountFormula] = useState(results.columnCountFormula);
+
 	const [editOptions, setEditOptions] = useState({})
 	const [applyType, setApplyType] = useState('cell');
+	const [formatString, setFormatString] = useState('');
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -86,6 +88,24 @@ export function MatrixView(props) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	useEffect(() => {
+		const results = updateResults.length ? updateResults[0].results : {};
+		const format = results?.columnFormats?.[currentCell[1]] || results?.columnFormats?.[0] || '';
+		setFormatString(format);
+
+		if (results.columnCountFormula) {
+			setColumnCountFormula(results.columnCountFormula);
+		}
+		if (results.rowCountFormula) {
+			setRowCountFormula(results.rowCountFormula);
+		}
+	}, [updateResults])
+
+	useEffect(() => {
+		const format = results?.columnFormats?.[currentCell[1]] || results?.columnFormats?.[0] || '';
+		setFormatString(format);
+	}, [currentCell])
+
 	if (updateResults.error) {
 		// use empty command just to defer popView
 		props.actions.doCommand('', () => {
@@ -104,8 +124,10 @@ export function MatrixView(props) {
 		);
 	}
 
-	const valueUnit = (value && value.unit) ? value.unit : '';
-	const unitType = (value && value.unitType) ? value.unitType : '';
+	const isTable = (value && value.t) === 't';
+	let unitType = results.columnUnitType[currentCell[1]] || results.columnUnitType[0];
+	const unitName = results.columnUnits[currentCell[1]] || results.columnUnits[0];
+
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 
@@ -114,7 +136,7 @@ export function MatrixView(props) {
 			case 'cell':
 				return (formula) => {
 					const path = props.viewInfo.path;
-					props.actions.doCommand(`__blob__${path} setcell ${currentCell.join(' ')}__blob__${formula}`, () => {
+					props.actions.doCommand(`${path} setcell ${currentCell.join(' ')} ${formula}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
 						setEditFormula(formula);
 						setDisplay(MatrixDisplay.table);
@@ -122,17 +144,17 @@ export function MatrixView(props) {
 				}
 			case 'columns':
 				return (formula) => {
-					props.actions.doCommand(`__blob__${results.path}.columnCount set formula__blob__${formula}`, () => {
+					props.actions.doCommand(`${results.path}.columnCount set formula ${formula}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
-						setEditFormula(formula);
+						setColumnCountFormula(formula);
 						setDisplay(MatrixDisplay.table);
 					});
 				}
 				case 'rows':
 					return (formula) => {
-						props.actions.doCommand(`__blob__${results.path}.rowCount set formula__blob__${formula}`, () => {
+						props.actions.doCommand(`${results.path}.rowCount set formula ${formula}`, () => {
 							props.actions.updateView(props.viewInfo.stackIndex);
-							setEditFormula(formula);
+							setRowCountFormula(formula);
 							setDisplay(MatrixDisplay.table);
 						});
 					}
@@ -149,11 +171,13 @@ export function MatrixView(props) {
 					t: props.t,
 					actions: props.actions,
 					unitType: unitType,
+					unitName: unitName,
 					cancel: () => {
 						setDisplay(MatrixDisplay.table);
 					},
 					apply: (unit) => {
-						props.actions.doCommand(`${props.viewInfo.path} set displayUnitName ${unit}`, () => {
+						let cmd = `setcolumnunit ${currentCell[1]} ${unit}`;						
+						props.actions.doCommand(`${props.viewInfo.path} ${cmd}`, () => {
 							props.actions.updateView(props.viewInfo.stackIndex);
 							setDisplay(MatrixDisplay.table);
 						});						
@@ -170,6 +194,7 @@ export function MatrixView(props) {
 					t: t,
 					viewInfo: props.viewInfo,
 					infoWidth: props.infoWidth,
+					infoHeight: props.infoHeight,
 					actions: props.actions,
 					editOptions: editOptions,
 					cancelAction: () => {
@@ -216,7 +241,7 @@ export function MatrixView(props) {
 							formula: rowCountFormula || '',
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							editAction: (editOptins) => {
+							editAction: (editOptions) => {
 								setEditOptions(editOptions);
 								setApplyType('rows');
 								setDisplay(MatrixDisplay.formulaEditor);
@@ -252,12 +277,6 @@ export function MatrixView(props) {
 					'div', {
 						id: 'matrix__unit-line',
 					},
-					e(
-						'div', {
-							id: 'matrix__current-cell-location',
-						},
-						`[${currentCell.join(', ')}]`,
-					),
 					e (
 						'div', {
 							id: 'matrix__output-unit',
@@ -265,7 +284,31 @@ export function MatrixView(props) {
 								setDisplay(MatrixDisplay.unitPicker);
 							}
 						},
-						`${unitType}: ${valueUnit}`,
+						`${unitType}: ${unitName}`,
+					),
+					e(
+						'input', {
+							id: 'matrix__format-input',
+							tabIndex: -1,
+							placeholder: 'format',
+							value: formatString,
+							onChange: (event) => {
+									// keeps input field in sync
+									setFormatString(event.target.value);
+							},
+							onKeyDown: e => {
+								if (e.code == 'Enter') {
+									e.target.blur();
+								}
+							},
+							onBlur: () => {
+								// set the expression format
+								const cmd = `${props.viewInfo.path} setcolumnformat ${currentCell[1]} ${formatString}`;
+								props.actions.doCommand(cmd, () => {
+									props.actions.updateView(props.viewInfo.stackIndex);
+								});
+							},		
+						}
 					),
 				),
 				e(

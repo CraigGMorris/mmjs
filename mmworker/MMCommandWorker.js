@@ -17,54 +17,18 @@
 */
 'use strict';
 
-/* global
-  importScripts:readonly
-  MMCommandProcessor:readonly
-  MMSession:readonly
-*/
+import { setupImports } from './aggregator.js';
 
 /**
  * @global theMMSession
  */
 // eslint-disable-next-line no-unused-vars
-var theMMSession;
-
-importScripts(
-  'MMCommandProcessor.js',
-  'MMSession.js',
-  "MMReport.js",
-  'mmunits/MMUnitSystem.js',
-  "MMMath.js",
-  "MMValue.js",
-  "MMNumberValue.js",
-  "MMStringValue.js",
-  "MMTableValue.js",
-  "MMToolValue.js",
-  'MMModel.js',
-  "MMExpression.js",
-  "MMMatrix.js",
-  "MMFormula.js",
-  "MMDataTable.js",
-  "MMSolver.js",
-  "MMOde.js",
-  "MMIterator.js",
-  "MMOptimizer.js",
-  "MMGraph.js",
-  "MMHtmlPage.js",
-  "MMFlash.js",
-  "coolprop.js",
-  // "pouchdb.min.js"
-  "pouchdb.js"
-);
-
-/* global
-	Module:readonly
-*/
+// var theMMSession;
 
 class MMCommandWorker {
   constructor() {
     this.processor = new MMCommandProcessor();
-    theMMSession = new MMSession(this.processor)
+    self.theMMSession = new MMSession(this.processor)
 
     this.processor.setStatusCallBack((message) => {
       const msg = {
@@ -76,25 +40,36 @@ class MMCommandWorker {
   }
 }
 
-// var worker = new MMCommandWorker();
+var worker;
 
-// for coolprop we need to wait for the wasm to be initialized and ready to run
-var worker
-async function createWorker() {
-  return new Promise((resolve) => {
-    Module.onRuntimeInitialized = () => {
-      // console.log('readytorun');
-      worker = new MMCommandWorker();
-      resolve();
-    }
-  });
-}
-
+// Initialize everything before creating the worker
+(async function() {
+  try {
+    await setupImports();
+    worker = new MMCommandWorker();
+    console.log('Worker initialized successfully');
+    
+    // Send ready signal to main thread
+    postMessage({
+      verb: 'ready',
+      results: 'Worker is ready to process commands'
+    });
+  } catch (error) {
+    console.error('Failed to initialize worker:', error);
+    
+    // Send error signal to main thread
+    postMessage({
+      verb: 'error',
+      results: 'Failed to initialize worker: ' + error.message
+    });
+  }
+})();
 
 onmessage = async function(e) {
   // console.log('Worker: Message received from main script');
   if (!worker) {
-    await createWorker();
+    console.error('Worker not yet initialized');
+    return;
   }
   let result = await worker.processor.processCommandString(e.data);
   if (result) {

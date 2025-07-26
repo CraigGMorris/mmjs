@@ -1,0 +1,126 @@
+tool:
+  name: MMDataTable
+  type: DataTable
+  extends: MMTool
+
+  desc: |
+    MMDataTable behaves similarly to a relational database table.
+    It defines a fixed number of columns, each with a name, unit type, and formula.
+    All columns share the same number of rows.
+    When used in formulas, the value of a DataTable is a MMTableValue object.
+    Tables containing text use the unit type 'string'.
+
+    Column types:
+      - **data**: Values are computed from the formula only once, when each row is added.
+      - **calculated**: Values are dynamically recalculated each time the table is evaluated.
+
+  formulas:
+    "<columnName>defaultFormula": |
+      One formula exists for each column. Replace `<columnName>` with the actual column name.
+      The formula is evaluated when a row is added (for data columns), or every time the table is evaluated (for calculated columns).
+
+    filterFormula: |
+      If supplied, this formula follows the syntax of the `select` function in MMFormula.
+      It filters rows for display in the user interface only; it does not affect actual evaluation or values.
+
+  parameters:
+    "<columnName>": |
+      Returns the values for column <columnName>.
+
+    nrow: "Returns the number of rows in the table."
+    ncol: "Returns the number of columns in the table."
+
+  properties: []
+
+  verbs:
+    addcolumn:
+      desc: |
+        Adds a new column to the table.
+        If the table already contains rows, data columns will initialize new cell values using the default formula.
+        Calculated columns do not store values and are evaluated on access.
+      args:
+        - options:
+            desc: |
+              JSON string specifying properties of the column to add.
+              Use strict JSON syntax (all keys and strings must be double-quoted).
+              Example: {"name": "Date", "defaultValue": "{date {now}}"}
+              Note the JSON should not be enclosed in quotes.
+              The object may contain:
+            fields:
+              - name: |
+                  Optional name of the column. Defaults to `Field_n` if not provided.
+              - isCalculated: |
+                  If true, creates a calculated column. Cannot be changed later.
+              - defaultValue: |
+                  Formula used to compute initial values for data columns.
+                  For calculated columns, the formula should return an array matching row count.
+              - displayUnit: |
+                  Unit of the column. Can be changed later but must remain within the column's unit type. Use "string" for text columns.
+              - format: |
+                  Format string for displaying values.
+                  Examples:
+                    - `8.2f` → fixed point with 2 decimals
+                    - `.4e` → exponential with 4 decimals
+                    - `.16x` → radix 16: shown as `16r7b`
+              - columnNumber: |
+                  1-based index to insert the new column at.
+                  Defaults to the end of the table or last column if invalid.
+
+    addrow:
+      desc: |
+        Adds a new row to the table.
+        For data columns, values are computed from the default formula.
+        For calculated columns, values are always computed dynamically.
+        You can override values using `columnValues`.
+      args:
+        - rowNumber: 
+            desc: "Optional 1-based row number. Defaults to appending to the end of the table."
+        - columnValues:
+            desc: |
+              Optional JSON object where keys are column names and values are formulas.
+              Only specified columns will override the default formula behavior.
+
+    removecolumn:
+      desc: "Removes a column from the table."
+      args:
+        - name:
+            desc: "The name of the column to remove."
+
+    movecolumn:
+      desc: "Moves a column to a new position."
+      args:
+        - fromNumber:
+            desc: "The 1-based index of the column to move."
+        - toNumber:
+            desc: "The 1-based index to move the column to."
+
+    setcell:
+      desc: "Sets the value of a cell."
+      args:
+        - rowNumber:
+            desc: "The 1-based index of the row to set."
+        - columnNumber:
+            desc: "The 1-based index of the column to set."
+        - value:
+            desc: "The value to set."
+
+  usageNote: |
+    In calculated column formulas, use the `$` symbol to refer to other columns in the same table:
+      - `$.name` → value of the column named `name` in the current row.
+
+    When adding a column with a `defaultValue` formula, all referenced tools must already exist.
+    See the **Formula Dependency Rule** in the system instructions for more information.
+    
+    To create a MMDataTable from CSV data, use the `paste` command.
+    If the clipboard contains CSV data prefixed by three lines as described in `MMModel.copyastable`,
+    the system will automatically create an MMDataTable.
+
+    The prefix lines should include:
+      1. `table,en` (keyword + language + separator)
+      2. Column names
+      3. Unit names (e.g. `'string'` for text)
+
+    You can also add new rows interactively using a `MMButton` tool.
+    A common pattern is to use input `MMExpression` tools to define form values and use those expressions
+    in the default formula for a `MMDataTable` column.
+    Then use a `MMButton` to trigger `addrow` on a target MMDataTable using those inputs.

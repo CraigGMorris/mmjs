@@ -1,0 +1,41 @@
+tool:
+  name: MMButton
+  type: Button
+  extends: MMTool
+
+  desc: |
+    MMButton is a tool that can be used to trigger actions in the model. When displayed in a model view, it appears as a button.
+    When clicked, it triggers the action defined by the `action` property.
+
+  formulas:
+    "labelFormula": "Formula used to compute the button label shown in the model view."
+    "targetFormula": "Formula used to compute the target of the action. It must evaluate to a string."
+
+  parameters:
+    "action": "Returns a string specifying the action to trigger when the button is pressed."
+    "target": "Returns the evaluated target of the action, such as a tool name, session name, or command string."
+    "label": "Returns the label of the button."
+
+  properties:
+    "action": |
+      Set this property to the name of the action to trigger when the button is pressed.
+      The options are:
+        - "addrow": Add a new row to a target MMDataTable.
+        - "push": Display the target tool view.
+        - "refresh": The targeted tool will be forced to recalculate itself.
+        - "load": The session named in the `target` property will be loaded.
+        - "loadurl": The url named in the `target` property will be loaded. Security rules mean this will likely only work if the url is on the same server.
+        - "cmd": The string contained in the `target` property will be executed as a command.
+
+  verbs: []
+
+  usageNote: |
+    MMButtons are typically used to let the user trigger actions like submitting form-like data.
+    Supply an appropriate label in the `labelFormula` property if one is not provided.
+
+    A common pattern is:
+      - One or more MMExpression tools act as user input fields.
+      - An MMButton tool has `action = addrow` and its `target` set to the name of a MMDataTable.
+      - When pressed, the button adds a row to the table using the column default formulas to obtain
+        the desired values directly or indirectly from the expressions.
+

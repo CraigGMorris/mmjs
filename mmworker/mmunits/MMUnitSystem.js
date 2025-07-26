@@ -19,15 +19,15 @@
 
 /* globals
 	theMMSession:readonly
-	MMCommandParent:readonly
-	MMCommandObject:readonly
+	MMParent:readonly
+	MMObject:readonly
 	MMPropertyType:readonly
 	MMCommandMessage:readonly
 */
 /**
  * @enum {number} MMDimensionType
  */
-const MMUnitDimensionType = Object.freeze({
+export const MMUnitDimensionType = Object.freeze({
 	LENGTH: 0,
 	MASS: 1,
 	TIME: 2,
@@ -80,7 +80,7 @@ const MMUnitDateType = Object.freeze({
  * @member {MMUnitsContainer} units
  */
 // eslint-disable-next-line no-unused-vars
-class MMUnitSystem extends MMCommandParent {
+export class MMUnitSystem extends MMParent {
 	/** @static areDimensionsEqual
 	 * @param {Number[]} dim1
 	 * @param {Number[]} dim2
@@ -114,6 +114,84 @@ class MMUnitSystem extends MMCommandParent {
 		}
 		
 		return true;
+	}
+
+	/** @static format
+	 * @param {Number} v
+	 * @param {String} format
+	 * @return {String}  v formatted with format
+	 */
+	static format(v, format) {
+		if (format) {
+			let leadingPadChar = ' ';
+			const parts = format.split('.');	// split on decimal point, if there is one
+			let width = 0;
+			let prefix = '';  // character before wisth for date format
+			format = parts[parts.length - 1];
+			if (parts.length && parts[0].length) {
+				prefix = parts[0].substring(0,1);
+				const widthField = parts[0].replace(/[^\d]+/,'');
+				if (widthField.length) {
+					width = parseInt(widthField);
+					if (widthField.startsWith('0')) {
+						leadingPadChar = '0';
+					}
+				}
+			}
+			let precision = parseInt(format);
+			let precisionDefined = true;
+			if (isNaN(precision) || precision < 0 || precision > 36) {
+				precision = 8;
+				precisionDefined = false;
+			}
+			let s = ''
+			const type = format.slice(-1)  // last character should be format type
+			switch (type) {
+				case 'c':
+				case 'f':
+					s = v.toFixed(precision);
+					if (type === 'c') {
+						const [whole, decimals] = s.split('.');
+						s = whole.replace(/\B(?=(\d{3})+(?!\d))/g,',') + (decimals ? '.' + decimals : '');
+					}
+					break;
+				case 'e':
+					s = v.toExponential(precision);
+					break;
+				case 'r':
+				case 'x':
+					s = `${precision}r` + v.toString(precision);
+					break;
+				case '/':
+				case '-':
+					// Create a Date object
+					const sParts = v.toFixed(6).padStart(15,'0').split('.');
+					const sTime = sParts[1].replace(/(\d\d)(\d\d)(\d\d)/, '$1:$2:$3');
+					const regex = prefix === 'd' || prefix === 'm' ?
+						/(\d\d)(\d\d)(\d\d\d\d)/ :
+						/(\d\d\d\d)(\d\d)(\d\d)/;
+					const sDate = sParts[0].replace(regex, `$1${type}$2${type}$3`);
+					if (!precisionDefined) {
+						precision = 0;
+					}
+
+					// adjust precision for added colons
+					let addedColons = 0;
+					if (precision > 5) {
+						addedColons = 2;
+					}
+					else if (precision > 2) {
+						addedColons = 1;
+					}
+					s = sDate + ' ' + sTime.substring(0,precision + addedColons);
+					break;
+				}
+			if (width > s.length) {
+				s = s.padStart(width, leadingPadChar);
+			}
+			return s;
+		}
+		return v.toPrecision(8);
 	}
 
 	/**
@@ -356,7 +434,7 @@ class MMUnitSystem extends MMCommandParent {
  * 		non master units are user units that will not be disturbed when the program is updated
  * @member {MMUnitSystem} unitSystem;
  */
-class MMUnit extends MMCommandObject {
+export class MMUnit extends MMObject {
 
 	/** @static compoundRegex
 	 * compound unit operators
@@ -368,7 +446,10 @@ class MMUnit extends MMCommandObject {
 	 * @param {number[]} dimensions
 	 */
 	static stringFromDimensions(dimensions) {
-		return dimensions.map(n => String(n)).join(' ');
+		if (dimensions) {
+			return dimensions.map(n => String(n)).join(' ');
+		}
+		return null;
 	}
 
 	static dimensionsFromString(dimensionString) {
@@ -781,10 +862,14 @@ class MMUnit extends MMCommandObject {
 	 * @method stringForValue
 	 * display string for value converted to unit
 	 * @param {Number} value
+	 * @param {String} format (optional)
 	 * @returns {String}
 	 */
-	stringForValue(value) {	
+	stringForValue(value, format) {	
 		value = this.convertFromBase(value)
+		if (format) {
+			return MMUnitSystem.format(value, format);
+		}
 		if (value != 0.0 && (Math.abs(value) > 100000000.0 || Math.abs(value) < 0.01)) {
 			return value.toExponential(6).padStart(14, ' ');
 		}
@@ -797,10 +882,11 @@ class MMUnit extends MMCommandObject {
 	 * @method stringForValueWithUnit
 	 * the value converted to unit with unit name
 	 * @param {Number} value
+	 * @param {String} format (optional)
 	 * @returns {String}
 	 */
-	stringForValueWithUnit(value) {	
-		return `${this.stringForValue(value)} ${this.displayName}`;
+	stringForValueWithUnit(value, format) {	
+		return `${this.stringForValue(value, format)} ${this.displayName}`;
 	}
 }
 
@@ -812,7 +898,7 @@ class MMUnit extends MMCommandObject {
  * @member {boolean} isMaster
  * @member {MMUnitSystem} unitSystem
  */
-class MMUnitSet extends MMCommandObject {
+export class MMUnitSet extends MMObject {
 		/** @constructor
 	 * @param {string} name
 	 * @param {MMUnitSetsContainer} setsContainer
@@ -1076,7 +1162,7 @@ class MMUnitSet extends MMCommandObject {
  * key is dimensionString, value is array of units with those dimensions
  * @member {MMUnitSystem} unitSystem;
  */
-class MMUnitsContainer extends MMCommandParent {
+export class MMUnitsContainer extends MMParent {
 	/**
 	 * @constructor
 	 * @param {MMUnitSystem} unitSystem - parent
@@ -1099,6 +1185,7 @@ class MMUnitsContainer extends MMCommandParent {
 			verbs['listuserunits'] = this.listUserUnits;
 			verbs['remove'] = this.removeUserDefinition;
 			verbs['unitsfordim'] = this.listUnitsWithDimensions;
+			verbs['unitsofsametype'] = this.listUnitsOfSameType;
 		}
 		return verbs;
 	}
@@ -1114,6 +1201,7 @@ class MMUnitsContainer extends MMCommandParent {
 			listuserunits: 'mmunit:_listuserunits',
 			remove: 'mmunit:_removeuserunit',
 			unitsfordim:	'mmunit:_unitsfordim',
+			unitsofsametype: 'mmunit:_unitsofsametype',
 		}[command];
 		if (key) {
 			return key;
@@ -1149,9 +1237,16 @@ class MMUnitsContainer extends MMCommandParent {
 		if (this.children[lowerCaseName]) {
 			throw(this.t('mmunit:duplicateUnit', {name: name}));
 		}
-		let newUnit = new MMUnit(name, this).initWithDescription(isMaster, description);
-		this.addChild(name, newUnit);
-		this.registerDimensionsOfUnit(newUnit);
+		let newUnit = new MMUnit(name, this);
+		try {
+			newUnit.initWithDescription(isMaster, description);
+			this.registerDimensionsOfUnit(newUnit);
+		}
+		catch (e) {
+			if (this.children[lowerCaseName]) {
+				this.removeChildNamed(lowerCaseName);
+			}
+		}
 		return newUnit;
 	}
 
@@ -1244,6 +1339,27 @@ class MMUnitsContainer extends MMCommandParent {
 		command.results = unitNames;
 	}
 
+	/** method listUnitsWithDimensions
+	 * @param {MMCommand} command - requires command.args = the dimension string
+	 */
+	listUnitsOfSameType(command) {
+		const unitName = command.args;
+		const templateUnit = this.children[unitName];
+		let unitNames = [];
+		if (templateUnit) {
+			const dimensionString = templateUnit.dimensionString;
+			for (let key in this.children) {
+				const unit = this.children[key];
+				if (unit.dimensionString === dimensionString) {
+					unitNames.push(unit.name);
+				}
+			}
+		}
+
+		unitNames = unitNames.sort();
+		command.results = unitNames;
+	}
+
 	/** @method removeUserDefinition
 	 * @param {MMCommand} command - command args should be name = scale * existingUnit
 	*/
@@ -1302,6 +1418,8 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addUnit("arcmin","1 0 0 0 0 0 0 0 0.00029088820866572158",true);
 		this.addUnit("arcsec","1 0 0 0 0 0 0 0 4.8481368110953598e-06",true);
 		this.addUnit("dollar","1 0 0 0 0 0 0 0 1.000000e+00",true)
+		this.addUnit("count","1 0 0 0 0 0 0 0 1.000000e+00",true)
+		this.addUnit("quantity","1 0 0 0 0 0 0 0 1.000000e+00",true)
 	
 		this.addUnit("m","1 1 0 0 0 0 0 0 1.000000e+00",true);
 		this.addUnit("angstrom","1 1 0 0 0 0 0 0 1.000000e-10",true);
@@ -1370,6 +1488,9 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addUnit("acre","1 2 0 0 0 0 0 0 4.04685642e+03",true);
 		this.addUnit("darcy","1 2 0 0 0 0 0 0 9.869233e-13",true);
 		this.addUnit("hectare","1 2 0 0 0 0 0 0 1.000000e+04",true);
+		this.addUnit("lp100km","1 2 0 0 0 0 0 0 1.000000e-08",true);
+
+		this.addUnit("g0","1 1 0 -2 0 0 0 0 9.80665e+00",true);
 	
 		this.addUnit("debye","1 1 0 1 1 0 0 0 3.335640e-30",true);
 	
@@ -1403,6 +1524,7 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addUnit("erg","1 2 1 -2 0 0 0 0 1.000000e-07",true);
 		this.addUnit("cal","1 2 1 -2 0 0 0 0 4.184000e+00",true);
 		this.addUnit("kcal","1 2 1 -2 0 0 0 0 4.184000e+03",true);
+		this.addUnit("kwh","1 2 1 -2 0 0 0 0 3.6e+06",true),
 		this.addUnit("megatontnt","1 2 1 -2 0 0 0 0 4.184000e+15",true);
 	
 		this.addUnit("cp","1 -1 1 -1 0 0 0 0 1.000000e-03",true);
@@ -1418,6 +1540,7 @@ class MMUnitsContainer extends MMCommandParent {
 		this.addUnit("atm","1 -1 1 -2 0 0 0 0 1.013250e+05",true);
 		this.addUnit("barg","2 -1 1 -2 0 0 0 0 1.000000e+05 1.013250e+05",true);
 		this.addUnit("mmHg0C","1 -1 1 -2 0 0 0 0 1.333220e+02",true);
+		this.addUnit("mmHg","1 -1 1 -2 0 0 0 0 1.333220e+02",true);
 		this.addUnit("cmHg0C","1 -1 1 -2 0 0 0 0 1.333220e+00",true);
 		this.addUnit("inHg32F","1 -1 1 -2 0 0 0 0 3.386383e+03",true);
 		this.addUnit("feetH2O4C","1 -1 1 -2 0 0 0 0 2.988980e+00",true);
@@ -1444,11 +1567,16 @@ class MMUnitsContainer extends MMCommandParent {
 	
 		this.addUnit("Wb","1 2 1 -2 -1 0 0 0 1.0",true);
 		this.addUnit("Mx","1 2 1 -2 -1 0 0 0 1.0e-8",true);
+
+		this.addUnit("T","1 0 1 -2 -1 0 0 0 1.0");
+		this.addUnit("Gauss","1 0 1 -2 -1 0 0 0 1.0e-4");
 	
 		this.addUnit("Henry","1 2 1 -2 -2 0 0 0 1.0",true);
 	
 		this.addUnit("Hz","1 0 0 -1 0 0 0 0 1.0",true);
 		this.addUnit("rpm","1 0 0 -1 0 0 0 0 0.104719755",true);
+
+		this.addUnit("mpg","1 -2 0 0 0 0 0 0 4.251437074e+5",true);
 	
 		this.addUnit("SG[60]","1 -3 1 0 0 0 0 0 9.990220e+02",true);
 		this.addUnit("API60","3 -3 1 0 0 0 0 0 1.413616e+05 1.315000e+02",true);
@@ -1459,7 +1587,7 @@ class MMUnitsContainer extends MMCommandParent {
  * @member {MMUnitSet} defaultSet;
  * @member {MMUnitSystem} unitSystem;
  */
-class MMUnitSetsContainer extends MMCommandParent {
+export class MMUnitSetsContainer extends MMParent {
 	/**
 	 * @constructor
 	 * @param {MMUnitSystem} unitSystem - parent
@@ -1635,6 +1763,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 					"Length" : "m",
 					"LuminousIntensity" : "cd",
 					"MagneticFlux" : "kg-m^2/A-s^2",
+					"MagneticFluxDensity" : "kg/A-s^2",
 					"Mass" : "kg",
 					"MassEnthalpy" : "m^2/s^2",
 					"MassFlow" : "kg/s",
@@ -1690,6 +1819,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 					"Length" : "m",
 					"LuminousIntensity" : "cd",
 					"MagneticFlux" : "Wb",
+					"MagneticFluxDensity" : "T",
 					"Mass" : "kg",
 					"MassEnthalpy" : "kJ/kg",
 					"MassFlow" : "kg/h",
@@ -1745,6 +1875,7 @@ class MMUnitSetsContainer extends MMCommandParent {
 					"Length" : "ft",
 					"LuminousIntensity" : "cd",
 					"MagneticFlux" : "Wb",
+					"MagneticFluxDensity" : "T",
 					"Mass" : "lb",
 					"MassEnthalpy" : "Btu/lb",
 					"MassFlow" : "lb/h",

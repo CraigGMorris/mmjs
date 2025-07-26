@@ -30,6 +30,9 @@ export class SessionsView extends React.Component {
 		super(props);
 		this.state = {
 			menuPath: '',
+			menuAction: '',
+			menuPrompt: '',
+			promptValue: '',
 			currentFolder: null
 		};
 	}
@@ -69,7 +72,7 @@ export class SessionsView extends React.Component {
 				await this.props.actions.doCommand(
 					`/ load ${e.target.getAttribute('value')}`,
 					(results) => {
-						this.props.actions.resetInfoStack('root', results[0].results);
+						this.props.actions.resetInfoStack('root', results ? results[0].results : null);
 						this.props.updateDiagram(true);
 					}
 				);
@@ -89,9 +92,9 @@ export class SessionsView extends React.Component {
 					let r = new FileReader();
 					r.onload = (e) => { 
 						let contents = e.target.result;
-						contents = `__blob__/ import__blob__${this.props.viewInfo.rootFolder}:` + contents;
-						this.props.actions.doCommand(contents, () => {
-							this.props.actions.resetInfoStack('root');
+						contents = `/ import ${this.props.viewInfo.rootFolder}:` + contents;
+						this.props.actions.doCommand(contents, (results) => {
+							this.props.actions.resetInfoStack('root', results ? results[0].results : null);
 							this.props.updateDiagram(true);
 						});
 					};
@@ -104,8 +107,7 @@ export class SessionsView extends React.Component {
 			}
 		}
 
-		let copyPath = async (oldName) => {
-			let newName = prompt(t('react:sessionsDuplicatePrompt', {oldName: oldName}));
+		let copyPath = async (oldName, newName) => {
 			if (newName) {
 				if (oldName.endsWith('/')) {
 					if (!newName.endsWith('/')) {
@@ -115,6 +117,7 @@ export class SessionsView extends React.Component {
 					for (let n of sessionPaths) {
 						if (n.toLocaleLowerCase().startsWith(lcNewName)) {
 							alert(t('react:sessionFolderDuplicateConflict', {newName: newName}));
+							this.setState({menuAction: '', promptValue: ''});
 							return;	
 						}
 					}
@@ -122,6 +125,7 @@ export class SessionsView extends React.Component {
 				else {
 					if (sessionPaths.map(n => n.toLocaleLowerCase()).includes(newName.toLocaleLowerCase())) {
 						if (!confirm(t('react:sessionsDuplicateOverwrite', {oldName: oldName, newName: newName}))) {
+							this.setState({menuAction: '', promptValue: ''});
 							return;
 						}
 					}
@@ -130,10 +134,32 @@ export class SessionsView extends React.Component {
 					`/ copy "${oldName}" "${newName}"`,
 					() => {
 						this.props.actions.updateView(this.props.viewInfo.stackIndex);
-						this.setState({menuPath: ''});
+						this.setState({
+							menuPath: '',
+							menuAction: '',
+							promptValue: ''
+						});
 					}
 				);
 			}
+		}
+
+		let saveToPath = async path => {
+			if (!path) {
+				// no name given
+				this.setState({
+					menuAction: '',
+					promptValue: ''
+				});
+				return;
+			}
+			const cmd = '/ save ' + path;
+			await this.props.actions.doCommand(
+				cmd,
+				() => {
+					this.props.actions.popView();
+				}
+			);			
 		}
 	
 		let deletePath = async path => {
@@ -152,8 +178,7 @@ export class SessionsView extends React.Component {
 			}							
 		}
 
-		let renamePath = async (oldName) => {
-			let newName = prompt(t('react:sessionsRenamePrompt', {oldName: oldName}), oldName);
+		let renamePath = async (oldName, newName) => {
 			if (newName && newName !== oldName) {
 				if (oldName.endsWith('/')) {
 					if (!newName.endsWith('/')) {
@@ -163,6 +188,10 @@ export class SessionsView extends React.Component {
 					for (let n of sessionPaths) {
 						if (n.toLocaleLowerCase().startsWith(lcNewName)) {
 							alert(t('react:sessionFolderRenameConflict', {newName: newName}));
+							this.setState({
+								menuAction: '',
+								promptValue: ''
+							});
 							return;	
 						}
 					}
@@ -170,7 +199,11 @@ export class SessionsView extends React.Component {
 				else {
 					if (sessionPaths.map(n => n.toLocaleLowerCase()).includes(newName.toLocaleLowerCase())) {
 						if (!confirm(t('react:sessionsRenameOverwrite', {oldName: oldName, newName: newName}))) {
-							return;
+							this.setState({
+								menuAction: '',
+								promptValue: ''
+							});
+								return;
 						}
 					}
 				}
@@ -178,7 +211,11 @@ export class SessionsView extends React.Component {
 					`/ rename "${oldName}" "${newName}"`,
 					() => {
 						this.props.actions.updateView(this.props.viewInfo.stackIndex);
-						this.setState({menuPath: ''});
+						this.setState({
+							menuPath: '',
+							menuAction: '',
+							promptValue: ''
+						});
 						this.props.updateDiagram(true);
 					}
 				);
@@ -188,7 +225,7 @@ export class SessionsView extends React.Component {
 		let clipSession = async (path) => {
 			await this.props.actions.doCommand(
 				`/ getjson ${path}`,
-				(results) => {
+				async (results) => {
 					let json;
 					if (path.endsWith('/')) {
 						json = JSON.stringify(results[0].results, null, '\t');
@@ -196,7 +233,12 @@ export class SessionsView extends React.Component {
 					else {
 						json = results[0].results;
 					}
-					writeClipboard(json);
+					try {
+						await writeClipboard(json);
+					}
+					catch (error) {
+						alert(`Clip Session Error ${error}`);
+					}
 					this.setState({menuPath: ''});
 				}
 			)
@@ -216,7 +258,7 @@ export class SessionsView extends React.Component {
 						else {
 							json = results[0].results;
 						}
-						const blob = new Blob([json], {type : "text/plain"});
+						const blob = new Blob([json], {type : "application/json"});
 						const link = document.createElement('a');
 						link.download = pathParts.pop();
 						if (link.download.length === 0) {
@@ -231,7 +273,71 @@ export class SessionsView extends React.Component {
 		}
 
 		let sections = [];
-		if (this.state.menuPath) {	// item menu is being shown
+		if (this.state.menuAction) { // prompt for item menu is being shown
+			sections.push(e(
+				'div', {
+					id: 'sessions__menu-prompt',
+					key: 'menu-prompt'
+				},
+				this.state.menuPrompt
+			));
+
+			sections.push(e(
+				'input', {
+					id: 'sessions__prompt-input',
+					key: 'prompt-input',
+					value: this.state.promptValue,
+					onChange: (event) => {
+						// keeps input field in sync
+						this.setState({promptValue: event.target.value});
+					},
+				}
+			));
+
+			sections.push(e(
+				'button', {
+					id: 'sessions__prompt-cancel',
+					key: 'prompt-cancel',
+					className: 'sessions__menu-button',
+					onClick: () => {
+						this.setState({menuAction: '', promptValue: ''});
+					},
+				},
+				t('react:cancel')
+			));
+
+			sections.push(e(
+				'button', {
+					id: 'sessions__prompt-apply',
+					key: 'prompt-apply',
+					className: 'sessions__menu-button',
+					onClick: () => {
+						switch (this.state.menuAction) {
+							case 'copy':
+								copyPath(this.state.menuPath, this.state.promptValue);
+								break;
+
+							case 'rename':
+								renamePath(this.state.menuPath, this.state.promptValue);
+								break;
+							
+							case 'save':
+								saveToPath(this.state.promptValue);
+								break;
+						}
+					},
+				},
+				t('react:ok')
+			));
+
+			return e(
+				'div', {
+					id: 'sessions__prompt-wrapper',
+				},
+				sections
+			);	
+		}
+		else if (this.state.menuPath) {	// item menu is being shown
 			sections.push(e(
 				'div', {
 					id: 'sessions__menu-title',
@@ -258,7 +364,11 @@ export class SessionsView extends React.Component {
 					key: 'menu-rename',
 					className: 'sessions__menu-button',
 					onClick: () => {
-						renamePath(this.state.menuPath);
+						this.setState({
+							menuAction: 'rename',
+							menuPrompt: t('react:sessionsRenamePrompt', {oldName: this.state.menuPath}),
+							promptValue: this.state.menuPath
+						});
 					},
 				},
 				t('react:sessionsRenameButton')
@@ -280,7 +390,9 @@ export class SessionsView extends React.Component {
 					id: 'sessions__menu-clip',
 					key: 'menu-clip',
 					className: 'sessions__menu-button',
-					onClick: () => {
+					onPointerUp: (e) => {
+						e.stopPropagation();
+						e.preventDefault();
 						clipSession(this.state.menuPath);
 					},
 				},
@@ -305,7 +417,11 @@ export class SessionsView extends React.Component {
 					key: 'menu-copy',
 					className: 'sessions__menu-button',
 					onClick: () => {
-						copyPath(this.state.menuPath);
+						this.setState({
+							menuAction: 'copy',
+							menuPrompt: t('react:sessionsDuplicatePrompt', {oldName: this.state.menuPath}),
+							promptValue: this.state.menuPath
+						});
 					},
 				},
 				t('react:sessionsDuplicateButton')
@@ -336,7 +452,7 @@ export class SessionsView extends React.Component {
 								await this.props.actions.doCommand(
 									`/ new`,
 									() => {
-										this.props.actions.resetInfoStack('root');
+										this.props.actions.resetInfoStack('root', {new: true});
 										this.props.updateDiagram(true);
 									}
 								);
@@ -351,21 +467,21 @@ export class SessionsView extends React.Component {
 						onClick: async () => {
 							let cmd = '/ save';
 							if (currentPath === '(unnamed)') {
-								let path = prompt(t('react:sessionsSaveNamePrompt'));
-								if (path) {
-									cmd += ' ' + path;
-								}
-								else {
-									// no name given
-									return;
-								}
+								// let path = prompt(t('react:sessionsSaveNamePrompt'));
+								this.setState({
+									menuAction: 'save',
+									menuPrompt: t('react:sessionsSaveNamePrompt'),
+								});
+	
 							}
-							await this.props.actions.doCommand(
-								cmd,
-								() => {
-									this.props.actions.popView();
-								}
-							);			
+							else {
+								await this.props.actions.doCommand(
+									cmd,
+									() => {
+										this.props.actions.popView();
+									}
+								);
+							}	
 						},
 					},
 					t('react:sessionsSaveButton')
@@ -440,6 +556,8 @@ export class SessionsView extends React.Component {
 								// add a folder entry
 								foundFolders.add(path);
 								// hide the normal entry and add a folder one
+								// strip off the root folder
+								const displayPath = path.replace(rootFolder, '');
 								showPath = false;
 								let cmp = e(
 									'div', {
@@ -457,7 +575,7 @@ export class SessionsView extends React.Component {
 												})
 											},
 										},
-										path
+										displayPath
 									),
 									e(
 										'div', {

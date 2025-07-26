@@ -25,6 +25,9 @@
 	theMMSession:readonly
 	MMMath:readonly
 	MMCommandMessage:readonly
+	MMStringValue:readonly
+	MMTableValueColumn:readonly
+	MMTableValue:readonly
 */
 
 /**
@@ -32,7 +35,7 @@
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
-class MMSolver extends MMTool {
+export class MMSolver extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
@@ -161,7 +164,7 @@ class MMSolver extends MMTool {
 	}
 
 	get isEnabled() {
-		return this._isEnabled;
+		return this._isEnabled && !theMMSession.noRun;
 	}
 
 	set isEnabled(newValue) {
@@ -271,7 +274,7 @@ class MMSolver extends MMTool {
 		}
 		const functionJson = this.jsonForFunction(removeRow);
 		this.removeFunction(removeRow);
-		command.undo = `__blob__${this.getPath()} restorefunction__blob__${functionJson}`;
+		command.undo = `${this.getPath()} restorefunction ${functionJson}`;
 	}
 
 	/**
@@ -518,6 +521,9 @@ class MMSolver extends MMTool {
 								}
 								for (let j = 0; j < arraySize && eqnNo < fxCount; j++, eqnNo++) {
 									fx[eqnNo] = value.values[ j ];
+									if (isNaN(fx[eqnNo])) {
+										throw(this.t('mmcmd:solverCalcFailure'), {path: this.getPath()});
+									}
 									// console.log(`fx${eqnNo} ${fx[eqnNo]}`);
 								}
 							}
@@ -595,7 +601,33 @@ class MMSolver extends MMTool {
 			this.solve();
 		}
 
-		if (lcDescription.startsWith('f')) {
+		if (lcDescription === 'table') {
+			const functionCount = this.functions.length;
+			const x = []
+			const fx = []
+			for (let i = 0; i < functionCount; i++) {
+				const func = this.functions[i];
+				const v = func.errorFormula.value();
+				const vX = this.valueDescribedBy(`${i+1}`);
+				x.push((vX instanceof MMNumberValue) ? vX.stringUsingUnit() : '---');
+				fx.push((v instanceof MMNumberValue) ? v.stringUsingUnit() : '---')
+			}
+			const sX = MMStringValue.stringArrayValue(x);
+			const sFx = MMStringValue.stringArrayValue(fx);
+			const xColumn = new MMTableValueColumn({
+				name: this.isConverged ? 'x (solved)' : 'x (unsolved)',
+				value: sX
+			})
+			const fxColumn = new MMTableValueColumn({
+				name: 'fx',
+				value: sFx
+			})
+	
+			this.addRequestor(requestor);
+			return new MMTableValue({columns: [xColumn, fxColumn]});
+	
+		}
+		else if (lcDescription.startsWith('f')) {
 			const n = parseInt(lcDescription.substring(1));
 			if (isNaN(n) || n < 1 || n > this.functions.length) {
 				return null;
@@ -638,6 +670,19 @@ class MMSolver extends MMTool {
 			func.countFormula.addInputSourcesToSet(sources);
 		}
 		return sources;
+	}
+
+	/**
+	 * @method formulaList
+	 * @returns [] contains formulae contained by this tool and its children
+	 */
+	formulaList() {
+		const formulae = [this.maxIterFormula, this.maxJacobianFormula];
+		for (const func of this.functions) {
+			formulae.push(func.errorFormula);
+			formulae.push(func.countFormula);
+		}
+		return formulae;
 	}
 
 	/**

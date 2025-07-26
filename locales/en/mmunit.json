@@ -27,11 +27,13 @@
 	"_cloneset": "usage: clone setName\nreturns new set name",
 	"_listsets": "usage: lists\nreturns list of unit sets",
 	"_listtypes": "usage: listtypes\nreturns all the types defined in the set",
+	"_listunits": "usage: listunits\nreturns all known units",
 	"_listuserunits": "usage: listuserunits\nreturns user added units",
 	"_removeuserunit": "usage: remove unitName\nremoves user added unit named unitName",
 	"_removeset": "usage: remove setName",
 	"_removetype": "usage: removetype typeName",
 	"_renametype": "usage: renametype fromName toName",
 	"_unitsfordim": "usage unitsfordim dimensionString",
-	"_unitfortype": "usage: unitfortype typeName\nreturns the unit for type in the set"
+	"_unitfortype": "usage: unitfortype typeName\nreturns the unit for type in the set",
+	"_unitsofsametype": "usage: unitsofsametype unitName\nreturns units with same type as unitName"
 }

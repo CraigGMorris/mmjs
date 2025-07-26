@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta name="viewport" content="initial-scale=1.0">
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" href="help.css" type="text/css">
 		<script type="text/javascript" src="help.js"></script>
 		<script type="text/javascript">
@@ -12,6 +13,7 @@
 					string: 'String',
 					table: 'Table',
 					tool: 'Tool Reference',
+					json: 'JSON Object',
 					empty: 'Empty'
 				});
 			};			
@@ -22,6 +24,7 @@
 	<body>
 		<div id="page">
 			<div id="heading"></div>
+			<div id="menubody"></div>
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
@@ -88,13 +91,17 @@
 			<div id="tool" class="section">
 				<h3>Tool Reference</h3>
 				<p>
-					When the name of an expression tool is referenced in a formula, it will evaluate to
-					the minion value calculated by the expression's formula.  A matrix reference will be
-					replaced by a numeric value and a data table reference with a table value.
+					A tool reference is simply a value that points to another tool.
+				</p>
+				<p>
+					When the name of an expression tool is used as formula, it  evaluates to
+					the minion value calculated by the expression's formula.  Similarly a matrix
+					reference will be replaced by a numeric value and a data table reference
+					with a table value.
 				</p>
 				<p>
 					However other tools don't have values intrinsically associated with their names and
-					a reference to them will become an tool reference.
+					a formula consisting of just their name will become a tool reference.
 				</p>
 				<p>
 					For instance if a model has an ordinary differential equation solver calling <b>integ</b>
@@ -119,23 +126,96 @@
 					will both return the derivative values of the <b>integ</b> solver.
 				</p>
 				<p>
-					Where this becomes useful is when the expression with the tool reference is designated
-					as an output expression.  This allows formulas in the parent model access to the
-					parameters of the tool that it is referencing.
+					This can be useful when the expression with the tool reference is designated
+					is an input expression as it allows formulas in the model access to the
+					parameters of a tool that is referenced from the parent model.
 				</p>
 				<p>
-					A tool reference can be made to any tool using the <b>self</b> parameter.  For example
+					Arrays of tool references can be created by using the <b>tools</b> parameter of
+					of model or by using the index operation <b>[]</b> with a model. The tools parameter
+					will return an array of all the tools in the model, while the index operator will return
+					an array of tools with names matching the string contained in the operator.
+					The string can contain <b>*</b> wild card characters which will match any
+					number of arbitrary characters. For instance
+				</p>
+				<p class="formula">
+					model1["field*"]
+				</p>
+				<p>
+					would return all the tools in <b>model1</b> whose names started with "field".
+				</p>
+				<p>
+					An index of "value" can be used with references to expression tool to get its value,
+					Thus
+				</p>
+				<p class="formula">
+					model1["field*"]["value"]
+				</p>
+				<p>
+					and assuming all the "field" tools were scalar expressions, would return an
+					array with all the values of those fields. Note you must be sure all the
+					expression have the same unit type.
+				</p>
+				<p>
+					If the index string is prefixed with "type:" or "notes:" then the tool type
+					("Expression", "Model", etc.) or the tool's notes are searched rather than the
+					tool name.
+				</p>
+				<p>
+					If you are familiar with regular expressions, note that the index value is
+					converted to a regular expression with a prefix of "^" and a postfix of "$"
+					and the "*" characters replaced with ".*". This means you are free to use other
+					regular expression features in the search term.  For instance:
+				</p>
+				<p class="formula">
+					myModel["x[\d]+"]
+				</p>
+				<p>
+					would return all the tools in myModel whose names consist of an "x" followed by
+					one or more digits.
+				</p>
+				<p>
+					You can prefix the index string with <b>type:</b> or <b>notes:</b> to have the
+					string that follows match the tool type name, e.g. <b>Expression</b> or the tool
+					notes. Thus:
+				</p>
+				<p class="formula">
+					myModel["type:model"]
+				</p>
+				<p>
+					Would find all the model tools contained in myModel.
+				</p>
+				<p>
+					Tool arrays can be particularly useful in constructing reports with values from various
+					models that represent things like forms.
+				</p>
+				<p>
+					Finally a tool reference can be made to any tool using the <b>self</b> parameter.  For example
 					a reference to a data table named <b>dtable</b> would look like:
 				</p>
 				<p class="formula">
 					dtable.self
 				</p>
 				<p>
-					This could allow the data table itself to be returned in an output expression, rather
-					than its table value.
+					but this a mainly historical holdover that is retained for backwards compatibility.
+				</p>
+			</div>
+			<div id="json" class="section">
+				<h3>JSON Object</h3>
+				<p>
+					The <b>jsonparse</b> function creates a
+					<a href="https://en.wikipedia.org/wiki/JavaScript">javascript</a> object
+					from a
+					<a href="https://en.wikipedia.org/wiki/JSON" target="_blank">JSON</a>
+					string and encapsulates it in a Math Minion <b>jsonvalue</b>.
 				</p>
 				<p>
-					Tool values are always scalars.
+					This value is just displayed as a JSON string, but its members can be
+					referenced with standard dot notation and some special index formats to
+					create Math Minion string and number values.
+				</p>
+				<p>
+					See Formulas.JsonValue model in the Getting Started session for details.
 				</p>
 			</div>
 			<div id="empty" class="section">

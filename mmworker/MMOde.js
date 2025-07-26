@@ -39,14 +39,14 @@
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
-class MMOde extends MMTool {
+export class MMOde extends MMTool {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Ode');
-		this.odeT = MMNumberValue.scalarValue(0); // this is just t in user interface, but t is already used by MMCommandObject
+		this.odeT = MMNumberValue.scalarValue(0); // this is just t in user interface, but t is already used by MMObject
 		this.initialYFormula = new MMFormula('y0', this);
 		this.derivativeFormula = new MMFormula('dy', this);
 		this.nextTFormula = new MMFormula('nextT', this);
@@ -94,6 +94,25 @@ class MMOde extends MMTool {
 		}
 		
 		return sources;
+	}
+
+	/**
+	 * @method formulaList
+	 * @returns [] contains formulae contained by this tool and its children
+	 */
+	formulaList() {
+		const formulae = [
+			this.initialYFormula,
+			this.derivativeFormula,
+			this.nextTFormula,
+			this.endTFormula,
+			this.relTolFormula,
+			this.absTolFormula,
+		];
+		for (const formula of this.recordedValueFormulas) {
+			formulae.push(formula);
+		}
+		return formulae;
 	}
 
 	/**
@@ -279,7 +298,7 @@ class MMOde extends MMTool {
 	}
 
 	get shouldAutoRun() {
-		return this._shouldAutoRun;
+		return this._shouldAutoRun && !theMMSession.noRun;
 	}
 
 	set shouldAutoRun(newValue) {
@@ -385,7 +404,7 @@ class MMOde extends MMTool {
 			const saveForUndo = {n: recNumber, f: this.recordedValueFormulas[recNumber - 1].formula};
 			this.removeRecordedValue(recNumber);
 			const undoString = JSON.stringify(saveForUndo);
-			command.undo = `__blob__${this.getPath()} restorerecorded__blob__${undoString}`;
+			command.undo = `${this.getPath()} restorerecorded ${undoString}`;
 			command.results = 'removed recorded';
 		}
 		else {
@@ -536,6 +555,10 @@ class MMOde extends MMTool {
 		for (let i = 0; i < count; i++) {
 			const formula = this.recordedValueFormulas[i];
 			const recValue = formula.value();
+			if (recValue instanceof MMTableValue) {
+				this.setError('mmcmd:recordTableError', {number: i + 1, path: this.getPath()});
+				return false;
+			}
 			const a = this.recordedValues[i];
 			if (recValue) {
 				a.push(recValue.copyOf());
@@ -993,7 +1016,7 @@ class MMOde extends MMTool {
 			const solver = new MMOdeSolver(this);
 			let nextT = this.nextTFormula.numberValue();
 			let tNext = nextT.values[0];
-			const tStop = endT.values[0];
+			let tStop = endT.values[0];
 			if (tNext > tStop) {
 				tNext = tStop;
 			}
@@ -1013,7 +1036,12 @@ class MMOde extends MMTool {
 				if (!this.recordCurrentValues()) {
 					break;
 				}
-
+				const endT = this.endTFormula.numberValue();
+				if (endT && endT.values[0] <= this.odeT.values[0]) {
+					this.isSolved = true;
+					return;
+				}
+				tStop = endT.values[0];
 				if (this.odeT.values[0] >= tStop) {
 					this.isSolved = true;
 					break;
@@ -1027,11 +1055,16 @@ class MMOde extends MMTool {
 
 				this.nextRecordNumber++;
 				this.forgetStep();
-				nextT = this.nextTFormula.numberValue();
-				if (!nextT) {
+				const newNextT = this.nextTFormula.numberValue();
+				if (!newNextT) {
 					this.setError('mmcmd:odeRecordTimeError', {path: this.getPath()});
 					break;
 				}
+				if (newNextT.values[0] <= nextT.values[0]) {
+					this.setError('mmcmd:odeRecordTimeUnchanged', {path: this.getPath()});
+					break;
+				}
+				nextT = newNextT;
 				tNext = nextT.values[0];
 				if (tNext > tStop) {
 					tNext = tStop;

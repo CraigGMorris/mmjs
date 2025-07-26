@@ -63,7 +63,7 @@ export function OdeView(props) {
 	const applyChanges = (name) => {
 		const path = `${results.path}.${name}`;
 		return (formula) => {
-			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
+			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(OdeDisplay.input);
 			});
@@ -80,6 +80,7 @@ export function OdeView(props) {
 				t: t,
 				viewInfo: props.viewInfo,
 				infoWidth: props.infoWidth,
+				infoHeight: props.infoHeight,
 				actions: props.actions,
 				editOptions: editOptions,
 				cancelAction: () => {
@@ -191,6 +192,7 @@ export function OdeView(props) {
 						'input', {
 							id: 'ode__is-stiff-checkbox',
 							className: 'checkbox__input',
+							tabIndex: -1,
 							type: 'checkbox',
 							checked: results.isStiff,
 							onChange: () => {
@@ -221,6 +223,7 @@ export function OdeView(props) {
 						'input', {
 							id: 'ode__autorun-checkbox',
 							className: 'checkbox__input',
+							tabIndex: -1,
 							type: 'checkbox',
 							checked: results.shouldAutoRun,
 							onChange: () => {
@@ -247,6 +250,7 @@ export function OdeView(props) {
 				e(
 					'button', {
 						id: 'ode__addrecord-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} addrecorded`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);
@@ -263,6 +267,7 @@ export function OdeView(props) {
 				e(
 					'button', {
 						id: 'ode__reset-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} reset`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);
@@ -274,6 +279,7 @@ export function OdeView(props) {
 				e(
 					'button', {
 						id: 'ode__run-button',
+						tabIndex: -1,
 						onClick: () => {
 							props.actions.doCommand(`${props.viewInfo.path} run`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);

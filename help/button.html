@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Button',{
+					overview: 'Overview',
+					info: 'Information View',
+					label: 'Label',
+					action: 'action',
+					target: 'Target',
+					paramters: 'Formula Parametes',
+				});
+			};			
+		</script>	
+		<title>Button</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="menubody"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					The button tool lets you place a button with some common actions onto a model
+					information view or an html page.
+				</p>
+			</div>
+			<div id="info" class="section">
+				<h3>Information View</h3>
+				<img src="button.png" alt="Button Information View">
+				<p>
+					The fields are:
+				</p>
+				<div id="label" class="subsection">
+					<h3>Label</h3>
+					<p>
+						A formula field for the text that will appear on the button.
+					</p>
+				</div>
+				<div id="action" class="subsection">
+					<h3>Action</h3>
+					<p>
+						The action that will take place when the button is pressed.
+					</p>
+					<ul>
+						<li>
+							<b>Add Row to a Data Table</b>. The data table will use its inital value formulas
+							to fill in the fields.
+						</li>
+						<li>
+							<b>Push View of Tool</b>. The information view for the targeted tool will replace the
+							current one. Tapping the back button at the top of the new view will return to
+							the original one.
+						</li>
+						<li>
+							<b>Refresh Tool</b>. The targeted tool will be forced to recalculate itself. This
+							is rarely needed, but can be useful for things like time and random numbers.
+						</li>
+						<li>
+							<b>Load Session</b>. The targeted session will replace the current one.
+						</li>
+						<li>
+							<b>Load Session Url</b>. An attempt will be made to load a session from an
+							Internet address supplied as the target. This is likely to fail due to security
+							reasons unless the file is on the same server as the one that provided the MM code.
+							(See
+							<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">CORS</a>)
+						</li>
+						<li>
+							<b>Console Command</b>. The target string will be used as a command such as used in
+							the <a href="console.html">Console</a> view. This is probably best ignored unless you
+							are sure you know what you are doing.
+						</li>
+					</ul>
+					</div>
+				<div id="target" class="subsection">
+					<h3>Target</h3>
+					<p>
+						A formula field for the target of the action. The formula should evaluate to a string
+						that is the name of either a tool or a session, depending on what the action is. 	
+						A drop down menu where the target of the action is selected. The result of evaluating
+						the formula is displayed below the field and if it isn't a string, it will display as
+						<b>"?"</b>.
+					</p>
+				</div>
+			</div>
+			<div id="parameters" class="section">
+				<h3>Formula Parameters</h3>
+				<p class="reminder">Parameters that can be accessed in the form a.b where a is the tool name and b is the parameter name.</p>
+				<ul>
+					<li><b>action</b> - the selected action. One of ("addrow", "push", "refresh", "load"). </li>
+					<li><b>target</b> - the result of evaluating the target formula and should be either
+						 a tool name or a session name</li>
+					<li><b>label</b> - the result of evaluating the label formula</li>
+					<li><b>html</b> - a html code representation of the tool.</li>
+					<li><b>notes</b> - the notes for the tool</li>
+					<li><b>myname</b> - the name of the tool</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>

@@ -4,26 +4,90 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="icon" type="image/png" href="./favicon32.png">
-	<title>CoolMM</title>
+	<link rel="icon" type="image/png" href="./minion.svg">
+	<link rel="manifest" href="./PWAManifest.json" />
+	<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+	<titleCoolMM</title>
+	<style>
+    #update {
+      visibility: hidden;
+      width: 250px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 16px;
+      position: fixed;
+      z-index: 1;
+      left: 30px;
+      top: 100px;
+    }
+
+    #update.show {
+      visibility: visible;
+		}
+    #update.hide {
+      visibility: hidden;
+		}
+
+	</style>
+
 </head>	
 
 <body>
 	<div id="root">Loading...please be patient, its a big program</div>
-	<script src="https://unpkg.com/i18next/i18next.js"></script>
-	<script src="https://unpkg.com/i18next-xhr-backend/i18nextXHRBackend.js"></script>
-	<script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
-	<script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
-
-	<!--
+	<div id="update">
+		A new version is available. Click <a id="reload">here</a> to reload.
+	</div>
+	
+	
 	<script src="offline/i18next.js"></script>
 	<script src="offline/i18nextXHRBackend.js"></script>
-	<script src="offline/react.development.js" crossorigin></script>
-	<script src="offline/react-dom.development.js" crossorigin></script>
-	-->
+	<!-- <script src="offline/react.development.js" crossorigin></script> -->
+	<!-- <script src="offline/react-dom.development.js" crossorigin></script> -->
+	<script src="offline/react.production.min.js" crossorigin></script>
+	<script src="offline/react-dom.production.min.js" crossorigin></script>
+	
 
 	<link rel="stylesheet" href="./react/mmjs.css">
 	<script type="module" src="./index.js"></script>
- </body>
+	<script>
+		let newWorker;
+		// The click event on the pop up notification
+		const reloadBtn = document.getElementById('reload');
+		if (reloadBtn) {
+			reloadBtn.addEventListener('click', function() {
+				newWorker?.postMessage({ action: 'skipWaiting' });
+			});
+		}
+		if ("serviceWorker" in navigator) {
+			navigator.serviceWorker.register("PWAServiceWorker.js").then((swReg) => {
+				swReg.addEventListener('updatefound', () => {
+					newWorker = swReg.installing;
+					newWorker.addEventListener('statechange', () => {
+						// Has network.state changed?
+						if (newWorker.state === 'installed') {
+							if (navigator.serviceWorker.controller) {
+								// new update available
+								const updateNotice = document.getElementById('update');
+								updateNotice.classList.add('show');
+								console.log('showing prompt');
+							}
+						}
+            // else No update available
+          });
+        });
+			}).catch(err => {
+				console.error("Service Worker registration failed:", err);
+			});
+
+			let refreshing;
+  	  navigator.serviceWorker.addEventListener('controllerchange', function () {
+    	  if (refreshing) return;
+    		window.location.reload();
+      	refreshing = true;
+   	 });
+		}
+	</script>
+</body>
 
 </html>
