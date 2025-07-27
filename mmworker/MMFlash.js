@@ -1295,9 +1295,10 @@ class MMFlash extends MMTool {
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view
 	 */
-	toolViewInfo(command) {
+	async toolViewInfo(command) {
 		super.toolViewInfo(command);
-		let results = command.results;
+		await super.toolViewInfo(command);
+		const results = command.results;
 		results['thermoFormula'] = this.thermoFormula.formula;
 		results['firstPropFormula'] = this.firstPropertyFormula.formula;
 		results['secondPropFormula'] = this.secondPropertyFormula.formula;
@@ -1307,3 +1308,5 @@ class MMFlash extends MMTool {
 		results.displayTable = this.displayTable();
 	}
 }
+
+export { MMFlash, MMFlashPhaseValue };

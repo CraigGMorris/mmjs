@@ -22,6 +22,26 @@
  * This function loads modules in the exact same order as the original importScripts
  */
 export async function setupImports() {
+  // Load coolprop.js first since other modules depend on it
+  // coolprop.js creates a global Module object that needs to be available
+  console.log('Loading coolprop.js...');
+  
+  try {
+    // Use the wrapper to load coolprop.js with proper configuration
+    const { loadCoolProp } = await import('./coolprop-wrapper.js');
+    const Module = await loadCoolProp();
+    
+    console.log('coolprop.js loaded and initialized successfully');
+    console.log('Module available:', typeof Module !== 'undefined' ? 'yes' : 'no');
+    
+    // Attach Module to global scope for use by MMFlash
+    self.Module = Module;
+    console.log('Module attached to global scope');
+  } catch (error) {
+    console.error('Failed to load coolprop.js:', error);
+    throw error;
+  }
+  
   // Follow the exact same order as the original importScripts
   
   // MMCommandProcessor.js
@@ -292,6 +312,17 @@ export async function setupImports() {
 
   // Attach menu to global scope
   self.MMMenu = MMMenu;
+
+  // MMFlash.js - must be loaded after Module is available
+  const [
+    { MMFlash, MMFlashPhaseValue }
+  ] = await Promise.all([
+    import('./MMFlash.js')
+  ]);
+
+  // Attach flash to global scope
+  self.MMFlash = MMFlash;
+  self.MMFlashPhaseValue = MMFlashPhaseValue;
 
   console.log('All modules loaded and attached to global scope');
 } 

@@ -1400,7 +1400,7 @@ export const MMToolTypes = {
 
 /**
  * @class MMTool - base class for all calculation tools
- * @extends MMCommandParent
+ * @extends MMParent
  * @member {MMSession} session;
  * @member {string} notes
  * @member {string} description
@@ -1413,7 +1413,7 @@ export const MMToolTypes = {
  * @member {boolean} diagramNotes;
  */
 // eslint-disable-next-line no-unused-vars
-class MMTool extends MMCommandParent {
+class MMTool extends MMParent {
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel

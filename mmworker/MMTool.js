@@ -77,7 +77,7 @@ export class MMTool extends MMParent {
 	}
 
 	get displayName() {
-		let toolType = MMToolTypes[this.typeName];
+		let toolType = pes[this.typeName];
 		return this.t(toolType.displayName);
 	}
 
