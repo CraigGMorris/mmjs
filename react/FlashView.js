@@ -65,7 +65,7 @@ export function FlashView(props) {
 	const applyChanges = (name) => {
 		const path = `${results.path}.${name}`;
 		return (formula) => {
-			props.actions.doCommand(`__blob__${path} set formula__blob__${formula}`, () => {
+			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(FlashDisplay.input);
 			});
@@ -134,6 +134,7 @@ export function FlashView(props) {
 							formula: results.thermoFormula,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
+							applyChanges: applyChanges('thermoFormula'),
 							clickAction: (offset) => {
 								setFormulaOffset(offset);
 								setFormulaName('thermoFormula');
@@ -156,6 +157,7 @@ export function FlashView(props) {
 							formula: results.firstPropFormula,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
+							applyChanges: applyChanges('firstPropFormula'),
 							clickAction: (offset) => {
 								setFormulaOffset(offset);
 								setFormulaName('firstPropFormula');
@@ -178,6 +180,7 @@ export function FlashView(props) {
 							formula: results.secondPropFormula,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
+							applyChanges: applyChanges('secondPropFormula'),
 							clickAction: (offset) => {
 								setFormulaOffset(offset);
 								setFormulaName('secondPropFormula');
@@ -200,6 +203,7 @@ export function FlashView(props) {
 							formula: results.flowFormula,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
+							applyChanges: applyChanges('flowFormula'),
 							clickAction: (offset) => {
 								setFormulaOffset(offset);
 								setFormulaName('flowFormula');
@@ -222,6 +226,7 @@ export function FlashView(props) {
 							formula: results.moleFracFormula,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
+							applyChanges: applyChanges('moleFracFormula'),
 							clickAction: (offset) => {
 								setFormulaOffset(offset);
 								setFormulaName('moleFracFormula');
@@ -244,6 +249,7 @@ export function FlashView(props) {
 							formula: results.massFracFormula,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
+							applyChanges: applyChanges('massFracFormula'),
 							clickAction: (offset) => {
 								setFormulaOffset(offset);
 								setFormulaName('massFracFormula');
