@@ -26,21 +26,30 @@ export async function setupImports() {
   // coolprop.js creates a global Module object that needs to be available
   console.log('Loading coolprop.js...');
   
-  try {
-    // Use the wrapper to load coolprop.js with proper configuration
-    const { loadCoolProp } = await import('./coolprop-wrapper.js');
-    const Module = await loadCoolProp();
+  // try {
+  //   // Use the wrapper to load coolprop.js with proper configuration
+  //   const { loadCoolProp } = await import('./coolprop-wrapper.js');
+  //   const Module = await loadCoolProp();
     
-    console.log('coolprop.js loaded and initialized successfully');
-    console.log('Module available:', typeof Module !== 'undefined' ? 'yes' : 'no');
+  //   console.log('coolprop.js loaded and initialized successfully');
+  //   console.log('Module available:', typeof Module !== 'undefined' ? 'yes' : 'no');
     
-    // Attach Module to global scope for use by MMFlash
-    self.Module = Module;
-    console.log('Module attached to global scope');
-  } catch (error) {
-    console.error('Failed to load coolprop.js:', error);
-    throw error;
-  }
+  //   // Attach Module to global scope for use by MMFlash
+  //   self.Module = Module;
+  //   console.log('Module attached to global scope');
+  // } catch (error) {
+  //   console.error('Failed to load coolprop.js:', error);
+  //   throw error;
+  // }
+
+  const [
+    { Module }
+  ] = await Promise.all([
+    import('./coolprop.mjs')
+  ]);
+
+  self.Module = Module;
+
   
   // Follow the exact same order as the original importScripts
   
