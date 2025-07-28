@@ -167,8 +167,7 @@ export class MMIterator extends MMTool {
 				a.push(recValue.copyOf());
 			}
 			else {
-				this.setError('mmcmd:recordValueError', {number: i + 1, path: this.getPath()});
-				return false;
+				a.push(MMNumberValue.scalarValue(NaN));
 			}
 		}
 		return true;
