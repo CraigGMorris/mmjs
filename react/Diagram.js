@@ -1531,7 +1531,8 @@ class ToolIcon extends React.Component {
 			Graph: 'rgba(224,247,247,.8)',
 			HtmlPage: 'rgba(217,204,230,.8)',
 			Button: 'rgba(239,239,255,.8)',
-			Menu: 'rgba(255, 255, 255, .8)'
+			Menu: 'rgba(255, 255, 255, .8)',
+			Flash: 'rgba(93, 180, 246, 0.8)'
 		}
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;

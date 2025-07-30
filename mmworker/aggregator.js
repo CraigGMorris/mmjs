@@ -22,37 +22,23 @@
  * This function loads modules in the exact same order as the original importScripts
  */
 export async function setupImports() {
-  // Load coolprop.js first since other modules depend on it
-  // coolprop.js creates a global Module object that needs to be available
-  console.log('Loading coolprop.js...');
   
-  // try {
-  //   // Use the wrapper to load coolprop.js with proper configuration
-  //   const { loadCoolProp } = await import('./coolprop-wrapper.js');
-  //   const Module = await loadCoolProp();
-    
-  //   console.log('coolprop.js loaded and initialized successfully');
-  //   console.log('Module available:', typeof Module !== 'undefined' ? 'yes' : 'no');
-    
-  //   // Attach Module to global scope for use by MMFlash
-  //   self.Module = Module;
-  //   console.log('Module attached to global scope');
-  // } catch (error) {
-  //   console.error('Failed to load coolprop.js:', error);
-  //   throw error;
-  // }
+  // coolprop.mjs
+  // 1. Fetch and compile the WebAssembly binary manually
+  const response = await fetch('coolprop.wasm');
+  const wasmBytes = await response.arrayBuffer();
+  const wasmModule = await WebAssembly.compile(wasmBytes);
 
-  const [
-    { Module }
-  ] = await Promise.all([
-    import('./coolprop.mjs')
-  ]);
+  // 2. Prepare global Module object with the compiled WASM
+  self.Module = { wasm: wasmModule };
 
-  self.Module = Module;
+  // 3. Dynamically import the ES6 module
+  const { default: CoolPropModule } = await import('./coolprop.mjs');
 
-  
-  // Follow the exact same order as the original importScripts
-  
+  // 4. Instantiate using the global self.Module
+  self.Module = await CoolPropModule(self.Module);
+
+ 
   // MMCommandProcessor.js
   const [
     { MMCommandProcessor, MMCommand, MMCommandMessage, MMPropertyType, MMObject, MMParent }

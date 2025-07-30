@@ -7,6 +7,9 @@
 
 #ifdef EMSCRIPTEN
 
+#include <CoolPropTools.h>           // header that defines CoolPropDbl
+#include <emscripten/bind.h>
+
 #include "CoolProp.h"
 #include "AbstractState.h"
 #include "Configuration.h"
@@ -108,9 +111,12 @@ CoolProp::AbstractState * factory(const std::string &backend, const std::string 
     return CoolProp::AbstractState::factory(backend, strsplit(fluid_names, '&'));
 }
 
+double vec_at(const std::vector<double>& v, size_t i) { return v.at(i); }
+
 // Binding code
 EMSCRIPTEN_BINDINGS(abstract_state_bindings) {
 
+    function("vec_at", &vec_at);
     register_vector<double>("VectorDouble");
     register_vector<std::string>("VectorString");
 
@@ -131,7 +137,7 @@ EMSCRIPTEN_BINDINGS(abstract_state_bindings) {
         .function("rhomass", &CoolProp::AbstractState::rhomass)
         .function("viscosity", &CoolProp::AbstractState::viscosity)
         .function("set_mole_fractions", &CoolProp::AbstractState::set_mole_fractions_double)
-        .function("set_mass_fractions", &CoolProp::AbstractState::set_mass_fractions_double)
+        .function("set_mass_fractions", &CoolProp::AbstractState::set_mass_fractions)
         .function("build_phase_envelope", &CoolProp::AbstractState::build_phase_envelope)
         .function("get_phase_envelope_data", &CoolProp::AbstractState::get_phase_envelope_data)
         .function("keyed_output", &CoolProp::AbstractState::keyed_output)

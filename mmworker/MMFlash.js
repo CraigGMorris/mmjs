@@ -886,7 +886,8 @@ class MMFlash extends MMTool {
 							liquid.x = new MMNumberValue(this.nComponents, 1);
 							const xValues = liquid.x.values;
 							for (let i = 0; i < this.nComponents; i++) {
-								xValues[i] = x.get(i);
+								xValues[i] = Module.vec_at(x, i);
+								// xValues[i] = x.get(i);
 							}
 							x.delete();
 		
@@ -894,7 +895,7 @@ class MMFlash extends MMTool {
 							vapor.x = new MMNumberValue(this.nComponents, 1);
 							const yValues = vapor.x.values;
 							for (let i = 0; i < this.nComponents; i++) {
-								yValues[i] = y.get(i);
+								yValues[i] = Module.vec_at(y, i);
 							}
 							y.delete();
 						}
@@ -905,7 +906,7 @@ class MMFlash extends MMTool {
 							const xValues = liquid.massx.values;
 							const xMoleFracs = [];
 							for (let i = 0; i < this.nComponents; i++) {
-								xMoleFracs.push(x.get(i));
+								xMoleFracs.push(Module.vec_at(x, i));
 							}
 							const xMassFracs = this.convertMoleFracToMass(xMoleFracs);
 							for (let i = 0; i < this.nComponents; i++) {
@@ -918,7 +919,7 @@ class MMFlash extends MMTool {
 							const yValues = vapor.massx.values;
 							const yMoleFracs = [];
 							for (let i = 0; i < this.nComponents; i++) {
-								yMoleFracs.push(y.get(i));
+								yMoleFracs.push(Module.vec_at(y, i));
 							}
 							const yMassFracs = this.convertMoleFracToMass(yMoleFracs);
 							for (let i = 0; i < this.nComponents; i++) {
@@ -1090,8 +1091,8 @@ class MMFlash extends MMTool {
 				const tValues = tColumn.values;
 				const pValues = pColumn.values;
         for(let i = 0; i < nPoints; i++) {
-            tValues[i] = d.T.get(i);
-            pValues[i] = d.p.get(i);
+            tValues[i] = Module.vec_at(d.T, i);
+            pValues[i] = Module.vec_at(d.p, i);
         }
 				const columns = [
 					new MMTableValueColumn({
