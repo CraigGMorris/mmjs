@@ -43,7 +43,8 @@ export function FlashView(props) {
 
 	const [display, setDisplay] = useState(FlashDisplay.input);
 	const [formulaName, setFormulaName] = useState('')
-	const [formulaOffset, setFormulaOffset] = useState(0);
+	const [editOptions, setEditOptions] = useState({});
+
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -84,7 +85,7 @@ export function FlashView(props) {
 				value: results.displayTable,
 				actions: props.actions,
 				viewInfo: props.viewInfo,
-				viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 6*nInputHeight - 10],
+				viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 6*nInputHeight - 70],
 			}
 		);
 	}
@@ -97,9 +98,10 @@ export function FlashView(props) {
 					key: 'editor',
 					t: t,
 					viewInfo: props.viewInfo,
+					infoWidth: props.infoWidth,
+					infoHeight: props.infoHeight,
 					actions: props.actions,
-					formula: results[formulaName],
-					formulaOffset: formulaOffset,
+					editOptions: editOptions,
 					cancelAction: () => {
 						setDisplay(FlashDisplay.input);
 					},
@@ -135,8 +137,8 @@ export function FlashView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							applyChanges: applyChanges('thermoFormula'),
-							clickAction: (offset) => {
-								setFormulaOffset(offset);
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
 								setFormulaName('thermoFormula');
 								setDisplay(FlashDisplay.formulaEditor);
 							}
@@ -158,8 +160,8 @@ export function FlashView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							applyChanges: applyChanges('firstPropFormula'),
-							clickAction: (offset) => {
-								setFormulaOffset(offset);
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
 								setFormulaName('firstPropFormula');
 								setDisplay(FlashDisplay.formulaEditor);
 							}
@@ -181,8 +183,8 @@ export function FlashView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							applyChanges: applyChanges('secondPropFormula'),
-							clickAction: (offset) => {
-								setFormulaOffset(offset);
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
 								setFormulaName('secondPropFormula');
 								setDisplay(FlashDisplay.formulaEditor);
 							}
@@ -204,8 +206,8 @@ export function FlashView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							applyChanges: applyChanges('flowFormula'),
-							clickAction: (offset) => {
-								setFormulaOffset(offset);
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
 								setFormulaName('flowFormula');
 								setDisplay(FlashDisplay.formulaEditor);
 							}
@@ -227,8 +229,8 @@ export function FlashView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							applyChanges: applyChanges('moleFracFormula'),
-							clickAction: (offset) => {
-								setFormulaOffset(offset);
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
 								setFormulaName('moleFracFormula');
 								setDisplay(FlashDisplay.formulaEditor);
 							}
@@ -250,8 +252,8 @@ export function FlashView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							applyChanges: applyChanges('massFracFormula'),
-							clickAction: (offset) => {
-								setFormulaOffset(offset);
+							editAction: (editOptions) => {
+								setEditOptions(editOptions);
 								setFormulaName('massFracFormula');
 								setDisplay(FlashDisplay.formulaEditor);
 							}

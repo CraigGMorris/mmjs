@@ -686,9 +686,23 @@ a:hover {
 	color: var(--link--color-hover);
 }
 
-#flash__formulas {
+#flash {
+	height: 100%;
 	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: calc(var(--input--height) * 7) 1fr;
+	grid-template-areas: "formulas"
+		"display";
+	box-sizing: border-box;
+	grid-gap: 2px;
+}
+
+#flash__formulas {
+	height: 100%;
+	display: grid;
+	grid-area: formulas;
 	grid-template-columns: 80px 1fr;
+	grid-template-rows: var(--input--height) var(--input--height) var(--input--height) var(--input--height) var(--input--height) var(--input--height);
 	grid-row-gap: 5px;
 	padding-top: 5px;
 	padding-bottom: 5px;

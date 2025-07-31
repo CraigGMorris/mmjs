@@ -106,6 +106,7 @@
 	"matrixWrongUnitType": "Falscher Einheitentyp in Matrix-Eingabe\n\nPfad: {{path}}\nEingabe: {{input}}",
 	"menuDisplayName": "Menü",
 	"modelDisplayName": "Modell",
+	"modelFlashDisplayName": "Flash",
 	"modelImportDisplayName": "Importiertes Modell",
 	"modelImportJsonError": "Das importierte Modell namens {{name}} konnte nicht interpretiert werden\n\nin Modell {{path}}.\n\nEs wurde als String in einen Ausdruck platziert",
 	"sessionImportNotFound": "Das importierte Modell namens {{name}} konnte nicht gefunden werden\n\nin Modell {{path}}.",

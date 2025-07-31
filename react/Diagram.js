@@ -1215,6 +1215,12 @@ export class Diagram extends React.Component {
 										addTool('Import');
 									}
 								},
+								{
+									text: this.props.t('mmcmd:modelFlashDisplayName'),
+									action: () => {
+										addTool('Flash');
+									}
+								},
 							]
 						}
 					)
