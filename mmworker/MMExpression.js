@@ -354,7 +354,7 @@ export class MMExpression extends MMTool {
 						rv = value.valueForDescription(description);
 					}
 					else if (value instanceof MMFlashPhaseValue) {
-						value = value.valueDescribedBy(description, requestor);
+						rv = value.valueDescribedBy(description, requestor);
 					}
 					if (!rv) {
 						rv = super.valueDescribedBy(description, requestor);
@@ -429,7 +429,6 @@ export class MMExpression extends MMTool {
 					displayUnit = null;  // display unit is wrong type - ignore and use default
 				}
 			}
-			json = value.jsonValue(displayUnit, formats);
 			if (value._values && value._values[0] instanceof MMFlash) {
 				json = value.values[0].displayTable();
 			}
@@ -441,7 +440,7 @@ export class MMExpression extends MMTool {
 				if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, value.unitDimensions)) {
 					displayUnit = null;  // display unit is wrong type - ignore and use default
 				}
-				json = value.jsonValue(displayUnit);
+				json = value.jsonValue(displayUnit, formats);
 			}
 		}
 		return json;

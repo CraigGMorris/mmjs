@@ -52,7 +52,16 @@ class MMFlashPhaseValue extends MMValue {
 	}
 
 	valueDescribedBy(description, requestor) {
-		const returnValue = this.flash.valueDescribedBy(this.phase + '.' + description);
+		let returnValue = null;
+		if (description === 'thermo') {
+			const thermoDefn = this.flash.thermoFormula.value();
+			if (thermoDefn && thermoDefn instanceof MMStringValue && thermoDefn.valueCount > 0) {
+				returnValue = MMStringValue.scalarValue(thermoDefn.values[0]);
+			}
+		}
+		else {
+			returnValue = this.flash.valueDescribedBy(this.phase + '.' + description);
+		}
 		if (returnValue && requestor) {
 			this.flash.addRequestor(requestor);
 		}
