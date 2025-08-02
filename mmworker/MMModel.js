@@ -1069,8 +1069,8 @@ export class MMModel extends MMTool {
 		chunks.push('		<div class="model-form__objects">')
 		if (isMyNameSpace) {
 			chunks.push('	  <div class="model-form__buttons">');
-			chunks.push(`   <div class="model-form__refresh" onClick="mmpost([], {mm_cmd: '${this.getPath()} refresh'});">&nbsp;🔄</div>`);
-			chunks.push('	  <div class="model-form__print" onClick="window.print();">&nbsp;🖨️</div>')
+			chunks.push(`   <div class="model-form__refresh" title="Refresh" onClick="mmpost([], {mm_cmd: '${this.getPath()} refresh'});">&nbsp;🔄</div>`);
+			chunks.push('	  <div class="model-form__print" title="Print" onClick="window.print();">&nbsp;🖨️</div>')
 			chunks.push('	  </div>');
 		}
 		for (let object of results.objects) {
