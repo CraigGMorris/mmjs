@@ -568,7 +568,9 @@ export class MMHtmlPageProcessor {
 				font-weight: bold;
 				margin-bottom: 10px;
 			}
-			.model-form__print {
+			.model-form__buttons {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
 				float: right;
 				position: sticky;
 				top: 10px;
