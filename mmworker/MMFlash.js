@@ -71,6 +71,45 @@ class MMFlashPhaseValue extends MMValue {
 	displayTable() {
 		return this.flash.displayTable(this.phase);
 	}
+
+		/**
+	 * @method htmlValue
+	 * @returns {String}
+	 */
+	htmlValue(requestor) {
+		let rv;
+		const table = this.displayTable();
+		if (!table) {
+			return '<b>Flash not calculated</b>';
+		}
+		const lines = [];
+		const maxColumn = table.nc;
+		const maxRow = table.nr;
+		lines.push('\n<table class="tvalue">')
+		lines.push(`\t<tr class="row0">`);
+		for (let column = 0; column < maxColumn; column++) {
+			const header = table.v[column].name;
+			lines.push(`\t\t<th class="col${column+1}">${header}</th>`);
+		}
+		lines.push('\t</tr>');
+		for (let row = 0; row < maxRow; row++) {
+			lines.push(`<tr class="row${row+1}">\n\t\t<th class="col0">${row}</th>`)
+			for (let column = 0; column < maxColumn; column++) {
+				try {
+					const v = table.v[column].v.v[row]
+					lines.push(`\t\t<td class="col${column+1}">${v}</td>`)
+				}
+				catch(e) {
+					lines.push(`\t\t<td class="col${column+1}">???</td>`)
+				}
+			}
+			lines.push('\t</tr>');
+		}
+		lines.push('</table>\n');
+		rv = lines.join('\n');
+	
+		return rv;
+	}	
 }
 
 /**
@@ -1134,11 +1173,11 @@ class MMFlash extends MMTool {
 		}
 	}
 
-	displayTable(justPhase) {
+	displayTable(justPhase, requestor) {
 		try {
 			if (!this.flashResults) {
 				// trigger flash
-				this.valueDescribedBy('flash.b');
+				this.valueDescribedBy('flash.b', requestor);
 			}
 			const makePhaseColumn = (phase) => {
 				const strings = []
@@ -1317,6 +1356,44 @@ class MMFlash extends MMTool {
 		results['flowFormula'] = this.flowFormula.formula;
 		results.displayTable = this.displayTable();
 	}
+	/**
+	 * @method htmlValue
+	 * @returns {String}
+	 */
+		htmlValue(requestor) {
+			let rv;
+			const table = this.displayTable(null, requestor);
+			if (!table) {
+				return '<b>Flash not calculated</b>';
+			}
+			const lines = [];
+			const maxColumn = table.nc;
+			const maxRow = table.nr;
+			lines.push('\n<table class="tvalue">')
+			lines.push(`\t<tr class="row0">`);
+			for (let column = 0; column < maxColumn; column++) {
+				const header = table.v[column].name;
+				lines.push(`\t\t<th class="col${column+1}">${header}</th>`);
+			}
+			lines.push('\t</tr>');
+			for (let row = 0; row < maxRow; row++) {
+				lines.push(`<tr class="row${row+1}">\n\t\t<th class="col0">${row}</th>`)
+				for (let column = 0; column < maxColumn; column++) {
+					try {
+						const v = table.v[column].v.v[row]
+						lines.push(`\t\t<td class="col${column+1}">${v}</td>`)
+					}
+					catch(e) {
+						lines.push(`\t\t<td class="col${column+1}">???</td>`)
+					}
+				}
+				lines.push('\t</tr>');
+			}
+			lines.push('</table>\n');
+		rv = lines.join('\n');
+	
+		return rv;
+	}	
 }
 
 export { MMFlash, MMFlashPhaseValue };

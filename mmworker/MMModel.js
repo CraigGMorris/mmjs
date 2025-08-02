@@ -33,6 +33,7 @@
 	MMMenu:readonly
 	MMGraph:readonly
 	MMHtmlPageProcessor:readonly
+	MMFlashPhaseValue:readonly
 */
 
 /**
@@ -1145,7 +1146,7 @@ export class MMModel extends MMTool {
 							}
 						}
 					}
-					else if (value.valueCount <= 1 && !(value instanceof MMTableValue)) {
+					else if (value.valueCount <= 1 && !(value instanceof MMTableValue) && !(value instanceof MMFlashPhaseValue)) {
 						chunks.push(`<div class="model-form__output-row">`);
 						chunks.push(`<div class="model-form__output-name" onClick="${onNameClick}('${output.name}')">${output.name}</div>`);
 						chunks.push(`<div id="${outputId}" class="model-form__output-value model-form__1output-value">${value.htmlValue(requestor)}</div>`);
