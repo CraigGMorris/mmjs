@@ -932,6 +932,9 @@ export class MMModel extends MMTool {
 			const toolType = MMToolTypes[typeName];
 			if(!toolType) {
 				const newTool = new MMExpression(name, this);
+				if (tool.DiagramX && tool.DiagramY) {
+					newTool.position = new MMPoint(tool.DiagramX, tool.DiagramY);
+				}
 				newTool.formula.formula = `'Invalid Tool ${typeName}\n\nJSON:\n${JSON.stringify(tool, null, ' ')}`;
 				newTool.savedInvalid = true;
 			}
