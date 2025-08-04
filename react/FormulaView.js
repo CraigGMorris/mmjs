@@ -125,6 +125,7 @@ export function FormulaField(props) {
 				ref: fieldInputRef,
 				value: formula?.slice(0,200) || '',
 				width: String(props.infoWidth - 25),
+				spellCheck: "false",
 				title: props.t('react:formulaFieldInputHover'),
 				onChange: (event) => {
 					// keeps input field in sync
