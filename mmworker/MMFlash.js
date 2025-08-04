@@ -518,13 +518,27 @@ class MMFlash extends MMTool {
 		if (phase === 'b'){
 			if (property === 'x') {
 				if (!this.moleX && this.massX && this.mwts) {
-					return MMNumberValue.numberArrayValue(this.convertMassFracToMole(this.massX.values));
+					const x = MMNumberValue.numberArrayValue(this.convertMassFracToMole(this.massX.values));
+					if (x) {
+						this.addRequestor(requestor);
+					}
+					return x;
+				}
+				if (this.moleX) {
+					this.addRequestor(requestor);
 				}
 				return this.moleX;
 			}
 			else if (property === 'massx') {
 				if (this.moleX && !this.massX && this.mwts) {
-					return MMNumberValue.numberArrayValue(this.convertMoleFracToMass(this.moleX.values));
+					const x = MMNumberValue.numberArrayValue(this.convertMoleFracToMass(this.moleX.values));
+					if (x) {
+						this.addRequestor(requestor);
+					}
+					return x;
+				}
+				if (this.massX) {
+					this.addRequestor(requestor);
 				}
 				return this.massX;
 			}
@@ -822,9 +836,17 @@ class MMFlash extends MMTool {
 				secondValue = this.secondProperty.values[0];
 			}
 			else if (this.secondPropertyType === 'Q') {
+				// if (this.nComponents === 1) {
 				flashType = Module.input_pairs.PQ_INPUTS;
-				firstValue = this.firstProperty.values[0];
-				secondValue = this.secondProperty.values[0];
+					firstValue = this.firstProperty.values[0];
+					secondValue = this.secondProperty.values[0];
+				// }
+				// else {
+				// 	firstValue = this.firstProperty.values[0];
+				// 	secondValue = this.secondProperty.values[0];
+				// 	this.searchTFlash('q', firstValue, secondValue);
+				// 	return;
+				// }
 			}
 			else if (this.secondPropertyType === 'H') {
 				if (this.nComponents === 1) {
@@ -835,7 +857,7 @@ class MMFlash extends MMTool {
 				else {
 					firstValue = this.firstProperty.values[0];
 					secondValue = this.secondProperty.values[0];
-					this.searchFlash('h', firstValue, secondValue);
+					this.searchTFlash('h', firstValue, secondValue);
 					return;
 				}
 			}
@@ -848,7 +870,7 @@ class MMFlash extends MMTool {
 				else {
 					firstValue = this.firstProperty.values[0];
 					secondValue = this.secondProperty.values[0];
-					this.searchFlash('s', firstValue, secondValue);
+					this.searchTFlash('s', firstValue, secondValue);
 					return;
 				}
 			}
@@ -905,12 +927,17 @@ class MMFlash extends MMTool {
 				this.flashResults = this.getFlashResults(absState, usingMoleFracs);
 			}
 			catch(e) {
-				const msg = e.message || ''
-				this.setError('mmcool:flashFailed',{
-					path: this.getPath(),
-					msg: msg
-				});
-				return;
+				if (this.firstPropertyType === 'P' && this.secondPropertyType === 'Q') {
+					this.searchTFlash('q', firstValue, secondValue);
+				}
+				else {
+					const msg = e.message || ''
+					this.setError('mmcool:flashFailed',{
+						path: this.getPath(),
+						msg: msg
+					});
+					return;
+				}
 			}
 			finally {
 				absState.delete();
@@ -1147,8 +1174,9 @@ class MMFlash extends MMTool {
 	 * pretty crude and slow, but fairly reliable
 	 * someone less lazy could greatly improve this
 	 */
-	searchFlash(targetType, p, target) {
+	searchTFlash(targetType, p, target) {
 		const targetDef = MMFlashPropertyDefinitions[targetType];
+		const R = 8.31446261815324;
 		if (!targetDef) { return; }
 		const targetParam = targetDef.param;
 		try {
@@ -1167,7 +1195,7 @@ class MMFlash extends MMTool {
 				const maxIter = 100;
 				let lastSuccessfullT;
 				let lastFailedT = -1;
-				const tTolerance = 0.001
+				const tTolerance = 0.001;
 				while (tUpper - tLower > tTolerance && count < maxIter) {
 					count++;
 					t = (tUpper + tLower) / 2;
@@ -1175,8 +1203,32 @@ class MMFlash extends MMTool {
 						if (this.imposedPhase) {
 							absState.specify_phase(this.imposedPhase);
 						}
-						absState.update(flashType, p, t);
-						h = absState.keyed_output(targetParam);
+						let retryCount = 3;
+						while (true) {
+							try {
+								absState.update(flashType, p, t);
+								absState.update(flashType, p, t);
+								absState.update(flashType, p, t);
+								h = absState.keyed_output(targetParam);
+								absState.update(flashType, p, t);
+								if (targetType === 'q') {
+									if (h === -1) {
+										// try to guess the phase based on z
+										const dmolar = absState.keyed_output(Module.parameters.iDmolar);
+										const z = p/R/t/dmolar;
+										h = (z > 0.35) ? 1.01 : 0.99;
+									}
+								}
+								break;
+							}
+							catch(e) {
+								if (retryCount <= 0) {
+									throw e;
+								}
+								retryCount--;
+								t = t + 0.01;
+							}
+						}
 						lastSuccessfullT = t;
 						if (h > target) {
 							tUpper = t;
