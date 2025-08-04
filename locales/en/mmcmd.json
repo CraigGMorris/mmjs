@@ -212,6 +212,8 @@
 	"_aiquery": "returns information about the arguments\n\nusage: aiquery queryKeys",
 	"_exprSetColumnUnit": "set the display unit for a column\n\nusage: setcolumnunit columnNumber unitName",
 	"_exprSetColumnFormat": "set the display format for a column\n\nusage: setcolumnformat columnNumber formatString",
+	"_flashSetPropUnit": "set the display unit for a property\n\nusage: setpropunit propName unitName",
+	"_flashSetPropFormat": "set the display format for a property\n\nusage: setpropformat propName formatString",
 	"_formulaRefresh": "reevaluate the formula\n\nusage: refresh",
 	"_formulaValue": "return formula value as json\n\nusage: value",
 	"_fpreview": "evaluate arbitrary formula and return value\n\nusage: tool fpreview namespace formula",

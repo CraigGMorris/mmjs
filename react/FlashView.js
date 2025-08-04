@@ -20,6 +20,8 @@
 import {ToolView} from './ToolView.js';
 import {FormulaField, FormulaEditor} from './FormulaView.js';
 import {TableView} from './TableView.js';
+import {UnitPicker} from './UnitsView.js';
+import {MMFormatValue} from './MMApp.js';
 
 const e = React.createElement;
 const useState = React.useState;
@@ -32,7 +34,8 @@ const useEffect = React.useEffect;
  */
 const FlashDisplay = Object.freeze({
 	input: 0,
-	formulaEditor: 1
+	unitPicker: 1,
+	formulaEditor: 2,
 });
 
 /**
@@ -44,7 +47,10 @@ export function FlashView(props) {
 	const [display, setDisplay] = useState(FlashDisplay.input);
 	const [formulaName, setFormulaName] = useState('')
 	const [editOptions, setEditOptions] = useState({});
-
+	const [selectedCell, setSelectedCell] = useState([0,0]);
+	const [formatString, setFormatString] = useState('');
+	const [displayedUnit, setDisplayedUnit] = useState('');
+	const [unitType, setUnitType] = useState('');
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
@@ -62,6 +68,31 @@ export function FlashView(props) {
 		return null;
 	}
 	const results = updateResults.length ? updateResults[0].results : {};
+
+	useEffect(() => {
+		const results = updateResults.length ? updateResults[0].results : {};
+		const displayTable = results.displayTable;
+		if (displayTable) {
+			const row = selectedCell[0] - 1;
+			if (row >= 0) {
+				const unit = displayTable?.v?.[1]?.v?.v?.[row];
+				if (unit) {
+					setDisplayedUnit(unit);
+				}
+				else {
+					setDisplayedUnit('');
+				}
+				const unitTypes = results.unitTypes;
+				const propName = displayTable?.v?.[0]?.v?.v?.[row];
+				setUnitType(unitTypes?.[propName] || '');
+				setFormatString(results.formatStrings?.[propName] || '');
+			}
+			else {
+				setDisplayedUnit('');
+				setFormatString('');
+			}
+		}
+	}, [props.viewInfo.updateResults, selectedCell, updateResults])
 
 	const applyChanges = (name) => {
 		const path = `${results.path}.${name}`;
@@ -85,7 +116,16 @@ export function FlashView(props) {
 				value: results.displayTable,
 				actions: props.actions,
 				viewInfo: props.viewInfo,
-				viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 6*nInputHeight - 70],
+				viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 7*nInputHeight - 70],
+				cellClick: (row, column) => {
+					const displayTable = results.displayTable;
+					if (results.displayTable && column >= 0 && column < displayTable.nc && row > 0 && row <= displayTable.nr) {
+						setSelectedCell([row,column]);
+					}
+					else {
+						setSelectedCell([0,0]);
+					}
+				},
 			}
 		);
 	}
@@ -109,6 +149,33 @@ export function FlashView(props) {
 				}
 			);
 			break;
+
+			case FlashDisplay.unitPicker:				
+				displayComponent = e(
+					UnitPicker, {
+						key: 'unit',
+						t: props.t,
+						actions: props.actions,
+						unitType: unitType,
+						unitName: displayedUnit,
+						cancel: () => {
+							setDisplay(FlashDisplay.input);
+						},
+						apply: (unit) => {
+							const displayTable = results.displayTable;
+							if (displayTable && selectedCell[0] > 0 && selectedCell[0] <= displayTable.nr) {
+								const propName = displayTable?.v?.[0]?.v?.v?.[selectedCell[0] - 1];
+								const cmd = `${props.viewInfo.path} setpropunit ${propName} ${unit}`;
+								props.actions.doCommand(cmd, () => {
+									props.actions.updateView(props.viewInfo.stackIndex);
+									setDisplay(FlashDisplay.input);
+								});
+							}
+						},
+					}
+				);
+				break;
+	
 
 		case FlashDisplay.input: {
 			displayComponent = e(
@@ -258,6 +325,56 @@ export function FlashView(props) {
 								setDisplay(FlashDisplay.formulaEditor);
 							}
 						}
+					),
+				),
+				e(
+					'div', {
+						id: 'flash__units-format',						
+					},
+					e(
+						// results unit line
+						'div', {
+							id: 'flash__units',
+							onClick: () => {
+								if (unitType) {
+									setDisplay(FlashDisplay.unitPicker);
+								}
+							}
+						},
+						`${unitType}: ${displayedUnit}`
+					),
+					e(
+						'input', {
+							id: 'flash__format-input',
+							tabIndex: -1,
+							placeholder: 'format',
+							value: formatString,
+							onChange: (event) => {
+									// keeps input field in sync
+									setFormatString(event.target.value);
+							},
+							onKeyDown: e => {
+								if (e.code == 'Enter') {
+									e.target.blur();
+								}
+							},
+							onBlur: () => {
+								const displayTable = results.displayTable;
+								if (displayTable && selectedCell[0] > 0 && selectedCell[0] <= displayTable.nr) {
+									const propName = displayTable?.v?.[0]?.v?.v?.[selectedCell[0] - 1];
+									let cmd = `${props.viewInfo.path} setpropformat ${propName} ${formatString}`
+									props.actions.doCommand(cmd, () => {
+										props.actions.updateView(props.viewInfo.stackIndex);
+									});
+								}
+							},		
+						}
+					),
+	
+					e(
+						'div', {
+							id: 'flash__format',
+						},
 					),
 				),
 				displayTable

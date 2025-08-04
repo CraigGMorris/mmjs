@@ -690,11 +690,38 @@ a:hover {
 	height: 100%;
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: calc(var(--input--height) * 7) 1fr;
+	grid-template-rows: calc(var(--input--height) * 7) var(--input--height) 1fr;
 	grid-template-areas: "formulas"
+		"units-format"
 		"display";
 	box-sizing: border-box;
 	grid-gap: 2px;
+}
+#flash__format-input {
+	font-size: 10pt;
+	height: 22px;
+}
+
+#flash__units-format {
+	grid-area: units-format;
+	display: grid;
+	grid-template-columns: 1fr 50px;
+}
+
+#flash__format {
+	align-self: end;
+}
+
+#flash__units {
+	box-sizing: border-box;
+	padding-top: 2px;
+	color: var(--link--color);
+	cursor: pointer;
+	align-self: center;
+}
+
+#flash__units:hover {
+	color: var(--link--color-hover);
 }
 
 #flash__formulas {

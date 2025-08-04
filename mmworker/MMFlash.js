@@ -163,7 +163,49 @@ class MMFlash extends MMTool {
 			return MMUnitSystem.areDimensionsEqual(property.unitDimensions, def.dim);
 		}
 		return false
-}
+	}
+
+	/**
+	 * propertyTypeForCPType returns the property type for a given CoolProp type
+	 * @param {String} cpType - CoolProp type
+	 * @returns {String} property type
+	 */
+	static propertyTypeForCPType(cpType) {
+		const cpTypes = {
+			'q': "Dimensionless",
+			't': 'Temperature',
+			'p': "Pressure",
+			'f': "MoleFlow",
+			'h': "MolarEnthalpy",
+			's': "MolarSpecificHeat",
+			'dmolar': "MolarConcentration",
+			'mwt': "MolecularWeight",
+			'x': "Dimensionless",
+			"massf": "MassFlow",
+			"massx": "Dimensionless",
+			"hflow": "Power",
+			"cpmolar": "MolarSpecificHeat",
+			"cp0molar": "MolarSpecificHeat",
+			"cvmolar": "MolarSpecificHeat",
+			"umolar": "MolarEnthalpy",
+			"gmolar": "MolarEnthalpy",
+			"cpmass": "MassSpecificHeat",
+			"cp0mass": "MassSpecificHeat",
+			"cvmass": "MassSpecificHeat",
+			"dmass": "Density",
+			"umass": "MassEnthalpy",
+			"gmass": "MassEnthalpy",
+			"tmin": "Temperature",
+			"tmax": "Temperature",
+			"pmin": "Pressure",
+			"pmax": "Pressure",
+			"viscosity": "Viscosity",
+			"conductivity": "ThermalConductivity",
+			"surfacetension": "SurfaceTension",
+			"prandtl": "Dimensionless"
+		}
+		return cpTypes[cpType] || 'Dimensionless';
+	}
 
 	/** @constructor
 	 * @param {string} name
@@ -179,6 +221,86 @@ class MMFlash extends MMTool {
 		this.massFracFormula = new MMFormula('massFracFormula', this);
 		this.flowFormula = new MMFormula('flowFormula', this);
 		this.additionalProperties = [];
+		this.formatStrings = this.defaultFormatStrings();
+		this.displayUnits = [];
+	}
+
+	defaultFormatStrings() {
+		return {
+			't': '.2f',
+			'p': '.2f',
+			'f': '.2f',
+			'h': '.2f',
+			's': '.2f',
+			'dmolar': '.2f'};
+	}
+
+	/** @override */
+	get verbs() {
+		let verbs = super.verbs;
+		verbs['setpropunit'] = this.setPropUnitCommand;
+		verbs['setpropformat'] = this.setPropFormatCommand;
+		return verbs;
+	}
+
+	/** @method getVerbUsageKey
+	 * @override
+	 * @param {string} command - command to get the usage key for
+	 * @returns {string} - the i18n key, if it exists
+	 */
+	getVerbUsageKey(command) {
+		let key = {
+			setpropunit: 'mmcmd:_flashSetPropUnit',
+			setpropformat: 'mmcmd:_flashSetPropFormat',
+		}[command];
+		if (key) {
+			return key;
+		}
+		else {
+			return super.getVerbUsageKey(command);
+		}
+	}
+	
+	/**
+	 * @method setPropUnitCommand
+	 * @param {MMCommand} command
+	 * command.args should contain propName unitName
+	 * command.results = unitName if successful
+	 */
+	setPropUnitCommand(command) {
+		const parts = command.args.split(/\s/);
+		if (parts.length === 2) {
+			const propName = parts[0];
+			for (let i = 0; i < this.propList.length; i++) {
+				if (this.propList[i] === propName) {
+					this.displayUnits[i + 1] = parts[1];
+					break;
+				}
+			}
+			this.forgetCalculated();
+			command.results = parts[1];
+		}
+	}
+
+	/**
+	 * @method setPropFormatCommand
+	 * @param {MMCommand} command
+	 * command.args should contain propName formatString
+	 * command.results = formatString if successful
+	 */
+	setPropFormatCommand(command) {
+		const parts = command.args.split(/\s/);
+		if (parts.length === 2) {
+			const propName = parts[0];
+			for (let i = 0; i < this.propList.length; i++) {
+				if (this.propList[i] === propName) {
+					this.formatStrings[propName] = parts[1];
+					break;
+				}
+			}
+			this.forgetCalculated();
+			command.results = parts[1];
+		}
 	}
 
 	/**
@@ -195,6 +317,8 @@ class MMFlash extends MMTool {
 		o['molefrac'] = {Formula: this.moleFracFormula.formula}
 		o['massfrac'] = {Formula: this.massFracFormula.formula}
 		o['flow'] = {Formula: this.flowFormula.formula}
+		o['displayUnits'] = this.displayUnits;
+		o['formatStrings'] = this.formatStrings;
 
 		return o;
 	}	
@@ -214,6 +338,8 @@ class MMFlash extends MMTool {
 			this.moleFracFormula.formula = saved.molefrac.Formula;
 			this.massFracFormula.formula = saved.massfrac.Formula;
 			this.flowFormula.formula = saved.flow.Formula;
+			this.displayUnits = saved.displayUnits || [];
+			this.formatStrings = Array.isArray(saved.formatStrings) ? this.defaultFormatStrings() : saved.formatStrings;
 		}
 		finally {
 			this.isLoadingCase = false;
@@ -1181,12 +1307,22 @@ class MMFlash extends MMTool {
 			}
 			const makePhaseColumn = (phase) => {
 				const strings = []
-				for (const propName of this.propList) {
+				for (let row = 0; row < this.propList.length; row++) {
+					const propName = this.propList[row];
 					const propValue = phase[propName];
 					if (propValue) {
 						const propCount = propValue.valueCount;
-						for (let i = 1; i <= propCount; i++) {
-							strings.push(propValue.stringForRowColumnUnit(i,1));
+						const unitName = this.displayUnits[row + 1];
+						let unit = unitName ? theMMSession.unitSystem.unitNamed(unitName) : null;
+						const def = MMFlashPropertyDefinitions[propName.toLowerCase()];
+						if (unit && def) {
+							if (!MMUnitSystem.areDimensionsEqual(unit.dimensions, def.dim)) {
+								unit = null;
+							}
+						}
+				
+						for (let j = 1; j <= propCount; j++) {
+							strings.push(propValue.stringForRowColumnUnit(j,1, unit, this.formatStrings[propName]));
 						}
 					}
 					else {
@@ -1199,11 +1335,12 @@ class MMFlash extends MMTool {
 			const labelsAndUnits = (bulkProps) => {
 				const labelStrings = [];
 				const unitStrings = [];
-				for (const propName of this.propList) {
+				for (let i = 0; i < this.propList.length; i++) {
+					const propName = this.propList[i];
 					const propValue = bulkProps[propName];
 					if (propValue) {
 						const propCount = propValue.valueCount;
-						const unitName = propValue.defaultUnit.name;
+						const unitName = this.displayUnits[i + 1] || propValue.defaultUnit.name;
 						if (propCount === 1) {
 							if (propName === 'q' && this.imposedPhase) {
 								labelStrings.push('q IMPOSED');
@@ -1354,7 +1491,16 @@ class MMFlash extends MMTool {
 		results['moleFracFormula'] = this.moleFracFormula.formula;
 		results['massFracFormula'] = this.massFracFormula.formula;
 		results['flowFormula'] = this.flowFormula.formula;
+		results['formatStrings'] = this.formatStrings;
 		results.displayTable = this.displayTable();
+		const unitTypes = {};
+		for (const propName of this.propList) {
+			const type = MMFlash.propertyTypeForCPType(propName);
+			if (type) {
+				unitTypes[propName] = type;
+			}
+		}
+		results['unitTypes'] = unitTypes;
 	}
 	/**
 	 * @method htmlValue
