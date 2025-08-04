@@ -524,6 +524,9 @@ export class MMHtmlPageProcessor {
 				border: 1px solid black;
 				padding: 4px;
 			}
+			td {
+				text-align: center;
+			}
 
 			tr:nth-child(odd){background-color: #f2f2f2;}
 			tr:nth-child(even){background-color: #ffffff;}
@@ -531,7 +534,7 @@ export class MMHtmlPageProcessor {
 			tr:hover {background-color: #ddd;}
 
 			th {
-				text-align: left;
+				text-align: center;
 				background-color: #e8e8ff;
 				color: black;
 			}
