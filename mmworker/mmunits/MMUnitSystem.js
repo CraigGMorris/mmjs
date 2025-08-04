@@ -125,7 +125,7 @@ export class MMUnitSystem extends MMParent {
 		if (format) {
 			let leadingPadChar = ' ';
 			const parts = format.split('.');	// split on decimal point, if there is one
-			let width = 0;
+			let width = 14;
 			let prefix = '';  // character before wisth for date format
 			format = parts[parts.length - 1];
 			if (parts.length && parts[0].length) {
