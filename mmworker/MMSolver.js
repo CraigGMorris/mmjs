@@ -470,11 +470,11 @@ export class MMSolver extends MMTool {
 							return;
 						}
 					},
-					setError: (msgKey) => {
+					setError: (msgKey, msgArgs) => {
 						this.isInError = true;
 						this.isConverged = false;
 						const cmdMsg = new MMCommandMessage('mmcmd:solverError', {path: this.getPath()});
-						this.setError(msgKey, {}, cmdMsg);
+						this.setError(msgKey, msgArgs, cmdMsg);
 						return;
 					},
 					setStatus: (msg) => {

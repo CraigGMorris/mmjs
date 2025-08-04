@@ -82,7 +82,7 @@
 	"jsonImportFailed": "Failed to initialize a session from the supplied json\n\n{{error}}",
 	"mathBrentIterating": "Brent iter: {{iter}} error: {{error}}",
 	"mathBrentIterExceeded": "Maximum iterations of {{iter}} exceeded in Brent solution",
-	"mathBrentNoBracket": "Root was not bracketed in Brent solution",
+	"mathBrentNoBracket": "Root was not bracketed in Brent solution \na {{a}}\nfa {{fa}}\nb {{b}}\nfb {{fb}}",
 	"mathBrodenIterating": "Broyden iter: {{iter}} error: {{error}}",
 	"mathBroydenIterExceeded": "Maximum iterations of {{iter}} exceeded in Broyden solution",
 	"mathBroydenSpurious": "A spurious solution with a zero gradient occurred in Broyden",

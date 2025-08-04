@@ -873,7 +873,7 @@ export const MMMath = {
 		let fb = functionValue(b);
 		
 		if (( fa > 0.0 && fb > 0.0 ) || ( fa < 0.0 && fb < 0.0 )) {
-			setErrorDescription('mmcmd:mathBrentNoBracket')
+			setErrorDescription('mmcmd:mathBrentNoBracket', {a: a, b: b, fa: fa, fb: fb});
 			return;
 		}
 		
