@@ -339,7 +339,7 @@ class MMFlash extends MMTool {
 			this.massFracFormula.formula = saved.massfrac.Formula;
 			this.flowFormula.formula = saved.flow.Formula;
 			this.displayUnits = saved.displayUnits || [];
-			this.formatStrings = Array.isArray(saved.formatStrings) ? this.defaultFormatStrings() : saved.formatStrings;
+			this.formatStrings = (!saved.formatStrings || Array.isArray(saved.formatStrings)) ? this.defaultFormatStrings() : saved.formatStrings;
 		}
 		finally {
 			this.isLoadingCase = false;
