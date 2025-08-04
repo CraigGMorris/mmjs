@@ -290,11 +290,11 @@ class MMFlash extends MMTool {
 	 */
 	setPropFormatCommand(command) {
 		const parts = command.args.split(/\s/);
-		if (parts.length === 2) {
+		if (parts.length > 0) {
 			const propName = parts[0];
 			for (let i = 0; i < this.propList.length; i++) {
 				if (this.propList[i] === propName) {
-					this.formatStrings[propName] = parts[1];
+					this.formatStrings[propName] = parts[1] || '';
 					break;
 				}
 			}
