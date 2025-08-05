@@ -50,6 +50,14 @@
 					be dragged around like other tables.
 				</p>
 				<img src="flashinfo.png" alt="Flash Information View">
+				<p>
+					You can click on any row of the table to view the unit and format used for the row. In the image
+					above, the flow row has been clicked on, so the flow unit and format are shown.
+				</p>
+				<p>
+					As in other MM tables, you can click on the unit description to bring up a unit picker
+					and you can enter a format for the row in the format field.
+				</p>
 			</div>
 			<div id="thermo" class="section">
 				<h3>Thermo Input</h3>
@@ -150,12 +158,6 @@
 					The flow formula can resolve to either a molar flow or a mass flow, based on the unit
 					conversion type.
 				</p>
-				<p>
-					You can also supply an array with the same number of flows as there are components. 
-					In this case the flows will be normalized into either mole or mass fractions and used
-					as the bulk composition.  The sum of the flows will become the bulk flow value, again
-					in either mole or mass terms depending on the unit conversion type.
-				</p>
 			</div>
 			<div id="fracs" class=section>
 				<h3>Composition Input</h3>
@@ -165,14 +167,17 @@
 					composition should resolve to an array of the same length as the number of components
 					defined in the thermo definition.
 				</p>
+				<p>
+					The composition will be normalized, so the values don't need to sum to 1. The normalizing
+					process also removes any units, so you could provide an array of flows if you wished.
+				</p>
 			</div>
 			<div id="mixhs" class="section">
 				<h3>Mixture H and S Flashes</h3>
 				<p>
 					Unfortunately CoolProp does not do isenthalpic or isentropic flashes for mixtures,
 					so the Math Minion flash tool does a crude section search on temperature to match
-					the desired value. This is fairly robust, but can be slow and certainly could be
-					improved on.
+					the desired value. This is fairly robust, but can be slow.
 				</p>
 			</div>
 			<div id="imposedphase" class="section">
@@ -238,7 +243,7 @@
 				</p>
 				<p>
 					If only the phase appears, then the result is value containing all the properties for that phase.
-					This is only useful in tool reference expressions, such as input or output expressions in a model.
+					This is useful in tool reference expressions, such as input or output expressions in a model.
 				</p>
 				<p>
 					If only the property is present, then the property for the bulk phase is returned.
