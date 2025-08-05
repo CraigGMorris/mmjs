@@ -1206,11 +1206,10 @@ class MMFlash extends MMTool {
 						let retryCount = 3;
 						while (true) {
 							try {
-								absState.update(flashType, p, t);
-								absState.update(flashType, p, t);
+								// console.log(`searchTFlash ${this.name} t ${t} ${p} tUpper ${tUpper} tLower ${tLower}`);
 								absState.update(flashType, p, t);
 								h = absState.keyed_output(targetParam);
-								absState.update(flashType, p, t);
+								// console.log(`h ${h}`);
 								if (targetType === 'q') {
 									if (h === -1) {
 										// try to guess the phase based on z
@@ -1222,11 +1221,24 @@ class MMFlash extends MMTool {
 								break;
 							}
 							catch(e) {
+								// console.log(`${this.name} retryCount ${retryCount} t ${t}`);
 								if (retryCount <= 0) {
 									throw e;
 								}
 								retryCount--;
-								t = t + 0.01;
+								if (targetType === 'q') {
+									t = t + 0.01;
+								}
+								else {
+									// console.log(`lastSuccessfullT ${lastSuccessfullT} t ${t}`);
+									if (lastSuccessfullT ==  null) {
+										t = 300
+									}
+									else {
+										t = (lastSuccessfullT + t)/2;
+									}
+									lastFailedT = t;
+								}
 							}
 						}
 						lastSuccessfullT = t;
@@ -1238,30 +1250,11 @@ class MMFlash extends MMTool {
 						}
 					}
 					catch(e) {
-						if (e.message) {
-							this.setError('mmcool:flashFailed',{
-								path: this.getPath(),
-								msg: e.message
-							});
-							return;									
-						}
-						else {
-							if (lastSuccessfullT ==  null) {
-								if (t > 300) {
-									tUpper = 600 - tLower; // so next t is 300
-								}
-								else {
-									tLower = 600 - tUpper;
-								}
-							}
-							else if (t > lastSuccessfullT) {
-								tUpper = t;
-							}
-							else {
-								tLower = t;
-							}
-							lastFailedT = t;
-						}
+						this.setError('mmcool:flashFailed',{
+							path: this.getPath(),
+							msg: e.message || ''
+						});
+						return;									
 					}
 				}
 				if (count >= maxIter) {
