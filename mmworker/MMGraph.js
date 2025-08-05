@@ -1836,11 +1836,10 @@ export class MMGraph extends MMTool {
 			let xValues = xValue.values;
 			let lineColor = lineColors[colorStart % nColors];
 	
+			let xUnitName = xValue.displayUnit?.name || xValue?.values?.defaultUnit?.name || '';			
 			const xTitle = xValue.title +
-				((xValue.displayUnit &&
-					xValue.displayUnit.name !== 'Fraction' &&
-					xValue.displayUnit.name !== 'String')
-				? ` (${xValue.displayUnit.name})`
+				((xUnitName !== 'Fraction' && xUnitName !== 'String')
+				? ` (${xUnitName})`
 				: '');
 			lines.push(`<text class="svg_xlabel" x="${leftMargin + plotWidth/2}" y="${plotHeight + topMargin + 30}" stroke="${lineColor}" text-anchor="middle">${xTitle}</text>`);
 	
