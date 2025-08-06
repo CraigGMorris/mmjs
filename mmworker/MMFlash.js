@@ -358,11 +358,17 @@ class MMFlash extends MMTool {
 		p.push('b');
 		p.push('v');
 		p.push('l');
-		p.push(...this.propList);
 		p.push('thermo');
 		p.push('envelope');
 		p.push('fluids');
+		p.push('f');
+		p.push('massf');
+		p.push('x');
+		p.push('massx');
 		p.push('fugacities');
+		for (const propName of Object.keys(MMFlashPropertyDefinitions)) {
+			p.push(propName);
+		}
 		return p;
 	}
 
