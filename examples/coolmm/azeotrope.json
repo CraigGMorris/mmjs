@@ -1,0 +1,270 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [
+		null,
+		null
+	],
+	"CaseName": "EtOH Azeotrope",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "root",
+	"ModelPath": "/.root",
+	"RootModel": {
+		"name": "root",
+		"Notes": "",
+		"DiagramX": 0,
+		"DiagramY": 0,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"HtmlNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "az",
+				"Notes": "The azeotrope composition and conditions",
+				"DiagramX": 260,
+				"DiagramY": 210,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "'Water,Ethanol;massx"
+				},
+				"firstprop": {
+					"Formula": "1 atm"
+				},
+				"secondprop": {
+					"Formula": "0"
+				},
+				"molefrac": {
+					"Formula": "{cc 1.4^opt.x, 1}"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": ""
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "opt",
+				"DiagramX": 340,
+				"DiagramY": 180,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Optimizer",
+				"optFormula": {
+					"Formula": "az.t"
+				},
+				"countFormula": {
+					"Formula": "1"
+				},
+				"outputs": [
+					-6.267868920055916
+				],
+				"Enabled": true,
+				"Optimized": true
+			},
+			{
+				"name": "iterate",
+				"DiagramX": 260,
+				"DiagramY": 260,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Iterator",
+				"whileFormula": {
+					"Formula": "{lt $.x, 1.0001}"
+				},
+				"initXFormula": {
+					"Formula": "0"
+				},
+				"nextXFormula": {
+					"Formula": "$.x + 0.005"
+				},
+				"recFormulas": [
+					{
+						"Formula": "$.x ' H2O fraction"
+					},
+					{
+						"Formula": "bp.t'T"
+					},
+					{
+						"Formula": "bp.v.massx[1]'V_EtOH"
+					},
+					{
+						"Formula": "bp.l.massx[1]'L_EtOH"
+					}
+				],
+				"AutoRun": "y"
+			},
+			{
+				"name": "bp",
+				"Notes": "",
+				"DiagramX": 260,
+				"DiagramY": 235,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "az.thermo"
+				},
+				"firstprop": {
+					"Formula": "az.p"
+				},
+				"secondprop": {
+					"Formula": "0"
+				},
+				"molefrac": {
+					"Formula": ""
+				},
+				"massfrac": {
+					"Formula": "{cc iterate.x, 1 - iterate.x}"
+				},
+				"flow": {
+					"Formula": ""
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "bpResults",
+				"Notes": "",
+				"DiagramX": 340,
+				"DiagramY": 205,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "iterate.table"
+				}
+			},
+			{
+				"name": "T_X_Plot",
+				"Notes": "The <b>T_X_Plot</b> graph uses the recorded temperature and H2O fraction to create a plot. Tapping <b>Edit</b> in the upper right of the plot will show the inputs. Again comments are used on the inputs as labels, this time for the plot axis.  The <b>Min</b> and <b>Max</b> values are set for the H2O fraction to highlight the area of interest. Only a maximum is given for the temperature, with the result in this case that the lower bound of the Y-axis will report the plotted azeotropic temperature.",
+				"DiagramX": 340,
+				"DiagramY": 235,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Graph",
+				"X1": {
+					"v": "iterate.H2O_fraction' mass x H2O",
+					"vmin": "0",
+					"vmax": ".12",
+					"Y1": {
+						"v": "iterate.t'T",
+						"vmin": "",
+						"vmax": "78.5 degc",
+						"lineType": 0
+					}
+				}
+			},
+			{
+				"name": "Zoomed_VLE",
+				"Notes": "",
+				"DiagramX": 340,
+				"DiagramY": 295,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Graph",
+				"X1": {
+					"v": "iterate.L_EtOH'Liq Mass x EtOH",
+					"vmin": "0",
+					"vmax": ".1",
+					"Y1": {
+						"v": "iterate.V_EtOH'Vap Mass x EtOH",
+						"vmin": "0",
+						"vmax": ".1",
+						"lineType": 0
+					}
+				},
+				"X2": {
+					"v": "{cc 0, 1} 'Diagonal",
+					"vmin": "",
+					"vmax": "",
+					"Y1": {
+						"v": "{cc 0, 1}'Diagonal",
+						"vmin": "",
+						"vmax": "",
+						"lineType": 0
+					}
+				}
+			},
+			{
+				"name": "VLE",
+				"Notes": "The <b>VLE</b> graph uses the other two recorded values to plot the fraction of ethanol in the vapour against that in the liquid.  A second two point curve is added just to provide the diagonal.\n\nWay down at the lower left corner, the equilibrium curve crosses the diagonal. You can zoom in on the graph, but the <b>Zoomed_VLE</b> graph does the same plot, but with much smaller ranges",
+				"DiagramX": 340,
+				"DiagramY": 265,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Graph",
+				"X1": {
+					"v": "iterate.L_EtOH'Liq Mass x EtOH",
+					"vmin": "",
+					"vmax": "",
+					"Y1": {
+						"v": "iterate.V_EtOH'Vap Mass x EtOH",
+						"vmin": "",
+						"vmax": "",
+						"lineType": 0
+					}
+				},
+				"X2": {
+					"v": "{cc 0, 1}'Diagonal",
+					"vmin": "",
+					"vmax": "",
+					"Y1": {
+						"v": "{cc 0, 1}'Diagonal",
+						"vmin": "",
+						"vmax": "",
+						"lineType": 0
+					}
+				}
+			},
+			{
+				"name": "Overview",
+				"Notes": "<h3>Ethanol - Water Azeotrope</h3>This model uses an <a href=\"./help/optimizer.html\" target=\"_blank\"><b>Optimizer</b></a> tool (<b>opt</b>) to determine the well known <a href=\"https://en.wikipedia.org/wiki/Azeotrope\" target=\"_blank\">azeotrope</a> of the ethanol water mixture at 1 atmosphere.\n\nSeparately an <a href=\"./help/iterator.html\" target=\"_blank\"><b>Interator</b></a> tool (<b>iterate</b>) is used to prepare the input for <a href=\"./help/graph.html\" target=\"_blank\"><b>Graph</b></a> tools that plot the bubble point temperature for the mixture against the ethanol mass fraction and the vapour-liquid equilibrium of the mixture.\n\nThe <a href=\"./help/flash.html\" target=\"_blank\"><b>Flash</b></a> tool <b>az</b> is used with the optimizeer and has the following inputs:\n\n\t<b>thermo</b> = <b>'Water,Ethanol;massx</b> - the two compounds with the mass fraction property added as that is what we are interested in.\n\t<b>T or P</b> = <b>1 atm</b> - the pressure of interest</li>\n\t<b>2nd Prop</b> = <b>0</b> - calculate the bubble point</li>\n\t<b>Mass Fracs</b> = <b>{cc 1.4^opt.x, 1}</b> - the optimizer output will vary around zero and ideally the optimum will be approximately in the range from -1 to 1. Here I use a small arbitrary number raised to the power of the optimizer output to represent the ethanol mass fraction. This ensures the value never goes negative and doesn't have the reversal that taking an absolute value would have.  The water mass fraction is just given as one, since the flash tool will normalize the values.\n\nThe function <b>opt</b> is given to minimize is just the temperature of <b>az</b>, namely <b>ax.t</b>\n\nThe result of <b>78.29</b> degC is in reasonable agreement with the common value of 78.2 degC.\n\nSeparately, the <b>iterate</b> tool starts with an initial value for its <b>x</b> parameter of <b>0</b> and increments it by 0.005 on each step until it exceeds <b>1</b>.\n\nOn each step it records four values. The formula for the first one is:\n\n\t<b>$.x ' H2O fraction</b>\n\nThe term <b>$</b> always refers to the tool owning the formula, so <b>$.x</b> refers to iterate's own <b>x</b> parameter.\n\nThe formula's comment, i.e. everything following the single quote, has additional meaning here in that it becomes a parameter name that other tools can use to refer to that recorded value.\n\nIt will also be used as the column label if the table parameter is requested.\n\nThe generic terms for recorded values, that is <b>r1, r2, etc.</b>, can still be used as well. \n\nThe second recorded value is the temperature of the <b>bp</b> flash tool, with the label <b>T</b>.\n\n\t<b>bp.t'T</b>\n\nThe final two recorded values are the the mass fractions of ethanol in the vapour and liquid.  The formulas look like:\n\n\t<b>bp.v.massx[1]'V_EtOH</b>\n\nwhere <b>bp.v.massx</b> requests the mass fraction composition array for the vapour of <b>bp</b> and <b>[1]</b> requests the first element of that array, which is ethanol.\n\nThe <b>bpResults</b> expression requests the table parameter from <b>iterate</b>, which returns a table with a column for each recorded value. Note the recorded value formula comments are used as the column labels.",
+				"DiagramX": 260,
+				"DiagramY": 180,
+				"HideInfo": "n",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": ""
+				}
+			}
+		]
+	}
+}
