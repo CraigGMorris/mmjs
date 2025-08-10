@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="keywords" content="coolmm, examples, thermodynamics, engineering">
+	<meta name="description" content="CoolMM Examples - Thermodynamic and Engineering Calculations">
+	<title>CoolMM Examples</title>
+	<link rel="stylesheet" href="../../react/mmjs.css">
+	<link rel="stylesheet" href="../../mmsite.css">
+	<link rel="icon" type="image/png" href="../../minion.svg">
+	<style>
+		.example-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+			gap: 2rem;
+			margin: 2rem 0;
+		}
+		.example-card {
+			border: 1px solid var(--border-color, #ddd);
+			border-radius: 8px;
+			padding: 1.5rem;
+			background: var(--card-bg, transparent);
+		}
+		.example-card h3 {
+			margin-top: 0;
+			color: var(--text-color, inherit);
+		}
+		.example-links {
+			margin-top: 1rem;
+			display: flex;
+			gap: 1rem;
+			flex-wrap: wrap;
+		}
+		.example-links a, .example-links button {
+			/* padding: 0.5rem 1rem; */
+			padding: 0.4rem 0.5rem;
+			font-size: 0.8rem;
+			text-decoration: none;
+			border-radius: 4px;
+			font-weight: bold;
+		}
+		.pdf-link {
+			background: var(--pdf-link-bgcolor);
+			/* background: #8b3228; */
+			color: white;
+		}
+		.pdf-link:hover {
+			background: var(--pdf-hover-bgcolor);
+			color: var(--link-hover-color);
+		}
+		.json-link {
+			/* background: #3498db; */
+			background: var(--json-link-bgcolor);
+			color: var(--link-color);
+			border: none;
+			cursor: pointer;
+		}
+		.json-link:hover {
+			background: var(--json-hover-bgcolor);
+			color: var(--link-hover-color);
+		}
+		.back-link {
+			display: inline-block;
+			margin-bottom: 2rem;
+			padding: 0.5rem 1rem;
+			background: #95a5a6;
+			color: white;
+			text-decoration: none;
+			border-radius: 4px;
+		}
+		.back-link:hover {
+			background: #7f8c8d;
+		}
+		
+		/* Dark mode compatibility */
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--border-color: #444;
+				--card-bg: rgba(255, 255, 255, 0.05);
+				--text-color: inherit;
+				--pdf-link-bgcolor: #8b3228;
+				--json-link-bgcolor: #20638f;
+				--link-color: #dddddd;
+				--pdf-hover-bgcolor: #c0392b;
+				--json-hover-bgcolor: #2980b9;
+				--link-hover-color: white;
+			}
+		}
+		
+		/* Light mode defaults */
+		@media (prefers-color-scheme: light) {
+			:root {
+				--border-color: #ddd;
+				--card-bg: rgba(0, 0, 0, 0.02);
+				--text-color: inherit;
+				--pdf-link-bgcolor: #e74c3c;;
+				--json-link-bgcolor: #3498db;
+				--link-color: white;
+				--pdf-hover-bgcolor: #c0392b;
+				--json-hover-bgcolor: #2980b9;
+				--link-hover-color: #dddddd;
+			}
+		}
+	</style>
+</head>	
+
+<body>
+	<div id="page">
+		<div id="title"><span>CoolMM Examples</span></div>
+		<div id="menu">
+			<div id="run"><a href="../../run.html">Run Math Minion</a></div>
+			<div id="help"><a href="../../help/helppage.html">Help</a></div>
+		</div>
+		
+		<a href="../../index.html" class="back-link">← Back to Math Minion</a>
+		
+		<p>
+			<b>CoolMM Examples</b> showcase various thermodynamic and engineering calculations 
+			that can be performed using a version of Math Minion that includes a flash tool based on the
+			open source CoolProp property package.
+		</p>
+		<p>
+			Each example, except for the toolbox, includes PDF 
+			documentation and a corresponding JSON file that can be downloaded and imported into 
+			Math Minion for hands-on exploration.
+		</p>
+
+		<p>
+			<b>NOTE!:</b> These examples require the flash tool, which is only available
+			when you run Math Minion from <a href="https://coolmm.mathminion.org">
+			https://coolmm.mathminion.org</a>. Other than having the flash tool and taking
+			slightly longer for the initial load, it is identical to the plain mathminion.org
+			version.
+		</p>
+		
+		<div class="example-grid">
+			<div class="example-card">
+				<h3>Azeotrope Calculation</h3>
+				<p>
+					Demonstrates the calculation of ethanol-water azeotrope composition and conditions 
+					using flash calculations and optimization. It also includes graphs of the phase
+					equilibrium.
+				</p>
+				<div class="example-links">
+					<a href="azeotrope.pdf" class="pdf-link" target="_blank">View PDF</a>
+					<button class="json-link" onclick="downloadFile('azeotrope.json')">Download JSON</button>
+				</div>
+			</div>
+
+			<div class="example-card">
+				<h3>Dynamic Steam Boiler Simulation</h3>
+				<p>
+					This model demonstrates the use of a denisty-enthalpy flash for steam in a highly idealized dynamic
+simulation of a steam boiler and steam chest. 
+				</p>
+				<div class="example-links">
+					<a href="boiler.pdf" class="pdf-link" target="_blank">View PDF</a>
+					<button class="json-link" onclick="downloadFile('boiler.json')">Download JSON</button>
+				</div>
+			</div>
+
+			<div class="example-card">
+				<h3>Cascade Refrigeration</h3>
+				<p>
+					This model represents a cascade refrigeration system with a high temperature loop and a low
+temperature one, using different refrigerants.
+				</p>
+				<div class="example-links">
+					<a href="cascade_refrig.pdf" class="pdf-link" target="_blank">View PDF</a>
+					<button class="json-link" onclick="downloadFile('cascade_refrig.json')">Download JSON</button>
+				</div>
+			</div>
+
+			<div class="example-card">
+				<h3>Gas Plant Simulation</h3>
+				<p>
+					A simulation of the front end of a simple hydrocarbon dew point control process for natural gas.
+				</p>
+				<div class="example-links">
+					<a href="gasplant.pdf" class="pdf-link" target="_blank">View PDF</a>
+					<button class="json-link" onclick="downloadFile('gasplant.json')">Download JSON</button>
+				</div>
+			</div>
+
+			<div class="example-card">
+				<h3>Liquid Air Separation</h3>
+				<p>
+					The Hampson-Linde cycle is one of the first and simplest processes for liquifying air. Reproducing the
+thermodynamics of it here was an interesting exercise, but I must confess I more or less guessed at
+conditions. At the very least my ignoring any heat gained from the
+environment is a big simplification.
+				</p>
+				<div class="example-links">
+					<a href="liqair.pdf" class="pdf-link" target="_blank">View PDF</a>
+					<button class="json-link" onclick="downloadFile('liqair.json')">Download JSON</button>
+				</div>
+			</div>
+
+			<div class="example-card">
+				<h3>Organic Rankine Cycle (ORC)</h3>
+				<p>
+					Organic Rankine Cycle power generation system using organic working fluids 
+					for low-temperature heat recovery.
+				</p>
+				<div class="example-links">
+					<a href="orc.pdf" class="pdf-link" target="_blank">View PDF</a>
+					<button class="json-link" onclick="downloadFile('orc.json')">Download JSON</button>
+				</div>
+			</div>
+
+			<div class="example-card">
+				<h3>Two-Stage Steam Turbine</h3>
+				<p>
+					Steam turbine power generation system with high-pressure and low-pressure 
+					stages, including reheat cycles.
+				</p>
+				<div class="example-links">
+					<a href="steam_turbine.pdf" class="pdf-link" target="_blank">View PDF</a>
+					<button class="json-link" onclick="downloadFile('steam_turbine.json')">Download JSON</button>
+				</div>
+			</div>
+
+			<div class="example-card">
+				<h3>CoolMM Toolbox</h3>
+				<p>
+					This model has a collection of models that might be useful when modelling fluid systems.
+					Just copy and paste them into your session as needed. Each model contains a brief
+					description of how to use it.
+					<br><br>
+					The refrigeration model makes a pretty good introduction to doing flash calculations.
+				</p>
+				<div class="example-links">
+					<img src="toolbox.png" alt="Toolbox" style="max-width: 100%; height: auto; margin-bottom: 1rem;">
+					<button class="json-link" onclick="downloadFile('toolbox.json')">Download JSON</button>
+				</div>
+			</div>
+		</div>
+
+		<h3>How to Use These Examples</h3>
+		<ol>
+			<li>Review the PDF file for some background on the example.</li>
+			<li>Download the JSON file using the download button</li>
+			<li>Open Math Minion from the <a href="https://coolmm.mathminion.org">coolmm.mathminion.org</a> site</li>
+			<li>Tap the <b>Sessions</b> button at the bottom of the information view.</li>
+			<li>Select the JSON file you downloaded. The model will be put in your sessions library and opened.</li>
+			<li>Play around.</li>
+		</ol>
+		<p>
+			<b>Alternatively</b> you can open the Getting Started session in Math Minion and click on the import
+			button for the example you want to try. There is also a button for importing all Math Minion examples
+			into a folder in you session library.
+		</p>
+		<p>
+			These are pretty simple examples, but they do demonstrate that some interesting calculations are
+			possible with Math Minion and CoolProp.
+		</p>
+	</div>
+
+	<script>
+		function downloadFile(filename) {
+			const link = document.createElement('a');
+			link.href = filename;
+			link.download = filename;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
+	</script>
+</body>
+</html>
