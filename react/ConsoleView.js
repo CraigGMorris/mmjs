@@ -72,8 +72,8 @@ class openAI {
 		this.previousResponseId = null;
 		this.promptTemplate = ``;
 		this.apiKey = '';
-		// this.model = 'gpt-4.1';
-		this.model = 'o4-mini';
+		this.model = 'gpt-5-mini';
+		// this.model = 'o4-mini';
 		this.retryCount = 0;
 		this.maxRetries = 2;
 		this.resetCount = 0;

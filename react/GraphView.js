@@ -893,7 +893,10 @@ class Plot2D extends React.Component {
 		const yScale = this.state.yScale;
 		const translate = this.state.translate;
 
-		let axisX = info.xInfo[xAxisIndex];
+		const axisX = info.xInfo[xAxisIndex];
+		if (!axisX) {
+			return null;
+		}
 
 		const lineColors = [
 			'Blue', '#009900', 'Brown', '#E58231', 'Purple', '#e60000', '#7D8F9B',
@@ -969,7 +972,7 @@ class Plot2D extends React.Component {
 
 			const xLabelElements = [];
 			const isXString = axisX.unit === 'String'
-			const xLabelCount = isXString ? axisX.values.length : 5;
+			const xLabelCount = isXString && axisX?.values ? axisX.values.length : 5;
 			let step = plotWidth / (xLabelCount - 1);
 			let labelStep = (axisX.maxLabel - axisX.minLabel) / (xLabelCount - 1);
 			const xLabelTranslate = (axisX.minLabel - axisX.maxLabel) * (translate.x / plotWidth) / xScale;
@@ -984,7 +987,7 @@ class Plot2D extends React.Component {
 				let labelX = centerX;
 				let labelValue;
 				if (isXString) {
-					labelValue = axisX.values[i];
+					labelValue = axisX?.values?.[i] || 'Error';
 					const labelY = height - this.bottomMargin + 15;
 					xLabelElements.push(e(
 						'text', {
