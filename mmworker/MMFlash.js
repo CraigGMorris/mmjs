@@ -826,6 +826,9 @@ class MMFlash extends MMTool {
 					secondValue = this.firstProperty.values[0];
 				}
 				else {
+					firstValue = this.firstProperty.values[0];
+					secondValue = this.secondProperty.values[0];
+					this.searchPFlash('s', firstValue, secondValue);
 					return;
 				}
 			}
@@ -843,13 +846,6 @@ class MMFlash extends MMTool {
 				flashType = Module.input_pairs.PQ_INPUTS;
 					firstValue = this.firstProperty.values[0];
 					secondValue = this.secondProperty.values[0];
-				// }
-				// else {
-				// 	firstValue = this.firstProperty.values[0];
-				// 	secondValue = this.secondProperty.values[0];
-				// 	this.searchTFlash('q', firstValue, secondValue);
-				// 	return;
-				// }
 			}
 			else if (this.secondPropertyType === 'H') {
 				if (this.nComponents === 1) {
@@ -930,17 +926,12 @@ class MMFlash extends MMTool {
 				this.flashResults = this.getFlashResults(absState, usingMoleFracs);
 			}
 			catch(e) {
-				if (this.firstPropertyType === 'P' && this.secondPropertyType === 'Q') {
-					this.searchTFlash('q', firstValue, secondValue);
-				}
-				else {
-					const msg = e.message || ''
-					this.setError('mmcool:flashFailed',{
-						path: this.getPath(),
-						msg: msg
-					});
-					return;
-				}
+				const msg = e.message || ''
+				this.setError('mmcool:flashFailed',{
+					path: this.getPath(),
+					msg: msg
+				});
+				return;
 			}
 			finally {
 				absState.delete();
@@ -1138,29 +1129,6 @@ class MMFlash extends MMTool {
 								vapor.fugacities = bulk.fugacities;
 								liquid.fugacities = bulk.fugacities;
 							}
-						// commented out below for now due to memory problems with more than one
-						// AbstractState
-						// 	else {
-						// 		const vapState = Module.factory(this.thermoPkg, this.componentString);
-						// 		const y = new Module.VectorDouble();
-						// 		try {
-						// 			for (let i = 0; i < this.nComponents; i++) {
-						// 				y.push_back(vapor.x.values[i]);
-						// 			}
-						// 			vapState.set_mole_fractions(y);
-
-						// 			const fugs = [];
-						// 			for (let i = 0; i < this.nComponents; i++) {
-						// 				fugs.push(vapState.fugacity(i));
-						// 			}
-						// 			vapor.fugacities = MMNumberValue.numberArrayValue(fugs, [-1, 1, -2, 0, 0, 0, 0]);
-						// 			liquid.fugacities = vapor.fugacities;
-						// 		}
-						// 		finally {
-						// 			vapState.delete();
-						// 			y.delete();
-						// 		}
-						// 	}
 						}
 							break;	
 					}
@@ -1173,7 +1141,7 @@ class MMFlash extends MMTool {
 	}
 
 	/**
-	 * seaarchFlash - attempts basic iteration to find T match at P and H or S
+	 * seaarchTFlash - attempts basic iteration to find T match at P and H or S
 	 * pretty crude and slow, but fairly reliable
 	 * someone less lazy could greatly improve this
 	 */
@@ -1229,19 +1197,14 @@ class MMFlash extends MMTool {
 									throw e;
 								}
 								retryCount--;
-								if (targetType === 'q') {
-									t = t + 0.01;
+								// console.log(`lastSuccessfullT ${lastSuccessfullT} t ${t}`);
+								if (lastSuccessfullT ==  null) {
+									t = 300
 								}
 								else {
-									// console.log(`lastSuccessfullT ${lastSuccessfullT} t ${t}`);
-									if (lastSuccessfullT ==  null) {
-										t = 300
-									}
-									else {
-										t = (lastSuccessfullT + t)/2;
-									}
-									lastFailedT = t;
+									t = (lastSuccessfullT + t)/2;
 								}
+								lastFailedT = t;
 							}
 						}
 						lastSuccessfullT = t;
@@ -1268,6 +1231,121 @@ class MMFlash extends MMTool {
 				}
 				if (Math.abs(t - lastFailedT) < tTolerance) {
 					this.setError('mmcool:flashPHBadBound', {type: targetType.toUpperCase(), path: this.getPath()});
+				}
+				this.flashResults = this.getFlashResults(absState, usingMoleFracs);
+			}
+			catch(e) {
+				const msg = e.message || '';
+				this.setError('mmcool:flashFailed',{
+					path: this.getPath(),
+					msg: msg
+				});
+				return;
+			}
+			finally {
+				absState.delete()
+			}
+		}
+		catch(e) {
+			console.log(e);
+			this.setError('mmcool:flashThermoDefnError', {path: this.getPath()});
+			return;
+		}
+		finally {
+			this.processor.showStatus(this.t('mmcmd:calculating'));
+		}
+	}
+
+	/**
+	 * seaarchPFlash - attempts basic iteration to find P match at T and S
+	 * pretty crude and slow, but fairly reliable
+	 */
+	searchPFlash(targetType, t, target) {
+		const targetDef = MMFlashPropertyDefinitions[targetType];
+		const R = 8.31446261815324;
+		if (!targetDef) { return; }
+		const targetParam = targetDef.param;
+		try {
+			this.processor.showStatus(this.t(`${targetType} flash ${this.getPath()}`));
+			const absState = Module.factory(this.thermoPkg, this.componentString);
+			try {
+				const usingMoleFracs = this.assignComposition(absState);
+				const pMin = 0;
+				const pMax = 1e8; // Pa
+				let pUpper = pMax;
+				let pLower = pMin;
+				let p;
+				let h;
+				const flashType = Module.input_pairs.PT_INPUTS;
+				let count = 0;
+				const maxIter = 100;
+				let lastSuccessfullP;
+				let lastFailedP = -1;
+				const pTolerance = 1000.0;
+				while (pUpper - pLower > pTolerance && count < maxIter) {
+					count++;
+					p = (pUpper + pLower) / 2;
+					try {
+						if (this.imposedPhase) {
+							absState.specify_phase(this.imposedPhase);
+						}
+						let retryCount = 3;
+						while (true) {
+							try {
+								// console.log(`searchPFlash ${this.name} t ${t} ${p} pUpper ${pUpper} pLower ${pLower}`);
+								absState.update(flashType, p, t);
+								h = absState.keyed_output(targetParam);
+								// console.log(`h ${h}`);
+								if (targetType === 'q') {
+									if (h === -1) {
+										// try to guess the phase based on z
+										const dmolar = absState.keyed_output(Module.parameters.iDmolar);
+										const z = p/R/t/dmolar;
+										h = (z > 0.35) ? 1.01 : 0.99;
+									}
+								}
+								break;
+							}
+							catch(e) {
+								// console.log(`${this.name} retryCount ${retryCount} t ${t}`);
+								if (retryCount <= 0) {
+									throw e;
+								}
+								retryCount--;
+								// console.log(`lastSuccessfullP ${lastSuccessfullP} t ${p}`);
+								if (lastSuccessfullT ==  null) {
+									p = 101325
+								}
+								else {
+									p = (lastSuccessfullP + p)/2;
+								}
+								lastFailedP = p;
+							}
+						}
+						lastSuccessfullP = p;
+						if (h < target) {
+							pUpper = p;
+						}
+						else {
+							pLower = p;
+						}
+					}
+					catch(e) {
+						this.setError('mmcool:flashFailed',{
+							path: this.getPath(),
+							msg: e.message || ''
+						});
+						return;									
+					}
+				}
+				if (count >= maxIter) {
+					this.setError('mmcool:flashTHMaxIter', {type: targetType.toUpperCase(), path: this.getPath(), count: count});
+				}
+				if (pMax - p < pTolerance || p - pMin < pTolerance) {
+					this.setError('mmcool:flashTHHitBound', {type: targetType.toUpperCase(), path: this.getPath()});
+				}
+				if (Math.abs(p - lastFailedP) < pTolerance) {
+					this.setError('mmcool:flashTHBadBound', {type: targetType.toUpperCase(), path: this.getPath()});
 				}
 				this.flashResults = this.getFlashResults(absState, usingMoleFracs);
 			}
