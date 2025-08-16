@@ -1,0 +1,352 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [
+		null,
+		null
+	],
+	"CaseName": "TH_Flash_Solver",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "",
+	"ModelPath": "/.root.TH_Flash_Solver",
+	"RootModel": {
+		"name": "root",
+		"Notes": "",
+		"DiagramX": 0,
+		"DiagramY": 0,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"HtmlNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "TH_Flash_Solver",
+				"Notes": "",
+				"DiagramX": 65,
+				"DiagramY": 35,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "thermo",
+						"Notes": "This model is a crude way to calculate the pressure for a given temperature and enthalpy of a mixture.\n\nSince the pressure enthalpy curve often has minimums or maximums,\nuse the graph to figure out a minimum and maximum pressure range to search in as appropriate for your conditions.\n\nBe sure and check that the solver has actually solved.\n\nThe results are not automatically displayed in the model view as you may not want calculations to proceed until the inputs are set up.",
+						"DiagramX": 55,
+						"DiagramY": 35,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "'Methane, Ethane, n-Propane,\nn-Butane, n-Hexane, n-Heptane,\nn-Octane, n-Nonane, n-Decane"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "MoleFracs",
+						"Notes": "",
+						"DiagramX": 55,
+						"DiagramY": 60,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{cc \t70,20,10,9,8,7,6,5,4 }"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "IterFlash",
+						"Notes": "",
+						"DiagramX": 150,
+						"DiagramY": 170,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Flash",
+						"thermo": {
+							"Formula": "thermo"
+						},
+						"firstprop": {
+							"Formula": "25 degc"
+						},
+						"secondprop": {
+							"Formula": "IterP"
+						},
+						"molefrac": {
+							"Formula": "molefracs"
+						},
+						"massfrac": {
+							"Formula": ""
+						},
+						"flow": {
+							"Formula": ""
+						},
+						"displayUnits": [],
+						"formatStrings": {
+							"t": ".2f",
+							"p": ".2f",
+							"f": ".2f",
+							"h": ".2f",
+							"s": ".2f",
+							"dmolar": ".2f"
+						}
+					},
+					{
+						"name": "Iter",
+						"Notes": "",
+						"DiagramX": 145,
+						"DiagramY": 35,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Iterator",
+						"whileFormula": {
+							"Formula": "{le $.i, 20}"
+						},
+						"initXFormula": {
+							"Formula": "1"
+						},
+						"nextXFormula": {
+							"Formula": "$.x + 1"
+						},
+						"recFormulas": [
+							{
+								"Formula": "iterFlash.h'H"
+							},
+							{
+								"Formula": "iterT'T"
+							},
+							{
+								"Formula": "IterP'P"
+							}
+						],
+						"AutoRun": "y"
+					},
+					{
+						"name": "iterTable",
+						"Notes": "",
+						"DiagramX": 150,
+						"DiagramY": 145,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "iter.table"
+						}
+					},
+					{
+						"name": "IterQ",
+						"Notes": "",
+						"DiagramX": 150,
+						"DiagramY": 120,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if {isnan Iter.q}, 0, iter.q}"
+						}
+					},
+					{
+						"name": "IterP",
+						"Notes": "",
+						"DiagramX": 145,
+						"DiagramY": 85,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "0 kpa +  iter.i  * 1000 kpa"
+						}
+					},
+					{
+						"name": "Temperature",
+						"Notes": "",
+						"DiagramX": 55,
+						"DiagramY": 85,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "25 degc"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "Enthalpy",
+						"Notes": "",
+						"DiagramX": 55,
+						"DiagramY": 110,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "6000 kj/kmol"
+						},
+						"showInput": "y"
+					},
+					{
+						"name": "IterT",
+						"Notes": "",
+						"DiagramX": 145,
+						"DiagramY": 60,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "20 degC +  iter.i  * 10 K"
+						}
+					},
+					{
+						"name": "PMin",
+						"Notes": "",
+						"DiagramX": 55,
+						"DiagramY": 135,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "50 kpa"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "PMax",
+						"Notes": "",
+						"DiagramX": 55,
+						"DiagramY": 160,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "10000 kpa"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "PH_Graph",
+						"Notes": "P vs H Graph, Click here to view",
+						"DiagramX": 150,
+						"DiagramY": 195,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Graph",
+						"X1": {
+							"v": "itertable.P'P iter",
+							"vmin": "0 kpa",
+							"vmax": "20000 kpa",
+							"Y1": {
+								"v": "itertable.h' H iter",
+								"vmin": "",
+								"vmax": "",
+								"lineType": 0
+							}
+						},
+						"highlight": "true"
+					},
+					{
+						"name": "PSolver",
+						"Notes": "Solver for P, Click here to view",
+						"DiagramX": 55,
+						"DiagramY": 240,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Equation Solver",
+						"f0": "Enthalpy - SolverFlash.h",
+						"c0": "1",
+						"maxIter": 200,
+						"maxJacobians": 5,
+						"Enabled": "y"
+					},
+					{
+						"name": "SolverFlash",
+						"Notes": "",
+						"DiagramX": 55,
+						"DiagramY": 185,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Flash",
+						"thermo": {
+							"Formula": "thermo"
+						},
+						"firstprop": {
+							"Formula": "25 degc"
+						},
+						"secondprop": {
+							"Formula": "PMin + ((PMax - PMin) / 2) * (1 + PSolver.1)"
+						},
+						"molefrac": {
+							"Formula": "molefracs"
+						},
+						"massfrac": {
+							"Formula": ""
+						},
+						"flow": {
+							"Formula": ""
+						},
+						"displayUnits": [],
+						"formatStrings": {
+							"t": ".2f",
+							"p": ".2f",
+							"f": ".2f",
+							"h": ".2f",
+							"s": ".2f",
+							"dmolar": ".2f"
+						}
+					},
+					{
+						"name": "P",
+						"Notes": "Solved P, Click here to calculate and view",
+						"DiagramX": 150,
+						"DiagramY": 225,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "SolverFlash.p"
+						},
+						"format": ".2f"
+					},
+					{
+						"name": "IsSolved",
+						"Notes": "If the value below isn't one, then the solver hasn't solved.  Open it and reset and turn on solve.",
+						"DiagramX": 55,
+						"DiagramY": 210,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "PSolver.solved"
+						}
+					}
+				]
+			}
+		]
+	}
+}
