@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2025.08.15";
+const VERSION = "2025.08.15b";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
@@ -29,6 +29,15 @@ const APP_STATIC_RESOURCES = [
 	"examples/indexof.txt",
 	"examples/number_commas.txt",
 	"examples/orbits.txt",
+	"examples/coolmm/azeotrope.json",
+	"examples/coolmm/boiler.json",
+	"examples/coolmm/cascade_refrig.json",
+	"examples/coolmm/gasplant.json",
+	"examples/coolmm/liqair.json",
+	"examples/coolmm/orc.json",
+	"examples/coolmm/steam_turbine.json",
+	"examples/coolmm/thflash.json",
+	"examples/coolmm/toolbox.json",
 	"examples/weather.csv",
 	"help/Getting Started.txt",
 	"help/broyden.png",
