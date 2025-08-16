@@ -2363,6 +2363,7 @@ export class MMGraph extends MMTool {
 			const xNumber = parseInt(name.substring(1)) - 1;
 			const xValue = this.xValues[xNumber];
 			if (xValue) {
+				delete this.selectedCurve;
 				switch(prefix) {
 					case 'x': {
 						if (this.xValues.length < 2) {
