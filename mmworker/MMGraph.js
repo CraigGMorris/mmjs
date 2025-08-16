@@ -641,9 +641,8 @@ class MMGraphX extends MMGraphAxis {
 	 * @param {Number} n;
 	 */
 	renumberTo(n) {
-		this.name = `x${n}`;
-		this.number = n;
 		this.renameTo(`x${n}`);
+		this.number = n;
 		const nY = this.yValues.length;
 		for (let i = 0; i < nY; i++) {
 			this.yValues[i].renameTo(`y${n}_${i+1}`);
