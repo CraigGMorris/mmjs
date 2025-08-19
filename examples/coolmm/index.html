@@ -61,19 +61,6 @@
 			background: var(--json-hover-bgcolor);
 			color: var(--link-hover-color);
 		}
-		.back-link {
-			display: inline-block;
-			margin-bottom: 2rem;
-			padding: 0.5rem 1rem;
-			background: #95a5a6;
-			color: white;
-			text-decoration: none;
-			border-radius: 4px;
-		}
-		.back-link:hover {
-			background: #7f8c8d;
-		}
-		
 		/* Dark mode compatibility */
 		@media (prefers-color-scheme: dark) {
 			:root {
@@ -110,29 +97,26 @@
 	<div id="page">
 		<div id="title"><span>CoolMM Examples</span></div>
 		<div id="menu">
-			<div id="run"><a href="../../run.html">Run Math Minion</a></div>
+			<div id="run"><a href="../../index.html">Home</a></div>
 			<div id="help"><a href="../../help/helppage.html">Help</a></div>
 		</div>
-		
-		<a href="../../index.html" class="back-link">← Back to Math Minion</a>
-		
 		<p>
-			<b>CoolMM Examples</b> showcase various thermodynamic and engineering calculations 
+			These examples showcase various thermodynamic and engineering calculations 
 			that can be performed using a version of Math Minion that includes a flash tool based on the
 			open source CoolProp property package.
 		</p>
 		<p>
 			Each example, except for the toolbox, includes PDF 
-			documentation and a corresponding JSON file that can be downloaded and imported into 
+			documentation and they all have a JSON file that can be downloaded and imported into 
 			Math Minion for hands-on exploration.
 		</p>
 
 		<p>
 			<b>NOTE!:</b> These examples require the flash tool, which is only available
 			when you run Math Minion from <a href="https://coolmm.mathminion.org">
-			https://coolmm.mathminion.org</a>. Other than having the flash tool and taking
-			slightly longer for the initial load, it is identical to the plain mathminion.org
-			version.
+			https://coolmm.mathminion.org</a>. Other than having the flash tool it is identical to the plain
+			mathminion.org version. It is only kept separate to reduce the initial load time for folks who are
+			unlikely to fluid property calculations.
 		</p>
 		
 		<div class="example-grid">
@@ -244,17 +228,13 @@ environment is a big simplification.
 			<li>Download the JSON file using the download button</li>
 			<li>Open Math Minion from the <a href="https://coolmm.mathminion.org">coolmm.mathminion.org</a> site</li>
 			<li>Tap the <b>Sessions</b> button at the bottom of the information view.</li>
+			<li>Tap the <b>Import</b> button at the top of the sessions view.</li>
 			<li>Select the JSON file you downloaded. The model will be put in your sessions library and opened.</li>
 			<li>Play around.</li>
 		</ol>
 		<p>
 			<b>Alternatively</b> you can open the Getting Started session in Math Minion and click on the import
-			button for the example you want to try. There is also a button for importing all Math Minion examples
-			into a folder in you session library.
-		</p>
-		<p>
-			These are pretty simple examples, but they do demonstrate that some interesting calculations are
-			possible with Math Minion and CoolProp.
+			button for the example you want to try.
 		</p>
 	</div>
 
