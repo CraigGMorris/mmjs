@@ -128,7 +128,7 @@ class MMMatrixInputValue {
 
 	// check the the inputstring has the same unit type as the column unit
 	checkInputUnit(owner) {
-		if (this.state === MatrixValueState.string) {
+		if (this.state === MatrixValueState.string || this.state === MatrixValueState.error) {
 			this.resetInput(this._input, owner);
 		}
 	}
@@ -658,6 +658,11 @@ export class MMMatrix extends MMTool {
 				this.columnUnits[column] = null;
 			}
 		}
+		for (const input of Object.values(this.cellInputs)) {
+			if (input.column === column) {
+				input.checkInputUnit(this);
+			}
+		}
 		this.forgetCalculated();
 	}
 
@@ -691,11 +696,6 @@ export class MMMatrix extends MMTool {
 					}
 					else if (column > 0) {
 						this.setColumnUnit(column, null);
-					}
-				}
-				for (const input of Object.values(this.cellInputs)) {
-					if (input.column === column) {
-						input.checkInputUnit(this);
 					}
 				}
 			}

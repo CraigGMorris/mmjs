@@ -274,6 +274,22 @@ export class SessionsView extends React.Component {
 
 		let sections = [];
 		if (this.state.menuAction) { // prompt for item menu is being shown
+			const doAction = () => {
+				switch (this.state.menuAction) {
+					case 'copy':
+						copyPath(this.state.menuPath, this.state.promptValue);
+						break;
+
+					case 'rename':
+						renamePath(this.state.menuPath, this.state.promptValue);
+						break;
+					
+					case 'save':
+						saveToPath(this.state.promptValue);
+						break;
+				}
+			}
+
 			sections.push(e(
 				'div', {
 					id: 'sessions__menu-prompt',
@@ -287,6 +303,13 @@ export class SessionsView extends React.Component {
 					id: 'sessions__prompt-input',
 					key: 'prompt-input',
 					value: this.state.promptValue,
+					onKeyDown: (event) => {
+						if (event.code === 'Enter') {
+							event.preventDefault();
+							event.stopPropagation();
+							doAction();
+						}
+					},
 					onChange: (event) => {
 						// keeps input field in sync
 						this.setState({promptValue: event.target.value});
@@ -311,21 +334,7 @@ export class SessionsView extends React.Component {
 					id: 'sessions__prompt-apply',
 					key: 'prompt-apply',
 					className: 'sessions__menu-button',
-					onClick: () => {
-						switch (this.state.menuAction) {
-							case 'copy':
-								copyPath(this.state.menuPath, this.state.promptValue);
-								break;
-
-							case 'rename':
-								renamePath(this.state.menuPath, this.state.promptValue);
-								break;
-							
-							case 'save':
-								saveToPath(this.state.promptValue);
-								break;
-						}
-					},
+					onClick: doAction,
 				},
 				t('react:ok')
 			));
