@@ -168,6 +168,7 @@ const APP_STATIC_RESOURCES = [
 	"locales/de/mmcmd.json",
 	"locales/de/mmunit.json",
 	"locales/de/react.json",
+	"mmworker/aggregator.js",
 	"mmworker/MMButton.js",
 	"mmworker/MMCommandPipe.js",
 	"mmworker/MMCommandProcessor.js",
