@@ -5312,10 +5312,10 @@
 								"name": "Example",
 								"Notes": "Cell function example",
 								"DiagramX": 60,
-								"DiagramY": 110,
+								"DiagramY": 145,
 								"HideInfo": "n",
 								"DiagramNotes": "y",
-								"HtmlNotes": "n",
+								"HtmlNotes": "y",
 								"Type": "Model",
 								"diagramScale": 1,
 								"indexTool": "overview",
@@ -5348,7 +5348,8 @@
 										"Formula": {
 											"Formula": "1000"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"format": "12.2f"
 									},
 									{
 										"name": "futureV",
@@ -5377,10 +5378,12 @@
 										"isOutput": "y",
 										"Type": "Matrix",
 										"columnUnits": [
-											"dollar"
+											"dollar",
+											null
 										],
 										"columnFormats": [
-											"10.2f"
+											"10.2f",
+											null
 										],
 										"CellInputs": {
 											"0_0": "0",
@@ -5403,7 +5406,8 @@
 										"Formula": {
 											"Formula": "savings[1:10*12]"
 										},
-										"showInput": "y"
+										"showInput": "y",
+										"format": "12.2f"
 									},
 									{
 										"name": "Overvlew",
@@ -5600,7 +5604,18 @@
 										"isOutput": "y",
 										"Type": "Matrix",
 										"columnUnits": [
-											"Fraction"
+											"Fraction",
+											null,
+											null,
+											null,
+											null
+										],
+										"columnFormats": [
+											null,
+											null,
+											null,
+											null,
+											null
 										],
 										"CellInputs": {
 											"0_0": "{row} + {col} / 10",
@@ -5682,7 +5697,18 @@
 										"isOutput": "y",
 										"Type": "Matrix",
 										"columnUnits": [
-											"Fraction"
+											"Fraction",
+											null,
+											null,
+											null,
+											null
+										],
+										"columnFormats": [
+											null,
+											null,
+											null,
+											null,
+											null
 										],
 										"CellInputs": {
 											"0_0": "{if {gt {row}, {col}},\n  1,\n  matrix[ {row}, {col} ]\n}\n' select 1 if row number is greater than column number, otherwise the corresponding value from the matrix object is used.\n\nNote the use of the single quote to append a comment to the end of a formula.\n"
@@ -5733,7 +5759,14 @@
 								"isOutput": "y",
 								"Type": "Matrix",
 								"columnUnits": [
-									"Fraction"
+									"Fraction",
+									null,
+									null
+								],
+								"columnFormats": [
+									null,
+									null,
+									null
 								],
 								"CellInputs": {
 									"0_0": "{row} * {col} ",
@@ -5842,6 +5875,78 @@
 										"Type": "Expression",
 										"Formula": {
 											"Formula": ""
+										}
+									}
+								]
+							},
+							{
+								"name": "ColumnUnits",
+								"Notes": "Columns can have different units.",
+								"DiagramX": 60,
+								"DiagramY": 110,
+								"HideInfo": "n",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "CircleAndSphere",
+										"Notes": "<h4>Matrix Column Units</h4>In some rare circumstances, it might be useful to have different conversion units for different columns in a matrix.\n\nIn this example the first column is just a radius in metres equal to the row number.\n\nThe second column is the area of a circle, calculated from the radius immediately to the left of each cell.\n\nThe third column is the volume of a sphere, using the radius from two columns to the left.\n\nYou set the unit for a column by selecting the column header cell and then tapping on the unit to the left in the line above the table. It is best to do this before you set the formula for the column or you will get an error, but if you forget, just change it to the appropriate unit type.\n\nIf you append a string to the header formula, the string will become the name of the column and can be referenced in other formulas.",
+										"DiagramX": -20,
+										"DiagramY": -50,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Matrix",
+										"columnUnits": [
+											"Fraction",
+											"m",
+											"m^2",
+											"m^3"
+										],
+										"columnFormats": [
+											null,
+											"8.0f",
+											"10.2f",
+											"10.2f"
+										],
+										"CellInputs": {
+											"0_0": "0",
+											"0_1": "{row}* 1 m'radius",
+											"0_2": "{pi}*{cell 0, -1}^2'Circle",
+											"0_3": "(4/3)*{pi}*{cell 0, -2}^3'Sphere"
+										},
+										"rowCount": "4",
+										"columnCount": "3"
+									},
+									{
+										"name": "circle",
+										"Notes": "Here an expression references the <b>circle</b> column of the matrix.",
+										"DiagramX": -20,
+										"DiagramY": -20,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "CircleAndSphere.circle"
+										}
+									},
+									{
+										"name": "formulaList",
+										"Notes": "This expression demonstrates the use of both the <b>{parent}</b> function and  the model's <b>formulae</b> parameter.\n\nThe <b>{parent}</b> function returns the parent model of the tool the formula belongs to. In this case that would be the <b>ColumnUnits</b> model.\n\nThe <b>formulae</b> parameter returns a html string listing all the formulae in the model along with whatever inputs they use and what references them.",
+										"DiagramX": -20,
+										"DiagramY": 15,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{parent}.formulae"
 										}
 									}
 								]
