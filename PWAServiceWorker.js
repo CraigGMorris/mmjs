@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2025.08.23";
+const VERSION = "2025.08.24";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
@@ -10,6 +10,7 @@ const APP_STATIC_RESOURCES = [
 	"PWAManifest.json",
 	"index.js",
 	"minion.svg",
+	"minion2.svg",
 	"mmsite.css",
 	"run.html",
 	"macapp.html",

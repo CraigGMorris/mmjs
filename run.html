@@ -29,12 +29,114 @@
       visibility: hidden;
 		}
 
+    /* Loading View Styles */
+    .loading-view {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #eeffee;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+
+    .loading-view__logo {
+      margin-bottom: 20px;
+    }
+
+    .loading-view__subtitle {
+      font-size: 16px;
+      margin-bottom: 40px;
+      color: #222222;
+    }
+
+    .loading-view__progress-container {
+      width: 400px;
+      height: 20px;
+      background-color: #114411;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .loading-view__progress-bar {
+      height: 100%;
+      background-color: #4CAF50;
+      transition: width 0.3s ease-in-out;
+      border-radius: 10px;
+    }
+
+    .loading-view__progress-text {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #4CAF50;
+      font-weight: bold;
+    }
+
+    .loading-view__current-module {
+      font-size: 14px;
+      color: #114411;
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .loading-view__loading-dots {
+      margin-top: 20px;
+      font-size: 24px;
+      color: #4CAF50;
+    }
+
+    .loading-view__loading-dots::after {
+      content: '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏';
+      animation: loading-dots 1s infinite;
+      display: inline-block;
+    }
+
+    @keyframes loading-dots {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-240px); }
+    }
+
+    /* Responsive design for smaller screens */
+    @media (max-width: 600px) {
+      .loading-view__progress-container {
+        width: 300px;
+      }
+      
+      .loading-view__title {
+        font-size: 24px;
+      }
+      
+      .loading-view__subtitle {
+        font-size: 14px;
+      }
+    }
+
 	</style>
 
 </head>	
 
 <body>
 	<div id="root">Loading...please be patient, its a big program</div>
+
+	<div class="loading-view">
+		<div class="loading-view__logo">
+			<img src="./minion2.svg" alt="Math Minion Logo" style="width: 200px; height: 200px;">
+		</div>
+		<p class="loading-view__subtitle">Loading modules...</p>
+		<div class="loading-view__progress-container">
+			<div class="loading-view__progress-bar" style="width: 0%"></div>
+		</div>
+		<div class="loading-view__progress-text">0%</div>
+		<div class="loading-view__current-module">Initializing...</div>
+		<div class="loading-view__loading-dots"></div>
+	</div>
 	<div id="update">
 		A new version is available. Click <a id="reload">here</a> to reload.
 	</div>
@@ -52,6 +154,68 @@
 	<script type="module" src="./index.js"></script>
 	<script>
 		let newWorker;
+		let moduleLoadingWorker;
+		
+		// Progress update function for loading view
+		function updateLoadingProgress(progress, currentModule) {
+			if (currentModule === '__All_modules_loaded__') {
+				hideLoadingView();
+				return;
+			}
+			const progressBar = document.querySelector('.loading-view__progress-bar');
+			const progressText = document.querySelector('.loading-view__progress-text');
+			const currentModuleText = document.querySelector('.loading-view__current-module');
+			
+			if (progressBar) progressBar.style.width = progress + '%';
+			if (progressText) progressText.textContent = Math.round(progress) + '%';
+			if (currentModuleText) currentModuleText.textContent = currentModule;
+		}
+		
+		// Function to hide loading view when complete
+		function hideLoadingView() {
+			const loadingView = document.querySelector('.loading-view');
+			if (loadingView) {
+				loadingView.style.display = 'none';
+			}
+		}
+		
+		// Start module loading immediately
+		function startModuleLoading() {
+			if (window.Worker) {
+				// console.log('Starting module loading...');
+				moduleLoadingWorker = new Worker("./mmworker/MMCommandWorker.js", { type: 'module' });
+				
+				moduleLoadingWorker.onmessage = (e) => {
+					const data = e.data;
+					
+					// Handle progress updates
+					if (data.verb === 'progress') {
+						// console.log('Progress update:', data.results);
+						updateLoadingProgress(data.results.progress, data.results.currentModule);
+					}
+					
+					// Handle ready signal
+					if (data.verb === 'ready') {
+						// console.log('Worker is ready');
+						// Don't hide loading view yet - wait for React app to be ready
+						// Signal that modules are loaded and React can proceed
+						window.modulesLoaded = true;
+					}
+					
+					// Handle error signal
+					if (data.verb === 'error') {
+						console.error('Worker error:', data.results);
+						hideLoadingView();
+					}
+				};
+			} else {
+				console.error('No worker support');
+			}
+		}
+				
+		// Start loading modules when the page loads
+		document.addEventListener('DOMContentLoaded', startModuleLoading);
+		
 		// The click event on the pop up notification
 		const reloadBtn = document.getElementById('reload');
 		if (reloadBtn) {
