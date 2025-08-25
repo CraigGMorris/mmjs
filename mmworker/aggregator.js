@@ -33,8 +33,8 @@ export async function setupImports() {
   
   // Function to update progress
   const updateProgress = async (moduleName) => {
-    loadedModules++;
     const progress = Math.round((loadedModules / totalModules) * 100);
+    loadedModules++;
     postMessage({
       verb: 'progress',
       results: {
@@ -53,6 +53,7 @@ export async function setupImports() {
   
   // coolprop.mjs
   // 1. Fetch and compile the WebAssembly binary manually
+  await updateProgress('CoolProp Module');
   const response = await fetch('coolprop.wasm');
   const wasmBytes = await response.arrayBuffer();
   const wasmModule = await WebAssembly.compile(wasmBytes);
@@ -65,10 +66,9 @@ export async function setupImports() {
 
   // 4. Instantiate using the global self.Module
   self.Module = await CoolPropModule(self.Module);
-  await updateProgress('CoolProp Module');
 
- 
   // MMCommandProcessor.js
+  await updateProgress('Command Processor');
   const [
     { MMCommandProcessor, MMCommand, MMCommandMessage, MMPropertyType, MMObject, MMParent }
   ] = await Promise.all([
@@ -82,9 +82,9 @@ export async function setupImports() {
   self.MMPropertyType = MMPropertyType;
   self.MMObject = MMObject;
   self.MMParent = MMParent;
-  await updateProgress('Command Processor');
 
   // MMSession.js
+  await updateProgress('Session Manager');
   const [
     { MMSession, MMPoint, MMIndexedDBStorage, MMToolTypes }
   ] = await Promise.all([
@@ -96,9 +96,9 @@ export async function setupImports() {
   self.MMPoint = MMPoint;
   self.MMIndexedDBStorage = MMIndexedDBStorage;
   self.MMToolTypes = MMToolTypes;
-  await updateProgress('Session Manager');
 
   // MMReport.js
+  await updateProgress('Report System');
   const [
     { MMReport }
   ] = await Promise.all([
@@ -107,9 +107,9 @@ export async function setupImports() {
 
   // Attach report to global scope
   self.MMReport = MMReport;
-  await updateProgress('Report System');
 
   // mmunits/MMUnitSystem.js
+  await updateProgress('Unit System');
   const [
     { MMUnitSystem, MMUnitDimensionType, MMUnit, MMUnitSet, MMUnitsContainer, MMUnitSetsContainer }
   ] = await Promise.all([
@@ -123,9 +123,9 @@ export async function setupImports() {
   self.MMUnitSet = MMUnitSet;
   self.MMUnitsContainer = MMUnitsContainer;
   self.MMUnitSetsContainer = MMUnitSetsContainer;
-  await updateProgress('Unit System');
 
   // MMMath.js
+  await updateProgress('Math Engine');
   const [
     { MMMath }
   ] = await Promise.all([
@@ -134,9 +134,9 @@ export async function setupImports() {
 
   // Attach math to global scope
   self.MMMath = MMMath;
-  await updateProgress('Math Engine');
 
   // MMValue.js
+  await updateProgress('Value System');
   const [
     { MMValue }
   ] = await Promise.all([
@@ -145,9 +145,9 @@ export async function setupImports() {
 
   // Attach MMValue to global scope
   self.MMValue = MMValue;
-  await updateProgress('Value System');
 
   // MMNumberValue.js
+  await updateProgress('Number Values');
   const [
     { MMNumberValue, MMDyadicUnitAction }
   ] = await Promise.all([
@@ -157,9 +157,9 @@ export async function setupImports() {
   // Attach number value to global scope
   self.MMNumberValue = MMNumberValue;
   self.MMDyadicUnitAction = MMDyadicUnitAction;
-  await updateProgress('Number Values');
 
   // MMStringValue.js
+  await updateProgress('String Values');
   const [
     { MMStringValue }
   ] = await Promise.all([
@@ -168,9 +168,9 @@ export async function setupImports() {
 
   // Attach string value to global scope
   self.MMStringValue = MMStringValue;
-  await updateProgress('String Values');
 
   // MMTableValue.js
+  await updateProgress('Table Values');
   const [
     { MMTableValue, MMTableValueColumn }
   ] = await Promise.all([
@@ -180,9 +180,9 @@ export async function setupImports() {
   // Attach table value to global scope
   self.MMTableValue = MMTableValue;
   self.MMTableValueColumn = MMTableValueColumn;
-  await updateProgress('Table Values');
 
   // MMToolValue.js
+  await updateProgress('Tool Values');
   const [
     { MMToolValue }
   ] = await Promise.all([
@@ -191,9 +191,9 @@ export async function setupImports() {
 
   // Attach tool value to global scope
   self.MMToolValue = MMToolValue;
-  await updateProgress('Tool Values');
 
   // MMTool.js
+  await updateProgress('Tool System');
   const [
     { MMTool }
   ] = await Promise.all([
@@ -202,9 +202,9 @@ export async function setupImports() {
 
   // Attach tool to global scope
   self.MMTool = MMTool;
-  await updateProgress('Tool System');
 
   // MMMatrix.js
+  await updateProgress('Matrix System');
   const [
     { MMMatrix }
   ] = await Promise.all([
@@ -213,9 +213,9 @@ export async function setupImports() {
 
   // Attach matrix to global scope
   self.MMMatrix = MMMatrix;
-  await updateProgress('Matrix System');
 
   // MMModel.js
+  await updateProgress('Model System');
   const [
     { MMModel }
   ] = await Promise.all([
@@ -224,9 +224,9 @@ export async function setupImports() {
 
   // Attach model to global scope
   self.MMModel = MMModel;
-  await updateProgress('Model System');
 
   // MMExpression.js
+  await updateProgress('Expression Engine');
   const [
     { MMExpression }
   ] = await Promise.all([
@@ -235,9 +235,9 @@ export async function setupImports() {
 
   // Attach expression to global scope
   self.MMExpression = MMExpression;
-  await updateProgress('Expression Engine');
 
   // MMFormula.js
+  await updateProgress('Formula Engine');
   const [
     { MMFormula, MMFunctionResult, MMDivideOperator, MMMultiplyOperator }
   ] = await Promise.all([
@@ -249,9 +249,9 @@ export async function setupImports() {
   self.MMFunctionResult = MMFunctionResult;
   self.MMDivideOperator = MMDivideOperator;
   self.MMMultiplyOperator = MMMultiplyOperator;
-  await updateProgress('Formula Engine');
 
   // MMDataTable.js
+  await updateProgress('Data Tables');
   const [
     { MMDataTable }
   ] = await Promise.all([
@@ -260,9 +260,9 @@ export async function setupImports() {
 
   // Attach data table to global scope
   self.MMDataTable = MMDataTable;
-  await updateProgress('Data Tables');
 
   // MMSolver.js
+  await updateProgress('Solver System');
   const [
     { MMSolver }
   ] = await Promise.all([
@@ -271,9 +271,9 @@ export async function setupImports() {
 
   // Attach solver to global scope
   self.MMSolver = MMSolver;
-  await updateProgress('Solver System');
 
   // MMOde.js
+  await updateProgress('ODE Solver');
   const [
     { MMOde }
   ] = await Promise.all([
@@ -282,9 +282,9 @@ export async function setupImports() {
 
   // Attach ODE to global scope
   self.MMOde = MMOde;
-  await updateProgress('ODE Solver');
 
   // MMIterator.js
+  await updateProgress('Iterator System');
   const [
     { MMIterator }
   ] = await Promise.all([
@@ -293,9 +293,9 @@ export async function setupImports() {
 
   // Attach iterator to global scope
   self.MMIterator = MMIterator;
-  await updateProgress('Iterator System');
 
   // MMOptimizer.js
+  await updateProgress('Optimizer');
   const [
     { MMOptimizer }
   ] = await Promise.all([
@@ -304,9 +304,9 @@ export async function setupImports() {
 
   // Attach optimizer to global scope
   self.MMOptimizer = MMOptimizer;
-  await updateProgress('Optimizer');
 
   // MMGraph.js
+  await updateProgress('Graphing System');
   const [
     { MMGraph }
   ] = await Promise.all([
@@ -315,9 +315,9 @@ export async function setupImports() {
 
   // Attach graph to global scope
   self.MMGraph = MMGraph;
-  await updateProgress('Graphing System');
 
   // MMHtmlPage.js
+  await updateProgress('HTML Page Processor');
   const [
     { MMHtmlPage, MMHtmlPageProcessor }
   ] = await Promise.all([
@@ -327,9 +327,9 @@ export async function setupImports() {
   // Attach HTML page to global scope
   self.MMHtmlPage = MMHtmlPage;
   self.MMHtmlPageProcessor = MMHtmlPageProcessor;
-  await updateProgress('HTML Page Processor');
 
   // MMButton.js
+  await updateProgress('Button System');
   const [
     { MMButton }
   ] = await Promise.all([
@@ -338,9 +338,9 @@ export async function setupImports() {
 
   // Attach button to global scope
   self.MMButton = MMButton;
-  await updateProgress('Button System');
 
   // MMMenu.js
+  await updateProgress('Menu System');
   const [
     { MMMenu }
   ] = await Promise.all([
@@ -349,9 +349,9 @@ export async function setupImports() {
 
   // Attach menu to global scope
   self.MMMenu = MMMenu;
-  await updateProgress('Menu System');
 
   // MMJsonValue.js
+  await updateProgress('JSON Value System');
   const [
     { MMJsonValue }
   ] = await Promise.all([
@@ -360,8 +360,8 @@ export async function setupImports() {
 
   // Attach JSON value to global scope
   self.MMJsonValue = MMJsonValue;
-  await updateProgress('JSON Value System');
 
+  await updateProgress('Flash Tool');
   // MMFlash.js - must be loaded after Module is available
   const [
     { MMFlash, MMFlashPhaseValue }
@@ -372,10 +372,6 @@ export async function setupImports() {
   // Attach flash to global scope
   self.MMFlash = MMFlash;
   self.MMFlashPhaseValue = MMFlashPhaseValue;
-  await updateProgress('Flash Tool');
-
-  
-  
   await updateProgress('__All_modules_loaded__');
 
   console.log('All modules loaded and attached to global scope');
