@@ -30,8 +30,7 @@
 				<p>
 					The optimizer manipulates one or more output values to try and obtain the smallest
 					possible scalar value for a single function that depends, either directly or
-					indirectly, on those outputs.  The algorithm used is the Powell method if there are multiple
-					X values and the Brent method if there is only one.
+					indirectly, on those outputs.  The algorithm used is the Powell method.
 				</p>
 				<p>
 					You must designate how many outputs the optimizer should produce.  These will initially
@@ -40,12 +39,6 @@
 				<p>
 					These values will be available as parameters 1, 2 etc. and must be used to calculate
 					the value determined by the formula in the f(x) field.
-				</p>
-				<p>
-					If there is only one X value, then the output value will always be in the range -1 to 1.
-					In most cases you will need to scale this to an appropriately for the problem. If there 
-					are multiple X values, then the output values can exceed the -1 to 1 range, but it is still good
-					practice to scale the outputs so the solution values will be relatively normalized.
 				</p>
 				<p>
 					While the entire calculation could be contained in a single formula, more typically
