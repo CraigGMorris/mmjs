@@ -670,7 +670,10 @@ export class Diagram extends React.Component {
 
 			const d = toolInfo.position;
 			for (const requestorName of toolInfo.requestors) {
-				const o = tools[requestorName].position;
+				const o = tools?.[requestorName]?.position;
+				if (!o) {
+					continue;
+				}
 
 				let ox, oy, dx, dy, deltay;
 				let cpox, cpoy, cpdx, cpdy;
