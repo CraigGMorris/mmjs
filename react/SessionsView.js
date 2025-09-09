@@ -568,6 +568,8 @@ export class SessionsView extends React.Component {
 								// strip off the root folder
 								const displayPath = path.replace(rootFolder, '');
 								showPath = false;
+								let selectedClass = (currentPath.startsWith(path)) ? ' entry--selected' : '';
+
 								let cmp = e(
 									'div', {
 										className: 'sessions__entry',
@@ -575,7 +577,7 @@ export class SessionsView extends React.Component {
 									},
 									e(
 										'div', {
-											className: 'sessions__folder-name',
+											className: 'sessions__folder-name' + selectedClass,
 											value: path,
 											onClick: () => {
 												this.props.actions.pushView('sessions', path, {
