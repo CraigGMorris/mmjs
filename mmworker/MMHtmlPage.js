@@ -391,6 +391,18 @@ export class MMHtmlPageProcessor {
 						if (!mmResult) {
 							reqResult = '';
 						}
+						else if (mmResult instanceof MMTableValue) {
+							reqResult = {};
+							const rowCount = mmResult.rowCount;
+							for (const column of mmResult.columns) {
+								const columnValues = [];
+								for (let r = 0; r < rowCount; r++) {
+									const value = column.value.valueAtCount(r);
+									columnValues.push(value);
+								}
+								reqResult[column.name] = columnValues;
+							}
+						}
 						else if (mmResult instanceof MMValue) {
 							const v = mmResult.values;
 							if (mmResult.valueCount === 1) {
