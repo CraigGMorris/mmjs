@@ -663,9 +663,13 @@ export class MMTableValue extends MMValue {
 			}
 			for (let i = 0; i < csvColumnCount; i++) {
 				let columnName = columnNames[i];
-				columnName = columnName.substring(1,columnName.length -1);  // strip off the quotes
+				if (columnName.startsWith('"')) {
+					columnName = columnName.substring(1,columnName.length -1);  // strip off the quotes
+				}
 				let unitName = unitNames[i];
-				unitName = unitName.substring(1,unitName.length -1);  // strip off the quotes
+				if (unitName.startsWith('"')) {
+					unitName = unitName.substring(1,unitName.length -1);  // strip off the quotes
+				}
 				if (!uniqueNames.has(columnName)) {
 					const column = new MMTableValueColumn({
 						name: columnName,
