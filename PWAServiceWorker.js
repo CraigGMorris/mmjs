@@ -25,7 +25,7 @@ const APP_STATIC_RESOURCES = [
 	"examples/Taylor_Series_Expansion.txt",
 	"examples/Triangulate.txt",
 	"examples/Turbine.txt",
-	"examples/examples.txt",
+	"examples/examples.json",
 	"examples/htmlpage.css",
 	"examples/indexof.txt",
 	"examples/number_commas.txt",
