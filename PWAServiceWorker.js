@@ -16,7 +16,7 @@ const APP_STATIC_RESOURCES = [
 	"macapp.html",
 	"LICENSE.txt",
 	"apple-touch-icon.png",
-	"examples/Financial.txt",
+	"examples/Financial.json",
 	"examples/Foot_Inch_Calculator.txt",
 	"examples/FormatTime.txt",
 	"examples/FrictionFactor.txt",
