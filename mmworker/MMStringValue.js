@@ -83,9 +83,9 @@ export class MMStringValue extends MMValue {
 		results.push(header);
 		let v = this._values;
 		let columnCount = this.columnCount;
-		for(let r = 0; r < this.rowCount; r++) {
-			for(let c = 0; c < columnCount; c++) {
-				results.push(`${r} ${c} ${v[r*columnCount + c]}`)
+		for (let r = 0; r < this.rowCount; r++) {
+			for (let c = 0; c < columnCount; c++) {
+				results.push(`${r} ${c} ${v[r * columnCount + c]}`)
 			}
 		}
 	}
@@ -134,7 +134,7 @@ export class MMStringValue extends MMValue {
 	 */
 	valueAtRowColumn(row, column) {
 		this.checkBounds(row, column);
-		return this._values[(row-1) * this.columnCount + column - 1];
+		return this._values[(row - 1) * this.columnCount + column - 1];
 	}
 
 	/**
@@ -178,7 +178,7 @@ export class MMStringValue extends MMValue {
 	 */
 	stringForRowColumnUnit(row, column/*, outUnit */) {
 		this.checkBounds(row, column);
-		return this._values[(row - 1)*this.columnCount + column - 1];
+		return this._values[(row - 1) * this.columnCount + column - 1];
 	}
 
 	/**
@@ -191,7 +191,7 @@ export class MMStringValue extends MMValue {
 	 */
 	stringForRowColumnWithUnit(row, column/*, outUnit */) {
 		this.checkBounds(row, column);
-		return this._values[(row - 1)*this.columnCount + column - 1];
+		return this._values[(row - 1) * this.columnCount + column - 1];
 	}
 
 	/**
@@ -201,7 +201,7 @@ export class MMStringValue extends MMValue {
 	 * @returns {MMValue}
 	 */
 	valueForColumnNumber(number) {
-		if (this.columnCount == 1 ) {
+		if (this.columnCount == 1) {
 			return this;
 		}
 
@@ -209,7 +209,7 @@ export class MMStringValue extends MMValue {
 		for (let r = 1; r <= this.rowCount; r++) {
 			rv.setValue(this.valueAtRowColumn(r, number), r, 1);
 		}
-	
+
 		return rv;
 	}
 
@@ -294,7 +294,7 @@ export class MMStringValue extends MMValue {
 		const thisValues = this._values;
 		for (let i = 0; i < rowCount; i++) {
 			for (let j = 0; j < columnCount; j++) {
-				rvValues[j*rowCount+i] = thisValues[i*columnCount+j];
+				rvValues[j * rowCount + i] = thisValues[i * columnCount + j];
 			}
 		}
 		return rv;
@@ -322,15 +322,15 @@ export class MMStringValue extends MMValue {
 		let columnCount = calculatedValue.columnCount;
 		let valueRowCount = value.rowCount;
 		let valueColumnCount = value.columnCount;
-		for(let i = 0; i < rowCount; i++) {
+		for (let i = 0; i < rowCount; i++) {
 			let rMine = i % this.rowCount;
 			let rValue = i % valueRowCount;
-			for(let j = 0; j < columnCount; j++) {
+			for (let j = 0; j < columnCount; j++) {
 				let cMine = j % this.columnCount;
 				let cValue = j % valueColumnCount;
-				v1[i*columnCount+j] = func(
-					this._values[rMine*this.columnCount + cMine],
-					v2[rValue*valueColumnCount + cValue]
+				v1[i * columnCount + j] = func(
+					this._values[rMine * this.columnCount + cMine],
+					v2[rValue * valueColumnCount + cValue]
 				);
 			}
 		}
@@ -357,8 +357,8 @@ export class MMStringValue extends MMValue {
 	 */
 	multiply(value) {
 		const rv = this.processStringDyadic(value, (a, b) => {
-			let s = a;
-			for (let i = 1; i < b; i++) {
+			let s = "";
+			for (let i = 0; i < b; i++) {
 				s += a
 			}
 			return s;
@@ -441,21 +441,21 @@ export class MMStringValue extends MMValue {
 				return MMStringValue.scalarValue(rows.join(rowJoin));
 			}
 		}
-		else {	
+		else {
 			let joinValue = join1._values[0];
 			joinValue = joinValue.replace(/\\n/, '\n');
 			joinValue = joinValue.replace(/\\t/, '\t');
-			if ( myValueCount && join1.valueCount ) {
-				if ( myColumnCount == 1 || myRowCount == 1 ) { 
+			if (myValueCount && join1.valueCount) {
+				if (myColumnCount == 1 || myRowCount == 1) {
 					return MMStringValue.scalarValue(this._values.join(joinValue));
 				}
 				else {
 					// matrix - return array with columns joined into one column
 					const rv = new MMStringValue(myRowCount, 1);
 					const rvValues = rv._values;
-					for (let i = 0; i < myRowCount; i++ ) {
+					for (let i = 0; i < myRowCount; i++) {
 						const columns = [];
-						for (let j = 0; j < myColumnCount; j++ ) {
+						for (let j = 0; j < myColumnCount; j++) {
 							columns.push(myValues[i * myColumnCount + j]);
 						}
 						rvValues[i] = columns.join(joinValue);
@@ -486,10 +486,10 @@ export class MMStringValue extends MMValue {
 					const columnCount = rowArray[0].split(columnSep).length;
 					const rv = new MMStringValue(rowCount, columnCount);
 					const rvValues = rv._values;
-					for(let row = 0; row < rowCount; row++) {
+					for (let row = 0; row < rowCount; row++) {
 						const columnArray = rowArray[row].split(columnSep);
 						const copyCount = columnArray.length;  // incase it is different from columnCount
-						for(let column = 0; column < columnCount && column < copyCount; column++) {
+						for (let column = 0; column < columnCount && column < copyCount; column++) {
 							rvValues[row * columnCount + column] = columnArray[column];
 						}
 						for (let column = copyCount + 1; column < columnCount; column++) {
@@ -524,7 +524,7 @@ export class MMStringValue extends MMValue {
 						for (let row = 0; row < myValueCount; row++) {
 							const columnArray = myValues[row].split(separator);
 							const copyCount = columnArray.length;
-							for(let column = 0; column < columnCount && column < copyCount; column++) {
+							for (let column = 0; column < columnCount && column < copyCount; column++) {
 								rvValues[row * columnCount + column] = columnArray[column];
 							}
 							for (let column = copyCount + 1; column < columnCount; column++) {
@@ -544,7 +544,7 @@ export class MMStringValue extends MMValue {
 				if (rowCount) {
 					const rv = new MMStringValue(rowCount, 1);
 					const rvValues = rv._values;
-					for(let i = 0; i < rowCount; i++) {
+					for (let i = 0; i < rowCount; i++) {
 						rvValues[i] = s[i];
 					}
 					return rv;
@@ -566,7 +566,7 @@ export class MMStringValue extends MMValue {
 		const myValues = this._values;
 		const matchRowCount = match.rowCount;
 		const matchColumnCount = match.columnCount;
-		if ( matchRowCount !== replace.rowCount || matchColumnCount !== replace.columnCount ) {
+		if (matchRowCount !== replace.rowCount || matchColumnCount !== replace.columnCount) {
 			return null;
 		}
 		const myRowCount = this.rowCount;
@@ -591,7 +591,7 @@ export class MMStringValue extends MMValue {
 			}
 		}
 
-	return rv;
+		return rv;
 	}
 
 	/**
@@ -624,12 +624,12 @@ export class MMStringValue extends MMValue {
 					start = 0;
 				}
 			}
-			
-			if (start >= s.length ) {
+
+			if (start >= s.length) {
 				s = '';
 			}
 			else {
-				if ( !lengthCount )
+				if (!lengthCount)
 					sLength -= start;
 				else {
 					const l = Math.floor(vLength[i % lengthCount] + 0.01);
@@ -646,9 +646,9 @@ export class MMStringValue extends MMValue {
 
 			rvValues[i] = s;
 		}
-	
+
 		return rv;
-}
+	}
 
 	/**
 	 * @method find
@@ -661,7 +661,7 @@ export class MMStringValue extends MMValue {
 		const rxValues = regex._values;
 		const rv = new MMNumberValue(myValueCount, 2);
 		const rvValues = rv._values;
-		for (let i = 0; i < myValueCount; i++ ) {
+		for (let i = 0; i < myValueCount; i++) {
 			const m = myValues[i].match(rxValues[i % rxCount]);
 			if (m) {
 				rvValues[i * 2] = m.index + 1;
