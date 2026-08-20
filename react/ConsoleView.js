@@ -71,9 +71,10 @@ class openAI {
 	constructor() {
 		this.previousResponseId = null;
 		this.promptTemplate = ``;
-		this.apiKey = '';
-		this.model = 'gpt-5-mini';
-		// this.model = 'o4-mini';
+//		this.apiKey = '';
+// DANGEROUS - for testing only remove for production
+		this.apiKey = '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';
+		this.model = 'openai/gpt-5.6-terra';
 		this.retryCount = 0;
 		this.maxRetries = 2;
 		this.resetCount = 0;
@@ -81,12 +82,6 @@ class openAI {
 }
 
 const openAIValues = new openAI();
-
-const claudeValues = {
-	previousResponseId: null,
-	promptTemplate: ``,
-	apiKey: '',
-};
 
 let inputTarget = 'OpenAI';
 
@@ -193,28 +188,6 @@ export function ConsoleView(props) {
 				'/ aikey openai',
 				(results) => {
 					openAIValues.apiKey = results?.[0]?.results;
-			});
-		}
-	}
-	else 	if (target === 'Claude') {
-		if (!openAIValues.promptTemplate) {
-			fetch('../ai/openai/APIcontext.txt').then(response => {
-				if (!response.ok) {
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
-				return response.text();
-			})
-			.then(text => {
-				claudeValues.promptTemplate = text;
-			}).catch(error => {
-				pushOutput(t('react:consoleCouldNotFetchSystemPrompt', { error:error }));
-			});
-		}
-		if (!claudeValues.apiKey) {
-			props.actions.doCommand(
-				'/ aikey claude',
-				(results) => {
-					claudeValues.apiKey = results?.[0]?.results;
 			});
 		}
 	}
@@ -370,13 +343,17 @@ export function ConsoleView(props) {
 			// const mock = await import("../ai/openai/mockAssistant.js");
 			// return mock.runAssistant(promptText);
 
+			// const url = "https://api.openai.com/v1/responses";
+			const url = "https://openrouter.ai/api/v1/responses";
+
 			const headers = {
-				"Authorization": `Bearer ${openAIValues.apiKey}`,
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
+				"Authorization": `Bearer ${openAIValues.apiKey}`
 			};
 	
 			const body = {
 				model: openAIValues.model,
+				temperature: 0.2,
 				input: []
 			};
 		
@@ -396,10 +373,9 @@ export function ConsoleView(props) {
 			const last = openAIValues.lastPromptTime || 0;
 			const elapsed = now - last;
 			if(isMounted.current) { setIsWaiting(true); }
-			const response = await fetch("https://api.openai.com/v1/responses", {
+			const response = await fetch(url, {
 				method: "POST",
 				headers,
-				temperature: 0.2,
 				body: JSON.stringify(body)
 			});
 			if(isMounted.current) { setIsWaiting(false); }
@@ -623,55 +599,6 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 		}
 	};
 
-	// Abandoned Anthropic implementation for now. Just keeping some of it here for reference.
-	// const claudeChat = {
-	// 	async sendPrompt(promptText) {
-	// 		// const mock = await import("../ai/anthropic/mockAssistant.js");
-	// 		// return mock.runAssistant(promptText);
-	
-	// 		const headers = {
-	// 			"x-api-key": `${claudeValues.apiKey}`,
-	// 			"Content-Type": "application/json",
-	// 			"anthropic-version": "2023-06-01",
-	// 			"anthropic-dangerous-direct-browser-access": "true"
-	// 		};
-	
-	// 		const body = {
-	// 			model: "claude-3-7-sonnet-20250219",
-	// 			max_tokens: 4000
-	// 		};
-		
-	// 		if (!claudeValues.conversationHistory) {
-	// 			// First call → initialize conversation history with system prompt and user prompt
-	// 			claudeValues.conversationHistory = [
-	// 				{ role: "user", content: promptText }
-	// 			];
-				
-	// 			// Add system prompt as a separate field, not part of messages array
-	// 			body.system = claudeValues.promptTemplate;
-	// 		} else {
-	// 			// Follow-up call → add new user message to existing conversation
-	// 			claudeValues.conversationHistory.push({ role: "user", content: promptText });
-	// 		}
-			
-	// 		// Always send the full conversation history
-	// 		body.messages = claudeValues.conversationHistory;
-	
-	// 		const response = await fetch("https://api.anthropic.com/v1/messages", {
-	// 			method: "POST",
-	// 			headers,
-	// 			body: JSON.stringify(body)
-	// 		});
-	
-	// 		if (response.status === 429) {
-	// 			const body = await response.text();
-	// 			console.error("❌ 429 Too Many Requests", body);
-	// 			updateOutput(`❌ ${body}`);
-	// 			return;
-	// 		}
-			
-	// 	
-
 	let commandAction, successCallBack, failCallBack;
 	switch(target) {
 		case 'Console':
@@ -695,16 +622,6 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 			break;
 		}
 		
-	// 	case 'Claude': {
-	// 		commandAction = claudeChat.action;
-	// 		successCallBack = (result) => {
-	// 			updateOutput(result);
-	// 		}
-	// 		failCallBack = (error) => {console.log(`Claude Fail`);}
-	// 	}
-	// 		break;	
-	// Have deleted the rest as it should be modelled on the OpenAI implementation above.	
-
 		default:
 			alert(t('react:consoleInvalidInputTarget'));
 			break;
