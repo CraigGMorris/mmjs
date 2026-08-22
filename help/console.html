@@ -12,7 +12,7 @@
 					structure: 'Program Structure',
 					view: 'Console Mode',
 					commands: 'Commands',
-					openai: 'OpenAI Mode',
+					aimode: 'AI Mode',
 				});
 			};			
 		</script>	
@@ -32,8 +32,11 @@
 							Console: This is a text-based interface for interacting with Math Minion by means of the commands the Math Minion user interface uses
 							communicate with the Math Minion calculation engine.  Most users will never use this mode.
 						</li>
-						<li>OpenAI: This is an experimental chat interface using OpenAI's API. It can be asked to create models to solve problems or do
-							things like annotating tools. It's ability to succeed at the requested task is rather variable.
+						<li>AI: This is an experimental chat interface using the OpenAI completion API.  By
+							default the Open Router service is used, but other providers support this API including of course OpenAI.
+							The AI can be asked to create models to solve problems or do
+							things like annotating tools. Its ability to succeed at the requested task varies by model, but higher
+							mid tier ones do a reasonable job. The default model is the latest Gemini Flash model.
 						</li>
 					</ul>
 				</p>
@@ -113,7 +116,7 @@
 						displayed.
 					</p>
 					<p>
-						You can also looked at the <a href="../ai/openai/APIcontext.txt">instructions</a> for the AI assistant. They are a bit verbose, but contain detailed information. There are also specific instructions for less common tools:
+						You can also look at the <a href="../ai/openai/APIcontext.txt">instructions</a> for the AI assistant. They are a bit verbose, but contain detailed information. There are also specific instructions for less common tools:
 					</p>
 					<ul>
 						<li><a href="../ai/openai/info/button.yml">Button</a></li>
@@ -123,19 +126,37 @@
 					</ul>
 				</div>
 			</div>
-			<div id="openai" class="section">
-				<h3>OpenAI Mode</h3>
+			<div id="aimode" class="section">
+				<h3>AI Mode</h3>
 				<p>
-					NOTE: Using this feature will require having an OpenAI account and an OpenAI API key.
-					This can be obtained from <a href="https://platform.openai.com/api-keys">https://platform.openai.com/api-keys</a>,
-					but it is a paid service and will incur a cost. However you only need to add a few dollars to your account and
-					$10 will go a long way.
+					NOTE: Using this feature will require having an AI provider account and an API key. The default Open Router
+					provider allows access to a large number of different models with only a single account. API keys aren't free,
+					but you only need to add a few dollars to your account and $10 will go a long way depending on your model choice.
+				</p>
+				<p>
+					You can obtain an Open Router API key from <a href="https://openrouter.ai">https://openrouter.ai</a>. Once you have the key, you
+					will have to enter it into the console using the <b>aikey</b> command. Note this is using the Console view, not the AI view
+				</p>
+				<p class="formula">
+					/ aikey &lt;your api key&gt; [optional completion url]
+				</p>
+				<p>
+					The completion url is only needed if you are not using Open Router. If omited, it will default to https://openrouter.ai/api/v1/chat/completions.
+				</p>
+				<p>
+					To change the model, us the aimodel command:
+				</p>
+				<p class="formula">
+					/ aimodel &lt;model name&gt;
+				</p>
+				<p>
+					After changing the api key or the model, you may have to reload Math Minion to clear the AI context if you have already been using the AI chat.
 				</p>
 				<p>
 					How useful this is may be questionable, but it is a fun way to play with AI.
 				</p>
 				<p>
-					When in OpenAI mode, the instructions you enter are sent to OpenAI's API, which returns comments and usually commands.
+					When in AI mode, the instructions you enter are sent to the selected API, which returns comments and usually commands.
 					The commands are sent to the Math Minion engine for execution. Both the comments and commands are displayed in the
 					text area above.
 				</p>
@@ -144,12 +165,8 @@
 					with the solution it created, you can ask it to fix them, although it is often easier to just fix them yourself.
 				</p>
 				<p>
-					How well it works is variable and while it sometimes is surprisingly bright, other times it is rather dim. The same instructions
-					will often produce different results.
-				</p>
-				<p>
 					It can be a bit slow, so be patient. If it encounters an error and tries to fix it, the "thinking" indicator in the input field
-					may disappear, but either a "Done" or Failed message will appear in the text area when it is finished. If you want to abort it, just
+					may brieflydisappear, but either a "Done" or Failed message will appear in the text area when it is finished. If you want to abort it, just
 					refresh the browser. Refreshing will also clear the saved conversation and start fresh.
 				</p>
 				<p>
@@ -157,13 +174,11 @@
 					create and manipulate all Math Minion tools, with the exception of the HTML page and imported model tools.
 				</p>
 				<p>
-					Here are some examples along with comments on how well it worked as I write this. Again results vary.
+					Here are some examples. When I first implemented this over a year before these updates, performance was a
+					bit hit or miss, but the improvement in that time is remarkable.  All of my examples just simply worked now.
 				</p>
 				<p class="formula">
 					I need an Expression that is 200 elements long that toggles between 0 and 1
-				</p>
-				<p>
-					This usually works well.
 				</p>
 				<p class="formula">
 					Given equations:<br>
@@ -172,15 +187,9 @@
 					Exp(-x*y) +20*z+ (10*pi -3)/3 = 0<br>
 					Create a model that determines the values of x, y and z.
 				</p>
-				<p>
-					This worked correctly except it didn't create a model, but created the tools in the current model.
-				</p>
 				<p class="formula">
 					For angles 0 to 720 degrees in 10 degree increments, create a 3d plot with x being sin angles, y being cos angles and z
 					starting at 0 m and increasing 1 m for angle index. Add a second curve with z 20 m above the first.
-				</p>
-				<p>
-					This worked correctly.
 				</p>
 				<p class="formula">
 					Create a model to simulate a predator/prey relationship. Inputs should be:
@@ -192,10 +201,6 @@
 					Show both a table and graph of the results
 				</p>
 				<p>
-					This also usually works, but sometimes with a few errors that need to be fixed. This time it had an error that it
-					fixed itself, but ended up with the model embedded inside an outer one.
-				</p>
-				<p>
 					The instructions didn't say anything about duration, so it just took a reasonable guess. After it created the model,
 					I told it:
 				</p>
@@ -203,16 +208,14 @@
 					change the run time to 10 days and the recording period to 1 hour.
 				</p>
 				<p>
-					which it did correctly.
+					I had switched into the model before giving this instruction, so its attempt to move
+					into the model failed. I then queried the model and realized it was already in the correct model
+					and proceeded to issue the correct commands.
 				</p>
 				<p>
 					I have found doing things like asking it to examine a model and then add appropriate notes
 					to the tools often works pretty well as does things like asking it to arrange the diagram
 					icons into two columns or some such.
-				</p>
-				<p>
-					The bottom line is that it is fun to play with and might even be a time saver. The jury is still out,
-					but given the rapid improvements in AI, that isn't going to be the case for long.
 				</p>
 			</div>
 		</div>
