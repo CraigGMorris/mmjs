@@ -552,10 +552,13 @@ class MMFlash extends MMTool {
 			}
 		}
 
-		if (lcDescription === 'envelope') {
+		if (phase === 'envelope') {
 			const envelope = this.envelope();
 			if (envelope) {
 				this.addRequestor(requestor);
+				if (property) {
+					return envelope.valueForIndexRowColumn(MMNumberValue.scalarValue(0), MMStringValue.scalarValue(property));
+				}
 			}
 			return envelope;
 		}
