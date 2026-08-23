@@ -51,6 +51,8 @@ usageNote: |
 		Example:  .optimizer list
 	To get all information about a tool use the toolviewinfo verb
 		Example .optimizer toolviewinfo
+	⚠️ Important:
+	- Do not use a query for add or modify tools. It is only for obtaining information.
 
 # Errors
 
@@ -1118,6 +1120,97 @@ desc: >
 			value:
 				desc: Returns the matrix's calculated value in JSON format.
 				args: []
+
+	MMFlash:
+		extends: MMTool
+		typeName: Flash
+
+		desc: >
+			Performs flash and thermodynamic property calculations using CoolProp's HEOS backend.
+			Calculates bulk, vapour, and liquid phase equilibrium, transport, and thermodynamic properties for pure fluids and mixtures.
+
+		formulas:
+			thermoFormula:
+				desc: >
+					String formula specifying a comma-separated list of fluid components (e.g., `"Ethanol,Water"`).
+					Optional properties to calculate can be appended after a semicolon (e.g., `"Ethanol,Water;massx,viscosity"`).
+					An imposed phase can optionally be specified by appending `@` followed by the phase name.
+					Supported imposed phases: `supercritical`, `supercritical_liquid`, `supercritical_gas`, `liquid`, `gas`, `twophase`.
+			firstPropFormula:
+				desc: >
+					First intensive property formula. Must evaluate to temperature or pressure based on its unit conversion type.
+					For single-component thermo definitions, molar density can also be used.
+			secondPropFormula:
+				desc: >
+					Second intensive property formula. Inferred by conversion unit type: vapour fraction, temperature, pressure,
+					mole-based enthalpy, or mole-based entropy (must not be the same property type as `torp`).
+			flowFormula:
+				desc: >
+					Optional flow rate formula. Evaluates to molar flow or mass flow based on conversion unit type.
+					Calculates phase flows when the fluid is two-phase.
+			moleFracFormula:
+				desc: >
+					A single coloum array of component mole fractions matching the component count in the thermo definition.
+					Values are normalized automatically.
+			massFracFormula:
+				desc: >
+					A single coloum array of component mass fractions matching the component count in the thermo definition.
+					Values are normalized automatically.
+
+		parameters:
+			thermo: The thermo definition string (components and requested optional properties).
+			fluids: A column array of all available fluid names in CoolProp.
+			envelope: A table containing temperature and pressure columns defining the fluid's phase envelope.
+			phase.property: >
+				Phase and property values accessed via `someFlash.phase.property`, `someFlash.phase`, or `someFlash.property`.
+				If the phase is omitted, the bulk phase property is returned.
+				If only the phase is specified, a value containing all properties for that phase is returned.
+
+				Phase specifiers:
+				- `b`: bulk phase
+				- `v`: vapour phase
+				- `l`: liquid phase
+
+				Always-calculated properties:
+				- `q`: vapour fraction
+				- `t`: temperature
+				- `p`: pressure
+				- `f`: molar flow rate
+				- `h`: mole-based enthalpy
+				- `s`: mole-based entropy
+				- `dmolar`: mole-based density
+				- `mwt`: molecular weight
+				- `x`: mole fractions
+
+				Optional properties (available when included in the thermo definition string):
+				- `massf`: mass flow rate
+				- `massx`: mass fractions
+				- `hflow`: energy flow
+				- `cpmolar`: mole-based constant-pressure specific heat
+				- `cp0molar`: mole-based ideal-gas constant-pressure specific heat
+				- `cvmolar`: mole-based constant-volume specific heat
+				- `umolar`: mole-based internal energy
+				- `gmolar`: mole-based Gibbs energy
+				- `cpmass`: mass-based constant-pressure specific heat
+				- `cp0mass`: mass-based ideal-gas constant-pressure specific heat
+				- `cvmass`: mass-based constant-volume specific heat
+				- `dmass`: mass-based density
+				- `umass`: mass-based internal energy
+				- `gmass`: mass-based Gibbs energy
+				- `tmin`: minimum temperature limit
+				- `tmax`: maximum temperature limit
+				- `pmin`: minimum pressure limit
+				- `viscosity`: dynamic viscosity
+				- `conductivity`: thermal conductivity
+				- `surfacetension`: surface tension
+				- `prandtl`: Prandtl number
+
+		usageNote: >
+			- Property types for `torp`, `secondprop`, and `flow` are inferred automatically from their conversion unit types (e.g., `degC`, `kPa`, `kJ/mol`, `kg/s`).
+			- Use dot notation to extract phase-specific values in downstream formulas (e.g., `feed.v.x`, `feed.l.f`, `feed.p`).
+			- Available fluids can be queried from any flash tool using its `fluids` parameter (e.g., `myFlash.fluids`).
+			- Set string properties such as `thermo` using enclosing quotes:
+				`.myFlash.thermo set formula "Ethanol,Water;massx"`
 
 availableAiquery:
   note: >
