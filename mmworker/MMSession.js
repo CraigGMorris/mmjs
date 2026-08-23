@@ -244,8 +244,8 @@ export class MMSession extends MMParent {
 		this.savedLastPathId = '(lastPath)';
 		this.savedLastNewsId = '(lastNews)';
 		this.savedStorageVersionId = '(storageVersion)';
-		this.openAIKey = '(openAIKey)';
-		this.anthropicKey = '(anthropicKey)';
+		this.aiKey = '(aiKey)';
+		this.aiModel = '(aiModel)'
 		this.lastNews = '20250903';
 		this.newSession();
 		this.couchError = null;
@@ -774,6 +774,7 @@ export class MMSession extends MMParent {
 		verbs['remote'] = this.remoteDBCommand;
 		verbs['getmodelstack'] = this.getModelStackCommand;
 		verbs['aikey'] = this.aiKeyCommand;
+		verbs['aimodel'] = this.aiModelCommand;
 		verbs['aiquery'] = this.aiQueryCommand;
 		return verbs;
 	}
@@ -802,6 +803,7 @@ export class MMSession extends MMParent {
 			remote: 'mmcmd:_sessionRemote',
 			getmodelstack: 'mmcmd:_sessionGetModelStack',
 			aikey: 'mmcmd:_aikey',
+			aimodel: 'mmcmd:_aimodel',
 			aiinfo: 'mmcmd:_aiinfo',
 		}[command];
 		if (key) {
@@ -1261,54 +1263,50 @@ export class MMSession extends MMParent {
 			this.setError('mmcmd:noIndexedDB', {});
 			return;
 		}
-		const args = this.splitArgsString(command.args);
-		if (args.length === 0) {
-			this.setError('mmcmd:_aikey', {});
+		const key = command.args;
+		if (!key) {
+			command.results = await this.storage.load(this.aiKey);
 			return;
 		}
-		else if (args.length === 1) {
-			switch (args[0].toLowerCase()) {
-				case 'openai':
-					command.results = await this.storage.load(this.openAIKey);
-					return;
-				case 'claude':
-					command.results = await this.storage.load(this.anthropicKey);
-					return;
-				default:
-					this.setError('No AI model', {model: args[0]});
+		else {
+			if (key.toLowerCase() === 'x') {
+				await this.storage.save(this.aiKey, '');
+				command.results = 'key cleared';
 			}
+			else {
+				await this.storage.save(this.aiKey, key);
+				command.results = 'key saved';
+			}
+			return;
+		}
+	}
+
+	/**
+	 * @method aiModelCommand
+	 * verb
+	 * @param {MMCommand} command - sets, gets or clears aimodel
+	 */
+	async aiModelCommand(command) {
+		if (!indexedDB) {
+			this.setError('mmcmd:noIndexedDB', {});
+			return;
+		}
+		const modelName = command.args;
+		if (!modelName) {
+			command.results = await this.storage.load(this.aiModel);
+			return;
 		}
 		else {
-			switch (args[0].toLowerCase()) {
-				case 'openai': {
-					let key = args[1];
-					if (key.toLowerCase() === 'x') {
-						await this.storage.save(this.openAIKey, '');
-						command.results = 'key cleared';
-					}
-					else {
-						await this.storage.save(this.openAIKey, key);
-						command.results = 'key saved';
-					}
-					return;
-				}
-				case 'claude': {
-					let key = args[1];
-					if (key.toLowerCase() === 'x') {
-						await this.storage.save(this.anthropicKey, '');
-						command.results = 'key cleared';
-					}
-					else {
-						await this.storage.save(this.anthropicKey, key);
-						command.results = 'key saved';
-					}
-					return;
-				}
-				default:
-					this.setError('No AI model', {model: args[0]});
+			if (modelName.toLowerCase() === 'x') {
+				await this.storage.save(this.aiModel, '');
+				command.results = 'model cleared';
 			}
+			else {
+				await this.storage.save(this.aiModel, modelName);
+				command.results = 'model saved';
+			}
+			return;
 		}
-
 	}
 
 	/**
