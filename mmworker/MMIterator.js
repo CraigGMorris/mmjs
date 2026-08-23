@@ -346,7 +346,8 @@ export class MMIterator extends MMTool {
 			return new MMTableValue({columns: columns});
 		}
 
-		switch (lcDescription) {
+		const parts = lcDescription.split('.');
+		switch (parts[0]) {
 			case 'i':
 				return returnValue(this.i);
 
@@ -365,8 +366,13 @@ export class MMIterator extends MMTool {
 			case 'nextx':
 				return returnValue(this.nextXFormula.numberValue());
 	
-			case 'table': 
-				return returnValue(makeTable());
+			case 'table': {
+				const table = returnValue(makeTable());
+				if (parts.length > 1) {
+					return table.valueForIndexRowColumn(MMNumberValue.scalarValue(0), MMStringValue.scalarValue(parts[1]));
+				}
+				return table;
+			}
 			
 			default:
 				if (lcDescription.match(/^r\d+$/)) {
