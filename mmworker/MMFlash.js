@@ -495,7 +495,7 @@ class MMFlash extends MMTool {
 			return this.thermoDefn;
 		}
 
-		if (!property) {
+		if (!property && phase !== 'envelope') {
 			const phaseSet = new Set(['b', 'v', 'l']);
 			if (phaseSet.has(phase)) {
 				this.addRequestor(requestor);
