@@ -507,12 +507,18 @@ class MMFlash extends MMTool {
 
 		if (!this.moleX) {
 			this.moleX = this.moleFracFormula.value();
+			if (!this.moleX && this.nComponents === 1) {
+				this.moleX = MMNumberValue.scalarValue(1);
+			}
 			if (this.moleX) {
 				this.moleX = this.moleX.divideBy(this.moleX.sum());
 			}
 		}
 		if (!this.massX) {
 			this.massX = this.massFracFormula.value();
+			if (!this.massX && this.nComponents === 1) {
+				this.massX = MMNumberValue.scalarValue(1);
+			}
 			if (this.massX) {
 				this.massX = this.massX.divideBy(this.massX.sum());
 			}
