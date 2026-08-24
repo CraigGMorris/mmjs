@@ -203,7 +203,7 @@
 						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "feed"
+							"Formula": "feed.v"
 						},
 						"isInput": "y"
 					},
@@ -217,7 +217,7 @@
 						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "10 kpa"
+							"Formula": "10 psi"
 						},
 						"isInput": "y"
 					},
@@ -245,7 +245,7 @@
 						"HtmlNotes": "n",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "10 kpa"
+							"Formula": "10 psi"
 						},
 						"isInput": "y"
 					},
