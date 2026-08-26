@@ -221,7 +221,7 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 	const ws = workspace || (eos instanceof Object && 'workspace' in eos && eos.workspace instanceof ThermodynamicWorkspace ? eos.workspace : new ThermodynamicWorkspace(N));
 
 	const tol = options.tol !== undefined ? options.tol : 1e-6;
-	const maxOuterIterations = options.maxIterations !== undefined ? Math.min(50, options.maxIterations) : 20;
+	const maxOuterIterations = options.maxIterations !== undefined ? Math.min(100, options.maxIterations) : 35;
 	const flashType = spec.type || FlashType.TP;
 
 	// Normalize feed composition into ws.z
@@ -483,6 +483,12 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 			let sumX = 0.0;
 			for (let i = 0; i < N; i++) sumX += ws.x[i];
 			if (sumX > 0) for (let i = 0; i < N; i++) ws.x[i] /= sumX;
+		} else {
+			for (let i = 0; i < N; i++) {
+				const c = eos.compounds[i];
+				ws.K[i] = Math.exp(Math.log(c.pc / P) + 5.373 * (1.0 + c.omega) * (1.0 - c.tc / T));
+			}
+			solveRachfordRice(ws.z, ws.K, Q, ws.x, ws.y, N);
 		}
 
 		for (let iter = 0; iter < maxOuterIterations; iter++) {
@@ -574,7 +580,8 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 					const lnK_rig = ws.lnPhiL[i] - ws.lnPhiV[i];
 					ws.temp1[i] = Math.exp(lnK_rig);
 					const res_i = Math.abs(Math.log(Math.max(1e-30, ws.K[i])) - lnK_rig);
-					if (res_i > residual) residual = res_i;
+					if (isNaN(res_i)) residual = 1.0;
+					else if (res_i > residual) residual = res_i;
 				}
 
 				if (residual < tol) {
@@ -651,6 +658,12 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 			let sumX = 0.0;
 			for (let i = 0; i < N; i++) sumX += ws.x[i];
 			if (sumX > 0) for (let i = 0; i < N; i++) ws.x[i] /= sumX;
+		} else {
+			for (let i = 0; i < N; i++) {
+				const comp = eos.compounds[i];
+				ws.K[i] = Math.exp(Math.log(comp.pc / P) + 5.373 * (1.0 + comp.omega) * (1.0 - comp.tc / T));
+			}
+			solveRachfordRice(ws.z, ws.K, Q, ws.x, ws.y, N);
 		}
 
 		for (let iter = 0; iter < maxOuterIterations; iter++) {
@@ -718,6 +731,35 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				}
 
 				P /= S;
+			} else {
+				const params = createInsideOutParams(eos, ws);
+				initInsideOutParams(eos, ws.z, T, P, params, ws);
+
+				eos.calculateZFactors(T, P, ws.x, ws.zFactors, undefined, ws);
+				zL = ws.zFactors[0];
+				eos.calculateFugacityCoefficients(T, P, ws.x, zL, ws.lnPhiL, undefined, ws);
+
+				eos.calculateZFactors(T, P, ws.y, ws.zFactors, undefined, ws);
+				zV = ws.zFactors[1];
+				eos.calculateFugacityCoefficients(T, P, ws.y, zV, ws.lnPhiV, undefined, ws);
+
+				residual = 0.0;
+				for (let i = 0; i < N; i++) {
+					const lnK_rig = ws.lnPhiL[i] - ws.lnPhiV[i];
+					ws.temp1[i] = Math.exp(lnK_rig);
+					const res_i = Math.abs(Math.log(Math.max(1e-30, ws.K[i])) - lnK_rig);
+					if (isNaN(res_i)) residual = 1.0;
+					else if (res_i > residual) residual = res_i;
+				}
+
+				if (residual < tol) {
+					converged = true;
+					break;
+				}
+
+				updateInsideOutParams(eos, T, P, ws.x, ws.y, ws.temp1, zL, zV, params, ws);
+				const innerRes = solveInsideOutInner(spec, ws.z, params, eos, ws.x, ws.y, ws.K, Q, 0.0, 1e-10, 30);
+				P = innerRes.P;
 			}
 		}
 

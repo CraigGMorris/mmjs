@@ -172,6 +172,19 @@ export class CompoundRegistry {
 			return this._compoundsByAlias.get(norm);
 		}
 
+		// 6. Common prefix / alias fallbacks (e.g. n-Propane -> Propane, Isobutane -> i-Butane)
+		if (norm.startsWith('n') && norm.length > 2) {
+			const withoutN = norm.substring(1);
+			if (this._compoundsByName.has(withoutN)) return this._compoundsByName.get(withoutN);
+			if (this._compoundsById.has(withoutN)) return this._compoundsById.get(withoutN);
+		} else if (norm.startsWith('iso') && norm.length > 4) {
+			const withIDash = 'i-' + norm.substring(3);
+			if (this._compoundsById.has(withIDash)) return this._compoundsById.get(withIDash);
+		} else if (norm.startsWith('i') && norm.length > 2) {
+			const withDash = 'i-' + norm.substring(1);
+			if (this._compoundsById.has(withDash)) return this._compoundsById.get(withDash);
+		}
+
 		return undefined;
 	}
 
