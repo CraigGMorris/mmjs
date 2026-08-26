@@ -22,9 +22,9 @@
  * This function loads modules in the exact same order as the original importScripts
  */
 export async function setupImports() {
-  // Total number of modules to load
-  const totalModules = 28;
-  let loadedModules = 0;
+	// Total number of modules to load
+	const totalModules = 29;
+	let loadedModules = 0;
   
   // Function to add artificial delay for testing (set to 0 for normal speed)
   const TEST_DELAY_MS = 0; // delay between modules for testing
@@ -358,10 +358,21 @@ export async function setupImports() {
     import('./MMJsonValue.js')
   ]);
 
-  // Attach JSON value to global scope
-  self.MMJsonValue = MMJsonValue;
+	// Attach JSON value to global scope
+	self.MMJsonValue = MMJsonValue;
 
-  await updateProgress('Flash Tool');
+	// thermo package
+	await updateProgress('Thermodynamics Package');
+	const [
+		thermo
+	] = await Promise.all([
+		import('./thermo/index.js')
+	]);
+
+	// Attach thermo package to global scope
+	self.thermo = thermo;
+
+	await updateProgress('Flash Tool');
   // MMFlash.js - must be loaded after Module is available
   const [
     { MMFlash, MMFlashPhaseValue }
