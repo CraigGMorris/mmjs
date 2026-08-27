@@ -299,20 +299,49 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 		return v;
 	}
 
+	const baseStepSize = Math.max(0.005, Math.min(0.06, (Math.log(pMax) - Math.log(pMin)) / (Math.max(10, numPoints) * 1.3)));
+	const maxStepSize = baseStepSize * 1.3;
+
 	/**
 	 * Traces a curve branch (bubble, dew, or quality) using parameter continuation.
 	 * @param {Float64Array} initX
 	 * @param {number} Q
 	 * @param {number} maxSteps
 	 */
-	function traceBranch(initX, Q, maxSteps = 100) {
+	function traceBranch(initX, Q, maxSteps = 150) {
 		let X = new Float64Array(initX);
 		let prevTangent = null;
-		let stepSize = 0.15;
-		const pts = [];
+		let stepSize = baseStepSize;
+		const pts = [{ T: X[N], P: Math.exp(X[N + 1]) }];
+		let maxT = X[N];
+		let passedMaxT = false;
 		let minLnK2 = Infinity;
 
 		for (let step = 0; step < maxSteps; step++) {
+			let sumLnK2 = 0.0;
+			for (let i = 0; i < N; i++) sumLnK2 += X[i] * X[i];
+
+			// Critical state detection
+			if (pts.length > 5 && sumLnK2 < 2e-4) {
+				break;
+			}
+			if (pts.length > 10 && sumLnK2 < 0.1 && sumLnK2 > minLnK2 * 1.3) {
+				// Passed the critical point
+				break;
+			}
+			if (sumLnK2 < minLnK2) minLnK2 = sumLnK2;
+
+			if (X[N] > maxT) {
+				maxT = X[N];
+			} else if (X[N] < maxT - 0.5) {
+				passedMaxT = true;
+			}
+
+			// Retrograde direction guard: prevent superheated single-phase runaway
+			if (passedMaxT && X[N] > maxT + 0.1 && sumLnK2 < 0.1) {
+				break;
+			}
+
 			const f0 = evaluateF(X, Q);
 			const J = computeJacobian(X, Q, f0);
 			const tangent = computeTangent(J, prevTangent);
@@ -321,20 +350,6 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 				for (let j = 0; j < N + 2; j++) tangent[j] = -tangent[j];
 			}
 			prevTangent = tangent;
-
-			let sumLnK2 = 0.0;
-			for (let i = 0; i < N; i++) sumLnK2 += X[i] * X[i];
-			pts.push({ T: X[N], P: Math.exp(X[N + 1]) });
-
-			if (pts.length > 5 && sumLnK2 < 1e-3) {
-				break;
-			}
-			if (pts.length > 10 && sumLnK2 < 2.0 && sumLnK2 > minLnK2 * 1.5) {
-				// Passed the critical point
-				pts.pop();
-				break;
-			}
-			if (sumLnK2 < minLnK2) minLnK2 = sumLnK2;
 
 			const useP = Math.abs(tangent[N + 1]) >= Math.abs(tangent[N] / 50.0);
 			const fixedIdx = useP ? N + 1 : N;
@@ -361,7 +376,12 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 					if (absF > maxF) maxF = absF;
 				}
 				if (maxF < tol) {
-					conv = true;
+					// Strict non-triviality check to reject single-phase trivial manifold
+					let sK = 0.0;
+					for (let i = 0; i < N; i++) sK += X_curr[i] * X_curr[i];
+					if (sK > 5e-5) {
+						conv = true;
+					}
 					break;
 				}
 				const J_curr = computeJacobian(X_curr, Q, f_curr);
@@ -381,17 +401,18 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 
 			if (conv) {
 				for (let j = 0; j < N + 2; j++) X[j] = X_curr[j];
-				stepSize = Math.min(0.2, stepSize * 1.1);
+				pts.push({ T: X[N], P: Math.exp(X[N + 1]) });
+				stepSize = Math.min(maxStepSize, stepSize * 1.1);
 			} else {
 				stepSize *= 0.5;
-				if (stepSize < 0.001) break;
+				if (stepSize < 0.0005) break;
 			}
 		}
 		return pts;
 	}
 
 	// Trace Bubble Curve (Q = 0)
-	const maxBranchSteps = Math.max(50, numPoints);
+	const maxBranchSteps = Math.max(150, numPoints * 3);
 	const pq0 = insideOutFlash({ type: FlashType.PQ, P: pMin, Q: 0.0 }, ws.z, eos, { tol, maxIterations: maxIter }, ws);
 	const Xbub = new Float64Array(N + 2);
 	for (let i = 0; i < N; i++) Xbub[i] = Math.log(Math.max(1e-30, pq0.K[i]));
