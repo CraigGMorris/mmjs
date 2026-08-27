@@ -63,10 +63,8 @@ export class FlashEngine {
 
 		let sumZ = 0.0;
 		for (let i = 0; i < N; i++) {
-			const zi = z[i];
-			if (zi < 0.0) {
-				throw new Error(`Negative mole fraction detected at component ${i}: ${zi}`);
-			}
+			const zi = Math.max(0.0, z[i]);
+			this.workspace.z[i] = zi;
 			sumZ += zi;
 		}
 
@@ -76,7 +74,7 @@ export class FlashEngine {
 
 		const invSumZ = 1.0 / sumZ;
 		for (let i = 0; i < N; i++) {
-			this.workspace.z[i] = z[i] * invSumZ;
+			this.workspace.z[i] *= invSumZ;
 		}
 
 		return this.workspace.z;
@@ -96,9 +94,9 @@ export class FlashEngine {
 		}
 		this.normalizeFeed(z);
 
-		// Route to immiscible 3-phase engine if water is present and 3-phase is requested or default
+		// Route to immiscible 3-phase engine if water is present and 3-phase is explicitly requested
 		if (spec.type === FlashType.TP && this._waterIndex >= 0 && this.workspace.z[this._waterIndex] > 0.0) {
-			if (options.enable3PhaseWater !== false) {
+			if (options.enable3PhaseWater === true) {
 				const T = spec.T !== undefined ? spec.T : 298.15;
 				const P = spec.P !== undefined ? spec.P : 101325.0;
 				return immiscible3PhaseFlash(T, P, this.workspace.z, this.eos, options, this.workspace);

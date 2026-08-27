@@ -227,11 +227,13 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 	// Normalize feed composition into ws.z
 	let sumZ = 0.0;
 	for (let i = 0; i < N; i++) {
-		sumZ += z[i];
+		const zi = Math.max(0.0, z[i]);
+		ws.z[i] = zi;
+		sumZ += zi;
 	}
 	const invSumZ = sumZ > 0.0 ? 1.0 / sumZ : 1.0;
 	for (let i = 0; i < N; i++) {
-		ws.z[i] = z[i] * invSumZ;
+		ws.z[i] *= invSumZ;
 	}
 
 	// 1. Initial State Estimation
