@@ -139,6 +139,7 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 		return {
 			bubbleCurve: pureCurve,
 			dewCurve: pureCurve,
+			curve: pureCurve,
 			qualityCurves: new Map(),
 			criticalPoint: { T: Tc, P: Pc },
 			cricondentherm: { T: Tc, P: Pc },
@@ -316,6 +317,11 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 		let maxT = X[N];
 		let passedMaxT = false;
 		let minLnK2 = Infinity;
+		let minLnK2Idx = 0;
+
+		let initSumLnK2 = 0.0;
+		for (let i = 0; i < N; i++) initSumLnK2 += initX[i] * initX[i];
+		const criticalThreshold = Math.max(2.0, initSumLnK2 * 0.01);
 
 		for (let step = 0; step < maxSteps; step++) {
 			let sumLnK2 = 0.0;
@@ -325,11 +331,17 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 			if (pts.length > 5 && sumLnK2 < 2e-4) {
 				break;
 			}
-			if (pts.length > 10 && sumLnK2 < 0.1 && sumLnK2 > minLnK2 * 1.3) {
-				// Passed the critical point
+			if (pts.length > 10 && minLnK2 < criticalThreshold && sumLnK2 > minLnK2 * 1.15) {
+				// Passed the critical point - trim points past minimum
+				while (pts.length > minLnK2Idx + 1) {
+					pts.pop();
+				}
 				break;
 			}
-			if (sumLnK2 < minLnK2) minLnK2 = sumLnK2;
+			if (sumLnK2 < minLnK2) {
+				minLnK2 = sumLnK2;
+				minLnK2Idx = pts.length - 1;
+			}
 
 			if (X[N] > maxT) {
 				maxT = X[N];
@@ -426,7 +438,7 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 	for (let i = 0; i < N; i++) Xdew[i] = Math.log(Math.max(1e-30, pq1.K[i]));
 	Xdew[N] = pq1.T;
 	Xdew[N + 1] = Math.log(pMin);
-	const dewCurve = traceBranch(Xdew, 1.0, maxBranchSteps);
+	const dewCurveAscending = traceBranch(Xdew, 1.0, maxBranchSteps);
 
 	// Trace Quality Curves
 	/** @type {Map<number, Array<{ T: number, P: number }>>} */
@@ -448,7 +460,7 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 	// Extrema Identification
 	// Cricondentherm: Point of maximum T on dew curve
 	let cricondentherm = { T: 0.0, P: 0.0 };
-	for (const pt of dewCurve) {
+	for (const pt of dewCurveAscending) {
 		if (pt.T > cricondentherm.T) {
 			cricondentherm = { T: pt.T, P: pt.P };
 		}
@@ -456,7 +468,7 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 
 	// Cricondenbar: Point of maximum P across the entire boundary
 	let cricondenbar = { T: 0.0, P: 0.0 };
-	for (const pt of [...bubbleCurve, ...dewCurve]) {
+	for (const pt of [...bubbleCurve, ...dewCurveAscending]) {
 		if (pt.P > cricondenbar.P) {
 			cricondenbar = { T: pt.T, P: pt.P };
 		}
@@ -467,14 +479,18 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 	if (bubbleCurve.length > 0) {
 		const lastB = bubbleCurve[bubbleCurve.length - 1];
 		criticalPoint = { T: lastB.T, P: lastB.P };
-	} else if (dewCurve.length > 0) {
-		const lastD = dewCurve[dewCurve.length - 1];
+	} else if (dewCurveAscending.length > 0) {
+		const lastD = dewCurveAscending[dewCurveAscending.length - 1];
 		criticalPoint = { T: lastD.T, P: lastD.P };
 	}
+
+	// Reverse dew curve so that it continues from critical point (Pc, Tc) down to pMin
+	const dewCurve = dewCurveAscending.reverse();
 
 	return {
 		bubbleCurve,
 		dewCurve,
+		curve: [...bubbleCurve, ...dewCurve],
 		qualityCurves,
 		criticalPoint,
 		cricondentherm,

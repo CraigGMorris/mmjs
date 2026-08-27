@@ -1141,14 +1141,9 @@ class MMFlash extends MMTool {
 			const envResult = this.engine.generatePhaseEnvelope(z);
 
 			const points = [];
-			if (envResult.bubbleCurve) {
-				for (let i = 0; i < envResult.bubbleCurve.length; i++) {
-					points.push(envResult.bubbleCurve[i]);
-				}
-			}
-			if (envResult.dewCurve) {
-				for (let i = envResult.dewCurve.length - 1; i >= 0; i--) {
-					points.push(envResult.dewCurve[i]);
+			if (envResult.curve) {
+				for (let i = 0; i < envResult.curve.length; i++) {
+					points.push(envResult.curve[i]);
 				}
 			}
 			const nPoints = points.length;

@@ -182,8 +182,9 @@ export const FlashType = Object.freeze({
 /**
  * Complete PT Phase Envelope calculation result.
  * @typedef {Object} PhaseEnvelopeResult
- * @property {Array<{ T: number, P: number }>} bubbleCurve - Coordinates along bubble line (Q = 0)
- * @property {Array<{ T: number, P: number }>} dewCurve - Coordinates along dew line (Q = 1)
+ * @property {Array<{ T: number, P: number }>} bubbleCurve - Coordinates along bubble line (Q = 0, Pmin -> Pcrit)
+ * @property {Array<{ T: number, P: number }>} dewCurve - Coordinates along dew line (Q = 1, Pcrit -> Pmin)
+ * @property {Array<{ T: number, P: number }>} curve - Continuous ordered coordinates enclosing the envelope boundary (Pmin -> Pcrit -> Pmin)
  * @property {Map<number, Array<{ T: number, P: number }>>} qualityCurves - Map of quality fraction to PT coordinate arrays
  * @property {{ T: number, P: number }} criticalPoint - Estimated mixture critical point (Tc, Pc)
  * @property {{ T: number, P: number }} cricondentherm - Maximum temperature limit (Tmax, P(Tmax))
