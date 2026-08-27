@@ -94,9 +94,9 @@ export class FlashEngine {
 		}
 		this.normalizeFeed(z);
 
-		// Route to immiscible 3-phase engine if water is present and 3-phase is explicitly requested
+		// Route to immiscible 3-phase engine if water is present and 3-phase is requested or default
 		if (spec.type === FlashType.TP && this._waterIndex >= 0 && this.workspace.z[this._waterIndex] > 0.0) {
-			if (options.enable3PhaseWater === true) {
+			if (options.enable3PhaseWater !== false) {
 				const T = spec.T !== undefined ? spec.T : 298.15;
 				const P = spec.P !== undefined ? spec.P : 101325.0;
 				return immiscible3PhaseFlash(T, P, this.workspace.z, this.eos, options, this.workspace);
