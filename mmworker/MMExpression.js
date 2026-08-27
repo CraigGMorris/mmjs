@@ -189,6 +189,9 @@ export class MMExpression extends MMTool {
 				p = v._values[0].parameters();
 			}
 		}
+		else if (v instanceof MMFlashPhaseValue) {
+			p = v.flash.parameters();
+		}
 		return p;
 	}
 

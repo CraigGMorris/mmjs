@@ -58,6 +58,9 @@ class MMFlashPhaseValue extends MMValue {
 				returnValue = MMStringValue.scalarValue(thermoDefn.values[0]);
 			}
 		}
+		else if (description === 'fluids') {
+			returnValue = this.flash.valueDescribedBy('fluids');
+		}
 		else {
 			returnValue = this.flash.valueDescribedBy(this.phase + '.' + description);
 		}
@@ -65,6 +68,10 @@ class MMFlashPhaseValue extends MMValue {
 			this.flash.addRequestor(requestor);
 		}
 		return returnValue;
+	}
+
+	parameters() {
+		return this.flash.parameters();
 	}
 
 	displayTable() {
@@ -504,6 +511,16 @@ class MMFlash extends MMTool {
 				this.addRequestor(requestor);
 			}
 			return this.thermoDefn;
+		}
+
+		if (phase === 'fluids' || property === 'fluids') {
+			if (thermoEngine && thermoEngine.defaultRegistry) {
+				thermoEngine.defaultRegistry.loadAll();
+				const fluidsList = MMStringValue.stringArrayValue(thermoEngine.defaultRegistry.all().map(c => c.name));
+				this.addRequestor(requestor);
+				return fluidsList;
+			}
+			return null;
 		}
 
 		if (!property && phase !== 'envelope') {
