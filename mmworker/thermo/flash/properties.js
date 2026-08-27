@@ -176,6 +176,7 @@ export function assembleFlashResult(
 		outK[i] = K[i];
 	}
 
+	/** @type {string} */
 	let phaseState = PhaseState.TWO_PHASE;
 	if (beta <= 1e-9) {
 		phaseState = PhaseState.LIQUID;

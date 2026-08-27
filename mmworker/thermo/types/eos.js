@@ -67,11 +67,11 @@
  * @property {Float64Array} bipMatrix - Flattened N x N binary interaction parameter (BIP) matrix
  * @property {(z: ArrayLike<number>) => number} mwMix - Calculates mean molecular weight of mixture [kg/mol]
  * @property {(T: number, outA: Float64Array, outB: Float64Array, outC: Float64Array, outDadT: Float64Array) => void} calculatePureParams - Calculates pure component temperature-dependent parameters
- * @property {(T: number, z: ArrayLike<number>, outParams: CubicMixtureParams, workspace?: any) => CubicMixtureParams} calculateMixtureParams - Evaluates mixing rules
- * @property {(T: number, P: number, z: ArrayLike<number>, outZ: Float64Array|number[], mixtureParams?: CubicMixtureParams, workspace?: any) => number} calculateZFactors - Computes liquid and vapor Z factors
+ * @property {(T: number, z: ArrayLike<number>, outParams?: CubicMixtureParams, workspace?: any) => CubicMixtureParams} calculateMixtureParams - Evaluates mixing rules
+ * @property {(T: number, P: number, z: ArrayLike<number>, outZ?: Float64Array|number[], mixtureParams?: CubicMixtureParams, workspace?: any) => number} calculateZFactors - Computes liquid and vapor Z factors
  * @property {(T: number, P: number, z: ArrayLike<number>, Z: number, outLnPhi: Float64Array, mixtureParams?: CubicMixtureParams, workspace?: any) => Float64Array} calculateFugacityCoefficients - Calculates analytical ln(phi_i)
- * @property {(T: number, P: number, z: ArrayLike<number>, Z: number, outDepartures: PhaseDepartures, mixtureParams?: CubicMixtureParams) => PhaseDepartures} calculateDepartures - Calculates enthalpy and entropy departures
- * @property {(T: number, P: number, z: ArrayLike<number>, Z: number, outDensity: PhaseDensity, mixtureParams?: CubicMixtureParams) => PhaseDensity} calculateDensity - Calculates Peneloux-corrected densities
+ * @property {(T: number, P: number, z: ArrayLike<number>, Z: number, outDepartures?: PhaseDepartures, mixtureParams?: CubicMixtureParams) => PhaseDepartures} calculateDepartures - Calculates enthalpy and entropy departures
+ * @property {(T: number, P: number, z: ArrayLike<number>, Z: number, outDensity?: PhaseDensity, mixtureParams?: CubicMixtureParams) => PhaseDensity} calculateDensity - Calculates Peneloux-corrected densities
  */
 
 export {};

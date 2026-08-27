@@ -403,6 +403,7 @@ export function immiscible3PhaseFlash(T, P, z, eos, options = {}, workspace) {
 	const rhoMassBulk = rhoMolarBulk * mwBulk;
 	const gBulk = hBulk - T * sBulk;
 
+	/** @type {string} */
 	let phaseState = PhaseState.TWO_PHASE;
 	if (L2 > 1e-6 && L1 > 1e-6 && V > 1e-6) {
 		phaseState = PhaseState.THREE_PHASE;
