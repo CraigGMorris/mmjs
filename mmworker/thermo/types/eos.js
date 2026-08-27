@@ -73,3 +73,5 @@
  * @property {(T: number, P: number, z: ArrayLike<number>, Z: number, outDepartures: PhaseDepartures, mixtureParams?: CubicMixtureParams) => PhaseDepartures} calculateDepartures - Calculates enthalpy and entropy departures
  * @property {(T: number, P: number, z: ArrayLike<number>, Z: number, outDensity: PhaseDensity, mixtureParams?: CubicMixtureParams) => PhaseDensity} calculateDensity - Calculates Peneloux-corrected densities
  */
+
+export {};

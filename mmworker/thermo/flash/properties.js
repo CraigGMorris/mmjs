@@ -183,19 +183,8 @@ export function assembleFlashResult(
 		phaseState = PhaseState.VAPOR;
 	}
 
-	/** @type {import('../types/flash.js').PhaseProperties|null} */
-	let liquid = null;
-	/** @type {import('../types/flash.js').PhaseProperties|null} */
-	let vapor = null;
-
-	if (phaseState === PhaseState.LIQUID) {
-		liquid = assemblePhaseProperties('LIQUID', 1.0, outX, zL, lnPhiL, eos, T, P, workspace);
-	} else if (phaseState === PhaseState.VAPOR) {
-		vapor = assemblePhaseProperties('VAPOR', 1.0, outY, zV, lnPhiV, eos, T, P, workspace);
-	} else {
-		liquid = assemblePhaseProperties('LIQUID', 1.0 - beta, outX, zL, lnPhiL, eos, T, P, workspace);
-		vapor = assemblePhaseProperties('VAPOR', beta, outY, zV, lnPhiV, eos, T, P, workspace);
-	}
+	const liquid = assemblePhaseProperties('LIQUID', 1.0 - beta, outX, zL, lnPhiL, eos, T, P, workspace);
+	const vapor = assemblePhaseProperties('VAPOR', beta, outY, zV, lnPhiV, eos, T, P, workspace);
 
 	const mwBulk = eos.mwMix(z);
 

@@ -674,39 +674,48 @@ class MMFlash extends MMTool {
 		const f = this.flow;
 		const results = this.flashResults;
 		if (results) {
+			const qVal = Math.max(0.0, Math.min(1.0, results.b.q ? results.b.q.values[0] : 0.0));
+			const q = MMNumberValue.scalarValue(qVal);
+			const oneMinusQ = MMNumberValue.scalarValue(1.0 - qVal);
+
 			if (MMUnitSystem.areDimensionsEqual(f.unitDimensions, [0, 0, -1, 0, 0, 1, 0])) {
 				results.b.f = f;
 				results.b.massf = f.multiply(results.b.mwt);
 				if (results.b.h) {
 					results.b.hflow = f.multiply(results.b.h);
 				}
-				if (results.v && results.l) {
-					results.v.f = f.multiply(results.b.q);
-					results.l.f = f.multiply(MMNumberValue.scalarValue(1).subtract(results.b.q));
+				if (results.v) {
+					results.v.f = f.multiply(q);
 					results.v.massf = results.v.f.multiply(results.v.mwt);
-					results.l.massf = results.l.f.multiply(results.l.mwt);
 					if (results.v.h) {
 						results.v.hflow = results.v.h.multiply(results.v.f);
 					}
+				}
+				if (results.l) {
+					results.l.f = f.multiply(oneMinusQ);
+					results.l.massf = results.l.f.multiply(results.l.mwt);
 					if (results.l.h) {
 						results.l.hflow = results.l.h.multiply(results.l.f);
 					}
 				}
 			}
 			else if (MMUnitSystem.areDimensionsEqual(f.unitDimensions, [0, 1, -1, 0, 0, 0, 0])) {
+				const molarF = f.divideBy(results.b.mwt);
 				results.b.massf = f;
-				results.b.f = f.divideBy(results.b.mwt);
+				results.b.f = molarF;
 				if (results.b.h) {
-					results.b.hflow = results.b.f.multiply(results.b.h);
+					results.b.hflow = molarF.multiply(results.b.h);
 				}
-				if (results.v && results.l) {
-					results.v.f = results.b.f.multiply(results.b.q);
-					results.l.f = results.b.f.multiply(MMNumberValue.scalarValue(1).subtract(results.b.q));
+				if (results.v) {
+					results.v.f = molarF.multiply(q);
 					results.v.massf = results.v.f.multiply(results.v.mwt);
-					results.l.massf = results.l.f.multiply(results.l.mwt);
 					if (results.v.h) {
 						results.v.hflow = results.v.h.multiply(results.v.f);
 					}
+				}
+				if (results.l) {
+					results.l.f = molarF.multiply(oneMinusQ);
+					results.l.massf = results.l.f.multiply(results.l.mwt);
 					if (results.l.h) {
 						results.l.hflow = results.l.h.multiply(results.l.f);
 					}
@@ -723,12 +732,14 @@ class MMFlash extends MMTool {
 		const moleFracs = [];
 		let sum = 0;
 		for (let i = 0; i < this.nComponents; i++) {
-			const moleFrac = massFracs[i] / this.mwts[i];
+			const moleFrac = Math.max(0, massFracs[i]) / this.mwts[i];
 			sum += moleFrac;
 			moleFracs.push(moleFrac);
 		}
-		for (let i = 0; i < this.nComponents; i++) {
-			moleFracs[i] /= sum;
+		if (sum > 0) {
+			for (let i = 0; i < this.nComponents; i++) {
+				moleFracs[i] /= sum;
+			}
 		}
 		return moleFracs;
 	}
@@ -737,12 +748,14 @@ class MMFlash extends MMTool {
 		const massFracs = [];
 		let sum = 0;
 		for (let i = 0; i < this.nComponents; i++) {
-			const massFrac = moleFracs[i] * this.mwts[i];
+			const massFrac = Math.max(0, moleFracs[i]) * this.mwts[i];
 			sum += massFrac;
 			massFracs.push(massFrac);
 		}
-		for (let i = 0; i < this.nComponents; i++) {
-			massFracs[i] /= sum;
+		if (sum > 0) {
+			for (let i = 0; i < this.nComponents; i++) {
+				massFracs[i] /= sum;
+			}
 		}
 		return massFracs;
 	}
@@ -829,7 +842,9 @@ class MMFlash extends MMTool {
 				this.setError('mmcool:flashWrongCmpCount', {path: this.getPath()});
 				return;
 			}
-			z = this.moleX.values;
+			z = Array.from(this.moleX.values).map(v => Math.max(0, v));
+			let sumZ = z.reduce((a, b) => a + b, 0);
+			if (sumZ > 0) z = z.map(v => v / sumZ);
 		}
 		else if (this.massX && this.massX instanceof MMNumberValue && this.massX.valueCount > 0) {
 			if (this.massX.valueCount !== this.nComponents) {
@@ -915,6 +930,7 @@ class MMFlash extends MMTool {
 
 			const flashResult = this.engine.flash(spec, z, options);
 			this.flashResults = this.getFlashResults(flashResult, usingMoleFracs);
+			this.calculateFlows();
 		}
 		catch (e) {
 			const msg = e.message || '';
@@ -1076,12 +1092,20 @@ class MMFlash extends MMTool {
 
 		const result = { b: bulkProps };
 
-		if (flashResult.phaseState === thermoEngine.PhaseState.TWO_PHASE || (flashResult.liquid && flashResult.vapor && beta > 1e-6 && beta < 1.0 - 1e-6)) {
-			const liquidZ = flashResult.liquid.moleFractions || flashResult.x;
-			const vaporZ = flashResult.vapor.moleFractions || flashResult.y;
-
+		if (flashResult.liquid) {
+			const liquidZ = flashResult.liquid.moleFractions || flashResult.x || bulkZ;
 			result.l = this.calculatePhaseProperties(flashResult.liquid, liquidZ, T, P, false, 0.0);
+		}
+		else {
+			result.l = this.calculatePhaseProperties(flashResult.bulk, bulkZ, T, P, false, 0.0);
+		}
+
+		if (flashResult.vapor) {
+			const vaporZ = flashResult.vapor.moleFractions || flashResult.y || bulkZ;
 			result.v = this.calculatePhaseProperties(flashResult.vapor, vaporZ, T, P, true, 1.0);
+		}
+		else {
+			result.v = this.calculatePhaseProperties(flashResult.bulk, bulkZ, T, P, true, 1.0);
 		}
 
 		return result;
