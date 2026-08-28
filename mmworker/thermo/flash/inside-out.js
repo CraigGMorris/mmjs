@@ -434,6 +434,12 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 		const Q = spec.Q !== undefined ? spec.Q : 0.0;
 		P = spec.P || 101325.0;
 
+		let maxZ = 0.0;
+		for (let i = 0; i < N; i++) {
+			if (ws.z[i] > maxZ) maxZ = ws.z[i];
+		}
+		const isPure = (N === 1 || maxZ > 0.99999);
+
 		// Initial Wilson estimation for bubble and dew points
 		let tBub = tcAvg * 0.7;
 		for (let k = 0; k < 15; k++) {
@@ -469,6 +475,10 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 			const clampedDelta = Math.max(-0.2 * tDew, Math.min(0.2 * tDew, delta));
 			tDew -= clampedDelta;
 			if (tDew < 20.0) tDew = 20.0;
+		}
+
+		if (!isPure && tDew > tcAvg * 1.35) {
+			tDew = tcAvg * 1.25;
 		}
 
 		T = (1.0 - Q) * tBub + Q * tDew;
@@ -523,9 +533,25 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				eos.calculateFugacityCoefficients(T, P, ws.y, zV, ws.lnPhiV, undefined, ws);
 
 				let S = 0.0;
+				let sumLnK2 = 0.0;
 				for (let i = 0; i < N; i++) {
-					ws.K[i] = Math.exp(ws.lnPhiL[i] - ws.lnPhiV[i]);
+					const lnKi = ws.lnPhiL[i] - ws.lnPhiV[i];
+					ws.K[i] = Math.exp(lnKi);
 					S += ws.z[i] * ws.K[i];
+					sumLnK2 += lnKi * lnKi;
+				}
+
+				if (!isPure && (sumLnK2 < 1e-4 || Math.abs(zV - zL) < 1e-4)) {
+					T *= 0.95;
+					for (let i = 0; i < N; i++) {
+						const c = eos.compounds[i];
+						ws.K[i] = Math.exp(Math.log(c.pc / P) + 5.373 * (1.0 + c.omega) * (1.0 - c.tc / T));
+						ws.y[i] = ws.z[i] * ws.K[i];
+					}
+					let sumY = 0.0;
+					for (let i = 0; i < N; i++) sumY += ws.y[i];
+					if (sumY > 0) for (let i = 0; i < N; i++) ws.y[i] /= sumY;
+					continue;
 				}
 
 				let compRes = 0.0;
@@ -537,7 +563,8 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				}
 
 				residual = Math.max(Math.abs(S - 1.0), compRes);
-				if (residual < tol) {
+				const isNonTrivial = isPure ? (zV - zL > 1e-4) : (sumLnK2 >= 1e-4 && zV - zL > 1e-4);
+				if (residual < tol && isNonTrivial) {
 					converged = true;
 					break;
 				}
@@ -557,9 +584,25 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				eos.calculateFugacityCoefficients(T, P, ws.x, zL, ws.lnPhiL, undefined, ws);
 
 				let S = 0.0;
+				let sumLnK2 = 0.0;
 				for (let i = 0; i < N; i++) {
-					ws.K[i] = Math.exp(ws.lnPhiL[i] - ws.lnPhiV[i]);
+					const lnKi = ws.lnPhiL[i] - ws.lnPhiV[i];
+					ws.K[i] = Math.exp(lnKi);
 					S += ws.z[i] / ws.K[i];
+					sumLnK2 += lnKi * lnKi;
+				}
+
+				if (!isPure && (sumLnK2 < 1e-4 || Math.abs(zV - zL) < 1e-4)) {
+					T = Math.min(T - 5.0, tcAvg * 1.25);
+					for (let i = 0; i < N; i++) {
+						const c = eos.compounds[i];
+						ws.K[i] = Math.exp(Math.log(c.pc / P) + 5.373 * (1.0 + c.omega) * (1.0 - c.tc / T));
+						ws.x[i] = ws.z[i] / ws.K[i];
+					}
+					let sumX = 0.0;
+					for (let i = 0; i < N; i++) sumX += ws.x[i];
+					if (sumX > 0) for (let i = 0; i < N; i++) ws.x[i] /= sumX;
+					continue;
 				}
 
 				let compRes = 0.0;
@@ -571,13 +614,14 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				}
 
 				residual = Math.max(Math.abs(S - 1.0), compRes);
-				if (residual < tol) {
+				const isNonTrivial = isPure ? (zV - zL > 1e-4) : (sumLnK2 >= 1e-4 && zV - zL > 1e-4);
+				if (residual < tol && isNonTrivial) {
 					converged = true;
 					break;
 				}
 
 				const deltaT = -(T * T * Math.log(S)) / B_param;
-				const clampedDeltaT = Math.max(-0.1 * T, Math.min(0.1 * T, deltaT));
+				const clampedDeltaT = Math.max(-0.08 * T, Math.min(0.08 * T, deltaT));
 				T += clampedDeltaT;
 			} else {
 				// Intermediate 0 < Q < 1: Inside-Out loop
@@ -593,15 +637,18 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				eos.calculateFugacityCoefficients(T, P, ws.y, zV, ws.lnPhiV, undefined, ws);
 
 				residual = 0.0;
+				let sumLnK2 = 0.0;
 				for (let i = 0; i < N; i++) {
 					const lnK_rig = ws.lnPhiL[i] - ws.lnPhiV[i];
 					ws.temp1[i] = Math.exp(lnK_rig);
 					const res_i = Math.abs(Math.log(Math.max(1e-30, ws.K[i])) - lnK_rig);
 					if (isNaN(res_i)) residual = 1.0;
 					else if (res_i > residual) residual = res_i;
+					sumLnK2 += lnK_rig * lnK_rig;
 				}
 
-				if (residual < tol) {
+				const isNonTrivial = isPure ? (zV - zL > 1e-4) : (sumLnK2 >= 1e-4 && zV - zL > 1e-4);
+				if (residual < tol && isNonTrivial) {
 					converged = true;
 					break;
 				}
@@ -634,6 +681,12 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 	if (flashType === FlashType.TQ) {
 		const Q = spec.Q !== undefined ? spec.Q : 0.0;
 		T = spec.T || 298.15;
+
+		let maxZ = 0.0;
+		for (let i = 0; i < N; i++) {
+			if (ws.z[i] > maxZ) maxZ = ws.z[i];
+		}
+		const isPure = (N === 1 || maxZ > 0.99999);
 
 		// Initial Wilson estimation for bubble and dew pressures
 		let pBub = 0.0, pDew = 0.0;
@@ -697,9 +750,12 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				eos.calculateFugacityCoefficients(T, P, ws.y, zV, ws.lnPhiV, undefined, ws);
 
 				let S = 0.0;
+				let sumLnK2 = 0.0;
 				for (let i = 0; i < N; i++) {
-					ws.K[i] = Math.exp(ws.lnPhiL[i] - ws.lnPhiV[i]);
+					const lnKi = ws.lnPhiL[i] - ws.lnPhiV[i];
+					ws.K[i] = Math.exp(lnKi);
 					S += ws.z[i] * ws.K[i];
+					sumLnK2 += lnKi * lnKi;
 				}
 
 				let compRes = 0.0;
@@ -711,7 +767,8 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				}
 
 				residual = Math.max(Math.abs(S - 1.0), compRes);
-				if (residual < tol) {
+				const isNonTrivial = isPure ? (zV - zL > 1e-4) : (sumLnK2 >= 1e-4 && zV - zL > 1e-4);
+				if (residual < tol && isNonTrivial) {
 					converged = true;
 					break;
 				}
@@ -728,9 +785,12 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				eos.calculateFugacityCoefficients(T, P, ws.x, zL, ws.lnPhiL, undefined, ws);
 
 				let S = 0.0;
+				let sumLnK2 = 0.0;
 				for (let i = 0; i < N; i++) {
-					ws.K[i] = Math.exp(ws.lnPhiL[i] - ws.lnPhiV[i]);
+					const lnKi = ws.lnPhiL[i] - ws.lnPhiV[i];
+					ws.K[i] = Math.exp(lnKi);
 					S += ws.z[i] / ws.K[i];
+					sumLnK2 += lnKi * lnKi;
 				}
 
 				let compRes = 0.0;
@@ -742,7 +802,8 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				}
 
 				residual = Math.max(Math.abs(S - 1.0), compRes);
-				if (residual < tol) {
+				const isNonTrivial = isPure ? (zV - zL > 1e-4) : (sumLnK2 >= 1e-4 && zV - zL > 1e-4);
+				if (residual < tol && isNonTrivial) {
 					converged = true;
 					break;
 				}
@@ -761,15 +822,18 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				eos.calculateFugacityCoefficients(T, P, ws.y, zV, ws.lnPhiV, undefined, ws);
 
 				residual = 0.0;
+				let sumLnK2 = 0.0;
 				for (let i = 0; i < N; i++) {
 					const lnK_rig = ws.lnPhiL[i] - ws.lnPhiV[i];
 					ws.temp1[i] = Math.exp(lnK_rig);
 					const res_i = Math.abs(Math.log(Math.max(1e-30, ws.K[i])) - lnK_rig);
 					if (isNaN(res_i)) residual = 1.0;
 					else if (res_i > residual) residual = res_i;
+					sumLnK2 += lnK_rig * lnK_rig;
 				}
 
-				if (residual < tol) {
+				const isNonTrivial = isPure ? (zV - zL > 1e-4) : (sumLnK2 >= 1e-4 && zV - zL > 1e-4);
+				if (residual < tol && isNonTrivial) {
 					converged = true;
 					break;
 				}
