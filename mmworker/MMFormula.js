@@ -650,7 +650,7 @@ class MMToolReferenceOperator extends MMFormulaOperator {
 			return null;
 		}
 
-		if (this.recursionCount > 2) {
+		if (this.recursionCount > 4) {
 			this.formula.setError('mmcmd:formulaRecursion', {
 				formula: this.formula.truncatedFormula(),
 				path: this.formula.parent.getPath()
