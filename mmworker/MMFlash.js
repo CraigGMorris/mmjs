@@ -949,7 +949,7 @@ class MMFlash extends MMTool {
 			if (flashResult && !flashResult.converged) {
 				this.setError('mmcool:flashFailed', {
 					path: this.getPath(),
-					msg: 'Calculation did not converge'
+					msg: `Calculation did not converge t=${flashResult.T-273.15}, p=${flashResult.P/1000}`
 				});
 				return;
 			}
