@@ -236,7 +236,7 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 	const ws = workspace || (eos instanceof Object && 'workspace' in eos && eos.workspace instanceof ThermodynamicWorkspace ? eos.workspace : new ThermodynamicWorkspace(N));
 
 	const tol = options.tol !== undefined ? options.tol : 1e-6;
-	const maxOuterIterations = options.maxIterations !== undefined ? Math.min(100, options.maxIterations) : 50;
+	const maxOuterIterations = options.maxIterations !== undefined ? Math.min(250, options.maxIterations) : 100;
 	const flashType = spec.type || FlashType.TP;
 
 	// Normalize feed composition into ws.z
