@@ -99,7 +99,22 @@ export function solveSinglePhaseT(
 			break;
 		}
 
-		const deriv = isEnthalpy ? Math.max(10.0, cpMix) : Math.max(0.01, cpMix / T);
+		// Numerical derivative dVal/dT accounting for both ideal gas and EOS departure temperature dependence
+		const tPerturb = T * 1.001;
+		eos.calculateZFactors(tPerturb, P, z, ws.zFactors, undefined, ws);
+		const zPerturb = (phase === 'LIQUID') ? ws.zFactors[0] : ws.zFactors[1];
+		const depPerturb = eos.calculateDepartures(tPerturb, P, z, zPerturb);
+
+		let valPerturb = 0.0;
+		if (isEnthalpy) {
+			valPerturb = calculateIdealGasEnthalpy(eos.compounds, z, tPerturb) + depPerturb.hDep;
+		} else {
+			valPerturb = calculateIdealGasEntropy(eos.compounds, z, tPerturb, P) + depPerturb.sDep;
+		}
+
+		const dVal_dT = (valPerturb - currentVal) / (tPerturb - T);
+		const fallbackDeriv = isEnthalpy ? Math.max(10.0, cpMix) : Math.max(0.01, cpMix / T);
+		const deriv = Math.abs(dVal_dT) > 1e-6 ? dVal_dT : fallbackDeriv;
 		let deltaT = -residual / deriv;
 
 		// Step damping
