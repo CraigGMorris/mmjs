@@ -946,6 +946,13 @@ class MMFlash extends MMTool {
 			}
 
 			const flashResult = this.engine.flash(spec, z, options);
+			if (flashResult && !flashResult.converged) {
+				this.setError('mmcool:flashFailed', {
+					path: this.getPath(),
+					msg: 'Calculation did not converge'
+				});
+				return;
+			}
 			this.flashResults = this.getFlashResults(flashResult, usingMoleFracs);
 			this.calculateFlows();
 		}
