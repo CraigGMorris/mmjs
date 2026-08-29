@@ -51,22 +51,6 @@ export async function setupImports() {
     }
   };
   
-  // coolprop.mjs
-  // 1. Fetch and compile the WebAssembly binary manually
-  await updateProgress('CoolProp Module');
-  const response = await fetch('coolprop.wasm');
-  const wasmBytes = await response.arrayBuffer();
-  const wasmModule = await WebAssembly.compile(wasmBytes);
-
-  // 2. Prepare global Module object with the compiled WASM
-  self.Module = { wasm: wasmModule };
-
-  // 3. Dynamically import the ES6 module
-  const { default: CoolPropModule } = await import('./coolprop.mjs');
-
-  // 4. Instantiate using the global self.Module
-  self.Module = await CoolPropModule(self.Module);
-
   // MMCommandProcessor.js
   await updateProgress('Command Processor');
   const [
