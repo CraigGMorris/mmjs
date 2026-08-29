@@ -34,6 +34,57 @@
 var MMFlashPropertyDefinitions;
 
 /**
+ * Parses a Math Minion thermo definition string into component names and properties.
+ * 
+ * @param {string} input - Thermo string, e.g. "'1,1-dichloroethane,Water;massx'"
+ * @returns {{ compounds: string[], properties: string[] }}
+ */
+function parseThermoDefinition(input) {
+	if (!input || typeof input !== 'string') {
+		return { compounds: [], properties: [] };
+	}
+
+	// Remove outer single/double quotes if the whole expression was passed as a literal
+	let cleanInput = input.trim();
+	if (
+		(cleanInput.startsWith("'") && cleanInput.endsWith("'")) ||
+		(cleanInput.startsWith('"') && cleanInput.endsWith('"'))
+	) {
+		cleanInput = cleanInput.slice(1, -1).trim();
+	}
+
+	const [compoundsPart, ...propsPart] = cleanInput.split(';');
+	const propStr = propsPart.join(';');
+
+	// Parse compounds: matches quoted strings or unquoted tokens delimited by non-digit commas
+	const compounds = [];
+	if (compoundsPart) {
+		// Split on commas not surrounded by digits
+		const rawTokens = compoundsPart.split(/(?<!\d),(?!\d)/);
+		for (let token of rawTokens) {
+			token = token.trim();
+			// Strip optional quotes or brackets if present around the individual compound
+			if (
+				(token.startsWith('"') && token.endsWith('"')) ||
+				(token.startsWith("'") && token.endsWith("'")) ||
+				(token.startsWith('[') && token.endsWith(']'))
+			) {
+				token = token.slice(1, -1).trim();
+			}
+			if (token) {
+				compounds.push(token);
+			}
+		}
+	}
+
+	const properties = propStr
+		? propStr.split(',').map(s => s.trim()).filter(Boolean)
+		: [];
+
+	return { compounds, properties };
+}
+
+/**
  * @class MMFlashValue
  * @extends MMValue
  */
@@ -464,25 +515,23 @@ class MMFlash extends MMTool {
 			if (thermoDefn && thermoDefn instanceof MMStringValue && thermoDefn.valueCount > 0) {
 				this.thermoDefn = thermoDefn;
 				const cleanThermo = thermoDefn.values[0].replace(/^['"`]+|['"`]+$/g, '').trim();
-				const phaseSplit = cleanThermo.replace(/[\s\n]+/g, '').replace(/,/g, '&').split('@');
+				const phaseSplit = cleanThermo.split('@');
 				if (phaseSplit.length > 1) {
-					this.imposedPhase = phaseSplit[1].toLowerCase();
+					this.imposedPhase = phaseSplit[1].trim().toLowerCase();
 				}
 
 				const pkgSplit = phaseSplit[0].split('::');
 				if (pkgSplit.length > 1) {
-					this.thermoPkg = pkgSplit.shift();
+					this.thermoPkg = pkgSplit.shift().trim();
 				}
 				else {
 					this.thermoPkg = 'PR';
 				}
-				const desc = pkgSplit[0].split(';');
-				this.componentString = desc.shift();
-				if (desc.length) {
-					this.additionalProperties = desc[0].split('&');
-				}
-				this.componentNames = this.componentString.split('&').map(s => s.replace(/^['"`]+|['"`]+$/g, '').trim()).filter(s => s.length > 0);
+				const parsed = parseThermoDefinition(pkgSplit.join('::'));
+				this.componentNames = parsed.compounds;
 				this.nComponents = this.componentNames.length;
+				this.componentString = this.componentNames.join(',');
+				this.additionalProperties = parsed.properties;
 
 				if (thermoEngine && thermoEngine.defaultRegistry) {
 					const compounds = [];
@@ -1431,4 +1480,6 @@ class MMFlash extends MMTool {
 	}
 }
 
-export { MMFlash, MMFlashPhaseValue };
+MMFlash.parseThermoDefinition = parseThermoDefinition;
+
+export { MMFlash, MMFlashPhaseValue, parseThermoDefinition };

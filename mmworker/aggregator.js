@@ -375,7 +375,7 @@ export async function setupImports() {
 	await updateProgress('Flash Tool');
   // MMFlash.js - must be loaded after Module is available
   const [
-    { MMFlash, MMFlashPhaseValue }
+    { MMFlash, MMFlashPhaseValue, parseThermoDefinition }
   ] = await Promise.all([
     import('./MMFlash.js')
   ]);
@@ -383,6 +383,7 @@ export async function setupImports() {
   // Attach flash to global scope
   self.MMFlash = MMFlash;
   self.MMFlashPhaseValue = MMFlashPhaseValue;
+  self.parseThermoDefinition = parseThermoDefinition;
   await updateProgress('__All_modules_loaded__');
 
   console.log('All modules loaded and attached to global scope');
