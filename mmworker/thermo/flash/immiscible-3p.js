@@ -132,8 +132,11 @@ export function immiscible3PhaseFlash(T, P, z, eos, options = {}, workspace) {
 		sumZ += z[i];
 	}
 	const invSumZ = sumZ > 0.0 ? 1.0 / sumZ : 1.0;
+	const zFeed = ws.temp2;
 	for (let i = 0; i < N; i++) {
-		ws.z[i] = z[i] * invSumZ;
+		const val = z[i] * invSumZ;
+		ws.z[i] = val;
+		zFeed[i] = val;
 	}
 
 	const zw = (w >= 0) ? ws.z[w] : 0.0;
@@ -371,6 +374,9 @@ export function immiscible3PhaseFlash(T, P, z, eos, options = {}, workspace) {
 	}
 
 	// 7. Bulk mixture properties
+	for (let i = 0; i < N; i++) {
+		ws.z[i] = zFeed[i];
+	}
 	const mwBulk = eos.mwMix(ws.z);
 	let zBulk = 0.0;
 	let vBulk = 0.0;
