@@ -340,9 +340,10 @@ export function solveInsideOutInner(
 	}
 
 	// Case 4: Simultaneous 2x2 Inner Loop for PH, PS (P is fixed, beta and u are solved)
-	const isEnthalpy = (flashType === FlashType.PH || flashType === FlashType.TH);
-	const targetSpec = isEnthalpy ? (spec.H !== undefined ? spec.H : 0.0) : (spec.S !== undefined ? spec.S : 0.0);
-	const compounds = eos.compounds;
+	if (flashType === FlashType.PH || flashType === FlashType.PS) {
+		const isEnthalpy = (flashType === FlashType.PH);
+		const targetSpec = isEnthalpy ? (spec.H !== undefined ? spec.H : 0.0) : (spec.S !== undefined ? spec.S : 0.0);
+		const compounds = eos.compounds;
 
 	let converged = false;
 	let iterCount = 0;
@@ -473,12 +474,140 @@ export function solveInsideOutInner(
 		}
 	}
 
-	evaluateSimpleK(params, u, outK, N);
-	for (let i = 0; i < N; i++) {
-		const den = 1.0 + beta * (outK[i] - 1.0);
-		outX[i] = z[i] / den;
-		outY[i] = outX[i] * outK[i];
+		evaluateSimpleK(params, u, outK, N);
+		for (let i = 0; i < N; i++) {
+			const den = 1.0 + beta * (outK[i] - 1.0);
+			outX[i] = z[i] / den;
+			outY[i] = outX[i] * outK[i];
+		}
+
+		return { beta, u, T, P, converged, iterations: iterCount, error: finalError };
 	}
 
-	return { beta, u, T, P, converged, iterations: iterCount, error: finalError };
+	// Case 5: Simultaneous 2x2 Inner Loop for TH, TS (T is fixed, beta and P are solved)
+	if (flashType === FlashType.TH || flashType === FlashType.TS) {
+		const isEnthalpy = (flashType === FlashType.TH);
+		const targetSpec = isEnthalpy ? (spec.H !== undefined ? spec.H : 0.0) : (spec.S !== undefined ? spec.S : 0.0);
+		const compounds = eos.compounds;
+		T = (spec.T !== undefined && spec.T > 0) ? spec.T : TRef;
+		u = 0.0;
+
+		let v = Math.log(Math.max(1e-10, PRef / P));
+		let converged = false;
+		let iterCount = 0;
+		let finalError = 1.0;
+
+		for (let iter = 0; iter < maxIter; iter++) {
+			iterCount = iter + 1;
+			P = PRef * Math.exp(-v);
+
+			const expAv = Math.exp(Math.max(-80.0, Math.min(80.0, params.A + v)));
+			for (let i = 0; i < N; i++) {
+				outK[i] = params.alpha[i] * expAv;
+			}
+
+			// Material balance compositions
+			for (let i = 0; i < N; i++) {
+				const den = 1.0 + beta * (outK[i] - 1.0);
+				outX[i] = z[i] / den;
+				outY[i] = outX[i] * outK[i];
+			}
+
+			// Evaluate objective function E1 and derivative dE1/dbeta, dE1/dv
+			let E1 = 0.0;
+			let J00 = 0.0; // dE1/dbeta
+			let J01 = 0.0; // dE1/dv
+
+			for (let i = 0; i < N; i++) {
+				const km1 = outK[i] - 1.0;
+				const den = 1.0 + beta * km1;
+				const den2 = den * den;
+				E1 += (z[i] * km1) / den;
+				J00 -= (z[i] * km1 * km1) / den2;
+				J01 += (z[i] * outK[i]) / den2;
+			}
+
+			// Evaluate objective function E2 (Energy or Entropy) and derivatives J10, J11
+			let propV = 0.0;
+			let propL = 0.0;
+
+			if (isEnthalpy) {
+				let propV_ig = 0.0;
+				let propL_ig = 0.0;
+				for (let i = 0; i < N; i++) {
+					const cpCorr = compounds[i].cpIdeal;
+					const h_ig_i = cpCorr ? integrateCpIdeal(cpCorr, T_STD, T) : 0.0;
+					propV_ig += outY[i] * h_ig_i;
+					propL_ig += outX[i] * h_ig_i;
+				}
+				propV = propV_ig + params.hVStar;
+				propL = propL_ig + params.hLStar;
+			} else {
+				let propV_ig = 0.0;
+				let propL_ig = 0.0;
+				for (let i = 0; i < N; i++) {
+					const cpCorr = compounds[i].cpIdeal;
+					const s_ig_i = cpCorr ? integrateCpIdealOverT(cpCorr, T_STD, T) : 0.0;
+					const sMixV = -R_GAS * Math.log(Math.max(EPSILON, outY[i]));
+					const sMixL = -R_GAS * Math.log(Math.max(EPSILON, outX[i]));
+					propV_ig += outY[i] * (s_ig_i + sMixV);
+					propL_ig += outX[i] * (s_ig_i + sMixL);
+				}
+				const sPres = -R_GAS * Math.log(Math.max(EPSILON, P / P_STD));
+				propV = propV_ig + sPres + params.sVStar;
+				propL = propL_ig + sPres + params.sLStar;
+			}
+
+			const propBulk = beta * propV + (1.0 - beta) * propL;
+			const E2 = propBulk - targetSpec;
+			const J10 = propV - propL; // dE2/dbeta
+			const J11 = isEnthalpy ? 0.0 : R_GAS; // dE2/dv
+
+			const scaleE2 = isEnthalpy ? Math.max(1000.0, Math.abs(targetSpec)) : Math.max(10.0, Math.abs(targetSpec));
+			finalError = Math.max(Math.abs(E1), Math.abs(E2) / scaleE2);
+
+			if (finalError < tol) {
+				converged = true;
+				break;
+			}
+
+			const det = J00 * J11 - J01 * J10;
+			let deltaBeta = 0.0;
+			let deltaV = 0.0;
+
+			if (Math.abs(det) > 1e-25) {
+				deltaBeta = (-E1 * J11 + E2 * J01) / det;
+				deltaV = (-J00 * E2 + J10 * E1) / det;
+			} else {
+				deltaBeta = -E2 / (J10 !== 0 ? J10 : 1000.0);
+				deltaV = -E1 / (J01 !== 0 ? J01 : 1.0);
+			}
+
+			// Step damping on beta
+			deltaBeta = Math.max(-0.25, Math.min(0.25, deltaBeta));
+			beta = Math.max(0.0, Math.min(1.0, beta + deltaBeta));
+
+			// Step damping on v (pressure coordinate)
+			deltaV = Math.max(-0.75, Math.min(0.75, deltaV));
+			v += deltaV;
+
+			if (Math.abs(deltaBeta) < tol && Math.abs(deltaV) < 1e-12) {
+				converged = true;
+				break;
+			}
+		}
+
+		P = PRef * Math.exp(-v);
+		const expAv = Math.exp(Math.max(-80.0, Math.min(80.0, params.A + v)));
+		for (let i = 0; i < N; i++) {
+			outK[i] = params.alpha[i] * expAv;
+			const den = 1.0 + beta * (outK[i] - 1.0);
+			outX[i] = z[i] / den;
+			outY[i] = outX[i] * outK[i];
+		}
+
+		return { beta, u: 0.0, T, P, converged, iterations: iterCount, error: finalError };
+	}
+
+	throw new Error(`Unsupported flash specification type in inner solver: ${flashType}`);
 }

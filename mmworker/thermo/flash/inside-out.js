@@ -1065,19 +1065,200 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 		const targetSpec = isEnthalpy ? (spec.H !== undefined ? spec.H : 0.0) : (spec.S !== undefined ? spec.S : 0.0);
 		T = spec.T || 298.15;
 
-		const single = solveSinglePhaseP(eos, T, ws.z, 'VAPOR', targetSpec, isEnthalpy, 101325.0, ws);
-		eos.calculateFugacityCoefficients(T, single.P, ws.z, single.zFactor, ws.lnPhiV, undefined, ws);
+		// Calculate Wilson bubble and dew pressures at T
+		let pBub = 0.0, pDew = 0.0;
+		let sumZOverK = 0.0;
 		for (let i = 0; i < N; i++) {
-			ws.x[i] = ws.z[i];
-			ws.y[i] = ws.z[i];
-			ws.K[i] = 1.0;
-			ws.lnPhiL[i] = ws.lnPhiV[i];
+			const comp = eos.compounds[i];
+			const Tr = T / comp.tc;
+			const pSat_i = comp.pc * Math.exp(5.373 * (1.0 + comp.omega) * (1.0 - 1.0 / Tr));
+			pBub += ws.z[i] * pSat_i;
+			sumZOverK += ws.z[i] / pSat_i;
 		}
-		return assembleFlashResult(T, single.P, ws.z, 1.0, ws.x, ws.y, ws.K, single.zFactor, single.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
-			converged: single.converged,
-			iterations: single.iterations,
-			residual: 0.0
-		});
+		pDew = sumZOverK > 0 ? 1.0 / sumZOverK : 100.0;
+		if (isNaN(pBub) || pBub <= 0) pBub = 1e6;
+		if (isNaN(pDew) || pDew <= 0) pDew = 100.0;
+
+		// Calculate property at Wilson bubble point (liquid)
+		eos.calculateZFactors(T, pBub, ws.z, ws.zFactors, undefined, ws);
+		const zLBub = ws.zFactors[0];
+		const depBub = eos.calculateDepartures(T, pBub, ws.z, zLBub);
+		const propBub = isEnthalpy ?
+			(calculateIdealGasEnthalpy(eos.compounds, ws.z, T) + depBub.hDep) :
+			(calculateIdealGasEntropy(eos.compounds, ws.z, T, pBub) + depBub.sDep);
+
+		// Calculate property at Wilson dew point (vapor)
+		eos.calculateZFactors(T, pDew, ws.z, ws.zFactors, undefined, ws);
+		const zVDew = ws.zFactors[1];
+		const depDew = eos.calculateDepartures(T, pDew, ws.z, zVDew);
+		const propDew = isEnthalpy ?
+			(calculateIdealGasEnthalpy(eos.compounds, ws.z, T) + depDew.hDep) :
+			(calculateIdealGasEntropy(eos.compounds, ws.z, T, pDew) + depDew.sDep);
+
+		// If target < propBub: Subcooled liquid
+		if (targetSpec < propBub) {
+			const singleL = solveSinglePhaseP(eos, T, ws.z, 'LIQUID', targetSpec, isEnthalpy, pBub * 1.05, ws);
+			eos.calculateFugacityCoefficients(T, singleL.P, ws.z, singleL.zFactor, ws.lnPhiL, undefined, ws);
+			for (let i = 0; i < N; i++) {
+				ws.x[i] = ws.z[i];
+				ws.y[i] = ws.z[i];
+				ws.K[i] = 1.0;
+				ws.lnPhiV[i] = ws.lnPhiL[i];
+			}
+			return assembleFlashResult(T, singleL.P, ws.z, 0.0, ws.x, ws.y, ws.K, singleL.zFactor, singleL.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
+				converged: singleL.converged,
+				iterations: singleL.iterations,
+				residual: 0.0
+			});
+		}
+
+		// If target > propDew: Superheated vapor
+		if (targetSpec > propDew) {
+			const singleV = solveSinglePhaseP(eos, T, ws.z, 'VAPOR', targetSpec, isEnthalpy, pDew * 0.95, ws);
+			eos.calculateFugacityCoefficients(T, singleV.P, ws.z, singleV.zFactor, ws.lnPhiV, undefined, ws);
+			for (let i = 0; i < N; i++) {
+				ws.x[i] = ws.z[i];
+				ws.y[i] = ws.z[i];
+				ws.K[i] = 1.0;
+				ws.lnPhiL[i] = ws.lnPhiV[i];
+			}
+			return assembleFlashResult(T, singleV.P, ws.z, 1.0, ws.x, ws.y, ws.K, singleV.zFactor, singleV.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
+				converged: singleV.converged,
+				iterations: singleV.iterations,
+				residual: 0.0
+			});
+		}
+
+		// Two-phase initial estimate
+		beta = Math.max(0.01, Math.min(0.99, (targetSpec - propBub) / (propDew - propBub)));
+		P = Math.exp((1.0 - beta) * Math.log(pBub) + beta * Math.log(pDew));
+
+		const params = createInsideOutParams(eos, ws);
+		initInsideOutParams(eos, ws.z, T, P, params, ws);
+
+		for (let i = 0; i < N; i++) {
+			const comp = eos.compounds[i];
+			const Tr = T / comp.tc;
+			ws.K[i] = Math.exp(Math.log(comp.pc / P) + 5.373 * (1.0 + comp.omega) * (1.0 - 1.0 / Tr));
+		}
+		const rr = solveRachfordRice(ws.z, ws.K, N, ws.x, ws.y);
+		if (rr.converged && rr.beta > 0 && rr.beta < 1) {
+			beta = rr.beta;
+		} else {
+			for (let i = 0; i < N; i++) {
+				const den = 1.0 + beta * (ws.K[i] - 1.0);
+				ws.x[i] = ws.z[i] / den;
+				ws.y[i] = ws.x[i] * ws.K[i];
+			}
+			let sumX = 0.0, sumY = 0.0;
+			for (let i = 0; i < N; i++) { sumX += ws.x[i]; sumY += ws.y[i]; }
+			if (sumX > 0) {
+				const invX = 1.0 / sumX;
+				for (let i = 0; i < N; i++) ws.x[i] *= invX;
+			}
+			if (sumY > 0) {
+				const invY = 1.0 / sumY;
+				for (let i = 0; i < N; i++) ws.y[i] *= invY;
+			}
+		}
+
+		let zL = 1.0, zV = 1.0;
+		let converged = false;
+		let iterations = 0;
+		let residual = 1.0;
+
+		for (let iter = 0; iter < maxOuterIterations; iter++) {
+			iterations = iter + 1;
+
+			eos.calculateZFactors(T, P, ws.x, ws.zFactors, undefined, ws);
+			zL = ws.zFactors[0];
+			eos.calculateFugacityCoefficients(T, P, ws.x, zL, ws.lnPhiL, undefined, ws);
+
+			eos.calculateZFactors(T, P, ws.y, ws.zFactors, undefined, ws);
+			zV = ws.zFactors[1];
+			eos.calculateFugacityCoefficients(T, P, ws.y, zV, ws.lnPhiV, undefined, ws);
+
+			residual = 0.0;
+			for (let i = 0; i < N; i++) {
+				const lnK_rig = ws.lnPhiL[i] - ws.lnPhiV[i];
+				ws.temp1[i] = Math.exp(lnK_rig);
+				const res_i = Math.abs(Math.log(Math.max(1e-30, ws.K[i])) - lnK_rig);
+				if (res_i > residual) residual = res_i;
+			}
+
+			if (residual < tol) {
+				converged = true;
+				break;
+			}
+
+			updateInsideOutParams(eos, T, P, ws.x, ws.y, ws.temp1, zL, zV, params, ws);
+
+			const innerRes = solveInsideOutInner(
+				spec,
+				ws.z,
+				params,
+				eos,
+				ws.x,
+				ws.y,
+				ws.K,
+				beta,
+				0.0,
+				1e-10,
+				30
+			);
+
+			beta = innerRes.beta;
+			P = innerRes.P;
+
+			if (beta <= 0.0) {
+				const singleL = solveSinglePhaseP(eos, T, ws.z, 'LIQUID', targetSpec, isEnthalpy, P, ws);
+				eos.calculateFugacityCoefficients(T, singleL.P, ws.z, singleL.zFactor, ws.lnPhiL, undefined, ws);
+				for (let i = 0; i < N; i++) {
+					ws.x[i] = ws.z[i];
+					ws.y[i] = ws.z[i];
+					ws.K[i] = 1.0;
+					ws.lnPhiV[i] = ws.lnPhiL[i];
+				}
+				return assembleFlashResult(T, singleL.P, ws.z, 0.0, ws.x, ws.y, ws.K, singleL.zFactor, singleL.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
+					converged: singleL.converged,
+					iterations: iterations + singleL.iterations,
+					residual: 0.0
+				});
+			}
+
+			if (beta >= 1.0) {
+				const singleV = solveSinglePhaseP(eos, T, ws.z, 'VAPOR', targetSpec, isEnthalpy, P, ws);
+				eos.calculateFugacityCoefficients(T, singleV.P, ws.z, singleV.zFactor, ws.lnPhiV, undefined, ws);
+				for (let i = 0; i < N; i++) {
+					ws.x[i] = ws.z[i];
+					ws.y[i] = ws.z[i];
+					ws.K[i] = 1.0;
+					ws.lnPhiL[i] = ws.lnPhiV[i];
+				}
+				return assembleFlashResult(T, singleV.P, ws.z, 1.0, ws.x, ws.y, ws.K, singleV.zFactor, singleV.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
+					converged: singleV.converged,
+					iterations: iterations + singleV.iterations,
+					residual: 0.0
+				});
+			}
+		}
+
+		return assembleFlashResult(
+			T,
+			P,
+			ws.z,
+			beta,
+			ws.x,
+			ws.y,
+			ws.K,
+			zL,
+			zV,
+			ws.lnPhiL,
+			ws.lnPhiV,
+			eos,
+			ws,
+			{ converged, iterations, residual }
+		);
 	}
 
 	throw new Error(`Unsupported flash specification type: ${flashType}`);
