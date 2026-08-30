@@ -1192,23 +1192,24 @@ class MMFlash extends MMTool {
 		let betaL1 = flashResult.liquid ? flashResult.liquid.beta : (flashResult.betaL1 !== undefined ? flashResult.betaL1 : (hasL2 ? 0.0 : 1.0 - betaV));
 		let betaL2 = hasL2 ? (liq2.beta !== undefined ? liq2.beta : flashResult.betaL2 || 0.0) : 0.0;
 
+		const liquidZ = (flashResult.liquid && flashResult.liquid.moleFractions) || flashResult.x || bulkZ;
+		const vaporZ = (flashResult.vapor && flashResult.vapor.moleFractions) || flashResult.y || bulkZ;
+
 		if (flashResult.liquid) {
-			const liquidZ = flashResult.liquid.moleFractions || flashResult.x || bulkZ;
 			result.l = this.calculatePhaseProperties(flashResult.liquid, liquidZ, T, P, false, 0.0);
 			result.l.phaseFraction = betaL1;
 		}
 		else {
-			result.l = this.calculatePhaseProperties(flashResult.bulk, bulkZ, T, P, false, 0.0);
+			result.l = this.calculatePhaseProperties(flashResult.bulk, liquidZ, T, P, false, 0.0);
 			result.l.phaseFraction = betaL1;
 		}
 
 		if (flashResult.vapor) {
-			const vaporZ = flashResult.vapor.moleFractions || flashResult.y || bulkZ;
 			result.v = this.calculatePhaseProperties(flashResult.vapor, vaporZ, T, P, true, 1.0);
 			result.v.phaseFraction = betaV;
 		}
 		else {
-			result.v = this.calculatePhaseProperties(flashResult.bulk, bulkZ, T, P, true, 1.0);
+			result.v = this.calculatePhaseProperties(flashResult.bulk, vaporZ, T, P, true, 1.0);
 			result.v.phaseFraction = betaV;
 		}
 

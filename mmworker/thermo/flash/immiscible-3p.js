@@ -343,24 +343,18 @@ export function immiscible3PhaseFlash(T, P, z, eos, options = {}, workspace) {
 
 	// 6. Assemble individual phase properties
 	/** @type {import('../types/flash.js').PhaseProperties|null} */
-	let vaporProps = null;
-	if (V > 1e-9) {
-		eos.calculateZFactors(T, P, yMix, ws.zFactors, undefined, ws);
-		const zV = ws.zFactors[1];
-		eos.calculateFugacityCoefficients(T, P, yMix, zV, ws.lnPhiV, undefined, ws);
-		vaporProps = assemblePhaseProperties('VAPOR', V, yMix, zV, ws.lnPhiV, eos, T, P, ws);
-		vaporProps.phaseType = PhaseType.Vapor;
-	}
+	eos.calculateZFactors(T, P, yMix, ws.zFactors, undefined, ws);
+	const zV = ws.zFactors[1];
+	eos.calculateFugacityCoefficients(T, P, yMix, zV, ws.lnPhiV, undefined, ws);
+	const vaporProps = assemblePhaseProperties('VAPOR', V, yMix, zV, ws.lnPhiV, eos, T, P, ws);
+	vaporProps.phaseType = PhaseType.Vapor;
 
 	/** @type {import('../types/flash.js').PhaseProperties|null} */
-	let liq1Props = null;
-	if (L1 > 1e-9) {
-		eos.calculateZFactors(T, P, x1Mix, ws.zFactors, undefined, ws);
-		const zL1 = ws.zFactors[0];
-		eos.calculateFugacityCoefficients(T, P, x1Mix, zL1, ws.lnPhiL, undefined, ws);
-		liq1Props = assemblePhaseProperties('LIQUID', L1, x1Mix, zL1, ws.lnPhiL, eos, T, P, ws);
-		liq1Props.phaseType = PhaseType.Liquid;
-	}
+	eos.calculateZFactors(T, P, x1Mix, ws.zFactors, undefined, ws);
+	const zL1 = ws.zFactors[0];
+	eos.calculateFugacityCoefficients(T, P, x1Mix, zL1, ws.lnPhiL, undefined, ws);
+	const liq1Props = assemblePhaseProperties('LIQUID', L1, x1Mix, zL1, ws.lnPhiL, eos, T, P, ws);
+	liq1Props.phaseType = PhaseType.Liquid;
 
 	/** @type {import('../types/flash.js').PhaseProperties|null} */
 	let liq2Props = null;
