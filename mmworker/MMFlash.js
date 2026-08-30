@@ -887,7 +887,14 @@ class MMFlash extends MMTool {
 				this.secondPropertyType = 'P';
 			}
 			else if (MMFlash.isPropertyType(this.secondProperty, 'q')) {
-				this.secondPropertyType = 'Q';
+				if (this.secondProperty.values[0] < 0 || this.secondProperty.values[0] > 1) {
+					this.setError('mmcool:flashQualityOutOfRange', {path: this.getPath()});
+					this.secondProperty = null;
+					this.secondPropertyType = null;
+				}
+				else {
+					this.secondPropertyType = 'Q';
+				}
 			}
 			else if (MMFlash.isPropertyType(this.secondProperty, 'h')) {
 				this.secondPropertyType = 'H';

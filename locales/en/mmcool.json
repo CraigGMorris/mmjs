@@ -9,6 +9,7 @@
 	"flashPHBadBound": "P{{type}} calculation ended against failed flash\n{{path}}",
 	"flashPHHitBound": "P{{type}} calculation hit max or min bound for fluid\n{{path}}",
 	"flashPHMaxIter": "P{{type}} calculation excessive iterations {{count}}\n{{path}}",
+	"flashQualityOutOfRange": "Flash quality must be in the range 0-1\nin {{path}}",
 	"flashTHBadBound": "T{{type}} calculation ended against failed flash\n{{path}}",
 	"flashTHHitBound": "T{{type}} calculation hit max or min bound for fluid\n{{path}}",
 	"flashTHMaxIter": "T{{type}} calculation excessive iterations {{count}}\n{{path}}",
