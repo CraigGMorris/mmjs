@@ -1135,7 +1135,7 @@ desc: >
 		typeName: Flash
 
 		desc: >
-			Performs flash and thermodynamic property calculations using CoolProp's HEOS backend.
+			Performs flash and thermodynamic property calculations using PR 1978 with data from ChemSep and DWSim.
 			Calculates bulk, vapour, and liquid phase equilibrium, transport, and thermodynamic properties for pure fluids and mixtures.
 
 		formulas:
@@ -1168,7 +1168,7 @@ desc: >
 
 		parameters:
 			thermo: The thermo definition string (components and requested optional properties).
-			fluids: A column array of all available fluid names in CoolProp.
+			fluids: A column array of all available fluid names in the thermo package.
 			envelope: A table containing temperature and pressure columns defining the fluid's phase envelope.
 			phase.property: >
 				Phase and property values accessed via `someFlash.phase.property`, `someFlash.phase`, or `someFlash.property`.
@@ -1185,7 +1185,7 @@ desc: >
 				- `t`: temperature
 				- `p`: pressure
 				- `f`: molar flow rate
-				- `h`: mole-based enthalpy
+				h`: mole-based sensible enthalpy (Math Minion uses arbitrary component reference states; does NOT include heat of formation).
 				- `s`: mole-based entropy
 				- `dmolar`: mole-based density
 				- `mwt`: molecular weight
@@ -1194,7 +1194,7 @@ desc: >
 				Optional properties (available when included in the thermo definition string):
 				- `massf`: mass flow rate
 				- `massx`: mass fractions
-				- `hflow`: energy flow
+				- `hflow`: energy flow (relative sensible energy only; does NOT include heat of formation).
 				- `cpmolar`: mole-based constant-pressure specific heat
 				- `cp0molar`: mole-based ideal-gas constant-pressure specific heat
 				- `cvmolar`: mole-based constant-volume specific heat
@@ -1220,6 +1220,10 @@ desc: >
 			- Available fluids can be queried from any flash tool using its `fluids` parameter (e.g., `myFlash.fluids`).
 			- Set string properties such as `thermo` using enclosing quotes:
 				`.myFlash.thermo set formula "Ethanol,Water;massx"`
+			- Math Minion enthalpies (`h`, `hflow`) use arbitrary, independent reference states per fluid and do NOT contain heats of formation (ΔHf°).
+				- NEVER equate inlet and outlet enthalpy/hflow across a reaction (e.g., `outlet.hflow = inlet.hflow` is invalid for a reactor).
+				- NEVER calculate reaction heat as `outlet.hflow - inlet.hflow`.
+				- For reactors and chemical reactions, calculate the standard heat of reaction (ΔHrxn° at 298.15 K) separately using standard heats of formation (ΔHf°), and use Flash `h` only for sensible enthalpy changes relative to 298.15 K (e.g., `h(T) - h(298.15 degK)`).
 
 availableAiquery:
   note: >
