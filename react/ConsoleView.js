@@ -82,7 +82,7 @@ class aiClass {
 
 const aiValues = new aiClass();
 
-let inputTarget = 'Console';
+let inputTarget = 'AI';
 
 /**
  * accepts command line inputs and displays result
