@@ -191,9 +191,9 @@ export function assembleFlashResult(
 
 	if (phaseState === PhaseState.LIQUID) {
 		liquid = assemblePhaseProperties('LIQUID', 1.0, outX, zL, lnPhiL, eos, T, P, workspace);
-		vapor = assemblePhaseProperties('VAPOR', 0.0, outY, zV, lnPhiV, eos, T, P, workspace);
+		vapor = null;
 	} else if (phaseState === PhaseState.VAPOR) {
-		liquid = assemblePhaseProperties('LIQUID', 0.0, outX, zL, lnPhiL, eos, T, P, workspace);
+		liquid = null;
 		vapor = assemblePhaseProperties('VAPOR', 1.0, outY, zV, lnPhiV, eos, T, P, workspace);
 	} else {
 		liquid = assemblePhaseProperties('LIQUID', 1.0 - beta, outX, zL, lnPhiL, eos, T, P, workspace);
