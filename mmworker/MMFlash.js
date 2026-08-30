@@ -540,7 +540,7 @@ class MMFlash extends MMTool {
 					for (const cName of this.componentNames) {
 						let comp = thermoEngine.defaultRegistry.get(cName);
 						if (!comp) {
-							this.setError('mmcool:flashThermoDefnError', {path: this.getPath()});
+							this.setError('thermo:flashThermoDefnError', {path: this.getPath()});
 							return null;
 						}
 						compounds.push(comp);
@@ -808,7 +808,7 @@ class MMFlash extends MMTool {
 				}
 			}
 			else {
-				this.setError('mmcool:flashBadFlowUnit', {path: this.getPath()});
+				this.setError('thermo:flashBadFlowUnit', {path: this.getPath()});
 				this.flow = null;
 			}
 		}
@@ -871,7 +871,7 @@ class MMFlash extends MMTool {
 				this.firstPropertyType = 'DMolar';
 			}
 			else {
-				this.setError('mmcool:flashFirstPropNotTorPorD', {path: this.getPath()});
+				this.setError('thermo:flashFirstPropNotTorPorD', {path: this.getPath()});
 				this.firstProperty = null;
 			}
 		}
@@ -888,7 +888,7 @@ class MMFlash extends MMTool {
 			}
 			else if (MMFlash.isPropertyType(this.secondProperty, 'q')) {
 				if (this.secondProperty.values[0] < 0 || this.secondProperty.values[0] > 1) {
-					this.setError('mmcool:flashQualityOutOfRange', {path: this.getPath()});
+					this.setError('thermo:flashQualityOutOfRange', {path: this.getPath()});
 					this.secondProperty = null;
 					this.secondPropertyType = null;
 				}
@@ -903,14 +903,14 @@ class MMFlash extends MMTool {
 				this.secondPropertyType = 'S';
 			}
 			else {
-				this.setError('mmcool:flashInvalidSecondPropType', {path: this.getPath()});
+				this.setError('thermo:flashInvalidSecondPropType', {path: this.getPath()});
 				this.secondProperty = null;
 				this.secondPropertyType = null;
 			}
 		}
 
 		if (this.firstProperty && this.firstPropertyType === this.secondPropertyType) {
-			this.setError('mmcool:flashDuplicatePropTypes', {path: this.getPath()});
+			this.setError('thermo:flashDuplicatePropTypes', {path: this.getPath()});
 			this.secondProperty = null;
 			this.secondPropertyType = null;
 		}
@@ -932,7 +932,7 @@ class MMFlash extends MMTool {
 		let z = [];
 		if (this.moleX && this.moleX instanceof MMNumberValue && this.moleX.valueCount > 0) {
 			if (this.moleX.valueCount !== this.nComponents) {
-				this.setError('mmcool:flashWrongCmpCount', {path: this.getPath()});
+				this.setError('thermo:flashWrongCmpCount', {path: this.getPath()});
 				return;
 			}
 			z = Array.from(this.moleX.values).map(v => Math.max(0, v));
@@ -941,7 +941,7 @@ class MMFlash extends MMTool {
 		}
 		else if (this.massX && this.massX instanceof MMNumberValue && this.massX.valueCount > 0) {
 			if (this.massX.valueCount !== this.nComponents) {
-				this.setError('mmcool:flashWrongCmpCount', {path: this.getPath()});
+				this.setError('thermo:flashWrongCmpCount', {path: this.getPath()});
 				return;
 			}
 			z = this.convertMassFracToMole(this.massX.values);
@@ -1023,7 +1023,7 @@ class MMFlash extends MMTool {
 
 			const flashResult = this.engine.flash(spec, z, options);
 			if (flashResult && !flashResult.converged) {
-				this.setError('mmcool:flashFailed', {
+				this.setError('thermo:flashFailed', {
 					path: this.getPath(),
 					msg: `Calculation did not converge t=${flashResult.T-273.15}, p=${flashResult.P/1000}`
 				});
@@ -1034,7 +1034,7 @@ class MMFlash extends MMTool {
 		}
 		catch (e) {
 			const msg = e.message || '';
-			this.setError('mmcool:flashFailed', {
+			this.setError('thermo:flashFailed', {
 				path: this.getPath(),
 				msg: msg
 			});
@@ -1268,7 +1268,7 @@ class MMFlash extends MMTool {
 		}
 		catch (e) {
 			const msg = e.message || '';
-			this.setError('mmcool:envelopeFailed', {
+			this.setError('thermo:envelopeFailed', {
 				path: this.getPath(),
 				msg: msg
 			});
@@ -1459,7 +1459,7 @@ class MMFlash extends MMTool {
 		}
 		catch (e) {
 			const msg = e.message || '';
-			this.setError('mmcool:flashFailed', {
+			this.setError('thermo:flashFailed', {
 				path: this.getPath(),
 				msg: msg
 			});

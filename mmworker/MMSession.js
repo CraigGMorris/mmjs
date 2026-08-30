@@ -1392,7 +1392,7 @@ export const MMToolTypes = {
 	},
 	"Flash": {
 		factory: (name, parent) => {return new MMFlash(name, parent)},
-		displayName: new MMCommandMessage('mmcool:flashDisplayName'),
+		displayName: new MMCommandMessage('thermo:flashDisplayName'),
 	},
 };
 

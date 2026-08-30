@@ -192,7 +192,7 @@ export function FlashView(props) {
 						'div', {
 							id: 'flash__thermo-label',
 						},
-						t('mmcool:flashThermoLabel')
+						t('thermo:flashThermoLabel')
 					),
 					e(
 						FormulaField, {
@@ -215,7 +215,7 @@ export function FlashView(props) {
 						'div', {
 							id: 'flash__t-or-p-label',
 						},
-						t('mmcool:flashTorPLabel')
+						t('thermo:flashTorPLabel')
 					),
 					e(
 						FormulaField, {
@@ -238,7 +238,7 @@ export function FlashView(props) {
 						'div', {
 							id: 'flash__2nd-prop-label',
 						},
-						t('mmcool:flash2ndPropLabel')
+						t('thermo:flash2ndPropLabel')
 					),
 					e(
 						FormulaField, {
@@ -261,7 +261,7 @@ export function FlashView(props) {
 						'div', {
 							id: 'flash__flow-label',
 						},
-						t('mmcool:flashFlowLabel')
+						t('thermo:flashFlowLabel')
 					),
 					e(
 						FormulaField, {
@@ -284,7 +284,7 @@ export function FlashView(props) {
 						'div', {
 							id: 'flash__molefrac-label',
 						},
-						t('mmcool:flashMoleFracPropLabel')
+						t('thermo:flashMoleFracPropLabel')
 					),
 					e(
 						FormulaField, {
@@ -307,7 +307,7 @@ export function FlashView(props) {
 						'div', {
 							id: 'flash__massfrac-label',
 						},
-						t('mmcool:flashMassFracPropLabel')
+						t('thermo:flashMassFracPropLabel')
 					),
 					e(
 						FormulaField, {

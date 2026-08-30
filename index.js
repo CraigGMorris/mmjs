@@ -37,7 +37,7 @@ i18next
 			lng: language,
 			fallbackLng: 'en',
 			debug: false,
-			ns: ['cmd', 'mmcmd', 'mmunit', 'react', 'mmcool'],
+			ns: ['cmd', 'mmcmd', 'mmunit', 'react', 'thermo'],
 			defaultNS: 'cmd',
 			interpolation: { escapeValue: false },	// not html - if output is used for html, then escape
 			backend: {

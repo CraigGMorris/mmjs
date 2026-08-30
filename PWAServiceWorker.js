@@ -164,6 +164,7 @@ const APP_STATIC_RESOURCES = [
 	"locales/en/mmcmd.json",
 	"locales/en/mmunit.json",
 	"locales/en/react.json",
+	"locales/en/thermo.json",
 	"locales/de/cmd.json",
 	"locales/de/mmcmd.json",
 	"locales/de/mmunit.json",
