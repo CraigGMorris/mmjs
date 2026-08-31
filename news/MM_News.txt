@@ -10,8 +10,8 @@
 	],
 	"CaseName": "MM_News",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "Updates",
-	"ModelPath": "/.root.Older_Articles.Sept_03_2025",
+	"SelectedObject": "",
+	"ModelPath": "/.root.Older_Articles.Sept_3_2026",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
@@ -38,7 +38,7 @@
 						"name": "News_20211010",
 						"Notes": "",
 						"DiagramX": 225,
-						"DiagramY": -110,
+						"DiagramY": -85,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -346,7 +346,7 @@
 						"name": "News_20210910",
 						"Notes": "",
 						"DiagramX": 225,
-						"DiagramY": -85,
+						"DiagramY": -60,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -724,7 +724,7 @@
 						"name": "News_20210703",
 						"Notes": "",
 						"DiagramX": 225,
-						"DiagramY": -60,
+						"DiagramY": -35,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -751,7 +751,7 @@
 						"name": "News_20210621",
 						"Notes": "",
 						"DiagramX": 225,
-						"DiagramY": -35,
+						"DiagramY": -10,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -778,7 +778,7 @@
 						"name": "News_20211207",
 						"Notes": "",
 						"DiagramX": 225,
-						"DiagramY": -135,
+						"DiagramY": -110,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -791,7 +791,7 @@
 						"name": "News_20220121",
 						"Notes": "",
 						"DiagramX": 225,
-						"DiagramY": -160,
+						"DiagramY": -135,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1362,7 +1362,7 @@
 						"name": "News_20220226",
 						"Notes": "",
 						"DiagramX": 225,
-						"DiagramY": -185,
+						"DiagramY": -160,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1740,8 +1740,8 @@
 					{
 						"name": "News_20220324",
 						"Notes": "",
-						"DiagramX": 155,
-						"DiagramY": -5,
+						"DiagramX": 225,
+						"DiagramY": -185,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1821,7 +1821,7 @@
 						"name": "Aug_2022_News",
 						"Notes": "<b>New Model Information Views</b>\n\nThe views for models have been completely redesigned, with the motivation being to provide a means of generating simple forms, reports etc., without needing any knowledge of HTML.\n\nIn that spirit, this article is just the view for this model and what you are reading right now its notes. In addition to the <b>Show on Diagram</b> button, the notes editor for a tool now has a <b>Show in Model HTML</b> button. Model notes are shown at the top of its own view.\n\n<i>Okay, I cheated a bit by including some very basic tags to highlight things. Notes can contain some simple HTML tags like these, but nothing too fancy.</i>\n\nAny tool in a model can be set to have its results shown on the model's view. This is done by checking the <b>Display</b> check box beside its name on the tool's view. What is displayed will depend on what type of tool it is.\n\nExpressions now have a check box labeled <b>Display Input</b>, which if checked will cause an input field to appear in the model view. This allows you to enter or edit an expression's formula right from the model view. This expression (<b>Weight</b>) has that box checked, so an input field for it will appear below. It does not have its <b>Display</b> box checked though, so the calculated value will not be shown. In this case that will normally just be an entered constant.\n\nThe <b>Energy</b> expression does have its <b>Display</b> box checked, so its result is displayed, but not its formula. It also has its notes shown.  You can set these in any combination and even have only the notes appear.\n\nRather than a lengthy explanation like this, a more normal use for notes would be something like:",
 						"DiagramX": 155,
-						"DiagramY": -35,
+						"DiagramY": -10,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -2036,7 +2036,7 @@
 						"name": "Sept_2022_News",
 						"Notes": "",
 						"DiagramX": 155,
-						"DiagramY": -60,
+						"DiagramY": -35,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2357,7 +2357,7 @@
 						"name": "Dec_2022_News",
 						"Notes": "",
 						"DiagramX": 155,
-						"DiagramY": -85,
+						"DiagramY": -60,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2641,7 +2641,7 @@
 						"name": "Oct_2023_News",
 						"Notes": "",
 						"DiagramX": 155,
-						"DiagramY": -135,
+						"DiagramY": -110,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2790,7 +2790,7 @@
 						"name": "Aug_2023_News",
 						"Notes": "",
 						"DiagramX": 155,
-						"DiagramY": -110,
+						"DiagramY": -85,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2804,7 +2804,7 @@
 						"name": "Jan_2024_News",
 						"Notes": "",
 						"DiagramX": 155,
-						"DiagramY": -160,
+						"DiagramY": -135,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3061,7 +3061,7 @@
 						"name": "Feb_02_2024",
 						"Notes": "",
 						"DiagramX": 155,
-						"DiagramY": -185,
+						"DiagramY": -160,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3206,8 +3206,8 @@
 					{
 						"name": "Feb_12_2024",
 						"Notes": "",
-						"DiagramX": 85,
-						"DiagramY": -10,
+						"DiagramX": 155,
+						"DiagramY": -185,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3221,7 +3221,7 @@
 						"name": "Feb_20_2024",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -35,
+						"DiagramY": -10,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3235,7 +3235,7 @@
 						"name": "Mar_17_2024",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -60,
+						"DiagramY": -35,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3376,7 +3376,7 @@
 						"name": "Mar_20_2025",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -85,
+						"DiagramY": -60,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3812,7 +3812,7 @@
 						"name": "May_10_2025",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -110,
+						"DiagramY": -85,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -3938,7 +3938,7 @@
 						"name": "May_26_2025",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -135,
+						"DiagramY": -110,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -4328,7 +4328,7 @@
 						"name": "Sept_03_2025",
 						"Notes": "",
 						"DiagramX": 85,
-						"DiagramY": -160,
+						"DiagramY": -135,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -4375,6 +4375,681 @@
 								"Type": "Expression",
 								"Formula": {
 									"Formula": "'<b>Formula Lists</b>"
+								}
+							}
+						]
+					},
+					{
+						"name": "Sept_3_2026",
+						"Notes": "",
+						"DiagramX": 85,
+						"DiagramY": -160,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "TolueneHDA",
+								"Notes": "",
+								"DiagramX": 120,
+								"DiagramY": 65,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Model",
+								"diagramScale": 1,
+								"indexTool": "ProcessSummary",
+								"Objects": [
+									{
+										"name": "thermo",
+										"Notes": "Thermodynamic property package definition using Peng-Robinson 1978 for H2, CH4, Benzene, and Toluene.",
+										"DiagramX": 100,
+										"DiagramY": 100,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "\"Hydrogen,Methane,Benzene,Toluene;hflow,massx,massf,cpmolar\""
+										}
+									},
+									{
+										"name": "FreshGas",
+										"Notes": "Fresh gas feed: 100 kmol/h (95 mol% H2, 5 mol% CH4) at 25 °C and 35 bar.",
+										"DiagramX": 100,
+										"DiagramY": 155,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "thermo"
+										},
+										"firstprop": {
+											"Formula": "25 degC"
+										},
+										"secondprop": {
+											"Formula": "35 bar"
+										},
+										"molefrac": {
+											"Formula": "{cc 0.95, 0.05, 0, 0}"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "100 kmol/h"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "FreshTol",
+										"Notes": "Fresh liquid toluene feed: 40 kmol/h pure toluene at 25 °C and 35 bar.",
+										"DiagramX": 100,
+										"DiagramY": 210,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "thermo"
+										},
+										"firstprop": {
+											"Formula": "25 degC"
+										},
+										"secondprop": {
+											"Formula": "35 bar"
+										},
+										"molefrac": {
+											"Formula": "{cc 0, 0, 0, 1}"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "40 kmol/h"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "RecycleSolver",
+										"Notes": "Multi-variable solver to converge component molar flows of the recycle stream.",
+										"DiagramX": 100,
+										"DiagramY": 265,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Equation Solver",
+										"f0": "(RecycleGasFlows[1,1] - F_rec_calc[1,1]) / 1 kmol/h",
+										"c0": "1",
+										"f1": "(RecycleGasFlows[2,1] - F_rec_calc[2,1]) / 1 kmol/h",
+										"c1": "1",
+										"f2": "(RecycleGasFlows[3,1] - F_rec_calc[3,1]) / 1 kmol/h",
+										"c2": "1",
+										"f3": "(RecycleGasFlows[4,1] - F_rec_calc[4,1]) / 1 kmol/h",
+										"c3": "1",
+										"maxIter": 200,
+										"maxJacobians": 5,
+										"Enabled": "y"
+									},
+									{
+										"name": "RecycleGasFlows",
+										"Notes": "Guessed/solved recycle component molar flows [H2, CH4, Benzene, Toluene].",
+										"DiagramX": 100,
+										"DiagramY": 320,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{cc RecycleSolver.1 * 100 + 150, RecycleSolver.2 * 100 + 50, RecycleSolver.3 * 5 + 0.5, RecycleSolver.4 * 5 + 0.5} * 1 kmol/h"
+										},
+										"displayUnit": "kmol/h"
+									},
+									{
+										"name": "RecycleGas",
+										"Notes": "Recycle gas stream at 38 °C and 33 bar before compression.",
+										"DiagramX": 100,
+										"DiagramY": 375,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "thermo"
+										},
+										"firstprop": {
+											"Formula": "38 degC"
+										},
+										"secondprop": {
+											"Formula": "33 bar"
+										},
+										"molefrac": {
+											"Formula": "RecycleGasFlows / {sum RecycleGasFlows}"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "{sum RecycleGasFlows}"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "RecycleComp",
+										"Notes": "Recycle gas compressed isentropically to mixer pressure of 35 bar.",
+										"DiagramX": 100,
+										"DiagramY": 430,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "thermo"
+										},
+										"firstprop": {
+											"Formula": "35 bar"
+										},
+										"secondprop": {
+											"Formula": "RecycleGas.s"
+										},
+										"molefrac": {
+											"Formula": "RecycleGas.x"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "RecycleGas.f"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "CompDuty",
+										"Notes": "Recycle compressor duty calculated from enthalpy change.",
+										"DiagramX": 100,
+										"DiagramY": 485,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "RecycleComp.hflow - RecycleGas.hflow"
+										},
+										"displayUnit": "kW"
+									},
+									{
+										"name": "MixerOutlet",
+										"Notes": "Combined feed mixer outlet at 35 bar from fresh gas, fresh toluene, and compressed recycle.",
+										"DiagramX": 200,
+										"DiagramY": 100,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "thermo"
+										},
+										"firstprop": {
+											"Formula": "35 bar"
+										},
+										"secondprop": {
+											"Formula": "(FreshGas.hflow + FreshTol.hflow + RecycleComp.hflow) / (FreshGas.f + FreshTol.f + RecycleComp.f)"
+										},
+										"molefrac": {
+											"Formula": "(FreshGas.f * FreshGas.x + FreshTol.f * FreshTol.x + RecycleComp.f * RecycleComp.x) / (FreshGas.f + FreshTol.f + RecycleComp.f)"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "FreshGas.f + FreshTol.f + RecycleComp.f"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "HeaterOutlet",
+										"Notes": "Reactor feed preheater outlet heated to 620 °C at 34 bar.",
+										"DiagramX": 200,
+										"DiagramY": 155,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "thermo"
+										},
+										"firstprop": {
+											"Formula": "620 degC"
+										},
+										"secondprop": {
+											"Formula": "34 bar"
+										},
+										"molefrac": {
+											"Formula": "MixerOutlet.x"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "MixerOutlet.f"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "HeaterDuty",
+										"Notes": "Preheater thermal duty required to reach reactor inlet temperature.",
+										"DiagramX": 200,
+										"DiagramY": 210,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "HeaterOutlet.hflow - MixerOutlet.hflow"
+										},
+										"displayUnit": "kW"
+									},
+									{
+										"name": "ReactorOutlet",
+										"Notes": "Isothermal reactor product at 620 °C and 34 bar with 75% toluene conversion (Toluene + H2 -> Benzene + CH4).",
+										"DiagramX": 200,
+										"DiagramY": 265,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "thermo"
+										},
+										"firstprop": {
+											"Formula": "620 degC"
+										},
+										"secondprop": {
+											"Formula": "34 bar"
+										},
+										"molefrac": {
+											"Formula": "{cc HeaterOutlet.x[1,1] - 0.75 * HeaterOutlet.x[4,1], HeaterOutlet.x[2,1] + 0.75 * HeaterOutlet.x[4,1], HeaterOutlet.x[3,1] + 0.75 * HeaterOutlet.x[4,1], 0.25 * HeaterOutlet.x[4,1]}"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "HeaterOutlet.f"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "dH_rxn_298",
+										"Notes": "Standard heat of reaction for hydrodealkylation at 298.15 K.",
+										"DiagramX": 200,
+										"DiagramY": 320,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "-41.94 kJ/mol"
+										},
+										"displayUnit": "kJ/mol"
+									},
+									{
+										"name": "ReactorInlet_25C",
+										"Notes": "Reactor inlet stream evaluated at 25 °C reference state for sensible enthalpy calculation.",
+										"DiagramX": 200,
+										"DiagramY": 375,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "thermo"
+										},
+										"firstprop": {
+											"Formula": "25 degC"
+										},
+										"secondprop": {
+											"Formula": "34 bar"
+										},
+										"molefrac": {
+											"Formula": "HeaterOutlet.x"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "HeaterOutlet.f"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "ReactorOutlet_25C",
+										"Notes": "Reactor outlet stream evaluated at 25 °C reference state for sensible enthalpy calculation.",
+										"DiagramX": 200,
+										"DiagramY": 430,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "thermo"
+										},
+										"firstprop": {
+											"Formula": "25 degC"
+										},
+										"secondprop": {
+											"Formula": "34 bar"
+										},
+										"molefrac": {
+											"Formula": "ReactorOutlet.x"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "ReactorOutlet.f"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "ReactorCooling",
+										"Notes": "Required reactor cooling duty combining standard heat of reaction and sensible enthalpy changes.",
+										"DiagramX": 300,
+										"DiagramY": 365,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "-(0.75 * HeaterOutlet.f * HeaterOutlet.x[4,1] * dH_rxn_298 + (ReactorOutlet.hflow - ReactorOutlet_25C.hflow) - (HeaterOutlet.hflow - ReactorInlet_25C.hflow))"
+										},
+										"displayUnit": "kW"
+									},
+									{
+										"name": "CoolerOutlet",
+										"Notes": "High-pressure flash drum feed cooled to 38 °C and 33 bar, flashing into vapor and liquid phases.",
+										"DiagramX": 300,
+										"DiagramY": 100,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "thermo"
+										},
+										"firstprop": {
+											"Formula": "38 degC"
+										},
+										"secondprop": {
+											"Formula": "33 bar"
+										},
+										"molefrac": {
+											"Formula": "ReactorOutlet.x"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "ReactorOutlet.f"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "CoolerDuty",
+										"Notes": "Product cooler duty (heat removed from reactor effluent).",
+										"DiagramX": 300,
+										"DiagramY": 155,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "CoolerOutlet.hflow - ReactorOutlet.hflow"
+										},
+										"displayUnit": "kW"
+									},
+									{
+										"name": "LiquidProduct",
+										"Notes": "Liquid product phase from HP flash drum (rich in benzene and unreacted toluene).",
+										"DiagramX": 300,
+										"DiagramY": 210,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "thermo"
+										},
+										"firstprop": {
+											"Formula": "38 degC"
+										},
+										"secondprop": {
+											"Formula": "33 bar"
+										},
+										"molefrac": {
+											"Formula": "CoolerOutlet.l.x"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "CoolerOutlet.l.f"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "PurgeGas",
+										"Notes": "Purge gas stream (10% of HP flash vapor) removing excess methane and unreacted H2.",
+										"DiagramX": 300,
+										"DiagramY": 265,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "thermo"
+										},
+										"firstprop": {
+											"Formula": "38 degC"
+										},
+										"secondprop": {
+											"Formula": "33 bar"
+										},
+										"molefrac": {
+											"Formula": "CoolerOutlet.v.x"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "0.10 * CoolerOutlet.v.f"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "F_rec_calc",
+										"Notes": "Calculated component molar flows for the 90% recycle gas split.",
+										"DiagramX": 300,
+										"DiagramY": 320,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "0.90 * CoolerOutlet.v.f * CoolerOutlet.v.x"
+										},
+										"displayUnit": "kmol/h"
+									},
+									{
+										"name": "ProcessSummary",
+										"Notes": "Process summary dashboard with calculation methodology, duties, material balance, and SVG flowsheet.",
+										"DiagramX": 300,
+										"DiagramY": 420,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "y",
+										"isOutput": "y",
+										"Type": "HTML Form",
+										"Formula": {
+											"Formula": "'<div style=\"font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color: #2d3748; padding: 24px; max-width: 960px; margin: 0 auto; line-height: 1.6;\">\n  <h1 style=\"color: #1a365d; border-bottom: 2px solid #3182ce; padding-bottom: 8px; margin-top: 0;\">Toluene Hydrodealkylation (HDA) Process</h1>\n  <p>This model simulates the hydrodealkylation of toluene to produce benzene and methane: <strong>C<sub>7</sub>H<sub>8</sub> + H<sub>2</sub> &rarr; C<sub>6</sub>H<sub>6</sub> + CH<sub>4</sub></strong>.</p>\n  \n  <h2 style=\"color: #2b6cb0; margin-top: 24px;\">Process Flowsheet</h2>\n  <div style=\"text-align: center; margin: 20px 0; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;\">\n    <svg viewBox=\"0 0 880 400\" style=\"max-width: 100%; height: auto; font-family: sans-serif; font-size: 12px;\">\n      <defs>\n        <marker id=\"arrow\" viewBox=\"0 0 10 10\" refX=\"6\" refY=\"5\" markerWidth=\"6\" markerHeight=\"6\" orient=\"auto-auto-start-reverse\">\n          <path d=\"M 0 1 L 10 5 L 0 9 z\" fill=\"#4a5568\"/>\n        </marker>\n        <marker id=\"arrow-blue\" viewBox=\"0 0 10 10\" refX=\"6\" refY=\"5\" markerWidth=\"6\" markerHeight=\"6\" orient=\"auto-auto-start-reverse\">\n          <path d=\"M 0 1 L 10 5 L 0 9 z\" fill=\"#3182ce\"/>\n        </marker>\n      </defs>\n\n      <!-- Feeds -->\n      <rect x=\"20\" y=\"120\" width=\"100\" height=\"40\" rx=\"5\" fill=\"#ebf8ff\" stroke=\"#3182ce\" stroke-width=\"2\"/>\n      <text x=\"70\" y=\"136\" text-anchor=\"middle\" font-weight=\"bold\" fill=\"#2b6cb0\">Fresh Gas</text>\n      <text x=\"70\" y=\"150\" text-anchor=\"middle\" font-size=\"10\" fill=\"#4a5568\">100 kmol/h</text>\n\n      <rect x=\"20\" y=\"200\" width=\"100\" height=\"40\" rx=\"5\" fill=\"#ebf8ff\" stroke=\"#3182ce\" stroke-width=\"2\"/>\n      <text x=\"70\" y=\"216\" text-anchor=\"middle\" font-weight=\"bold\" fill=\"#2b6cb0\">Fresh Toluene</text>\n      <text x=\"70\" y=\"230\" text-anchor=\"middle\" font-size=\"10\" fill=\"#4a5568\">40 kmol/h</text>\n\n      <!-- Mixer -->\n      <circle cx=\"180\" cy=\"180\" r=\"24\" fill=\"#edf2f7\" stroke=\"#4a5568\" stroke-width=\"2\"/>\n      <text x=\"180\" y=\"184\" text-anchor=\"middle\" font-weight=\"bold\" fill=\"#2d3748\">Mixer</text>\n\n      <!-- Feed lines to mixer -->\n      <path d=\"M 120 140 L 158 170\" stroke=\"#4a5568\" stroke-width=\"2\" fill=\"none\" marker-end=\"url(#arrow)\"/>\n      <path d=\"M 120 220 L 158 190\" stroke=\"#4a5568\" stroke-width=\"2\" fill=\"none\" marker-end=\"url(#arrow)\"/>\n\n      <!-- Mixer to Preheater -->\n      <path d=\"M 204 180 L 250 180\" stroke=\"#4a5568\" stroke-width=\"2\" fill=\"none\" marker-end=\"url(#arrow)\"/>\n\n      <!-- Preheater -->\n      <rect x=\"250\" y=\"155\" width=\"80\" height=\"50\" rx=\"5\" fill=\"#feebc8\" stroke=\"#dd6b20\" stroke-width=\"2\"/>\n      <text x=\"290\" y=\"175\" text-anchor=\"middle\" font-weight=\"bold\" fill=\"#c05621\">Preheater</text>\n      <text x=\"290\" y=\"192\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7b341e\">620 °C, 34 bar</text>\n\n      <!-- Preheater to Reactor -->\n      <path d=\"M 330 180 L 370 180\" stroke=\"#4a5568\" stroke-width=\"2\" fill=\"none\" marker-end=\"url(#arrow)\"/>\n\n      <!-- Reactor -->\n      <rect x=\"370\" y=\"145\" width=\"90\" height=\"70\" rx=\"6\" fill=\"#fed7d7\" stroke=\"#e53e3e\" stroke-width=\"2\"/>\n      <text x=\"415\" y=\"172\" text-anchor=\"middle\" font-weight=\"bold\" fill=\"#9b2c2c\">Reactor</text>\n      <text x=\"415\" y=\"188\" text-anchor=\"middle\" font-size=\"10\" fill=\"#742a2a\">75% Conv</text>\n      <text x=\"415\" y=\"202\" text-anchor=\"middle\" font-size=\"10\" fill=\"#742a2a\">620 °C, 34 bar</text>\n\n      <!-- Reactor to Cooler -->\n      <path d=\"M 460 180 L 500 180\" stroke=\"#4a5568\" stroke-width=\"2\" fill=\"none\" marker-end=\"url(#arrow)\"/>\n\n      <!-- Product Cooler -->\n      <rect x=\"500\" y=\"155\" width=\"80\" height=\"50\" rx=\"5\" fill=\"#e6fffa\" stroke=\"#319795\" stroke-width=\"2\"/>\n      <text x=\"540\" y=\"175\" text-anchor=\"middle\" font-weight=\"bold\" fill=\"#234e52\">Cooler</text>\n      <text x=\"540\" y=\"192\" text-anchor=\"middle\" font-size=\"10\" fill=\"#285e61\">38 °C, 33 bar</text>\n\n      <!-- Cooler to HP Flash Drum -->\n      <path d=\"M 580 180 L 620 180\" stroke=\"#4a5568\" stroke-width=\"2\" fill=\"none\" marker-end=\"url(#arrow)\"/>\n\n      <!-- Flash Drum -->\n      <rect x=\"620\" y=\"140\" width=\"60\" height=\"80\" rx=\"15\" fill=\"#e2e8f0\" stroke=\"#4a5568\" stroke-width=\"2\"/>\n      <text x=\"650\" y=\"176\" text-anchor=\"middle\" font-weight=\"bold\" fill=\"#2d3748\">HP Flash</text>\n      <text x=\"650\" y=\"192\" text-anchor=\"middle\" font-size=\"10\" fill=\"#4a5568\">38 °C</text>\n\n      <!-- Liquid Product stream -->\n      <path d=\"M 650 220 L 650 310 L 730 310\" stroke=\"#4a5568\" stroke-width=\"2\" fill=\"none\" marker-end=\"url(#arrow)\"/>\n      <rect x=\"730\" y=\"290\" width=\"120\" height=\"40\" rx=\"5\" fill=\"#f0fff4\" stroke=\"#38a169\" stroke-width=\"2\"/>\n      <text x=\"790\" y=\"306\" text-anchor=\"middle\" font-weight=\"bold\" fill=\"#22543d\">Liquid Product</text>\n      <text x=\"790\" y=\"320\" text-anchor=\"middle\" font-size=\"10\" fill=\"#4a5568\">Benzene Rich</text>\n\n      <!-- Vapor overhead -->\n      <path d=\"M 650 140 L 650 70 L 730 70\" stroke=\"#4a5568\" stroke-width=\"2\" fill=\"none\" marker-end=\"url(#arrow)\"/>\n\n      <!-- Purge Stream (10%) -->\n      <rect x=\"730\" y=\"50\" width=\"100\" height=\"40\" rx=\"5\" fill=\"#fff5f5\" stroke=\"#e53e3e\" stroke-width=\"2\"/>\n      <text x=\"780\" y=\"66\" text-anchor=\"middle\" font-weight=\"bold\" fill=\"#9b2c2c\">Purge (10%)</text>\n      <text x=\"780\" y=\"80\" text-anchor=\"middle\" font-size=\"10\" fill=\"#4a5568\">Fuel / Flare</text>\n\n      <!-- Recycle Stream (90%) -->\n      <path d=\"M 680 70 L 680 30 L 320 30\" stroke=\"#3182ce\" stroke-width=\"2\" fill=\"none\" marker-end=\"url(#arrow-blue)\"/>\n      \n      <!-- Recycle Compressor -->\n      <polygon points=\"320,15 320,45 280,38 280,22\" fill=\"#ebf8ff\" stroke=\"#3182ce\" stroke-width=\"2\"/>\n      <text x=\"300\" y=\"58\" text-anchor=\"middle\" font-weight=\"bold\" fill=\"#2b6cb0\">Recycle Comp</text>\n      <text x=\"300\" y=\"70\" text-anchor=\"middle\" font-size=\"9\" fill=\"#4a5568\">33 to 35 bar</text>\n\n      <!-- Compressor to Mixer -->\n      <path d=\"M 280 30 L 180 30 L 180 156\" stroke=\"#3182ce\" stroke-width=\"2\" fill=\"none\" marker-end=\"url(#arrow-blue)\"/>\n    </svg>\n  </div>\n\n  <h2 style=\"color: #2b6cb0; margin-top: 24px;\">Key Process Duties</h2>\n  <table style=\"width: 100%; border-collapse: collapse; margin-top: 12px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-radius: 6px; overflow: hidden;\">\n    <thead>\n      <tr style=\"background: #edf2f7; color: #2d3748; text-align: left;\">\n        <th style=\"padding: 12px 16px; border-bottom: 2px solid #cbd5e0;\">Equipment / Duty</th>\n        <th style=\"padding: 12px 16px; border-bottom: 2px solid #cbd5e0;\">Calculated Value</th>\n        <th style=\"padding: 12px 16px; border-bottom: 2px solid #cbd5e0;\">Description</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr style=\"border-bottom: 1px solid #e2e8f0;\">\n        <td style=\"padding: 10px 16px; font-weight: 600;\">Recycle Compressor Duty</td>\n        <td style=\"padding: 10px 16px; color: #2b6cb0; font-weight: bold;\"><mm>CompDuty</mm></td>\n        <td style=\"padding: 10px 16px;\">Isentropic compression from 33 bar to 35 bar mixer pressure.</td>\n      </tr>\n      <tr style=\"border-bottom: 1px solid #e2e8f0; background: #f7fafc;\">\n        <td style=\"padding: 10px 16px; font-weight: 600;\">Feed Preheater Duty</td>\n        <td style=\"padding: 10px 16px; color: #dd6b20; font-weight: bold;\"><mm>HeaterDuty</mm></td>\n        <td style=\"padding: 10px 16px;\">Sensible heat to raise mixed feed to reaction temperature (620 °C).</td>\n      </tr>\n      <tr style=\"border-bottom: 1px solid #e2e8f0;\">\n        <td style=\"padding: 10px 16px; font-weight: 600;\">Reactor Cooling Duty</td>\n        <td style=\"padding: 10px 16px; color: #e53e3e; font-weight: bold;\"><mm>ReactorCooling</mm></td>\n        <td style=\"padding: 10px 16px;\">Heat removal to maintain isothermal reactor operation at 620 °C (exothermic reaction).</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px 16px; font-weight: 600;\">Product Cooler Duty</td>\n        <td style=\"padding: 10px 16px; color: #319795; font-weight: bold;\"><mm>CoolerDuty</mm></td>\n        <td style=\"padding: 10px 16px;\">Cooling effluent from 620 °C to 38 °C prior to high-pressure flash separation.</td>\n      </tr>\n    </tbody>\n  </table>\n\n  <h2 style=\"color: #2b6cb0; margin-top: 24px;\">Material Balance Summary</h2>\n  <table style=\"width: 100%; border-collapse: collapse; margin-top: 12px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-radius: 6px; overflow: hidden;\">\n    <thead>\n      <tr style=\"background: #edf2f7; color: #2d3748; text-align: left;\">\n        <th style=\"padding: 12px 16px; border-bottom: 2px solid #cbd5e0;\">Stream</th>\n        <th style=\"padding: 12px 16px; border-bottom: 2px solid #cbd5e0;\">Molar Flow</th>\n        <th style=\"padding: 12px 16px; border-bottom: 2px solid #cbd5e0;\">T & P</th>\n        <th style=\"padding: 12px 16px; border-bottom: 2px solid #cbd5e0;\">Phase</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr style=\"border-bottom: 1px solid #e2e8f0;\">\n        <td style=\"padding: 10px 16px; font-weight: 600;\">Fresh Gas Feed</td>\n        <td style=\"padding: 10px 16px;\"><mm>FreshGas.f</mm></td>\n        <td style=\"padding: 10px 16px;\">25 °C, 35 bar</td>\n        <td style=\"padding: 10px 16px;\">Vapor (95% H2, 5% CH4)</td>\n      </tr>\n      <tr style=\"border-bottom: 1px solid #e2e8f0; background: #f7fafc;\">\n        <td style=\"padding: 10px 16px; font-weight: 600;\">Fresh Toluene Feed</td>\n        <td style=\"padding: 10px 16px;\"><mm>FreshTol.f</mm></td>\n        <td style=\"padding: 10px 16px;\">25 °C, 35 bar</td>\n        <td style=\"padding: 10px 16px;\">Liquid (100% Toluene)</td>\n      </tr>\n      <tr style=\"border-bottom: 1px solid #e2e8f0;\">\n        <td style=\"padding: 10px 16px; font-weight: 600;\">Liquid Product</td>\n        <td style=\"padding: 10px 16px;\"><mm>LiquidProduct.f</mm></td>\n        <td style=\"padding: 10px 16px;\">38 °C, 33 bar</td>\n        <td style=\"padding: 10px 16px;\">Liquid (Benzene / Toluene rich)</td>\n      </tr>\n      <tr style=\"border-bottom: 1px solid #e2e8f0; background: #f7fafc;\">\n        <td style=\"padding: 10px 16px; font-weight: 600;\">Purge Gas (10%)</td>\n        <td style=\"padding: 10px 16px;\"><mm>PurgeGas.f</mm></td>\n        <td style=\"padding: 10px 16px;\">38 °C, 33 bar</td>\n        <td style=\"padding: 10px 16px;\">Vapor (H2, CH4 rich)</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px 16px; font-weight: 600;\">Recycle Gas (90%)</td>\n        <td style=\"padding: 10px 16px;\"><mm>RecycleGas.f</mm></td>\n        <td style=\"padding: 10px 16px;\">38 °C, 33 bar</td>\n        <td style=\"padding: 10px 16px;\">Vapor recycled to compressor</td>\n      </tr>\n    </tbody>\n  </table>\n</div>'"
+										},
+										"f0": "CompDuty",
+										"f1": "HeaterDuty",
+										"f2": "ReactorCooling",
+										"f3": "CoolerDuty",
+										"f4": "FreshGas.f",
+										"f5": "FreshTol.f",
+										"f6": "LiquidProduct.f",
+										"f7": "PurgeGas.f",
+										"f8": "RecycleGas.f"
+									}
+								]
+							},
+							{
+								"name": "TolueneHDA_Prompt",
+								"Notes": "Below are the instructions given to Opus 5, which resulted in it creating the TolueneHDA model. After if finished, I gave it a separate prompt asking it to create a html page describing the calculations and results along with a SVG flowsheet.\n\nCreate a model for the reaction creating toluene using the following flowsheet\n\n                     +------------- [Purge]\n                     |\n[Fresh Gas] ---\\     |       +----- [Recycle Gas] -----+\n                +->(Mixer)-->|                         |\n[Fresh Tol] ---/     ^       +->(Compressor)-----------|\n                     |                                 |\n                     +---------------------------------+\n                                     |\n                                     v\n[Mixed Feed] ---> (Heater: 620 °C, 34 bar)\n                                     |\n                                     v\n                             (Reactor: PFR/Conv)\n                                     |\n                                     v\n                             (Cooler: 38 °C, 33 bar)\n                                     |\n                                     v\n                        (High-Pressure Flash Drum)\n                               /           \\\n               [Vapor Phase] -+             +-> [Liquid Phase]\n             (H2, CH4 rich)                 (Benzene, Toluene rich)\n             \nFeed 1 (Gas): 100 kmol/h (95 mol% H2, 5 mol% C) at 25 °C, 35 bar.\nFeed 2 (Liquid Toluene): 40 kmol/h pure Toluene at 25 °C, 35 bar.\n\nReactor Conditions: isothermal at 620 °C, 34 bar. 75% conversion of Toluene.\nCalculate the required reactor cooling. Note that flash tool enthalpies don't include heat of formation.\nCool the product to 38 °C, 33 bar and flash into vapour and liquid.\n\nSend 90% to Recycle, 10% to Purge.\nCalculate the recycle compressor duty.\nAdditionally determine the Cooler duty.\n\nUse the flash tool for all streams.\n\nProvide notes on all tools explaining their calculations and leave extra room beneath the diagram icons for them. Also show all tools and notes on the model view.",
+								"DiagramX": 120,
+								"DiagramY": 30,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "Updates",
+								"Notes": "",
+								"DiagramX": 20,
+								"DiagramY": 30,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "HTML Form",
+								"Formula": {
+									"Formula": "'\n<style>\n\tli {\n\t\tmargin-bottom: 5px;\n\t}\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t.quote\n\t{\n\t\tcolor: green;\n\t\tmargin-left: 30px;\n\t}\n\t.main {\n\t\tbackground-color: #f2f2f2;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t}\n</style>\n<div class=\"main\">\n<h4>Sept 3, 2026</h4>\n<h4>Thermo and AI</h4>\n<p>\n\tI last updated the model used by the AI assistant a year ago and a year is an eternity in the AI world. Rather than just updating the existing OpenAI model, I wanted more versatility so now you can now use any provider that uses the OpenAI completion api, which most do.\n</p>\n<p>\n\tThe default provider is Open Router as they let you access over 400 different models with a single API key. I chose Google's latest Gemini Flash model as the default as it seemed a nice balance of performance versus cost. For reference, I have made 228 requests during my testing and my total cost to date is $4.80. That is less than 2 cents a prompt, although most of those used Gemini Flash, which currently is \"on sale\".\n</p>\n<p>\n\tI have been using AI for various personal projects and was well aware of the astonishing pace of improvement, but I was still blown away by making a full year jump in capabilities all at once. A year ago the AI would often make mistakes and have to make corrections after getting an error from Math Minion. This rarely happens now and this emboldened me to try it with CoolMM as well. It turns out that the better AI models are now pretty good process engineers as well.\n</p>\n<p>\n\tThis was all so impressive that after some discussion with Google Gemini, I decided to try giving Antigravity (Google's agentic coding tool) instructions to build a javascript replacement for the CoolProp flash tool. This worked amazingly well. It used open source data from ChemSep and DWSIM, but created a bespoke Peng Robinson (1978) package with a Boston-Brit inside-out flash algorithm. This proved to be fast and more robust and adept at multi-component flashes than CoolProp. It even has a feature that will treat water as an immiscible third phase in t-p flashes. Being native javascript, it was also light enough to just include in Math Minion itself rather than having a separate version.\n</p>\n<p>\n\tThe CoolMM version is still available and might be the better choice for some single component systems, but I don't plan making any further improvements to it. Most sessions created by CoolMM should work fine in Math Minion, although some compound names might be slightly different and the new thermo does not have all the refrigerants (Rwhatever) that CoolProp does.\n</p>\n<p>\n\tAs an example, a prompt for a simple toluene hydrodealkylation process is shown in the notes of expression\n\t<span class=\"link\"\n\t\tonClick=\"mmpost({}, {mm_view: 'TolueneHDA_Prompt'})\">\n\t\t\"TolueneHDA_Prompt\"\n\t</span>\n\tand the resulting model the AI created being \n\t<span class=\"link\"\n\t\tonClick=\"mmpost({}, {mm_view: 'TolueneHDA'})\">\n\t\t\"TolueneHDA\"\n\t</span>.\n</p>\n\t\n<h4>New Getting Started session</h4>\n<p>\n\tThere have been changes to the Getting Started session.  Please\n\t<span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\">get a fresh copy</span>.\n</p>"
 								}
 							}
 						]
