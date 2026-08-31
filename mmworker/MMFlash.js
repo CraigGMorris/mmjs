@@ -1319,12 +1319,7 @@ class MMFlash extends MMTool {
 						const propCount = propValue.valueCount;
 						const unitName = this.displayUnits[i + 1] || (propValue.defaultUnit ? propValue.defaultUnit.name : '');
 						if (propCount === 1) {
-							if (propName === 'q' && this.imposedPhase) {
-								labelStrings.push('q IMPOSED');
-							}
-							else {
-								labelStrings.push(propName);
-							}
+							labelStrings.push(propName);
 							unitStrings.push(unitName);
 						}
 						else if (this.componentNames && this.componentNames.length === propCount) {

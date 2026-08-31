@@ -87,14 +87,13 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink subsection"><a href="matrix.html">Matrix</a></div>
 	<div class="contentlink subsection"><a href="ode.html">Ordinary Differential Equations</a></div>
 	<div class="contentlink subsection"><a href="optimizer.html">Optimizer</a></div>
+	<div class="contentlink subsection"><a href="flash.html">Flash</a></div>
 	<div class="contentlink subsection"><a href="importedmodel.html">Imported Model</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink subsection"><a href="graph.html">Graph</a></div>
 	<div class="contentlink subsection"><a href="htmlpage.html">HTML Page</a></div>
 	<div class="contentlink subsection"><a href="button.html">Button</a></div>
 	<div class="contentlink subsection"><a href="menu.html">Menu</a></div>
-	<div>&nbsp;</div>
-	<div class="contentlink subsection"><a href="flash.html">Flash</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink subsection"><a href="notes.html">Tool Notes</a></div>
 	<div>&nbsp;</div>

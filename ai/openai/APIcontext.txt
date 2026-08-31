@@ -1143,8 +1143,6 @@ desc: >
 				desc: >
 					String formula specifying a comma-separated list of fluid components (e.g., `"Ethanol,Water"`).
 					Optional properties to calculate can be appended after a semicolon (e.g., `"Ethanol,Water;massx,viscosity"`).
-					An imposed phase can optionally be specified by appending `@` followed by the phase name.
-					Supported imposed phases: `supercritical`, `supercritical_liquid`, `supercritical_gas`, `liquid`, `gas`, `twophase`.
 			firstPropFormula:
 				desc: >
 					First intensive property formula. Must evaluate to temperature or pressure based on its unit conversion type.

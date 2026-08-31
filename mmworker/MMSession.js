@@ -248,41 +248,7 @@ export class MMSession extends MMParent {
 		this.aiModel = '(aiModel)'
 		this.lastNews = '20250903';
 		this.newSession();
-		this.couchError = null;
 	}
-
-	/**
-	 * @method couchDBSync
-	 * if this.remoteCouch is set up, sync session database
-	 */
-	couchDBSync() {
-		if (this.remoteCouch) {
-			var opts = {live: true, retry: true};
-			this.storage.db.replicate.to(this.remoteCouch, opts, (err) => {
-				const destination = this.remoteCouch.split('@')[1]
-				console.log(`There was an error syncing to ${destination}\n${err.error}`);
-				this.couchError = {key: 'mmcmd:couchToError', options: {dest: destination, msg: err.error}};
-			});
-			this.storage.db.replicate.from(this.remoteCouch, opts, (err) => {
-				const destination = this.remoteCouch.split('@')[1]
-				console.log(`There was an error syncing from ${destination}\n${err.error}`);
-				this.couchError = {key: 'mmcmd:couchFromError', options: {dest: destination, msg: err.error}};
-			}).on('change', (info) => {
-				for(const record of info.docs) {
-					if (record._id === this.storePath) {
-						this.storage.load(this.storePath).then(result => {
-							if (result) {
-								new MMUnitSystem(this);  // clear any user units and sets
-								this.initializeFromJson(result, this.storePath);
-							}
-						});
-						break;
-					}
-				}
-			});
-		}
-	}
-
 
 	/** @method newSession
 	 * initialize to new empty session
@@ -524,8 +490,6 @@ export class MMSession extends MMParent {
 			// await this.importOldStorage();
 			await this.storage.save(this.savedStorageVersionId, '1');
 		}
-		// this.remoteCouch = await indexedDB.load('(remoteCouch)');
-		// this.couchDBSync();
 		try {
 			this.isLoadingCase = true;
 			this.newSession();
@@ -1151,18 +1115,6 @@ export class MMSession extends MMParent {
 	async loadUrlCommand(command) {
 		command.results = await this.loadUrl(command.args);
 	}
-
-	/**
-	 * @method remoteDBCommand
-	 * @param {MMCommand} command 
-	 * command.args should contain the url (including name and pw) of the couchDB to sync with
-	 * an empty argument will turn off syncing
-	 */
-	// async remoteDBCommand(command) {
-	// 	this.remoteCouch = command.args;
-	// 	const indexedDB = new MMIndexedDBStorage();
-	// 	await indexedDB.save('(remoteCouch)', this.remoteCouch);
-	// }
 
 	/**
 	 * @method diagramInfo
