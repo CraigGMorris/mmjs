@@ -1223,6 +1223,80 @@ desc: >
 				- NEVER calculate reaction heat as `outlet.hflow - inlet.hflow`.
 				- For reactors and chemical reactions, calculate the standard heat of reaction (ΔHrxn° at 298.15 K) separately using standard heats of formation (ΔHf°), and use Flash `h` only for sensible enthalpy changes relative to 298.15 K (e.g., `h(T) - h(298.15 degK)`).
 
+	MMHtmlPage:
+		extends: MMTool
+		typeName: HtmlPage
+
+		desc: >
+			MMHtmlPage provides a customizable HTML view rendered inside a sandboxed iframe.
+			It allows creating custom user interfaces, forms, reports, and interactive dashboards combining HTML, CSS, and JavaScript with Math Minion tools.
+
+			Embedding Formulas with <mm> Tags:
+				Formulas enclosed in `<mm>...</mm>` tags are evaluated and replaced with their formatted output before rendering:
+				- Scalar values: Rendered directly as text.
+				- Tables and matrices: Automatically rendered as formatted HTML tables.
+				- Tool references (e.g., `<mm>myPlot</mm>`): Rendered as tool output (such as SVG for graphs, or embedded tables).
+				- Empty tag `<mm></mm>`: Inserts the full information view of the parent model.
+				- Using `$` inside `<mm>` tags (e.g., `<mm>$.myInput</mm>`) retrieves the previous input parameter posted to the HTML page tool itself.
+
+			Named Block Parameters:
+				Sections of HTML wrapped in `<!--begin_blockname-->` and `<!--end_blockname-->` comments can be extracted by other tools via the parameter `myHtmlPage.block_blockname`.
+
+			Client-Side Interaction via mmpost:
+				The page automatically injects the JavaScript function `mmpost(inputs, requests, callBack)` to communicate with Math Minion:
+				- `inputs`: An array of HTML element ID strings (e.g., `['weight', 'height']`) or an object `{name: value}`. The values are assigned as parameters on the MMHtmlPage tool and trigger recalculation of dependent tools.
+				- `requests`: An object defining formulas to evaluate and return to `callBack`, or special `mm_` action directives:
+					- `mm_view`: `"toolName"` — switches view to the specified tool.
+					- `mm_push`: `"toolName"` — pushes the specified tool's view over the HTML page.
+					- `mm_addrow`: `"tableName"` — adds a new row to an MMDataTable (evaluates default column formulas against current inputs).
+					- `mm_deleterows`: `{table: "tableName", rows: [row1, row2]}` — deletes specified rows from an MMDataTable.
+					- `mm_refresh`: `"toolName"` — forces a tool to recalculate.
+					- `mm_clear`: `true` — clears all stored input parameters on the HTML page tool.
+					- `mm_update`: `true` — forces the HTML page to re-render.
+					- `mm_load`: `"sessionName"` — loads a saved session.
+					- `mm_loadurl`: `"sessionUrl"` — loads a session from a URL.
+					- `mm_viewurl`: `"url"` — opens a URL in a new browser window.
+					- `mm_cmd`: `"cli_command_string"` — executes a CLI command in the calculation engine (e.g. `'.expr.formula set formula 42'`).
+				- `callBack`: Optional callback `function(results)` receiving evaluated formula query results.
+
+		formulas:
+			formula:
+				desc: >
+					The raw HTML template string. Use a leading single quote (`'`) to define multi-line HTML content without escaping quotes.
+
+		properties:
+			isOutput:
+				desc: Boolean. Set to true to display the rendered HTML in the model information view.
+			notes:
+				desc: Text notes for the tool.
+			diagramNotes:
+				desc: Boolean. If true, notes are shown on the diagram.
+
+		parameters:
+			html: The fully rendered HTML string after evaluating all `<mm>...</mm>` tags.
+			block_<blockname>: The content between `<!--begin_<blockname>-->` and `<!--end_<blockname>-->`.
+			<input_name>: Returns the latest value posted for the input element with id `<input_name>`. Numeric values return as numbers; others as strings or arrays.
+			myname: The tool name.
+			notes: The tool notes.
+
+		verbs:
+			htmlaction:
+				desc: Processes JSON messages from `mmpost` containing inputs, formula queries, or actions.
+				args:
+					- jsonMessage
+
+		usageNote: >
+			1. Create an HTML page tool:
+				. addtool HtmlPage myPage
+			2. Set the HTML content using a single quote at the beginning of the formula:
+				.myPage.formula set formula '<h1>Title</h1><p>Result: <mm>calcExpr</mm></p>
+			3. To bind form inputs to calculations, pass element IDs to `mmpost`:
+				<input type="text" id="val1" value="<mm>$.val1</mm>">
+				<button onclick="mmpost(['val1']);">Calculate</button>
+			4. To make the HTML page visible on the model view or act as the model's main index view:
+				.myPage set isOutput true
+				. set indexTool myPage
+
 availableAiquery:
   note: >
     The following reference keys are available via the `aiquery` command.
