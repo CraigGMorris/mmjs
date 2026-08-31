@@ -500,7 +500,7 @@ class MMFlash extends MMTool {
 		if (lcDescription === 'fluids') {
 			if (thermoEngine && thermoEngine.defaultRegistry) {
 				thermoEngine.defaultRegistry.loadAll();
-				const fluidsList = MMStringValue.stringArrayValue(thermoEngine.defaultRegistry.all().map(c => c.name));
+				const fluidsList = MMStringValue.stringArrayValue(thermoEngine.defaultRegistry.all().map(c => c.name).sort());
 				this.addRequestor(requestor);
 				return fluidsList;
 			}
