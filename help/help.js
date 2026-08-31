@@ -66,6 +66,7 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink"><a href="infoview.html">Information View</a></div>
 	<div class="contentlink"><a href="sessions.html">Sessions</a></div>
 	<div class="contentlink"><a href="units.html">Conversion Units</a></div>
+	<div class="contentlink"><a href="console.html#aimode">AI Assistant</a></div>
 	<div class="contentlink"><a href="console.html">Console</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink"><a href="formula.html">Formulas</a></div>

@@ -144,7 +144,8 @@
 					The completion url is only needed if you are not using Open Router. If omited, it will default to https://openrouter.ai/api/v1/chat/completions.
 				</p>
 				<p>
-					To change the model, us the aimodel command:
+					By default the latest Google Gemini Flash model is used. 
+					To change the model, use the aimodel command:
 				</p>
 				<p class="formula">
 					/ aimodel &lt;model name&gt;
@@ -153,12 +154,12 @@
 					After changing the api key or the model, you may have to reload Math Minion to clear the AI context if you have already been using the AI chat.
 				</p>
 				<p>
-					How useful this is may be questionable, but it is a fun way to play with AI.
-				</p>
-				<p>
 					When in AI mode, the instructions you enter are sent to the selected API, which returns comments and usually commands.
 					The commands are sent to the Math Minion engine for execution. Both the comments and commands are displayed in the
 					text area above.
+				</p>
+				<p>
+					The AI will often ask Math Minion questions and you can also ask the AI questions about the model.
 				</p>
 				<p>
 					If executing a command returns an error, it will try a couple of times to fix it before giving up. If there are problems
@@ -166,12 +167,12 @@
 				</p>
 				<p>
 					It can be a bit slow, so be patient. If it encounters an error and tries to fix it, the "thinking" indicator in the input field
-					may brieflydisappear, but either a "Done" or Failed message will appear in the text area when it is finished. If you want to abort it, just
+					may briefly disappear, but either a "Done" or Failed message will appear in the text area when it is finished. If you want to abort it, just
 					refresh the browser. Refreshing will also clear the saved conversation and start fresh.
 				</p>
 				<p>
 					The assistant's instructions includes all functions and formula syntax and how to
-					create and manipulate all Math Minion tools, with the exception of the HTML page and imported model tools.
+					create and manipulate all Math Minion tools, with the exception of the imported model tools.
 				</p>
 				<p>
 					Here are some examples. When I first implemented this over a year before these updates, performance was a
@@ -209,13 +210,18 @@
 				</p>
 				<p>
 					I had switched into the model before giving this instruction, so its attempt to move
-					into the model failed. I then queried the model and realized it was already in the correct model
+					into the model failed. It then queried the model and realized it was already in the correct model
 					and proceeded to issue the correct commands.
 				</p>
 				<p>
 					I have found doing things like asking it to examine a model and then add appropriate notes
 					to the tools often works pretty well as does things like asking it to arrange the diagram
 					icons into two columns or some such.
+				</p>
+				<p>
+					It also does a surprisingly good job of process engineering using the <a href="flash.html">
+					Flash tool</a>. I have even had good results having it add an html page to describe the process,
+					complete with an svg flowsheet.
 				</p>
 			</div>
 		</div>
