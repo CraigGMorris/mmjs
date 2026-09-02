@@ -5,7 +5,7 @@ Math Minion
 the reporting of them will be appreciated)
 
 Math Minion is a general purpose calculation tool running completely in the browser
-and is completely [free and private](http://mathminion.org/help/freeprivate.html)
+and is completely [free and private](https://mathminion.org/help/freeprivate.html)
 
 It combines a mind map style diagram of the relationships between a range of
 calculation tools, with a formula system that operates transparently on scalars,
@@ -25,4 +25,4 @@ Other features include:
 * 2 and 3 dimension graphs
 * HTML page
 
-For more information see the [website](http://mathminion.org).
+For more information see the [website](https://mathminion.org).
