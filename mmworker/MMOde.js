@@ -2158,7 +2158,7 @@ class MMOdeSolver {
 			/* Test for convergence.  If m > 0, an estimate of the convergence
 				 rate constant is stored in crate, and used in the test.        */
 			if (m > 0) {
-				crate = (/** @type {any} */ (Math.abs))(0.3 * crate, del / delp);
+				crate = (/** @type {any} */ (Math.max))(0.3 * crate, del / delp);
 			}
 			const dcon = del * Math.min(1, crate) / this.tq[4];
 			if (dcon <= 1) {
@@ -2260,6 +2260,7 @@ class MMOdeSolver {
 
 	/**
 	 * @method ewtonIteration
+	 * @returns {number}
 	 *
 	 * This routine performs the Newton iteration. If the iteration succeeds,
 	 * it returns the value SUCCESS. If not, it may signal the newtonSolve 
