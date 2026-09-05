@@ -35,10 +35,14 @@ const DELTA1 = 1.0 + Math.SQRT2;
 const DELTA2 = 1.0 - Math.SQRT2;
 
 /**
+ * @typedef {import('../types/eos.js').PropertyPackage} IPropertyPackage
+ */
+
+/**
  * Peng-Robinson (1978) Property Package with Peneloux Volume Translation.
  * Implements the standard PropertyPackage interface with zero transient allocations.
  *
- * @implements {import('../types/eos.js').PropertyPackage}
+ * @implements {IPropertyPackage}
  */
 export class PengRobinson {
 	/**
