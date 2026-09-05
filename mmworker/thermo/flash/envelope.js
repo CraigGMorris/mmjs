@@ -114,7 +114,7 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 		const Pc = comp.pc;
 		const pureCurve = [];
 		const nPts = Math.max(30, numPoints);
-		const tMin = comp.tt ? Math.max(20.0, comp.tt) : 0.4 * Tc;
+		const tMin = comp.tm ? Math.max(20.0, comp.tm) : 0.4 * Tc;
 		for (let i = 0; i <= nPts; i++) {
 			const frac = i / nPts;
 			const T = tMin + frac * (Tc * 0.999 - tMin);
