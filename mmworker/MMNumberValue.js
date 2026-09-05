@@ -1,3 +1,5 @@
+// @ts-check
+
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -28,6 +30,17 @@
 	MMFunctionResult:readonly,
 */
 
+/** @typedef {import('./MMCommandProcessor.js').MMCommandMessage} MMCommandMessage */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnitSet} MMUnitSet */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnitSystem} MMUnitSystem */
+/** @typedef {import('./MMTableValue.js').MMTableValue} MMTableValue */
+/** @typedef {import('./MMTableValue.js').MMTableValueColumn} MMTableValueColumn */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMMath.js').MMMath} MMMath */
+/** @typedef {import('./MMFormula.js').MMFunctionResult} MMFunctionResult */
+
 /**
  * Enum for dyadic units
  * @readonly
@@ -49,10 +62,15 @@ export const MMDyadicUnitAction = Object.freeze({
  */
 // eslint-disable-next-line no-unused-vars
 export class MMNumberValue extends MMValue {
+	/** @type {number[]} */
+	unitDimensions;
+	/** @type {Float64Array} */
+	_values;
+
 	/** @constructor
 	 * @param {Number} rowCount
 	 * @param {Number} columnCount
-	 * @param {number[]} unitDimensions - can be nil
+	 * @param {number[]|null} [unitDimensions] - can be nil
 	*/
 	constructor(rowCount, columnCount, unitDimensions) {
 		super(rowCount, columnCount);
@@ -74,7 +92,7 @@ export class MMNumberValue extends MMValue {
 	}
 
 	/** @method copyOf
-	 * @returns {MMValue}  - a copy of this instance
+	 * @returns {MMNumberValue}  - a copy of this instance
 	 */
 	copyOf() {
 		let newValue = new MMNumberValue(this.rowCount, this.columnCount, this.unitDimensions);
@@ -90,7 +108,7 @@ export class MMNumberValue extends MMValue {
 	/** @static scalarValue
 	 * creates a MMNumberValue with a single value
 	 * @param {Number} value
-	 * @param {Number[]} unitDimensions
+	 * @param {Number[]|null} [unitDimensions]
 	 * @returns {MMNumberValue}
 	 */
 	static scalarValue(value, unitDimensions) {
@@ -102,7 +120,8 @@ export class MMNumberValue extends MMValue {
 	/** @static numberArrayValue
 	 * creates a MMNumberValue from an array of numbers
 	 * @param {number[]} values
-	 * @param {number[]} unitDimensions
+	 * @param {number[]} [unitDimensions]
+	 * @returns {MMNumberValue}
 	 */
 	static numberArrayValue(values, unitDimensions) {
 		let newValue = new MMNumberValue(values.length, 1, unitDimensions);
@@ -127,7 +146,7 @@ export class MMNumberValue extends MMValue {
 	}
 
 	/** @method addUnitDimensions
-	 * @param {Number[]} dimesions
+	 * @param {Number[]} dimensions
 	 */
 	addUnitDimensions(dimensions) {
 		for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
@@ -136,7 +155,7 @@ export class MMNumberValue extends MMValue {
 	}
 	
 	/** @method subtractUnitDimensions
-	 * @param {Number[]} dimesions
+	 * @param {Number[]} dimensions
 	 */
 	subtractUnitDimensions(dimensions) {
 		for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
@@ -165,7 +184,7 @@ export class MMNumberValue extends MMValue {
 	}
 	
 	/** @method checkUnitDimensionsAreEqualTo
-	 * @param {Number[]} dimensions
+	 * @param {Number[]|null} [dimensions]
 	 * @throws if they are not
 	 */
 	checkUnitDimensionsAreEqualTo(dimensions) {
@@ -175,7 +194,7 @@ export class MMNumberValue extends MMValue {
 	}
 
 	/** @method setAllValuesTo
-	 * @param value sets all values to this scalar
+	 * @param {number} value sets all values to this scalar
 	 */
 	setAllValuesTo(value) {
 		this._values.fill(value);
@@ -234,16 +253,17 @@ export class MMNumberValue extends MMValue {
 
 	/**
 	 * @method defaultUnit
-	 * @returns {MMUnit}
+	 * @override
+	 * @returns {MMUnit|null}
 	 */
 	get defaultUnit() {
-		return theMMSession.unitSystem.defaultUnitWithDimensions(this.unitDimensions);
+		return (/** @type {MMUnitSystem} */ (theMMSession.unitSystem)).defaultUnitWithDimensions(this.unitDimensions);
 	}
 
 	/**
 	 * @method format
 	 * @param {MMStringValue} format 
-	 * @param {MMUnit} unit 
+	 * @param {MMUnit|null} [unit] 
 	 */
 	format(format, unit) {
 		const f = MMUnitSystem.format;
@@ -279,13 +299,13 @@ export class MMNumberValue extends MMValue {
 
 	/**
 	 * @method stringUsingUnit
-	 * @param {MMUnit} outUnit - can be nil
-	 * @param {String} format (optional)
+	 * @param {MMUnit} [outUnit] - can be nil
+	 * @param {String} [format] (optional)
 	 * @returns {String}
 	 */
 	stringUsingUnit(outUnit, format) {
 		if(!outUnit) {
-			outUnit = this.defaultUnit;
+			outUnit = (/** @type {MMUnit} */ (this.defaultUnit));
 		}
 
 		if(this.valueCount == 0) {
@@ -301,13 +321,14 @@ export class MMNumberValue extends MMValue {
 
 	/**
 	 * @method stringWithUnit
-	 * @param {MMUnit} outUnit - can be nil
-	 * @param {String} format (optional)
+	 * @override
+	 * @param {MMUnit} [outUnit] - can be nil
+	 * @param {String} [format] (optional)
 	 * @returns {String}
 	 */
 	stringWithUnit(outUnit, format) {
 		if(!outUnit || !MMUnitSystem.areDimensionsEqual(this.unitDimensions, outUnit.dimensions)) {
-			outUnit = this.defaultUnit;
+			outUnit = (/** @type {MMUnit} */ (this.defaultUnit));
 		}
 
 		if(this.valueCount == 0) {
@@ -316,9 +337,9 @@ export class MMNumberValue extends MMValue {
 
 		let value = this._values[0];
 		if(this.valueCount == 1) {
-			return outUnit.stringForValueWithUnit(value, format);
+			return (/** @type {MMUnit} */ (outUnit)).stringForValueWithUnit(value, (/** @type {string} */ (format)));
 		}
-		return `${outUnit.stringForValueWithUnit(value, format)}...[${this.rowCount},${this.columnCount}]`;
+		return `${(/** @type {MMUnit} */ (outUnit)).stringForValueWithUnit(value, (/** @type {string} */ (format)))}...[${this.rowCount},${this.columnCount}]`;
 	}
 
 	/**
@@ -326,8 +347,8 @@ export class MMNumberValue extends MMValue {
 	 * @override
 	 * @param {Number} row
 	 * @param {Number} column
-	 * @param {MMUnit} outUnit
-	 * @param {String} format (optional)
+	 * @param {MMUnit} [outUnit]
+	 * @param {String} [format] (optional)
 	 * @returns {String}
 	 */
 	stringForRowColumnUnit(row, column, outUnit, format) {
@@ -337,9 +358,9 @@ export class MMNumberValue extends MMValue {
 			outUnit = this.displayUnit;
 		}
 		if (!outUnit) {
-			outUnit = this.defaultUnit;
+			outUnit = (/** @type {MMUnit} */ (this.defaultUnit));
 		}
-		return outUnit.stringForValue(value, format);
+		return (/** @type {MMUnit} */ (outUnit)).stringForValue(value, (/** @type {string} */ (format)));
 	}
 
 	/**
@@ -347,8 +368,8 @@ export class MMNumberValue extends MMValue {
 	 * @override
 	 * @param {Number} row
 	 * @param {Number} column
-	 * @param {MMUnit} outUnit
-	 * @param {String} format (optional)
+	 * @param {MMUnit} [outUnit]
+	 * @param {String} [format] (optional)
 	 * @returns {String}
 	 */
 	stringForRowColumnWithUnit(row, column, outUnit, format) {
@@ -358,10 +379,10 @@ export class MMNumberValue extends MMValue {
 			outUnit = this.displayUnit;
 		}
 		if (!outUnit) {
-			outUnit = this.defaultUnit;
+			outUnit = (/** @type {MMUnit} */ (this.defaultUnit));
 		}
 
-		return outUnit.stringForValueWithUnit(value, format);
+		return (/** @type {MMUnit} */ (outUnit)).stringForValueWithUnit(value, (/** @type {string} */ (format)));
 	}
 
 	/**
@@ -372,7 +393,7 @@ export class MMNumberValue extends MMValue {
 	 * @returns {MMValue}
 	 */
 	valueForIndexRowColumn(rowIndex, columnIndex) {
-		return this.valueForIndexRowColumnFactory(rowIndex, columnIndex, (nRows, nColumns) => {
+		return this.valueForIndexRowColumnFactory(rowIndex, columnIndex, (/** @type {number} */ nRows, /** @type {number} */ nColumns) => {
 			return new MMNumberValue(nRows, nColumns, this.unitDimensions);
 		});
 	}
@@ -399,11 +420,12 @@ export class MMNumberValue extends MMValue {
 
 	/**
 	 * @method append
-	 * appends columns to value
+	 * @override
 	 * @param {MMValue} additions
+	 * @returns {MMValue}
 	*/
 	append(additions) {
-		additions = additions ? additions.numberValue() : null;
+		additions = additions ? (/** @type {any} */ (additions.numberValue())) : null;
 		if (!additions) {
 			return this;
 		}
@@ -449,6 +471,12 @@ export class MMNumberValue extends MMValue {
 	* @param {MMNumberValue} value
 	* @param {function} func
 	*/
+	/**
+	 * @param {MMNumberValue} value
+	 * @param {string} unitAction
+	 * @param {(a: number, b: number) => number} func
+	 * @returns {MMNumberValue|null}
+	 */
 	processDyadic(value, unitAction, func) {
 		let rv = this.dyadicNumberResult(value, this.unitDimensions);
 		let v1 = rv._values;
@@ -505,8 +533,12 @@ export class MMNumberValue extends MMValue {
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
 	 */
+	/**
+	 * @param {MMNumberValue} value
+	 * @returns {MMNumberValue}
+	 */
 	add(value) {
-		return this.processDyadic(value, MMDyadicUnitAction.equal, (a,b) => a+b);
+		return (/** @type {MMNumberValue} */ (this.processDyadic(value, MMDyadicUnitAction.equal, (a,b) => a+b)));
 	}
 
 	/**
@@ -515,8 +547,12 @@ export class MMNumberValue extends MMValue {
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
 	 */
+	/**
+	 * @param {MMNumberValue} value
+	 * @returns {MMNumberValue}
+	 */
 	subtract(value) {
-		return this.processDyadic(value, MMDyadicUnitAction.equal, (a,b) => a-b);
+		return (/** @type {MMNumberValue} */ (this.processDyadic(value, MMDyadicUnitAction.equal, (a,b) => a-b)));
 	}
 
 	/**
@@ -525,8 +561,12 @@ export class MMNumberValue extends MMValue {
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
 	 */
+	/**
+	 * @param {MMNumberValue} value
+	 * @returns {MMNumberValue}
+	 */
 	multiply(value) {
-		const rv = this.processDyadic(value, MMDyadicUnitAction.multiply, (a,b) => a*b);
+		const rv = (/** @type {MMNumberValue} */ (this.processDyadic(value, MMDyadicUnitAction.multiply, (a,b) => a*b)));
 		return rv;
 	}
 
@@ -536,8 +576,12 @@ export class MMNumberValue extends MMValue {
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
 	 */
+	/**
+	 * @param {MMNumberValue} value
+	 * @returns {MMNumberValue}
+	 */
 	divideBy(value) {
-		const rv = this.processDyadic(value, MMDyadicUnitAction.divide, (a,b) => a/b);
+		const rv = (/** @type {MMNumberValue} */ (this.processDyadic(value, MMDyadicUnitAction.divide, (a,b) => a/b)));
 		return rv;
 	}
 
@@ -547,14 +591,18 @@ export class MMNumberValue extends MMValue {
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
 	 */
+	/**
+	 * @param {MMNumberValue} value
+	 * @returns {MMNumberValue}
+	 */
 	mod(value) {
-		const rv = this.processDyadic(value, MMDyadicUnitAction.divide, (a,b) => {
+		const rv = (/** @type {MMNumberValue} */ (this.processDyadic(value, MMDyadicUnitAction.divide, (a,b) => {
 			// return a % b;
 			// the objc version did the equivalent of the following,
 			// but I am not sure the floor operations should be included
 			// if not needed
 			return Math.floor(Math.abs(a) + .1) % Math.floor(Math.abs(b) + .1);
-		});
+		})));
 		return rv;
 	}
 
@@ -573,6 +621,10 @@ export class MMNumberValue extends MMValue {
 	 * @param {MMNumberValue} value
 	 * @returns {MMNumberValue}
 	 */
+	/**
+	 * @param {MMNumberValue} value
+	 * @returns {MMNumberValue}
+	 */
 	power(value) {
 		if(value.hasUnitDimensions()) {
 			this.exceptionWith('mmcmd:valuePowerHasUnits');
@@ -580,7 +632,7 @@ export class MMNumberValue extends MMValue {
 		if(value.valueCount > 1 && this.hasUnitDimensions()) {
 			this.exceptionWith('mmcmd:valuePowerOfArrayWithUnits');
 		}
-		const rv = this.processDyadic(value, MMDyadicUnitAction.power, Math.pow);
+		const rv = (/** @type {MMNumberValue} */ (this.processDyadic(value, MMDyadicUnitAction.power, Math.pow)));
 		return rv;
 	}
 
@@ -588,7 +640,7 @@ export class MMNumberValue extends MMValue {
 	 * @method getbit
 	 * returns bit value and bitNumber
 	 * @param {MMNumberValue} bitNumber
-	 * @returns {MMNumberValue}
+	 * @returns {MMNumberValue|undefined}
 	 */
 		getbit(bitNumber) {
 			if (bitNumber instanceof MMNumberValue) {
@@ -610,7 +662,7 @@ export class MMNumberValue extends MMValue {
 
 	/**
 	 * @method monadicResultWithUnitDimensions
-	 * @param {Number[]} unitDimensions
+	 * @param {Number[]} [unitDimensions]
 	 * @returns {MMNumberValue}
 	 */
 	monadicResultWithUnitDimensions(unitDimensions) {
@@ -619,6 +671,11 @@ export class MMNumberValue extends MMValue {
 
 	/** @method genericMonadic
 	 * @param f - function taking a float value and returning the function result for it
+	 */
+	/**
+	 * @param {(x: number) => number} f
+	 * @param {boolean} [canHaveUnits]
+	 * @returns {MMNumberValue}
 	 */
 	genericMonadic(f, canHaveUnits = false) {
 		if (!canHaveUnits && this.hasUnitDimensions()) {
@@ -789,6 +846,7 @@ export class MMNumberValue extends MMValue {
 
 	/** @method sum
 	 * returns the sum of all values
+	 * @returns {MMNumberValue}
 	 */
 	sum() {
 		let sum = 0;
@@ -802,6 +860,7 @@ export class MMNumberValue extends MMValue {
 
 	/** @method sumRows
 	 * returns the sum of each row
+	 * @returns {MMNumberValue}
 	 */
 	sumRows() {
 		const columnCount = this.columnCount;
@@ -820,6 +879,7 @@ export class MMNumberValue extends MMValue {
 
 	/** @method sumColumns
 	 * returns the sum of each column
+	 * @returns {MMNumberValue}
 	 */
 	sumColumns() {
 		const columnCount = this.columnCount;
@@ -857,14 +917,15 @@ export class MMNumberValue extends MMValue {
 
 	/**
 	 * @method concat
-	 * @param  {MMNumberValue} other
-	 * @return MMNumberValue
+	 * @override
+	 * @param  {MMValue} other
+	 * @returns {MMNumberValue|null|undefined}
 	 * overriden to concatanate two value into one by row
 	 */
 	concat(other) {
 		let rv;
 		if (other instanceof MMNumberValue) {
-			this.checkUnitDimensionsAreEqualTo(other.unitDimensions);
+			this.checkUnitDimensionsAreEqualTo((/** @type {MMNumberValue} */ (other)).unitDimensions);
 			const valueCount = this.valueCount + other.valueCount;
 			rv = new MMNumberValue(valueCount, 1, this.unitDimensions);
 			for (let i = 0; i < this.valueCount; i++) {
@@ -977,7 +1038,7 @@ export class MMNumberValue extends MMValue {
 	 * pivot is an output vector that records the row permutations effected by partial pivoting.
 	 * it must be sized appropriately by the calling routine
 	 * based on Numerical Recipe in C
-	 * @return {Object} contains pivot:, a Int32Array that records the row permutations effected by partial pivoting
+	 * @returns {{pivot: Int32Array, isEven: boolean, error?: any}} contains pivot:, a Int32Array that records the row permutations effected by partial pivoting
 	 * and isEven: which is true if the number of row interchanges was even and false if odd
 	 */
 	luDecomposition() {
@@ -986,7 +1047,7 @@ export class MMNumberValue extends MMValue {
 		}
 		const count = this.columnCount;
 		const values = this._values;
-		const result = MMMath.luDecomposition(count, values);
+		const result = (/** @type {any} */ (MMMath)).luDecomposition(count, values);
 		if (result.error) {
 			this.exceptionWith(result.error)
 		}
@@ -1099,7 +1160,7 @@ export class MMNumberValue extends MMValue {
 		}
 		const count = this.columnCount;
 		const v = this._values;
-		const elementSwap = (i,j) => {
+		const elementSwap = (/** @type {number} */ i, /** @type {number} */ j) => {
 			const temp = v[i];
 			v[i] = v[j];
 			v[j] = temp;
@@ -1152,7 +1213,7 @@ export class MMNumberValue extends MMValue {
 		const count = this.columnCount;
 		const v = this._values;
 		const float_min = 1e-37;
-		const eigenSign = (a,b) => {
+		const eigenSign = (/** @type {number} */ a, /** @type {number} */ b) => {
 			return (b) > 0 ? Math.abs(a) : -Math.abs(a);
 		}
 		let anorm = Math.abs(v[0]);  // compute matrix norm for possible use in locating single small subdiagonal element
@@ -1217,7 +1278,10 @@ export class MMNumberValue extends MMValue {
 						}
 						++its;
 						let m;
-						let p, q, r, z;
+						let p = (/** @type {any} */ (undefined));
+						let q = (/** @type {any} */ (undefined));
+						let r = (/** @type {any} */ (undefined));
+						let z = (/** @type {any} */ (undefined));
 						for (m = nn - 2; m >= 0; m--) {   // form shift and then look for 2 consecutive small subdiagonal elements
 							z = v[count * m + m];
 							r = x - z;
@@ -1422,7 +1486,7 @@ export class MMNumberValue extends MMValue {
 	/**
 	 * @method processComplexDyadic
 	 * @param {String} name - name of operation
-	 * @param {MMNumber} value - 2 column number value representing complex
+	 * @param {MMNumberValue} value - 2 column number value representing complex
 	 * @param {MMDyadicUnitAction} unitAction
 	 * @param {function} func
 	*/
@@ -1477,7 +1541,7 @@ export class MMNumberValue extends MMValue {
 			iValues[row] = iResult;
 		}
 
-		const displayUnit = theMMSession.unitSystem.baseUnitWithDimensions(rv.unitDimensions);
+		const displayUnit = (/** @type {MMUnitSystem} */ (theMMSession.unitSystem)).baseUnitWithDimensions(rv.unitDimensions);
 		const rColumn = new MMTableValueColumn({
 			name: 'r',
 			displayUnit: displayUnit.name,
@@ -1493,6 +1557,11 @@ export class MMNumberValue extends MMValue {
 		return complexValue;		
 	}
 
+	/**
+	 * @param {MMNumberValue} v1
+	 * @param {MMNumberValue} v2
+	 * @returns {[MMNumberValue, MMNumberValue]}
+	 */
 	complexNumberParameters(v1, v2) {
 		if (v1.columnCount > 2 || v2.columnCount > 2) {
 			this.exceptionWith('mmcmd:formulaComplexColumnCount');
@@ -1501,18 +1570,22 @@ export class MMNumberValue extends MMValue {
 		if (v1.columnCount === 1) {
 			// assume real and add zero img column
 			const zero = MMNumberValue.scalarValue(0, v1.unitDimensions);
-			v1 = v1.append(zero);
+			v1 = (/** @type {MMNumberValue} */ (v1.append(zero)));
 		}
 
 		if (v2.columnCount === 1) {
 			// assume real and add zero img column
 			const zero = MMNumberValue.scalarValue(0, v2.unitDimensions);
-			v2 = v2.append(zero);
+			v2 = (/** @type {MMNumberValue} */ (v2.append(zero)));
 		}
 		return [v1, v2];
 	}
 
 	// statistical functions
+	/**
+	 * @param {number} resultType
+	 * @returns {MMNumberValue|null}
+	 */
 	averageOf(resultType) {
 		let rv = null;
 		switch (resultType) {
@@ -1529,7 +1602,16 @@ export class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/**
+	 * @param {number} resultType
+	 * @returns {MMNumberValue|null}
+	 */
 	geoMeanOf(resultType) {
+		/**
+		 * @param {MMNumberValue} v
+		 * @param {number} resultType
+		 * @returns {MMNumberValue|null}
+		 */
 		const calc = (v, resultType) => {
 			let rv = null;
 			switch (resultType) {
@@ -1555,7 +1637,7 @@ export class MMNumberValue extends MMValue {
 			const oneUnit = MMNumberValue.scalarValue(1, this.unitDimensions);
 			const unitlessValue = new MMNumberValue(this.rowCount, this.columnCount);
 			unitlessValue._values.set(this._values);
-			return calc(unitlessValue, resultType).multiply(oneUnit);
+			return (/** @type {MMNumberValue} */ (calc(unitlessValue, resultType))).multiply(oneUnit);
 		}
 		else {
 			return calc(this, resultType);
@@ -1563,6 +1645,10 @@ export class MMNumberValue extends MMValue {
 	}
 
 	// statistical functions
+	/**
+	 * @param {number} resultType
+	 * @returns {MMNumberValue|null}
+	 */
 	harmonicMeanOf(resultType) {
 		let rv = null;
 		let one = MMNumberValue.scalarValue(1);  // unitless one
@@ -1581,7 +1667,16 @@ export class MMNumberValue extends MMValue {
 	}
 	
 
+	/**
+	 * @param {number} resultType
+	 * @returns {MMNumberValue|null}
+	 */
 	medianOf(resultType) {
+		/**
+		 * @param {Float64Array|number[]} array
+		 * @param {number} count
+		 * @returns {number}
+		 */
 		const quickSelect = (array, count) => {
 			/*
 				*  This Quickselect routine is based on the algorithm described in
@@ -1593,6 +1688,9 @@ export class MMNumberValue extends MMValue {
 				let high = count - 1;
 				let median = Math.floor((low + high) / 2.0)
 				let middle, ll, hh;
+				/** @param {number} a
+				 * @param {number} b
+				 */
 				const swap = (a,b) => {
 					const t = array[a];
 					array[a] = array[b];
@@ -1691,6 +1789,10 @@ export class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/**
+	 * @param {number} resultType
+	 * @returns {MMNumberValue|null}
+	 */
 	varianceOf(resultType) {
 		let rv = null;
 		const mean = this.averageOf(resultType);
@@ -1698,17 +1800,17 @@ export class MMNumberValue extends MMValue {
 		switch (resultType) {
 			case MMFunctionResult.all: {
 				const count = MMNumberValue.scalarValue(this.valueCount - 1);
-				rv = this.subtract(mean).power(two).sum().divideBy(count);
+				rv = this.subtract((/** @type {MMNumberValue} */ (mean))).power(two).sum().divideBy(count);
 			}
 				break;
 			case MMFunctionResult.rows: {
 				const count = MMNumberValue.scalarValue(this.columnCount - 1);
-				rv = this.subtract(mean).power(two).sumRows().divideBy(count);
+				rv = this.subtract((/** @type {MMNumberValue} */ (mean))).power(two).sumRows().divideBy(count);
 			}
 				break;
 			case MMFunctionResult.columns:{
 				const count = MMNumberValue.scalarValue(this.rowCount - 1);
-				rv = this.subtract(mean).power(two).sumColumns().divideBy(count);
+				rv = this.subtract((/** @type {MMNumberValue} */ (mean))).power(two).sumColumns().divideBy(count);
 			}
 				break;
 		}
@@ -1743,6 +1845,12 @@ export class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/**
+	 * @param {MMNumberValue} u
+	 * @param {MMNumberValue} s
+	 * @param {boolean} [isCumulative]
+	 * @returns {MMNumberValue}
+	 */
 	normalDistribution(u, s, isCumulative) {
 		this.checkUnitDimensionsAreEqualTo(u.unitDimensions);
 		this.checkUnitDimensionsAreEqualTo(s.unitDimensions);
@@ -1773,6 +1881,11 @@ export class MMNumberValue extends MMValue {
 		return rv;		
 	}
 
+	/**
+	 * @param {MMNumberValue} u
+	 * @param {MMNumberValue} s
+	 * @returns {MMNumberValue}
+	 */
 	inverseNormalProbability(u, s) {
 		if (this.hasUnitDimensions()) {
 			this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: 'norminv p'});
@@ -1796,6 +1909,11 @@ export class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/**
+	 * @param {MMNumberValue} success
+	 * @param {MMNumberValue} probability
+	 * @returns {MMNumberValue}
+	 */
 	binomialDistribution(success, probability) {  // where this is the number of trials
 		if (this.hasUnitDimensions() || success.hasUnitDimensions() || probability.hasUnitDimensions()) {
 			this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: 'binomdist'});
@@ -1821,6 +1939,11 @@ export class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/**
+	 * @param {MMNumberValue} a
+	 * @param {MMNumberValue} b
+	 * @returns {MMNumberValue}
+	 */
 	betaDistribution(a, b) {  // where this is x (0 <= x <= 1)
 		if (this.hasUnitDimensions() || a.hasUnitDimensions() || b.hasUnitDimensions()) {
 			this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: 'betadist'});
@@ -1847,6 +1970,10 @@ export class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/**
+	 * @param {MMNumberValue} expected
+	 * @returns {MMNumberValue|null}
+	 */
 	chiTest(expected) {
 		if (this.hasUnitDimensions() || expected.hasUnitDimensions()) {
 			this.exceptionWith('mmcmd:formulaFunctionUnitsNone', {name: 'chitest'});
@@ -1875,12 +2002,20 @@ export class MMNumberValue extends MMValue {
 		return MMNumberValue.scalarValue(p);
 	}
 
+	/**
+	 * @param {MMNumberValue} b
+	 * @returns {MMNumberValue}
+	 */
 	studentT(b) {
 		this.checkUnitDimensionsAreEqualTo(b.unitDimensions);
 		const v = MMMath.ttest(this._values, this.valueCount, b._values, b.valueCount);
 		return MMNumberValue.scalarValue(v);
 	}
 
+	/**
+	 * @param {MMNumberValue} b
+	 * @returns {MMNumberValue}
+	 */
 	pairedStudentT(b) {
 		this.checkUnitDimensionsAreEqualTo(b.unitDimensions);
 		if (this.valueCount != b.valueCount) {
@@ -1892,6 +2027,11 @@ export class MMNumberValue extends MMValue {
 
 	// Lookup functions
 
+	/**
+	 * @param {MMNumberValue} index
+	 * @param {MMValue} values
+	 * @returns {MMValue}
+	 */
 	lookup(index, values) {
 		this.checkUnitDimensionsAreEqualTo(index.unitDimensions);
 		if ( values.valueCount !== index.valueCount) {
@@ -1911,7 +2051,7 @@ export class MMNumberValue extends MMValue {
 
 		for (let i = 0; i < myValueCount; i++) {
 			const l = myValues[i];
-			let v0, v1, i0, i1;
+			let v0 = (/** @type {any} */ (undefined)), v1 = (/** @type {any} */ (undefined)), i0 = (/** @type {any} */ (undefined)), i1 = (/** @type {any} */ (undefined));
 			// v0 = v1 = i0 = i1 = 0.0;  // just to get rid of analyze errors
 			if (l < iValues[0] ) {
 				i0 = iValues[0];
@@ -2005,6 +2145,10 @@ export class MMNumberValue extends MMValue {
 
 	// 3D transform functions
 
+	/**
+	 * @param {number} angle
+	 * @returns {MMNumberValue}
+	 */
 	static rollForAngle(angle) {
 		const rv = new MMNumberValue(4,4);
 		const v = rv._values;
@@ -2026,6 +2170,10 @@ export class MMNumberValue extends MMValue {
 		return null;
 	}
 
+	/**
+	 * @param {number} angle
+	 * @returns {MMNumberValue}
+	 */
 	static pitchForAngle(angle) {
 		const rv = new MMNumberValue(4,4);
 		const v = rv._values;
@@ -2047,6 +2195,10 @@ export class MMNumberValue extends MMValue {
 		return null;
 	}
 
+	/**
+	 * @param {number} angle
+	 * @returns {MMNumberValue}
+	 */
 	static yawForAngle(angle) {
 		const rv = new MMNumberValue(4,4);
 		const v = rv._values;
@@ -2113,6 +2265,10 @@ export class MMNumberValue extends MMValue {
 		return rv;
 	}
 
+	/**
+	 * @param {MMNumberValue} coords
+	 * @returns {MMNumberValue}
+	 */
 	transform(coords) {
 		const myValueCount = this.valueCount;
 		if (myValueCount !== 16 || coords.valueCount === 0 || coords.valueCount % 3 ) {
@@ -2143,25 +2299,26 @@ export class MMNumberValue extends MMValue {
 	/**
 	 * @method jsonValue
 	 * @override
-	 * @param {MMUnit} displayUnit
-	 * @param {String} format
+	 * @param {MMUnit} [displayUnit]
+	 * @param {String} [format]
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
 	jsonValue(displayUnit, format) {
-		let rv = {}
+		/** @type {Record<string, any>} */
+		let rv = {};
 		if (!displayUnit) {
 			displayUnit = this.displayUnit;
 		}
 		if (!displayUnit) {
-			displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(this.unitDimensions);
+			displayUnit = (/** @type {MMUnitSystem} */ (theMMSession.unitSystem)).defaultUnitWithDimensions(this.unitDimensions);
 		}
 		if (displayUnit) {
 			rv['unit'] = displayUnit.name;
-			rv['v'] = Array.from(this._values).map(x => displayUnit.convertFromBase(x));
-			}
+			rv['v'] = Array.from(this._values).map(x => (/** @type {MMUnit} */ (displayUnit)).convertFromBase(x));
+		}
 		else {
 			rv['v'] = Array.from(this._values);
-			rv['unit'] = theMMSession.unitSystem.baseUnitWithDimensions(this.unitDimensions).name;
+			rv['unit'] = (/** @type {MMUnitSystem} */ (theMMSession.unitSystem)).baseUnitWithDimensions(this.unitDimensions).name;
 		}
 		if (!format) {
 			format = this.displayFormat;
@@ -2169,7 +2326,7 @@ export class MMNumberValue extends MMValue {
 		if (format) {
 			rv["format"] = format;
 		}
-		rv['unitType'] = theMMSession.unitSystem.sets.defaultSet.typeNameForDimensions(this.unitDimensions);
+		rv['unitType'] = (/** @type {MMUnitSet} */ ((/** @type {MMUnitSystem} */ (theMMSession.unitSystem)).sets.defaultSet)).typeNameForDimensions(this.unitDimensions);
 		rv['t'] = 'n';
 		rv['nr'] = this.rowCount;
 		rv['nc'] = this.columnCount;

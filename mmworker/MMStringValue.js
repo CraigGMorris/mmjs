@@ -1,3 +1,5 @@
+// @ts-check
+
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -22,6 +24,10 @@
 	MMNumberValue:readonly
 */
 
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+
 /**
  * @class MMStringValue
  * @extends MMValue
@@ -29,18 +35,22 @@
  */
 // eslint-disable-next-line no-unused-vars
 export class MMStringValue extends MMValue {
+	/** @type {string[]} */
+	_values;
+
 	/** @constructor
 	 * @param {Number} rowCount
 	 * @param {Number} columnCount
+	 * @param {number[]} [unitDimensions]
 	*/
-	constructor(rowCount, columnCount) {
+	constructor(rowCount, columnCount, unitDimensions) {
 		super(rowCount, columnCount);
 		this._values = new Array(this.valueCount);
 		this._values.fill('', 0, this.valueCount);
 	}
 
 	/** @method copyOf
-	 * @returns {MMValue}  - a copy of this instance
+	 * @returns {MMStringValue}  - a copy of this instance
 	 */
 	copyOf() {
 		let newValue = new MMStringValue(this.rowCount, this.columnCount);
@@ -48,6 +58,7 @@ export class MMStringValue extends MMValue {
 		return newValue;
 	}
 
+	/** @returns {string[]} */
 	get values() {
 		// used by MMTableValueColumn for saving actual values
 		return this._values;
@@ -101,7 +112,7 @@ export class MMStringValue extends MMValue {
 	 * set value at row and column
 	 * @param {String} value
 	 * @param {Number} row
-	 * @param {Numbber} column
+	 * @param {Number} column
 	 */
 	setValue(value, row, column) {
 		this.checkBounds(row, column);
@@ -139,6 +150,7 @@ export class MMStringValue extends MMValue {
 
 	/**
 	 * @method valueForIndexRowColumn
+	 * @override
 	 * @param {MMValue} rowIndex
 	 * @param {MMValue} columnIndex
 	 * @returns {MMValue}
@@ -151,7 +163,8 @@ export class MMStringValue extends MMValue {
 
 	/**
 	 * @method stringWithUnit
-	 * @param {MMUnit} unit - optional
+	 * @override
+	 * @param {MMUnit} [unit] - optional
 	 * @returns {String} 
 	 */
 	// eslint-disable-next-line no-unused-vars
@@ -173,7 +186,6 @@ export class MMStringValue extends MMValue {
 	 * @override
 	 * @param {Number} row
 	 * @param {Number} column
-	 * @param {MMUnit} outUnit
 	 * @returns {String}
 	 */
 	stringForRowColumnUnit(row, column/*, outUnit */) {
@@ -186,7 +198,6 @@ export class MMStringValue extends MMValue {
 	 * @override
 	 * @param {Number} row
 	 * @param {Number} column
-	 * @param {MMUnit} outUnit
 	 * @returns {String}
 	 */
 	stringForRowColumnWithUnit(row, column/*, outUnit */) {
@@ -198,7 +209,7 @@ export class MMStringValue extends MMValue {
 	 * @method valueForColumnNumber
 	 * @override
 	 * @param {Number} number 
-	 * @returns {MMValue}
+	 * @returns {MMStringValue}
 	 */
 	valueForColumnNumber(number) {
 		if (this.columnCount == 1) {
@@ -215,8 +226,10 @@ export class MMStringValue extends MMValue {
 
 	/**
 	 * @method append
+	 * @override
 	 * appends columns to value
 	 * @param {MMValue} additions
+	 * @returns {MMStringValue|null}
 	*/
 	append(additions) {
 		let rv = null;
@@ -247,6 +260,7 @@ export class MMStringValue extends MMValue {
 	/** @method redimension
 	 * return value reconfigured to given number of columns
 	 * @param {MMNumberValue} nColumns
+	 * @returns {MMStringValue|undefined}
 	 */
 	redimension(nColumns) {
 		let rv;
@@ -264,6 +278,7 @@ export class MMStringValue extends MMValue {
 
 	/** @method sumColumns
 	 * for string just return blank
+	 * @returns {MMStringValue}
 	 */
 	sumColumns() {
 		return MMStringValue.scalarValue('');
@@ -271,6 +286,7 @@ export class MMStringValue extends MMValue {
 
 	/** @method maxColumns
 	 * for string just return blank
+	 * @returns {MMStringValue}
 	 */
 	maxColumns() {
 		return MMStringValue.scalarValue('');
@@ -278,6 +294,7 @@ export class MMStringValue extends MMValue {
 
 	/** @method minColumns
 	 * for string just return blank
+	 * @returns {MMStringValue}
 	 */
 	minColumns() {
 		return MMStringValue.scalarValue('');
@@ -308,9 +325,9 @@ export class MMStringValue extends MMValue {
 	/**
 	* @method processStringDyadic
 	* processes function that returns string value
-	* @param {MMStringValue} value
-	* @param {function} func
-	* @param isNumberResult - true if function has number result false if string result
+	* @param {MMStringValue|MMNumberValue} value
+	* @param {(a: any, b: any) => any} func
+	* @param {boolean} [isNumberResult] - true if function has number result false if string result
 	* @return {MMValue} - MMStringValue unless isNumberResult is true, then MMNumberValue
 	*/
 	processStringDyadic(value, func, isNumberResult) {
@@ -344,9 +361,9 @@ export class MMStringValue extends MMValue {
 	 * @returns {MMStringValue}
 	 */
 	add(value) {
-		return this.processStringDyadic(value, (a, b) => {
+		return (/** @type {MMStringValue} */ (this.processStringDyadic(value, (a, b) => {
 			return a + b;
-		});
+		})));
 	}
 
 	/**
@@ -356,13 +373,13 @@ export class MMStringValue extends MMValue {
 	 * @returns {MMStringValue}
 	 */
 	multiply(value) {
-		const rv = this.processStringDyadic(value, (a, b) => {
+		const rv = (/** @type {MMStringValue} */ (this.processStringDyadic(value, (a, b) => {
 			let s = "";
 			for (let i = 0; i < b; i++) {
 				s += a
 			}
 			return s;
-		});
+		})));
 		return rv;
 	}
 
@@ -389,8 +406,9 @@ export class MMStringValue extends MMValue {
 
 	/**
 	 * @method concat
-	 * @param  {MMStringValue} other
-	 * @return MMStringValue
+	 * @override
+	 * @param  {MMValue} other
+	 * @return {MMStringValue|undefined}
 	 * overriden to concatanate two arrays into one
 	 */
 	concat(other) {
@@ -412,7 +430,8 @@ export class MMStringValue extends MMValue {
 	/**
 	 * @method join
 	 * @param {MMStringValue} join1 
-	 * @param {MMStringValue} join2 - // optional
+	 * @param {MMStringValue} [join2] - // optional
+	 * @returns {MMStringValue|undefined}
 	 */
 	join(join1, join2) {
 		const myValueCount = this.valueCount;
@@ -468,19 +487,20 @@ export class MMStringValue extends MMValue {
 
 	/**
 	 * @method split
-	 * @param {MMStringValue} sep1 
-	 * @param {MMStringValue} sep2 - // optional
+	 * @param {MMStringValue} [sep1]
+	 * @param {MMStringValue} [sep2] - // optional
+	 * @returns {MMStringValue|null}
 	 */
 	split(sep1, sep2) {
 		const myValueCount = this.valueCount;
 		const myValues = this._values;
 		if (sep2) {
-			if (myValueCount && sep1.valueCount && sep2.valueCount) {
+			if (myValueCount && (/** @type {MMStringValue} */ (sep1)).valueCount && sep2.valueCount) {
 				const rowSep = sep2._values[0];
 				const rowArray = this._values[0].split(rowSep);
 				const rowCount = rowArray.length;
 				if (rowCount) {
-					const columnSep = sep1._values[0];
+					const columnSep = (/** @type {MMStringValue} */ (sep1))._values[0];
 
 					// determine the number of columns in the first row
 					const columnCount = rowArray[0].split(columnSep).length;
@@ -561,6 +581,8 @@ export class MMStringValue extends MMValue {
 	 * @method replace
 	 * @param {MMStringValue} match
 	 * @param {MMStringValue} replace 
+	 * @param {string} [options]
+	 * @returns {MMStringValue|null}
 	 */
 	replace(match, replace, options) {
 		const myValues = this._values;
@@ -596,8 +618,9 @@ export class MMStringValue extends MMValue {
 
 	/**
 	 * @method subString
-	 * @param {MMStringValue} from
-	 * @param {MMStringValue} length 
+	 * @param {MMNumberValue} from
+	 * @param {MMNumberValue} [length]
+	 * @returns {MMStringValue}
 	 */
 	subString(from, length) {
 		const myValueCount = this.valueCount;
@@ -632,7 +655,7 @@ export class MMStringValue extends MMValue {
 				if (!lengthCount)
 					sLength -= start;
 				else {
-					const l = Math.floor(vLength[i % lengthCount] + 0.01);
+					const l = Math.floor((/** @type {Float64Array} */ (vLength))[i % lengthCount] + 0.01);
 					if (l < 0 || start + l > sLength) {
 						sLength = sLength - start;
 					}
@@ -653,6 +676,7 @@ export class MMStringValue extends MMValue {
 	/**
 	 * @method find
 	 * @param {MMStringValue} regex 
+	 * @returns {MMNumberValue}
 	 */
 	find(regex) {
 		const myValueCount = this.valueCount;
@@ -664,7 +688,7 @@ export class MMStringValue extends MMValue {
 		for (let i = 0; i < myValueCount; i++) {
 			const m = myValues[i].match(rxValues[i % rxCount]);
 			if (m) {
-				rvValues[i * 2] = m.index + 1;
+				rvValues[i * 2] = (/** @type {number} */ (m.index)) + 1;
 				rvValues[i * 2 + 1] = m[0].length;
 			}
 			else {
@@ -678,7 +702,6 @@ export class MMStringValue extends MMValue {
 	/**
 	 * @method jsonValue
 	 * @override
-	 * @param {MMUnit} displayUnit
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
 	jsonValue() {

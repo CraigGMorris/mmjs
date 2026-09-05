@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -25,11 +26,38 @@
 	MMStringValue:readonly
 	MMTableValueColumn:readonly
 	MMTableValue:readonly
+	theMMSession:readonly
 */
+
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./MMModel.js').MMModel} MMModel */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMTableValue.js').MMTableValue} MMTableValue */
+/** @typedef {import('./MMTableValue.js').MMTableValueColumn} MMTableValueColumn */
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+/** @typedef {import('./MMCommandProcessor.js').MMCommandMessage} MMCommandMessage */
+
 
 /**
  * @class MMIterator
  * @extends MMTool
+ * @property {MMFormula[]} recordedValueFormulas
+ * @property {number} lastRecordedFormula
+ * @property {any[]} recordedValues
+ * @property {MMNumberValue} i
+ * @property {MMFormula} whileFormula
+ * @property {MMFormula} initialXFormula
+ * @property {MMFormula} nextXFormula
+ * @property {MMNumberValue|null} x
+ * @property {boolean} isHidingInfo
+ * @property {boolean} shouldAutoRun
+ * @property {boolean} _shouldAutoRun
+ * @property {boolean|null} isSolved
+ * @property {boolean} isSolving
+ * @property {boolean} isInError
  */
 // eslint-disable-next-line no-unused-vars
 export class MMIterator extends MMTool {
@@ -39,8 +67,12 @@ export class MMIterator extends MMTool {
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Iterator');
+		/** @type {boolean} */
+		this._shouldAutoRun = false;
+		/** @type {MMFormula[]} */
 		this.recordedValueFormulas = [];
 		this.lastRecordedFormula = 1;		// used for naming recorded value formulas
+		/** @type {any[]} */
 		this.recordedValues =	[];
 
 		this.i = MMNumberValue.scalarValue(1);
@@ -68,7 +100,7 @@ export class MMIterator extends MMTool {
 	 * @returns {Object} object that can be converted to json for save file
 	 */
 	saveObject() {
-		let o = super.saveObject();
+		let o = /** @type {Record<string, any>} */ (super.saveObject());
 		o['Type'] = 'Iterator';
 		o['whileFormula'] = {Formula: this.whileFormula.formula}
 		o['initXFormula'] = {Formula: this.initialXFormula.formula}
@@ -87,7 +119,7 @@ export class MMIterator extends MMTool {
 	/**
 	 * @method initFromSaved - initialize from stored object
 	 * @override
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		this.isLoadingCase = true;
@@ -164,7 +196,7 @@ export class MMIterator extends MMTool {
 			}
 			const a = this.recordedValues[i];
 			if (recValue) {
-				a.push(recValue.copyOf());
+				a.push((/** @type {any} */ (recValue)).copyOf());
 			}
 			else {
 				a.push(MMNumberValue.scalarValue(NaN));
@@ -224,6 +256,11 @@ export class MMIterator extends MMTool {
 	 * @param {Boolean} commentOnly - if present and true, null will be return if no comment on formula
 	 * @returns {String} - the name for recorded value rNumber
 	 */
+	/**
+	 * @param {number} rNumber
+	 * @param {boolean} [commentOnly]
+	 * @returns {string|null}
+	 */
 	columnNameForRecorded(rNumber, commentOnly=false) {
 		if (rNumber > 0 && rNumber <= this.recordedValues.length) {
 			const formula = this.recordedValueFormulas[rNumber - 1];
@@ -242,7 +279,7 @@ export class MMIterator extends MMTool {
 	/**
 	 * @method valueForRecorded
 	 * @param {Number} rNumber - the record value number
-	 * @returns {MMNumberValue} - the recorded values for rNumber
+	 * @returns {MMNumberValue|MMStringValue|null|undefined} - the recorded values for rNumber
 	 */
 	valueForRecorded(rNumber) {
 		if (rNumber > 0 && rNumber <= this.recordedValues.length) {
@@ -265,7 +302,7 @@ export class MMIterator extends MMTool {
 						return null;
 					}
 					for (let column = 0; column < firstLength; column++) {
-						ov.values[row * firstLength + column] = v.values[column];
+						(/** @type {any} */ (ov)).values[row * firstLength + column] = (/** @type {any} */ (v)).values[column];
 					}
 				}
 				return ov;
@@ -276,9 +313,9 @@ export class MMIterator extends MMTool {
 
 	/**
 	 * @override valueDescribedBy
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @param {string} [description]
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(description, requestor) {
 		if (!description) {
@@ -301,7 +338,7 @@ export class MMIterator extends MMTool {
 		}
 
 		// convenience function to add requestor is return value is known
-		const returnValue = (v) => {
+		const returnValue = (/** @type {any} */ v) => {
 			if (v) {
 				this.addRequestor(requestor);
 				return v;
@@ -320,10 +357,11 @@ export class MMIterator extends MMTool {
 				if (v.columnCount > 1) {
 					for (let cNumber = 1; cNumber <= v.columnCount; cNumber++) {
 						const name = columnName + `_${cNumber}`;
+						/** @type {{ name: string, value: MMValue|null|undefined, displayUnit?: string|null }} */
 						const options = {
 							name: name,
 							value: v.valueForColumnNumber(cNumber)
-						}
+						};
 						if (v.defaultUnit) {
 							options.displayUnit = v.defaultUnit.name;
 						} 
@@ -332,10 +370,11 @@ export class MMIterator extends MMTool {
 					}
 				}
 				else {
+					/** @type {{ name: string, value: MMValue|null|undefined, displayUnit?: string|null }} */
 					const options = {
 						name: columnName,
 						value: v
-					}
+					};
 					if (v.defaultUnit) {
 						options.displayUnit = v.defaultUnit.name;
 					} 
@@ -411,10 +450,10 @@ export class MMIterator extends MMTool {
 		this.x = null;
 		this.valueDescribedBy('x');
 		const setStatus = () => {
-			this.processor.statusCallBack(this.t('mmcmd:iterStatus', {
+			(/** @type {any} */ (this.processor)).statusCallBack(this.t('mmcmd:iterStatus', {
 				name: this.name,
 				i: this.i.stringUsingUnit(),
-				x: this.x ? this.x.stringUsingUnit() : '',
+				x: this.x ? (/** @type {MMNumberValue} */ (this.x)).stringUsingUnit() : '',
 			}));
 		}
 
@@ -446,18 +485,18 @@ export class MMIterator extends MMTool {
 		}
 		catch(e) {
 			this.shouldAutoRun = false;
-			this.setError('mmcmd:iterException', {path: this.getPath(), e: e.message});
+			this.setError('mmcmd:iterException', {path: this.getPath(), e: (/** @type {any} */ (e)).message});
 		}
 		finally {
 			this.isSolving = false;
-			this.isSolved = test && this.shouldAutoRun;
+			this.isSolved = (/** @type {any} */ (test && this.shouldAutoRun));
 		}
 	}
 
 	/**
 	 * @method inputSources
 	 * @override
-	 * @returns {Set} contains tools referenced by this tool
+	 * @returns {Set<MMTool>} contains tools referenced by this tool
 	 */
 	inputSources() {
 		let sources = super.inputSources();
@@ -497,10 +536,12 @@ export class MMIterator extends MMTool {
 		return d;
 	}
 
+	/** @returns {boolean} */
 	get shouldAutoRun() {
 		return this._shouldAutoRun && !theMMSession.noRun;
 	}
 
+	/** @param {boolean} newValue */
 	set shouldAutoRun(newValue) {
 		this._shouldAutoRun = (newValue) ? true : false;
 		this.reset();
@@ -519,7 +560,7 @@ export class MMIterator extends MMTool {
 		/** @method getVerbUsageKey
 		 * @override
 		 * @param {string} command - command to get the usage key for
-		 * @returns {string} - the i18n key, if it exists
+		 * @returns {string|undefined} - the i18n key, if it exists
 		 */
 		getVerbUsageKey(command) {
 			let key = {
@@ -624,7 +665,7 @@ export class MMIterator extends MMTool {
 		const results = command.results;
 		results.shouldAutoRun = this.shouldAutoRun;
 
-		const fReturn = (formula) => {
+		const fReturn = (/** @type {MMFormula} */ formula) => {
 			const v = formula.value();
 			const vString = v ? v.stringWithUnit() : '';
 			return [formula.name, formula.formula, vString];
@@ -637,7 +678,7 @@ export class MMIterator extends MMTool {
 			formulas.push([f.name, f.formula, '']);
 		}
 		results.i = this.i.values[0];
-		results.x = this.x ? this.x.stringWithUnit() : '';
+		results.x = this.x ? (/** @type {MMNumberValue} */ (this.x)).stringWithUnit() : '';
 
 		results.formulas = formulas;
 	}

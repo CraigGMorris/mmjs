@@ -1,3 +1,5 @@
+// @ts-check
+
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -24,6 +26,12 @@
 	MMPropertyType:readonly
 	MMCommandMessage:readonly
 */
+
+/** @typedef {import('../MMCommandProcessor.js').MMCommand} MMCommand */
+/** @typedef {import('../MMCommandProcessor.js').MMCommandMessage} MMCommandMessage */
+/** @typedef {import('../MMCommandProcessor.js').MMObject} MMObject */
+/** @typedef {import('../MMCommandProcessor.js').MMParent} MMParent */
+/** @typedef {import('../MMSession.js').MMSession} MMSession */
 /**
  * @enum {number} MMDimensionType
  */
@@ -52,7 +60,7 @@ const MMUnitCalcType = Object.freeze({
 });
 
 /**
- * @enum MMUnitDataType
+ * @enum {number} MMUnitDateType
  * how date value is represented
  */
 const MMUnitDateType = Object.freeze({
@@ -82,8 +90,8 @@ const MMUnitDateType = Object.freeze({
 // eslint-disable-next-line no-unused-vars
 export class MMUnitSystem extends MMParent {
 	/** @static areDimensionsEqual
-	 * @param {Number[]} dim1
-	 * @param {Number[]} dim2
+	 * @param {Number[]|null} [dim1]
+	 * @param {Number[]|null} [dim2]
 	 * @return {boolean}  true if equal
 	 */
 	static areDimensionsEqual(dim1, dim2) {
@@ -109,7 +117,7 @@ export class MMUnitSystem extends MMParent {
 
 		// both dimensions have values
 		for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
-			if ( dim1[i] != dim2[i] )
+			if ( (/** @type {number[]} */ (dim1))[i] != (/** @type {number[]} */ (dim2))[i] )
 				return false;
 		}
 		
@@ -196,7 +204,7 @@ export class MMUnitSystem extends MMParent {
 
 	/**
 	 * @constructor
-	 * @param {Object} session - MMSession - parent session
+	 * @param {MMSession} session - parent session
 	 */
 	constructor(session) {
 		super('unitsys',  session, 'MMUnitSystem');
@@ -206,12 +214,12 @@ export class MMUnitSystem extends MMParent {
 
 	/** @returns {MMUnitsContainer} */
 	get units() {
-		return this.children['units'];
+		return (/** @type {MMUnitsContainer} */ (this.children['units']));
 	}
 
-	/** @returns {MMSetsContaioner} */
+	/** @returns {MMUnitSetsContainer} */
 	get sets() {
-		return this.children['sets'];
+		return (/** @type {MMUnitSetsContainer} */ (this.children['sets']));
 	}
 
 	/** @method findNamePartsInString
@@ -221,6 +229,7 @@ export class MMUnitSystem extends MMParent {
 	 * @param {string} term
 	 */
 	findNamePartsInString(term) {
+		/** @type {[MMUnit, number][]} */
 		let parts = [];
 		if (term.length == 0) {
 			return parts;
@@ -236,7 +245,7 @@ export class MMUnitSystem extends MMParent {
 			else if (exponentPartsCount == 2) {
 				exponent = parseFloat(exponentParts[1]);
 			}
-			let consituentUnit = this.units.childNamed(exponentParts[0]);
+			let consituentUnit = (/** @type {MMUnit} */ (this.units.childNamed(exponentParts[0])));
 			if (consituentUnit || exponentParts[0] != '1') {
 				if (consituentUnit.calcType == MMUnitCalcType.COMPOUND ||
 					consituentUnit.calcType == MMUnitCalcType.SCALE)
@@ -256,14 +265,14 @@ export class MMUnitSystem extends MMParent {
 
 	/** @method unitNamed
 	 * @param {string} name
-	 * @returns {MMUnit}
+	 * @returns {MMUnit|null}
 	*/
 	unitNamed(name) {
 		if (!name) {
 			return null;
 		}
 
-		let unit = this.units.childNamed(name);
+		let unit = (/** @type {MMUnit|null} */ (this.units.childNamed(name) || null));
 		if (unit) {
 			return unit;
 		}
@@ -305,10 +314,10 @@ export class MMUnitSystem extends MMParent {
 
 	/**
 	 * @method defaultSet
-	 * @returns MMUnitSet 
+	 * @returns {MMUnitSet} 
 	 */
 	defaultSet() {
-		return this.sets.defaultSet;
+		return (/** @type {MMUnitSet} */ (this.sets.defaultSet));
 	}
 	
 	/**
@@ -360,6 +369,7 @@ export class MMUnitSystem extends MMParent {
 		numerator += denominator;
 		let unitName = numerator;  // switch variable names for clarity
 	
+		/** @type {number} */
 		let calcType = MMUnitCalcType.SCALE;  // figure out if compound unit or not
 		let compoundRegex = /[/\\-\\^]/;  // compound unit operators		
 		if (unitName.search(compoundRegex) != -1) {
@@ -370,7 +380,7 @@ export class MMUnitSystem extends MMParent {
 		if (!unit) {
 			// unit doesn't exist - create it
 			unit = new MMUnit(unitName, this.units).initWithOperation(
-				false, calcType, MMUnit.stringFromDimensions(dimensions), 1.0, 0.0
+				false, calcType, (/** @type {string} */ (MMUnit.stringFromDimensions(dimensions))), 1.0, 0.0
 				);
 		}
 		return unit;
@@ -382,7 +392,7 @@ export class MMUnitSystem extends MMParent {
 	 * @returns {MMUnit}
 	 */
 	defaultUnitWithDimensions(dimensions) {
-		let unit = this.sets.defaultSet.unitForDimensions(dimensions);
+		let unit = (/** @type {MMUnitSet} */ (this.sets.defaultSet)).unitForDimensions(dimensions);
 		if(!unit) {
 			unit = this.baseUnitWithDimensions(dimensions);
 		}
@@ -435,6 +445,26 @@ export class MMUnitSystem extends MMParent {
  * @member {MMUnitSystem} unitSystem;
  */
 export class MMUnit extends MMObject {
+	/** @type {number} */
+	scale;
+	/** @type {number} */
+	offset;
+	/** @type {string|undefined} */
+	notes;
+	/** @type {boolean} */
+	isMaster;
+	/** @type {number} */
+	calcType;
+	/** @type {number[]} */
+	dimensions;
+	/** @type {string|undefined} */
+	definition;
+	/** @type {number|undefined} */
+	exponent;
+	/** @type {string|undefined} */
+	displayFormat;
+	/** @type {number|undefined} */
+	dateType;
 
 	/** @static compoundRegex
 	 * compound unit operators
@@ -444,6 +474,7 @@ export class MMUnit extends MMObject {
 	/** @static stringFromDimensions
 	 * creates dimensions string from Number array
 	 * @param {number[]} dimensions
+	 * @returns {string|null}
 	 */
 	static stringFromDimensions(dimensions) {
 		if (dimensions) {
@@ -452,6 +483,10 @@ export class MMUnit extends MMObject {
 		return null;
 	}
 
+	/**
+	 * @param {string} dimensionString
+	 * @returns {number[]}
+	 */
 	static dimensionsFromString(dimensionString) {
 		// convert the dimension string to doubles
 		const parts = dimensionString.split(/[, ]+/);
@@ -471,7 +506,7 @@ export class MMUnit extends MMObject {
 		/**
 	 * @static convertDateToSeconds
 	 * @param {Number} dateValue
-	 * @param {MMUnitDataType} typeFlag
+	 * @param {MMUnitDateType} typeFlag
 	 * @returns {Number}
 	 */
 	static convertDateToSeconds(dateValue, typeFlag) {
@@ -535,13 +570,13 @@ export class MMUnit extends MMObject {
 		}
 		let date = new Date(Date.UTC(year, month - 1, day, hour, minute, seconds));
 		
-		return Math.floor(date/1000);
+		return Math.floor(/** @type {any} */ (date) / 1000);
 	}
 
 	/**
 	 * @static convertSecondsToDate
 	 * @param {Number} seconds
-	 * @param {MMUnitDataType} typeFlag
+	 * @param {MMUnitDateType} typeFlag
 	 * @returns {Number}
 	 */
 	static convertSecondsToDate(seconds, typeFlag) {
@@ -582,18 +617,21 @@ export class MMUnit extends MMObject {
 		super(name, unitsContainer, 'MMUnit');
 	}
 
+	/** @returns {MMUnitSystem} */
 	get unitSystem() {
-		return this.parent.unitSystem;
+		return (/** @type {MMUnitsContainer} */ (this.parent)).unitSystem;
 	}
 
+	/** @returns {string|null} */
 	get dimensionString() {
 		return MMUnit.stringFromDimensions(this.dimensions);
 	}
 
+	/** @param {string|null} newDimensions */
 	set dimensionString(newDimensions) {
 		if (this.calcType != MMUnitCalcType.COMPOUND) {
 			// convert the dimension string to doubles
-			let parts = newDimensions.split(/[, ]+/);
+			let parts = (/** @type {string} */ (newDimensions)).split(/[, ]+/);
 			for(let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
 				this.dimensions[i] = parseFloat(parts[i]);
 			}
@@ -608,6 +646,7 @@ export class MMUnit extends MMObject {
 		return (this.name == 'Fraction') ? '' : this.name;
 	}
 	
+	/** @returns {Record<string, any>} */
 	get properties() {
 		let d = super.properties;
 		d['scale'] = {type: MMPropertyType.float, readOnly: false};
@@ -620,14 +659,14 @@ export class MMUnit extends MMObject {
 	}
 
 	/** @method initWithDescription
-	 * @param {boolean} isMaster - false for user added
+	 * @param {boolean|undefined} isMaster - false for user added
 	 * @param {string} description - either a compound unit or string of space separated numbers
 	 * consisting of the calculation type, followed by the seven dimension powers and
 	 * optionally scale and offset.
 	 * if scale and offset aren't suppled they will default to 1 and 0
 	 */
 	initWithDescription(isMaster, description) {
-		this.isMaster = isMaster;
+		this.isMaster = (/** @type {boolean} */ (isMaster));
 		try {
 			this.scale = 1.0;		// default values
 			this.offset = 0.0;
@@ -776,8 +815,8 @@ export class MMUnit extends MMObject {
 		let numeratorParts = null;
 		let denominatorParts = null;
 		try {
-			numeratorParts = this.parent.parent.findNamePartsInString(numerator);
-			denominatorParts = this.parent.parent.findNamePartsInString(denominator);
+			numeratorParts = (/** @type {MMUnitSystem} */ (/** @type {any} */ (this.parent).parent)).findNamePartsInString(numerator);
+			denominatorParts = (/** @type {MMUnitSystem} */ (/** @type {any} */ (this.parent).parent)).findNamePartsInString(denominator);
 		}
 		catch (e) {
 			return false;
@@ -862,7 +901,7 @@ export class MMUnit extends MMObject {
 	 * @method stringForValue
 	 * display string for value converted to unit
 	 * @param {Number} value
-	 * @param {String} format (optional)
+	 * @param {String} [format] (optional)
 	 * @returns {String}
 	 */
 	stringForValue(value, format) {	
@@ -882,7 +921,7 @@ export class MMUnit extends MMObject {
 	 * @method stringForValueWithUnit
 	 * the value converted to unit with unit name
 	 * @param {Number} value
-	 * @param {String} format (optional)
+	 * @param {String} [format] (optional)
 	 * @returns {String}
 	 */
 	stringForValueWithUnit(value, format) {	
@@ -899,7 +938,16 @@ export class MMUnit extends MMObject {
  * @member {MMUnitSystem} unitSystem
  */
 export class MMUnitSet extends MMObject {
-		/** @constructor
+	/** @type {Record<string, MMUnit>} */
+	unitsDictionary = {};
+	/** @type {Record<string, string>} */
+	dimensionsDictionary = {};
+	/** @type {Record<string, string>} */
+	typesDictionary = {};
+	/** @type {boolean} */
+	isMaster;
+
+	/** @constructor
 	 * @param {string} name
 	 * @param {MMUnitSetsContainer} setsContainer
 	 * @param {boolean} isMaster
@@ -913,11 +961,15 @@ export class MMUnitSet extends MMObject {
 	}
 
 	get unitSystem() {
-		return this.parent.unitSystem;
+		return (/** @type {MMUnitsContainer} */ (this.parent)).unitSystem;
 	}
 
-	/** @override */
+	/**
+	 * @override
+	 * @returns {Record<string, (command: MMCommand) => any>}
+	 */
 	get verbs() {
+		/** @type {Record<string, any>} */
 		let verbs = super.verbs;
 		if (!this.isMaster) {
 			verbs['addtype'] = this.addTypeVerb;
@@ -933,6 +985,11 @@ export class MMUnitSet extends MMObject {
 	 * @override
 	 * @param {string} command - command to get the usage key for
 	 * @returns {string} - the i18n key, if it exists
+	 */
+	/**
+	 * @override
+	 * @param {string} command
+	 * @returns {string|undefined}
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -955,7 +1012,7 @@ export class MMUnitSet extends MMObject {
 	 * @param {string} typeName
 	 */
 	setUnitForTypeNamed(unit, typeName) {
-		let dimensionString = unit.dimensionString;
+		let dimensionString = (/** @type {string} */ (unit.dimensionString));
 		let lcTypeName = typeName.toLowerCase();
 		let oldDimensionString = this.dimensionsDictionary[lcTypeName];
 		let oldTypeName = this.typesDictionary[dimensionString];
@@ -996,7 +1053,7 @@ export class MMUnitSet extends MMObject {
 			throw(this.t('mmunit:addTypeError', {args: args}));
 		}
 		let unit = this.unitSystem.unitNamed(parts[1]);
-		this.setUnitForTypeNamed(unit, parts[0]);
+		this.setUnitForTypeNamed((/** @type {MMUnit} */ (unit)), parts[0]);
 		command.results = true;
 		command.undo = this.getPath() + ' removetype ' + parts[0];
 	}
@@ -1074,7 +1131,7 @@ export class MMUnitSet extends MMObject {
 
 	/** @method unitForDimensions
 	 * @param {number[]} dimensions
-	 * @returns {MMUnit}
+	 * @returns {MMUnit|null}
 	 */
 	unitForDimensions(dimensions) {
 		let dimensionString = MMUnit.stringFromDimensions(dimensions);
@@ -1135,6 +1192,7 @@ export class MMUnitSet extends MMObject {
 	 * @returns Object dictionary of units suitable for storing as json
 	 */
 	setAsJsonObject() {
+		/** @type {Record<string, string>} */
 		let objects = {};
 		for (let key in this.typesDictionary) {
 			objects[this.typesDictionary[key]] = this.unitsDictionary[key].name;
@@ -1143,14 +1201,14 @@ export class MMUnitSet extends MMObject {
 	}
 
 	/** @method loadFromJsonObject
-	 * @param {Object} objects
+	 * @param {Record<string, any>} objects
 	 */
 	loadFromJsonObject(objects) {
 		let types = objects['units'];
 		for (let typeName in types) {
 			let unitName = types[typeName];
 			let unit = this.unitSystem.unitNamed(unitName);
-			this.setUnitForTypeNamed(unit, typeName);
+			this.setUnitForTypeNamed((/** @type {MMUnit} */ (unit)), typeName);
 		}
 	}
 }
@@ -1163,6 +1221,11 @@ export class MMUnitSet extends MMObject {
  * @member {MMUnitSystem} unitSystem;
  */
 export class MMUnitsContainer extends MMParent {
+	/** @type {Record<string, MMUnit[]>} */
+	dimensionsDictionary = {};
+	/** @type {boolean|undefined} */
+	isMaster;
+
 	/**
 	 * @constructor
 	 * @param {MMUnitSystem} unitSystem - parent
@@ -1174,11 +1237,15 @@ export class MMUnitsContainer extends MMParent {
 	}
 
 	get unitSystem() {
-		return this.parent;
+		return (/** @type {MMUnitSystem} */ (this.parent));
 	}
 
-	/** @override */
+	/**
+	 * @override
+	 * @returns {Record<string, (command: MMCommand) => any>}
+	 */
 	get verbs() {
+		/** @type {Record<string, any>} */
 		let verbs = super.verbs;
 		if (!this.isMaster) {
 			verbs['adduserunit'] = this.addUserDefinitionCommand;
@@ -1194,6 +1261,11 @@ export class MMUnitsContainer extends MMParent {
 	 * @override
 	 * @param {string} command - command to get the usage key for
 	 * @returns {string} - the i18n key, if it exists
+	 */
+	/**
+	 * @override
+	 * @param {string} command
+	 * @returns {string|undefined}
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -1213,10 +1285,10 @@ export class MMUnitsContainer extends MMParent {
 
 	/** @method registerDimensionsOfUnit
 	 * adds the unit to the dimensionDictionary array keyed by dimensionString 
-	 * @param {MMUnit}
+	 * @param {MMUnit} unit
 	 */
 	registerDimensionsOfUnit(unit) {
-		let dimensionString = unit.dimensionString;
+		let dimensionString = (/** @type {string} */ (unit.dimensionString));
 		let unitArray = this.dimensionsDictionary[dimensionString];
 		if (!unitArray) {
 			unitArray = [];
@@ -1229,7 +1301,7 @@ export class MMUnitsContainer extends MMParent {
 	 * creates a unit based on the name and description
 	 * @param {string} name
 	 * @param {string} description - description string - unit powers
-	 * @param {boolean} isMaster - false if user added
+	 * @param {boolean} [isMaster] - false if user added
 	 * @returns {MMUnit} returns unit created
 	 */
 	addUnit(name, description, isMaster) {
@@ -1280,7 +1352,7 @@ export class MMUnitsContainer extends MMParent {
 			throw(this.t('mmunit:userDefValueError', {definition: definition}))
 		}
 		let lowerName = unitName.toLowerCase();
-		let newUnit = this.children[lowerName];
+		let newUnit = (/** @type {MMUnit} */ (this.children[lowerName]));
 		if (newUnit) {
 			if (newUnit.isMaster) {
 				if (loadingUser) {
@@ -1309,9 +1381,9 @@ export class MMUnitsContainer extends MMParent {
 	listUserUnits(command) {
 		let list = [];
 		for (let name in this.children) {
-			let child = this.children[name];
+			let child = (/** @type {MMUnit} */ (this.children[name]));
 			if (!child.isMaster) {
-				let unitType = this.unitSystem.sets.defaultSet.typeNameForDimensions(child.dimensions);
+				let unitType = (/** @type {MMUnitSet} */ (this.unitSystem.sets.defaultSet)).typeNameForDimensions(child.dimensions);
 				list.push({
 					name: child.name,
 					unitType: unitType,
@@ -1329,7 +1401,7 @@ export class MMUnitsContainer extends MMParent {
 		const dimensionString = command.args;
 		let unitNames = [];
 		for (let key in this.children) {
-			const unit = this.children[key];
+			const unit = (/** @type {MMUnit} */ (this.children[key]));
 			if (unit.dimensionString === dimensionString) {
 				unitNames.push(unit.name);
 			}
@@ -1344,12 +1416,12 @@ export class MMUnitsContainer extends MMParent {
 	 */
 	listUnitsOfSameType(command) {
 		const unitName = command.args;
-		const templateUnit = this.children[unitName];
+		const templateUnit = (/** @type {MMUnit} */ (this.children[unitName]));
 		let unitNames = [];
 		if (templateUnit) {
 			const dimensionString = templateUnit.dimensionString;
 			for (let key in this.children) {
-				const unit = this.children[key];
+				const unit = (/** @type {MMUnit} */ (this.children[key]));
 				if (unit.dimensionString === dimensionString) {
 					unitNames.push(unit.name);
 				}
@@ -1366,7 +1438,7 @@ export class MMUnitsContainer extends MMParent {
 	removeUserDefinition(command) {
 		let name = command.args;
 		let lcName = name.toLowerCase();
-		let unit = this.children[lcName];
+		let unit = (/** @type {MMUnit} */ (this.children[lcName]));
 		if (!unit) {
 			throw(this.t('mmunit:unknownUnit', {name: name}));
 		}
@@ -1387,7 +1459,7 @@ export class MMUnitsContainer extends MMParent {
 	userUnitsAsJsonObject() {
 		let list = [];
 		for (let name in this.children) {
-			let child = this.children[name];
+			let child = (/** @type {MMUnit} */ (this.children[name]));
 			if (!child.isMaster) {
 				list.push(child.definition);
 			}
@@ -1397,6 +1469,7 @@ export class MMUnitsContainer extends MMParent {
 
 	/**
 	 * loadFromJsonObject
+	 * @param {string[]} object
 	 */
 	loadFromJsonObject(object) {
 		for (let definition of object) {
@@ -1568,6 +1641,7 @@ export class MMUnitsContainer extends MMParent {
 		this.addUnit("Wb","1 2 1 -2 -1 0 0 0 1.0",true);
 		this.addUnit("Mx","1 2 1 -2 -1 0 0 0 1.0e-8",true);
 
+		// TODO: addUnit for T and Gauss omits isMaster=true (defaults to undefined/falsy)
 		this.addUnit("T","1 0 1 -2 -1 0 0 0 1.0");
 		this.addUnit("Gauss","1 0 1 -2 -1 0 0 0 1.0e-4");
 	
@@ -1588,6 +1662,9 @@ export class MMUnitsContainer extends MMParent {
  * @member {MMUnitSystem} unitSystem;
  */
 export class MMUnitSetsContainer extends MMParent {
+	/** @type {MMUnitSet|undefined} */
+	defaultSet;
+
 	/**
 	 * @constructor
 	 * @param {MMUnitSystem} unitSystem - parent
@@ -1595,15 +1672,19 @@ export class MMUnitSetsContainer extends MMParent {
 	constructor(unitSystem) {
 		super('sets', unitSystem, 'MMUnitSetsContainer');
 		this.loadMasterSets();
-		this.defaultSet = this.childNamed('SI');
+		this.defaultSet = (/** @type {MMUnitSet} */ (this.childNamed('SI')));
 	}
 
 	get unitSystem() {
-		return this.parent;
+		return (/** @type {MMUnitSystem} */ (this.parent));
 	}
 
-	/** @override */
+	/**
+	 * @override
+	 * @returns {Record<string, (command: MMCommand) => any>}
+	 */
 	get verbs() {
+		/** @type {Record<string, any>} */
 		let verbs = super.verbs;
 		verbs['clone'] = this.cloneSet;
 		verbs['remove'] = this.removeSetNamed;
@@ -1614,7 +1695,7 @@ export class MMUnitSetsContainer extends MMParent {
 	/** @method getVerbUsageKey
 	 * @override
 	 * @param {string} command - command to get the usage key for
-	 * @returns {string} - the i18n key, if it exists
+	 * @returns {string|undefined} - the i18n key, if it exists
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -1637,11 +1718,11 @@ export class MMUnitSetsContainer extends MMParent {
 	}
 
 	get defaultSetName() {
-		return this.defaultSet.name;
+		return (/** @type {MMUnitSet} */ (this.defaultSet)).name;
 	}
 
 	set defaultSetName(name) {
-		let newDefault = this.childNamed(name);
+		let newDefault = (/** @type {MMUnitSet} */ (this.childNamed(name)));
 		if (!newDefault) {
 			throw(this.t('mmunit:setNotFound', {name: name}));
 		}
@@ -1664,12 +1745,12 @@ export class MMUnitSetsContainer extends MMParent {
 	}
 
 	/** @method  cloneSet
-	 * @param {command} command - args should be originalName
+	 * @param {MMCommand} command - args should be originalName
 	 * command.results set to new set name
 	*/
 	cloneSet(command) {
 		let originalName = command.args;
-		let original = this.childNamed(originalName);
+		let original = (/** @type {MMUnitSet} */ (this.childNamed(originalName)));
 		if (!original) {
 			throw(this.t('mmunit:setNotFound', {name: originalName}));
 		}
@@ -1691,11 +1772,11 @@ export class MMUnitSetsContainer extends MMParent {
 	 */
 	removeSetNamed(command) {
 		let name = command.args;
-		let set = this.childNamed(name);
+		let set = (/** @type {MMUnitSet} */ (this.childNamed(name)));
 		if (set && !set.isMaster) {
 			this.removeChildNamedCommand(command);
 			if (set === this.defaultSet) {
-				this.defaultSet = this.childNamed('SI');
+				this.defaultSet = (/** @type {MMUnitSet} */ (this.childNamed('SI')));
 			}
 		}
 	}
@@ -1707,7 +1788,7 @@ export class MMUnitSetsContainer extends MMParent {
 	listSets(command) {
 		let results = [];
 		for (let name in this.children) {
-			let set = this.children[name];
+			let set = (/** @type {MMUnitSet} */ (this.children[name]));
 			results.push({name: set.name, isMaster: set.isMaster});
 		}
 		command.results = results;
@@ -1717,9 +1798,10 @@ export class MMUnitSetsContainer extends MMParent {
 	 * @returns Object suitable for storing as json
 	 */
 	userSetsAsJsonObject() {
+		/** @type {Record<string, any>} */
 		let sets = {};
 		for (let name in this.children) {
-			let set = this.children[name];
+			let set = (/** @type {MMUnitSet} */ (this.children[name]));
 			if (!set.isMaster) {
 				sets[set.name] = set.setAsJsonObject();
 			}
@@ -1734,7 +1816,7 @@ export class MMUnitSetsContainer extends MMParent {
 	loadFromJsonObject(sets, isMaster) {
 		for (let setName in sets) {
 			let set = this.addSet(setName, isMaster);
-			set.loadFromJsonObject(sets[setName]);
+			set.loadFromJsonObject(/** @type {any} */ (sets)[setName]);
 		}
 	}
 

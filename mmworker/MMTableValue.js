@@ -1,3 +1,5 @@
+// @ts-check
+
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -29,6 +31,16 @@
 	MMFunctionResult:readonly
 */
 
+/** @typedef {import('./MMCommandProcessor.js').MMCommandMessage} MMCommandMessage */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnitSet} MMUnitSet */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnitSystem} MMUnitSystem */
+/** @typedef {import('./MMSession.js').MMSession} MMSession */
+/** @typedef {import('./MMFormula.js').MMFunctionResult} MMFunctionResult */
+
 /**
  * @class MMTableValueColumn
  * @member {String} name
@@ -37,10 +49,20 @@
  * @member {String} format
  */
 export class MMTableValueColumn {
+	/** @type {string} */
+	name;
+	/** @type {MMUnit|null} */
+	_displayUnit;
+	/** @type {MMValue|null|undefined} */
+	_value;
+	/** @type {string|undefined} */
+	format;
+
 	/** @method exceptionWith
 	 * throws a MMCommandMessage
 	 * @param {string} key	for i18n
-	 * @param {Object} args	for i18n
+	 * @param {Object} [args]	for i18n
+	 * @returns {never}
 	*/
 	exceptionWith(key, args) {
 		let msg = new MMCommandMessage(key, args);
@@ -50,10 +72,12 @@ export class MMTableValueColumn {
 	/**
 	 * @constructor
 	 * @param {Object} context
-	 * context can have one of two forms
-	 * the first has the name {String}, displayUnit {String} and value  {MMValue}
-	 * the second has rowNumbers {MMNumberValue} and column {MMTableValueColumn} amd
-	 * creates a copy of column containing just the rows listed in rowNumbers 
+	 * @param {string} [context.name]
+	 * @param {string|null} [context.displayUnit]
+	 * @param {MMValue|null} [context.value]
+	 * @param {string} [context.format]
+	 * @param {MMNumberValue} [context.rowNumbers]
+	 * @param {MMTableValueColumn} [context.column]
 	 */
 	constructor(context) {
 		if (context.name) {
@@ -68,7 +92,7 @@ export class MMTableValueColumn {
 						}
 						catch(e) {
 							this.displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(this._value.unitDimensions);
-							theMMSession.setError(e.msgKey, {error: e.args});
+							theMMSession.setError((/** @type {any} */ (e)).msgKey, {error: (/** @type {any} */ (e)).args});
 						}
 					}
 					else {
@@ -91,19 +115,19 @@ export class MMTableValueColumn {
 						});
 						this._displayUnit = theMMSession.unitSystem.unitNamed('Fraction');
 					}
-					this._value = new MMNumberValue(0, 0, this._displayUnit.dimensions);
+					this._value = new MMNumberValue(0, 0, (/** @type {MMUnit} */ (this._displayUnit)).dimensions);
 				}
 			}
 		}
 		else if (context.column) {
 			const column = context.column;
 			this.name = column.name;
-			this._displayUnit = column.displayUnit;
+			this._displayUnit = (/** @type {any} */ (column.displayUnit));
 			this.format = column.format;
-			const rowNumbers = context.rowNumbers;
+			const rowNumbers = (/** @type {MMNumberValue} */ (context.rowNumbers));
 			const nRows = rowNumbers.valueCount;
 			const rowNValues = rowNumbers.values;
-			const columnValues = column.value.values;
+			const columnValues = (/** @type {any} */ (column.value)).values;
 			const columnValueCount = column.value.valueCount;
 			// if rowNumbers is scalar 0, then the whole column is used
 			if (nRows === 1 && rowNValues[0] ===  0) {
@@ -130,7 +154,7 @@ export class MMTableValueColumn {
 					dimensions = v.unitDimensions;
 				}
 				else {
-					dimensions = column.unitDimensions.dimensions;
+					dimensions = (/** @type {any} */ (column)).unitDimensions?.dimensions;
 				}
 				let nValue = new MMNumberValue(nRows, 1, dimensions);
 				for (let i = 1; i <= nRows; i++) {
@@ -152,7 +176,7 @@ export class MMTableValueColumn {
 	 * @return {MMValue}
 	 */
 	get value() {
-		return this._value;
+		return (/** @type {MMValue} */ (this._value));
 	}
 
 	/**
@@ -170,14 +194,14 @@ export class MMTableValueColumn {
 	}
 
 	/**
-	 * @returns {MMUnit}
+	 * @returns {MMUnit|string|null}
 	 */
 	get displayUnit() {
 		return this.isString ? 'string' : this._displayUnit;
 	}
 
 	/**
-	 * @param {MMUnit} unit - can be string in which case it will try to make unit from it
+	 * @param {MMUnit|string|null} displayUnit - can be string in which case it will try to make unit from it
 	 */
 	set displayUnit(displayUnit) {
 		if (this.isString) {
@@ -203,18 +227,18 @@ export class MMTableValueColumn {
 		}
 
 		if (this._value instanceof MMNumberValue) {
-			if (MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, this._value.unitDimensions)) {
-				this._displayUnit = displayUnit;
+			if (MMUnitSystem.areDimensionsEqual((/** @type {MMUnit} */ (displayUnit)).dimensions, this._value.unitDimensions)) {
+				this._displayUnit = (/** @type {MMUnit} */ (displayUnit));
 				return;
 			}
 			else if (this._value.rowCount === 0) {
-				this._value.setUnitDimensions(displayUnit.dimensions);
-				this._displayUnit = displayUnit;
+				this._value.setUnitDimensions((/** @type {MMUnit} */ (displayUnit)).dimensions);
+				this._displayUnit = (/** @type {MMUnit} */ (displayUnit));
 				return;
 			}
 		}
 
-		this.exceptionWith('mmcmd:displayUnitTypeMismatch', { unitName: displayUnit.name });
+		this.exceptionWith('mmcmd:displayUnitTypeMismatch', { unitName: (/** @type {MMUnit} */ (displayUnit)).name });
 	}
 
 	/**
@@ -241,7 +265,7 @@ export class MMTableValueColumn {
 		if (isString) {
 			let newString = new MMStringValue(nTotalRows, 1);
 			if (this._value) {
-				const oldValue = this._value;
+				const oldValue = (/** @type {MMStringValue} */ (this._value));
 				for ( let i = 0; i < rowNumber - 1; i++) {
 					newString.setValueAtCount(oldValue.valueAtCount(i), i);
 				}
@@ -251,7 +275,7 @@ export class MMTableValueColumn {
 				}
 			}
 
-			const calcValue = (insertValue) ? insertValue.stringForRowColumnUnit(1,1, null) : '';
+			const calcValue = (insertValue) ? insertValue.stringForRowColumnUnit(1,1, undefined) : '';
 			newString.setValue(calcValue, rowNumber, 1);
 			this._value = newString;
 		}
@@ -280,14 +304,14 @@ export class MMTableValueColumn {
 				}
 			}
 
-			let newValue = new MMNumberValue(nTotalRows, 1, dimensions);
+			let newValue = new MMNumberValue(nTotalRows, 1, dimensions || undefined);
 			if (oldValue) {
 				for (let i = 0; i < rowNumber - 1; i++ ) {
-					newValue.values[i] = oldValue.values[i];
+					newValue.values[i] = (/** @type {any} */ (oldValue)).values[i];
 				}
 				
 				for (let i = rowNumber; i < nTotalRows; i++ ) {
-					newValue.values[i] = oldValue.values[i - 1];
+					newValue.values[i] = (/** @type {any} */ (oldValue)).values[i - 1];
 				}
 			}
 			
@@ -308,7 +332,7 @@ export class MMTableValueColumn {
 				let newValue = new MMStringValue(nCurrentRows, 1);
 				for (let i = 0; i < nCurrentRows; i++) {
 					const j = i % withValue.rowCount;
-					const calcValue = withValue.stringForRowColumnUnit(j + 1, 1, null);
+					const calcValue = (/** @type {any} */ (withValue)).stringForRowColumnUnit(j + 1, 1, null);
 					newValue.setValue(calcValue, i + 1, 1);
 				}
 				this._value = newValue;
@@ -327,23 +351,24 @@ export class MMTableValueColumn {
 	/**
 	 * @method updateRow
 	 * @param {Number} rowNumber
-	 * @param {MMValue} withValue
-	 * @param {MMTableValue} dataTable
+	 * @param {MMValue|null} withValue
+	 * @param {MMTableValue|any} [dataTable]
 	 */
 	updateRow(rowNumber, withValue, dataTable) {
 		if (this._value && rowNumber <= this._value.rowCount) {
 			if (this.isString) {
+				const val = (/** @type {MMStringValue} */ (this._value));
 				if (withValue) {
-					this._value.setValue(withValue.stringForRowColumnUnit(1, 1), rowNumber, 1);
+					val.setValue(withValue.stringForRowColumnUnit(1, 1), rowNumber, 1);
 				}
 				else {
-					this._value.setValue('""', rowNumber, 1);
+					val.setValue('""', rowNumber, 1);
 				}
 			}
 			else {
 				if (withValue instanceof MMNumberValue) {
 					if (MMUnitSystem.areDimensionsEqual(withValue.unitDimensions, this._value.unitDimensions)) {
-						this._value.setValue(withValue.valueAtRowColumn(1,1), rowNumber, 1);
+						(/** @type {MMNumberValue} */ (this._value)).setValue(withValue.valueAtRowColumn(1,1), rowNumber, 1);
 					}
 					else {
 						this.exceptionWith('mmcmd:tableUnitTypeMismatch', {
@@ -372,11 +397,12 @@ export class MMTableValueColumn {
 	updateRowWithString(rowNumber, value) {
 		if (this._value && rowNumber <= this._value.rowCount) {
 			if (this.isString) {
+				const val = (/** @type {MMStringValue} */ (this._value));
 				if (value) {
-					this._value.setValue(value, rowNumber, 1);
+					val.setValue(value, rowNumber, 1);
 				}
 				else {
-					this._value.setValue('', rowNumber, 1);
+					val.setValue('', rowNumber, 1);
 				}
 			}
 			else {
@@ -395,20 +421,21 @@ export class MMTableValueColumn {
 	 * @returns {Object} object that can be converted to json for save file
 	 */
 	saveObject() {
+		/** @type {Record<string, any>} */
 		const o = {
 			name: this.name,
-			displayUnit: this.isString ? 'string' : this.displayUnit.name,
+			displayUnit: this.isString ? 'string' : (/** @type {any} */ (this.displayUnit))?.name,
 		}
 		if (this.format && this.format.length) {
 			o.format = this.format;
 		}
 		if (this._value) {
 			if (this.isString) {
-				o.sValues = this._value.values;
+				o.sValues = (/** @type {any} */ (this._value)).values;
 			}
 			else {
-				o.nValues = Array.from(this._value.values);
-				o.unitDimensions = MMUnit.stringFromDimensions(this._value.unitDimensions);
+				o.nValues = Array.from((/** @type {any} */ (this._value)).values);
+				o.unitDimensions = MMUnit.stringFromDimensions((/** @type {number[]} */ (this._value.unitDimensions)));
 			}
 		}
 		return o;
@@ -416,7 +443,7 @@ export class MMTableValueColumn {
 
 	/**
 	 * @method initFromSaved - initialize from stored object
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		if (saved.format) {
@@ -453,7 +480,7 @@ export class MMTableValueColumn {
 			this._value = newValue;
 		}
 		else {
-			const dimensions = this._displayUnit.dimensions;
+			const dimensions = (/** @type {MMUnit} */ (this._displayUnit)).dimensions;
 			const newValue = new MMNumberValue(rowCount, 1, dimensions);
 			for (let i = 0; i < rowCount; i++) {
 				let d = parseFloat(stringValues[i]);
@@ -475,7 +502,7 @@ export class MMTableValueColumn {
 			const nNewRows = this._value.rowCount - 1;
 			if (this.isString) {
 				const newValue = new MMStringValue(nNewRows, 1);
-				const oldValue = this._value;
+				const oldValue = (/** @type {MMStringValue} */ (this._value));
 				for (let i = 1; i < rowNumber; i++) {
 					newValue.setValue(oldValue.valueAtCount(i - 1), i, 1);
 				}
@@ -508,7 +535,7 @@ export class MMTableValueColumn {
 			const nNewRows = keepNumbers.length;
 			if (this.isString) {
 				const newValue  =  new MMStringValue(nNewRows, 1);
-				const oldValue = this._value;
+				const oldValue = (/** @type {MMStringValue} */ (this._value));
 				for (let i = 0; i < nNewRows; i++) {
 					newValue.setValue(oldValue.valueAtCount(keepNumbers[i]), i, 1);
 				}
@@ -527,15 +554,14 @@ export class MMTableValueColumn {
 
 	/**
 	 * @method jsonValue
-	 * @override
-	 * @param {MMUnit} displayUnit
-	 * @param {String} format
+	 * @param {MMUnit} [displayUnit]
+	 * @param {String} [format]
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
 	jsonValue(displayUnit, format) {
 		if (!displayUnit) {
-			displayUnit = this._displayUnit;
-			if (!displayUnit && this._value.unitDimensions) {
+			displayUnit = (/** @type {MMUnit} */ (this._displayUnit));
+			if (!displayUnit && this._value?.unitDimensions) {
 				displayUnit = theMMSession.unitSystem.defaultUnitWithDimensions(this._value.unitDimensions);
 			}
 		}
@@ -545,7 +571,7 @@ export class MMTableValueColumn {
 			name: this.name,
 			dUnit: displayUnitName,
 			format: format ? format : this.format,
-			v: this._value.jsonValue(displayUnit),
+			v: (/** @type {MMValue} */ (this._value)).jsonValue(displayUnit),
 		}
 	}
 }
@@ -556,13 +582,21 @@ export class MMTableValueColumn {
  */
 // eslint-disable-next-line no-unused-vars
 export class MMTableValue extends MMValue {
+	/** @type {MMTableValueColumn[]} */
+	columns;
+	/** @type {Record<string, MMTableValueColumn>} */
+	_nameDictionary;
+
 	/**
 	 * @constructor
 	 * @param {Object} context
-	 * context must have a columns array containing MMTableValueColumns
-	 * can optionally have a rowNumbers MMNumberValue containing the rows from columns to include
+	 * @param {MMTableValueColumn[]} [context.columns]
+	 * @param {MMNumberValue} [context.rowNumbers]
+	 * @param {string} [context.csv]
+	 * @param {string} [context.path]
 	 */
 	constructor(context) {
+		/** @param {MMTableValueColumn[]} columns */
 		const initWithColumns = (columns) => {
 			this.columns = Array.from(columns)  // create copy
 			this._nameDictionary = {};
@@ -609,18 +643,24 @@ export class MMTableValue extends MMValue {
 			let i = 0;
 			let line;
 			let re = new RegExp('.*?[\\r\\n]+');
+			/** @param {string} key @param {Object} [args] */
 			const exceptionWith = (key, args) => {
 				let msg = new MMCommandMessage(key, args);
 				throw(msg);
 			}
 		
+			/**
+			 * @param {number} i
+			 * @param {RegExp} re
+			 * @returns {[number, string]}
+			 */
 			const getLine = (i, re) => {
 				let match = csv.substring(i).match(re);
 				if (!match) {
 					exceptionWith('mmcmd:tableBadCsvHeader', {path: context.path});
 				}
-				let line = match[0];
-				i += match.index + line.length;
+				let line = (/** @type {RegExpMatchArray} */ (match))[0];
+				i += (/** @type {number} */ ((/** @type {RegExpMatchArray} */ (match)).index)) + line.length;
 				return [i, line];
 			}
 			[i, line] = getLine(i, re);
@@ -653,6 +693,7 @@ export class MMTableValue extends MMValue {
 			}
 	
 			const columns = [];
+			/** @type {(string|number)[][]} */
 			const columnData = [];
 			const csvColumnCount = columnNames.length;
 			const uniqueNames = new Set();
@@ -687,13 +728,15 @@ export class MMTableValue extends MMValue {
 			const columnCount = uniqueNames.size;
 	
 			re = new RegExp('".*?"|[^' + csvSeparator + '"\\n]*','ms');
+			/** @type {RegExpMatchArray | null} */
 			let match = csv.substring(i).match(re);
 			let columnNumber = 0;
 			let csvColumnNumber = 0;
 			const csvLength = csv.length;
 			while (match && i <= csvLength) {
+				/** @type {string|number} */
 				let token = match[0];
-				i += match.index + token.length;
+				i += (/** @type {number} */ (match.index)) + (/** @type {string} */ (token)).length;
 				if (includeColumn[csvColumnNumber]) {
 					const column = columns[columnNumber];
 	
@@ -737,7 +780,7 @@ export class MMTableValue extends MMValue {
 				}
 			}
 			for (let i = 0; i < columnCount; i++) {
-				columns[i].updateFromStringArray(columnData[i]);
+				columns[i].updateFromStringArray((/** @type {string[]} */ (columnData[i])));
 			}
 			super(rowCount, columnCount);
 			initWithColumns(columns);
@@ -749,15 +792,14 @@ export class MMTableValue extends MMValue {
 	}
 
 	/**
-	 * 
-	 * @returns 
+	 * @returns {MMTableValue}
 	 */
 	copyOf() {
 		const newColumns = [];
 		for (const column of this.columns) {
 			const newColumn = new MMTableValueColumn({
 				name: column.name,
-				displayUnit: column?.displayUnit?.name,
+				displayUnit: (/** @type {any} */ (column.displayUnit))?.name,
 				format: column?.format,
 				value: column.value
 			});
@@ -771,7 +813,7 @@ export class MMTableValue extends MMValue {
 	 * @method valueForColumnNumber
 	 * @override
 	 * @param {Number} number 
-	 * @returns {MMValue}
+	 * @returns {MMValue|null}
 	 */
 	valueForColumnNumber(number) {
 		if (number <= this.columns.length) {
@@ -781,7 +823,7 @@ export class MMTableValue extends MMValue {
 	}
 
 	/** @method columnNamed
-	 * @param name
+	 * @param {string} name
 	 * @returns {MMTableValueColumn}
 	 */
 	columnNamed(name) {
@@ -790,10 +832,11 @@ export class MMTableValue extends MMValue {
 
 	/**
 	 * @method columnHeader
+	 * @override
 	 * @param {Number} number 
-	 * @returns {String || Number}
+	 * @returns {string|null}
 	 */
-		columnHeader(number) {
+	columnHeader(number) {
 			if (number <= this.columns.length) {
 				return  this.columns[number - 1].name;
 			}
@@ -802,12 +845,12 @@ export class MMTableValue extends MMValue {
 	
 	/**
 	 * @method columnDisplayUnitName
-	 * @param {Number} number 
-	 * @returns {String || Number}
+	 * @param {Number} [number] 
+	 * @returns {string|null}
 	 */
 	columnDisplayUnitName(number) {
-		if (number <= this.columns.length) {
-			const unit =  this.columns[number - 1].displayUnit;
+		if (number && number <= this.columns.length) {
+			const unit =  (/** @type {any} */ (this.columns[number - 1].displayUnit));
 			if (unit) {
 				return unit.name;
 			}
@@ -819,8 +862,8 @@ export class MMTableValue extends MMValue {
 	 * @method valueForIndexRowColumn
 	 * @override
 	 * @param {MMValue} rowIndex
-	 * @param {MMValue} columnIndex
-	 * @returns {MMValue}
+	 * @param {MMValue} [columnIndex]
+	 * @returns {MMValue|undefined}
 	 */
 	valueForIndexRowColumn(rowIndex, columnIndex) {
 		if( rowIndex instanceof MMNumberValue ) {
@@ -860,9 +903,11 @@ export class MMTableValue extends MMValue {
 			}
 			if (rvColumns.length === 1) {
 				const v = rvColumns[0].value.valueForIndexRowColumn(rowIndex, MMNumberValue.scalarValue(1));
-				v.displayUnit = rvColumns[0]._displayUnit;
-				v.displayFormat = rvColumns[0].format;
-				return v;
+				if (v) {
+					v.displayUnit = (/** @type {MMUnit} */ (rvColumns[0]._displayUnit));
+					v.displayFormat = rvColumns[0].format;
+				}
+				return (/** @type {MMValue} */ (v));
 			}
 			else if (rvColumns.length > 1) {
 				return new MMTableValue({
@@ -875,7 +920,6 @@ export class MMTableValue extends MMValue {
 
 	/**
 	 * @method valueAtRowColumn
-	 * @override
 	 * @param {Number} rowIndex
 	 * @param {Number} columnIndex
 	 * @returns {MMValue}
@@ -885,15 +929,16 @@ export class MMTableValue extends MMValue {
 			this.exceptionWith("mmcmd:tableValueIndexError");
 		}
 		const column = this.columns[columnIndex - 1];
-		return column.value.valueAtRowColumn(rowIndex, 1);
+		return (/** @type {any} */ (column.value)).valueAtRowColumn(rowIndex, 1);
 	}
 
 	/**
 	 * @method stringForRowColumnUnit
+	 * @override
 	 * @param {Number} rowNumber
 	 * @param {Number} columnNumber
-	 * @param {MMUnit} outUnit
-	 * @param {String} format
+	 * @param {MMUnit} [outUnit]
+	 * @param {String} [format]
 	 * @returns {String}
 	 */
 	// eslint-disable-next-line no-unused-vars
@@ -901,25 +946,26 @@ export class MMTableValue extends MMValue {
 		const column = this.columns[columnNumber - 1];
 
 		if (!outUnit) {
-			outUnit = column.displayUnit;
+			outUnit = (/** @type {MMUnit} */ (column.displayUnit));
 		}
 		if (!outUnit) {
-			outUnit = column.value.defaultUnit;
+			outUnit = (/** @type {MMUnit} */ (column.value.defaultUnit));
 		}
 
 		if (!format) {
 			format = column.format;
 		}
 
-		return column.value.stringForRowColumnUnit(rowNumber, 1, outUnit, format);
+		return (/** @type {any} */ (column.value)).stringForRowColumnUnit(rowNumber, 1, outUnit, format);
 	}
 
 	/**
-	 * @method stringForRowColumnUnit
+	 * @method stringForRowColumnWithUnit
+	 * @override
 	 * @param {Number} rowNumber
 	 * @param {Number} columnNumber
-	 * @param {MMUnit} outUnit
-	 * @param {String} format
+	 * @param {MMUnit} [outUnit]
+	 * @param {String} [format]
 	 * @returns {String}
 	 */
 	// eslint-disable-next-line no-unused-vars
@@ -927,24 +973,24 @@ export class MMTableValue extends MMValue {
 		const column = this.columns[columnNumber - 1];
 
 		if (!outUnit) {
-			outUnit = column.displayUnit;
+			outUnit = (/** @type {MMUnit} */ (column.displayUnit));
 		}
 		if (!outUnit) {
-			outUnit = column.value.defaultUnit;
+			outUnit = (/** @type {MMUnit} */ (column.value.defaultUnit));
 		}
 
 		if (!format) {
 			format = column.format;
 		}
 
-		return column.value.stringForRowColumnWithUnit(rowNumber, 1, outUnit, format);
+		return (/** @type {any} */ (column.value)).stringForRowColumnWithUnit(rowNumber, 1, outUnit, format);
 	}
 
 	/**
 	 * @method jsonValue
 	 * @override
-	 * @param {MMUnit[]} displayUnits
-	 * @param {String[]} formats
+	 * @param {MMUnit[]|MMUnit} [displayUnits]
+	 * @param {String[]} [formats]
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
 	jsonValue(displayUnits, formats) {
@@ -952,9 +998,10 @@ export class MMTableValue extends MMValue {
 		const nc =  this.columnCount;
 		for (let i = 0; i < nc; i++) {
 			const column = this.columns[i];
-			columns.push(column.jsonValue(displayUnits?.[i + 1], formats?.[i + 1]));
+			columns.push(column.jsonValue((/** @type {any} */ (displayUnits))?.[i + 1], formats?.[i + 1]));
 		}
 
+		/** @type {{t: string, v: any[], nr: number, nc: number, isTransposed?: boolean}} */
 		const returnValue = {
 			t: 't',
 			v: columns,
@@ -969,7 +1016,8 @@ export class MMTableValue extends MMValue {
 
 	/**
 	 * @method stringWithUnit
-	 * @param {MMUnit} unit - optional
+	 * @override
+	 * @param {MMUnit} [unit] - optional
 	 * @returns {String} 
 	 */
 	// eslint-disable-next-line no-unused-vars
@@ -980,10 +1028,10 @@ export class MMTableValue extends MMValue {
 	/**
 	 * @method numberValue
 	 * @override
-	 * @returns MMNumberValue
+	 * @returns {MMNumberValue|null}
 	 */
 	numberValue() {
-		let rv;
+		let rv = null;
 		if (this.columnCount) {
 			let numericCount = 0;
 			let firstNumeric;
@@ -1021,8 +1069,10 @@ export class MMTableValue extends MMValue {
 
 	/**
 	 * @method ifThenElse
+	 * @override
 	 * table is not valid conditions
 	 * table[0,1] would be though
+	 * @returns {null}
 	*/
 	ifThenElse() {
 		return null;
@@ -1030,8 +1080,10 @@ export class MMTableValue extends MMValue {
 
 	/**
 	 * @method ifStringThenElse
+	 * @override
 	 * table is not valid conditions
 	 * table[0,1] would be though
+	 * @returns {null}
 	*/
 	ifStringThenElse() {
 		return null;
@@ -1039,8 +1091,9 @@ export class MMTableValue extends MMValue {
 
 	/**
 	 * @method selectBoolean
+	 * @override
 	 * @param {MMNumberValue} selector
-	 * @returns MMTableValue
+	 * @returns {MMTableValue|null|undefined}
 	 */
 	selectBoolean(selector) {
 		if (selector.columnCount > 1) {
@@ -1076,7 +1129,7 @@ export class MMTableValue extends MMValue {
 
 				const newColumn = new MMTableValueColumn({
 					name: column.name,
-					displayUnit: column.displayUnit ? column.displayUnit.name : null,
+					displayUnit: (/** @type {any} */ (column.displayUnit)) ? (/** @type {any} */ (column.displayUnit)).name : null,
 					format: column.format,
 					value: selectedValues
 				});
@@ -1092,13 +1145,18 @@ export class MMTableValue extends MMValue {
 	/**
 	 * @method stringSelectorsToBoolean
 	 * @param {MMStringValue} selectors
-	 * @returns MMNumberValue
+	 * @returns {MMNumberValue|null}
 	 */
 	stringSelectorsToBoolean(selectors) {
+		/**
+		 * @param {string} term
+		 * @returns {never}
+		 */
 		const syntaxError = (term) => {
 			this.exceptionWith('mmcmd:tableSelectSyntax', {term: term});
 		}
 
+		/** @type {number[]} */
 		const initialSelector = [];
 		initialSelector.length = this.rowCount;
 		initialSelector.fill(1); // set all true to start
@@ -1155,7 +1213,7 @@ export class MMTableValue extends MMValue {
 					if (valueParts.length > 1) {
 						// assume unit
 						const unit = theMMSession.unitSystem.unitNamed(valueParts[1]);
-						if (!MMUnitSystem.areDimensionsEqual(unit.dimensions, columnValue.unitDimensions)) {
+						if (!MMUnitSystem.areDimensionsEqual((/** @type {any} */ (unit))?.dimensions, columnValue.unitDimensions)) {
 							this.exceptionWith('mmcmd:tableSelectUnitMismatch', {term: selectorValue})
 						}
 						if (unit) {
@@ -1176,7 +1234,7 @@ export class MMTableValue extends MMValue {
 					findValue = valueString.toLowerCase();
 				}
 
-				const op = {
+				const op = (/** @type {Record<string, (a: any, b: any) => number|boolean>} */ ({
 					'=': (a, b) => {return a === b ? 1 : 0;},
 					'==': (a, b) => {return a === b ? 1 : 0;},
 					'!=': (a, b) => {return a === b ? 0 : 1},
@@ -1185,10 +1243,10 @@ export class MMTableValue extends MMValue {
 					'<=': (a, b) => {return a <= b ? 1 : 0;},
 					'>=': (a, b) => {return a >= b ? 1 : 0;},
 					'?': (a, b) => {return a.includes(b);}
-				}[opString];
+				}))[opString];
 
 				for (let i = 0; i < this.rowCount; i++) {
-					let value = columnValue.values[i];
+					let value = (/** @type {any} */ (columnValue)).values[i];
 					if (columnValue instanceof MMStringValue) {
 						value = value.toLowerCase().trim();
 					}
@@ -1210,15 +1268,22 @@ export class MMTableValue extends MMValue {
 
 	/**
 	 * @method selectString
+	 * @override
 	 * @param {MMStringValue} selectors
-	 * @returns MMTableValue
+	 * @returns {MMTableValue|null|undefined}
 	 */
 	selectString(selectors) {
-		return this.selectBoolean(this.stringSelectorsToBoolean(selectors))
+		const bools = this.stringSelectorsToBoolean(selectors);
+		return bools ? this.selectBoolean(bools) : null;
 	}
 
 	// statistical functions
 
+	/**
+	 * @param {number} resultType
+	 * @param {(v: MMNumberValue) => MMNumberValue|null} f
+	 * @returns {MMTableValue|MMNumberValue|null}
+	 */
 	calcMean(resultType, f) {
 		if (resultType === MMFunctionResult.rows || resultType === MMFunctionResult.all) {
 			const v = this.numberValue();
@@ -1236,8 +1301,8 @@ export class MMTableValue extends MMValue {
 						return null;
 					}
 					let displayUnitName = null;
-					if (column.displayUnit && MMUnitSystem.areDimensionsEqual(mean.unitDimensions, column.displayUnit.unitDimensions)) {
-						displayUnitName = column.displayUnit.name;
+					if (column.displayUnit && MMUnitSystem.areDimensionsEqual(mean.unitDimensions, (/** @type {any} */ (column.displayUnit)).unitDimensions)) {
+						displayUnitName = (/** @type {any} */ (column.displayUnit)).name;
 					}
 					const newColumn = new MMTableValueColumn({
 						name: column.name,
@@ -1252,32 +1317,52 @@ export class MMTableValue extends MMValue {
 		return rv;
 	}
 
+	/**
+	 * @param {number} resultType
+	 * @returns {MMTableValue|MMNumberValue|null}
+	 */
 	averageOf(resultType) {
-		return this.calcMean(resultType, (v) => {
+		return this.calcMean(resultType, (/** @type {MMNumberValue} */ v) => {
 			return v.averageOf(resultType);
 		})
 	}
 
+	/**
+	 * @param {number} resultType
+	 * @returns {MMTableValue|MMNumberValue|null}
+	 */
 	medianOf(resultType) {
-		return this.calcMean(resultType, (v) => {
+		return this.calcMean(resultType, (/** @type {MMNumberValue} */ v) => {
 			return v.medianOf(resultType);
 		})
 	}
 
+	/**
+	 * @param {number} resultType
+	 * @returns {MMTableValue|MMNumberValue|null}
+	 */
 	geoMeanOf(resultType) {
-		return this.calcMean(resultType, (v) => {
+		return this.calcMean(resultType, (/** @type {MMNumberValue} */ v) => {
 			return v.geoMeanOf(resultType);
 		})
 	}
 
+	/**
+	 * @param {number} resultType
+	 * @returns {MMTableValue|MMNumberValue|null}
+	 */
 	harmonicMeanOf(resultType) {
-		return this.calcMean(resultType, (v) => {
+		return this.calcMean(resultType, (/** @type {MMNumberValue} */ v) => {
 			return v.harmonicMeanOf(resultType);
 		})
 	}
 
+	/**
+	 * @param {number} resultType
+	 * @returns {MMTableValue|MMNumberValue|null}
+	 */
 	varianceOf(resultType) {
-		return this.calcMean(resultType, (v) => {
+		return this.calcMean(resultType, (/** @type {MMNumberValue} */ v) => {
 			return v.varianceOf(resultType);
 		})
 	}

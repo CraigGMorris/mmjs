@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -34,26 +35,63 @@
 	MMFlashPhaseValue:readonly
 */
 
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./MMModel.js').MMModel} MMModel */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMTableValue.js').MMTableValue} MMTableValue */
+/** @typedef {import('./MMTableValue.js').MMTableValueColumn} MMTableValueColumn */
+/** @typedef {import('./MMToolValue.js').MMToolValue} MMToolValue */
+/** @typedef {import('./MMJsonValue.js').MMJsonValue} MMJsonValue */
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnitSystem} MMUnitSystem */
+/** @typedef {import('./MMSession.js').MMSession} MMSession */
+/** @typedef {import('./MMFlash.js').MMFlash} MMFlash */
+/** @typedef {import('./MMFlash.js').MMFlashPhaseValue} MMFlashPhaseValue */
 /**
  * @class MMExpression
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
 export class MMExpression extends MMTool {
+	/** @type {MMFormula} */
+	formula;
+	/** @type {MMValue|null} */
+	cachedValue;
+	/** @type {MMUnit|null} */
+	displayUnit;
+	/** @type {Record<string, MMUnit>|null} */
+	tableUnits;
+	/** @type {boolean} */
+	_isInput;
+	/** @type {boolean} */
+	_showInput;
+	/** @type {string|null|undefined} */
+	_format;
+	/** @type {any} */
+	tableFormats;
+	/** @type {boolean|undefined} */
+	savedInvalid;
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Expression');
-		this.formula = new MMFormula('Formula', this);
+		this.formula = new MMFormula('Formula', /** @type {any} */ (this));
 		this.cachedValue = null;		// MMValue - retained until forgotten
 		this.displayUnit = null;		// MMUnit - for number values
 		this.tableUnits = null;		// dictionary of optional table column display MMUnits 
 		this._isInput = false;			// boolean
 	}
 
-	/** @override */
+	/**
+	 * @override
+	 * @returns {Record<string, any>}
+	 */
 	get properties() {
 		let d = super.properties;
 		d['isInput'] = {type: MMPropertyType.boolean, readOnly: false};
@@ -75,10 +113,10 @@ export class MMExpression extends MMTool {
 			if (newInput) {
 				// nameSpace will be parent model, but
 				// check to ensure this isn't the root model and so actually has parent model
-				this.formula.nameSpace = this.parent.parent instanceof MMModel ? this.parent.parent : this.parent;
+				this.formula.nameSpace = /** @type {any} */ ((/** @type {any} */ (this.parent)).parent instanceof MMModel ? (/** @type {any} */ (this.parent)).parent : this.parent);
 			}
 			else {
-				this.formula.nameSpace = this.parent;
+				this.formula.nameSpace = /** @type {any} */ (this.parent);
 			}
 		}
 	}
@@ -92,7 +130,7 @@ export class MMExpression extends MMTool {
 
 		if (newInput !== this._showInput ) {
 			this._showInput = newInput;
-			this.parent.forgetCalculated();
+			(/** @type {any} */ (this.parent)).forgetCalculated();
 		}
 	}
 
@@ -132,8 +170,8 @@ export class MMExpression extends MMTool {
 	 * @override
 	 * returns null or a unit to be used for a bare numeric constant in the named formula
 	 * for an expression there is only one formula, so the name is ignored
-	 * @param {String} formulaName
-	 * @returns {MMUnit}
+	 * @param {String} [formulaName]
+	 * @returns {MMUnit|null}
 	 */
 	// eslint-disable-next-line no-unused-vars
 	defaultFormulaUnit(formulaName) {
@@ -152,7 +190,7 @@ export class MMExpression extends MMTool {
 	/** @method getVerbUsageKey
 	 * @override
 	 * @param {string} command - command to get the usage key for
-	 * @returns {string} - the i18n key, if it exists
+	 * @returns {string | undefined} - the i18n key, if it exists
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -186,38 +224,39 @@ export class MMExpression extends MMTool {
 		}
 		else if (v instanceof MMToolValue) {
 			if (v._values && v._values[0]) {
-				p = v._values[0].parameters();
+				p = (/** @type {any} */ (v._values[0])).parameters();
 			}
 		}
 		else if (v instanceof MMFlashPhaseValue) {
-			p = v.flash.parameters();
+			p = (/** @type {any} */ (v)).flash.parameters();
 		}
 		return p;
 	}
 
 	/**
 	 * @method valueForRequestor
-	 * @override
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null}
 	 */
 	valueForRequestor(requestor) {
 		if (!this.cachedValue) {
-			this.cachedValue = this.formula.value();
+			this.cachedValue = /** @type {any} */ (this.formula.value());
 			if (this.cachedValue instanceof MMTableValue) {
 				if (this.tableFormats) {
 					const tv = this.cachedValue;
 					for (let i in this.tableFormats) {
-						if (tv.columns[i-1]) {
-							tv.columns[i-1].format = this.tableFormats[i];
+						const idx = Number(i) - 1;
+						if (tv.columns[idx]) {
+							tv.columns[idx].format = this.tableFormats[i];
 						}
 					}
 				}
 				if (this.tableUnits) {
 					const tv = this.cachedValue;
 					for (let i in this.tableUnits) {
-						if (tv.columns[i-1]) {
-							tv.columns[i-1].displayUnit = this.tableUnits[i];
+						const idx = Number(i) - 1;
+						if (tv.columns[idx]) {
+							tv.columns[idx].displayUnit = this.tableUnits[i];
 						}
 					}
 				}
@@ -225,7 +264,7 @@ export class MMExpression extends MMTool {
 			else if (this.cachedValue instanceof MMNumberValue) {
 				if (
 					this.format && this.format !== this.cachedValue.displayFormat ||
-					this.displayUnit && this.displayUnit !== this.cachedValue.displayFormat
+					this.displayUnit && (/** @type {any} */ (this.displayUnit)) !== this.cachedValue.displayFormat
 				) {
 					this.cachedValue = this.cachedValue.copyOf();
 					if (this.format) {
@@ -269,9 +308,9 @@ export class MMExpression extends MMTool {
 
 	/**
 	 * @override valueDescribedBy
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @param {String} [description]
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(description, requestor) {
 		let rv = null;	// return value
@@ -307,25 +346,25 @@ export class MMExpression extends MMTool {
 				case 'table':
 					if (!(value instanceof MMTableValue)) {
 						if (value instanceof MMToolValue) {
-							const tool = value._values[0];
+							const tool = /** @type {any} */ (value._values[0]);
 							rv = tool.valueDescribedBy(description, requestor);
 						}
 						else {
-							const columnCount = value.columnCount;
+							const columnCount = (/** @type {any} */ (value)).columnCount;
 							const columns = [];
 							const rowIndex = MMNumberValue.scalarValue(0);
 							const columnIndex = MMNumberValue.scalarValue(0);
 							for (let i = 1; i <= columnCount; i++) {
 								columnIndex._values[0] = i;
-								const columnValue = value.valueForIndexRowColumn(rowIndex, columnIndex);
+								const columnValue = (/** @type {any} */ (value)).valueForIndexRowColumn(rowIndex, columnIndex);
 								const displayUnit = (columnValue instanceof MMNumberValue)
 									? theMMSession.unitSystem.defaultUnitWithDimensions(columnValue.unitDimensions)
 									: null;
 								const columnName = `${i}`;
 								const column = new MMTableValueColumn({
 									name: columnName,
-									displayUnit: displayUnit ? displayUnit.name : null,
-									value: columnValue
+									displayUnit: (displayUnit ? displayUnit.name : undefined),
+									value: columnValue || undefined
 								});
 								columns.push(column);
 							}
@@ -346,7 +385,7 @@ export class MMExpression extends MMTool {
 								rv.displayFormat = column.format;
 							}
 							if (column.displayUnit) {
-								rv.displayUnit = column.displayUnit;
+								rv.displayUnit = /** @type {any} */ (column.displayUnit);
 							}
 						}
 					}
@@ -378,7 +417,7 @@ export class MMExpression extends MMTool {
 		/**
 	 * @method inputSources
 	 * @override
-	 * @returns {Set} contains tools referenced by this tool
+	 * @returns {Set<MMTool>} contains tools referenced by this tool
 	 */
 	inputSources() {
 		let sources = super.inputSources();
@@ -390,7 +429,7 @@ export class MMExpression extends MMTool {
 
 	/**
 	 * @method formulaList
-	 * @returns [] contains formulae contained by this tool and its children
+	 * @returns {MMFormula[]} contains formulae contained by this tool and its children
 	 */
 	formulaList() {
 		return [this.formula];
@@ -410,8 +449,8 @@ export class MMExpression extends MMTool {
 		results['isInput'] = this._isInput;
 		results['showInput'] = this._showInput;
 		results['value'] = this.jsonValue();
-		if (this._isInput && this.parent.parent && this.parent.parent instanceof MMModel) {
-			results['modelPath'] = this.parent.parent.getPath();
+		if (this._isInput && (/** @type {any} */ (this.parent))?.parent && (/** @type {any} */ (this.parent)).parent instanceof MMModel) {
+			results['modelPath'] = (/** @type {any} */ (this.parent)).parent.getPath();
 		}
 	}
 
@@ -426,24 +465,24 @@ export class MMExpression extends MMTool {
 				formats = this.tableFormats;
 			}
 			else {
-				displayUnit = this.displayUnit || this.cachedValue.displayUnit;
-				formats = this.cachedValue.displayFormat;
+				displayUnit = this.displayUnit || (/** @type {any} */ (this.cachedValue))?.displayUnit;
+				formats = (/** @type {any} */ (this.cachedValue))?.displayFormat;
 				if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, value.unitDimensions)) {
 					displayUnit = null;  // display unit is wrong type - ignore and use default
 				}
 			}
 			if (value._values && value._values[0] instanceof MMFlash) {
-				json = value.values[0].displayTable();
+				json = (/** @type {any} */ (value)).values[0].displayTable();
 			}
 			else if (value instanceof MMFlashPhaseValue) {
-				json = value.displayTable();
+				json = (/** @type {any} */ (value)).displayTable();
 			}
 			else {
 				let displayUnit = (value instanceof MMTableValue)  ? this.tableUnits : this.displayUnit;
-				if (displayUnit && !MMUnitSystem.areDimensionsEqual(displayUnit.dimensions, value.unitDimensions)) {
+				if (displayUnit && !MMUnitSystem.areDimensionsEqual((/** @type {any} */ (displayUnit)).dimensions, value.unitDimensions)) {
 					displayUnit = null;  // display unit is wrong type - ignore and use default
 				}
-				json = value.jsonValue(displayUnit, formats);
+				json = (/** @type {any} */ (value)).jsonValue(displayUnit, formats);
 			}
 		}
 		return json;
@@ -451,7 +490,8 @@ export class MMExpression extends MMTool {
 
 	/**
 	 * @method htmlValue
-	 * @returns {String}
+	 * @param {MMTool} [requestor]
+	 * @returns {String|null}
 	 */
 	htmlValue(requestor) {
 		const value = this.valueForRequestor();
@@ -465,7 +505,7 @@ export class MMExpression extends MMTool {
 			return lines.join('\n');
 		}
 		else {
-			return super.htmlValue(requestor);
+			return (/** @type {any} */ (super.htmlValue))(requestor);
 		}
 	}
 
@@ -556,14 +596,15 @@ export class MMExpression extends MMTool {
 				// fall through and just save expression as normal
 			}
 		}
-		let o=   super.saveObject();
+		/** @type {Record<string, any>} */
+		let o = super.saveObject();
 		o['Type'] = 'Expression';
 		o['Formula'] = {'Formula': this.formula.formula};
 		if (this._isInput)			{ o['isInput'] = 'y'; }
 		if (this._showInput)			{ o['showInput'] = 'y'; }
 		if (this.displayUnit)		{ o['displayUnit'] = this.displayUnit.name; }
 		if (this.tableUnits) {
-			const units = {};
+			const units = /** @type {Record<string, string>} */ ({});
 			Object.entries(this.tableUnits).forEach(([key, unit]) => {
 				units[key] = unit.name;
 			});
@@ -577,7 +618,7 @@ export class MMExpression extends MMTool {
 	/**
 	 * @method initFromSaved - initialize from stored object
 	 * @override
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		super.initFromSaved(saved);
@@ -592,7 +633,7 @@ export class MMExpression extends MMTool {
 			Object.entries(saved.tableUnits).forEach(([key, unitName]) => {
 				const unit = theMMSession.unitSystem.unitNamed(unitName);
 				if (unit) {
-					this.tableUnits[key] = unit;
+					(/** @type {Record<string, MMUnit>} */ (this.tableUnits))[key] = unit;
 				}
 			});
 		}

@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -25,12 +26,27 @@
 	theMMSession:readonly
 */
 
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMModel.js').MMModel} MMModel */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+
 /**
  * @class MMButton
  * @extends MMTool
  */
 // eslint-disable-next-line no-unused-vars
 export class MMButton extends MMTool {
+	/** @type {string} */
+	_action;
+	/** @type {MMFormula} */
+	targetFormula;
+	/** @type {MMFormula} */
+	labelFormula;
+	/** @type {boolean} */
+	isLoadingCase;
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
@@ -38,8 +54,8 @@ export class MMButton extends MMTool {
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Button');
 		this._action = 'addrow';
-		this.targetFormula = new MMFormula('targetFormula', this);
-		this.labelFormula = new MMFormula('labelFormula', this);
+		this.targetFormula = new MMFormula('targetFormula', (/** @type {any} */ (this)));
+		this.labelFormula = new MMFormula('labelFormula', (/** @type {any} */ (this)));
 		this.isLoadingCase = false;
 		this.isOutput = true;
 	}
@@ -49,7 +65,12 @@ export class MMButton extends MMTool {
 	 * @override
 	 * @returns {Object} object that can be converted to json for save file
 	 */
+	/**
+	 * @override
+	 * @returns {Record<string, any>}
+	 */
 	saveObject() {
+		/** @type {Record<string, any>} */
 		let o = super.saveObject();
 		o['Type'] = 'Button';
 		o['action'] = this.action;
@@ -61,7 +82,7 @@ export class MMButton extends MMTool {
 	/**
 	 * @method initFromSaved - initialize from stored object
 	 * @override
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		this.isLoadingCase = true;
@@ -102,7 +123,7 @@ export class MMButton extends MMTool {
 	/**
 	 * @method inputSources
 	 * @override
-	 * @returns {Set} contains tools referenced by this tool
+	 * @returns {Set<MMTool>} contains tools referenced by this tool
 	 */
 	inputSources() {
 		let sources = super.inputSources();
@@ -123,6 +144,11 @@ export class MMButton extends MMTool {
 		 * @param {string} command - command to get the usage key for
 		 * @returns {string} - the i18n key, if it exists
 		 */
+		/**
+		 * @override
+		 * @param {string} command
+		 * @returns {string|undefined}
+		 */
 		getVerbUsageKey(command) {
 			let key = {
 				press: 'mmcmd:_buttonPress',
@@ -139,6 +165,10 @@ export class MMButton extends MMTool {
 	 * @method parameters
 	 * i.e. things that can be appended to a formula value
 	 */
+	/**
+	 * @override
+	 * @returns {string[]}
+	 */
 	parameters() {
 		let p = super.parameters();
 		p.push('action');
@@ -149,10 +179,10 @@ export class MMButton extends MMTool {
 	}
 
 	/**
-	 * @override valueDescribedBy
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @override
+	 * @param {string} description
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(description, requestor) {
 		if (!description) {
@@ -167,7 +197,7 @@ export class MMButton extends MMTool {
 				}
 				break;
 			case 'target': {
-				const targetValue = this.targetFormula.value();
+				const targetValue = /** @type {MMValue|null} */ (/** @type {any} */ (this.targetFormula.value()));
 				if (targetValue) {
 					this.addRequestor(requestor);
 					return targetValue;
@@ -175,7 +205,7 @@ export class MMButton extends MMTool {
 			}
 				break;
 			case 'label': {
-				const labelValue = this.labelFormula.value();
+				const labelValue = /** @type {MMValue|null} */ (/** @type {any} */ (this.labelFormula.value()));
 				if (labelValue) {
 					this.addRequestor(requestor);
 					return labelValue;
@@ -189,12 +219,13 @@ export class MMButton extends MMTool {
 
 	/**
 	 * @method htmlValue
-	 * @returns {String}
+	 * @param {MMTool} [requestor]
+	 * @returns {string|null|undefined}
 	 */
 	htmlValue(requestor) {
 		this.addRequestor(requestor);
 		const labelValue = this.labelFormula.value();
-		const label = labelValue ? labelValue.values[0] : '?';
+		const label = labelValue ? (/** @type {any} */ (labelValue)).values[0] : '?';
 		const targetValue = this.targetFormula.value();
 		if (targetValue instanceof MMStringValue) {
 			let target = targetValue ? targetValue.values[0] : '';
@@ -202,8 +233,8 @@ export class MMButton extends MMTool {
 				if (this.action === 'addrow' || this.action === 'push') {
 					const pathParts = [target];
 					if (this.parent !== theMMSession.currentModel) {
-						pathParts.push(this.parent.name);
-						let parent = this.parent.parent;
+						pathParts.push((/** @type {any} */ (this.parent)).name);
+						let parent = (/** @type {any} */ (this.parent)).parent;
 						while (parent !== theMMSession.currentModel) {
 							pathParts.push(parent.name);
 							parent = parent.parent;
@@ -229,6 +260,7 @@ export class MMButton extends MMTool {
 	 * @override
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view
+	 * @returns {Promise<void>}
 	 */
 	async toolViewInfo(command) {
 		await super.toolViewInfo(command);
@@ -238,7 +270,7 @@ export class MMButton extends MMTool {
 		results['labelFormulaName'] = 'labelFormula';
 		results['labelFormula'] = this.labelFormula.formula;
 		const labelValue = this.labelFormula.value();
-		results['label'] = labelValue ? labelValue.values[0] : '';
+		results['label'] = labelValue ? (/** @type {any} */ (labelValue)).values[0] : '';
 
 		results['targetFormulaName'] = 'targetFormula';
 		results['targetFormula'] = this.targetFormula.formula;

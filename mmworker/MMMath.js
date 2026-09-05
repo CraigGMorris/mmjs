@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -20,6 +21,43 @@
 // low level functions that operate on scalar values and that the
 // language Math library does not supply
 
+/** @typedef {[number, number]} ComplexNumber */
+
+/**
+ * @typedef {Object} MMBrentRequired
+ * @property {(x: number) => number} fx
+ * @property {(key: string, data?: Record<string, any>) => void} setError
+ * @property {(key: string, data?: Record<string, any>) => void} setStatus
+ */
+
+/**
+ * @typedef {Object} MMBrentOptions
+ * @property {number} [maxIterations]
+ * @property {number} [relTolerance]
+ * @property {number} [absTolerance]
+ * @property {number} [xLower]
+ * @property {number} [xUpper]
+ */
+
+/**
+ * @typedef {Object} MMBroydenRequired
+ * @property {(n: number, x: Float64Array, fx: Float64Array) => void} calcFx
+ * @property {(key: string, data?: Record<string, any>) => void} setError
+ * @property {(key: string, data?: Record<string, any>) => void} setStatus
+ */
+
+/**
+ * @typedef {Object} MMBroydenOptions
+ * @property {number} [maxIterations]
+ * @property {number} [maxJacobians]
+ * @property {number} [eps]
+ * @property {number} [fTolerance]
+ * @property {number} [dxTolerance]
+ * @property {number} [maxStepLength]
+ * @property {number} [minTolerance]
+ * @property {boolean} [startWithIdentity]
+ */
+
 export const MMMath = {
 
 	// low level complex calculation functions
@@ -30,10 +68,20 @@ export const MMMath = {
 
 	// functions taking complex arguments or returning complex values represent them
 	// as two value arrays [re, img]
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @param {ArrayLike<number>} b
+	 * @returns {[number, number]}
+	 */
 	complex: (a, b) => {  // create a complex value (i.e. table representation)
 		return [a[0], b[0]];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @param {ArrayLike<number>} b
+	 * @returns {[number, number]}
+	 */
 	cMultiply: (a, b) => { // multiply two complex numbers
 		// if just real
 		if (a[1] === 0.0 && b[1] === 0.0) {
@@ -42,6 +90,11 @@ export const MMMath = {
 		return [ a[0]*b[0] - a[1]*b[1], a[0]*b[1] + a[1]*b[0] ];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @param {ArrayLike<number>} b
+	 * @returns {[number, number]}
+	 */
 	cDivide: (a, b) => { // divide (a/b) two complex numbers
 		if (b[1] === 0.0) {
 			// real denominator
@@ -68,6 +121,11 @@ export const MMMath = {
 		}
 	},
 
+	/**
+	 * @param {number} x
+	 * @param {number} y
+	 * @returns {number}
+	 */
 	hypot: (x, y) => {
 
 		var a = Math.abs(x);
@@ -86,6 +144,11 @@ export const MMMath = {
 		return a * Math.sqrt(1 + b * b);
 	},
 
+	/**
+	 * @param {number} a
+	 * @param {number} b
+	 * @returns {number}
+	 */
 	logHypot: (a, b) => {
 		// Calculates log(sqrt(a^2+b^2)) in a way to avoid overflows
 		// utility function returning real scalar
@@ -106,6 +169,11 @@ export const MMMath = {
 		return Math.log(a / Math.cos(Math.atan2(b, a)));
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @param {ArrayLike<number>} b
+	 * @returns {number[]}
+	 */
 	cPower: (a, b) => { // raise complex number a to the power of complex number b
 		if (b[0] === 0 && b[1] === 0) {
 			return [1, 0];
@@ -144,10 +212,18 @@ export const MMMath = {
 		return [r * Math.cos(i), r * Math.sin(i)];					
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {number}
+	 */
 	cAbsolute: (a) => {
 		return MMMath.hypot(a[0], a[1]);
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	cexp: (a) => {
 
 		const tmp = Math.exp(a[0]);
@@ -158,6 +234,10 @@ export const MMMath = {
 		];
 	},
 		
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	cln: (a) => {
 		const re = a[0];
 		const img = a[1];
@@ -168,6 +248,10 @@ export const MMMath = {
 		];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	csin: (a) => {
 		const r = a[0];
 		const i = a[1];
@@ -177,6 +261,10 @@ export const MMMath = {
 		];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	ccos: (a) => {
 		const r = a[0];
 		const i = a[1];
@@ -186,6 +274,10 @@ export const MMMath = {
 		];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	ctan: (a) => {
 		const r = 2 * a[0];
 		const i = 2 *a[1];
@@ -197,6 +289,10 @@ export const MMMath = {
 		];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	casin: (a) => {
 		const r = a[0];
 		const i = a[1];
@@ -205,6 +301,10 @@ export const MMMath = {
 		return [t2[1], -t2[0]];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	cacos: (a) => {
 		const r = a[0];
 		const i = a[1];
@@ -213,6 +313,10 @@ export const MMMath = {
 		return [Math.PI / 2 - t2[1], t2[0]];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	catan: (a) => {
 		const r = a[0];
 		const i = a[1];
@@ -236,6 +340,10 @@ export const MMMath = {
 		return [-0.5 * t1[1], 0.5 * t1[0]];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	csinh: (a) => {
 		const r = a[0];
 		const i = a[1];
@@ -245,6 +353,10 @@ export const MMMath = {
 		];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	ccosh: (a) => {
 		const r = a[0];
 		const i = a[1];
@@ -254,6 +366,10 @@ export const MMMath = {
 		];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	ctanh: (a) => {
 		const r = 2 * a[0];
 		const i = 2 * a[1];
@@ -265,6 +381,10 @@ export const MMMath = {
 		];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	casinh: (a) => {
 		const r = a[0];
 		const i = a[1];
@@ -272,6 +392,10 @@ export const MMMath = {
 		return [-res[1], res[0]];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {[number, number]}
+	 */
 	cacosh: (a) => {
 		const res = MMMath.cacos(a);
 		if (res[1] <= 0.0) {
@@ -282,6 +406,10 @@ export const MMMath = {
 		}
 	},
 
+	/**
+	 * @param {ArrayLike<number>} a
+	 * @returns {number[]}
+	 */
 	catanh: (a) => {
 		const r = a[0];
 		const i = a[1];
@@ -315,6 +443,10 @@ export const MMMath = {
 
 	// statistical functions
 
+	/**
+	 * @param {number} xx
+	 * @returns {number}
+	 */
 	lnGamma: (xx) => {
 		// returns ln gamma xx for xx > 0.  Full accuracy is obtained for xx > 1.
 		// NR claims for 0 < xx < 1 the reflection formula (NR 6.1.4) should be used first,
@@ -343,10 +475,20 @@ export const MMMath = {
 		return -tmp + Math.log( 2.50662827465 * ser );
 	},
 
+	/**
+	 * @param {number} n
+	 * @param {number} chosen
+	 * @returns {number}
+	 */
 	permutation: (n, chosen) => {
 		return Math.exp(MMMath.lnGamma(n + 1) - MMMath.lnGamma(n - chosen + 1))
 	},
 
+	/**
+	 * @param {number} n
+	 * @param {number} chosen
+	 * @returns {number}
+	 */
 	combination: (n, chosen) => {
 		return Math.exp(MMMath.lnGamma(n + 1) -
 			MMMath.lnGamma(n - chosen + 1) -
@@ -357,6 +499,10 @@ export const MMMath = {
 	// erf functions
 	// Matti Kariluoma May 2012 
 	// http://stackoverflow.com/questions/5971830/need-code-for-inverse-error-function
+	/**
+	 * @param {number} x
+	 * @returns {number}
+	 */
 	erfc: (x) => {
 		const z = Math.abs(x)
 		const t = 1.0 / (0.5 * z + 1.0)
@@ -379,10 +525,18 @@ export const MMMath = {
 		return a;
 	},
 
+	/**
+	 * @param {number} x
+	 * @returns {number}
+	 */
 	erf: (x) => {
 		return 1.0 - MMMath.erfc(x)
 	},
 
+	/**
+	 * @param {number} y
+	 * @returns {number}
+	 */
 	erfinv: (y) => {
 		if (y < -1.0 ||y > 1.0) {
 			alert("erfinv input out of range!");
@@ -447,6 +601,10 @@ export const MMMath = {
 		return x
 	},
 
+	/**
+	 * @param {number} p
+	 * @returns {number}
+	 */
 	inverseNormal: (p) => {
 		/*
 		* The inverse standard normal distribution.
@@ -514,6 +672,10 @@ export const MMMath = {
 		return x;
 	},
 
+	/**
+	 * @param {number} x
+	 * @returns {number}
+	 */
 	cumulativeNormal: (x) => {
 		// from paper at https://lyle.smu.edu/~aleskovs/emis/sqc2/accuratecumnorm.pdf
 		// which implements Hart 1968 method
@@ -559,6 +721,12 @@ export const MMMath = {
 		return rv;
 	},
 
+	/**
+	 * @param {number} a
+	 * @param {number} b
+	 * @param {number} x
+	 * @returns {number}
+	 */
 	betacf: (a, b, x) => {
 		let bm = 1.0;
 		let az = 1.0;
@@ -589,6 +757,12 @@ export const MMMath = {
 		return Math.Infinity;
 	},
 
+	/**
+	 * @param {number} a
+	 * @param {number} b
+	 * @param {number} x
+	 * @returns {number}
+	 */
 	betai: (a, b, x ) => {
 		if (x < 0.0 || x > 1.0 ) {
 			return Math.Infinity;
@@ -608,6 +782,11 @@ export const MMMath = {
 		}
 	},
 
+	/**
+	 * @param {number} a
+	 * @param {number} x
+	 * @returns {number}
+	 */
 	gammaSer: (a, x) => {
 		// returns the incomplete gamma function P(a, x) evaluated by its series representation.
 		const gln = MMMath.lnGamma(a);
@@ -629,6 +808,11 @@ export const MMMath = {
 		return Math.Infinity;
 	},
 
+	/**
+	 * @param {number} a
+	 * @param {number} x
+	 * @returns {number}
+	 */
 	gammaCf: (a, x) => {
 		// returns the incomplete gamma function Q(a, x) evaluated by
 		// its confinued fraction representation
@@ -664,6 +848,11 @@ export const MMMath = {
 		return Math.Infinity;
 	},
 
+	/**
+	 * @param {number} a
+	 * @param {number} x
+	 * @returns {number}
+	 */
 	gammaQ: (a, x) => {
 		if (x < 0.0 || a <= 0.0)
 			return Math.Infinity;
@@ -676,6 +865,11 @@ export const MMMath = {
 		}
 	},
 
+	/**
+	 * @param {ArrayLike<number>} data
+	 * @param {number} n
+	 * @returns {[number, number]}
+	 */
 	avevar: (data, n) => {
 		let ave = 0.0;
 		let svar = 0.0;
@@ -692,6 +886,13 @@ export const MMMath = {
 		return [ave, svar];
 	},
 
+	/**
+	 * @param {ArrayLike<number>} data1
+	 * @param {number} n1
+	 * @param {ArrayLike<number>} data2
+	 * @param {number} n2
+	 * @returns {number}
+	 */
 	ttest: (data1, n1, data2, n2) => {
 		let ave1, var1, ave2, var2;
 		[ave1, var1] = MMMath.avevar( data1, n1);
@@ -702,6 +903,12 @@ export const MMMath = {
 		return MMMath.betai( 0.5 * df, 0.5, df/(df + t*t));
 	},
 
+	/**
+	 * @param {ArrayLike<number>} data1
+	 * @param {ArrayLike<number>} data2
+	 * @param {number} n
+	 * @returns {number}
+	 */
 	tptest: (data1, data2, n) => {
 		let ave1, var1, ave2, var2;
 		[ave1, var1] = MMMath.avevar( data1, n);
@@ -722,9 +929,9 @@ export const MMMath = {
 
 		/**
 	 * @method luDecomposition
-	 * @param {Number} count - size of square matrix represented by values parameter
+	 * @param {number} count - size of square matrix represented by values parameter
 	 * @param {Float64Array} values - matrix values stored in row * count + column order
-	 * @return {Object} contains pivot:, a Int32Array that records the row permutations effected
+	 * @return {{pivot: Int32Array, isEven: boolean} | {error: string}} contains pivot:, a Int32Array that records the row permutations effected
 	 * by partial pivoting and isEven: which is true if the number of row interchanges was even
 	 * and false if odd
 	 * based on Numerical Recipe in C
@@ -800,10 +1007,11 @@ export const MMMath = {
 
 		/**
 	 * @method luBackSubstitute
-	 * @param {Number} count - size of square matrix represented by values parameter
+	 * @param {number} count - size of square matrix represented by values parameter
 	 * @param {Float64Array} values - matrix values stored in row * count + column order
 	 * @param {Float64Array} b 
 	 * @param {Int32Array} pivot 
+	 * @returns {void}
 	 * values in b are replaced with x in solving equation A*x = b
 	 * this matrix is A having undergone luDecomposition producing pivot
 	 */
@@ -835,19 +1043,9 @@ export const MMMath = {
 
 	/**
 	 * @method brentSolve
-	 * @param {Object} required
-	 * required must have:
-	 *  fx(x) function returning the function evaluation of x
-	 *  setError(s) function for setting an error message;
-	 * 	setStatus(s) function for setting status message
-	 * @param {Object} options
-	 * 	options can have options (see code below for defaults):
-	 *  maxIterations
-	 *  relTolerance - relative tolerance
-	 *  absTolerance - absolute tolerance
-	 *  xLower
-	 *  xUpper
-	 * @return {[Number, Number]} - array containg x and fx - null if failed
+	 * @param {MMBrentRequired} required
+	 * @param {MMBrentOptions} [options]
+	 * @return {[number, number]|undefined} - array containg x and fx - undefined if failed
 	 */
 
 	// brentSolve
@@ -961,6 +1159,13 @@ export const MMMath = {
 		return;
 	},
 
+	/**
+	 * @param {number} n
+	 * @param {Float64Array} a
+	 * @param {Float64Array} c
+	 * @param {Float64Array} d
+	 * @returns {boolean}
+	 */
 	qrDecomp: (n, a, c, d) => {
 		// n is Number, a c d are Float64arrays
 		// Constructs the QR decomposition of a.  The upper triangle matrix R is returned in the upper triangle of a,
@@ -1015,6 +1220,15 @@ export const MMMath = {
 		return singular;
 	},
 	
+	/**
+	 * @param {number} n
+	 * @param {number} i
+	 * @param {number} a
+	 * @param {number} b
+	 * @param {Float64Array} r
+	 * @param {Float64Array} qt
+	 * @returns {void}
+	 */
 	qrRotate: (n, i, a, b, r, qt) => {
 		// n, i, a and b are integers, r and qt are Float64Arrays
 		// Given matrices r and qt, carry out a Jacobi rotation on rows i and i + 1 of each matrix.
@@ -1052,6 +1266,14 @@ export const MMMath = {
 		}
 	},
 
+	/**
+	 * @param {number} n
+	 * @param {Float64Array} r
+	 * @param {Float64Array} qt
+	 * @param {Float64Array} u
+	 * @param {Float64Array} v
+	 * @returns {void}
+	 */
 	qrUpdate: (n, r, qt, u, v) => {
 		// n is number, the rest are Float64Array
 		// Given the QR decomposition of some n x n matrix, calculates the QR decomposition of the
@@ -1089,6 +1311,13 @@ export const MMMath = {
 			MMMath.qrRotate(n, i, r[i*n+i], -r[(i+1)*n + i], r, qt);  // transform upper Hessenberg to upper triangular
 	},
 	
+	/**
+	 * @param {number} n
+	 * @param {Float64Array} a
+	 * @param {Float64Array} d
+	 * @returns {void}
+	 * @param {Float64Array} b
+	 */
 	rSolve: (n, a, d, b) => {
 		// n is a Number, a, d, b are Float64Arrays
 		// solves the set of n linear equations R*x = b where R is an upper triangle matrix stored in a and d, which are input as
@@ -1104,6 +1333,19 @@ export const MMMath = {
 		}
 	},
 	
+	/**
+	 * @param {number} n
+	 * @param {Float64Array} xold
+	 * @param {number} fold
+	 * @param {Float64Array} g
+	 * @param {Float64Array} p
+	 * @param {Float64Array} x
+	 * @param {Float64Array} fx
+	 * @param {number} stepMax
+	 * @param {number} dxTolerance
+	 * @param {{calcFx: (n: number, x: Float64Array, fx: Float64Array) => void, setError: (key: string, data?: Record<string, any>) => void}} delegate
+	 * @returns {[boolean, number]}
+	 */
 	lineSearch: (n, xold, fold, g, p, x, fx, stepMax, dxTolerance, delegate) => {
 		// delegate must contain functions
 		// calcFx(n, x, fx) and
@@ -1204,6 +1446,16 @@ export const MMMath = {
 		}
 	},
 	
+	/**
+	 * @param {number} n
+	 * @param {Float64Array} x
+	 * @param {Float64Array} fx
+	 * @param {Float64Array} dummyF
+	 * @param {Float64Array} df
+	 * @param {number} eps
+	 * @param {(n: number, x: Float64Array, fx: Float64Array) => void} calcFx
+	 * @returns {void}
+	 */
 	forwardDifference: (n, x, fx, dummyF, df, eps, calcFx) => {
 		const rootEps = Math.sqrt(eps);
 		for (let j = 0; j < n; j++) {
@@ -1224,23 +1476,11 @@ export const MMMath = {
 
 	/**
 	 * @method broydenSolve
-	 * @param {Number} n - number of equations
-	 * @param {Float64Arrat} x - starts as initial x
-	 * @param {Object} required
-	 * required must have:
-	 *  calcFx(n, x, fx) function calculating the function evaluation of x
-	 *     returned in fx
-	 *  setError(s) function for setting an error message;
-	 * 	setStatus(s) function for setting status message
-	 * @param {Object} options
-	 * 	options can have options (see code below for defaults):
-	 *  maxIterations
-	 *  maxJacobians
-	 *  eps
-	 *  fTolerance
-	 *  maxStepLength
-	 *  minTolerance
-	 *  startWithIdentity
+	 * @param {number} n - number of equations
+	 * @param {Float64Array} x - starts as initial x
+	 * @param {MMBroydenRequired} required
+	 * @param {MMBroydenOptions} options
+	 * @returns {void}
 	 */
 	broydenSolve: (n, x, required, options) => {
 		// required

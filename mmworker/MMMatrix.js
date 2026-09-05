@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -28,6 +29,16 @@
 	MMTableValueColumn:readonly
 */
 
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./MMModel.js').MMModel} MMModel */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMTableValue.js').MMTableValue} MMTableValue */
+/** @typedef {import('./MMTableValue.js').MMTableValueColumn} MMTableValueColumn */
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+
 /**
  * Enum for matrix value state.
  * @readonly
@@ -45,6 +56,21 @@ const MatrixValueState = Object.freeze({
  * @class MMMatrixInputValue
  */
 class MMMatrixInputValue {
+	/** @type {number} */
+	row;
+	/** @type {number} */
+	column;
+	/** @type {string} */
+	state;
+	/** @type {any} */
+	_input;
+	/** @type {number} */
+	value;
+	/**
+	 * @constructor
+	 * @param {number} row
+	 * @param {number} column
+	 */
 	constructor(row, column) {
 		this.row = row;
 		this.column = column;
@@ -68,12 +94,20 @@ class MMMatrixInputValue {
 		}
 	}
 
+	/**
+	 * @param {string} inputString
+	 * @param {MMMatrix} owner
+	 */
 	setInput(inputString, owner) {
 		if (inputString !== this._input) {
 			this.resetInput(inputString, owner);
 		}
 	}
 
+	/**
+	 * @param {string} inputString
+	 * @param {MMMatrix} owner
+	 */
 	resetInput(inputString, owner) {
 		this._input = null;
 		const displayUnit = owner.getColumnUnit(this.column);
@@ -120,13 +154,16 @@ class MMMatrixInputValue {
 		}
 
 		// wasn't number, so assume formula
-		const formula = new MMFormula(`cell_${this.row}_${this.column}`, owner);
+		const formula = new MMFormula(`cell_${this.row}_${this.column}`, /** @type {any} */ (owner));
 		formula.formula = inputString;
 		this._input = formula;
 		this.state = MatrixValueState.formula;
 	}
 
-	// check the the inputstring has the same unit type as the column unit
+	/**
+	 * check that the inputstring has the same unit type as the column unit
+	 * @param {MMMatrix} owner
+	 */
 	checkInputUnit(owner) {
 		if (this.state === MatrixValueState.string || this.state === MatrixValueState.error) {
 			this.resetInput(this._input, owner);
@@ -150,8 +187,8 @@ class MMMatrixInputValue {
 
 	/**
 	 * @method numberValue
-	 * @return {MMNumberValue}
-	 * @param {MMMatrix} owner 
+	 * @param {MMMatrix} owner
+	 * @returns {MMNumberValue|null}
 	 */
 	numberValue(owner) {
 		const displayUnit = owner.getColumnUnit(this.column);
@@ -188,12 +225,13 @@ class MMMatrixInputValue {
 			}
 		}
 		const dimensions = displayUnit ? displayUnit.dimensions : null;
-		return MMNumberValue.scalarValue(this.value, dimensions);
+		return MMNumberValue.scalarValue(this.value, /** @type {number[]|undefined} */ (dimensions));
 	}
 
 	/**
 	 * @method floatValue
-	 * @param {MMMatrix} owner 
+	 * @param {MMMatrix} owner
+	 * @returns {number|null}
 	 */
 	floatValue(owner) {
 		let value;
@@ -218,6 +256,32 @@ class MMMatrixInputValue {
  */
 // eslint-disable-next-line no-unused-vars
 export class MMMatrix extends MMTool {
+	/** @type {Record<string, MMMatrixInputValue>} */
+	cellInputs;
+	/** @type {MMNumberValue|MMTableValue|null} */
+	value;
+	/** @type {Array<MMUnit|null>} */
+	columnUnits;
+	/** @type {Array<string|null>} */
+	columnFormats;
+	/** @type {number|null} */
+	calculatedColumnCount;
+	/** @type {number|null} */
+	calculatedRowCount;
+	/** @type {MMFormula} */
+	rowCountFormula;
+	/** @type {MMFormula} */
+	columnCountFormula;
+	/** @type {number} */
+	recursionCount;
+	/** @type {boolean} */
+	isCalculating;
+	/** @type {number} */
+	currentRow;
+	/** @type {number} */
+	currentColumn;
+	/** @type {any} */
+	knowns;
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
@@ -232,8 +296,8 @@ export class MMMatrix extends MMTool {
 		// if only the origin cell has a unit assigned, the calculated value will be a MMNumberValue, otherwise it will be a MMTableValue
 		this.columnFormats = []; // formats assigned to each column. Can have null entries for columns that don't have a format assigned
 		this.calculatedColumnCount = 1;
-		this.rowCountFormula = new MMFormula('rowCount', this);
-		this.columnCountFormula = new MMFormula('columnCount', this);
+		this.rowCountFormula = new MMFormula('rowCount', (/** @type {any} */ (this)));
+		this.columnCountFormula = new MMFormula('columnCount', (/** @type {any} */ (this)));
 		this.rowCountFormula.formula = '1';
 		this.columnCountFormula.formula = '1';
 		this.isHidingInfo = false;  // needed because the formula assigns will reset
@@ -260,7 +324,7 @@ export class MMMatrix extends MMTool {
 	/** @method getVerbUsageKey
 	 * @override
 	 * @param {string} command - command to get the usage key for
-	 * @returns {string} - the i18n key, if it exists
+	 * @returns {string|undefined} - the i18n key, if it exists
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -290,6 +354,10 @@ export class MMMatrix extends MMTool {
 	 * @override
 	 * i.e. things that can be appended to a formula value
 	 */
+	/**
+	 * @override
+	 * @returns {string[]}
+	 */
 	parameters() {
 		let p = super.parameters();
 		p.push('table.');
@@ -297,8 +365,8 @@ export class MMMatrix extends MMTool {
 		p.push('ncols');
 		p.push('1_1');
 		if (this.value instanceof MMTableValue) {
-			for (let i = 0; i < this.columnCount; i++) {
-				p.push(this.value.columnHeader(i+1));
+			for (let i = 0; i < (/** @type {number} */ (this.columnCount)); i++) {
+				p.push(/** @type {string} */ (this.value.columnHeader(i+1)));
 			}
 		}
 		return p;
@@ -309,6 +377,7 @@ export class MMMatrix extends MMTool {
 	 * @override
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view
+	 * @returns {Promise<void>}
 	 */
 	async toolViewInfo(command) {
 		await super.toolViewInfo(command);
@@ -325,7 +394,7 @@ export class MMMatrix extends MMTool {
 		}
 		results['valueType'] = this.value instanceof MMTableValue ? 'table' : 'number';
 
-		const cellInputs = {};
+		const cellInputs = /** @type {Record<string, any>} */ ({});
 		for (let key in this.cellInputs) {
 			const cellInput = this.cellInputs[key];
 			cellInputs[key] = {
@@ -345,6 +414,9 @@ export class MMMatrix extends MMTool {
 		results['value'] = value;
 	}
 
+	/**
+	 * @returns {Record<string, any>}
+	 */
 	jsonValue() {
 		if (!this.value && !this.isCalculating) {
 			this.calculateValue();
@@ -353,10 +425,10 @@ export class MMMatrix extends MMTool {
 		if (this.value) {
 			if (this.value instanceof MMTableValue) {
 				const formats = this.columnFormats.map(format => format ? format : this.columnFormats[0]);
-				json = this.value.jsonValue(this.columnUnits, formats);
+				json = this.value.jsonValue(/** @type {any} */ (this.columnUnits), /** @type {any} */ (formats));
 			}
 			else {
-				json = this.value.jsonValue(this.columnUnits[0], this.columnFormats[0]);
+				json = this.value.jsonValue(/** @type {any} */ (this.columnUnits[0]), /** @type {any} */ (this.columnFormats[0]));
 			}
 		}
 		return json;
@@ -408,7 +480,7 @@ export class MMMatrix extends MMTool {
 	/**
 	 * @method inputSources
 	 * @override
-	 * @returns {Set} contains tools referenced by this tool
+	 * @returns {Set<MMTool>} contains tools referenced by this tool
 	 */
 	inputSources() {
 		let sources = super.inputSources();
@@ -427,7 +499,7 @@ export class MMMatrix extends MMTool {
 
 	/**
 	 * @method formulaList
-	 * @returns [] contains formulae contained by this tool and its children
+	 * @returns {MMFormula[]} contains formulae contained by this tool and its children
 	 */
 	formulaList() {
 		const formulae = [this.columnCountFormula, this.rowCountFormula];
@@ -446,7 +518,12 @@ export class MMMatrix extends MMTool {
 	 * @override
 	 * @returns {Object} object that can be converted to json for save file
 	 */
+	/**
+	 * @override
+	 * @returns {Record<string, any>}
+	 */
 	saveObject() {
+		/** @type {Record<string, any>} */
 		let o =   super.saveObject();
 		o['Type'] = 'Matrix';
 		if (this.columnUnits.length > 0) {
@@ -457,7 +534,7 @@ export class MMMatrix extends MMTool {
 			o['columnFormats'] = this?.columnFormats;
 		}
 
-		const cellInputs = {};
+		const cellInputs = /** @type {Record<string, any>} */ ({});
 		for (let key in this.cellInputs) {
 			cellInputs[key] = this.cellInputs[key].input;
 		}
@@ -470,7 +547,7 @@ export class MMMatrix extends MMTool {
 	/**
 	 * @method initFromSaved - initialize from stored object
 	 * @override
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		super.initFromSaved(saved);
@@ -480,14 +557,14 @@ export class MMMatrix extends MMTool {
 				this.columnUnits[0] = theMMSession.unitSystem.unitNamed(unitName);
 			}
 			else if (saved.columnUnits) {
-				this.columnUnits = saved.columnUnits.map(unitName => theMMSession.unitSystem.unitNamed(unitName));
+				this.columnUnits = saved.columnUnits.map((/** @type {string} */ unitName) => theMMSession.unitSystem.unitNamed(unitName));
 			}
 			else {
 				this.columnUnits = [theMMSession.unitSystem.unitNamed('Fraction')];
 			}
 		}
 		catch(e) {
-			this.caughtException(e);
+			this.caughtException(/** @type {any} */ (e));
 			this.columnUnits = [theMMSession.unitSystem.unitNamed('Fraction')];
 		}
 
@@ -514,7 +591,7 @@ export class MMMatrix extends MMTool {
 	}
 
 	/** initFromNumberString
-	 * @param s - string of comma or tab separated numbers, one row per line
+	 * @param {string} s - string of comma or tab separated numbers, one row per line
 	 */
 	initFromNumberString(s) {
 		const rows = s.split('\n');
@@ -533,10 +610,11 @@ export class MMMatrix extends MMTool {
 	}
 	
 	/**
-	 * @property rowCount
+	 * @returns {number|null}
 	 */
 	get rowCount() {
 		if (!this.calculatedRowCount) {
+			/** @type {any} */
 			let countValue = this.rowCountFormula.value();
 			if (countValue) {
 				countValue = countValue.numberValue();
@@ -561,10 +639,11 @@ export class MMMatrix extends MMTool {
 	}
 	
 	/**
-	 * @property columnCount
+	 * @returns {number|null}
 	 */
 	get columnCount() {
 		if (!this.calculatedColumnCount) {
+			/** @type {any} */
 			let countValue = this.columnCountFormula.value();
 			if (countValue) {
 				countValue = countValue.numberValue();
@@ -646,6 +725,10 @@ export class MMMatrix extends MMTool {
 	 * @param {Number} column
 	 * @param {MMUnit} unit
 	 */
+	/**
+	 * @param {number} column
+	 * @param {MMUnit|null} unit
+	 */
 	setColumnUnit(column, unit) {
 		if (unit) {
 			this.columnUnits[column] = unit;
@@ -668,8 +751,8 @@ export class MMMatrix extends MMTool {
 
 	/**
 	 * @method getColumnUnit
-	 * @param {Number} column
-	 * @returns {MMUnit}
+	 * @param {number} column
+	 * @returns {MMUnit|null}
 	 */
 		getColumnUnit(column) {
 			return this.columnUnits[column] || this.columnUnits[0];
@@ -686,7 +769,7 @@ export class MMMatrix extends MMTool {
 		if (parts.length >= 1) {
 			const column = Number(parts[0]);
 			const unitName = parts[1];
-			if (isNaN(column) || column < 0 || column > this.columnCount) {
+			if (isNaN(column) || column < 0 || column > (/** @type {number} */ (this.columnCount))) {
 				throw(this.t('mmcmd:matrixColumnNumberError', { path: this.getPath(), args: command.args }));
 			}
 			try {
@@ -707,15 +790,14 @@ export class MMMatrix extends MMTool {
 
 	/** @method setColumnFormatCommand
 	 * set format for a column
-	 * @param {Number} column
-	 * @param {String} format
+	 * @param {MMCommand} command
 	 */
 	setColumnFormatCommand(command) {
 		const parts = command.args.split(/\s+/);
 		if (parts.length >= 1) {
 			const column = Number(parts[0]);
 			const format = parts[1];
-			if (isNaN(column) || column < 0 || column > this.columnCount) {
+			if (isNaN(column) || column < 0 || column > (/** @type {number} */ (this.columnCount))) {
 				throw(this.t('mmcmd:matrixColumnNumberError', { path: this.getPath(), args: command.args }));
 			}
 			this.columnFormats[column] = format;
@@ -724,12 +806,18 @@ export class MMMatrix extends MMTool {
 
 	/**
 	 * @method valueCommand
+	 * @param {MMCommand} command
 	 * command.results = json
 	 */
 	valueCommand(command) {
 		command.results = this.jsonValue();
 	}
 
+	/**
+	 * @param {number} row
+	 * @param {number} column
+	 * @param {string} inputString
+	 */
 	setCellInput(row, column, inputString) {
 		const key = `${row}_${column}`;
 		let inputValue = this.cellInputs[key];
@@ -775,7 +863,7 @@ export class MMMatrix extends MMTool {
 			const dimensions = hasUnits ? null : this?.columnUnits?.[0]?.dimensions;
 			
 			// a unitless number value is used for the calculations
-			this.value = new MMNumberValue(rowCount, columnCount, dimensions);
+			this.value = new MMNumberValue(rowCount, columnCount, /** @type {number[]|undefined} */ (dimensions));
 			this.knowns = [];
 
 			for (let row = 1; row <= rowCount; row++) {
@@ -840,9 +928,9 @@ export class MMMatrix extends MMTool {
 
 	/**
 	 * @method floatValue
-	 * @param {Number} row - row number
-	 * @param {Number} column - column number
-	 * @returns {Number} value at row - column
+	 * @param {number} row - row number
+	 * @param {number} column - column number
+	 * @returns {number|null}
 	 */
 	floatValue(row, column) {
 		if (!this.isCalculating) {
@@ -852,7 +940,7 @@ export class MMMatrix extends MMTool {
 					return null;
 				}
 			}
-			return this.value.valueAtRowColumn(row, column);
+			return /** @type {number} */ (this.value.valueAtRowColumn(row, column));
 		}
 
 		let inputValue = this.cellInputs[`${row}_${column}`];
@@ -871,9 +959,9 @@ export class MMMatrix extends MMTool {
 
 	/**
 	 * @method numberValue
-	 * @param {Number} row
-	 * @param {Number} column
-	 * @returns {MMNumberValue} 
+	 * @param {number} row
+	 * @param {number} column
+	 * @returns {MMNumberValue|null} 
 	 */
 	numberValue(row, column) {
 		if (!this.isCalculating) {
@@ -884,10 +972,10 @@ export class MMMatrix extends MMTool {
 				}
 			}
 			if (this.value instanceof MMTableValue) {
-				return this.value.valueForIndexRowColumn(MMNumberValue.scalarValue(row), MMNumberValue.scalarValue(column));
+				return /** @type {any} */ (this.value.valueForIndexRowColumn(MMNumberValue.scalarValue(row), MMNumberValue.scalarValue(column)));
 			}
 			else {
-				return this.value.numberValueAtRowColumn(row, column);
+				return (/** @type {MMNumberValue} */ (this.value)).numberValueAtRowColumn(row, column);
 			}
 		}
 
@@ -904,9 +992,9 @@ export class MMMatrix extends MMTool {
 			return null;
 		}
 
-		const offset = this.value.offsetFor(row, column);
+		const offset = (/** @type {MMNumberValue} */ (this.value)).offsetFor(row, column);
 		if (this.knowns[offset]) {
-			return this.value.numberValueAtRowColumn(row, column);
+			return (/** @type {MMNumberValue} */ (this.value)).numberValueAtRowColumn(row, column);
 		}
 
 		this.recursionCount++;
@@ -927,7 +1015,7 @@ export class MMMatrix extends MMTool {
 
 		const rv = inputValue?.numberValue(this);
 		if (rv) {
-			this.value.setValue(rv.valueAtCount(0), row, column);
+			(/** @type {MMNumberValue} */ (this.value)).setValue(rv.valueAtCount(0), row, column);
 			this.knowns[offset] = true;
 		}
 		this.recursionCount--;
@@ -938,9 +1026,9 @@ export class MMMatrix extends MMTool {
 
 	/**
 	 * @method numberValueAtOffsets
-	 * @return {MMNumberValue} - value at offset from current cell
-	 * @param {Number} rowOffset
-	 * @param {Number} columnOffset 
+	 * @param {number} rowOffset
+	 * @param {number} columnOffset
+	 * @returns {MMNumberValue|null} - value at offset from current cell
 	 */
 	numberValueAtOffsets(rowOffset, columnOffset) {
 		const value = this.numberValue(this.currentRow + rowOffset, this.currentColumn + columnOffset);
@@ -952,29 +1040,28 @@ export class MMMatrix extends MMTool {
 	}
 
 	/**
-	 * @override valueDescribedBy
-	 * @return {MMNumberValue}
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @override
+	 * @param {string} [description]
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(description, requestor) {
 		let rv = null;
 		// convenience function to deal with units and format
-		const returnValue = (v) => {
+		const returnValue = (/** @type {any} */ v) => {
 			if (v) {
 				if (v instanceof MMNumberValue) {
 					const displayUnit = this.columnUnits[this.currentColumn] || this.columnUnits[0];
 					const format = this.columnFormats[this.currentColumn] || this.columnFormats[0];
 					if (
 						(displayUnit && displayUnit !== v.displayUnit) ||
-						(format && format !== v.format)
+						(format && format !== (/** @type {any} */ (v)).format)
 					)
 					{
 						v = v.copyOf();
 						if (v instanceof MMNumberValue) {
-							v.displayUnit = displayUnit;
-							v.displayFormat = format;
+							v.displayUnit = /** @type {any} */ (displayUnit);
+							v.displayFormat = format || undefined;
 						}
 					}
 					return v;
@@ -1010,7 +1097,7 @@ export class MMMatrix extends MMTool {
 			return MMNumberValue.scalarValue(this.columnCount);
 		}
 
-		const getCellValue = (cellDescription) => {
+		const getCellValue = (/** @type {string} */ cellDescription) => {
 			if (cellDescription.match(/^\d+_\d+$/)) {
 				const indexStrings = lcDescription.split('_');
 				const row = Number(indexStrings[0]);
@@ -1030,7 +1117,7 @@ export class MMMatrix extends MMTool {
 			rv = getCellValue(lcDescription);
 			if (rv) {
 				this.addRequestor(requestor);
-				return rv;
+				return /** @type {MMValue} */ (rv);
 			}
 			return null;
 		}
@@ -1050,10 +1137,10 @@ export class MMMatrix extends MMTool {
 			}
 			else {
 				const a = [];
-				for (let column = 1; column <= this.calculatedColumnCount; column++) {
-					const columnValue = new MMNumberValue(this.calculatedRowCount, 1, this.value.unitDimensions);
-					for (let row = 1; row <= this.calculatedRowCount; row++) {
-						columnValue.setValue(this.value.valueAtRowColumn(row, column), row, 1);
+				for (let column = 1; column <= (/** @type {number} */ (this.calculatedColumnCount)); column++) {
+					const columnValue = new MMNumberValue(/** @type {number} */ (this.calculatedRowCount), 1, (/** @type {MMNumberValue} */ (this.value)).unitDimensions);
+					for (let row = 1; row <= (/** @type {number} */ (this.calculatedRowCount)); row++) {
+						columnValue.setValue((/** @type {MMNumberValue} */ (this.value)).valueAtRowColumn(row, column), row, 1);
 					}
 					const tableColumn = new MMTableValueColumn({
 						name:`${column}`,

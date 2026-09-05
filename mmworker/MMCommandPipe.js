@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -20,7 +21,10 @@
 /**
  * @class MMCommandPipe
  * Creates and communicates with the worker
- * @member {Worker} cmdWorker
+ * @property {Worker} [cmdWorker]
+ * @property {boolean} isReady
+ * @property {Array<{ command: string, callBack: (result: any) => void }>} pendingCommands
+ * @property {((result: any) => void)|null} [currentCallBack]
  */
 export class MMCommandPipe {
 	/** @constructor */
@@ -28,6 +32,7 @@ export class MMCommandPipe {
 		if (window.Worker) { // Check if Browser supports the Worker api.
 			this.cmdWorker = new Worker("./mmworker/MMCommandWorker.js", { type: 'module' });
 			this.isReady = false;
+			/** @type {Array<{ command: string, callBack: (result: any) => void }>} */
 			this.pendingCommands = [];
 			
 			// Set up message handler
@@ -41,7 +46,7 @@ export class MMCommandPipe {
 					
 					// Process any pending commands
 					while (this.pendingCommands.length > 0) {
-						const { command, callBack } = this.pendingCommands.shift();
+						const { command, callBack } = /** @type {{ command: string, callBack: (result: any) => void }} */ (this.pendingCommands.shift());
 						this._sendCommand(command, callBack);
 					}
 					return;
@@ -66,14 +71,14 @@ export class MMCommandPipe {
 	
 	/** @method doCommand
 	 * @param {string} command
-	 * @param {function} callBack
+	 * @param {(result: any) => void} callBack
 	 */
 	doCommand(command, callBack) {
 		// console.log(`pipe ${command.cmdString}`);
 		
 		if (!this.isReady) {
 			// Queue the command until worker is ready
-			this.pendingCommands.push({ command, callBack });
+			(/** @type {Array<{ command: string, callBack: (result: any) => void }>} */ (this.pendingCommands)).push({ command, callBack });
 			return;
 		}
 		
@@ -82,10 +87,10 @@ export class MMCommandPipe {
 	
 	/** @private @method _sendCommand
 	 * @param {string} command
-	 * @param {function} callBack
+	 * @param {(result: any) => void} callBack
 	 */
 	_sendCommand(command, callBack) {
 		this.currentCallBack = callBack;
-		this.cmdWorker.postMessage(command);
+		(/** @type {Worker} */ (this.cmdWorker)).postMessage(command);
 	}
 }

@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -30,6 +31,21 @@
 	MMExpression:readonly
 	MMToolValue:readonly
 */
+
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./MMModel.js').MMModel} MMModel */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMTableValue.js').MMTableValue} MMTableValue */
+/** @typedef {import('./MMTableValue.js').MMTableValueColumn} MMTableValueColumn */
+/** @typedef {import('./MMToolValue.js').MMToolValue} MMToolValue */
+/** @typedef {import('./MMDataTable.js').MMDataTable} MMDataTable */
+/** @typedef {import('./MMExpression.js').MMExpression} MMExpression */
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+/** @typedef {import('./MMCommandProcessor.js').MMCommandMessage} MMCommandMessage */
+
 
 // code inserted into the page to implement the mmpost function
 const MMHtmlMessageCode = `
@@ -82,8 +98,18 @@ const mminputs = (idNames) => {
 
 /**
  * @class MMHtmlPageProcessor
+ * @property {any} parent
+ * @property {Record<string, any>|null} [inputs]
+ * @property {string|null} [rawHtml]
+ * @property {string|null} [processedHtml]
+ * @property {number} [scrollViewToY]
+ * @property {boolean} [recursionBlockIsOn]
  */
 export class MMHtmlPageProcessor {
+	/**
+	 * @constructor
+	 * @param {any} parentTool
+	 */
 	constructor(parentTool) {
 		// formula have to have a tool as parent, so rudely paste them onto it
 		this.parent = parentTool
@@ -96,8 +122,8 @@ export class MMHtmlPageProcessor {
 
 	/**
 	 * @method saveObject
-	 * @override
-	 * @returns {Object} object that can be converted to json for save file
+	 * @param {Record<string, any>} o
+	 * @returns {Record<string, any>} object that can be converted to json for save file
 	 */
 	saveObject(o) {
 		if (this.inputs) {
@@ -115,10 +141,9 @@ export class MMHtmlPageProcessor {
 
 	/**
 	 * @method initFromSaved - initialize from stored object
-	 * @override
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
-	initFromSaved(saved) {
+	initFromSaved(/** @type {Record<string, any>} */ saved) {
 		this.inputs = saved.inputs;
 		let formulaNumber = 0;
 		let tagFormula;
@@ -137,8 +162,7 @@ export class MMHtmlPageProcessor {
 	
 	/**
 	 * @method inputSources
-	 * @override
-	 * @returns {Set} contains tools referenced by this tool
+	 * @param {Set<MMTool>} sources - contains tools referenced by this tool
 	 */
 	inputSources(sources) {
 		const tagFormulas = this.parent.tagFormulas;
@@ -148,12 +172,14 @@ export class MMHtmlPageProcessor {
 			}
 			else {
 				// tag represents parent model
-				const parentModel = this.parent.parent;
-				for (const childName in parentModel.children) {
-					const child = parentModel.children[childName];
-					if (child.isInput || child.isOutput || child.htmlNotes) {
-						sources.add(child);
-						child.addRequestor(this.parent);
+				const parentModel = /** @type {any} */ (this.parent.parent);
+				if (parentModel && parentModel.children) {
+					for (const childName in parentModel.children) {
+						const child = /** @type {MMTool} */ (parentModel.children[childName]);
+						if (child && ((/** @type {any} */ (child)).isInput || (/** @type {any} */ (child)).isOutput || (/** @type {any} */ (child)).htmlNotes)) {
+							sources.add(child);
+							child.addRequestor(this.parent);
+						}
 					}
 				}
 			}
@@ -171,13 +197,13 @@ export class MMHtmlPageProcessor {
 	/**
 	 * @method action
 	 * @param {String} jsonMessage 
-	 * @returns {String}
+	 * @returns {Promise<Record<string, any>|string>}
 	 * Makes any inputs in the message available as parameters and
 	 * returns and returns and requested values in the response return
 	 * also performs action indicated in the requests with the mm_ keywords
 	 */
 	async action(jsonMessage) {
-		const response = {}
+		const response = /** @type {Record<string, any>} */ ({});
 		try {
 			const message = JSON.parse(jsonMessage);
 			if (message.callBackNumber) {
@@ -202,8 +228,8 @@ export class MMHtmlPageProcessor {
 				}
 			}
 
-			const actions = {};
-			const requestResults = {};
+			const actions = /** @type {Record<string, any>} */ ({});
+			const requestResults = /** @type {Record<string, any>} */ ({});
 			if (message.requests) {
 				for (let name of Object.keys(message.requests)) {
 					if (name.startsWith('mm_')) {
@@ -217,8 +243,8 @@ export class MMHtmlPageProcessor {
 			}
 
 			// now do any action requests
-			let parentModel = this.parent;
-			const getTarget = (names) => {
+			let parentModel = /** @type {any} */ (this.parent);
+			const getTarget = (/** @type {any} */ names) => {
 				names = names.toLowerCase().split('.');
 				let target = parentModel;
 				for (const name of names){
@@ -292,7 +318,7 @@ export class MMHtmlPageProcessor {
 									const oldInputs = target.removeRows(rows);
 									if (Object.keys(oldInputs).length) {
 										const inputsJson = JSON.stringify(oldInputs);
-										response.undo = `${this.getPath()} restorerows ${inputsJson}`;
+										response.undo = `${(/** @type {any} */ (this)).getPath()} restorerows ${inputsJson}`;
 									}
 								}
 								else if (target instanceof MMExpression) {
@@ -303,7 +329,7 @@ export class MMHtmlPageProcessor {
 											const oldInputs = tool.removeRows(rows)
 											if (Object.keys(oldInputs).length) {
 												const inputsJson = JSON.stringify(oldInputs);
-												response.undo = `${this.getPath()} restorerows ${inputsJson}`;
+												response.undo = `${(/** @type {any} */ (this)).getPath()} restorerows ${inputsJson}`;
 											}
 										}
 									}
@@ -328,8 +354,8 @@ export class MMHtmlPageProcessor {
 					case 'mm_clear': {
 						// forget all previously defined parameters derived from page inputs
 						if (actions[action]) {
-							this.inputs = null;
-							this.forgetCalculated();
+							this.inputs = undefined;
+							(/** @type {any} */ (this)).forgetCalculated();
 						}
 					}
 						break;
@@ -354,7 +380,7 @@ export class MMHtmlPageProcessor {
 					case 'mm_cmd': {
 						// have session execute a command(s)
 						const cmds = actions[action];
-						const results = await theMMSession.processor.processCommandString(cmds);
+						const results = await (/** @type {any} */ (theMMSession.processor)).processCommandString(cmds);
 						if (results) {
 							requestResults['_response'] = results
 							if (results[0] && results[0].error) {
@@ -375,7 +401,7 @@ export class MMHtmlPageProcessor {
 					}
 						break;
 					default:
-						this.setError('mmcmd:htmlBadAction', {action: action, path: this.parent.getPath()});
+						(/** @type {any} */ (this)).setError('mmcmd:htmlBadAction', {action: action, path: this.parent.getPath()});
 						break;
 				}
 			}
@@ -392,19 +418,19 @@ export class MMHtmlPageProcessor {
 							reqResult = '';
 						}
 						else if (mmResult instanceof MMTableValue) {
-							reqResult = {};
+							reqResult = /** @type {Record<string, any>} */ ({});
 							const rowCount = mmResult.rowCount;
 							for (const column of mmResult.columns) {
 								const columnValues = [];
 								for (let r = 0; r < rowCount; r++) {
-									const value = column.value.valueAtCount(r);
+									const value = (/** @type {any} */ (column.value)).valueAtCount(r);
 									columnValues.push(value);
 								}
 								reqResult[column.name] = columnValues;
 							}
 						}
 						else if (mmResult instanceof MMValue) {
-							const v = mmResult.values;
+							const v = (/** @type {any} */ (mmResult)).values;
 							if (mmResult.valueCount === 1) {
 								reqResult = v[0];
 							}
@@ -412,6 +438,7 @@ export class MMHtmlPageProcessor {
 								reqResult = [];
 								const columnCount = mmResult.columnCount;
 								for (let r = 0; r < mmResult.rowCount; r++) {
+									/** @type {any[]} */
 									const row = [];
 									reqResult.push(row);
 									for (let c = 0; c < columnCount; c++) {
@@ -435,15 +462,15 @@ export class MMHtmlPageProcessor {
 			return response;
 		}
 		catch(e) {
-			this.parent.setError('mmcmd:htmlBadActionJson', {path: this.parent.getPath(), msg: e.message});
+			this.parent.setError('mmcmd:htmlBadActionJson', {path: this.parent.getPath(), msg: (/** @type {any} */ (e)).message});
 			return '';
 		}
 	}
 
 	/**
 	 * @method htmlForRequestor
-	 * @param {MMTool} requestor
-	 * @param {Boolean} skipMessageCode;
+	 * @param {MMTool} [requestor]
+	 * @param {Boolean} [skipMessageCode]
 	 * @returns {String} 
 	 */
 	htmlForRequestor(requestor, skipMessageCode) {
@@ -480,10 +507,10 @@ export class MMHtmlPageProcessor {
 							formulaNumber++;
 							if (tagFormula.formula.length === 0) {
 								// if tag is empty assume parent model
-								const parentModel = this.parent.parent;
+								const parentModel = /** @type {any} */ (this.parent.parent);
 								try {
 									this.recursionBlockIsOn = true;
-									chunks.push(parentModel.htmlValue(requestor, true));
+									chunks.push(parentModel ? parentModel.htmlValue(requestor, true) : '');
 								}
 								finally {
 									this.recursionBlockIsOn = false;
@@ -492,7 +519,7 @@ export class MMHtmlPageProcessor {
 							else {
 								const value = tagFormula.value();
 								if (value instanceof MMValue) {
-									chunks.push(value.htmlValue(requestor));
+									chunks.push((/** @type {any} */ (value)).htmlValue(requestor));
 								}
 							}
 						}
@@ -731,6 +758,8 @@ export class MMHtmlPageProcessor {
 /**
  * @class MMHtmlPage
  * @extends MMTool
+ * @property {MMFormula} formula
+ * @property {MMHtmlPageProcessor} htmlProcessor
  */
 // eslint-disable-next-line no-unused-vars
 export class MMHtmlPage extends MMTool {
@@ -753,7 +782,7 @@ Replace this content in the source formula with your own content.
 	 * @returns {Object} object that can be converted to json for save file
 	 */
 	saveObject() {
-		let o = super.saveObject();
+		let o = /** @type {Record<string, any>} */ (super.saveObject());
 		o.Type = 'HTML Form';
 		o['Formula'] = {Formula: this.formula.formula};
 		this.htmlProcessor.saveObject(o);
@@ -763,7 +792,7 @@ Replace this content in the source formula with your own content.
 	/**
 	 * @method initFromSaved - initialize from stored object
 	 * @override
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		this.isLoadingCase = true;
@@ -789,6 +818,11 @@ Replace this content in the source formula with your own content.
 	 * @param {string} command - command to get the usage key for
 	 * @returns {string} - the i18n key, if it exists
 	 */
+	/**
+	 * @override
+	 * @param {string} command
+	 * @returns {string|undefined}
+	 */
 	getVerbUsageKey(command) {
 		let key = {
 			htmlaction: 'mmcmd:_htmlAction',
@@ -804,7 +838,7 @@ Replace this content in the source formula with your own content.
 	/**
 	 * @method inputSources
 	 * @override
-	 * @returns {Set} contains tools referenced by this tool
+	 * @returns {Set<MMTool>} contains tools referenced by this tool
 	 */
 	inputSources() {
 		let sources = super.inputSources();
@@ -835,9 +869,9 @@ Replace this content in the source formula with your own content.
 
 	/**
 	 * @override valueDescribedBy
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @param {String} [description]
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(description, requestor) {
 		if (!description) {
@@ -855,7 +889,7 @@ Replace this content in the source formula with your own content.
 			if ( this.formula.formula ) {
 				const rawHtmlValue = this.formula.value();
 				if (rawHtmlValue) {
-					const rawHtml = rawHtmlValue.values[0];
+					const rawHtml = (/** @type {MMStringValue} */ (rawHtmlValue)).values[0];
 					const blockName = lcDescription.substring(6);
 					const re = new RegExp(`(<!--begin_${blockName}-->)(.*)(<!--end_${blockName}-->)`, 'msi');
 					const match = rawHtml.match(re);
@@ -932,8 +966,8 @@ Replace this content in the source formula with your own content.
 	parameters() {
 		let p = super.parameters();
 		p.push('block_');
-		if (this.inputs) {
-			p = p.concat(Object.keys(this.inputs));
+		if ((/** @type {any} */ (this)).inputs) {
+			p = p.concat(Object.keys((/** @type {any} */ (this)).inputs));
 		}
 		return p;
 	}
@@ -951,18 +985,19 @@ Replace this content in the source formula with your own content.
 
 	/**
 	 * @method rawHtml
-	 * @returns {String}
+	 * @returns {String|undefined}
 	 */
 	rawHtml() {
 		const htmlValue = this.formula.value();
 		if (htmlValue) {
-			return htmlValue.values[0];
+			return (/** @type {MMStringValue} */ (htmlValue)).values[0];
 		}
 	}
 
 	/**
 	 * @method htmlValue
-	 * @returns {String}
+	 * @param {MMTool} [requestor]
+	 * @returns {String|null}
 	 */
 	htmlValue(requestor) {
 		return this.htmlProcessor.htmlForRequestor(requestor, true);

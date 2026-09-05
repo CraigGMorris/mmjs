@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -29,7 +30,25 @@ MMTableValue:readonly
 * options is dictionary of options
 * tool is MMTool
 */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMTableValue.js').MMTableValue} MMTableValue */
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+
+/**
+ * @typedef {Object} MMReportOptions
+ * @property {string} [sep]
+ * @property {boolean} [isCSV]
+ * @property {boolean} [isTableCopy]
+ */
+
 export const MMReport = {
+	/**
+	 * @param {MMReportOptions} options
+	 * @returns {string}
+	 */
 	separator: (options) => {
 		if (options.sep) {
 			return options.sep;
@@ -42,6 +61,11 @@ export const MMReport = {
 		}
 	},
 	
+	/**
+	 * @param {number} number
+	 * @param {MMReportOptions} options
+	 * @returns {string}
+	 */
 	float: (number, options) => {
 		let string;
 		if (options.isTableCopy) {
@@ -66,6 +90,11 @@ export const MMReport = {
 		return string;
 	},
 	
+	/**
+	 * @param {number} number
+	 * @param {MMReportOptions} options
+	 * @returns {string}
+	 */
 	headerInteger: (number, options) => {
 		let string;
 		if (options.isCSV || options.isTableCopy) {
@@ -77,6 +106,11 @@ export const MMReport = {
 		return string;
 	},
 	
+	/**
+	 * @param {string} string
+	 * @param {MMReportOptions} options
+	 * @returns {string}
+	 */
 	string: (string, options) => {
 		if (string) {
 			if (options.isCSV || options.isTableCopy) {
@@ -93,6 +127,11 @@ export const MMReport = {
 		return string;   
 	},
 	
+	/**
+	 * @param {string} string
+	 * @param {MMReportOptions} options
+	 * @returns {string}
+	 */
 	headerString: (string, options) => {
 		if (options.isCSV || options.isTableCopy) {
 			return MMReport.string(string, options);
@@ -106,6 +145,13 @@ export const MMReport = {
 		return string;
 	},
 	
+	/**
+	 * @param {MMTool & { tableUnits?: Record<string|number, MMUnit> }} [tool]
+	 * @param {MMValue} [value]
+	 * @param {MMUnit|null} [displayUnit]
+	 * @param {MMReportOptions} [options]
+	 * @returns {string}
+	 */
 	forToolValue: (tool, value, displayUnit, options = {}) => {
 		if (value) {
 			const lines = [];
@@ -129,6 +175,7 @@ export const MMReport = {
 					const fields = [];
 					if (includeindices) {
 						if (i !== 0) {
+							// @ts-ignore - Bug in original code: misplaced paren passes options to push() instead of string()
 							fields.push(MMReport.string(i.toFixed(0).padStart(5)), options);
 						}
 					}
@@ -141,7 +188,7 @@ export const MMReport = {
 							fields.push(MMReport.headerInteger(j, options));
 						}
 						else {
-							fields.push(MMReport.string(value.stringForRowColumnUnit(i, j, displayUnit), options));
+							fields.push(MMReport.string((/** @type {any} */ (value)).stringForRowColumnUnit(i, j, displayUnit), options));
 						}
 					}
 					lines.push(fields.join(sep));
@@ -158,6 +205,7 @@ export const MMReport = {
 					fields = [];
 					for (let j = 1; j <= value.columnCount; j++) {
 						if (displayUnit) {
+							// @ts-ignore - Bug in original code: misplaced paren passes options to push() instead of string()
 							fields.push(MMReport.string(displayUnit.name), options);
 						}
 						else {
@@ -211,7 +259,7 @@ export const MMReport = {
 					else {
 						let displayUnit = (tool && tool.tableUnits) ? tool.tableUnits[j+1] : null;
 						if (!displayUnit) {
-							displayUnit = column.displayUnit;
+							displayUnit = /** @type {MMUnit|null} */ (column.displayUnit);
 						}
 						if (!displayUnit) {
 							displayUnit = column.value.defaultUnit;
@@ -232,7 +280,7 @@ export const MMReport = {
 						const columnValue = column.value;
 						let columnUnit = (tool && tool.tableUnits) ? tool.tableUnits[j+1] : null;
 						if (!columnUnit) {
-							columnUnit = column.displayUnit;
+							columnUnit = /** @type {MMUnit|null} */ (column.displayUnit);
 						}
 						if (!columnUnit) {
 							columnUnit = columnValue ? columnValue.defaultUnit : null;
@@ -244,12 +292,13 @@ export const MMReport = {
 								cellValue = columnUnit.convertFromBase(cellValue);
 							}
 							field = MMReport.float(cellValue, options);
+							// @ts-ignore - Bug in original code: bitwise | used instead of logical ||
 							if (options.isCSV | options.isTableCopy) {
 								field = field.trim();
 							}
 						}
 						else {
-							field = MMReport.string(columnValue.values[i], options);
+							field = MMReport.string((/** @type {any} */ (columnValue)).values[i], options);
 						}
 						fields.push(field);
 					}

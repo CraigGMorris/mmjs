@@ -1,3 +1,5 @@
+// @ts-check
+
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -23,12 +25,20 @@
 	MMNumberValue:readonly
 */
 
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+
 /**
  * @class MMJsonValue
  * @extends MMValue
  */
 // eslint-disable-next-line no-unused-vars
 export class MMJsonValue extends MMValue {
+	/** @type {any} */
+	_jsonValue;
+
 	/** @constructor
 	 * @param {String|Object} jsonOrObject
 	*/
@@ -39,7 +49,7 @@ export class MMJsonValue extends MMValue {
 				this._jsonValue = JSON.parse(jsonOrObject);
 			}
 			catch(e) {
-				this.exceptionWith('mmcmd:formulaBadJsonValue', {msg: e.message});
+				this.exceptionWith('mmcmd:formulaBadJsonValue', {msg: (/** @type {any} */ (e)).message});
 				this._jsonValue = null;
 			}
 		}
@@ -49,7 +59,7 @@ export class MMJsonValue extends MMValue {
 	}
 
 	/** @method copyOf
-	 * @returns {MMValue}  - a copy of this instance
+	 * @returns {MMJsonValue}  - a copy of this instance
 	 */
 	copyOf() {
 		let newValue = new MMJsonValue(this._jsonValue);
@@ -65,17 +75,18 @@ export class MMJsonValue extends MMValue {
 	}
 
 	/** @static scalarValue
-	 * creates a MMStringValue with a single value
-	 * @param {String} value
-	 * @returns {MMStringValue}
+	 * creates a MMJsonValue with a single value
+	 * @param {any} value
+	 * @returns {MMJsonValue}
 	 */
 	static scalarValue(value) {
 		return new MMJsonValue(value);
 	}
 
 	/** @static stringArrayValue
-	 * creates a MMStringValue from an array of strings
-	 * @param {String[]} values
+	 * creates a MMJsonValue from an array of strings
+	 * @param {any[]} values
+	 * @returns {MMJsonValue}
 	 */
 	static stringArrayValue(values) {
 		return this.scalarValue(values);
@@ -88,7 +99,7 @@ export class MMJsonValue extends MMValue {
 	*/
 	logValueWithHeader(header, results) {
 		results.push(header);
-		results.push(this.values);
+		results.push(this.values || '');
 	}
 
 	/**
@@ -97,7 +108,7 @@ export class MMJsonValue extends MMValue {
 	 * @returns {String}
 	 */
 	valueAtCount(count) {
-		return (count < this.valueCount) ? this.values : '';
+		return (count < this.valueCount) ? (this.values || '') : '';
 	}
 
 	/**
@@ -108,13 +119,13 @@ export class MMJsonValue extends MMValue {
 	 */
 	valueAtRowColumn(row, column) {
 		this.checkBounds(row, column);
-		return this.values;
+		return this.values || '';
 	}
 
 	/**
 	 * @method valueForDescription
-	 * @param {String} descriptiopn
-	 * @returns {MMValue}
+	 * @param {String} description
+	 * @returns {MMValue|null}
 	 */
 	valueForDescription(description) {
 		const parts = description.split('.');
@@ -136,7 +147,7 @@ export class MMJsonValue extends MMValue {
 					// find default type
 					let type = 'undefined';
 					for (const element of elements) {
-						const member = element[key];
+						const member = (/** @type {any} */ (element))[key];
 						const memberType = typeof member;
 						if (memberType !== 'undefined') {
 							type = memberType;
@@ -145,7 +156,7 @@ export class MMJsonValue extends MMValue {
 					}
 
 					for (const element of elements) {
-						const member = element[key];
+						const member = (/** @type {any} */ (element))[key];
 						if (typeof member === 'boolean') {
 							newObj.push(member ? 't' : '')
 						}
@@ -165,7 +176,7 @@ export class MMJsonValue extends MMValue {
 				obj = newObj;
 			}
 			else {
-				obj = obj[part];
+				obj = (/** @type {any} */ (obj))[part];
 			}
 			if (obj === undefined) {
 				return null;
@@ -200,9 +211,10 @@ export class MMJsonValue extends MMValue {
 
 	/**
 	 * @method valueForIndexRowColumn
+	 * @override
 	 * @param {MMValue} rowIndex
-	 * @param {MMValue} columnIndex
-	 * @returns {MMValue}
+	 * @param {MMValue} [columnIndex]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueForIndexRowColumn(rowIndex, columnIndex) {
 		if (this._jsonValue) {
@@ -223,7 +235,8 @@ export class MMJsonValue extends MMValue {
 
 	/**
 	 * @method stringWithUnit
-	 * @param {MMUnit} unit - optional
+	 * @override
+	 * @param {MMUnit} [unit] - optional
 	 * @returns {String} 
 	 */
 	// eslint-disable-next-line no-unused-vars
@@ -237,12 +250,11 @@ export class MMJsonValue extends MMValue {
 	 * @override
 	 * @param {Number} row
 	 * @param {Number} column
-	 * @param {MMUnit} outUnit
 	 * @returns {String}
 	 */
 	stringForRowColumnUnit(row, column/*, outUnit */) {
 		this.checkBounds(row, column);
-		return this.values;
+		return this.values || '';
 	}
 
 	/**
@@ -250,18 +262,16 @@ export class MMJsonValue extends MMValue {
 	 * @override
 	 * @param {Number} row
 	 * @param {Number} column
-	 * @param {MMUnit} outUnit
 	 * @returns {String}
 	 */
 	stringForRowColumnWithUnit(row, column/*, outUnit */) {
 		this.checkBounds(row, column);
-		return this.values;
+		return this.values || '';
 	}
 
 	/**
 	 * @method valueForColumnNumber
 	 * @override
-	 * @param {Number} number 
 	 * @returns {MMValue}
 	 */
 	valueForColumnNumber() {
@@ -274,8 +284,9 @@ export class MMJsonValue extends MMValue {
 
 	/**
 	 * @method concat
-	 * @param  {MMJsonValue} other
-	 * @return MMJsonValue
+	 * @override
+	 * @param  {MMValue} other
+	 * @return {MMJsonValue|undefined}
 	 * returns array with both jsonObjects
 	 */
 	concat(other) {
@@ -289,7 +300,6 @@ export class MMJsonValue extends MMValue {
 	/**
 	 * @method jsonValue
 	 * @override
-	 * @param {MMUnit} displayUnit
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
 	jsonValue() {

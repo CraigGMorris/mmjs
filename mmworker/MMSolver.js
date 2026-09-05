@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -30,9 +31,44 @@
 	MMTableValue:readonly
 */
 
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./MMModel.js').MMModel} MMModel */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMTableValue.js').MMTableValue} MMTableValue */
+/** @typedef {import('./MMTableValue.js').MMTableValueColumn} MMTableValueColumn */
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+/** @typedef {import('./MMCommandProcessor.js').MMCommandMessage} MMCommandMessage */
+
+
+/**
+ * @typedef {Object} MMSolverFunction
+ * @property {MMFormula} errorFormula
+ * @property {MMFormula} countFormula
+ * @property {number[]} outputs
+ */
+
 /**
  * @class MMSolver
  * @extends MMTool
+ * @property {MMFormula} maxIterFormula
+ * @property {MMFormula} maxJacobianFormula
+ * @property {MMFormula} [maxJacobiansFormula]
+ * @property {boolean} isHidingInfo
+ * @property {boolean} isEnabled
+ * @property {boolean} _isEnabled
+ * @property {boolean} isRunning
+ * @property {boolean} isInError
+ * @property {boolean} isConverged
+ * @property {MMSolverFunction[]} functions
+ * @property {boolean} isLoadingCase
+ * @property {number[]} [outputs]
+ * @property {number} [iterations]
+ * @property {number} [jacobians]
+ * @property {number} [seconds]
+ * @property {number} [error]
  */
 // eslint-disable-next-line no-unused-vars
 export class MMSolver extends MMTool {
@@ -47,10 +83,13 @@ export class MMSolver extends MMTool {
 		this.maxIterFormula.formula = '200';
 		this.maxJacobianFormula.formula = '5';
 		this.isHidingInfo = false;  // needed because the formula assigns will reset
+		/** @type {boolean} */
+		this._isEnabled = false;
 		this.isEnabled = false;
 		this.isRunning = false;
 		this.isInError = false;
 		this.isConverged = false;
+		/** @type {MMSolverFunction[]} */
 		this.functions = [];
 		this.isLoadingCase = false;
 		this.addFunction();
@@ -62,7 +101,7 @@ export class MMSolver extends MMTool {
 	 * @returns {Object} object that can be converted to json for save file
 	 */
 	saveObject() {
-		let o = super.saveObject();
+		let o = /** @type {Record<string, any>} */ (super.saveObject());
 		o['Type'] = 'Equation Solver';
 		const functionCount = this.functions.length;
 		for (let i = 0; i < functionCount; i++) {
@@ -70,10 +109,14 @@ export class MMSolver extends MMTool {
 			o[`f${i}`] = func.errorFormula.formula;
 			o[`c${i}`] = func.countFormula.formula;
 			if (this.isConverged) {  // don't want to accidentally save nans as the json will fail
-				o[`o${i}`] = this.outputs;
+				o[`o${i}`] = (/** @type {any} */ (this)).outputs;
 			}
 		}
 
+		/**
+		 * @param {string} s
+		 * @returns {string|number}
+		 */
 		const numberOrString = (s) => {
 			// Apple MM has numbers, not strings for maxIter and maxJacobian
 			// if possible, conform
@@ -97,7 +140,7 @@ export class MMSolver extends MMTool {
 	/**
 	 * @method initFromSaved - initialize from stored object
 	 * @override
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		this.isLoadingCase = true;
@@ -143,7 +186,7 @@ export class MMSolver extends MMTool {
 					this.maxJacobianFormula.formula = `${maxJacobians}`;
 				}
 				else if (typeof maxIter === 'string') {
-					this.maxJacobiansFormula.formula = maxJacobians;
+					(/** @type {any} */ (this)).maxJacobiansFormula.formula = maxJacobians;
 				}
 			}
 
@@ -172,8 +215,8 @@ export class MMSolver extends MMTool {
 	}
 	
 	/** @method addFunction
-	 * @param rowNumber - 1 based row position to insert function - if missing, add at end
-	 * @returns {Number} - the actual 1 based row of the new function
+	 * @param {number|null} [rowNumber] - 1 based row position to insert function - if missing, add at end
+	 * @returns {number} - the actual 1 based row of the new function
 	 */
 	addFunction(rowNumber) {
 		this.setEnabled(false);
@@ -188,7 +231,7 @@ export class MMSolver extends MMTool {
 			countFormula: new MMFormula(`count_${functionNumber}`, this),
 			outputs: [1]
 		};
-		this.functions.splice(functionNumber - 1, null, func);
+		this.functions.splice(functionNumber - 1, (/** @type {any} */ (null)), func);
 		func.countFormula.formula = "1";
 		return functionNumber;
 	}
@@ -247,6 +290,7 @@ export class MMSolver extends MMTool {
 	 * if supplied, command.args should be the 1 based row number where the function is inserted
 	 */
 	addFunctionCommand(command) {
+		/** @type {number|null} */
 		let insertRow = parseInt(command.args);
 		if (isNaN(insertRow)) {
 			insertRow = null;
@@ -308,7 +352,7 @@ export class MMSolver extends MMTool {
 	/** @method getVerbUsageKey
 	 * @override
 	 * @param {string} command - command to get the usage key for
-	 * @returns {string} - the i18n key, if it exists
+	 * @returns {string|undefined} - the i18n key, if it exists
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -342,7 +386,7 @@ export class MMSolver extends MMTool {
 	/**
 	 * @method getOutputs
 	 * @param {Number} n - the function number
-	 * @returns {[Number]} - array of outputs for that function
+	 * @returns {number[]} - array of outputs for that function
 	 * resizes outputs if its size doesn't match the count formula value
 	 */
 	getOutputs(n) {
@@ -427,16 +471,16 @@ export class MMSolver extends MMTool {
 		// check if all the fx can be calculated
 		this.isRunning = true;
 		this.isConverged = false;
-		const maxIterations = this.maxIterFormula.value();
-		const maxJacobians = this.maxJacobianFormula.value();
+		const maxIterations = /** @type {MMNumberValue} */ (this.maxIterFormula.value());
+		const maxJacobians = /** @type {MMNumberValue} */ (this.maxJacobianFormula.value());
 		if (!maxIterations || !maxJacobians) {
 			return;
 		}
 		const functionCount = this.functions.length;
 		let totalNumberOfEqns = 0;
 		for (let i = 0; i < functionCount; i++) {
-			const func = this.functions[i]
-			const cx = func.countFormula.value();
+			const func = this.functions[i];
+			const cx = /** @type {MMNumberValue} */ (func.countFormula.value());
 			const fx = func.errorFormula.value();
 			if (!fx || !cx) {
 				this.isRunning = false;
@@ -456,7 +500,7 @@ export class MMSolver extends MMTool {
 		try {
 			if (totalNumberOfEqns === 1) {
 				MMMath.brentSolve({
-					fx: (x) => {
+					fx: /** @type {any} */ ((/** @type {number} */ x) => {
 						this.forgetStep();
 						const func = this.functions[0];
 						func.outputs[0] = x;
@@ -469,7 +513,7 @@ export class MMSolver extends MMTool {
 							this.setError('mmcmd:solverFxFail', {path: this.getPath()});
 							return;
 						}
-					},
+					}),
 					setError: (msgKey, msgArgs) => {
 						this.isInError = true;
 						this.isConverged = false;
@@ -478,7 +522,7 @@ export class MMSolver extends MMTool {
 						return;
 					},
 					setStatus: (msg) => {
-						this.processor.statusCallBack(this.t(msg));
+						(/** @type {any} */ (this.processor)).statusCallBack(this.t(msg));
 					}
 				}, {maxIterations: maxIterations.values[0]});
 				if (!this.isInError) {
@@ -540,7 +584,7 @@ export class MMSolver extends MMTool {
 						return;
 					},
 					setStatus: (msg) => {
-						this.processor.statusCallBack(this.t(msg));
+						(/** @type {any} */ (this.processor)).statusCallBack(this.t(msg));
 					}
 				},
 				{
@@ -555,7 +599,7 @@ export class MMSolver extends MMTool {
 		catch(e) {
 			this.isInError = true;
 			this.isConverged = false;
-			this.setError('mmcmd:solverError', {path: this.getPath(), msg: e.message});
+			this.setError('mmcmd:solverError', {path: this.getPath(), msg: (/** @type {any} */ (e)).message});
 			return;
 		}
 		finally {
@@ -566,9 +610,9 @@ export class MMSolver extends MMTool {
 
 	/**
 	 * @override valueDescribedBy
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @param {string} [description]
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(description, requestor) {
 		if (!description || this.functions.length === 0) {
@@ -646,7 +690,7 @@ export class MMSolver extends MMTool {
 			const func = this.functions[n-1];
 			const countValue = func.countFormula.value();
 			if (!countValue) { return null; }
-			const count = countValue.values[0];
+			const count = (/** @type {MMNumberValue} */ (countValue)).values[0];
 			if (count < 1) { return null; }
 			this.addRequestor(requestor);
 			const outputs = this.getOutputs(n-1);
@@ -657,7 +701,7 @@ export class MMSolver extends MMTool {
 	/**
 	 * @method inputSources
 	 * @override
-	 * @returns {Set} contains tools referenced by this tool
+	 * @returns {Set<MMTool>} contains tools referenced by this tool
 	 */
 	inputSources() {
 		let sources = super.inputSources();
@@ -710,10 +754,11 @@ export class MMSolver extends MMTool {
 	async toolViewInfo(command) {
 		await super.toolViewInfo(command);
 		const results = command.results;
+		/** @type {Record<string, string>} */
 		const formulas = {
 			'maxIter': this.maxIterFormula.formula,
 			'maxJacobian': this.maxJacobianFormula.formula,
-		}
+		};
 		const fv = [];
 		const functionCount = this.functions.length;
 		for (let i = 0; i < functionCount; i++) {

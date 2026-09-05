@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -29,22 +30,45 @@
 	MMModel:readonly
 */
 
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMToolValue.js').MMToolValue} MMToolValue */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMModel.js').MMModel} MMModel */
+/** @typedef {import('./MMSession.js').MMSession} MMSession */
+/** @typedef {import('./MMSession.js').MMPoint} MMPoint */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+
 /**
  * @class MMTool - base class for all calculation tools
  * @extends MMParent
- * @member {MMSession} session;
- * @member {string} notes
- * @member {string} description
- * @member {string} displayName
- * @member {string} typeName
- * @member {boolean} forgetRecursionBlockIsOn;
- * @member {boolean} isHidingInfo;
- * @member {Set<MMTool>} valueRequestors;
- * @member {MMPoint} position;
- * @member {boolean} diagramNotes;
+ * @property {boolean} [justAdded]
  */
 // eslint-disable-next-line no-unused-vars
 export class MMTool extends MMParent {
+	/** @type {string} */
+	typeName;
+	/** @type {string} */
+	notes;
+	/** @type {Set<MMTool>} */
+	valueRequestors;
+	/** @type {boolean} */
+	forgetRecursionBlockIsOn;
+	/** @type {boolean} */
+	isHidingConnections;
+	/** @type {MMPoint} */
+	position;
+	/** @type {boolean|undefined} */
+	justAdded;
+	/** @type {boolean} */
+	isHidingInfo;
+	/** @type {boolean} */
+	diagramNotes;
+	/** @type {boolean} */
+	_htmlNotes;
+	/** @type {boolean} */
+	_isOutput;
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
@@ -57,7 +81,7 @@ export class MMTool extends MMParent {
 		this.valueRequestors = new Set([]);
 		this.forgetRecursionBlockIsOn = false;
 		this.isHidingConnections = false;
-		this.position = this.session.nextToolLocation;
+		this.position = /** @type {MMPoint} */ (this.session.nextToolLocation);
 		this.session.nextToolLocation = this.session.unknownPosition;
 		this.isHidingInfo = false;
 		this.diagramNotes = false;
@@ -130,7 +154,11 @@ export class MMTool extends MMParent {
 		return verbs;
 	}
 
-	/** override */
+	/**
+	 * @override
+	 * @param {string} propertyName
+	 * @param {any} value
+	 */
 	setValue(propertyName, value) {
 		if (propertyName === 'notes' && value !== this.notes) {
 			this.forgetCalculated();
@@ -142,7 +170,12 @@ export class MMTool extends MMParent {
 	 * @method parameters
 	 * i.e. things that can be appended to a formula value
 	 */
+	/**
+	 * @override
+	 * @returns {string[]}
+	 */
 	parameters() {
+		/** @type {string[]} */
 		let p = super.parameters();
 		// note that previewParameter counts on these being first
 		// in the list
@@ -156,7 +189,7 @@ export class MMTool extends MMParent {
 	/** @method getVerbUsageKey
 	 * @override
 	 * @param {string} command - command to get the usage key for
-	 * @returns {string} - the i18n key, if it exists
+	 * @returns {string|undefined} - the i18n key, if it exists
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -178,9 +211,13 @@ export class MMTool extends MMParent {
 	 * command.results contains the info for tool info view
 	 * should be overridden by derived classes
 	 */
+	/**
+	 * @param {MMCommand} command
+	 * @returns {Promise<void>}
+	 */
 	async toolViewInfo(command) {
 		// console.log(`toolviewinfo ${this.getPath()} ${this.session.selectedObject}`);
-		let parent = this;
+		let parent = /** @type {any} */ (this);
 		const oldSelected = this.session.selectedObject;
 		this.session.selectedObject = this.name;
 		if (oldSelected !== this.name) {
@@ -207,7 +244,7 @@ export class MMTool extends MMParent {
 	/**
 	 * @method valueJson
 	 * @param {MMCommand} command
-	 * @returns {String} json value for valueDescribedBy(command.args)
+	 * @returns {void}
 	 */
 	valueJson(command) {
 		const value = this.valueDescribedBy(command.args);
@@ -222,7 +259,7 @@ export class MMTool extends MMParent {
 	/**
 	 * @method formulaPreview
 	 * @param {MMCommand} command
-	 * @returns {String} json value from evaluating the formula in command.args
+	 * @returns {void}
 	 */
 	formulaPreview(command) {
 		const args = command.args;
@@ -230,12 +267,12 @@ export class MMTool extends MMParent {
 		const pathEnd = args.indexOf(' ');
 		if (pathEnd !== -1) {
 			const formulaName = '_fpreview';
-			const f = new MMFormula(formulaName, this);
+			const f = new MMFormula(formulaName, (/** @type {any} */ (this)));
 			f.formula = args.substring(pathEnd+1);
-			f.nameSpace = this.processor.getObjectFromPath(args.substring(0, pathEnd));
+			f.nameSpace = /** @type {any} */ (this.processor?.getObjectFromPath(args.substring(0, pathEnd)));
 			const value = f.value();
 			if (value) {
-				command.results = value.jsonValue();
+				command.results = (/** @type {any} */ (value)).jsonValue();
 			}
 			this.removeChildNamed(formulaName);
 		}
@@ -244,7 +281,7 @@ export class MMTool extends MMParent {
 	/**
 	 * @method parameterPreview
 	 * @param {MMCommand} command
-	 * @returns {String} json value with preview parameters
+	 * @returns {void}
 	 */
 	parameterPreview(command) {
 		const [path, start] = command.args.split(':');
@@ -281,8 +318,9 @@ export class MMTool extends MMParent {
 		return `${x}${y}`;
 	}
 
+	/** @returns {MMSession} */
 	get	session() {
-		return this.parent.session;
+		return (/** @type {any} */ (this.parent)).session;
 	}
 
 	/**
@@ -318,8 +356,8 @@ export class MMTool extends MMParent {
 	/**
 	 * @method defaultFormulaUnit
 	 * returns null or a unit to be used for a bare numeric constant in the named formula
-	 * @param {String} formulaName
-	 * @returns {MMUnit}
+	 * @param {string} formulaName
+	 * @returns {MMUnit|null}
 	 */
 	// eslint-disable-next-line no-unused-vars
 	defaultFormulaUnit(formulaName) {
@@ -328,8 +366,9 @@ export class MMTool extends MMParent {
 
 	/**
 	 * @method addRequestor
-	 * @param {MMTool} requestor
+	 * @param {MMTool} [requestor]
 	 * short cut method
+	 * @returns {void}
 	 */
 	addRequestor(requestor) {
 		if (requestor) {
@@ -340,9 +379,9 @@ export class MMTool extends MMParent {
 	/**
 	 * override by appropriate tools - should call super if no match with description
 	 * @method valueDescribedBy
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @param {string} [rawDescription]
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(rawDescription, requestor) {
 		const description = rawDescription ? rawDescription.toLowerCase() : '';
@@ -376,7 +415,8 @@ export class MMTool extends MMParent {
 
 	/**
 	 * @method htmlValue
-	 * @returns {String}
+	 * @param {MMTool} [requestor]
+	 * @returns {string|null|undefined}
 	 */
 	htmlValue(requestor) {
 		const v = this.valueDescribedBy('table', requestor);
@@ -385,7 +425,7 @@ export class MMTool extends MMParent {
 
 	/**
 	 * @method inputSources
-	 * @returns {Set} contains tools referenced by this tool - filled in by derived classes
+	 * @returns {Set<MMTool>} contains tools referenced by this tool - filled in by derived classes
 	 */
 	inputSources() {
 		return new Set([]);
@@ -393,7 +433,7 @@ export class MMTool extends MMParent {
 
 	/**
 	 * @method formulaList
-	 * @returns [] contains formulae contained by this tool and its children
+	 * @returns {MMFormula[]} contains formulae contained by this tool and its children
 	 */
 	formulaList() {
 		return [];
@@ -404,6 +444,7 @@ export class MMTool extends MMParent {
 	 * @returns {Object} object that can be converted to json for save file
 	 */
 	saveObject() {
+		/** @type {Record<string, any>} */
 		const o =  {
 			name: this.name,
 			Notes: this.notes,
@@ -429,13 +470,13 @@ export class MMTool extends MMParent {
 		this.forgetCalculated();
 		super.renameto(command);
 		if (this.parent) {
-			this.parent.forgetCalculated();
+			(/** @type {any} */ (this.parent)).forgetCalculated();
 		}
 	}
 
 	/**
 	 * @method initFromSaved - initialize from stored object
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		this.notes = saved.Notes;

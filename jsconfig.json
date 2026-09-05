@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"allowJs": true,
+		"checkJs": false,
+		"strictPropertyInitialization": false,
+		"noEmit": true
+	},
+	"include": [
+		"mmworker/**/*"
+	]
+}

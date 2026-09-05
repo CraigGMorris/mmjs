@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -39,12 +40,42 @@ import { MMParent, MMPropertyType, MMCommandMessage } from './MMCommandProcessor
 	MMFormula:readonly
 */
 
+/** @typedef {import('./MMModel.js').MMModel} MMModel */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMTableValue.js').MMTableValue} MMTableValue */
+/** @typedef {import('./MMTableValue.js').MMTableValueColumn} MMTableValueColumn */
+/** @typedef {import('./MMToolValue.js').MMToolValue} MMToolValue */
+/** @typedef {import('./MMJsonValue.js').MMJsonValue} MMJsonValue */
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+/** @typedef {import('./MMCommandProcessor.js').MMCommandProcessor} MMCommandProcessor */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnitSystem} MMUnitSystem */
+/** @typedef {import('./MMExpression.js').MMExpression} MMExpression */
+/** @typedef {import('./MMMatrix.js').MMMatrix} MMMatrix */
+/** @typedef {import('./MMDataTable.js').MMDataTable} MMDataTable */
+/** @typedef {import('./MMSolver.js').MMSolver} MMSolver */
+/** @typedef {import('./MMOde.js').MMOde} MMOde */
+/** @typedef {import('./MMIterator.js').MMIterator} MMIterator */
+/** @typedef {import('./MMOptimizer.js').MMOptimizer} MMOptimizer */
+/** @typedef {import('./MMGraph.js').MMGraph} MMGraph */
+/** @typedef {import('./MMHtmlPage.js').MMHtmlPage} MMHtmlPage */
+/** @typedef {import('./MMButton.js').MMButton} MMButton */
+/** @typedef {import('./MMMenu.js').MMMenu} MMMenu */
+/** @typedef {import('./MMFlash.js').MMFlash} MMFlash */
+
 /** @class MMPoint
  * simple point class
  * @member {number} x
  * @member {number} y
  */
 export class MMPoint {
+	/**
+	 * @param {number} x
+	 * @param {number} y
+	 */
 	constructor(x, y) {
 		this.x = x;
 		this.y = y;
@@ -55,6 +86,13 @@ export class MMPoint {
  * @class MMIndexedDBStorage - original indexedDB persistent storage for session
  */
 export class MMIndexedDBStorage  {
+	/** @type {boolean} */
+	isSetup;
+	/** @type {boolean} */
+	_exists;
+	/** @type {any} */
+	db;
+
 	constructor() {
 		this.isSetup = false;
 		this._exists = true;
@@ -65,27 +103,27 @@ export class MMIndexedDBStorage  {
 	 */
 	async setup() {
 		let storage = this;
-		return new Promise((resolve, reject) => {
+		return new Promise((/** @type {(v?: any) => void} */ resolve, reject) => {
 			if (this.isSetup) { // already set up
 				resolve();
 				return;
 			}
 
 			let dbReq = indexedDB.open('MMSessions', 1);
-			dbReq.onupgradeneeded = function(event) {
+			dbReq.onupgradeneeded = function(/** @type {any} */ event) {
 				storage.db = event.target.result;
 				if (!storage.db.objectStoreNames.contains('sessions')) {
 					storage.db.createObjectStore('sessions', {keyPath: 'id'});
 				} 
 			}
 
-			dbReq.onsuccess = function(event) {
+			dbReq.onsuccess = function(/** @type {any} */ event) {
 				storage.db = event.target.result;
 				storage.isSetup = true;
 				resolve();
 			}
 
-			dbReq.onerror = function(event) {
+			dbReq.onerror = function(/** @type {any} */ event) {
 				reject(event.target.errorCode);
 			}
 		});
@@ -109,7 +147,7 @@ export class MMIndexedDBStorage  {
 			request.onsuccess = () => {
 				resolve(path);
 			}
-			request.onerror = event => {
+			request.onerror = (/** @type {any} */ event) => {
 				reject(event.target.errorCode);
 			}
 		});
@@ -135,7 +173,7 @@ export class MMIndexedDBStorage  {
 					resolve(null);
 				}
 			};
-			request.onerror = (event) => {
+			request.onerror = (/** @type {any} */ event) => {
 				reject(event.target.errorCode);
 			}
 		});
@@ -156,7 +194,7 @@ export class MMIndexedDBStorage  {
 			request.onsuccess = () => {
 					resolve(path);
 			};
-			request.onerror = (event) => {
+			request.onerror = (/** @type {any} */ event) => {
 				reject(event.target.errorCode);
 			}
 		});
@@ -200,7 +238,7 @@ export class MMIndexedDBStorage  {
 			let tx = storage.db.transaction(['sessions'], 'readonly');
 			let store = tx.objectStore('sessions');
 			let request = store.getAllKeys();
-			request.onsuccess = (event) => {
+			request.onsuccess = (/** @type {any} */ event) => {
 				if (request.result) {
 					resolve(request.result);
 				}
@@ -209,7 +247,7 @@ export class MMIndexedDBStorage  {
 					resolve(null);
 				}
 			};
-			request.onerror = (event) => {
+			request.onerror = (/** @type {any} */ event) => {
 				reject(event.target.errorCode);
 			}
 		});
@@ -230,11 +268,52 @@ export class MMIndexedDBStorage  {
  */
 // eslint-disable-next-line no-unused-vars
 export class MMSession extends MMParent {
+	/** @type {MMModel} */
+	rootModel;
+	/** @type {MMModel} */
+	currentModel;
+	/** @type {MMModel[]} */
+	modelStack;
+	/** @type {string} */
+	storePath;
+	/** @type {MMPoint} */
+	nextToolLocation;
+	/** @type {MMIndexedDBStorage} */
+	storage;
+	/** @type {string} */
+	savedLastPathId;
+	/** @type {string} */
+	savedLastNewsId;
+	/** @type {string} */
+	savedStorageVersionId;
+	/** @type {string} */
+	aiKey;
+	/** @type {string} */
+	aiModel;
+	/** @type {string} */
+	lastNews;
+	/** @type {boolean} */
+	noRun;
+	/** @type {string} */
+	selectedObject;
+	/** @type {boolean} */
+	isLoadingCase;
+	/** @type {number|undefined} */
+	detailWidth;
+	/** @type {number|undefined} */
+	deviceWidth;
+	/** @type {any} */
+	couchError;
+	/** @type {any} */
+	remoteDBCommand;
+	/** @type {boolean} */
+	isAutoSaving;
+
 	// session creation and storage commands
 
 	/**
 	 * @constructor
-	 * @param {Object} processor - MMCommandProcessor
+	 * @param {MMCommandProcessor} processor - MMCommandProcessor
 	 */
 	constructor(processor) {
 		super('session',  processor, 'MMSession');
@@ -252,7 +331,7 @@ export class MMSession extends MMParent {
 
 	/** @method newSession
 	 * initialize to new empty session
-	 * @param {string} storePath - the storage path
+	 * @param {string} [storePath] - the storage path
 	 */
 	newSession(storePath) {
 		if (!storePath) {
@@ -265,10 +344,12 @@ export class MMSession extends MMParent {
 		this.modelStack = [];
 		this.storePath = storePath;
 		this.noRun = false;
-		this.processor.defaultObject = this.rootModel;
+		(/** @type {MMCommandProcessor} */ (this.processor)).defaultObject = this.rootModel;
 		this.selectedObject = '';
 	}
 
+	/** @override */
+	/** @override */
 	get properties() {
 		let d = super.properties;
 		d['storePath'] = {type: MMPropertyType.string, readOnly: false};
@@ -280,7 +361,8 @@ export class MMSession extends MMParent {
 	/**
 	 * create a new session from json (stored case)
 	 * @param {string} json 
-	 * @param {string} storePath - default storage location
+	 * @param {string} [storePath] - default storage location
+	 * @returns {Promise<any>}
 	 */
 	async initializeFromJson(json, storePath) {
 		let saveObject;
@@ -288,7 +370,7 @@ export class MMSession extends MMParent {
 			saveObject = JSON.parse(json);
 		}
 		catch(e) {
-			const msg = (typeof e === 'string') ? e : e.message;
+			const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 			this.setError('mmcmd:parseSessionError', {error: msg});
 			return;
 		}
@@ -301,7 +383,7 @@ export class MMSession extends MMParent {
 			this.unitSystem.units.loadFromJsonObject(saveObject.UserUnits);
 		}
 		if (saveObject.DefaultUnitSet) {
-			this.unitSystem.sets.defaultSet = this.unitSystem.sets.childNamed(saveObject.DefaultUnitSet);
+			this.unitSystem.sets.defaultSet = /** @type {any} */ (this.unitSystem.sets.childNamed(saveObject.DefaultUnitSet));
 		}
 
 		let rootModel = MMToolTypes['Model'].factory('root', this);
@@ -317,11 +399,11 @@ export class MMSession extends MMParent {
 		if (!storePath) {
 			this.storePath = saveObject.CaseName;
 		}
-		this.processor.defaultObject = rootModel;
+		(/** @type {MMCommandProcessor} */ (this.processor)).defaultObject = rootModel;
 
-		const returnValue = {
+		const returnValue = /** @type {Record<string, any>} */ ({
 			storePath: this.storePath,
-		};
+		});
 
 		if (saveObject.ModelPath) {
 				const modelStack = [];
@@ -330,7 +412,7 @@ export class MMSession extends MMParent {
 				for (let i = 2; i < pathModels.length; i++) {
 					const childModel = this.currentModel.childNamed(pathModels[i]);
 					if (!childModel) { break; }
-					this.pushModel(childModel);
+					this.pushModel(/** @type {MMModel} */ (childModel));
 					modelStack.push(childModel.name);
 				}
 				returnValue.modelStack = modelStack
@@ -341,7 +423,7 @@ export class MMSession extends MMParent {
 			const toolName = saveObject.SelectedObject;
 			const tool = this.currentModel.childNamed(toolName);
 			if (tool) {
-				const toolType = tool.className.substring(2);
+				const toolType = (/** @type {any} */ (tool)).className.substring(2);
 				if (toolType !== 'Model') {
 					const fakeCommand = {results: {}};
 					try {
@@ -352,7 +434,7 @@ export class MMSession extends MMParent {
 						}
 					}
 					catch(e) {
-						this.setError()
+						(/** @type {any} */ (this)).setError();
 					}
 				}
 			}
@@ -364,7 +446,7 @@ export class MMSession extends MMParent {
 
 	/** @method sessionAsJson
 	 * returns the json needed to save the session
-	 * @param {string} path - the path to store to
+	 * @param {string|null} [path] - the path to store to
 	 */
 	sessionAsJson(path=null) {
 		let detailWidth = this['detailWidth'] ? this['detailWidth'] : 320;
@@ -406,7 +488,7 @@ export class MMSession extends MMParent {
 			return this.storePath;
 		}
 		catch(e) {
-			const msg = (typeof e === 'string') ? e : e.message;
+			const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 			this.setError('mmcmd:sessionSaveFailed', {path: this.storePath, error: msg});
 		}
 	}
@@ -427,7 +509,7 @@ export class MMSession extends MMParent {
 				}
 			}
 			catch(e) {
-				const msg = (typeof e === 'string') ? e : e.message;
+				const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 				this.setError('mmcmd:sessionSaveFailed', {path: this.storePath, error: msg});
 			}
 			finally {
@@ -450,7 +532,7 @@ export class MMSession extends MMParent {
 				await indexedDB.save(this.savedLastPathId, this.storePath);
 			}
 			catch(e) {
-				const msg = (typeof e === 'string') ? e : e.message;
+				const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 				console.log(msg);
 			}
 		}
@@ -470,7 +552,7 @@ export class MMSession extends MMParent {
 			return returnValue;
 		}
 		catch(e) {
-			const msg = (typeof e === 'string') ? e : e.message;
+			const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 			this.setError('mmcmd:sessionLoadFailed', {path: path, error: msg});
 			this.newSession();
 		}
@@ -501,7 +583,7 @@ export class MMSession extends MMParent {
 				(!lastNews && lastPath)
 			) {
 				// let things settle before loading news
-				function sleepAsync(ms) {
+				function sleepAsync(/** @type {number} */ ms) {
 					return new Promise(resolve => setTimeout(resolve, ms));
 				}
 				await sleepAsync(1000);
@@ -531,7 +613,7 @@ export class MMSession extends MMParent {
 			}
 		}
 		catch(e) {
-			const msg = (typeof e === 'string') ? e : e.message;
+			const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 			this.setError('mmcmd:sessionAutoLoadFailed', {error: msg});
 			this.newSession();
 		}
@@ -568,7 +650,7 @@ export class MMSession extends MMParent {
 					return path;
 				}
 				catch(e) {
-					const msg = (typeof e === 'string') ? e : e.message;
+					const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 					this.setError('mmcmd:sessionDeleteFailed', {path: path, error: msg});
 				}
 			}
@@ -609,7 +691,7 @@ export class MMSession extends MMParent {
 						await this.storage.copy(existingPath, newSessionPath);
 					}
 					catch(e) {
-						const msg = (typeof e === 'string') ? e : e.message;
+						const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 						this.setError('mmcmd:sessionCopyfailed', {oldPath: oldPath, newPath: newPath, error: msg});
 						return;
 						}
@@ -632,7 +714,7 @@ export class MMSession extends MMParent {
 				return newPath;
 			}
 			catch(e) {
-				const msg = (typeof e === 'string') ? e : e.message;
+				const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 				this.setError('mmcmd:sessionCopyfailed', {oldPath: oldPath, newPath: newPath, error: msg});
 			}
 		}
@@ -675,7 +757,7 @@ export class MMSession extends MMParent {
 						await this.storage.delete(existingPath);
 					}
 					catch(e) {
-						const msg = (typeof e === 'string') ? e : e.message;
+						const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 						this.setError('mmcmd:sessionRenamefailed', {oldPath: oldPath, newPath: newPath, error: msg});
 						return;
 					}
@@ -707,7 +789,7 @@ export class MMSession extends MMParent {
 				return newPath;
 			}
 			catch(e) {
-				const msg = (typeof e === 'string') ? e : e.message;
+				const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 				this.setError('mmcmd:sessionRenamefailed', {oldPath: oldPath, newPath: newPath, error: msg});
 				return;
 			}
@@ -746,7 +828,7 @@ export class MMSession extends MMParent {
 	/** @method getVerbUsageKey
 	 * @override
 	 * @param {string} command - command to get the usage key for
-	 * @returns {string} - the i18n key, if it exists
+	 * @returns {string|undefined} - the i18n key, if it exists
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -783,7 +865,7 @@ export class MMSession extends MMParent {
 	}
 
 	get unitSystem() {
-		return this.childNamed('unitsys');
+		return /** @type {MMUnitSystem} */ (this.childNamed('unitsys'));
 	}
 
 	get unknownPosition() {
@@ -801,7 +883,7 @@ export class MMSession extends MMParent {
 			this.modelStack.push(this.currentModel);
 		}
 		this.currentModel = model;
-		this.processor.defaultObject = model;
+		(/** @type {MMCommandProcessor} */ (this.processor)).defaultObject = model;
 	}
 
 	/**
@@ -810,13 +892,14 @@ export class MMSession extends MMParent {
 	 */
 	popModel(count=1) {
 		while (this.modelStack.length > 0 && count-- > 0) {
-			this.currentModel = this.modelStack.pop();
-			this.processor.defaultObject = this.currentModel;
+			this.currentModel = /** @type {MMModel} */ (this.modelStack.pop());
+			(/** @type {MMCommandProcessor} */ (this.processor)).defaultObject = this.currentModel;
 		}
 	}
 
 	/** @method listSessionsCommand
 	 * list all the stored sessions
+	 * @param {MMCommand} command
 	 */
 	async listSessionsCommand(command) {
 		const result = await this.storage.listSessions();
@@ -858,6 +941,7 @@ export class MMSession extends MMParent {
 	/**
 	 * @method autoSaveCommand
 	 * verb
+	 * @param {MMCommand} command
 	 */
 	async autoSaveCommand(command) {
 		if (!indexedDB) {
@@ -912,7 +996,7 @@ export class MMSession extends MMParent {
 			this.setError('mmcmd:noIndexedDB', {});
 			return;
 		}
-		let result = await this.deleteAllSessions(command.args);
+		let result = await (/** @type {any} */ (this.deleteAllSessions))(command.args);
 		command.results = `deleted: ${result}`;
 	}
 
@@ -963,7 +1047,7 @@ export class MMSession extends MMParent {
 				pathParts.pop();
 				const isRootFolder = args === '/';
 				const folderName = isRootFolder ? 'root/' : pathParts.pop();
-				const archive = {}
+				const archive = /** @type {Record<string, any>} */ ({});
 				for (const path of sessionPaths) {
 					if (!path.startsWith('(') && (isRootFolder || path.startsWith(args))) {
 						let sessionJson = await this.storage.load(path);
@@ -979,7 +1063,7 @@ export class MMSession extends MMParent {
 					command.results = result;
 				}
 				catch(e) {
-					const msg = (typeof e === 'string') ? e : e.message;
+					const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 					this.setError('mmcmd:sessionLoadFailed', {path: command.args, error: msg});
 				}
 			}
@@ -999,7 +1083,7 @@ export class MMSession extends MMParent {
 		const rootPathLength = command.args.indexOf(':');
 		const rootPath = command.args.substring(0, rootPathLength);
 		const existingPaths = await this.storage.listSessions();
-		const pathAlreadyUsed = (newPath) => {
+		const pathAlreadyUsed = (/** @type {string} */ newPath) => {
 			for (const path of existingPaths) {
 				if (path.startsWith(newPath)) {
 					return true;
@@ -1057,7 +1141,7 @@ export class MMSession extends MMParent {
 						storePath = rootPath + this.storePath + `-${n++}`;
 					}
 					await this.saveSession(storePath);
-					returnValue.storePath = this.storePath;
+					(/** @type {any} */ (returnValue)).storePath = this.storePath;
 					command.results = returnValue;
 					}
 				finally {
@@ -1065,7 +1149,7 @@ export class MMSession extends MMParent {
 				}
 			}
 			catch(e) {
-				const msg = (typeof e === 'string') ? e : e.message;
+				const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 				this.setError('mmcmd:jsonImportFailed', {error: msg});
 			}
 		}
@@ -1074,10 +1158,11 @@ export class MMSession extends MMParent {
 	/**
 	 * @method loadUrl
 	 * @param {String} url
-	 * @return {String} the storePath of the new session
+	 * @return {Promise<any>} the storePath of the new session
 	 * load a web file from url to construct a session from
 	 */
 	async loadUrl(url) {
+		/** @type {any} */
 		let returnValue = '';
 		if (url) {
 			try {
@@ -1099,7 +1184,7 @@ export class MMSession extends MMParent {
 				}
 			}
 			catch(e) {
-				const msg = (typeof e === 'string') ? e : e.message;
+				const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 				this.setError('mmcmd:sessionLoadUrlFailed', {url: url, error: msg});
 			}	
 		}
@@ -1136,6 +1221,7 @@ export class MMSession extends MMParent {
 	 */
 	async pushModelCommand(command) {
 		const names = command.args.toLowerCase().split('.');
+		/** @type {any} */
 		let model = this.currentModel;
 		for (let name of names){
 			name = name.startsWith('.') ? name.substring(1) : name; // remove dot prefix if present
@@ -1156,7 +1242,7 @@ export class MMSession extends MMParent {
 			const indexTool = this.currentModel.childNamed(indexToolName);
 			if (indexTool) {
 				command.results.indexTool = indexToolName;
-				command.results.indexToolType = indexTool.typeName;
+				command.results.indexToolType = (/** @type {any} */ (indexTool)).typeName;
 			}
 		}
 	}
@@ -1181,7 +1267,7 @@ export class MMSession extends MMParent {
 			const indexTool = this.currentModel.childNamed(indexToolName);
 			if (indexTool) {
 				command.results.indexTool = indexToolName;
-				command.results.indexToolType = indexTool.typeName;
+				command.results.indexToolType = (/** @type {any} */ (indexTool)).typeName;
 			}
 		}
 	}
@@ -1198,6 +1284,7 @@ export class MMSession extends MMParent {
 	}
 
 	// testing method - place to easily try things out
+	/** @param {MMCommand} command */
 	async test(command) {
 		let results = ['no test implemented']
 		// let test = command.args;
@@ -1272,7 +1359,7 @@ export class MMSession extends MMParent {
 			this.setError('mmcmd:_aiquery', {});
 			return;
 		}
-		const results = {};
+		const results = /** @type {Record<string, string>} */ ({});
 		for (const arg of args) {
 			const key = arg.toLowerCase();
 			const workerUrl = self.location.href;// window.location.pathname.split('/').slice(0, -1).join('/');
@@ -1293,7 +1380,7 @@ export class MMSession extends MMParent {
 	}
 }
 
-export const MMToolTypes = {
+export const MMToolTypes = /** @type {Record<string, {factory: (name: string, parent: any) => any, displayName: MMCommandMessage}>} */ ({
 	'Model': {
 		factory: (name, parent) => { return new MMModel(name, parent)},
 		displayName: new MMCommandMessage('mmcmd:modelDisplayName'),
@@ -1346,7 +1433,7 @@ export const MMToolTypes = {
 		factory: (name, parent) => {return new MMFlash(name, parent)},
 		displayName: new MMCommandMessage('thermo:flashDisplayName'),
 	},
-};
+});
 
 /**
  * @class MMTool - base class for all calculation tools
@@ -1364,6 +1451,23 @@ export const MMToolTypes = {
  */
 // eslint-disable-next-line no-unused-vars
 class MMTool extends MMParent {
+	/** @type {string} */
+	typeName;
+	/** @type {string} */
+	notes;
+	/** @type {Set<MMTool>} */
+	valueRequestors;
+	/** @type {boolean} */
+	forgetRecursionBlockIsOn;
+	/** @type {boolean} */
+	isHidingConnections;
+	/** @type {MMPoint} */
+	position;
+	/** @type {boolean} */
+	isHidingInfo;
+	/** @type {boolean} */
+	diagramNotes;
+
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
@@ -1376,8 +1480,8 @@ class MMTool extends MMParent {
 		this.valueRequestors = new Set([]);
 		this.forgetRecursionBlockIsOn = false;
 		this.isHidingConnections = false;
-		this.position = this.session.nextToolLocation;
-		this.session.nextToolLocation = this.session.unknownPosition;
+		this.position = (/** @type {any} */ (this.session)).nextToolLocation;
+		(/** @type {any} */ (this.session)).nextToolLocation = (/** @type {any} */ (this.session)).unknownPosition;
 		this.isHidingInfo = false;
 		this.diagramNotes = false;
 	}
@@ -1393,7 +1497,7 @@ class MMTool extends MMParent {
 
 	get displayName() {
 		let toolType = MMToolTypes[this.typeName];
-		return this.t(toolType.displayName);
+		return this.t(/** @type {any} */ (toolType.displayName));
 	}
 
 	get description() {
@@ -1417,7 +1521,10 @@ class MMTool extends MMParent {
 		return verbs;
 	}
 
-	/** override */
+	/** @override
+	 * @param {string} propertyName
+	 * @param {any} value
+	 */
 	setValue(propertyName, value) {
 		if (propertyName === 'notes' && value !== this.notes) {
 			this.forgetCalculated();
@@ -1426,8 +1533,9 @@ class MMTool extends MMParent {
 	}
 
 	/**
+	 * @override
 	 * @method parameters
-	 * i.e. things that can be appended to a formula value
+	 * @returns {string[]}
 	 */
 	parameters() {
 		let p = super.parameters();
@@ -1439,7 +1547,7 @@ class MMTool extends MMParent {
 	/** @method getVerbUsageKey
 	 * @override
 	 * @param {string} command - command to get the usage key for
-	 * @returns {string} - the i18n key, if it exists
+	 * @returns {string | undefined} - the i18n key, if it exists
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -1463,11 +1571,11 @@ class MMTool extends MMParent {
 	 */
 	async toolViewInfo(command) {
 		// console.log(`toolviewinfo ${this.getPath()} ${this.session.selectedObject}`);
-		let parent = this;
-		const oldSelected = this.session.selectedObject;
-		this.session.selectedObject = this.name;
+		let parent = /** @type {any} */ (this);
+		const oldSelected = (/** @type {any} */ (this.session)).selectedObject;
+		(/** @type {any} */ (this.session)).selectedObject = this.name;
 		if (oldSelected !== this.name) {
-			await this.session.autoSaveSession();
+			await (/** @type {any} */ (this.session)).autoSaveSession();
 		}
 		while (parent.typeName !== 'Model') {
 			parent = parent.parent;
@@ -1484,7 +1592,6 @@ class MMTool extends MMParent {
 	/**
 	 * @method valueJson
 	 * @param {MMCommand} command
-	 * @returns {String} json value for valueDescribedBy(command.args)
 	 */
 	valueJson(command) {
 		const value = this.valueDescribedBy(command.args);
@@ -1499,7 +1606,6 @@ class MMTool extends MMParent {
 	/**
 	 * @method formulaPreview
 	 * @param {MMCommand} command
-	 * @returns {String} json value from evaluating the formula in command.args
 	 */
 	formulaPreview(command) {
 		const args = command.args;
@@ -1507,12 +1613,12 @@ class MMTool extends MMParent {
 		const pathEnd = args.indexOf(' ');
 		if (pathEnd !== -1) {
 			const formulaName = '_fpreview';
-			const f = new MMFormula(formulaName, this);
+			const f = new MMFormula(formulaName, /** @type {any} */ (this));
 			f.formula = args.substring(pathEnd+1);
-			f.nameSpace = this.processor.getObjectFromPath(args.substring(0, pathEnd));
+			f.nameSpace = /** @type {any} */ ((/** @type {MMCommandProcessor} */ (this.processor)).getObjectFromPath(args.substring(0, pathEnd)));
 			const value = f.value();
 			if (value) {
-				command.results = value.jsonValue();
+				command.results = (/** @type {MMValue} */ (/** @type {unknown} */ (value))).jsonValue();
 			}
 			this.removeChildNamed(formulaName);
 		}
@@ -1529,7 +1635,7 @@ class MMTool extends MMParent {
 	}
 
 	get	session() {
-		return this.parent.session;
+		return (/** @type {any} */ (this.parent)).session;
 	}
 
 	/**
@@ -1559,7 +1665,7 @@ class MMTool extends MMParent {
 	 * @method defaultFormulaUnit
 	 * returns null or a unit to be used for a bare numeric constant in the named formula
 	 * @param {String} formulaName
-	 * @returns {MMUnit}
+	 * @returns {MMUnit|null}
 	 */
 	// eslint-disable-next-line no-unused-vars
 	defaultFormulaUnit(formulaName) {
@@ -1580,16 +1686,16 @@ class MMTool extends MMParent {
 	/**
 	 * override by appropriate tools - should call super if no match with description
 	 * @method valueDescribedBy
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @param {string} [description]
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(description, requestor) {
 		if (!description || description === 'self') {
 			if (requestor) {
 				this.valueRequestors.add(requestor);
 			}
-			return MMToolValue.scalarValue(this);
+			return MMToolValue.scalarValue(/** @type {any} */ (this));
 		}
 		else if (description === 'notes') {
 			if (requestor) {
@@ -1608,7 +1714,7 @@ class MMTool extends MMParent {
 
 	/**
 	 * @method htmlValue
-	 * @returns {String}
+	 * @returns {string|null}
 	 */
 	htmlValue() {
 		return null;
@@ -1616,7 +1722,7 @@ class MMTool extends MMParent {
 
 	/**
 	 * @method inputSources
-	 * @returns {Set} contains tools referenced by this tool - filled in by derived classes
+	 * @returns {Set<MMTool>} contains tools referenced by this tool - filled in by derived classes
 	 */
 	inputSources() {
 		return new Set([]);
@@ -1624,7 +1730,7 @@ class MMTool extends MMParent {
 
 	/**
 	 * @method saveObject
-	 * @returns {Object} object that can be converted to json for save file
+	 * @returns {Record<string, any>} object that can be converted to json for save file
 	 */
 	saveObject() {
 		return {
@@ -1638,6 +1744,7 @@ class MMTool extends MMParent {
 	}
 
 	/**
+	 * @override
 	 * @method renameTo
 	 * @param {MMCommand} command 
 	 */
@@ -1652,7 +1759,7 @@ class MMTool extends MMParent {
 
 	/**
 	 * @method initFromSaved - initialize from stored object
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		this.notes = saved.Notes;

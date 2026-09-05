@@ -1,3 +1,5 @@
+// @ts-check
+
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -27,6 +29,22 @@
 	 * @member {Object} results 
 */
 export class MMCommand {
+	/** @type {string|undefined} */
+	subject;
+	/** @type {string|undefined} */
+	verb;
+	/** @type {any} */
+	args;
+	/** @type {any} */
+	results;
+	/** @type {any} */
+	error;
+	/** @type {any} */
+	warning;
+	/** @type {boolean|undefined} */
+	handled;
+	/** @type {string|undefined} */
+	undo;
 	/**
 	 * @param {string} expression
 	 */
@@ -43,10 +61,13 @@ export class MMCommand {
  * @member {MMCommandMessage} child - optional
  */
 export class MMCommandMessage {
+	/** @type {MMCommandMessage|undefined} */
+	child;
+
 	/** @constructs
 	 * @param {string} msgKey
-	 * @param {Object} args
-	 * @param {MMCommandMessage} child - optional
+	 * @param {Object} [args]
+	 * @param {MMCommandMessage} [child] - optional
 	 */
 	constructor(msgKey, args, child) {
 		this.msgKey = msgKey;
@@ -65,6 +86,20 @@ export class MMCommandMessage {
  * @member {function} statusCallBack - (message: string) => void
 */
 export class MMCommandProcessor {
+	/** @type {MMParent|undefined} */
+	root;
+	/** @type {boolean} */
+	useLineContinuation;
+	/** @type {MMObject|undefined} */
+	defaultObject;
+	/** @type {string|undefined} */
+	currentExpression;
+	/** @type {((message: string|MMCommandMessage) => any)|undefined} */
+	statusCallBack;
+	/** @type {MMCommand|undefined|null} */
+	currentCommand;
+	/** @type {string|undefined} */
+	className;
 	/** @constructs */
 	constructor() {
 		this.root = undefined;
@@ -98,20 +133,20 @@ export class MMCommandProcessor {
 /**
 	 * shortcut translate call
 	 * @param {string} key
-	 * @param {Object} options
-	 * @returns {string}
+	 * @param {Object} [args]
+	 * @returns {MMCommandMessage}
 	 */
 	t(key, args) {
 		return new MMCommandMessage(key, args);
 	}
 
-	/** @param {function} cb - MMCommandMessage => void */
+	/** @param {(message: string|MMCommandMessage) => void} cb - MMCommandMessage => void */
 	setStatusCallBack(cb) {
 		this.statusCallBack = cb;
 	}
 
 	/** @param {MMCommand} command
-	 * @returns {boolean} true if successful
+	 * @returns {Promise<boolean>} true if successful
 	 */
 	async processCommand(command) {
 		let expression = command.expression;
@@ -138,7 +173,8 @@ export class MMCommandProcessor {
 			terms = this.getNextTerm(terms[1]);
 		}
 		else if(subjectPath.startsWith('/') || subjectPath.startsWith('.')) {
-			throw(this.t('cmd:subjectNotFound', {className: this.className, path: this.defaultObject.getPath(), subject: subjectPath}));
+			// TODO: this.className on MMCommandProcessor is undefined (bug: className is on MMObject)
+			throw(this.t('cmd:subjectNotFound', {className: (/** @type {any} */ (this)).className, path: (/** @type {MMObject} */ (this.defaultObject)).getPath(), subject: subjectPath}));
 		}
 		else {
 			// subject path is not valid path expression - assume it is command for defaultObject
@@ -153,26 +189,30 @@ export class MMCommandProcessor {
 		}
 
 		verb = verb.toLowerCase();
-		command.subject = subject.name;
+		command.subject = (/** @type {MMObject} */ (subject)).name;
 		command.verb = verb;
 		command.args = terms[1];
 
 		this.currentCommand = command;
-		await subject.performCommand(command);
+		await (/** @type {MMObject} */ (subject)).performCommand(command);
 		this.currentCommand = null;
 		return true;
 	}
 
 	/** 
-	 * @param {string} commands
+	 * @typedef {MMCommand[] & { id?: any, timeoutId?: any, error?: any }} MMCommandResultsArray
+	 */
+	/** 
+	 * @param {string | { cmdString: string, id?: any, timeoutId?: any }} commands
 	 * commands is normally an object containing a cmdString and an id, but it can be just a plain string
 	 * cmdString (or the plain string) can be made up of many commands separated by newline or semicolon
 	 * characters.  This function splits them up and processes them one at a time and returns the
 	 * concatenation of all their result strings.
 	 * If an id is provided, it is returned as a property of the results array
-	 * @returns {MMCommand[]} a list of MMCommands or null
+	 * @returns {Promise<MMCommandResultsArray>} a list of MMCommands or null
 	 */
 	async processCommandString(commands) {
+		/** @type {MMCommandResultsArray} */
 		let results = [];
 		if (typeof commands === 'object') {
 			results.id = commands.id;
@@ -270,10 +310,11 @@ export class MMCommandProcessor {
 	/**
 	 * @param {string} path 
 	 * @param {MMObject} startObject 
-	 * @returns {MMObject} returns found object or nil
+	 * @returns {MMObject|undefined} returns found object or nil
 	 */
 	followPath(path, startObject) {
 		let parts = path.split('.');
+		/** @type {MMObject|undefined} */
 		let resultObject = startObject;
 		for (let part of parts) {
 			if (part.length > 0 && resultObject instanceof MMParent) {
@@ -288,25 +329,25 @@ export class MMCommandProcessor {
 
 	/**
 	 * @param {string} path
-	 * @returns {MMObject} found object or nil
+	 * @returns {MMObject|undefined} found object or nil
 	 */
 	getObjectFromPath(path) {
 		if (path.length > 0) {
 			switch(path[0]) {
 				case '.':
-					return this.followPath(path.slice(1), this.defaultObject);
+					return this.followPath(path.slice(1), /** @type {MMObject} */ (this.defaultObject));
 				case '/':
-					return this.followPath(path.slice(1), this.root);
+					return this.followPath(path.slice(1), /** @type {MMObject} */ (this.root));
 				case '^':
-					return this.followPath(path.slice(1), this.defaultObject.parent);
+					return this.followPath(path.slice(1), /** @type {MMObject} */ ((/** @type {MMObject} */ (this.defaultObject)).parent));
 			}
 		}
 		return undefined;
 	}
 
-	/** @param {string} message */
+	/** @param {string|MMCommandMessage} message */
 	showStatus(message) {
-		this.statusCallBack(message);
+		(/** @type {(msg: string|MMCommandMessage) => void} */ (this.statusCallBack))(message);
 	}
 }
 
@@ -339,10 +380,23 @@ export const MMPropertyType = Object.freeze({
  *	@member {MMCommand} _command
 */
 export class MMObject {
+	/** @type {string} */
+	name;
+	/** @type {string|undefined} */
+	className;
+	/** @type {MMCommandProcessor|undefined} */
+	processor;
+	/** @type {MMParent|undefined} */
+	parent;
+	/** @type {Record<string, {type: any, readOnly?: boolean}>} */
+	setProperties;
+	/** @type {MMCommand|undefined} */
+	_command;
+
 	/** @constructor
 	 * @param {string} name
-	 * @param {MMParent} parent
-	 * @param {string} className
+	 * @param {MMParent} [parent]
+	 * @param {string} [className]
 	*/
 	constructor( name, parent, className) {
 		this.name = name;
@@ -358,6 +412,9 @@ export class MMObject {
 		}
 	}
 
+	/**
+	 * @returns {Record<string, (command: MMCommand) => any>}
+	 */
 	get verbs() {
 		return {
 			help: this.help,
@@ -373,7 +430,7 @@ export class MMObject {
 	 * derived classes that have verbs should override and call
 	 * super if they don't have a matching command
 	 * @param {string} command - command to get the usage key for
-	 * @returns {string} - the i18n key, if it exists
+	 * @returns {string|undefined} - the i18n key, if it exists
 	 */
 	getVerbUsageKey(command) {
 		return {
@@ -386,6 +443,9 @@ export class MMObject {
 		}[command];
 	}
 
+	/**
+	 * @returns {Record<string, {type: any, readOnly?: boolean}>}
+	 */
 	get properties() {
 		return Object.assign({},
 			{
@@ -396,6 +456,7 @@ export class MMObject {
 		);
 	}
 
+	/** @returns {MMCommand|undefined} */
 	get command() {
 		if (!this._command && this.parent) {
 			return this.parent.command;
@@ -406,9 +467,9 @@ export class MMObject {
 	/**
 	 * shortcut translate call
 	 * @param {string} key
-	 * @param {Object} args - optional
-	 * @param {MMObject} child - optional
-	 * @returns {string}
+	 * @param {Object} [args] - optional
+	 * @param {MMCommandMessage} [child] - optional
+	 * @returns {MMCommandMessage}
 	 */
 	t(key, args, child) {
 		return new MMCommandMessage(key, args, child);
@@ -417,12 +478,12 @@ export class MMObject {
 	/**
 	 * @method setError
 	 * @param {String} key
-	 * @param {Object} args - optional
-	 * @param {MMCommandMessage} child - optional
+	 * @param {Object} [args] - optional
+	 * @param {MMCommandMessage} [child] - optional
 	 */
 	setError(key, args, child) {
 		// ignore if error already set so first error is reported
-		if (this.processor.currentCommand && !this.processor.currentCommand.error) {
+		if (this.processor && this.processor.currentCommand && !this.processor.currentCommand.error) {
 			this.processor.currentCommand.error = this.t(key, args, child);
 		}
 	}
@@ -430,7 +491,7 @@ export class MMObject {
 	/**
 	 * @method setWarning
 	 * @param {String} key
-	 * @param {Object} args
+	 * @param {Object} [args]
 	 */
 	setWarning(key, args) {
 		// ignore if error already set so first error is reported
@@ -445,7 +506,7 @@ export class MMObject {
 	 */
 	caughtException(e) {
 		let message = (e instanceof Error) ? `${e.message}` : `${e}`;
-		this.command.error = this.t('cmd:caughtException', {e: message});
+		(/** @type {MMCommand} */ (this.command)).error = this.t('cmd:caughtException', {e: message});
 	}
 
 	/**
@@ -453,6 +514,7 @@ export class MMObject {
 	 * overridden by objects that have formula value parameters
 	 * i.e. things that can be appended to a formula value
 	 * e.g. aModel.anExpression.table
+	 * @returns {string[]}
 	 */
 	parameters() {
 		return [];
@@ -482,9 +544,10 @@ export class MMObject {
 	 */
 	getProperty(command) {
 		if (command.args === 'properties') {
+			/** @type {Record<string, any>} */
 			let props = {};
 			for (let key in this.properties) {
-				props[key] = this[key];
+				props[key] = (/** @type {Record<string, any>} */ (this))[key];
 			}
 			command.results = props;
 		}
@@ -519,10 +582,10 @@ export class MMObject {
 		
 		let oldValue;
 		if (propertyName.length > 0 && propertyName[0] == "_") {
-			oldValue = this[propertyName.substring(1)];
+			oldValue = (/** @type {Record<string, any>} */ (this))[propertyName.substring(1)];
 		}
 		else {
-			oldValue = this[propertyName];
+			oldValue = (/** @type {Record<string, any>} */ (this))[propertyName];
 		}
 		if (oldValue == undefined || oldValue == null) {
 			oldValue = '';
@@ -554,12 +617,12 @@ export class MMObject {
 		if (propertyName.length > 0 && propertyName[0] == "_") {
 			propertyName = propertyName.substring(1);
 			if ( value.length > 0) {
-				this[propertyName] = value;
+				(/** @type {Record<string, any>} */ (this))[propertyName] = value;
 				this.setProperties[propertyName] = { type: MMPropertyType.string, readOnly: false};
 			}
 			else {
-				delete this[propertyName];
-				delete this.properties[propertyName];
+				delete (/** @type {Record<string, any>} */ (this))[propertyName];
+				delete (/** @type {Record<string, any>} */ (this.properties))[propertyName];
 			}
 		}
 		else {
@@ -567,20 +630,20 @@ export class MMObject {
 			if (propInfo && !propInfo.readOnly) {
 				switch (propInfo.type) {
 					case MMPropertyType.string:
-						this[propertyName] = value;
+						(/** @type {Record<string, any>} */ (this))[propertyName] = value;
 						break;
 					case MMPropertyType.int:
-						this[propertyName] = parseInt(value);
+						(/** @type {Record<string, any>} */ (this))[propertyName] = parseInt(value);
 						break;
 					case MMPropertyType.float:
-						this[propertyName] = parseFloat(value);
+						(/** @type {Record<string, any>} */ (this))[propertyName] = parseFloat(value);
 						break;
 					case MMPropertyType.boolean:
 						if (value.length > 0 && value.toLocaleLowerCase()[0] == 't') {
-							this[propertyName] = true;
+							(/** @type {Record<string, any>} */ (this))[propertyName] = true;
 						}
 						else {
-							this[propertyName] = false;
+							(/** @type {Record<string, any>} */ (this))[propertyName] = false;
 						}
 						
 				}
@@ -597,36 +660,36 @@ export class MMObject {
 	 */
 	getValue(propertyName) {
 		if (propertyName.length > 0 && propertyName[0] == "_") {
-			let v = this[propertyName.substring(1)];
+			let v = (/** @type {Record<string, any>} */ (this))[propertyName.substring(1)];
 			if (v)
 				return v;
 		}
 		else {
 			let propInfo = this.properties[propertyName];
 			if (propInfo) {
-				return this[propertyName];
+				return (/** @type {Record<string, any>} */ (this))[propertyName];
 			}
 		}
 		throw(this.t('cmd:propertyNotFound', {name: this.name, propName: propertyName}));
 	}
 
 	/**
-	 * 
 	 * @param {MMCommand} command
-	 * @returns {Object} 
+	 * @returns {void} 
 	 */
 	getInfo(command) {
 		let argument = command.args;
 		let fields = argument.split(".");
 		switch(fields[0]) {
 			case "properties": {
+				/** @type {Record<string, any>} */
 				let returnValue = {};
 				for (let propName in this.properties) {
 					let info = this.properties[propName];
 					returnValue[propName] = {
 						type: info.type,
 						readOnly: info.readOnly,
-						value: this[propName]
+						value: (/** @type {Record<string, any>} */ (this))[propName]
 					};
 				}
 				command.results = returnValue;
@@ -638,12 +701,11 @@ export class MMObject {
 	}
 
 	/**
-	 * @param {string} newPath
-	 * @returns {string}
+	 * @param {MMCommand} command
 	 */
 	changeDefaultTo(command) {
-		let undoCmd = 'cd ' + this.processor.defaultObject.getPath();
-		let newObject = this.processor.setDefaultToPath(command.args);
+		let undoCmd = 'cd ' + (/** @type {MMObject} */ ((/** @type {MMCommandProcessor} */ (this.processor)).defaultObject)).getPath();
+		let newObject = (/** @type {MMCommandProcessor} */ (this.processor)).setDefaultToPath(command.args);
 		command['undo'] = undoCmd;
 		command.results = this.t('cmd:changedDefault', {path: newObject.getPath()});
 	}
@@ -717,12 +779,12 @@ export class MMObject {
 	 * this will overridden by derived classes, but they should call the super method if they can't
 	 * respond to the command
 	 * @param {MMCommand} command 
-	 * @returns {Object} 
+	 * @returns {Promise<void>} 
 	 */
 	async performCommand(command) {
 		this._command = command; // temporary so warnings can be set
 		try {
-			let f = this.verbs[command.verb];
+			let f = this.verbs[/** @type {string} */ (command.verb)];
 			if (!f) {
 				throw(this.t('cmd:commandNotFound', {className: this.className, path: this.getPath(), cmd: command.verb}));
 			}
@@ -739,18 +801,20 @@ export class MMObject {
  * @member {Object} children - {string: MMObject}
 */
 export class MMParent extends MMObject {
+	/** @type {Record<string, MMObject>} */
+	children = {};
 
 	/**
 	 * @constructor
 	 * @param {string} name 
-	 * @param {Object} anyParam - can be MMCommandProcessor or MMParent
+	 * @param {MMCommandProcessor|MMParent} anyParam - can be MMCommandProcessor or MMParent
 	 * should be MMCommandProcessor for root object, otherwise the parent object
-	 * @param {string} className 
+	 * @param {string} [className] 
 	 */
 	// eslint-disable-next-line constructor-super
 	constructor(name, anyParam, className) {
 		if (anyParam instanceof MMCommandProcessor) {
-			super(name, undefined, className);  // doesn't have parent
+			super(name, /** @type {any} */ (undefined), className);  // doesn't have parent
 			let cmdProcessor = anyParam;
 			this.processor = cmdProcessor;
 			cmdProcessor.setRoot(this);			// no parent so this must be root
@@ -762,8 +826,12 @@ export class MMParent extends MMObject {
 		}
 	}
 
-	/** @override */
+	/**
+	 * @override
+	 * @returns {Record<string, (command: MMCommand) => any>}
+	 */
 	get verbs() {
+		/** @type {Record<string, any>} */
 		let actions = super.verbs;
 		actions['list'] = this.listChildNames;
 		actions['removechild'] = this.removeChildNamedCommand;
@@ -773,7 +841,7 @@ export class MMParent extends MMObject {
 	/** @method getVerbUsageKey
 	 * @override
 	 * @param {string} command - command to get the usage key for
-	 * @returns {string} - the i18n key, if it exists
+	 * @returns {string|undefined} - the i18n key, if it exists
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -872,7 +940,7 @@ export class MMParent extends MMObject {
 
 	/**
 	 * @param {string} name
-	 * @returns {MMObject} - returns child MMObject or nil
+	 * @returns {MMObject|undefined} - returns child MMObject or nil
 	 */
 	childNamed(name) {
 		return this.children[name.toLowerCase()];

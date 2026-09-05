@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -30,15 +31,43 @@
 	theMMSession:readonly
 */
 
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./MMModel.js').MMModel} MMModel */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMTableValue.js').MMTableValue} MMTableValue */
+/** @typedef {import('./MMTableValue.js').MMTableValueColumn} MMTableValueColumn */
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+
 /**
  * @class MMDataTableColumn
  * @extends MMObject
  */
 class MMDataTableColumn extends MMObject {
+	/** @type {MMFormula} */
+	defaultFormula;
+	/** @type {boolean|undefined} */
+	isCalculated;
+	/** @type {boolean|undefined} */
+	isMenu;
+	/** @type {string|undefined} */
+	displayUnitName;
+	/** @type {string|undefined} */
+	_format;
+	/** @type {MMTableValueColumn|null} */
+	_columnValue;
+	/** @type {{selections: any[], values: any[]}|null} */
+	_menu;
+	/** @type {Record<string, any>|null} */
+	_menuLookup;
+
 	/**
 	 * @constructor
 	 * @param {MMDataTable} table - owner
-	 * @param {Object} options containing:
+	 * @param {Record<string, any>} options containing:
 	 * name - required string
 	 * displayUnit - required MMUnit or String
 	 * 	if string value equaling "string" then the column holds string values
@@ -46,7 +75,7 @@ class MMDataTableColumn extends MMObject {
 	 */
 	constructor(table, options) {
 		super(options.name, table, 'MMDataTableColumn');
-		this.defaultFormula = new MMFormula(`${options.name}defaultFormula`, this.parent);
+		this.defaultFormula = new MMFormula(`${options.name}defaultFormula`, /** @type {any} */ (this.parent));
 		this.defaultFormula.formula = options.defaultValue || '';
 		const displayUnitName = options.displayUnit instanceof MMUnit ? options.displayUnit.name : options.displayUnit;
 		this.isCalculated = options.isCalculated;
@@ -60,12 +89,13 @@ class MMDataTableColumn extends MMObject {
 				displayUnit: displayUnitName,
 				format: this.format,
 			});
-			if (!options.defaultValue && !this._columnValue.isString) {
-				this.defaultFormula.formula = `0 ${this._columnValue.displayUnit.name}`;
+			if (!options.defaultValue && !(/** @type {MMTableValueColumn} */ (this._columnValue)).isString) {
+				this.defaultFormula.formula = `0 ${(/** @type {MMUnit} */ ((/** @type {MMTableValueColumn} */ (this._columnValue)).displayUnit)).name}`;
 			}
 		}
 	}
 
+	/** @override */
 	get properties() {
 		let d = super.properties;
 		d['defaultValue'] = {type: MMPropertyType.string, readOnly: false};
@@ -74,6 +104,7 @@ class MMDataTableColumn extends MMObject {
 		return d;
 	}
 
+	/** @returns {MMTableValueColumn} */
 	get columnValue() {
 		if (this._columnValue) {
 			return this._columnValue;
@@ -83,7 +114,7 @@ class MMDataTableColumn extends MMObject {
 		calculatedValue = this.defaultFormula.value();
 		if (!(calculatedValue instanceof MMNumberValue) && !(calculatedValue instanceof MMStringValue)) {
 			// make empty string result as placeholder
-			calculatedValue = new MMStringValue(this.parent.rowCount, 1);
+			calculatedValue = new MMStringValue((/** @type {MMDataTable} */ (this.parent)).rowCount, 1);
 		}
 		this._columnValue = new MMTableValueColumn({
 			name: this.name,
@@ -96,10 +127,12 @@ class MMDataTableColumn extends MMObject {
 		return this._columnValue;
 	}
 
+	/** @returns {string} */
 	get defaultValue() {
 		return this.defaultFormula.formula;
 	}
 
+	/** @param {string} newValue */
 	set defaultValue(newValue) {
 		this.defaultFormula.formula = newValue;
 		if (this.isCalculated) {
@@ -107,20 +140,24 @@ class MMDataTableColumn extends MMObject {
 		}
 	}
 
+	/** @returns {string} */
 	get displayUnit() {
-		return this.columnValue.displayUnit.name;
+		return (/** @type {MMUnit} */ (this.columnValue.displayUnit)).name;
 	}
 
+	/** @param {string} unitName */
 	set displayUnit(unitName) {
 		this.displayUnitName = unitName;
 		this.columnValue.displayUnit = unitName;
 		this.forgetCalculated();
 	}
 
+	/** @returns {string} */
 	get format() {
 		return this._format || '';
 	}
 
+	/** @param {string} newValue */
 	set format(newValue) {
 		this._format = newValue;
 		if (!theMMSession.isLoadingCase) {
@@ -131,8 +168,8 @@ class MMDataTableColumn extends MMObject {
 
 	/**
 	 * @method addRow
-	 * @param {Number} rowNumber
-	 * @param {String} insertValue
+	 * @param {number} rowNumber
+	 * @param {any} [suppliedValue]
 	 */
 	addRow(rowNumber, suppliedValue) {
 		let insertValue
@@ -148,7 +185,7 @@ class MMDataTableColumn extends MMObject {
 			}
 		}
 		else {
-			if (this._columnValue.isString) {
+			if ((/** @type {MMTableValueColumn} */ (this._columnValue)).isString) {
 				insertValue = MMStringValue.scalarValue(suppliedValue);
 			}
 			else {
@@ -167,16 +204,17 @@ class MMDataTableColumn extends MMObject {
 				else {
 					n = suppliedValue;
 				}
-				insertValue = MMNumberValue.scalarValue(n, this._columnValue.displayUnit.dimensions);
+				insertValue = MMNumberValue.scalarValue(n, (/** @type {MMUnit} */ ((/** @type {MMTableValueColumn} */ (this._columnValue)).displayUnit)).dimensions);
 			}
 		}
-		this.columnValue.addRow(rowNumber, insertValue);
+		this.columnValue.addRow(rowNumber, /** @type {MMValue} */ (insertValue));
 	}
 
 	/**
 	 * @method displayValueWithUnit
-	 * @param {Number} rowNumber
-	 * @param {MMUnit} outUnit
+	 * @param {number} rowNumber
+	 * @param {MMUnit|null} [outUnit]
+	 * @returns {string}
 	 */
 	stringForRowWithUnit(rowNumber, outUnit) {
 		const value = this.columnValue.value;
@@ -186,34 +224,35 @@ class MMDataTableColumn extends MMObject {
 		if (!outUnit) {
 			outUnit = value.defaultUnit;
 		}
-		return value.stringForRowColumnWithUnit(rowNumber, 1, outUnit);
+		return value.stringForRowColumnWithUnit(rowNumber, 1, outUnit || undefined);
 	}
 
 	/**
 	 * @method setCell
-	 * @param {Number} rowNumber
-	 * @param {String} input
+	 * @param {number} rowNumber
+	 * @param {string} input
 	 */
 	setCell(rowNumber, input) {
 		const value = this.columnValue;
+		const parent = /** @type {MMDataTable} */ (this.parent);
 		if (value.isString) {
 			if (input.startsWith('=')) {
-				this.parent.insertFormula.formula = input.substring(1);
-				const inputValue = this.parent.insertFormula.value();
-				value.updateRow(rowNumber, inputValue, this.parent);
+				parent.insertFormula.formula = input.substring(1);
+				const inputValue = /** @type {any} */ (parent.insertFormula.value());
+				value.updateRow(rowNumber, inputValue, parent);
 			}
 			else if (input.startsWith("'")) {
-				this.parent.insertFormula.formula = input;
-				const inputValue = this.parent.insertFormula.value();
-				value.updateRow(rowNumber, inputValue, this.parent);
+				parent.insertFormula.formula = input;
+				const inputValue = /** @type {any} */ (parent.insertFormula.value());
+				value.updateRow(rowNumber, inputValue, parent);
 			}
 			else {
 				value.updateRowWithString(rowNumber, input);
 			}
 		}
 		else {
-			this.parent.insertFormula.formula = input;
-			const inputValue = this.parent.insertFormula.value();
+			parent.insertFormula.formula = input;
+			const inputValue = /** @type {any} */ (parent.insertFormula.value());
 			if (inputValue) {
 				value.updateRow(rowNumber, inputValue);
 			}
@@ -222,11 +261,11 @@ class MMDataTableColumn extends MMObject {
 
 	/**
 	 * @method saveObject
-	 * @returns {Object} object that can be converted to json for save file
+	 * @returns {Record<string, any>} object that can be converted to json for save file
 	 */
 	saveObject() {
 		const columnValue = this.columnValue;
-		const o = columnValue.saveObject();
+		const o = /** @type {Record<string, any>} */ (columnValue.saveObject());
 		
 		o.defaultValue = this.defaultFormula.formula
 		if (this.format) { o.format = this.format; }
@@ -237,8 +276,7 @@ class MMDataTableColumn extends MMObject {
 
 	/**
 	 * @method initFromSaved - initialize from stored object
-	 * @override
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		this.defaultFormula.formula = saved.defaultValue || '';
@@ -259,7 +297,7 @@ class MMDataTableColumn extends MMObject {
 		if (this._menu) {
 			this._menu = null;
 		}
-		this.parent.forgetCalculated();
+		(/** @type {MMDataTable} */ (this.parent)).forgetCalculated();
 	}
 }
 
@@ -269,6 +307,17 @@ class MMDataTableColumn extends MMObject {
  */
 // eslint-disable-next-line no-unused-vars
 export class MMDataTable extends MMTool {
+	/** @type {MMDataTableColumn[]} */
+	columnArray;
+	/** @type {number} */
+	rowCount;
+	/** @type {MMFormula} */
+	insertFormula;
+	/** @type {MMFormula} */
+	filterFormula;
+	/** @type {number[]|null} */
+	_displayRows;
+
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
@@ -277,10 +326,11 @@ export class MMDataTable extends MMTool {
 		super(name, parentModel, 'DataTable');
 		this.columnArray = [];
 		this.rowCount = 0;
-		this.insertFormula = new MMFormula('insertFormula', this);
-		this.filterFormula = new MMFormula('filterFormula', this);
+		this.insertFormula = new MMFormula('insertFormula', /** @type {any} */ (this));
+		this.filterFormula = new MMFormula('filterFormula', /** @type {any} */ (this));
 	}
 
+	/** @returns {number} */
 	get columnCount() {
 		return this.columnArray.length;
 	}
@@ -305,7 +355,7 @@ export class MMDataTable extends MMTool {
 		/** @method getVerbUsageKey
 		 * @override
 		 * @param {string} command - command to get the usage key for
-		 * @returns {string} - the i18n key, if it exists
+		 * @returns {string|undefined} - the i18n key, if it exists
 		 */
 		getVerbUsageKey(command) {
 			let key = {
@@ -329,8 +379,9 @@ export class MMDataTable extends MMTool {
 		}
 
 	/**
+	 * @override
 	 * @method parameters
-	 * i.e. things that can be appended to a formula value
+	 * @returns {string[]}
 	 */
 	parameters() {
 		let p = super.parameters();
@@ -345,31 +396,17 @@ export class MMDataTable extends MMTool {
 
 	/**
 	 * @method addColumn
-	 * @param {String} options - optional json string containing 
-	 * name: column name - default Field_n where n is columnNumber
-	 * columnNmber: n - the 1 based number where the column should be inserted
-	 * 		- default is as the last column
-	 * isCalculated - if present and true this will be a calculated column
-	 * displayUnit: this unit also determines the column type - Fraction is assumed
-	 * 		- use "string" for a string column
-	 * 		- this type cannot be later changed, although if can be changed to another unit of the same type
-	 * defaultValue: a string containing a formula to be used as the initial value for new rows
-	 *   - if isCalculated is true, then the formula should return an array of rowCount length
-	 *   - should be the same type as designated by displayUnit
-	 * format: a string designating number of decimal points and type of number formatting
-	 * 		- types f: fixed 2f => 1.23, e: exp 2e => 1.23e0
-	 * 				x: radix - the precision number is now the radix (between 2 and 36)
-	 * 					123 for 16x => 16r7b for 8x => 8r173 2x => 2r1111011
-	 * @returns {MMDataTableColumn}
+	 * @param {string} optionsJson
+	 * @returns {MMDataTableColumn|undefined}
 	 */
 	addColumn(optionsJson) {
-		let options = {};
+		let options = /** @type {Record<string, any>} */ ({});
 		if (optionsJson && optionsJson.trim().startsWith('{')) {
 			try {
 				options = JSON.parse(optionsJson);
 			}
 			catch(e) {
-				this.setError('mmcmd:tableBadColumnJson', {path: this.getPath(), msg: e.message});
+				this.setError('mmcmd:tableBadColumnJson', {path: this.getPath(), msg: (/** @type {any} */ (e)).message});
 				return;
 			}
 		}
@@ -437,7 +474,7 @@ export class MMDataTable extends MMTool {
 
 			if (insertValue instanceof MMStringValue || options.displayUnit === 'string') {
 				v = new MMStringValue(this.rowCount, 1);
-				insertValue = insertValue ? insertValue.values : '';
+				insertValue = insertValue ? (/** @type {any} */ (insertValue)).values : '';
 				const insertCount = insertValue.length;
 				for (let i = 0; i < this.rowCount; i++ ) {
 					v.values[i] = insertValue[i % insertCount];
@@ -445,7 +482,7 @@ export class MMDataTable extends MMTool {
 			}
 			else {
 				v = new MMNumberValue(this.rowCount, 1, column.columnValue.value.unitDimensions);
-				insertValue = insertValue ? insertValue.values : 0.0;
+				insertValue = insertValue ? (/** @type {any} */ (insertValue)).values : 0.0;
 				const insertCount = insertValue.length;
 				for (let i = 0; i < this.rowCount; i++ ) {
 					v.values[i] = insertValue[i % insertCount];
@@ -474,9 +511,8 @@ export class MMDataTable extends MMTool {
 
 	/**
 	 * @method updateColumn
-	 * @param {String} options - optional json string containing changes to column properties
-	 * see addColumn for details of the options
-	 * @returns {Object} the undo options necessary to reverse the update or null
+	 * @param {string} optionsJson
+	 * @returns {Record<string, any>|undefined} the undo options necessary to reverse the update or null
 	 */
 	updateColumn(optionsJson) {
 		let options;
@@ -484,17 +520,17 @@ export class MMDataTable extends MMTool {
 			options = JSON.parse(optionsJson);
 		}
 		catch(e) {
-			this.setError('mmcmd:tableBadColumnJson', {path: this.getPath(), msg: e.message});
+			this.setError('mmcmd:tableBadColumnJson', {path: this.getPath(), msg: (/** @type {any} */ (e)).message});
 			return;
 		}
 		
-		const column = options.name && this.childNamed(options.name);
+		const column = /** @type {MMDataTableColumn} */ (options.name && this.childNamed(options.name));
 		if (!column) {
 			this.setError('mmcmd:tableUpdateNoName', {path: this.getPath(), name: options.name});
 			return;
 		}
 
-		const undoOptions = {};
+		const undoOptions = /** @type {Record<string, any>} */ ({});
 		if (options.newName) {
 			if (options.newName === column.name) {
 				if (this.childNamed(options.newName)) {
@@ -532,7 +568,7 @@ export class MMDataTable extends MMTool {
 					column.displayUnit = options.displayUnit;
 				}
 				catch (e) {
-					this.setError(e.msgKey, e.args);
+					this.setError((/** @type {any} */ (e)).msgKey, (/** @type {any} */ (e)).args);
 					return undoOptions;
 				}
 				undoOptions.displayUnit = oldUnit;
@@ -618,7 +654,7 @@ export class MMDataTable extends MMTool {
 		super.renameChild(fromName, toName);
 		const extension = 'defaultFormula';
 		super.renameChild(fromName+extension, toName+extension);
-		const column = this.childNamed(toName);
+		const column = /** @type {MMDataTableColumn} */ (this.childNamed(toName));
 		column.columnValue.name = toName;
 	}
 
@@ -628,7 +664,7 @@ export class MMDataTable extends MMTool {
 	 */
 	removeColumnCommand(command) {
 		let name = command.args;
-		const column = this.childNamed(name);
+		const column = /** @type {MMDataTableColumn} */ (this.childNamed(name));
 		if (column) {
 			const savedColumn = column.saveObject();
 			const columnJson = JSON.stringify(savedColumn);
@@ -643,8 +679,8 @@ export class MMDataTable extends MMTool {
 
 	/**
 	 * @method restoreColumn - adds a column from json - for undo
-	 * @param {Number} columnNumber 
-	 * @param {Object} saved - from json
+	 * @param {number} columnNumber 
+	 * @param {any} saved - from json
 	 */
 	restoreColumn(columnNumber, saved) {
 		let displayUnit = saved.sValues ? 'string' : saved.displayUnit;
@@ -675,7 +711,7 @@ export class MMDataTable extends MMTool {
 	 */
 	restoreColumnCommand(command) {
 		const indicesMatch = command.args.match(/^\d+\s+/);
-		const columnNumber = Number(indicesMatch[0]);
+		const columnNumber = Number((/** @type {RegExpMatchArray} */ (indicesMatch))[0]);
 		const json = command.args.substring(indicesMatch[0].length);
 		const saved = JSON.parse(json);
 		this.restoreColumn(columnNumber, saved);
@@ -705,7 +741,7 @@ export class MMDataTable extends MMTool {
 	moveColumnCommand(command) {
 		const parts = command.args.split(/\s/);
 		if (parts.length !== 2) {
-			this.setError('mmcmd:_tableMoveColumn', {path: this.getPath(), name: name});
+			this.setError('mmcmd:_tableMoveColumn', {path: this.getPath(), name: /** @type {any} */ (typeof name !== 'undefined' ? name : undefined)});
 			return;
 		}
 		const fromNumber = parseInt(parts[0]);
@@ -716,7 +752,7 @@ export class MMDataTable extends MMTool {
 
 	/**
 	 * @method displayRows
-	 * @returns {[Number]} returns an array of the row numbers to be displayed
+	 * @returns {number[]|null} returns an array of the row numbers to be displayed
 	 */
 	get displayRows() {
 		if (this._displayRows) {
@@ -748,9 +784,9 @@ export class MMDataTable extends MMTool {
 				if (filters) {
 					this._displayRows = [];
 					for (let rowNumber in filters) {
-						rowNumber = Number(rowNumber);
+						rowNumber = /** @type {any} */ (Number(rowNumber));
 						if (filters[rowNumber]) {
-							this._displayRows.push(rowNumber % this.rowCount + 1);
+							this._displayRows.push((/** @type {any} */ (rowNumber)) % this.rowCount + 1);
 						}
 					}
 				}
@@ -759,17 +795,17 @@ export class MMDataTable extends MMTool {
 		}
 		catch(e) {
 			this._displayRows = null;
-			this.setWarning(e.msgKey, e.args);
+			this.setWarning((/** @type {any} */ (e)).msgKey, (/** @type {any} */ (e)).args);
 		}
 		return null;
 	}
 
 	/**
 	 * @method addRow
-	 * @param {Number} rowNumber
-	 * @param {Object} columnValues - optional dictionary of column values
+	 * @param {number} rowNumber
+	 * @param {Record<string, any>} [columnValues] - optional dictionary of column values
 	 * - missing values will use default formula
-	 * @returns {Number} - the actual number of the row added or -1 if failed
+	 * @returns {number} - the actual number of the row added or -1 if failed
 	 */
 	addRow(rowNumber, columnValues) {
 		let successCount = 0;
@@ -875,12 +911,12 @@ export class MMDataTable extends MMTool {
 
 	/**
 	 * @method removeRows
-	 * @param {Array} rowNumbers
-	 * @param {Boolean} ignoreFilter - set to true to ignore row filter
-	 * @returns {Object} - old inputs for undo keyed by row number - empty if fails
+	 * @param {number[]} rowNumbers
+	 * @param {boolean} [ignoreFilter] - set to true to ignore row filter
+	 * @returns {Record<number, string[]>} - old inputs for undo keyed by row number - empty if fails
 	 */
 	removeRows(rowNumbers, ignoreFilter=false) {
-		const oldInputs = {};
+		const oldInputs = /** @type {Record<number, string[]>} */ ({});
 		rowNumbers.sort((a,b) => a - b).reverse();
 		const displayRows = this.displayRows;
 		for (let rowNumber of rowNumbers) {
@@ -908,11 +944,11 @@ export class MMDataTable extends MMTool {
 	/**
 	 * @method removeRowsCommand
 	 * @param {MMCommand} command
-	 * command.args should be the the row number(s)
+	 * @param {boolean} [ignoreFilter]
 	 */
 	removeRowsCommand(command, ignoreFilter=false) {
 		const argParts = command.args.split(/\s/);
-		const rowNumbers = argParts.map(arg => {
+		const rowNumbers = argParts.map((/** @type {string} */ arg) => {
 			const n = parseInt(arg);
 			return isNaN(n) ? 0 : n;
 		})
@@ -925,17 +961,17 @@ export class MMDataTable extends MMTool {
 
 	/**
 	 * @method restoreRows
-	 * @param {Object} inputs) - row number keyed column values
+	 * @param {Record<string|number, string[]>} inputs - row number keyed column values
 	 */
 	restoreRows(inputs) {
 		const rowNumbers = Object.keys(inputs);
-		rowNumbers.sort((a,b) => a - b);
+		rowNumbers.sort((a,b) => (/** @type {any} */ (a)) - (/** @type {any} */ (b)));
 		for (let rowNumber of rowNumbers) {
-			rowNumber = this.addRow(rowNumber);
+			rowNumber = /** @type {any} */ (this.addRow(/** @type {any} */ (rowNumber)));
 			const columnInputs = inputs[rowNumber];
 			const nColumns = this.columnArray.length;
 			for (let columnNumber = 0; columnNumber < nColumns; columnNumber++) {
-				this.columnArray[columnNumber].setCell(rowNumber, columnInputs[columnNumber]);
+				this.columnArray[columnNumber].setCell(/** @type {any} */ (rowNumber), columnInputs[columnNumber]);
 			}
 		}
 		this.forgetCalculated();
@@ -944,7 +980,6 @@ export class MMDataTable extends MMTool {
 	/**
 	 * @method restoreRowsCommand
 	 * @param {MMCommand} command
-	 * command.args should have the the rinputsJson
 	 */
 	restoreRowsCommand(command) {
 		const inputs = JSON.parse(command.args);
@@ -957,7 +992,6 @@ export class MMDataTable extends MMTool {
 	/**
 	 * @method undoRestoreRowsCommand
 	 * @param {MMCommand} command
-	 * command.args should be the the row number(s)
 	 */
 	undoRestoreRowsCommand(command) {
 		this.removeRowsCommand(command, true); // ignore filter
@@ -966,7 +1000,6 @@ export class MMDataTable extends MMTool {
 	/**
 	 * @method setCellCommand
 	 * @param {MMCommand} command
-	 * command.args should have the the rowNumber columnNumber input
 	 */
 	setCellCommand(command) {
 		const indicesMatch = command.args.match(/^-?\d+\s+\d+\s+/);
@@ -987,7 +1020,7 @@ export class MMDataTable extends MMTool {
 					isNaN(rowNumber) || isNaN(columnNumber) || 
 					rowNumber < 1 || rowNumber > this.rowCount || 
 					columnNumber < 1 ||  columnNumber > this.columnArray.length ||
-					(displayRows && rowNumber > this.displayRows.length)
+					(displayRows && rowNumber > (/** @type {number[]} */ (this.displayRows)).length)
 				) {
 					throw(this.t('mmcmd:tableRowColumnError', { path: this.getPath(), args: command.args }));
 				}
@@ -1011,21 +1044,22 @@ export class MMDataTable extends MMTool {
 	}
 
 	/**
+	 * @override
 	 * @method saveObject
-	 * @returns {Object} object that can be converted to json for save file
+	 * @returns {Record<string, any>} object that can be converted to json for save file
 	 */
 	saveObject() {
-		let o =   super.saveObject();
+		let o =   /** @type {Record<string, any>} */ (super.saveObject());
 		o['Type'] = 'Data Table';
 		o['Columns'] = this.columnArray.map(col => col.saveObject());
 		o['Filter'] = {'Formula': this.filterFormula.formula};
 		return o;
 	}
 
-		/**
+	/**
 	 * @method initFromSaved - initialize from stored object
 	 * @override
-	 * @param {Object} saved
+	 * @param {any} saved
 	 */
 	initFromSaved(saved) {
 		super.initFromSaved(saved);
@@ -1035,7 +1069,7 @@ export class MMDataTable extends MMTool {
 				this.restoreColumn(i, columns[i - 1]);
 			}
 			catch(e) {
-				theMMSession.setWarning(e);
+				theMMSession.setWarning(/** @type {any} */ (e));
 				continue;
 			}
 		}
@@ -1056,7 +1090,7 @@ export class MMDataTable extends MMTool {
 		this.rowCount = tableValue.rowCount;
 		for (let i = 0; i < nColumns; i++) {
 			const valueColumn = tableValue.columns[i];
-			const value = valueColumn.value ? valueColumn.value.copyOf() : null;
+			const value = valueColumn.value ? (/** @type {any} */ (valueColumn.value)).copyOf() : null;
 			const dataColumn = new MMDataTableColumn(this, {
 				name: valueColumn.name,
 				value: value,
@@ -1068,14 +1102,14 @@ export class MMDataTable extends MMTool {
 	}
 
 	/**
+	 * @override
 	 * @method toolViewInfo
 	 * @param {MMCommand} command
-	 * command.results contains the info for tool info view
 	 */
 	async toolViewInfo(command) {
 		await super.toolViewInfo(command);
 		let results = command.results;
-		const value = this.tableValue().jsonValue();
+		const value = /** @type {Record<string, any>} */ (this.tableValue().jsonValue());
 
 		const nc = this.columnArray.length;
 		for (let i = 0; i < nc; i++) {
@@ -1087,7 +1121,7 @@ export class MMDataTable extends MMTool {
 				v.unitType = 'String';
 			}
 			else if (column.columnValue.displayUnit) {
-				v.unitType = theMMSession.unitSystem.typeNameForUnitNamed(column.columnValue.displayUnit.name);
+				v.unitType = theMMSession.unitSystem.typeNameForUnitNamed((/** @type {MMUnit} */ (column.columnValue.displayUnit)).name);
 			}
 			v.format = column.format;
 			if (column.isCalculated) {
@@ -1095,23 +1129,23 @@ export class MMDataTable extends MMTool {
 			}
 			if (column.isMenu) {
 				if (!column._menu) {
-					column._menuLookup = {}
+					column._menuLookup = /** @type {Record<string, any>} */ ({})
 					if (column.defaultFormula.formula) {
-						const menuValue = column.defaultFormula.value();
+						const menuValue = /** @type {any} */ (column.defaultFormula.value());
 						if (menuValue) {
 							column._menu = {selections: [], values: []};
 							if (menuValue.rowCount > 1 && menuValue.columnCount > 1) {
 								for (let i = 1; i <= menuValue.rowCount; i++) {
-									const si = menuValue.valueAtRowColumn(i, 1);
-									const vi = menuValue.valueAtRowColumn(i,2)
+									const si = (/** @type {any} */ (menuValue)).valueAtRowColumn(i, 1);
+									const vi = (/** @type {any} */ (menuValue)).valueAtRowColumn(i, 2);
 									column._menu.selections.push(si);
 									column._menu.values.push(vi);
 									column._menuLookup[vi] = si;
 								}
 							}
 							else {
-								for (let i = 0; i < menuValue.valueCount; i++) {
-									const vi = menuValue.valueAtCount(i);
+								for (let i = 0; i < (/** @type {any} */ (menuValue)).valueCount; i++) {
+									const vi = (/** @type {any} */ (menuValue)).valueAtCount(i);
 									column._menu.selections.push(vi);
 									column._menu.values.push(vi);
 									column._menuLookup[vi] = vi;
@@ -1127,7 +1161,7 @@ export class MMDataTable extends MMTool {
 				v.menu = column._menu;
 				const newV = [];
 				for (let i = 0; i < v.v.nr; i++) {
-					newV.push(column._menuLookup[v.v.v[i]]);
+					newV.push(/** @type {Record<string, any>} */ (column._menuLookup)[v.v.v[i]]);
 				}
 				v.v.v = newV
 			}
@@ -1157,7 +1191,7 @@ export class MMDataTable extends MMTool {
 
 	/**
 	 * @method tableValue
-	 * @returns MMTableValue 
+	 * @returns {MMTableValue} 
 	 */
 	tableValue() {
 		const values = []
@@ -1168,10 +1202,10 @@ export class MMDataTable extends MMTool {
 	}
 
 	/**
-	 * @override valueDescribedBy
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @override
+	 * @param {string} [description]
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(description, requestor) {
 		let value;
@@ -1191,7 +1225,7 @@ export class MMDataTable extends MMTool {
 				default: {
 					const parts = description.split('.');
 					const toolName = parts[0].toLowerCase();
-					const column = this.childNamed(toolName);
+					const column = /** @type {MMDataTableColumn} */ (this.childNamed(toolName));
 					if (column) {
 						value = column.columnValue;
 						if (value) {
@@ -1216,9 +1250,8 @@ export class MMDataTable extends MMTool {
 	}
 
 	/**
-	 * @method inputSources
 	 * @override
-	 * @returns {Set} contains tools referenced by this tool
+	 * @returns {Set<MMTool>}
 	 */
 	inputSources() {
 		let sources = super.inputSources();
@@ -1232,7 +1265,7 @@ export class MMDataTable extends MMTool {
 	}
 	
 	/**
-	 * @override forgetCalculated
+	 * @override
 	 */
 	forgetCalculated() {
 		if (!this.forgetRecursionBlockIsOn) {

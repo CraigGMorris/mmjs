@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -25,11 +26,46 @@
 	MMTableValue:readonly
 	MMTableValueColumn:readonly
 	MMStringValue:readonly
+	theMMSession:readonly
 */
+
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./MMModel.js').MMModel} MMModel */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMTableValue.js').MMTableValue} MMTableValue */
+/** @typedef {import('./MMTableValue.js').MMTableValueColumn} MMTableValueColumn */
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+
 
 /**
  * @class MMOptimizer
  * @extends MMTool
+ * @property {MMFormula} fxFormula
+ * @property {MMFormula} countFormula
+ * @property {number} _numberOfOutputs
+ * @property {Float64Array|null} outputs
+ * @property {Float64Array|null} commonP1
+ * @property {Float64Array|null} commonXi
+ * @property {boolean} isOptimized
+ * @property {boolean} isEnabled
+ * @property {boolean} _isEnabled
+ * @property {boolean} isRunning
+ * @property {boolean} isInError
+ * @property {number} maxIterations
+ * @property {number} maxBrentIterations
+ * @property {number} brentTolerance
+ * @property {number} fTolerance
+ * @property {number} zEps
+ * @property {number} cGold
+ * @property {number} gOld
+ * @property {number} gLimit
+ * @property {boolean} isLoadingCase
+ * @property {number} [iterations]
+ * @property {number} [seconds]
+ * @property {number} [error]
  */
 // eslint-disable-next-line no-unused-vars
 export class MMOptimizer extends MMTool {
@@ -64,7 +100,7 @@ export class MMOptimizer extends MMTool {
 	/**
 	 * @method initFromSaved - initialize from stored object
 	 * @override
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		try {
@@ -96,7 +132,7 @@ export class MMOptimizer extends MMTool {
 	 * @returns {Object} object that can be converted to json for save file
 	 */
 	saveObject() {
-		let o = super.saveObject();
+		let o = /** @type {Record<string, any>} */ (super.saveObject());
 		o['Type'] = 'Optimizer';
 
 		o['optFormula'] = {Formula: this.fxFormula.formula};
@@ -176,7 +212,7 @@ export class MMOptimizer extends MMTool {
 	/** @method getVerbUsageKey
 	 * @override
 	 * @param {string} command - command to get the usage key for
-	 * @returns {string} - the i18n key, if it exists
+	 * @returns {string|undefined} - the i18n key, if it exists
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -242,9 +278,9 @@ export class MMOptimizer extends MMTool {
 
 	/**
 	 * @override valueDescribedBy
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @param {string} [description]
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(description, requestor) {
 		if (!description) {
@@ -268,7 +304,7 @@ export class MMOptimizer extends MMTool {
 		}
 
 		// convenience function to add requestor is return value is known
-		const returnValue = (v) => {
+		const returnValue = (/** @type {any} */ v) => {
 			if (v) {
 				this.addRequestor(requestor);
 				return v;
@@ -287,7 +323,7 @@ export class MMOptimizer extends MMTool {
 			const n = this._numberOfOutputs;
 			const v = new MMNumberValue(n, 1);
 			for (let i = 0; i < n; i++) {
-				v.values[i] = this.outputs[i];
+				v.values[i] = (/** @type {Float64Array} */ (this.outputs))[i];
 			}
 			return returnValue(v);
 		}
@@ -296,7 +332,7 @@ export class MMOptimizer extends MMTool {
 			const fx = this.fxFormula.value();
 			const names = ['fx'];
 			const values = [fx ? fx.stringWithUnit() : '---']
-			const outputs = Array.from(this.outputs);
+			const outputs = Array.from(/** @type {Float64Array} */ (this.outputs));
 			const n = outputs.length;
 			for (let i = 0; i < n; i++) {
 				names.push(`x${i + 1}`);
@@ -318,7 +354,7 @@ export class MMOptimizer extends MMTool {
 
 		const outputNumber = parseInt(lcDescription);
 		if (!isNaN(outputNumber) && outputNumber > 0 && outputNumber <= this._numberOfOutputs) {
-			const v = MMNumberValue.scalarValue(this.outputs[outputNumber - 1]);
+			const v = MMNumberValue.scalarValue((/** @type {Float64Array} */ (this.outputs))[outputNumber - 1]);
 			return returnValue(v);
 		}
 		return super.valueDescribedBy(description, requestor);
@@ -327,7 +363,7 @@ export class MMOptimizer extends MMTool {
 	/**
 	 * @method inputSources
 	 * @override
-	 * @returns {Set} contains tools referenced by this tool
+	 * @returns {Set<MMTool>} contains tools referenced by this tool
 	 */
 	inputSources() {
 		let sources = super.inputSources();
@@ -362,7 +398,7 @@ export class MMOptimizer extends MMTool {
 		results['fx'] = fx ? fx.stringWithUnit() : '---';
 		const n = this.numberOfOutputs;
 		for (let i = 0; i < n; i++) {
-			results['outputs'] = Array.from(this.outputs);
+			results['outputs'] = Array.from(/** @type {Float64Array} */ (this.outputs));
 		}
 
 		results['isEnabled'] = this.isEnabled;
@@ -374,7 +410,7 @@ export class MMOptimizer extends MMTool {
 
 	/**
 	 * @method evaluateFunction - evaluates the optimize formula with the current outputs
-	 * @returns {Number} the result of the evaluation or null if failed
+	 * @returns {any} the result of the evaluation or null if failed
 	 */
 	evaluateFunction() {
 		this.forgetCalculated();
@@ -391,13 +427,15 @@ export class MMOptimizer extends MMTool {
 	/**
 	 * @method fInOneDimension
 	 * @param {Number} x
+	 * @returns {any}
 	 */
 	fInOneDimension(x) {
 		const n = this._numberOfOutputs;
-		const p1 = this.commonP1;
-		const xi = this.commonXi;
+		const p1 = /** @type {Float64Array} */ (this.commonP1);
+		const xi = /** @type {Float64Array} */ (this.commonXi);
+		const outputs = /** @type {Float64Array} */ (this.outputs);
 		for (let i = 0; i < n; i++) {
-			this.outputs[i] = p1[i] + x * xi[i];
+			outputs[i] = p1[i] + x * xi[i];
 		}
 		return this.evaluateFunction();
 	}
@@ -412,7 +450,7 @@ export class MMOptimizer extends MMTool {
 	 * @param {Number} bx 
 	 * @param {Number} cx 
 	 * @param {Number} tol 
-	 * @returns {[Number, Number]} if successful returns a two value array containing 
+	 * @returns {[number, number]|null} if successful returns a two value array containing 
 	 * the abscissa of the minimum and the minimum function value 
 	 * If unsuccessful, returns null
 	 */
@@ -539,12 +577,12 @@ export class MMOptimizer extends MMTool {
 	 * fInOneDimension at the returned location point.
 	 * @param {Float64Array} point 
 	 * @param {Float64Array} direction
-	 * @returns {Number} function value at solution, null if fails
+	 * @returns {any} function value at solution, null if fails
 	 */
 	minimizeLine(point, direction) {
 		const n = this._numberOfOutputs;
-		const p1 = this.commonP1;
-		const xi = this.commonXi;
+		const p1 = /** @type {Float64Array} */ (this.commonP1);
+		const xi = /** @type {Float64Array} */ (this.commonXi);
 		for (let i = 0; i < n; i++) {
 			p1[i] = point[i];
 			xi[i] = direction[i];
@@ -652,15 +690,15 @@ export class MMOptimizer extends MMTool {
 			xi[i*n + i] = 1; // set diagonal for identity
 		}		
 
-		const pt = Float64Array.from(this.outputs);
-		const p = Float64Array.from(this.outputs);
+		const pt = Float64Array.from(/** @type {Float64Array} */ (this.outputs));
+		const p = Float64Array.from(/** @type {Float64Array} */ (this.outputs));
 
 		let fReturn = this.evaluateFunction();
 		let lastStatusTime = Date.now();
 		for (let iter = 1; iter <= this.maxIterations; iter++) {
 			const now = Date.now();
 			if (now - lastStatusTime > 1000) {
-				if (this.processor.statusCallBack(this.t('mmcmd:optStatus', {iter: iter, error: fReturn}))) {
+				if ((/** @type {any} */ (this.processor)).statusCallBack(this.t('mmcmd:optStatus', {iter: iter, error: fReturn}))) {
 					this.isEnabled = false;
 					break;
 				}
@@ -699,7 +737,7 @@ export class MMOptimizer extends MMTool {
 					ptt[j] = 2.0 * p[j] - pt[j];  // and save the old starting point
 					xit[j] = p[j] - pt[j];
 					pt[j] = p[j];
-					this.outputs[j] = ptt[j];
+					(/** @type {Float64Array} */ (this.outputs))[j] = ptt[j];
 				}
 				
 				const fptt = this.evaluateFunction();   // function evaluation at the extrapolated point
@@ -741,7 +779,7 @@ export class MMOptimizer extends MMTool {
 			this.powell();
 		}
 		catch(e) {
-			this.setError('mmcmd:optException', {path: this.getPath(), msg: e.message});
+			this.setError('mmcmd:optException', {path: this.getPath(), msg: (/** @type {any} */ (e)).message});
 			this.isOptimized = false;
 			this.isInError = true;
 		}

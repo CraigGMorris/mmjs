@@ -1,3 +1,5 @@
+// @ts-check
+
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -23,6 +25,12 @@
 	MMStringValue:readonly
 */
 
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+
 /**
  * @class MMToolValue
  * @extends MMValue
@@ -30,6 +38,9 @@
  */
 // eslint-disable-next-line no-unused-vars
 export class MMToolValue extends MMValue {
+	/** @type {MMTool[]} */
+	_values;
+
 	/** @constructor
 	 * @param {Number} rowCount
 	 * @param {Number} columnCount
@@ -50,7 +61,7 @@ export class MMToolValue extends MMValue {
 	}
 
 	/** @method copyOf
-	 * @returns {MMValue}  - a copy of this instance
+	 * @returns {MMToolValue}  - a copy of this instance
 	 */
 	copyOf() {
 		let newValue = new MMToolValue(this.rowCount, this.columnCount);
@@ -98,9 +109,9 @@ export class MMToolValue extends MMValue {
 	/**
 	 * @method setValue
 	 * set value at row and column
-	 * @param {MMToolValue} value
+	 * @param {MMTool} value
 	 * @param {Number} row
-	 * @param {Numbber} column
+	 * @param {Number} column
 	 */
 	setValue(value, row, column) {
 		this.checkBounds(row, column);
@@ -120,9 +131,10 @@ export class MMToolValue extends MMValue {
 
 	/**
 	 * @method valueForIndexRowColumn
+	 * @override
 	 * @param {MMValue} rowIndex
-	 * @param {MMValue} columnIndex
-	 * @returns {MMValue}
+	 * @param {MMValue} [columnIndex]
+	 * @returns {MMValue|undefined}
 	 */
 	valueForIndexRowColumn(rowIndex, columnIndex) {
 		return this.valueForIndexRowColumnFactory(rowIndex, columnIndex, (nRows, nColumns) => {
@@ -142,7 +154,7 @@ export class MMToolValue extends MMValue {
 		/**
 		 * @method valueAtCount
 		 * @param {Number} count 
-		 * @returns {MMTool}
+		 * @returns {MMTool|string}
 		 */
 		valueAtCount(count) {
 			return (count < this.valueCount) ? this._values[count] : '';
@@ -150,7 +162,8 @@ export class MMToolValue extends MMValue {
 
 	/**
 	 * @method stringWithUnit
-	 * @param {MMUnit} unit - optional
+	 * @override
+	 * @param {MMUnit} [unit] - optional
 	 * @returns {String} 
 	 */
 	// eslint-disable-next-line no-unused-vars
@@ -167,9 +180,10 @@ export class MMToolValue extends MMValue {
 	/**
 	 * @method jsonValue
 	 * @override
+	 * @param {MMUnit} [displayUnit]
 	 * @returns {Object} - representation of value using unit, suitable for conversion to json
 	 */
-	jsonValue() {
+	jsonValue(displayUnit) {
 		const v = this._values.map(t => {return {t: t.typeName, n: t.name, p: t.getPath()}})
 		return {
 			t: 'tool',
@@ -181,6 +195,8 @@ export class MMToolValue extends MMValue {
 
 	/**
 	 * @method htmlValue
+	 * @override
+	 * @param {MMTool} [requestor]
 	 * @returns {String}
 	 */
 	htmlValue(requestor) {
@@ -199,8 +215,9 @@ export class MMToolValue extends MMValue {
 
 	/**
 	 * @method concat
-	 * @param  {MMToolValue} other
-	 * @return MMToolValue
+	 * @override
+	 * @param  {MMValue} other
+	 * @return {MMToolValue|undefined}
 	 * overriden to concatanate two arrays into one
 	 */
 	concat(other) {
@@ -210,10 +227,10 @@ export class MMToolValue extends MMValue {
 			rv = new MMToolValue(valueCount, 1);
 			valueCount = 1;
 			for (let i = 0; i < this.valueCount; i++) {
-				rv.setValue(this.valueAtCount(i), valueCount++, 1);
+				rv.setValue((/** @type {MMTool} */ (this.valueAtCount(i))), valueCount++, 1);
 			}
 			for (let i = 0; i < other.valueCount; i++) {
-				rv.setValue(other.valueAtCount(i), valueCount++, 1);
+				rv.setValue((/** @type {MMTool} */ (other.valueAtCount(i))), valueCount++, 1);
 			}
 		}
 		return rv;
@@ -221,8 +238,10 @@ export class MMToolValue extends MMValue {
 
 	/**
 	 * @method append
+	 * @override
 	 * appends columns to value
 	 * @param {MMValue} additions
+	 * @returns {MMToolValue|null}
 	*/
 	append(additions) {
 		let rv = null;
@@ -253,6 +272,7 @@ export class MMToolValue extends MMValue {
 	/** @method redimension
 	 * return value reconfigured to given number of columns
 	 * @param {MMNumberValue} nColumns
+	 * @returns {MMToolValue|undefined}
 	 */
 	redimension(nColumns) {
 		let rv;
@@ -287,15 +307,15 @@ export class MMToolValue extends MMValue {
 
 	/**
 	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null}
 	 */
 	valueDescribedBy(description, requestor) {
 		let rv = null;	// return value
 		if (this.valueCount === 1) {
 			const tool = this.valueAtRowColumn(1,1);
 			if (tool) {
-				rv = tool.valueDescribedBy(description, requestor);
+				rv = tool.valueDescribedBy(description, (/** @type {any} */ (requestor)));
 			}
 		}
 		else if (this.valueCount > 1) {
@@ -306,7 +326,7 @@ export class MMToolValue extends MMValue {
 				// 	// referenced expression returns its own value
 				// 	description = '';
 				// }
-				const firstValue = firstTool.valueDescribedBy(description, requestor);
+				const firstValue = firstTool.valueDescribedBy(description, (/** @type {any} */ (requestor)));
 				if (!(
 					firstValue instanceof MMNumberValue ||
 					firstValue instanceof MMStringValue ||
@@ -317,16 +337,16 @@ export class MMToolValue extends MMValue {
 				rv = firstValue;
 				for (let i = 1; i < this.valueCount; i++) {
 					const tool = this.valueAtCount(i);
-					if (!tool) {
+					if (!tool || typeof tool === 'string') {
 						return null;
 					}
-					const value = tool.valueDescribedBy(description, requestor);
+					const value = tool.valueDescribedBy(description, (/** @type {any} */ (requestor)));
 					if (value && Object.getPrototypeOf(value).constructor === Object.getPrototypeOf(firstValue).constructor) {
-						rv = rv.concat(value);
+						rv = (/** @type {MMValue} */ (rv)).concat(/** @type {any} */ (value)) || null;
 					}
 				}
 			}
 		}
-		return rv
+		return (/** @type {MMValue|null} */ (rv));
 	}
 }

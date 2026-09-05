@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -36,15 +37,41 @@
 	MMFlashPhaseValue:readonly
 */
 
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMTableValue.js').MMTableValue} MMTableValue */
+/** @typedef {import('./MMTableValue.js').MMTableValueColumn} MMTableValueColumn */
+/** @typedef {import('./MMToolValue.js').MMToolValue} MMToolValue */
+/** @typedef {import('./MMJsonValue.js').MMJsonValue} MMJsonValue */
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+/** @typedef {import('./MMExpression.js').MMExpression} MMExpression */
+/** @typedef {import('./MMButton.js').MMButton} MMButton */
+/** @typedef {import('./MMMenu.js').MMMenu} MMMenu */
+/** @typedef {import('./MMGraph.js').MMGraph} MMGraph */
+/** @typedef {import('./MMHtmlPage.js').MMHtmlPageProcessor} MMHtmlPageProcessor */
+
 /**
  * @class MMImportModelInfo - information about imported models
  * @member {String} sessionName
  * @member {Array} inputFormulas
  */
 class MMImportModelInfo {
+	/** @type {string|undefined} */
+	sessionName;
+	/** @type {any} */
+	inputFormulas;
+	/** @type {any} */
+	childImportFormulas;
+	/** @type {string|undefined} */
+	importPath;
+
 	/**
 	 * @constructor
-	 * @param {string} sessionName 
+	 * @param {string} [sessionName]
 	 */
 	constructor(sessionName) {
 		this.sessionName = sessionName;
@@ -53,10 +80,10 @@ class MMImportModelInfo {
 
 	/**
 	 * @method saveObject
-	 * @returns {Object} object that can be converted to json for save file
+	 * @returns {Record<string, any>} object that can be converted to json for save file
 	 */
 	saveObject() {
-		const o = {'name': this.sessionName}
+		const o = /** @type {Record<string, any>} */ ({'name': this.sessionName})
 		if (this.inputFormulas) {
 			o.inputs = this.inputFormulas;
 		}
@@ -65,7 +92,7 @@ class MMImportModelInfo {
 
 	/**
 	 * @method initFromSaved - initialize from stored object
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		this.sessionName = saved.name;
@@ -84,6 +111,19 @@ class MMImportModelInfo {
  */
 // eslint-disable-next-line no-unused-vars
 export class MMModel extends MMTool {
+	/** @type {MMHtmlPageProcessor} */
+	htmlProcessor;
+	/** @type {number} */
+	nextToolNumber;
+	/** @type {boolean} */
+	isMissingObject;
+	/** @type {string} */
+	lastDefaultUnitSetName;
+	/** @type {string|undefined} */
+	_indexTool;
+	/** @type {MMImportModelInfo|null|undefined} */
+	importInfo;
+
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
@@ -124,10 +164,12 @@ export class MMModel extends MMTool {
 		return d;
 	}
 
+	/** @returns {string|undefined} */
 	get indexTool() {
 		return this._indexTool;
 	}
 
+	/** @param {string|undefined} newValue */
 	set indexTool(newValue) {
 		this._indexTool = newValue;
 	}
@@ -135,7 +177,7 @@ export class MMModel extends MMTool {
 	/** @method getVerbUsageKey
 	 * @override
 	 * @param {string} command - command to get the usage key for
-	 * @returns {string} - the i18n key, if it exists
+	 * @returns {string|undefined} - the i18n key, if it exists
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -160,8 +202,9 @@ export class MMModel extends MMTool {
 	}
 
 	/**
+	 * @override
 	 * @method parameters
-	 * i.e. things that can be appended to a formula value
+	 * @returns {string[]}
 	 */
 	parameters() {
 		let p = super.parameters();
@@ -248,11 +291,11 @@ export class MMModel extends MMTool {
 			typeName = 'Model';
 			isImport = true;
 		}
-		let toolType = MMToolTypes[typeName];
+		let toolType = (/** @type {Record<string, any>} */ (MMToolTypes))[typeName];
 		if(!toolType) {
 			throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: typeName}));
 		}
-		let newTool = toolType.factory(name, this);
+		let newTool = /** @type {any} */ (toolType.factory(name, this));
 		if (newTool) {
 			if (position) {
 				newTool.position = position;
@@ -310,7 +353,6 @@ export class MMModel extends MMTool {
 	 * removes named tool from the model
 	 * @param {MMCommand} command
 	 * command.args should be the tool name(s)
-	 * @returns {boolean} success
 	 */
 	removeToolCommand(command) {
 		const names = command.args.split(/\s/);
@@ -345,7 +387,7 @@ export class MMModel extends MMTool {
 
 	/**
 	 * @method restoreTool - adds a tool from json - for undo
-	 * @param {Object} tool - from json
+	 * @param {any} tool - from json
 	 */
 	async restoreTool(tool) {
 		const name = tool.name;
@@ -355,11 +397,11 @@ export class MMModel extends MMTool {
 			.replace(' ','')
 			.replace('Equation','')
 			.replace('ModelArray', 'Model');
-		const toolType = MMToolTypes[typeName];
+		const toolType = (/** @type {Record<string, any>} */ (MMToolTypes))[typeName];
 		if(!toolType) {
 			throw(this.t('mmcmd:modelInvalidToolType', {name: name, typeName: tool.Type}));
 		}
-		let newTool = toolType.factory(name, this);
+		let newTool = /** @type {any} */ (toolType.factory(name, this));
 		await newTool.initFromSaved(tool);
 	}
 
@@ -375,7 +417,7 @@ export class MMModel extends MMTool {
 		for (let saved of savedTools) {
 			await this.restoreTool(saved);
 		}
-		const names = savedTools.map(t => t.name);
+		const names = savedTools.map((/** @type {any} */ t) => t.name);
 		command.undo = `${this.getPath()} removetool ${names.join(' ')}`
 		command.results = true;
 	}
@@ -384,7 +426,6 @@ export class MMModel extends MMTool {
 	 * collects saveObject infomation about the tool(s) and assigns it as json to command.results
 	 * @param {MMCommand} command
 	 * command.args should be the tool name(s)
-	 * @returns {String} json
 	 */
 	copyToolCommand(command) {
 		const names = command.args.split(/\s/);
@@ -399,20 +440,21 @@ export class MMModel extends MMTool {
 		command.results = json;
 	}
 
+	/** @param {Record<string, any>} obj */
 	contentsFromJsonObject(obj) {
-		const makeExpression = (name) => {
+		const makeExpression = (/** @type {string} */ name) => {
 			const toolType = MMToolTypes["Expression"];
-			return toolType.factory(name, this);
+			return /** @type {any} */ (toolType.factory(name, this));
 		}
 
-		const makeModel = (name, contents) => {
+		const makeModel = (/** @type {string} */ name, /** @type {any} */ contents) => {
 			const toolType = MMToolTypes["Model"];
-			const model = toolType.factory(name, this);
+			const model = /** @type {any} */ (toolType.factory(name, this));
 			model.contentsFromJsonObject(contents);
 			return model;
 		}
 
-		const autoPosition = (tool) => {
+		const autoPosition = (/** @type {any} */ tool) => {
 			const n = Object.keys(this.children).length - 1;
 			if (n === 0) {
 				tool.position = {x: 10, y: 10}
@@ -423,7 +465,7 @@ export class MMModel extends MMTool {
 				const column = n % toolsPerRow;
 				tool.position = {
 					x: 10 + column * 70,
-					y: 10 + row * 30
+					y: 10 + (/** @type {any} */ (row)) * 30
 				}
 			}
 		}
@@ -450,7 +492,7 @@ export class MMModel extends MMTool {
 					continue;
 				}
 				const first = child[0];
-				const parts = [];
+				const parts = /** @type {string[]} */ ([]);
 				if (typeof(first) === 'string') {
 					parts.push('{cc `' + first + '`');
 					for (let i = 1; i < child.length; i++) {
@@ -479,7 +521,7 @@ export class MMModel extends MMTool {
 					// Array of objects - use first as template to make a table with
 					// each of its children being a column. If one of them isn't a scalar
 					// string or number, then just create an expression with json string
-					const columnValues = [];
+					const columnValues = /** @type {Array<{name: string, type: string, values: any[]}>} */ ([]);
 					let dataOkay = true;
 					for (const columnName of Object.keys(first)) {
 						const columnFirst = first[columnName];
@@ -509,14 +551,14 @@ export class MMModel extends MMTool {
 					}
 					if (dataOkay) {
 						const toolType = MMToolTypes["DataTable"];
-						const table = toolType.factory(childName, this);
+						const table = /** @type {any} */ (toolType.factory(childName, this));
 						autoPosition(table);
 
 						// add columns
 						for (const v of columnValues) {
-							const options = {
+							const options = /** @type {Record<string, any>} */ ({
 								name: v.name,
-							};
+							});
 							if (v.type === 'string') {
 								options.displayUnit = 'string';
 								options.defaultValue = '""';
@@ -551,6 +593,7 @@ export class MMModel extends MMTool {
 	}
 
 	// testing method - place to easily try things out
+	/** @param {MMCommand} command */
 	async testCommand(command) {
 		let results = ['test function for model']
 		command.results = results;
@@ -562,6 +605,7 @@ export class MMModel extends MMTool {
 	 * command.args should be the tool name
 	 * @returns {String} json
 	 */
+	/** @param {MMCommand} command */
 	copyAsTableCommand(command) {
 		if (!command.args.length) {
 			throw(this.t('mmcmd:modelMissingToolName'));
@@ -582,6 +626,7 @@ export class MMModel extends MMTool {
 	 * command.args should be the tool x y toolJson
 	 * in the form  /.x paste x y  followed by the json text
 	 */
+	/** @param {MMCommand} command */
 	async pasteCommand(command) {
 		const indicesMatch = command.args.match(/^-*?[\d.]+\s+-*?[\d.]+\s+/);
 		if (indicesMatch) {
@@ -601,7 +646,7 @@ export class MMModel extends MMTool {
 					while ( this.childNamed(name) ) {
 						name = `x${this.nextToolNumber++}`;
 					}	
-					let newTool = toolType.factory(name, this);
+					let newTool = /** @type {any} */ (toolType.factory(name, this));
 					if (newTool) {
 						newTool.position = new MMPoint(originX, originY);
 						if (json.startsWith('matrix')) {
@@ -624,7 +669,7 @@ export class MMModel extends MMTool {
 					while ( this.childNamed(name) ) {
 						name = `x${this.nextToolNumber++}`;
 					}	
-					let newTool = toolType.factory(name, this);
+					let newTool = /** @type {any} */ (toolType.factory(name, this));
 					if (newTool) {
 						newTool.position = new MMPoint(originX, originY);
 						newTool.initFromTableValue(tableValue);
@@ -696,7 +741,7 @@ export class MMModel extends MMTool {
 								while ( this.childNamed(name) ) {
 									name = `x${this.nextToolNumber++}`;
 								}	
-								let model = toolType.factory(name, this);
+								let model = /** @type {any} */ (toolType.factory(name, this));
 								if (model) {
 									model.position = new MMPoint(originX, originY);
 									model.contentsFromJsonObject(saved);
@@ -722,7 +767,7 @@ export class MMModel extends MMTool {
 						while ( this.childNamed(name) ) {
 							name = `x${this.nextToolNumber++}`;
 						}	
-						const exp = new MMExpression(name, this);
+						const exp = new MMExpression(name, /** @type {any} */ (this));
 						exp.position = new MMPoint(originX, originY)
 						exp.formula.formula = "'" + json;
 						command.undo = `${this.getPath()} removetool ${name}`			
@@ -734,7 +779,7 @@ export class MMModel extends MMTool {
 
 	/**
 	 * @method inputExpressions
-	 * @returns {Array}
+	 * @returns {MMExpression[]}
 	 * returns the contained expressions marked as inputs
 	 */
 	inputExpressions() {
@@ -749,9 +794,9 @@ export class MMModel extends MMTool {
 	}
 
 	/**
-	 * @method inputSources
 	 * @override
-	 * @returns {Set} contains tools referenced by this tool
+	 * @method inputSources
+	 * @returns {Set<MMTool>}
 	 */
 	inputSources() {
 		const sources = super.inputSources();
@@ -773,11 +818,11 @@ export class MMModel extends MMTool {
 
 	/**
 	 * @method diagramInfo
-	 * @returns {Object}
+	 * @returns {Record<string, any>}
 	 * returns object containing the info needed for model diagram
 	 */
 	diagramInfo() {
-		let tools = {};
+		let tools = /** @type {Record<string, any>} */ ({});
 		for (const key in this.children) {
 			const tool = this.children[key];
 			if (!(tool instanceof MMTool)) {
@@ -791,20 +836,20 @@ export class MMModel extends MMTool {
 				}
 			}
 			const notes = tool.notes ? tool.notes.replace(/<\/*\w+>/g,'') : '';
-			let toolInfo = {
-				toolTypeName: tool.className.substring(2),
+			let toolInfo = /** @type {Record<string, any>} */ ({
+				toolTypeName: (/** @type {string} */ (tool.className)).substring(2),
 				name: tool.name,
 				position: tool.position,
 				requestors: requestors,
 				notes: notes,
 				diagramNotes: tool.diagramNotes,
-			}
+			});
 			if (tool instanceof MMExpression) {
 				toolInfo['formula'] = tool.formula.formula;
 				if (tool.cachedValue) {
 					const unit = tool.displayUnit || tool.cachedValue.displayUnit;
 					const format = tool.format || tool.cachedValue.displayFormat;
-					const v = tool.cachedValue.stringWithUnit(unit, format);
+					const v = (/** @type {any} */ (tool.cachedValue)).stringWithUnit(unit, format);
 					if (v) {
 						toolInfo['result'] = v;
 						toolInfo['resultType'] =
@@ -821,10 +866,10 @@ export class MMModel extends MMTool {
 			tools[tool.name] = toolInfo;
 		}
 
-		const info = {
+		const info = /** @type {Record<string, any>} */ ({
 			path: this.getPath(),
 			tools: tools,
-		};
+		});
 		if (this.importInfo) {
 			info.import = this.importInfo.sessionName;
 		}
@@ -832,11 +877,12 @@ export class MMModel extends MMTool {
 	}
 
 	/**
+	 * @override
 	 * @method saveObject
-	 * @returns {Object} object that can be converted to json for save file
+	 * @returns {Record<string, any>} object that can be converted to json for save file
 	 */
 	saveObject() {
-		const o = super.saveObject();
+		const o = /** @type {Record<string, any>} */ (super.saveObject());
 		o.Type = 'Model';
 		o.diagramScale = 1;	// need to fix this - get from interface?
 		if (this.indexTool) {
@@ -846,7 +892,7 @@ export class MMModel extends MMTool {
 		if (this.importInfo) {
 			this.determineImportInputFormulas();
 			o.import = this.importInfo.saveObject();
-			const childImportFormulas = {};
+			const childImportFormulas = /** @type {Record<string, any>} */ ({});
 			this.getChildImportFormulas('', childImportFormulas);
 			if (Object.keys(childImportFormulas).length) {
 				o.import.childImportFormulas = childImportFormulas;
@@ -869,19 +915,28 @@ export class MMModel extends MMTool {
 		return o;
 	}
 
-	getChildImportFormulas(parentName,childImportFormulas) {
+	/**
+	 * @param {string} parentName
+	 * @param {Record<string, any>} childImportFormulas
+	 * @returns {Record<string, any>}
+	 */
+	getChildImportFormulas(parentName, childImportFormulas) {
 		for (const toolName in this.children) {
 			const tool = this.children[toolName];
 			if (tool instanceof MMTool) {
-				if (tool.importInfo) {
-					tool.determineImportInputFormulas();
-					childImportFormulas[`${parentName}.${toolName}`] = tool.importInfo.inputFormulas;
-					tool.getChildImportFormulas(`${parentName}.${toolName}`, childImportFormulas);
+				if ((/** @type {MMModel} */ (tool)).importInfo) {
+					(/** @type {MMModel} */ (tool)).determineImportInputFormulas();
+					childImportFormulas[`${parentName}.${toolName}`] = (/** @type {MMModel} */ (tool)).importInfo?.inputFormulas;
+					(/** @type {MMModel} */ (tool)).getChildImportFormulas(`${parentName}.${toolName}`, childImportFormulas);
 				}
 			}
 		}
 		return childImportFormulas;
 	}
+	/**
+	 * @override
+	 * @param {any} saved
+	 */
 	async initFromSaved(saved) {
 		super.initFromSaved(saved);
 		if (saved.Objects) {
@@ -892,16 +947,16 @@ export class MMModel extends MMTool {
 				const importInfo = new MMImportModelInfo();
 				await importInfo.initFromSaved(saved.import);
 				// check for recursion
-				let parent = this.parent;
-				const lcImportName = theMMSession.storePath + '/' + importInfo.sessionName.toLowerCase();
+				let parent = /** @type {MMModel|null} */ (this.parent);
+				const lcImportName = theMMSession.storePath + '/' + (/** @type {string} */ (importInfo.sessionName)).toLowerCase();
 				let alreadyImported = lcImportName === theMMSession.storePath.toLowerCase();
 				while (parent) {
-					if (parent.importInfo && parent.importInfo.sessionName.toLowerCase() === lcImportName) {
+					if (parent.importInfo && (/** @type {string} */ (parent.importInfo.sessionName)).toLowerCase() === lcImportName) {
 						alreadyImported = true;
-						this.setError('mmcmd:modelRecursiveImport', {importName: importInfo.sessionName, path: this.getPath()});
+						this.setError('mmcmd:modelRecursiveImport', {importName: (/** @type {string} */ (importInfo.sessionName)), path: this.getPath()});
 						break;
 					}
-					parent = parent.parent;
+					parent = /** @type {MMModel|null} */ (parent.parent);
 				}
 				if (!alreadyImported) {
 					await this.setImportInfo(importInfo);
@@ -916,11 +971,11 @@ export class MMModel extends MMTool {
 
 	/**
 	 * @method constructToolsFromSaved
-	 * @param {Object} savedTools
+	 * @param {any[]} savedTools
 	 */
 	async constructToolsFromSaved(savedTools) {
 		 //console.log(`constructToolsFromSaved ${this.name}`);
-		theMMSession.pushModel(this);
+		theMMSession.pushModel(/** @type {any} */ (this));
 		for (let tool of savedTools) {
 			const name = tool.name;
 			const typeName = tool.Type
@@ -930,17 +985,17 @@ export class MMModel extends MMTool {
 				.replace('Equation','')
 				.replace('ModelArray', 'Model')
 				.replace('Graph/Table', 'Graph');
-			const toolType = MMToolTypes[typeName];
+			const toolType = (/** @type {Record<string, any>} */ (MMToolTypes))[typeName];
 			if(!toolType) {
-				const newTool = new MMExpression(name, this);
+				const newTool = new MMExpression(name, /** @type {any} */ (this));
 				if (tool.DiagramX && tool.DiagramY) {
 					newTool.position = new MMPoint(tool.DiagramX, tool.DiagramY);
 				}
 				newTool.formula.formula = `'Invalid Tool ${typeName}\n\nJSON:\n${JSON.stringify(tool, null, ' ')}`;
-				newTool.savedInvalid = true;
+				(/** @type {any} */ (newTool)).savedInvalid = true;
 			}
 			else {
-				let newTool = toolType.factory(name, this);
+				let newTool = /** @type {any} */ (toolType.factory(name, this));
 				// console.log(`newTool ${newTool.name} ${JSON.stringify(tool)}`);
 				await newTool.initFromSaved(tool);
 			}
@@ -948,6 +1003,11 @@ export class MMModel extends MMTool {
 		theMMSession.popModel();
 	}
 
+	/**
+	 * @param {any} a
+	 * @param {any} b
+	 * @returns {number}
+	 */
 	positionSort(a, b) {
 		// sort by position with left most first and  ties broken by
 		// top most first
@@ -968,6 +1028,7 @@ export class MMModel extends MMTool {
 		return 0;	
 	}
 
+	/** @returns {MMTool[]} */
 	positionSortedChildren() {
 		const tools = []
 		for (const t of Object.values(this.children)) {
@@ -978,8 +1039,12 @@ export class MMModel extends MMTool {
 		return tools.sort(this.positionSort);
 	}
 
-	htmlInfo() {
-		const results = {};
+	/**
+	 * @param {any} [requestor]
+	 * @returns {Record<string, any>}
+	 */
+	htmlInfo(requestor) {
+		const results = /** @type {Record<string, any>} */ ({});
 		const inputs = [];
 		const outputs = [];
 		const objects = [];
@@ -988,7 +1053,7 @@ export class MMModel extends MMTool {
 			if (!(tool instanceof MMTool)) {
 				continue;
 			}
-			if (tool.showInput && tool.typeName === 'Expression') {
+			if ((/** @type {any} */ (tool)).showInput && tool.typeName === 'Expression') {
 				inputs.push(tool);
 			}
 			if (tool.isOutput) {
@@ -1005,7 +1070,9 @@ export class MMModel extends MMTool {
 
 	/**
 	 * @method htmlValue
-	 * @returns {String}
+	 * @param {any} [requestor]
+	 * @param {boolean} [isMyNameSpace]
+	 * @returns {string}
 	 */
 	htmlValue(requestor, isMyNameSpace) {
 		const results = this.htmlInfo(requestor);
@@ -1081,7 +1148,7 @@ export class MMModel extends MMTool {
 				isAnyOutput = true;
 				chunks.push(`<div class="model-form__notes" onClick="${onNameClick}('${object.name}')">${object.notes}</div>`);
 			}	
-			if (object.showInput) {
+			if ((/** @type {any} */ (object)).showInput) {
 				isAnyOutput = true;
 				const input = object;
 				chunks.push(`				<div class="model-form__input-row">`);
@@ -1209,9 +1276,9 @@ export class MMModel extends MMTool {
 	}
 
 	/**
+	 * @override
 	 * @method toolViewInfo
 	 * @param {MMCommand} command
-	 * command.results contains the info for tool info view
 	 */
 	async toolViewInfo(command) {
 		await super.toolViewInfo(command);
@@ -1232,8 +1299,7 @@ export class MMModel extends MMTool {
 
 	/**
 	 * @method setPositions
-	 * @param {String} command
-	 * command should be a series of toolname x y values 
+	 * @param {MMCommand} command
 	 */
 	setPositions(command) {
 		let parts = command.args.split(/\s/);
@@ -1259,10 +1325,10 @@ export class MMModel extends MMTool {
 	}
 
 		/**
-	 * @override valueDescribedBy
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @override
+	 * @param {string} [description]
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(description, requestor) {
 		if (!description) {
@@ -1273,7 +1339,7 @@ export class MMModel extends MMTool {
 			return MMToolValue.scalarValue(this);
 		}
 		const toolNameParts = description.split('.');
-		let toolName = toolNameParts.shift().toLowerCase();
+		let toolName = (/** @type {string} */ (toolNameParts.shift())).toLowerCase();
 		const restOfPath = toolNameParts.join('.');
 		const tool = this.children[toolName];
 		if (tool instanceof MMTool) {
@@ -1318,7 +1384,7 @@ export class MMModel extends MMTool {
 			const children = this.positionSortedChildren()
 			for (const child of children) {
 				// if search for class name, remove the leading MM
-				const testValue = type === "className" ? child.className.substring(2) : child[type];
+				const testValue = type === "className" ? (/** @type {string} */ (child.className)).substring(2) : (/** @type {any} */ (child))[type];
 				if (regexPattern.test(testValue.toLowerCase())) {
 					tools.push(child);
 				}
@@ -1437,15 +1503,18 @@ export class MMModel extends MMTool {
 	 * @method determineImportInputFormulas
 	 */
 	determineImportInputFormulas() {
-		const formulas = {};
+		const formulas = /** @type {Record<string, any>} */ ({});
 		const inputs = this.inputExpressions();
 		for (const exp of inputs) {
 			if (exp.formula.formula )
 				formulas[exp.name] = exp.formula.formula;
 		}
-		this.importInfo.inputFormulas = formulas;	
+		if (this.importInfo) {
+			this.importInfo.inputFormulas = formulas;
+		}	
 	}
 
+	/** @param {MMImportModelInfo|null} importInfo */
 	async setImportInfo(importInfo) {
 		if (importInfo === null) { // make it local
 			this.importInfo = importInfo;
@@ -1489,9 +1558,9 @@ export class MMModel extends MMTool {
 		}
 
 		// see if there is a parent import
-		let parentWithImport = this.parent;
+		let parentWithImport = /** @type {MMModel|null} */ (this.parent);
 		while(parentWithImport && !parentWithImport.importInfo) {
-			parentWithImport = parentWithImport.parent;
+			parentWithImport = /** @type {MMModel|null} */ (parentWithImport.parent);
 		}
 		const parentImportInfo = parentWithImport ? parentWithImport.importInfo : null;
 
@@ -1560,7 +1629,7 @@ export class MMModel extends MMTool {
 					for (const expName of Object.keys(importInfo.inputFormulas)) {
 						const exp = this.childNamed(expName);
 						if (exp) {
-							exp.formula.formula = importInfo.inputFormulas[expName];
+							(/** @type {MMExpression} */ (exp)).formula.formula = importInfo.inputFormulas[expName];
 						}
 					}
 					importInfo.inputFormulas = null;
@@ -1569,16 +1638,16 @@ export class MMModel extends MMTool {
 					for (const childPath of Object.keys(importInfo.childImportFormulas)) {
 						const childNames = childPath.split('.');
 						childNames.shift();
-						let child = this;
+						let child = /** @type {MMModel|null} */ (this);
 						for (const childName of childNames) {
-							child = child.childNamed(childName);
+							child = child ? /** @type {MMModel|null} */ (child.childNamed(childName)) : null;
 						}
 						if (child) {
 							const inputFormulas = importInfo.childImportFormulas[childPath];
 							for (const expName of Object.keys(inputFormulas)) {
 								const exp = child.childNamed(expName);
 								if (exp) {
-									exp.formula.formula = inputFormulas[expName];
+									(/** @type {MMExpression} */ (exp)).formula.formula = inputFormulas[expName];
 								}
 							}
 						}
@@ -1593,14 +1662,15 @@ export class MMModel extends MMTool {
 				exprName = `x${this.nextToolNumber++}`;
 			}	
 
-			const expr = new MMExpression(exprName, this);
+			const expr = new MMExpression(exprName, /** @type {any} */ (this));
 			expr.formula.formula = "'" + savedJson;
 		}
 	}
 
 	/**
 	 * @method formulae
-	 * @returns String contains html listing of formulae
+	 * @param {boolean} [isChild]
+	 * @returns {string} contains html listing of formulae
 	 */
 	formulae(isChild) {
 		const chunks = [];
@@ -1636,16 +1706,16 @@ export class MMModel extends MMTool {
 		const tools = [...(Object.values(this.children))]
 		tools.sort((a, b) => a.name.localeCompare(b.name));
 
-		const reverseLookup = {};
+		const reverseLookup = /** @type {Record<string, MMTool[]>} */ ({});
 
 		// First pass: for each tool, for each input source, record that tool as a dependent
 		tools.forEach(tool => {
-			tool.inputSources().forEach(inputSource => {
+			(/** @type {MMTool} */ (tool)).inputSources().forEach(inputSource => {
 				const key = inputSource.name;
 				if (!reverseLookup[key]) {
 					reverseLookup[key] = [];
 				}
-				reverseLookup[key].push(tool);
+				reverseLookup[key].push(/** @type {MMTool} */ (tool));
 			});
 		});
 

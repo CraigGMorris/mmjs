@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -24,6 +25,13 @@
 	MMPropertyType:readonly
 */
 
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMModel.js').MMModel} MMModel */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+
 /**
  * @class MMMenu
  * @extends MMTool
@@ -31,13 +39,19 @@
  */
 // eslint-disable-next-line no-unused-vars
 export class MMMenu extends MMTool {
+	/** @type {MMFormula} */
+	optionsFormula;
+	/** @type {boolean} */
+	isLoadingCase;
+	/** @type {number} */
+	_selected;
 	/** @constructor
 	 * @param {string} name
 	 * @param {MMModel} parentModel
 	 */
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Menu');
-		this.optionsFormula = new MMFormula('options', this);
+		this.optionsFormula = new MMFormula('options', (/** @type {any} */ (this)));
 		this.isLoadingCase = false;
 		this.isOutput = true;
 		this._selected = 0;
@@ -48,7 +62,12 @@ export class MMMenu extends MMTool {
 	 * @override
 	 * @returns {Object} object that can be converted to json for save file
 	 */
+	/**
+	 * @override
+	 * @returns {Record<string, any>}
+	 */
 	saveObject() {
+		/** @type {Record<string, any>} */
 		let o = super.saveObject();
 		o['Type'] = 'Menu';
 		o['optionsFormula'] = {Formula: this.optionsFormula.formula}
@@ -59,7 +78,7 @@ export class MMMenu extends MMTool {
 	/**
 	 * @method initFromSaved - initialize from stored object
 	 * @override
-	 * @param {Object} saved 
+	 * @param {Record<string, any>} saved 
 	 */
 	initFromSaved(saved) {
 		this.isLoadingCase = true;
@@ -94,7 +113,7 @@ export class MMMenu extends MMTool {
 	/**
 	 * @method inputSources
 	 * @override
-	 * @returns {Set} contains tools referenced by this tool
+	 * @returns {Set<MMTool>} contains tools referenced by this tool
 	 */
 	inputSources() {
 		let sources = super.inputSources();
@@ -113,6 +132,11 @@ export class MMMenu extends MMTool {
 		 * @param {string} command - command to get the usage key for
 		 * @returns {string} - the i18n key, if it exists
 		 */
+		/**
+		 * @override
+		 * @param {string} command
+		 * @returns {string|undefined}
+		 */
 		getVerbUsageKey(command) {
 			let key = {
 				select: 'mmcmd:_menuSelect',
@@ -129,6 +153,10 @@ export class MMMenu extends MMTool {
 	 * @method parameters
 	 * i.e. things that can be appended to a formula value
 	 */
+	/**
+	 * @override
+	 * @returns {string[]}
+	 */
 	parameters() {
 		let p = super.parameters();
 		p.push('selected');
@@ -138,17 +166,17 @@ export class MMMenu extends MMTool {
 	}
 
 	/**
-	 * @override valueDescribedBy
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @override
+	 * @param {string} [description]
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(description, requestor) {
 		if (!description) {
 			description = 'selected';
 		}
 		const lcDescription = description.toLowerCase();
-		const options = this.optionsFormula.value();
+		const options = /** @type {MMValue|null} */ (/** @type {any} */ (this.optionsFormula.value()));
 		if (!options) {
 			return null;
 		}
@@ -188,12 +216,13 @@ export class MMMenu extends MMTool {
 	
 	/**
 	 * @method htmlValue
-	 * @returns {String}
+	 * @param {MMTool} [requestor]
+	 * @returns {string}
 	 */
 	htmlValue(requestor) {
 		this.addRequestor(requestor);
-		const options = this.optionsFormula.value();
-		const lines = [`<div  class="menu-tool">`]
+		const options = /** @type {MMValue|null} */ (/** @type {any} */ (this.optionsFormula.value()));
+		const lines = [`<div  class="menu-tool">`];
 		lines.push(`<select class="menu-select" id="menu__${this.name}"`);
 		lines.push(` onChange="
 			const newValue = document.getElementById('menu__${this.name}').selectedIndex;
@@ -222,13 +251,14 @@ export class MMMenu extends MMTool {
 	 * @override
 	 * @param {MMCommand} command
 	 * command.results contains the info for tool info view
+	 * @returns {Promise<void>}
 	 */
 	async toolViewInfo(command) {
 		await super.toolViewInfo(command);
 		const results = command.results;
 		results['optionsFormulaName'] = 'optionsFormula';
 		results['optionsFormula'] = this.optionsFormula.formula;
-		const options = this.optionsFormula.value();
+		const options = /** @type {MMValue|null} */ (/** @type {any} */ (this.optionsFormula.value()));
 		const optionValues = [];
 		const optionLabels = [];
 		if (options) {

@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -17,65 +18,79 @@
 */
 'use strict';
 
+/* global
+	MMCommandProcessor:readonly
+	MMSession:readonly
+*/
+
+/** @typedef {import('./MMCommandProcessor.js').MMCommandProcessor} MMCommandProcessor */
+/** @typedef {import('./MMSession.js').MMSession} MMSession */
+
 import { setupImports } from './aggregator.js';
 
 /**
- * @global theMMSession
- */
+	* @global theMMSession
+	*/
 // eslint-disable-next-line no-unused-vars
 // var theMMSession;
 
+/**
+	* @class MMCommandWorker
+	* @property {MMCommandProcessor} processor
+	*/
 class MMCommandWorker {
-  constructor() {
-    this.processor = new MMCommandProcessor();
-    self.theMMSession = new MMSession(this.processor)
+	constructor() {
+		this.processor = new MMCommandProcessor();
+		self.theMMSession = new MMSession(this.processor)
 
-    this.processor.setStatusCallBack((message) => {
-      const msg = {
-        verb: 'status',
-        results: message
-      }
-      postMessage([msg]);
-    }); 
-  }
+		this.processor.setStatusCallBack((message) => {
+			const msg = {
+				verb: 'status',
+				results: message
+			}
+			postMessage([msg]);
+		}); 
+	}
 }
 
+/** @type {MMCommandWorker|undefined} */
 var worker;
 
 // Initialize everything before creating the worker
 (async function() {
-  try {
-    await setupImports();
-    worker = new MMCommandWorker();
-    console.log('Worker initialized successfully');
-    
-    // Send ready signal to main thread
-    postMessage({
-      verb: 'ready',
-      results: 'Worker is ready to process commands'
-    });
-  } catch (error) {
-    console.error('Failed to initialize worker:', error);
-    
-    // Send error signal to main thread
-    postMessage({
-      verb: 'error',
-      results: 'Failed to initialize worker: ' + error.message
-    });
-  }
+	try {
+		await setupImports();
+		worker = new MMCommandWorker();
+		console.log('Worker initialized successfully');
+		
+		// Send ready signal to main thread
+		postMessage({
+			verb: 'ready',
+			results: 'Worker is ready to process commands'
+		});
+	} catch (error) {
+		console.error('Failed to initialize worker:', error);
+		
+		// Send error signal to main thread
+		postMessage({
+			verb: 'error',
+			results: 'Failed to initialize worker: ' + (/** @type {any} */ (error)).message
+		});
+	}
 })();
 
+/** @param {MessageEvent} e */
 onmessage = async function(e) {
-  // console.log('Worker: Message received from main script');
-  if (!worker) {
-    console.error('Worker not yet initialized');
-    return;
-  }
-  let result = await worker.processor.processCommandString(e.data);
-  if (result) {
-    // console.log('Worker: Posting message back to main script');
-    postMessage(result);
-  } else {
-    // console.log('Worker: No result');
-  }
+	// console.log('Worker: Message received from main script');
+	if (!worker) {
+		console.error('Worker not yet initialized');
+		return;
+	}
+	let result = await worker.processor.processCommandString(e.data);
+	if (result) {
+		// console.log('Worker: Posting message back to main script');
+		postMessage(result);
+	} else {
+		// console.log('Worker: No result');
+	}
 }

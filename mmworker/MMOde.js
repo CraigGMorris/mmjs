@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -22,7 +23,6 @@
 	MMFormula:readonly
 	MMPropertyType:readonly
 	MMNumberValue:readonly
-	MMNumberValue:readonly
 	MMUnitSystem:readonly
 	MMUnit:readonly
 	MMUnitDimensionType:readonly
@@ -34,9 +34,51 @@
 	theMMSession: readonly
 */
 
+/** @typedef {import('./MMTool.js').MMTool} MMTool */
+/** @typedef {import('./MMModel.js').MMModel} MMModel */
+/** @typedef {import('./MMFormula.js').MMFormula} MMFormula */
+/** @typedef {import('./MMValue.js').MMValue} MMValue */
+/** @typedef {import('./MMNumberValue.js').MMNumberValue} MMNumberValue */
+/** @typedef {import('./MMStringValue.js').MMStringValue} MMStringValue */
+/** @typedef {import('./MMTableValue.js').MMTableValue} MMTableValue */
+/** @typedef {import('./MMTableValue.js').MMTableValueColumn} MMTableValueColumn */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnit} MMUnit */
+/** @typedef {import('./mmunits/MMUnitSystem.js').MMUnitSystem} MMUnitSystem */
+/** @typedef {import('./MMCommandProcessor.js').MMCommand} MMCommand */
+/** @typedef {import('./MMCommandProcessor.js').MMCommandMessage} MMCommandMessage */
+
+
 /**
  * @class MMOde
  * @extends MMTool
+ * @property {MMNumberValue} odeT
+ * @property {MMFormula} initialYFormula
+ * @property {MMFormula} derivativeFormula
+ * @property {MMFormula} nextTFormula
+ * @property {MMFormula} endTFormula
+ * @property {MMFormula} relTolFormula
+ * @property {MMFormula} absTolFormula
+ * @property {MMFormula[]} recordedValueFormulas
+ * @property {number} lastRecordedFormula
+ * @property {any[]} recordedValues
+ * @property {boolean} isHidingInfo
+ * @property {number} nextRecordNumber
+ * @property {boolean} _isStiff
+ * @property {boolean} isStiff
+ * @property {boolean} _shouldAutoRun
+ * @property {boolean} shouldAutoRun
+ * @property {boolean} isSolving
+ * @property {boolean} isInError
+ * @property {boolean} isSolved
+ * @property {MMNumberValue|null} cachedY
+ * @property {MMNumberValue|null} relTol
+ * @property {MMNumberValue|null} absTol
+ * @property {MMTableValue|null} yUnits
+ * @property {number} numberOfEquations
+ * @property {number} [seconds]
+ * @property {number} [iterations]
+ * @property {number} [goodCount]
+ * @property {number} [badCount]
  */
 // eslint-disable-next-line no-unused-vars
 export class MMOde extends MMTool {
@@ -57,8 +99,10 @@ export class MMOde extends MMTool {
 		this.relTolFormula.formula = '1e-5';
 		this.absTolFormula = new MMFormula('absTol', this);
 		this.absTolFormula.formula = '1.0e-10*{baseunit $.y}';
+		/** @type {MMFormula[]} */
 		this.recordedValueFormulas = [];
 		this.lastRecordedFormula = 1;		// used for naming recorded value formulas
+		/** @type {any[]} */
 		this.recordedValues = [];
 		this.isHidingInfo = false;  // needed because the formula assigns will reset
 		this.nextRecordNumber = 0;
@@ -67,9 +111,13 @@ export class MMOde extends MMTool {
 		this.isSolving = false;
 		this.isInError = false;
 		this.isSolved = false;
+		/** @type {MMNumberValue|null} */
 		this.cachedY = null;
+		/** @type {MMNumberValue|null} */
 		this.relTol = null;
+		/** @type {MMNumberValue|null} */
 		this.absTol = null;
+		/** @type {MMTableValue|null} */
 		this.yUnits = null;
 		
 		this.numberOfEquations = 0;
@@ -78,7 +126,7 @@ export class MMOde extends MMTool {
 	/**
 	 * @method inputSources
 	 * @override
-	 * @returns {Set} contains tools referenced by this tool
+	 * @returns {Set<MMTool>} contains tools referenced by this tool
 	 */
 	inputSources() {
 		let sources = super.inputSources();
@@ -127,7 +175,7 @@ export class MMOde extends MMTool {
 		results.isStiff = this.isStiff;
 		results.shouldAutoRun = this.shouldAutoRun;
 
-		const fReturn = (formula) => {
+		const fReturn = (/** @type {MMFormula} */ formula) => {
 			const v = formula.value();
 			const vString = v ? v.stringWithUnit() : '';
 			return [formula.name, formula.formula, vString];
@@ -143,7 +191,7 @@ export class MMOde extends MMTool {
 			formulas.push(fReturn(rv));
 		}
 		results.t = this.odeT.values[0];
-		results.tunit = this.odeT.defaultUnit.name;
+		results.tunit = (/** @type {MMUnit} */ (this.odeT.defaultUnit)).name;
 
 		results.formulas = formulas;
 	}
@@ -154,7 +202,7 @@ export class MMOde extends MMTool {
 	 * @returns {Object} object that can be converted to json for save file
 	 */
 	saveObject() {
-		let o = super.saveObject();
+		let o = /** @type {Record<string, any>} */ (super.saveObject());
 		o['Type'] = 'ODE Solver';
 		o['y0Formula'] = {Formula: this.initialYFormula.formula}
 		o['dyFormula'] = {Formula: this.derivativeFormula.formula}
@@ -207,7 +255,7 @@ export class MMOde extends MMTool {
 	 * @override
 	 * @param {Object} saved 
 	 */
-	initFromSaved(saved) {
+	initFromSaved(/** @type {Record<string, any>} */ saved) {
 		this.isLoadingCase = true;
 		try {
 			super.initFromSaved(saved);
@@ -231,7 +279,7 @@ export class MMOde extends MMTool {
 			const t = saved.T;
 			if (typeof t === 'number') {
 				this.odeT.values[0] = t;
-				const parseDimensions = (s) => {
+				const parseDimensions = (/** @type {string|undefined} */ s) => {
 					if (s) {
 						return s.split(' ').map(d => parseFloat(d));
 					}
@@ -323,6 +371,11 @@ export class MMOde extends MMTool {
 	 * @override
 	 * @param {string} command - command to get the usage key for
 	 * @returns {string} - the i18n key, if it exists
+	 */
+	/**
+	 * @override
+	 * @param {string} command
+	 * @returns {string|undefined}
 	 */
 	getVerbUsageKey(command) {
 		let key = {
@@ -561,7 +614,7 @@ export class MMOde extends MMTool {
 			}
 			const a = this.recordedValues[i];
 			if (recValue) {
-				a.push(recValue.copyOf());
+				a.push((/** @type {MMNumberValue} */ (recValue)).copyOf());
 			}
 			else {
 				this.setError('mmcmd:recordValueError', {number: i + 1, path: this.getPath()});
@@ -574,7 +627,7 @@ export class MMOde extends MMTool {
 	/**
 	 * @method valueForRecorded
 	 * @param {Number} rNumber - the record value number
-	 * @returns {MMNumberValue} - the recorded values for rNumber
+	 * @returns {MMNumberValue|null} - the recorded values for rNumber
 	 */
 	valueForRecorded(rNumber) {
 		if (rNumber > 0 && rNumber <= this.recordedValues.length) {
@@ -603,8 +656,8 @@ export class MMOde extends MMTool {
 	/**
 	 * @method columnNameForRecorded
 	 * @param {Number} rNumber - the record value number
-	 * @param {Boolean} commentOnly - if present and true, null will be return if no comment on formula
-	 * @returns {String} - the name for recorded value rNumber
+	 * @param {Boolean} [commentOnly] - if present and true, null will be return if no comment on formula
+	 * @returns {String|null} - the name for recorded value rNumber
 	 */
 	columnNameForRecorded(rNumber, commentOnly) {
 		if (rNumber > 0 && rNumber <= this.recordedValues.length) {
@@ -623,9 +676,9 @@ export class MMOde extends MMTool {
 
 	/**
 	 * @override valueDescribedBy
-	 * @param {String} description
-	 * @param {MMTool} requestor
-	 * @returns {MMValue}
+	 * @param {String} [description]
+	 * @param {MMTool} [requestor]
+	 * @returns {MMValue|null|undefined}
 	 */
 	valueDescribedBy(description, requestor) {
 		if (!description) {
@@ -655,7 +708,7 @@ export class MMOde extends MMTool {
 		}
 
 		// convenience function to add requestor is return value is known
-		const returnValue = (v) => {
+		const returnValue = (/** @type {MMValue|null|undefined} */ v) => {
 			if (v instanceof MMTableValue && descriptionParts.length > 1) {
 				const column = v.columnNamed(descriptionParts[1]);
 				if (column) {
@@ -682,14 +735,14 @@ export class MMOde extends MMTool {
 						for (let cNumber = 1; cNumber <= v.columnCount; cNumber++) {
 							const name = columnName + `_${cNumber}`;
 							const column = new MMTableValueColumn({
-								name: name, displayUnit: v.defaultUnit.name, value: v.valueForColumnNumber(cNumber)
+								name: name, displayUnit: (/** @type {MMUnit} */ (v.defaultUnit)).name, value: v.valueForColumnNumber(cNumber)
 							});
 							columns.push(column);
 						}
 					}
 					else {
 						const column = new MMTableValueColumn({
-							name: columnName, displayUnit: v.defaultUnit.name, value: v
+							name: columnName, displayUnit: (/** @type {MMUnit} */ (v.defaultUnit)).name, value: v
 						});
 						columns.push(column);
 					}
@@ -727,6 +780,7 @@ export class MMOde extends MMTool {
 					}
 					else if (value instanceof MMTableValue) {
 						const columns = value.columns;
+						/** @type {MMTableValueColumn[]|null} */
 						let a = [];
 						for (let column of columns) {
 							const cValue = column.value;
@@ -823,7 +877,7 @@ export class MMOde extends MMTool {
 	calcDy(t, y, dy) {
 		this.forgetStep();
 		this.odeT.values[0] = t;
-		const cachedY = this.cachedY.values;
+		const cachedY = (/** @type {MMNumberValue} */ (this.cachedY)).values;
 		const nEqns = cachedY.length;
 		for (let i = 0; i < nEqns; i++) {
 			cachedY[i] = y[i];
@@ -852,7 +906,7 @@ export class MMOde extends MMTool {
 			const rowCount = newDy.rowCount;
 			for (let columnNumber = 0; columnNumber < columnCount; columnNumber++) {
 				const column = columns[columnNumber];
-				const columnValue = column.value.values;
+				const columnValue = (/** @type {MMNumberValue} */ (column.value)).values;
 				for (let rowNumber = 0; rowNumber < rowCount; rowNumber++) {
 					dy[rowNumber * columnCount + columnNumber] = columnValue[rowNumber];
 				}
@@ -889,7 +943,7 @@ export class MMOde extends MMTool {
 				return false;
 			}
 
-			this.relTol = this.relTolFormula.numberValue();
+			this.relTol = /** @type {MMNumberValue|null} */ (this.relTolFormula.numberValue());
 			if (!this.relTol) { return false; }
 			if (!MMUnitSystem.areDimensionsEqual(this.relTol.unitDimensions, null)) {
 				this.setError('mmcmd:odeRelTolHasUnits', {path: this.getPath()});
@@ -899,14 +953,14 @@ export class MMOde extends MMTool {
 			const absTol = this.absTolFormula.value();
 			if (absTol instanceof MMNumberValue) {
 				this.absTol = absTol;
-				if (!MMUnitSystem.areDimensionsEqual(absTol.unitDimensions, this.cachedY.unitDimensions)) {
+				if (!MMUnitSystem.areDimensionsEqual(absTol.unitDimensions, (/** @type {MMNumberValue} */ (this.cachedY)).unitDimensions)) {
 					this.setError('mmcmd:odeAbsTolUnitsMisMatch', {path: this.getPath()});
 					return false;
 				}
 			}
 			else if (absTol instanceof MMTableValue) {
-				const rowCount = this.cachedY.rowCount;
-				const columnCount = this.cachedY.columnCount;
+				const rowCount = (/** @type {MMNumberValue} */ (this.cachedY)).rowCount;
+				const columnCount = (/** @type {MMNumberValue} */ (this.cachedY)).columnCount;
 				if (absTol.columnCount !== columnCount) {
 					this.setError('mmcmd:odeAbsTolColumnCount', {path: this.getPath()});
 					return false;
@@ -920,7 +974,7 @@ export class MMOde extends MMTool {
 						this.setError('mmcmd:odeAbsTolNotNumber', {path: this.getPath()});
 						return false;
 					}
-					const unitColumn = this.yUnits.columns[columnNumber];
+					const unitColumn = (/** @type {MMTableValue} */ (this.yUnits)).columns[columnNumber];
 					const yUnit = unitColumn.value;
 					if (!MMUnitSystem.areDimensionsEqual(columnValue.unitDimensions, yUnit.unitDimensions)) {
 						this.setError('mmcmd:odeAbsTolUnitsMisMatch', {path: this.getPath()})
@@ -940,12 +994,12 @@ export class MMOde extends MMTool {
 
 			const derivativeValue = this.derivativeFormula.value();
 			if (derivativeValue instanceof MMNumberValue) {
-				if (derivativeValue.valueCount !== this.cachedY.valueCount) {
+				if (derivativeValue.valueCount !== (/** @type {MMNumberValue} */ (this.cachedY)).valueCount) {
 					this.setError('mmcmd:odeDyCountMismatch', {path: this.getPath()});
 					return false;
 				}
 				const tDimensions = this.odeT.unitDimensions;
-				const yDimensions = this.cachedY.unitDimensions;
+				const yDimensions = (/** @type {MMNumberValue} */ (this.cachedY)).unitDimensions;
 				const dyDimensions = derivativeValue.unitDimensions;
 				for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
 					if (yDimensions[i] !== tDimensions[i] + dyDimensions[i]) {
@@ -957,7 +1011,7 @@ export class MMOde extends MMTool {
 			else if (derivativeValue instanceof MMTableValue) {
 				const rowCount = derivativeValue.rowCount;
 				const columnCount = derivativeValue.columnCount;
-				if (columnCount !== this.cachedY.columnCount || rowCount !== this.cachedY.rowCount) {
+				if (columnCount !== (/** @type {MMNumberValue} */ (this.cachedY)).columnCount || rowCount !== (/** @type {MMNumberValue} */ (this.cachedY)).rowCount) {
 					this.setError('mmcmd:odeDyCountMismatch', {path: this.getPath()});
 					return false;
 				}
@@ -968,8 +1022,8 @@ export class MMOde extends MMTool {
 						this.setError('mmcmd:odeNonumericDy', {path: this.getPath()});
 						return false;
 					}
-					const unitColumn = this.yUnits.columns[columnNumber];
-					const yDimensions = unitColumn.value.unitDimensions;
+					const unitColumn = (/** @type {MMTableValue} */ (this.yUnits)).columns[columnNumber];
+					const yDimensions = (/** @type {MMNumberValue} */ (unitColumn.value)).unitDimensions;
 					const dyDimensions = column.value.unitDimensions;
 					for (let i = 0; i < MMUnitDimensionType.NUMDIMS; i++) {
 						if (yDimensions[i] !== tDimensions[i] + dyDimensions[i]) {
@@ -1008,15 +1062,15 @@ export class MMOde extends MMTool {
 			this.isSolved = true;
 			return;
 		}
-		this.processor.statusCallBack(this.t('mmcmd:odeStatusT', {t: this.odeT.stringUsingUnit()}));
+		(/** @type {any} */ (this.processor)).statusCallBack(this.t('mmcmd:odeStatusT', {t: this.odeT.stringUsingUnit()}));
 
-		const y = Float64Array.from(this.cachedY.values);
+		const y = Float64Array.from((/** @type {MMNumberValue} */ (this.cachedY)).values);
 		this.isSolving = true;
 		try {
 			const solver = new MMOdeSolver(this);
 			let nextT = this.nextTFormula.numberValue();
-			let tNext = nextT.values[0];
-			let tStop = endT.values[0];
+			let tNext = (/** @type {MMNumberValue} */ (nextT)).values[0];
+			let tStop = (/** @type {MMNumberValue} */ (endT)).values[0];
 			if (tNext > tStop) {
 				tNext = tStop;
 			}
@@ -1027,7 +1081,7 @@ export class MMOde extends MMTool {
 				this.forgetStep();
 				this.odeT.values[0] = stepResult.t;
 				// console.log(`t ${this.odeT.values[0]} y1 ${y[0]}`);
-				solver.vCopy(y, this.cachedY.values);
+				solver.vCopy(y, (/** @type {MMNumberValue} */ (this.cachedY)).values);
 				this.derivativeFormula.value();  // so all requestor information is correct
 				if (stepResult.succeeded === false) {
 					break;
@@ -1041,7 +1095,7 @@ export class MMOde extends MMTool {
 					this.isSolved = true;
 					return;
 				}
-				tStop = endT.values[0];
+				tStop = (/** @type {MMNumberValue} */ (endT)).values[0];
 				if (this.odeT.values[0] >= tStop) {
 					this.isSolved = true;
 					break;
@@ -1049,7 +1103,7 @@ export class MMOde extends MMTool {
 
 				const now = Date.now();
 				if (now - lastStatusTime > 1000) {
-					this.processor.statusCallBack(this.t('mmcmd:odeStatusT', {t: this.odeT.stringUsingUnit()}));
+					(/** @type {any} */ (this.processor)).statusCallBack(this.t('mmcmd:odeStatusT', {t: this.odeT.stringUsingUnit()}));
 					lastStatusTime = now;
 				}
 
@@ -1060,7 +1114,7 @@ export class MMOde extends MMTool {
 					this.setError('mmcmd:odeRecordTimeError', {path: this.getPath()});
 					break;
 				}
-				if (newNextT.values[0] <= nextT.values[0]) {
+				if (newNextT.values[0] <= (/** @type {MMNumberValue} */ (nextT)).values[0]) {
 					this.setError('mmcmd:odeRecordTimeUnchanged', {path: this.getPath()});
 					break;
 				}
@@ -1073,7 +1127,7 @@ export class MMOde extends MMTool {
 			this.derivativeFormula.value();  // so all requestor information is correct
 		}
 		catch(e) {
-			const msg = (typeof e === 'string') ? e : e.message;
+			const msg = (typeof e === 'string') ? e : (/** @type {any} */ (e)).message;
 			this.setError('mmcmd:odeException', {path: this.getPath(), msg: msg});
 		}
 		finally {
@@ -1088,11 +1142,61 @@ export class MMOde extends MMTool {
  * @class MMOdeSolver
  * this class does the actual solving based on techniques from
  * the Sundials CVOde code from Lawerence Livermore Labs
+ * @property {Record<string, number>} flags
+ * @property {MMOde} ode
+ * @property {number} qmax
+ * @property {Float64Array} M
+ * @property {Float64Array} savedJ
+ * @property {number} newtonStepNumber
+ * @property {number} lMax
+ * @property {Float64Array|null} y
+ * @property {Float64Array} ewt
+ * @property {Float64Array} acor
+ * @property {number} [acor_indx]
+ * @property {number} [indx_acor]
+ * @property {Float64Array} tempv
+ * @property {Float64Array} ftemp
+ * @property {Float64Array[]} zn
+ * @property {number} tn
+ * @property {number | Float64Array | number[]} absTol
+ * @property {number} relTol
+ * @property {number} stepNumber
+ * @property {number} setupStepNumber
+ * @property {number} h
+ * @property {number} next_h
+ * @property {number} eta
+ * @property {number} etamax
+ * @property {number} etaqm1
+ * @property {number} etaq
+ * @property {number} etaqp1
+ * @property {number} hscale
+ * @property {number[]} lCoeff
+ * @property {number} rl1
+ * @property {number} gamma
+ * @property {number} gammap
+ * @property {number} gamrat
+ * @property {number} acnrm
+ * @property {number} nlscoef
+ * @property {number[]} tau
+ * @property {number[]} tq
+ * @property {number} mxstep
+ * @property {number} nfe
+ * @property {number} q
+ * @property {number} L
+ * @property {number} qwait
+ * @property {number} qprime
+ * @property {number} hu
+ * @property {number} [h0u]
+ * @property {number} [hprime]
+ * @property {number} [qu]
+ * @property {number} [crate]
+ * @property {boolean} [jcur]
+ * @property {Int32Array|null} [pivot]
  */
 class MMOdeSolver {
 	/**
 	 * @constructor
-	 * @param {Object} ode - MMOde tool
+	 * @param {MMOde} ode - MMOde tool
 	 */
 	constructor(ode) {
 		this.flags = Object.freeze({
@@ -1130,7 +1234,8 @@ class MMOdeSolver {
 			FAIL_OTHER:					2
 		})
 		this.ode = ode;
-		const count = ode.cachedY.values.length;
+		const odeCachedY = /** @type {MMNumberValue} */ (ode.cachedY);
+		const count = odeCachedY.values.length;
 
 		// if stiff, then use BDF, else use Adams
 		if (ode.isStiff) {
@@ -1153,6 +1258,7 @@ class MMOdeSolver {
 		this.acor = new Float64Array(count);		// In the context of the solution of the nonlinear
 																						// equation, acor = y_n(m) - y_n(0). On return, 
 																						// this vector is scaled to give the est. local err.
+		/** @type {number|undefined} */
 		this.acor_indx;													// index of the zn vector with saved acor
 		this.tempv = new Float64Array(count);		// temporary storage vector
 		this.ftemp = new Float64Array(count);		// temporary storage vector
@@ -1164,11 +1270,12 @@ class MMOdeSolver {
 			this.zn.push(new Float64Array(count));
 		}
 		// Initialize zn[0] in the history array 
-		this.vCopy(ode.cachedY.values, this.zn[0]);
+		this.vCopy((/** @type {MMNumberValue} */ (ode.cachedY)).values, this.zn[0]);
 
 		this.tn = ode.odeT.values[0];
-		this.absTol = ode.absTol.values.length === 1 ? ode.absTol.values[0] : ode.absTol.values;
-		this.relTol = ode.relTol.values[0];
+		const odeAbsTol = /** @type {MMNumberValue} */ (ode.absTol);
+		this.absTol = odeAbsTol.values.length === 1 ? odeAbsTol.values[0] : odeAbsTol.values;
+		this.relTol = (/** @type {MMNumberValue} */ (ode.relTol)).values[0];
 
 		this.stepNumber = 0;
 		this.setupStepNumber = 0;		// step number of last setup call
@@ -1181,6 +1288,7 @@ class MMOdeSolver {
 		this.etaqp1;					// ratio of new to old h for order q+1
 	
 		this.hscale;          // value of h used in zn
+		/** @type {number[]} */
 		this.lCoeff = [];			// coefficients of l(x) (degree q poly)
 		this.rl1;							// the scalar 1/l[1]
 		this.gamma;						// gamma = h * rl1
@@ -1190,7 +1298,9 @@ class MMOdeSolver {
 		this.acnrm;						// | acor | wrms
 		this.nlscoef = 0.1;		// coeficient in nonlinear convergence test
 	
+		/** @type {number[]} */
 		this.tau = [];				// array of previous q+1 successful step sizes indexed from 1 to q+1
+		/** @type {number[]} */
 		this.tq = [];					//array of test quantities indexed from 1 to NUM_TESTS(=5)
 	
 		this.mxstep = 500;		// maximum number of internal steps for one user call
@@ -1218,7 +1328,7 @@ class MMOdeSolver {
 	 * @method stepToNextT
 	 * @param {Number} tout;
 	 * @param {Float64Array} yout
-	 * @returns {Object} - {succeeded: boolean, t: Number}
+	 * @returns {{succeeded: boolean, t: Number}}
 	 */
 	stepToNextT(tout, yout) {
 		this.y = yout;
@@ -1243,6 +1353,7 @@ class MMOdeSolver {
 			/* Scale zn[1] by h.*/
 			this.hscale = this.h; 
 			this.h0u    = this.h;
+			/** @type {number} */
 			this.hprime = this.h;
 
 			this.vScale(this.h, this.zn[1], this.zn[1]);
@@ -1250,8 +1361,8 @@ class MMOdeSolver {
 
 		if (this.stepNumber > 0) {
 			/* Estimate an infinitesimal time interval to be used as
-       a roundoff for time quantities (based on current time 
-       and step size) */
+		a roundoff for time quantities (based on current time 
+		and step size) */
 			if ((this.tn - tout)*this.h >= 0)  {
 				if (!this.getDKy(tout, 0, yout)) {					
 					return {succeeded: false, t: this.tn};
@@ -1351,6 +1462,7 @@ class MMOdeSolver {
 		const savedT = this.tn;
 		let ncf = 0;
 		let nErrors = 0;
+		/** @type {any} */
 		let flag = this.flags.FIRST_CALL;
 		let dsm;
 	
@@ -1536,7 +1648,7 @@ class MMOdeSolver {
 			if (this.saved_tq5 === 0) {
 				return this.etaqp1;
 			}
-			const cquot = (this.tq[5] / this.saved_tq5) * Math.pow(this.h/this.tau[2], this.L);
+			const cquot = (this.tq[5] / /** @type {number} */ (this.saved_tq5)) * Math.pow(this.h / /** @type {number} */ (this.tau[2]), this.L);
 			this.vLinearSum(-cquot, this.zn[this.qmax], 1, this.acor, this.tempv);
 			const dup = this.vWrmsNorm(this.tempv, this.ewt) * this.tq[3];
 			this.etaqp1 = 1 / (Math.pow(10*dup, 1/(this.L+1)) + 1e-6);
@@ -1557,7 +1669,7 @@ class MMOdeSolver {
 	 */
 
 	chooseEta() {
-		const etam = Math.max(this.etaqm1, Math.max(this.etaq, this.etaqp1));
+		const etam = Math.max(/** @type {number} */ (this.etaqm1), Math.max(/** @type {number} */ (this.etaq), /** @type {number} */ (this.etaqp1)));
 		
 		if (etam < 1.5) {
 			this.eta = 1;
@@ -1670,7 +1782,7 @@ class MMOdeSolver {
 		let hsum = 0;
 		for (let j = 1; j <= this.q-2; j++) {
 			hsum += this.tau[j];
-			const xi = hsum / this.hscale;
+			const xi = hsum / /** @type {number} */ (this.hscale);
 			for (let i = j+1; i >= 1; i--) {
 				l[i] = l[i]*xi + l[i-1];
 			}
@@ -1710,11 +1822,11 @@ class MMOdeSolver {
 			let prod = 1;
 			let xiold = 1;
 			let alpha0 = -1;
-			let hsum = this.hscale;
+			let hsum = /** @type {number} */ (this.hscale);
 			if (this.q > 1) {
 				for (let j = 1; j < this.q; j++) {
 					hsum += this.tau[j+1];
-					const xi = hsum / this.hscale;
+					const xi = hsum / /** @type {number} */ (this.hscale);
 					prod *= xi;
 					alpha0 -= 1 / (j+1);
 					alpha1 += 1 / xi;
@@ -1725,7 +1837,7 @@ class MMOdeSolver {
 				}
 			}
 			const A1 = (-alpha0 - alpha1) / prod;
-			this.vScale(A1, this.zn[this.indx_acor], this.zn[this.L]);
+			this.vScale(A1, this.zn[/** @type {number} */ (this.indx_acor)], this.zn[this.L]);
 			for (let j = 2; j <= this.q; j++) {
 				this.vLinearSum(l[j], this.zn[this.L], 1, this.zn[j], this.zn[j]);
 			}  
@@ -1745,7 +1857,7 @@ class MMOdeSolver {
 			this.vScale(factor, this.zn[j], this.zn[j]);
 			factor *= this.eta;
 		}
-		this.h = this.hscale * this.eta;
+		this.h = /** @type {number} */ (this.hscale) * this.eta;
 		// console.log(`${this.nfe} t ${this.tn} h ${this.h} hscale ${this.hscale} eta ${this.eta}`);
 		this.next_h = this.h;
 		this.hscale = this.h;
@@ -1799,7 +1911,7 @@ class MMOdeSolver {
 		if (this.stepNumber == 0) {
 			this.gammap = this.gamma;
 		}
-		this.gamrat = (this.stepNumber > 0) ? this.gamma / this.gammap : 1;  // protect x / x != 1.0
+		this.gamrat = (this.stepNumber > 0) ? this.gamma / /** @type {number} */ (this.gammap) : 1;  // protect x / x != 1.0
 	}
 
 	/**
@@ -1821,7 +1933,9 @@ class MMOdeSolver {
 	 */
 
 	setAdams() {
+		/** @type {number[]} */
 		let m = [];
+		/** @type {number[]} */
 		let M = [];
 		const l = this.lCoeff;
 		
@@ -1843,7 +1957,7 @@ class MMOdeSolver {
 
 	/**
 	 * @method adamsStart
-	 * @param {Array} m
+	 * @param {number[]} m
 	 *
 	 * This routine generates in m[] the coefficients of the product
 	 * polynomial needed for the Adams l and tq coefficients for q > 1.
@@ -1872,8 +1986,8 @@ class MMOdeSolver {
 
 	/**
 	 * @method adamsFinish
-	 * @param {Array} m
-	 * @param {array} M
+	 * @param {number[]} m
+	 * @param {number[]} M
 	 * @param {Number} hsum
 	 *
 	 * This routine completes the calculation of the Adams l and tq.
@@ -1907,7 +2021,7 @@ class MMOdeSolver {
 	/**  
 	 * @method altSum
 	 * @param {Number} iend
-	 * @param {Array} a
+	 * @param {number[]} a
 	 * @param {Number} k
 	 *
 	 * altSum returns the value of the alternating sum
@@ -2034,8 +2148,8 @@ class MMOdeSolver {
 		for(;;) {
 			/* Correct y directly from the last f value */
 			this.vLinearSum(this.h, this.tempv, -1, this.zn[1], this.tempv);
-			this.vScale(this.rl1, this.tempv, this.tempv);
-			this.vLinearSum(1, this.zn[0], 1, this.tempv, this.y);
+			this.vScale(/** @type {number} */ (this.rl1), this.tempv, this.tempv);
+			this.vLinearSum(1, this.zn[0], 1, this.tempv, /** @type {Float64Array} */ (this.y));
 			/* Get WRMS norm of current correction to use in convergence test */
 			this.vLinearSum(1, this.tempv, -1, this.acor, this.acor);
 			del = this.vWrmsNorm(this.acor, this.ewt);
@@ -2044,7 +2158,7 @@ class MMOdeSolver {
 			/* Test for convergence.  If m > 0, an estimate of the convergence
 				 rate constant is stored in crate, and used in the test.        */
 			if (m > 0) {
-				crate = Math.abs(0.3 * crate, del / delp);
+				crate = (/** @type {any} */ (Math.abs))(0.3 * crate, del / delp);
 			}
 			const dcon = del * Math.min(1, crate) / this.tq[4];
 			if (dcon <= 1) {
@@ -2060,7 +2174,7 @@ class MMOdeSolver {
 	
 			/* Save norm of correction, evaluate f, and loop again */
 			delp = del;
-			if (!this.ode.calcDy(this.tn, this.y, this.tempv)) {
+			if (!this.ode.calcDy(this.tn, /** @type {Float64Array} */ (this.y), this.tempv)) {
 				this.nfe++;
 				return this.flags.RHSFUNC_FAIL;
 			}
@@ -2071,7 +2185,7 @@ class MMOdeSolver {
 	/**
 	 * @method newtonSolve
 	 * @param {Number} flag - convey information about 
-	 * @returns {boolean} true, false or null
+	 * @returns {number}
 	 *
 	 * This routine attempts to solve the nonlinear system associated
 	 * with a single implicit step of the linear multistep method.
@@ -2091,6 +2205,7 @@ class MMOdeSolver {
 		const vtemp1 = this.acor;  /* rename acor as vtemp1 for readability  */
 
 		/* Set flag convfail, input to lsetup for its evaluation decision */
+		/** @type {any} */
 		let convFail = flag === this.flags.FIRST_CALL || flag === this.flags.PREV_ERR_FAIL;
 		convFail = convFail ? this.flags.NO_FAILURES : this.flags.FAIL_OTHER;
 
@@ -2099,12 +2214,12 @@ class MMOdeSolver {
 			(flag === this.flags.PREV_ERR_FAIL) ||
 			(this.stepNumber === 0) ||
 			(this.stepNumber >= this.setupStepNumber + 20) ||
-			(Math.abs(this.gamrat-1) > 0.3);
+			(Math.abs(/** @type {number} */ (this.gamrat) - 1) > 0.3);
 
 		/* Looping point for the solution of the nonlinear system.
-     Evaluate f at the predicted y, call denseSetup if indicated, and
-     call newtonIteration for the Newton iteration itself.      */
-  
+		Evaluate f at the predicted y, call denseSetup if indicated, and
+		call newtonIteration for the Newton iteration itself.      */
+		
 		for(;;) {
 			if (!this.ode.calcDy(this.tn, this.zn[0], this.ftemp)) {
 				this.nfe++;
@@ -2124,14 +2239,14 @@ class MMOdeSolver {
 
 			// Set acor to zero and load prediction into y vector
 			this.acor.fill(0);
-			this.vScale(1, this.zn[0], this.y);
+			this.vScale(1, this.zn[0], /** @type {Float64Array} */ (this.y));
 			
 			// Do the Newton iteration
 			const iterReturn = this.newtonIteration();
 			// console.log(`iterReturn ${iterReturn}`);
 
 			/* If there is a convergence failure and the Jacobian-related 
-       data appears not to be current, loop again with a call to lsetup
+		data appears not to be current, loop again with a call to lsetup
 			 in which convfail=CV_FAIL_BAD_J.  Otherwise return.
 			*/
 			if (iterReturn !== this.flags.TRY_AGAIN) {
@@ -2162,19 +2277,19 @@ class MMOdeSolver {
 		for(;;) {
 			/* Evaluate the residual of the nonlinear system*/
 			const b = this.tempv;
-			this.vLinearSum(this.rl1, this.zn[1], 1, this.acor, b);
-			this.vLinearSum(this.gamma, this.ftemp, -1, b, b);
+			this.vLinearSum(/** @type {number} */ (this.rl1), this.zn[1], 1, this.acor, b);
+			this.vLinearSum(/** @type {number} */ (this.gamma), this.ftemp, -1, b, b);
 			
 			// Call the back substitute function function to solve the matrix
-			MMMath.luBackSubstitute(this.y.length, this.M, b, this.pivot);
+			MMMath.luBackSubstitute((/** @type {Float64Array} */ (this.y)).length, /** @type {Float64Array} */ (this.M), b, /** @type {Int32Array} */ (this.pivot));
 			if (this.gamrat !== 1) {
-				this.vScale(1/(1 + this.gamrat), b, b);
+				this.vScale(1/(1 + /** @type {number} */ (this.gamrat)), b, b);
 			}
 			
 			/* Get WRMS norm of correction; add correction to acor and y */
 			const del = this.vWrmsNorm(b, this.ewt);
 			this.vLinearSum(1, this.acor, 1, b, this.acor);
-			this.vLinearSum(1, this.zn[0], 1, this.acor, this.y);
+			this.vLinearSum(1, this.zn[0], 1, this.acor, /** @type {Float64Array} */ (this.y));
 			
 			/* Test for convergence.  If m > 0, an estimate of the convergence
 				rate constant is stored in crate, and used in the test.        */
@@ -2205,7 +2320,7 @@ class MMOdeSolver {
 			
 			/* Save norm of correction, evaluate f, and loop again */
 			delp = del;
-			if (!this.ode.calcDy(this.tn, this.y, this.ftemp)) {
+			if (!this.ode.calcDy(this.tn, /** @type {Float64Array} */ (this.y), this.ftemp)) {
 				this.nfe++;
 				return this.flags.RHSFUNC_FAIL;
 			}
@@ -2217,9 +2332,9 @@ class MMOdeSolver {
 	/**
 	 * denseSetup
 	 * @param {Number} convFail 
-	 * @param {Float64Arrat} ypred 
-	 * @param {Float64Arrat} fpred 
-	 * @param {Float64Arrat} vtemp1 
+	 * @param {Float64Array} ypred 
+	 * @param {Float64Array} fpred 
+	 * @param {Float64Array} vtemp1 
 	 * @returns {boolean} true if the LU was complete; otherwise false
 	 * This routine does the setup operations for the dense linear solver.
 	 * It makes a decision whether or not to call the Jacobian evaluation
@@ -2230,9 +2345,9 @@ class MMOdeSolver {
 	 */
 	denseSetup(convFail, ypred, fpred, vtemp1) {
 		/* Use stepNumber, gamma/gammap, and convfail to set J eval. flag jok */
-		const dgamma = Math.abs((this.gamma/this.gammap) - 1);
+		const dgamma = Math.abs((/** @type {number} */ (this.gamma) / /** @type {number} */ (this.gammap)) - 1);
 		const jbad = (this.stepNumber === 0) ||
-			(this.stepNumber > this.newtonStepNumber + 50) ||
+			(this.stepNumber > /** @type {number} */ (this.newtonStepNumber) + 50) ||
 			((convFail === this.flags.FAIL_BAD_J) && (dgamma < 0.2)) ||
 			(convFail === this.flags.FAIL_OTHER);
 
@@ -2240,15 +2355,15 @@ class MMOdeSolver {
 		if (jok) {
 			/* If jok = TRUE, use saved copy of J */
 			this.jcur = false;
-			this.vCopy(this.savedJ, this.M);
+			this.vCopy(/** @type {Float64Array} */ (this.savedJ), /** @type {Float64Array} */ (this.M));
 		}
 		else {
 			/* If jok = fase, call calcJacobian routine for new J value */
 			this.newtonStepNumber = this.stepNumber;
 			this.jcur = true; 
-			this.M.fill(0);
-			if (!this.calcJacobian(this.tn, ypred, fpred, this.M, vtemp1)) {
-				this.setError('mmcmd:odeJacobianError', {path: this.getPath()});
+			(/** @type {Float64Array} */ (this.M)).fill(0);
+			if (!this.calcJacobian(this.tn, ypred, fpred, /** @type {Float64Array} */ (this.M), vtemp1)) {
+				(/** @type {any} */ (this).setError)('mmcmd:odeJacobianError', {path: (/** @type {any} */ (this)).getPath()});
 				return false;
 			}
 			// for (let ij = 0; ij < 3; ij++) {
@@ -2256,14 +2371,14 @@ class MMOdeSolver {
 			// 		console.log(`jac ${ij} ${jj} ${this.M[ij*3 + jj]}`);
 			// 	}
 			// }
-			this.vCopy(this.M, this.savedJ);
+			this.vCopy(/** @type {Float64Array} */ (this.M), /** @type {Float64Array} */ (this.savedJ));
 		}
 		// scale
 		const N = ypred.length;
 		const N2 = N*N;
-		const m = this.M
+		const m = /** @type {Float64Array} */ (this.M);
 		for (let i = 0; i < N2; i++) {
-			m[i] *= -this.gamma;
+			m[i] *= -/** @type {number} */ (this.gamma);
 		}
 		// add identity
 		for (let i = 0; i < N; i++) {
@@ -2271,7 +2386,7 @@ class MMOdeSolver {
 		}
 
 		// Do LU factorization of M
-		const luResult = MMMath.luDecomposition(N, m);
+		const luResult = /** @type {any} */ (MMMath.luDecomposition(N, m));
 		if (luResult.error) {
 			return false;
 		}
@@ -2357,11 +2472,16 @@ class MMOdeSolver {
 	 *   - otherwise, succeeded = false, and tryAgain = true. 
 	 *
 	*/
+	/**
+	 * @param {number} savedT
+	 * @param {number} nErrors
+	 * @returns {{succeeded: boolean, tryAgain: boolean, dsm: number, nErrors: number}}
+	 */
 	doErrorTest(savedT, nErrors) {
 		const returnValue = {
 			succeeded: false,
 			tryAgain: false,
-			dsm: this.acnrm * this.tq[2],
+			dsm: /** @type {number} */ (this.acnrm) * this.tq[2],
 			nErrors: nErrors
 		}
 
@@ -2428,7 +2548,7 @@ class MMOdeSolver {
 	/**
 	 * @method setErrorWeight
 	 * @param {Float64Array} ycur
-	 * @param {FloatArray} weight
+	 * @param {Float64Array} weight
 	 * This method is responsible for setting the error weight vector weight,
 	 * according to the absTol vector length, as follows:
 	 *
@@ -2437,18 +2557,18 @@ class MMOdeSolver {
 	 * (2) weight[i] = 1 / (reltol * ABS(ycur[i]) + abstol[i]), i=0,...,neq-1
 	 *      if absTol.length > 1
 	 *
-	 * @returns {Number} true if ewt is successfully set as above to a
+	 * @returns {boolean} true if ewt is successfully set as above to a
 	 * positive vector and true otherwise. In the latter case, ewt is
 	 * considered undefined.
 	*/
 	setErrorWeight(ycur, weight) {
 		this.vAbs(ycur, this.tempv);
-		if (this.ode.absTol.valueCount === 1) {
+		if ((/** @type {MMNumberValue} */ (this.ode.absTol)).valueCount === 1) {
 			this.vScale(this.relTol, this.tempv, this.tempv);
-			this.vAddConst(this.tempv, this.absTol, this.tempv);
+			this.vAddConst(this.tempv, /** @type {number} */ (this.absTol), this.tempv);
 		}
 		else {
-			this.vLinearSum(this.relTol, this.tempv, 1, this.absTol, this.tempv);
+			this.vLinearSum(this.relTol, this.tempv, 1, /** @type {Float64Array} */ (this.absTol), this.tempv);
 		}
 		if (this.vMin(this.tempv) < 0) {
 			this.setError('odeSetErrorWtFailed');
@@ -2490,16 +2610,16 @@ class MMOdeSolver {
 			return false; // too close
 		}
 		/* 
-     Set lower and upper bounds on h0, and take geometric mean 
-     as first trial value.
-     Exit with this value if the bounds cross each other.
+		Set lower and upper bounds on h0, and take geometric mean 
+		as first trial value.
+		Exit with this value if the bounds cross each other.
 		*/
 
 		/* 
 			* Upper bound based on |y0|/|y0'| -- allow at most an increase of
 			* 0.1 in y0 (based on a forward Euler step). The weight 
 			* factor is used as a safeguard against zero components in y0. 
-  	*/
+			*/
 		const temp1 = this.tempv;
 		const temp2 = this.acor;
 		const hubFactor = 0.1
@@ -2541,8 +2661,8 @@ class MMOdeSolver {
 
 		for(let count1 = 1; count1 <= maxIters; count1++) {
 			/* Attempts to estimate ydd */
-			this.vLinearSum(hg, this.zn[1], 1, this.zn[0], this.y);
-			if (!this.ode.calcDy(this.tn + hg, this.y, this.tempv)) {
+			this.vLinearSum(hg, this.zn[1], 1, this.zn[0], /** @type {Float64Array} */ (this.y));
+			if (!this.ode.calcDy(this.tn + hg, /** @type {Float64Array} */ (this.y), this.tempv)) {
 				this.nfe++;
 				return false;
 			}
@@ -2801,7 +2921,7 @@ class MMOdeSolver {
 	/**
 	 * @method vAddConst
 	 * @param {Float64Array} x
-	 * @param {Float64Array} b
+	 * @param {number} b
 	 * @param {Float64Array} z
 	 * Performs the operation z[i] = x[i] + b
 	 */
@@ -2918,9 +3038,9 @@ class MMOdeSolver {
 		}
 
 		/* Do all cases not handled above:
-     (1) a == other, b == 0.0 - user should have called N_VScale
-     (2) a == 0.0, b == other - user should have called N_VScale
-     (3) a,b == other, a !=b, a != -b */
+		(1) a == other, b == 0.0 - user should have called N_VScale
+		(2) a == 0.0, b == other - user should have called N_VScale
+		(3) a,b == other, a !=b, a != -b */
 		const count = x.length;
 		for (let i = 0; i < count; i++) {
 			z[i] = a*x[i] + b*y[i];
