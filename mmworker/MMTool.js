@@ -381,7 +381,7 @@ export class MMTool extends MMParent {
 	 * @method valueDescribedBy
 	 * @param {string} [rawDescription]
 	 * @param {MMTool} [requestor]
-	 * @returns {MMValue|null|undefined}
+	 * @returns {any|null|undefined}
 	 */
 	valueDescribedBy(rawDescription, requestor) {
 		const description = rawDescription ? rawDescription.toLowerCase() : '';

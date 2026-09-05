@@ -38,8 +38,6 @@
  */
 // eslint-disable-next-line no-unused-vars
 export class MMToolValue extends MMValue {
-	/** @type {MMTool[]} */
-	_values;
 
 	/** @constructor
 	 * @param {Number} rowCount
