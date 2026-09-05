@@ -567,7 +567,7 @@ class MMFlash extends MMTool {
 			MMFlash.createPropertyDefinitions();
 		}
 
-		const thermoEngine = (typeof self !== 'undefined' ? self.thermo : null) || (typeof thermo !== 'undefined' ? thermo : null);
+		const thermoEngine = (typeof self !== 'undefined' ? (/** @type {any} */ (self)).thermo : null) || (typeof thermo !== 'undefined' ? thermo : null);
 		const lcDescription = description.toLowerCase();
 
 		if (lcDescription === 'fluids') {
@@ -1004,7 +1004,7 @@ class MMFlash extends MMTool {
 			return; // not enough information
 		}
 
-		const thermoEngine = (typeof self !== 'undefined' ? self.thermo : null) || (typeof thermo !== 'undefined' ? thermo : null);
+		const thermoEngine = (typeof self !== 'undefined' ? (/** @type {any} */ (self)).thermo : null) || (typeof thermo !== 'undefined' ? thermo : null);
 		if (!thermoEngine) {
 			return;
 		}
@@ -1033,8 +1033,8 @@ class MMFlash extends MMTool {
 		}
 
 		let spec = null;
-		const val1 = this.firstProperty.values[0];
-		const val2 = this.secondProperty.values[0];
+		const val1 = (/** @type {MMNumberValue} */ (this.firstProperty)).values[0];
+		const val2 = (/** @type {MMNumberValue} */ (this.secondProperty)).values[0];
 
 		if (this.firstPropertyType === 'T') {
 			if (this.secondPropertyType === 'P') {
@@ -1138,7 +1138,7 @@ class MMFlash extends MMTool {
 	 * @returns {Record<string, MMNumberValue>}
 	 */
 	calculatePhaseProperties(phaseData, phaseZ, T, P, isVapor, qValue) {
-		const thermoEngine = /** @type {any} */ ((typeof self !== 'undefined' ? self.thermo : null) || (typeof thermo !== 'undefined' ? thermo : null));
+		const thermoEngine = /** @type {any} */ ((typeof self !== 'undefined' ? (/** @type {any} */ (self)).thermo : null) || (typeof thermo !== 'undefined' ? thermo : null));
 		/** @type {Record<string, MMNumberValue>} */
 		const props = {};
 		const N = /** @type {number} */ (this.nComponents);
@@ -1279,7 +1279,7 @@ class MMFlash extends MMTool {
 		const T = flashResult.T;
 		const P = flashResult.P;
 		const beta = flashResult.beta;
-		const thermoEngine = (typeof self !== 'undefined' ? self.thermo : null) || (typeof thermo !== 'undefined' ? thermo : null);
+		const thermoEngine = (typeof self !== 'undefined' ? (/** @type {any} */ (self)).thermo : null) || (typeof thermo !== 'undefined' ? thermo : null);
 
 		this.propList = ['q', 't', 'p', 'f', 'h', 's', 'dmolar', 'mwt', 'x'].concat(this.additionalProperties);
 
