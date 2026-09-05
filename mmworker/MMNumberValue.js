@@ -59,14 +59,10 @@ export const MMDyadicUnitAction = Object.freeze({
  * @extends MMValue
  * @member {number[]} unitDimensions
  * @member {Float64Array} _values
+ * 
  */
 // eslint-disable-next-line no-unused-vars
 export class MMNumberValue extends MMValue {
-	/** @type {number[]} */
-	unitDimensions;
-	/** @type {Float64Array} */
-	_values;
-
 	/** @constructor
 	 * @param {Number} rowCount
 	 * @param {Number} columnCount
@@ -100,6 +96,7 @@ export class MMNumberValue extends MMValue {
 		return newValue;
 	}
 
+	/** @returns {Float64Array} */
 	get values() {
 		// used by MMTableValueColumn for saving actual values
 		return this._values;
