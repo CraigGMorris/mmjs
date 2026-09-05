@@ -887,6 +887,7 @@ export class MMGraph extends MMTool {
 			const xNumber = parseInt(name.substring(4));
 			let rv;
 			if (xNumber > 0 && xNumber <= this.xValues.length) {
+				/** @type {MMGraphX} */
 				const xValue = this.xValues[xNumber - 1];
 				if (xValue.values instanceof MMStringValue) {
 					return returnValue(MMNumberValue.scalarValue(1));
@@ -907,7 +908,8 @@ export class MMGraph extends MMTool {
 					}
 					
 					if (!rv) {
-						rv = xValue.values ? xValue.values.min() : null;
+						const values = xValue.values;
+						rv = values instanceof MMNumberValue ? values.min() : null;
 					}
 				}
 			}
@@ -939,7 +941,8 @@ export class MMGraph extends MMTool {
 					}
 					
 					if (!rv) {
-						rv = xValue.values ? xValue.values.max() : null;
+						const values = xValue.values;
+						rv = values instanceof MMNumberValue ? values.max() : null;
 					}
 				}
 			}
@@ -1872,7 +1875,7 @@ export class MMGraph extends MMTool {
 			colorStart += yAxisIndex;
 	
 			const xValue = this.xValues[xAxisIndex];
-			if (yAxisIndex >= (/** @type {any} */ (xValue)).numberOfValues ) {
+			if (yAxisIndex >= (/** @type {MMGraphX} */ (xValue)).numberOfYValues ) {
 				yAxisIndex = 0;
 			}
 
