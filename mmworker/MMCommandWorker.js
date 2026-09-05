@@ -41,6 +41,7 @@ import { setupImports } from './aggregator.js';
 class MMCommandWorker {
 	constructor() {
 		this.processor = new MMCommandProcessor();
+		// @ts-ignore
 		self.theMMSession = new MMSession(this.processor)
 
 		this.processor.setStatusCallBack((message) => {

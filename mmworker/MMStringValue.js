@@ -35,8 +35,6 @@
  */
 // eslint-disable-next-line no-unused-vars
 export class MMStringValue extends MMValue {
-	/** @type {string[]} */
-	_values;
 
 	/** @constructor
 	 * @param {Number} rowCount
