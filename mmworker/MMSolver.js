@@ -109,7 +109,7 @@ export class MMSolver extends MMTool {
 			o[`f${i}`] = func.errorFormula.formula;
 			o[`c${i}`] = func.countFormula.formula;
 			if (this.isConverged) {  // don't want to accidentally save nans as the json will fail
-				o[`o${i}`] = (/** @type {any} */ (this)).outputs;
+				o[`o${i}`] = (/** @type {any} */ (func)).outputs;
 			}
 		}
 
