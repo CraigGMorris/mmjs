@@ -55,7 +55,6 @@
  * @extends MMTool
  * @property {MMFormula} maxIterFormula
  * @property {MMFormula} maxJacobianFormula
- * @property {MMFormula} [maxJacobiansFormula]
  * @property {boolean} isHidingInfo
  * @property {boolean} isEnabled
  * @property {boolean} _isEnabled
@@ -186,7 +185,7 @@ export class MMSolver extends MMTool {
 					this.maxJacobianFormula.formula = `${maxJacobians}`;
 				}
 				else if (typeof maxIter === 'string') {
-					(/** @type {any} */ (this)).maxJacobiansFormula.formula = maxJacobians;
+					(/** @type {any} */ (this)).maxJacobianFormula.formula = maxJacobians;
 				}
 			}
 
