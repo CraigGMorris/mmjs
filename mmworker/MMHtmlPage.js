@@ -318,7 +318,7 @@ export class MMHtmlPageProcessor {
 									const oldInputs = target.removeRows(rows);
 									if (Object.keys(oldInputs).length) {
 										const inputsJson = JSON.stringify(oldInputs);
-										response.undo = `${(/** @type {any} */ (this)).getPath()} restorerows ${inputsJson}`;
+										response.undo = `${this.parent.getPath()} restorerows ${inputsJson}`;
 									}
 								}
 								else if (target instanceof MMExpression) {
@@ -329,7 +329,7 @@ export class MMHtmlPageProcessor {
 											const oldInputs = tool.removeRows(rows)
 											if (Object.keys(oldInputs).length) {
 												const inputsJson = JSON.stringify(oldInputs);
-												response.undo = `${(/** @type {any} */ (this)).getPath()} restorerows ${inputsJson}`;
+												response.undo = `${this.parent.getPath()} restorerows ${inputsJson}`;
 											}
 										}
 									}
@@ -355,7 +355,7 @@ export class MMHtmlPageProcessor {
 						// forget all previously defined parameters derived from page inputs
 						if (actions[action]) {
 							this.inputs = undefined;
-							(/** @type {any} */ (this)).forgetCalculated();
+							this.parent.forgetCalculated();
 						}
 					}
 						break;
@@ -401,7 +401,7 @@ export class MMHtmlPageProcessor {
 					}
 						break;
 					default:
-						(/** @type {any} */ (this)).setError('mmcmd:htmlBadAction', {action: action, path: this.parent.getPath()});
+						this.parent.setError('mmcmd:htmlBadAction', {action: action, path: this.parent.getPath()});
 						break;
 				}
 			}
@@ -966,8 +966,8 @@ Replace this content in the source formula with your own content.
 	parameters() {
 		let p = super.parameters();
 		p.push('block_');
-		if ((/** @type {any} */ (this)).inputs) {
-			p = p.concat(Object.keys((/** @type {any} */ (this)).inputs));
+		if (this?.htmlProcessor?.inputs) {
+			p = p.concat(Object.keys(this.htmlProcessor.inputs));
 		}
 		return p;
 	}

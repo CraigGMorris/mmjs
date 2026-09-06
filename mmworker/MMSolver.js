@@ -230,7 +230,7 @@ export class MMSolver extends MMTool {
 			countFormula: new MMFormula(`count_${functionNumber}`, this),
 			outputs: [1]
 		};
-		this.functions.splice(functionNumber - 1, (/** @type {any} */ (null)), func);
+		this.functions.splice(functionNumber - 1, 0, func);
 		func.countFormula.formula = "1";
 		return functionNumber;
 	}

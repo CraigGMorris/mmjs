@@ -576,7 +576,7 @@ class MMGraphX extends MMGraphAxis {
 	}
 
 	get numberOfZValues() {
-		return this.zValue ? (/** @type {any} */ (this.zValue)).length : 0;
+		return this.zValue ? 1 : 0; // there can only be one or zero z values
 	}
 
 	/**
@@ -629,7 +629,7 @@ class MMGraphX extends MMGraphAxis {
 			this.graph.forgetCalculated();
 		}
 		else {
-			this.graph.setWarning('mmcmd:graphCantDeleteLast', {path: (/** @type {any} */ (this)).getPath(), vName: 'Y'});
+			this.graph.setWarning('mmcmd:graphCantDeleteLast', {path: this.graph.getPath(), vName: 'Y'});
 		}
 	}
 

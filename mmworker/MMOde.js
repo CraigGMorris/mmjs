@@ -2364,7 +2364,7 @@ class MMOdeSolver {
 			this.jcur = true; 
 			(/** @type {Float64Array} */ (this.M)).fill(0);
 			if (!this.calcJacobian(this.tn, ypred, fpred, /** @type {Float64Array} */ (this.M), vtemp1)) {
-				(/** @type {any} */ (this).setError)('mmcmd:odeJacobianError', {path: (/** @type {any} */ (this)).getPath()});
+				this.ode.setError('mmcmd:odeJacobianError', {path: this.ode.getPath()});
 				return false;
 			}
 			// for (let ij = 0; ij < 3; ij++) {
