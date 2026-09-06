@@ -1366,7 +1366,7 @@ export class Diagram extends React.Component {
 		return e(
 			'div', {
 				id: 'diagram__wrapper',
-				ref: (/** @type {any} */ node) => this.node = node,
+				ref: (/** @type {any} */ node) => { this.node = node; },
 				onContextMenu: (/** @type {any} */ event) => event.preventDefault(),
 				style: {
 					height: dgmBox.height,
@@ -1746,7 +1746,7 @@ class ToolIcon extends React.Component {
 					stroke: textColor,
 					fill: fillColor
 				},
-				ref: (/** @type {any} */ node) => this.node = node,
+				ref: (/** @type {any} */ node) => { this.node = node; },
 			},
 			e(
 				'rect', {
@@ -2124,7 +2124,7 @@ class ContextMenu extends React.Component {
 		return e(
 			'g', {
 				id: 'diagram__context-menu',
-				ref: (/** @type {any} */ node) => this.node = node,
+				ref: (/** @type {any} */ node) => { this.node = node; },
 			},
 			e(
 				'rect', {

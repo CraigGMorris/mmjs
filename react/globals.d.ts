@@ -88,12 +88,6 @@ declare namespace ReactDOM {
 	): Root;
 	function flushSync<R>(fn: () => R): R;
 	function flushSync(): void;
-	function render(
-		element: React.ReactElement | React.ReactNode,
-		container: Element | Document | DocumentFragment | null,
-		callback?: () => void
-	): any;
-	function findDOMNode(instance: any): Element | null | Text;
 }
 
 declare module 'react-dom/client' {

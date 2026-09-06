@@ -1261,7 +1261,7 @@ class Plot2D extends React.Component {
 					width: '100%',
 				},
 				viewBox: viewBox,
-				ref: (/** @type {any} */ node) => this.node = node,
+				ref: (/** @type {any} */ node) => { this.node = node; },
 				onPointerDown: this.onPointerDown,
 			},
 			e(
@@ -2195,7 +2195,7 @@ class Plot3D extends React.Component {
 					width: '100%',
 				},
 				viewBox: viewBox,
-				ref: (/** @type {any} */ node) => this.node = node,
+				ref: (/** @type {any} */ node) => { this.node = node; },
 				onPointerDown: this.onPointerDown,
 			},
 			e(
