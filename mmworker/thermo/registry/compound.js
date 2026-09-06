@@ -109,7 +109,9 @@ export function createCompound(def) {
 		heatOfVaporization: def.heatOfVaporization,
 		liquidViscosity: def.liquidViscosity,
 		vaporViscosity: def.vaporViscosity,
-		surfaceTension: def.surfaceTension
+		surfaceTension: def.surfaceTension,
+		liquidThermalConductivity: def.liquidThermalConductivity,
+		vaporThermalConductivity: def.vaporThermalConductivity
 	};
 
 	validateCompound(compound);

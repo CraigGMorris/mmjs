@@ -30,6 +30,7 @@
 export const DipprEquationForm = Object.freeze({
 	POLYNOMIAL_100: 100,
 	EXTENDED_ANTOINE_101: 101,
+	DIPPR_102: 102,
 	RACKETT_105: 105,
 	SOMAYAJULU_WATSON_106: 106,
 	ALY_LEE_107: 107,
@@ -44,6 +45,14 @@ export const DipprEquationForm = Object.freeze({
  * @property {number[]} coeffs - Coefficients [A, B, C, D, E, ...]
  * @property {number} tMin - Minimum valid temperature [K]
  * @property {number} tMax - Maximum valid temperature [K]
+ * @property {number} [eqno] - Alias for eq
+ * @property {number} [A] - Coefficient A
+ * @property {number} [B] - Coefficient B
+ * @property {number} [C] - Coefficient C
+ * @property {number} [D] - Coefficient D
+ * @property {number} [E] - Coefficient E
+ * @property {number} [Tmin] - Alias for tMin [K]
+ * @property {number} [Tmax] - Alias for tMax [K]
  */
 
 /**
@@ -84,6 +93,8 @@ export const DipprEquationForm = Object.freeze({
  * @property {DipprCorrelation} [liquidViscosity] - Liquid dynamic viscosity [Pa*s]
  * @property {DipprCorrelation} [vaporViscosity] - Vapor dynamic viscosity [Pa*s]
  * @property {DipprCorrelation} [surfaceTension] - Liquid surface tension [N/m]
+ * @property {DipprCorrelation} [liquidThermalConductivity] - Liquid thermal conductivity [W/(m*K)]
+ * @property {DipprCorrelation} [vaporThermalConductivity] - Vapor thermal conductivity [W/(m*K)]
  */
 
 /**

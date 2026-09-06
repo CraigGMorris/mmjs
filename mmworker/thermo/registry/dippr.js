@@ -151,6 +151,54 @@ export function derivativeDippr101(c, T) {
 }
 
 /**
+ * Evaluates DIPPR Form 102 (Vapor Viscosity / Thermal Conductivity):
+ * Y = (A * T^B) / (1 + C/T + D/T^2)
+ *
+ * @param {number[]|{A?: number, B?: number, C?: number, D?: number}} c - Coefficients [A, B, C, D] or object
+ * @param {number} T - Temperature [K]
+ * @returns {number} Property value
+ */
+export function evaluateDippr102(c, T) {
+	if (!c) return 0.0;
+	const A = Array.isArray(c) ? (c[0] || 0.0) : (c.A || 0.0);
+	const B = Array.isArray(c) ? (c[1] || 0.0) : (c.B || 0.0);
+	const C = Array.isArray(c) ? (c[2] || 0.0) : (c.C || 0.0);
+	const D = Array.isArray(c) ? (c[3] || 0.0) : (c.D || 0.0);
+
+	if (T <= 0.0 || A === 0.0) return 0.0;
+
+	const num = A * Math.pow(T, B);
+	const denom = 1.0 + C / T + D / (T * T);
+	return denom !== 0.0 ? num / denom : 0.0;
+}
+
+/**
+ * Analytical derivative of DIPPR Form 102 with respect to temperature dY/dT.
+ * dY/dT = Y * (B/T + (C/T^2 + 2*D/T^3) / (1 + C/T + D/T^2))
+ *
+ * @param {number[]|{A?: number, B?: number, C?: number, D?: number}} c - Coefficients [A, B, C, D] or object
+ * @param {number} T - Temperature [K]
+ * @returns {number} First derivative dY/dT
+ */
+export function derivativeDippr102(c, T) {
+	if (!c || T <= 0.0) return 0.0;
+	const Y = evaluateDippr102(c, T);
+	if (Y === 0.0) return 0.0;
+
+	const B = Array.isArray(c) ? (c[1] || 0.0) : (c.B || 0.0);
+	const C = Array.isArray(c) ? (c[2] || 0.0) : (c.C || 0.0);
+	const D = Array.isArray(c) ? (c[3] || 0.0) : (c.D || 0.0);
+
+	const T2 = T * T;
+	const T3 = T2 * T;
+	const denom = 1.0 + C / T + D / T2;
+	if (denom === 0.0) return 0.0;
+
+	const dDenomOverDenom = (C / T2 + (2.0 * D) / T3) / denom;
+	return Y * (B / T + dDenomOverDenom);
+}
+
+/**
  * Evaluates DIPPR Form 105 (Rackett Liquid Density):
  * Y = A / (B^(1 + (1 - T/C)^D))
  *
@@ -438,7 +486,7 @@ export function evaluateChemSep16(c, T) {
 	const D = c[3] || 0.0;
 	const E = c[4] || 0.0;
 
-	const arg = B / T + C + D * T + E * T * T;
+	const arg = B / T + C + T * (D + E * T);
 	const val = A + Math.exp(arg);
 	return val > 1000.0 ? val / 1000.0 : val;
 }
@@ -501,30 +549,34 @@ export function derivativeAntoine10(c, T) {
  * @returns {number} Evaluated property value
  */
 export function evaluateDippr(correlation, T, tc = 0) {
-	if (!correlation || !correlation.coeffs) return 0.0;
-	switch (correlation.eq) {
+	if (!correlation) return 0.0;
+	const c = correlation.coeffs || correlation;
+	const eq = correlation.eq !== undefined ? correlation.eq : correlation.eqno;
+	switch (eq) {
 		case 100:
 		case 1:
 		case 2:
 		case 3:
 		case 4:
 		case 5:
-			return evaluateDippr100(correlation.coeffs, T);
+			return evaluateDippr100(c, T);
 		case 101:
-			return evaluateDippr101(correlation.coeffs, T);
+			return evaluateDippr101(c, T);
+		case 102:
+			return evaluateDippr102(c, T);
 		case 105:
-			return evaluateDippr105(correlation.coeffs, T);
+			return evaluateDippr105(c, T);
 		case 106:
-			return evaluateDippr106(correlation.coeffs, T, tc);
+			return evaluateDippr106(c, T, tc);
 		case 107:
-			return evaluateDippr107(correlation.coeffs, T);
+			return evaluateDippr107(c, T);
 		case 16:
-			return evaluateChemSep16(correlation.coeffs, T);
+			return evaluateChemSep16(c, T);
 		case 10:
-			return evaluateAntoine10(correlation.coeffs, T);
+			return evaluateAntoine10(c, T);
 		default:
 			// Fallback to polynomial
-			return evaluateDippr100(correlation.coeffs, T);
+			return evaluateDippr100(c, T);
 	}
 }
 
@@ -537,29 +589,33 @@ export function evaluateDippr(correlation, T, tc = 0) {
  * @returns {number} Analytical derivative dY/dT
  */
 export function evaluateDipprDerivative(correlation, T, tc = 0) {
-	if (!correlation || !correlation.coeffs) return 0.0;
-	switch (correlation.eq) {
+	if (!correlation) return 0.0;
+	const c = correlation.coeffs || correlation;
+	const eq = correlation.eq !== undefined ? correlation.eq : correlation.eqno;
+	switch (eq) {
 		case 100:
 		case 1:
 		case 2:
 		case 3:
 		case 4:
 		case 5:
-			return derivativeDippr100(correlation.coeffs, T);
+			return derivativeDippr100(c, T);
 		case 101:
-			return derivativeDippr101(correlation.coeffs, T);
+			return derivativeDippr101(c, T);
+		case 102:
+			return derivativeDippr102(c, T);
 		case 105:
-			return derivativeDippr105(correlation.coeffs, T);
+			return derivativeDippr105(c, T);
 		case 106:
-			return derivativeDippr106(correlation.coeffs, T, tc);
+			return derivativeDippr106(c, T, tc);
 		case 107:
-			return derivativeDippr107(correlation.coeffs, T);
+			return derivativeDippr107(c, T);
 		case 16:
-			return derivativeChemSep16(correlation.coeffs, T);
+			return derivativeChemSep16(c, T);
 		case 10:
-			return derivativeAntoine10(correlation.coeffs, T);
+			return derivativeAntoine10(c, T);
 		default:
-			return derivativeDippr100(correlation.coeffs, T);
+			return derivativeDippr100(c, T);
 	}
 }
 

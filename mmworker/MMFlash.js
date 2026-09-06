@@ -1223,15 +1223,14 @@ class MMFlash extends MMTool {
 		props.viscosity = MMNumberValue.scalarValue(visc, [-1, 1, -1, 0, 0, 0, 0]);
 
 		// Thermal conductivity
-		let cond = 0.0;
-		for (let i = 0; i < N; i++) {
-			const comp = compounds[i];
-			if (comp && (/** @type {any} */ (comp)).thermalConductivity) {
-				cond += phaseZ[i] * thermoEngine.evaluateDippr((/** @type {any} */ (comp)).thermalConductivity, T, comp.tc);
+		let cond = phaseData ? phaseData.thermalConductivity : undefined;
+		if (cond === undefined || cond <= 0.0 || !Number.isFinite(cond)) {
+			if (thermoEngine && typeof thermoEngine.calculateThermalConductivity === 'function') {
+				cond = thermoEngine.calculateThermalConductivity(isVapor ? 'VAPOR' : 'LIQUID', phaseZ, T, compounds, eos ? eos.workspace : undefined);
 			}
-		}
-		if (cond <= 0.0) {
-			cond = isVapor ? 0.025 : 0.15;
+			else {
+				cond = isVapor ? 0.025 : 0.15;
+			}
 		}
 		props.conductivity = MMNumberValue.scalarValue(cond, [1, 1, -3, 0, -1, 0, 0]);
 

@@ -43,8 +43,8 @@ export class ThermodynamicWorkspace {
 		const N2 = N * N;
 
 		// Calculate total contiguous Float64 buffer size:
-		// 21 vectors of length N + 1 matrix of length N*N + 3 roots + 2 zFactors
-		const totalFloats = (21 * N) + N2 + 3 + 2;
+		// 23 vectors of length N + 1 matrix of length N*N + 3 roots + 2 zFactors
+		const totalFloats = (23 * N) + N2 + 3 + 2;
 		this.buffer = new ArrayBuffer(totalFloats * Float64Array.BYTES_PER_ELEMENT);
 		const f64 = new Float64Array(this.buffer);
 
@@ -97,6 +97,10 @@ export class ThermodynamicWorkspace {
 		this.ioK = f64.subarray(offset, offset + N); offset += N;
 		/** @type {Float64Array} Component ideal gas Cp scratch vector */
 		this.cpVect = f64.subarray(offset, offset + N); offset += N;
+		/** @type {Float64Array} Pure component thermal conductivity scratch vector */
+		this.pureK = f64.subarray(offset, offset + N); offset += N;
+		/** @type {Float64Array} Pure component viscosity scratch vector */
+		this.pureEta = f64.subarray(offset, offset + N); offset += N;
 
 		/** @type {Float64Array} Flattened N x N cross-parameter matrix a_ij */
 		this.aMatrix = f64.subarray(offset, offset + N2); offset += N2;

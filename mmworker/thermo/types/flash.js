@@ -113,6 +113,7 @@ export const FlashType = Object.freeze({
  * @property {number} sDep - Entropy departure relative to ideal gas state [J/(mol*K)]
  * @property {number} gDep - Gibbs free energy departure relative to ideal gas state [J/mol]
  * @property {number} mw - Average molecular weight of the phase [kg/mol]
+ * @property {number} [thermalConductivity] - Thermal conductivity of the phase [W/(m*K)]
  * @property {Float64Array} lnPhi - Logarithm of fugacity coefficients ln(phi_i) (length N)
  */
 
@@ -128,6 +129,7 @@ export const FlashType = Object.freeze({
  * @property {number} entropy - Total bulk molar entropy [J/(mol*K)]
  * @property {number} gibbs - Total bulk molar Gibbs free energy [J/mol]
  * @property {number} mw - Average mixture molecular weight [kg/mol]
+ * @property {number} [thermalConductivity] - Bulk mixture thermal conductivity [W/(m*K)]
  */
 
 /**
