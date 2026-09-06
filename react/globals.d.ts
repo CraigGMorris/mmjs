@@ -69,12 +69,51 @@ declare namespace React {
 }
 
 declare namespace ReactDOM {
+	interface Root {
+		render(children: React.ReactNode): void;
+		unmount(): void;
+	}
+	interface RootOptions {
+		identifierPrefix?: string;
+		onRecoverableError?: (error: unknown, errorInfo: { componentStack?: string }) => void;
+	}
+	function createRoot(
+		container: Element | Document | DocumentFragment,
+		options?: RootOptions
+	): Root;
+	function hydrateRoot(
+		container: Element | Document | DocumentFragment,
+		children: React.ReactNode,
+		options?: RootOptions
+	): Root;
+	function flushSync<R>(fn: () => R): R;
+	function flushSync(): void;
 	function render(
 		element: React.ReactElement | React.ReactNode,
 		container: Element | Document | DocumentFragment | null,
 		callback?: () => void
 	): any;
 	function findDOMNode(instance: any): Element | null | Text;
+}
+
+declare module 'react-dom/client' {
+	export interface Root {
+		render(children: React.ReactNode): void;
+		unmount(): void;
+	}
+	export interface RootOptions {
+		identifierPrefix?: string;
+		onRecoverableError?: (error: unknown, errorInfo: { componentStack?: string }) => void;
+	}
+	export function createRoot(
+		container: Element | Document | DocumentFragment,
+		options?: RootOptions
+	): Root;
+	export function hydrateRoot(
+		container: Element | Document | DocumentFragment,
+		children: React.ReactNode,
+		options?: RootOptions
+	): Root;
 }
 
 declare var i18next: any;

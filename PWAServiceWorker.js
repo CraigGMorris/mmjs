@@ -199,6 +199,7 @@ const APP_STATIC_RESOURCES = [
 	"news/MM_News.txt",
 	"offline/i18next.js",
 	"offline/i18nextXHRBackend.js",
+	"offline/react-dom-client.js",
 	"offline/react-dom.production.min.js",
 	"offline/react.production.min.js",
 	"react/ButtonView.js",

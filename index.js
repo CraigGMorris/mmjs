@@ -24,6 +24,7 @@
 */
 
 import {MMApp} from './react/MMApp.js';
+import {createRoot} from './offline/react-dom-client.js';
 // Get language from URL query parameter, defaulting to 'en' if not specified
 const urlParams = new URLSearchParams(window.location.search);
 const language = urlParams.get('lng') || 'en';
@@ -48,9 +49,13 @@ i18next
 			document.body.style.overflow = 'hidden';
 			// initialized and ready to go!
 			const domContainer = document.querySelector('#root');
-			domContainer.style.height = '100%';
-			domContainer.style.width = '100%';
-			ReactDOM.render(e(MMApp, {t: t}), domContainer);
+			if (domContainer) {
+				domContainer.style.height = '100%';
+				domContainer.style.width = '100%';
+				/** @type {import('react-dom/client').Root} */
+				const root = createRoot(domContainer);
+				root.render(e(MMApp, {t: t}));
+			}
 		}
 	);
 

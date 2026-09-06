@@ -587,7 +587,9 @@ export function MMApp(props) {
 				for (let result of results) {
 					if (result.verb && result.verb === 'status') {
 						const msg = props.t(result.results.msgKey, result.results.args);
-						setStatusMessage(msg);
+						ReactDOM.flushSync(() => {
+							setStatusMessage(msg);
+						});
 						continue;
 					}
 					if (result.error) {
