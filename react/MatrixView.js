@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -22,6 +23,8 @@ import {FormulaField, FormulaEditor} from './FormulaView.js';
 import {TableView} from './TableView.js';
 import {UnitPicker} from './UnitsView.js';
 
+/** @typedef {import('./MMApp.js').ViewProps} ViewProps */
+
 const e = React.createElement;
 const useState = React.useState;
 const useEffect = React.useEffect;
@@ -40,6 +43,7 @@ const MatrixDisplay = Object.freeze({
 /**
  * MatrixView
  * info view for matrix
+ * @param {ViewProps} props
  */
 export function MatrixView(props) {
 
@@ -53,7 +57,7 @@ export function MatrixView(props) {
 	const value = results.value;
 
 	const [currentCell, setCurrentCell] = useState([0,0]);
-	const [display, setDisplay] = useState(MatrixDisplay.table);
+	const [display, setDisplay] = useState(/** @type {number} */ (MatrixDisplay.table));
 	const originInput = cellInputs[currentCell.join('_')];
 	const [editFormula, setEditFormula] = useState(originInput ? originInput.input : '')
 	const [rowCountFormula, setRowCountFormula] = useState(results.rowCountFormula);
@@ -67,14 +71,14 @@ export function MatrixView(props) {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
 
-		if ( props.viewInfo.matrixViewState) {
-			const state = props.viewInfo.matrixViewState;
+		if ( (/** @type {any} */ (props.viewInfo)).matrixViewState) {
+			const state = (/** @type {any} */ (props.viewInfo)).matrixViewState;
 			setCurrentCell(state.currentCell);
 			setEditFormula(state.editFormula);
 			setDisplay(state.display);
 		}
 		else {
-			props.viewInfo.matrixViewState = {
+			(/** @type {any} */ (props.viewInfo)).matrixViewState = {
 				currentCell: currentCell,
 				editFormula: editFormula,
 				display: display,
@@ -84,7 +88,7 @@ export function MatrixView(props) {
 	}, []);
 
 	useEffect(() => {
-		props.viewInfo.matrixViewState.currentCell = currentCell;
+		(/** @type {any} */ (props.viewInfo)).matrixViewState.currentCell = currentCell;
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -106,7 +110,7 @@ export function MatrixView(props) {
 		setFormatString(format);
 	}, [currentCell])
 
-	if (updateResults.error) {
+	if ((/** @type {any} */ (updateResults)).error) {
 		// use empty command just to defer popView
 		props.actions.doCommand('', () => {
 			props.actions.popView();
@@ -131,10 +135,11 @@ export function MatrixView(props) {
 	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height'));
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 
+	/** @param {string} type */
 	const applyChanges = (type) => {
 		switch(type) {
 			case 'cell':
-				return (formula) => {
+				return (/** @type {string} */ formula) => {
 					const path = props.viewInfo.path;
 					props.actions.doCommand(`${path} setcell ${currentCell.join(' ')} ${formula}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
@@ -143,7 +148,7 @@ export function MatrixView(props) {
 					});
 				}
 			case 'columns':
-				return (formula) => {
+				return (/** @type {string} */ formula) => {
 					props.actions.doCommand(`${results.path}.columnCount set formula ${formula}`, () => {
 						props.actions.updateView(props.viewInfo.stackIndex);
 						setColumnCountFormula(formula);
@@ -151,7 +156,7 @@ export function MatrixView(props) {
 					});
 				}
 				case 'rows':
-					return (formula) => {
+					return (/** @type {string} */ formula) => {
 						props.actions.doCommand(`${results.path}.rowCount set formula ${formula}`, () => {
 							props.actions.updateView(props.viewInfo.stackIndex);
 							setRowCountFormula(formula);
@@ -175,7 +180,7 @@ export function MatrixView(props) {
 					cancel: () => {
 						setDisplay(MatrixDisplay.table);
 					},
-					apply: (unit) => {
+					apply: (/** @type {string} */ unit) => {
 						let cmd = `setcolumnunit ${currentCell[1]} ${unit}`;						
 						props.actions.doCommand(`${props.viewInfo.path} ${cmd}`, () => {
 							props.actions.updateView(props.viewInfo.stackIndex);
@@ -206,7 +211,7 @@ export function MatrixView(props) {
 			break;
 
 		case MatrixDisplay.table: {
-			const cellClick = (row, column) => {
+			const cellClick = (/** @type {number} */ row, /** @type {number} */ column) => {
 				row = Math.min(row, rowCount);
 				column = Math.min(column, columnCount);
 				setCurrentCell([row, column]);
@@ -241,7 +246,7 @@ export function MatrixView(props) {
 							formula: rowCountFormula || '',
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setApplyType('rows');
 								setDisplay(MatrixDisplay.formulaEditor);
@@ -264,7 +269,7 @@ export function MatrixView(props) {
 							formula: columnCountFormula || '',
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setApplyType('columns');
 								setDisplay(MatrixDisplay.formulaEditor);
@@ -292,11 +297,11 @@ export function MatrixView(props) {
 							tabIndex: -1,
 							placeholder: 'format',
 							value: formatString,
-							onChange: (event) => {
+							onChange: (/** @type {any} */ event) => {
 									// keeps input field in sync
 									setFormatString(event.target.value);
 							},
-							onKeyDown: e => {
+							onKeyDown: (/** @type {any} */ e) => {
 								if (e.code == 'Enter') {
 									e.target.blur();
 								}
@@ -324,7 +329,7 @@ export function MatrixView(props) {
 							formula: editFormula,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setApplyType('cell');
 								setDisplay(MatrixDisplay.formulaEditor);
@@ -340,7 +345,7 @@ export function MatrixView(props) {
 						value: results.value,
 						actions: props.actions,
 						viewInfo: props.viewInfo,
-						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 4*nInputHeight - 14],
+						viewBox: [0, 0, (/** @type {any} */ (props.infoWidth)) - 2*nInfoViewPadding, (/** @type {any} */ (props.infoHeight)) - 4*nInputHeight - 14],
 						cellClick: cellClick,
 						cellInputs: cellInputs,
 						currentCell: currentCell,

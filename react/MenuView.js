@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -20,6 +21,8 @@
 import {ToolView} from './ToolView.js';
 import {FormulaField, FormulaEditor} from './FormulaView.js';
 
+/** @typedef {import('./MMApp.js').ViewProps} ViewProps */
+
 const e = React.createElement;
 const useEffect = React.useEffect;
 const useState = React.useState;
@@ -37,18 +40,19 @@ const MenuDisplay = Object.freeze({
 /**
  * MenuView
  * info view for menu tool
+ * @param {ViewProps} props
  */
 export function MenuView(props) {
-	const [display, setDisplay] = useState(MenuDisplay.main);
+	const [display, setDisplay] = useState(/** @type {number} */ (MenuDisplay.main));
 	const [editOptions, setEditOptions] = useState({});
-	const [optionLabels, setOptionLabels] = useState([]);
-	const [optionValues, setOptionValues] = useState([]);
+	const [optionLabels, setOptionLabels] = useState(/** @type {any[]} */ ([]));
+	const [optionValues, setOptionValues] = useState(/** @type {any[]} */ ([]));
 	const [selected, setSelected] = useState(-1);
 
 	const t = props.t;
 	const updateResults = props.viewInfo.updateResults;
 
-	if (updateResults.error) {
+	if ((/** @type {any} */ (updateResults)).error) {
 		// use empty command just to defer popView
 		props.actions.doCommand('', () => {
 			props.actions.popView();
@@ -71,7 +75,7 @@ export function MenuView(props) {
 
 	const applyOptionChanges = () => {
 		const path = `${results.path}.options`;
-		return (formula) => {
+		return (/** @type {string} */ formula) => {
 			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(MenuDisplay.main);
@@ -104,7 +108,7 @@ export function MenuView(props) {
 		const optionCount = optionLabels.length
 		const selectedValue = (selected >= 0 && selected < optionCount) ? optionValues[selected] : '';
 		if (optionCount) {
-			const menuOption = (value, label) => {
+			const menuOption = (/** @type {any} */ value, /** @type {any} */ label) => {
 				menuOptions.push(e(
 					'option', {
 						className: 'menu__option',
@@ -135,7 +139,7 @@ export function MenuView(props) {
 				'select', {
 					className: 'menu__select',
 					value: selectedValue,
-					onChange: (e) => {
+					onChange: (/** @type {any} */ e) => {
 						const newValue = e.target.selectedIndex;
 						if (newValue >= 0 && newValue !== selected) {
 							const path = props.viewInfo.path;
@@ -175,7 +179,7 @@ export function MenuView(props) {
 						formula: results.optionsFormula || '',
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						editAction: (editOptions) => {
+						editAction: (/** @type {any} */ editOptions) => {
 							setEditOptions(editOptions);
 							setDisplay(MenuDisplay.formulaEditor);
 						},

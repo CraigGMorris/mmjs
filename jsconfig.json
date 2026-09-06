@@ -9,6 +9,7 @@
 		"noEmit": true
 	},
 	"include": [
-		"mmworker/**/*"
+		"mmworker/**/*",
+		"react/**/*"
 	]
 }

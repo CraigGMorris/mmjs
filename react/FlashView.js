@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -30,7 +31,7 @@ const useEffect = React.useEffect;
 /**
  * Enum for matrix display types.
  * @readonly
- * @enum {string}
+ * @enum {number}
  */
 const FlashDisplay = Object.freeze({
 	input: 0,
@@ -41,10 +42,11 @@ const FlashDisplay = Object.freeze({
 /**
  * MatrixView
  * info view for matrix
+ * @param {import('./MMApp.js').ViewProps} props
  */
 export function FlashView(props) {
 
-	const [display, setDisplay] = useState(FlashDisplay.input);
+	const [display, setDisplay] = useState(/** @type {number} */ (FlashDisplay.input));
 	const [formulaName, setFormulaName] = useState('')
 	const [editOptions, setEditOptions] = useState({});
 	const [selectedCell, setSelectedCell] = useState([0,0]);
@@ -94,9 +96,9 @@ export function FlashView(props) {
 		}
 	}, [props.viewInfo.updateResults, selectedCell, updateResults])
 
-	const applyChanges = (name) => {
+	const applyChanges = (/** @type {any} */ name) => {
 		const path = `${results.path}.${name}`;
-		return (formula) => {
+		return (/** @type {any} */ formula) => {
 			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(FlashDisplay.input);
@@ -116,8 +118,8 @@ export function FlashView(props) {
 				value: results.displayTable,
 				actions: props.actions,
 				viewInfo: props.viewInfo,
-				viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 7*nInputHeight - 70],
-				cellClick: (row, column) => {
+				viewBox: [0, 0, /** @type {number} */ (props.infoWidth) - 2*nInfoViewPadding, /** @type {number} */ (props.infoHeight) - 7*nInputHeight - 70],
+				cellClick: (/** @type {any} */ row, /** @type {any} */ column) => {
 					const displayTable = results.displayTable;
 					if (results.displayTable && column >= 0 && column < displayTable.nc && row > 0 && row <= displayTable.nr) {
 						setSelectedCell([row,column]);
@@ -161,7 +163,7 @@ export function FlashView(props) {
 						cancel: () => {
 							setDisplay(FlashDisplay.input);
 						},
-						apply: (unit) => {
+						apply: (/** @type {any} */ unit) => {
 							const displayTable = results.displayTable;
 							if (displayTable && selectedCell[0] > 0 && selectedCell[0] <= displayTable.nr) {
 								const propName = displayTable?.v?.[0]?.v?.v?.[selectedCell[0] - 1];
@@ -204,7 +206,7 @@ export function FlashView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							applyChanges: applyChanges('thermoFormula'),
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setFormulaName('thermoFormula');
 								setDisplay(FlashDisplay.formulaEditor);
@@ -227,7 +229,7 @@ export function FlashView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							applyChanges: applyChanges('firstPropFormula'),
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setFormulaName('firstPropFormula');
 								setDisplay(FlashDisplay.formulaEditor);
@@ -250,7 +252,7 @@ export function FlashView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							applyChanges: applyChanges('secondPropFormula'),
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setFormulaName('secondPropFormula');
 								setDisplay(FlashDisplay.formulaEditor);
@@ -273,7 +275,7 @@ export function FlashView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							applyChanges: applyChanges('flowFormula'),
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setFormulaName('flowFormula');
 								setDisplay(FlashDisplay.formulaEditor);
@@ -296,7 +298,7 @@ export function FlashView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							applyChanges: applyChanges('moleFracFormula'),
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setFormulaName('moleFracFormula');
 								setDisplay(FlashDisplay.formulaEditor);
@@ -319,7 +321,7 @@ export function FlashView(props) {
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
 							applyChanges: applyChanges('massFracFormula'),
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setFormulaName('massFracFormula');
 								setDisplay(FlashDisplay.formulaEditor);
@@ -349,11 +351,11 @@ export function FlashView(props) {
 							tabIndex: -1,
 							placeholder: 'format',
 							value: formatString,
-							onChange: (event) => {
+							onChange: (/** @type {any} */ event) => {
 									// keeps input field in sync
 									setFormatString(event.target.value);
 							},
-							onKeyDown: e => {
+							onKeyDown: (/** @type {any} */ e) => {
 								if (e.code == 'Enter') {
 									e.target.blur();
 								}

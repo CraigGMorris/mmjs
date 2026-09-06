@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -17,6 +18,17 @@
 */
 'use strict';
 
+/** @typedef {import('./MMApp.js').ViewProps} ViewProps */
+/** @typedef {import('./MMApp.js').Actions} Actions */
+/** @typedef {import('./MMApp.js').ViewInfo} ViewInfo */
+
+/**
+ * @typedef {ViewProps & {
+ * 	displayComponent?: React.ReactNode,
+ * 	[key: string]: any
+ * }} ToolViewProps
+ */
+
 const e = React.createElement;
 const useState = React.useState;
 const useEffect = React.useEffect;
@@ -24,12 +36,15 @@ const useEffect = React.useEffect;
 /**
  * ToolView
  * container for all tools views
+ * @param {ToolViewProps} props
  */
 
 export function ToolView(props) {
 	const t = props.t;
 	let name;
+	/** @type {React.MutableRefObject<any>} */
 	const nameRef = React.useRef();
+	/** @type {React.MutableRefObject<any>} */
 	const notesRef = React.useRef();
 	useEffect(() => {
 		// if the tool was just added focus on name and select it
@@ -78,12 +93,14 @@ export function ToolView(props) {
 		}
 	}
 
+	/** @param {string} newNotes */
 	const doSetNotes = (newNotes) => {
 		props.actions.doCommand(`${props.viewInfo.path} set notes ${newNotes}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 		});
 	}
 
+	/** @type {React.MutableRefObject<any>} */
 	const latestNotes = React.useRef(null);
   useEffect(() => {
     latestNotes.current = notesText;
@@ -97,18 +114,21 @@ export function ToolView(props) {
 		};
 	}, []);
 
+	/** @param {boolean} shouldShow */
 	const doSetHtmlNotes = (shouldShow) => {
 		props.actions.doCommand(`${props.viewInfo.path} set htmlNotes ${shouldShow ? 't' : 'f'}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 		});
 	}
 
+	/** @param {boolean} shouldShow */
 	const doSetDiagramNotes = (shouldShow) => {
 		props.actions.doCommand(`${props.viewInfo.path} set diagramNotes ${shouldShow ? 't' : 'f'}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 		});
 	}
 
+	/** @type {any[]} */
 	let cmpStack = [];
 	const nameArea = e(
 		'div', {
@@ -122,11 +142,13 @@ export function ToolView(props) {
 				tabIndex: 0,
 				value: toolName || '',
 				placeholder: t('react:toolNamePlaceHolder'),
+				/** @param {any} event */
 				onChange: (event) => {
 					// keeps input field in sync
 					const value = event.target.value;
 					setToolName(value);	
 				},
+				/** @param {any} event */
 				onKeyDown: (event) => {
 					// watches for Enter and sends command when it see it
 					if (event.code == 'Enter') {
@@ -161,6 +183,7 @@ export function ToolView(props) {
 					className: 'checkbox__input',
 					type: 'checkbox',
 					checked: results.isOutput || false,
+					/** @param {any} event */
 					onChange: (event) => {
 						// toggle the isOutput property
 						event.stopPropagation();
@@ -227,11 +250,13 @@ export function ToolView(props) {
 					id: 'tool-view__notes-input',
 					value: notesText,
 					ref: notesRef,
+					/** @param {any} event */
 					onChange: (event) => {
 						// keeps input field in sync
 						const value = event.target.value;
 						setNotesText(value);
 					},
+					/** @param {any} e */
 					onKeyDown: (e) => {
 						if (e.code === 'Enter' && e.shiftKey) {
 							e.preventDefault();

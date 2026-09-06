@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -28,17 +29,17 @@ const consoleStacks = {
 		show() {
 			return this.page[this.currentPage].join('\n');
 		},
-		push(s) {
+		push(/** @type {any} */ s) {
 			this.page.push([s]);
 			while (this.page.length > this.maxCount) {
 				this.page.shift();
 			}
 			this.currentPage = this.page.length - 1;
 		},
-		update(s) {
+		update(/** @type {any} */ s) {
 			this.page[this.currentPage].push(s);
 		},
-		scroll(nLines) {
+		scroll(/** @type {any} */ nLines) {
 			let n = this.currentPage + nLines;
 			this.currentPage = Math.min(Math.max(n, 0), this.page.length -1);
 			}
@@ -50,7 +51,7 @@ const consoleStacks = {
 		show() {
 			return this.page[this.currentPage];
 		},
-		push(s) {
+		push(/** @type {any} */ s) {
 			if (this.page.length < 2 || this.page[this.page.length-2] !== s) {
 				this.page[this.page.length-1] = s;
 				this.page.push('');
@@ -60,6 +61,10 @@ const consoleStacks = {
 				this.currentPage = this.page.length - 1;
 			}
 		},
+		/**
+		 * @param {any} nLines
+		 * @param {any} [input]
+		 */
 		scroll(nLines, input) {
 			let n = this.currentPage + nLines;
 			this.currentPage = Math.min(Math.max(n, 0), this.page.length -1);
@@ -69,6 +74,7 @@ const consoleStacks = {
 
 class aiClass {
 	constructor() {
+		/** @type {any[]} */
 		this.messages = [];
 		this.promptTemplate = ``;
 		this.apiKey = '';
@@ -77,6 +83,8 @@ class aiClass {
 		this.retryCount = 0;
 		this.maxRetries = 2;
 		this.resetCount = 0;
+		/** @type {number} */
+		this.lastPromptTime = 0;
 	}
 }
 
@@ -86,6 +94,7 @@ let inputTarget = 'AI';
 
 /**
  * accepts command line inputs and displays result
+ * @param {import('./MMApp.js').ViewProps} props
  */
 export function ConsoleView(props) {
 	const t = props.t;
@@ -93,9 +102,9 @@ export function ConsoleView(props) {
 	const [input, setInput] = useState('');
 	const [target, setTarget] = useState(inputTarget);
 	const [inputPlaceholder, setInputPlaceholder] = useState(t('react:consoleReadPlaceHolder'));
-	const inputRef = React.useRef(null);
+	/** @type {React.MutableRefObject<any>} */ const inputRef = React.useRef(null);
 	const isMounted = React.useRef(false);
-	const targetRef = React.useRef(null);
+	/** @type {React.MutableRefObject<any>} */ const targetRef = React.useRef(null);
 
 	React.useEffect(() => {
 		isMounted.current = true;
@@ -122,28 +131,32 @@ export function ConsoleView(props) {
 		}
 	}, [output]);	
 
-	const pushOutput = (s) => {
+	const pushOutput = (/** @type {any} */ s) => {
 		consoleStacks.output.push(s);
 		if (isMounted.current) {
 			setOutput(consoleStacks.output.show());
 		}
 	}
 
-	const updateOutput = (s) => {
+	/**
+	 * @param {any} s
+	 * @param {any} [extra]
+	 */
+	const updateOutput = (s, extra) => {
 		consoleStacks.output.update(s);
 		if (isMounted.current) {	
 			setOutput(consoleStacks.output.show());
 		}
 	}
 
-	function stringifyError(error) {
+	function stringifyError(/** @type {any} */ error) {
 		return error?.msgKey ? 
 		t(error.msgKey, error.args)
 	:
 		t(JSON.stringify(error, null, ' '));
 	}
 
-	function showCountdownTimer(delayMs, onComplete) {
+	function showCountdownTimer(/** @type {any} */ delayMs, /** @type {any} */ onComplete) {
 		const totalSeconds = Math.ceil(delayMs / 1000);
 		let secondsLeft = totalSeconds;
 	
@@ -205,7 +218,7 @@ export function ConsoleView(props) {
 		}
 	}
 
-	const performConsoleCommand = async(userPrompt, successCallback, failureCallback) => {
+	const performConsoleCommand = async(/** @type {any} */ userPrompt, /** @type {any} */ successCallback, /** @type {any} */ failureCallback) => {
 		try {
 			const result = await performCommand(userPrompt);
 			consoleCallBack(result);
@@ -217,11 +230,11 @@ export function ConsoleView(props) {
 
 
 	/** function consoleCallBack - called when the worker completes console command
-	 * @param {MMCommand[]} cmds
+	 * @param {any} cmds
 	 */
-	let consoleCallBack = cmds => {
-		let lines = [];
-		const getOutput = (r) => {
+	let consoleCallBack = (/** @type {any} */ cmds) => {
+		/** @type {any} */ let lines = [];
+		const getOutput = (/** @type {any} */ r) => {
 			let cmdOutput = r;
 			if (typeof cmdOutput != 'string') {
 				if (cmdOutput.verb == 'help' && cmdOutput.args) {
@@ -253,15 +266,19 @@ export function ConsoleView(props) {
 		}
 		pushOutput(lines);
 
-		props.updateDiagram();
+		(/** @type {any} */ (props.updateDiagram))();
 	}
 
 	// Wrapper for doCommand
-	async function doCommandPromise(cmd) {
+	/**
+	 * @param {any} cmd
+	 * @param {any} [extraCallback]
+	 */
+	async function doCommandPromise(cmd, extraCallback) {
 		return new Promise((resolve, reject) => {
 			props.actions.doCommand(
 				cmd,
-				(result) => {
+				(/** @type {any} */ result) => {
 					// Only resolve with result if there was no error
 					if (!result?.error) {
 						resolve(result);
@@ -270,7 +287,7 @@ export function ConsoleView(props) {
 						reject(result.error);
 					}
 				},
-				(error) => {
+				(/** @type {any} */ error) => {
 					reject(error);
 				}
 			);
@@ -278,10 +295,10 @@ export function ConsoleView(props) {
 	}
 
 	// Wrapper for pushModel
-	async function pushModelPromise(modelName) {
+	async function pushModelPromise(/** @type {any} */ modelName) {
 		return new Promise((resolve, reject) => {
 			props.actions.pushModel(modelName,
-				(result) => {
+				(/** @type {any} */ result) => {
 					// console.log('pushModelPromise: result', result);
 
 					// Only resolve with result if there was no error
@@ -292,7 +309,7 @@ export function ConsoleView(props) {
 						reject(result.error);
 					}
 				},
-				(error) => {
+				(/** @type {any} */ error) => {
 					// console.log('pushModelPromise: error', error);
 					reject(error);
 				}
@@ -300,12 +317,15 @@ export function ConsoleView(props) {
 		});
 	}
 	
-	// Wrapper for pushModel
+	// Wrapper for popModel
+	/**
+	 * @param {any} [modelName]
+	 */
 	async function popModelPromise(modelName) {
 		return new Promise((resolve, reject) => {
 			try {
 				const newPath = props.actions.popModel(modelName);
-				props.updateDiagram(true);
+				(/** @type {any} */ (props.updateDiagram))(true);
 				resolve([newPath]);
 			} catch(error) {
 				reject(error);
@@ -313,7 +333,7 @@ export function ConsoleView(props) {
 		});
 	}		
 	
-	const performCommand = async (cmd) => {
+	const performCommand = async (/** @type {any} */ cmd) => {
 		if (cmd.trim().match(/^\/\s+popmodel/)) {   	
 			return await popModelPromise();
 		}
@@ -327,23 +347,23 @@ export function ConsoleView(props) {
 		}
 	}
 	
-	let readCommandFile = event => {
+	let readCommandFile = (/** @type {any} */ event) => {
 		//Retrieve the first (and only!) File from the FileList object
 		var f = event.target.files[0]; 
 
 		if (f) {
 			let r = new FileReader();
-			r.onload = async (e) => { 
-				const contents = e.target.result;
+			r.onload = async (/** @type {any} */ e) => { 
+				const contents = /** @type {string} */ (e.target.result);
 				const cmds = contents.split(`\n'''`);
 				pushOutput('');
 				for (const cmd of cmds) {
 					updateOutput(t('react:consoleCommand', { cmd:cmd }));
-					await commandAction(cmd, (result) => {
+					await (/** @type {any} */ (commandAction))(cmd, (/** @type {any} */ result) => {
 						updateOutput(t('react:consoleCommandResult', { result: result?.[0]?.results }))
 					});
 				}
-				props.updateDiagram();
+				(/** @type {any} */ (props.updateDiagram))();
 			};
 			r.readAsText(f);
 		} else { 
@@ -352,7 +372,7 @@ export function ConsoleView(props) {
 	}
 
 	const aiChat = {
-		async sendPrompt(promptText) {
+		async sendPrompt(/** @type {any} */ promptText) {
 			const headers = {
 				"Content-Type": "application/json",
 				"Authorization": `Bearer ${aiValues.apiKey}`
@@ -393,7 +413,7 @@ export function ConsoleView(props) {
 					aiValues.resetCount++;
 					updateOutput(t('react:consoleRateLimitExceeded'));	
 					aiValues.messages = [];
-					await doCommandPromise('. dgmInfo', async (result) => {
+					await doCommandPromise('. dgmInfo', async (/** @type {any} */ result) => {
 						let dgminfo = result?.[0].results;
 						try {
 							dgminfo = JSON.stringify(dgminfo, null, 2);
@@ -426,7 +446,7 @@ export function ConsoleView(props) {
 			try {
 				let parsed = JSON.parse(clean);
 				updateOutput(t('react:consoleComments'))
-				parsed?.comments?.forEach((comment) => {updateOutput(`${comment}\n`)});
+				parsed?.comments?.forEach((/** @type {any} */ comment) => {updateOutput(`${comment}\n`)});
 				updateOutput('');
 				let maxQueries = 3;
 				while (parsed.query && maxQueries > 0) {
@@ -445,8 +465,8 @@ export function ConsoleView(props) {
 			}
 		},
 
-		async runQueryCommands(commands, maxRetries = 2) {
-			const results = {};
+		async runQueryCommands(/** @type {any} */ commands, maxRetries = 2) {
+			/** @type {any} */ const results = {};
 		
 			for (let i = 0; i < commands.length; i++) {
 				let cmd = commands[i];
@@ -458,7 +478,7 @@ export function ConsoleView(props) {
 					try {
 						result = await performCommand(cmd)
 						updateOutput(t('react:consoleQueryResult', { cmd:cmd, result: JSON.stringify(result) }));
-					} catch(error) {
+					} catch(/** @type {any} */ error) {
 						updateOutput(t('react:consoleErrorInQuery', { cmd:cmd, error: error.message }));
 						result = { error: error.message };
 					}
@@ -505,7 +525,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 			return results;
 		},
 	
-		async action(userPrompt, successCallback, failureCallback) {
+		async action(/** @type {any} */ userPrompt, /** @type {any} */ successCallback, /** @type {any} */ failureCallback) {
 			if (!aiValues.apiKey) {
 				pushOutput(t('react:consoleNeedAIApiKey'));
 				return;
@@ -528,7 +548,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 							failureCallback(t('react:consoleCommandFailed'));
 						}
 					}
-					catch(err) {
+					catch(/** @type {any} */ err) {
 						updateOutput(t('react:consoleErrorInExecuteCommands'));
 						failureCallback(err.message);
 					}
@@ -537,18 +557,24 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 					updateOutput(t('react:consoleSuccessDone'));
 				}
 			}
-			catch(err) {
+			catch(/** @type {any} */ err) {
 				failureCallback(err.message);
 			};
 		},
 	
+		/**
+		 * @param {any} commandsBlock
+		 * @param {any} originalPrompt
+		 * @returns {Promise<any>}
+		 */
 		async executeCommands(commandsBlock, originalPrompt) {
 			if (!commandsBlock) {
 				updateOutput(t('react:consoleNoCommandsToExecute'));
 				return false;
 			}
-			const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter(l => l.trim());
+			const lines = Array.isArray(commandsBlock) ? commandsBlock : commandsBlock.split(/\n/).filter((/** @type {any} */ l) => l.trim());
 
+			/** @returns {Promise<any>} */
 			const runNext = async () => {
 				if (lines.length === 0) {
 					return true;
@@ -556,6 +582,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 				const cmd = lines.shift();
 				updateOutput(t('react:consoleCmd', { cmd:cmd }));
 
+				/** @param {any} result @returns {Promise<any>} */
 				const cmdError = async (result) => {
 					lines.length = 0;
 					const message = (typeof result === 'string') ? result : JSON.stringify(result);
@@ -605,25 +632,27 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 		}
 	};
 
-	let commandAction, successCallBack, failCallBack;
+	let commandAction = (/** @type {any} */ (null));
+	let successCallBack = (/** @type {any} */ (null));
+	let failCallBack = (/** @type {any} */ (null));
 	switch(target) {
 		case 'Console':
 			commandAction = performConsoleCommand;
 			successCallBack = consoleCallBack;
-			failCallBack = (error) => { pushOutput(stringifyError(error)) };
+			failCallBack = (/** @type {any} */ error) => { pushOutput(stringifyError(error)) };
 			break;
 
 		case 'AI': {
 			commandAction = aiChat.action;
-			successCallBack = (result) => {
+			successCallBack = (/** @type {any} */ result) => {
 				updateOutput(result);
-				props.updateDiagram(true);
+				(/** @type {any} */ (props.updateDiagram))(true);
 				props.actions.toggleConsole();
 			}
-			failCallBack = (error) => {
+			failCallBack = (/** @type {any} */ error) => {
 				console.log(t('react:consoleAIFail'));
 				updateOutput(t('react:consoleAIFailed', { error }));
-				props.updateDiagram(true);
+				(/** @type {any} */ (props.updateDiagram))(true);
 			}
 			break;
 		}
@@ -650,12 +679,12 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 				value: input || '',
 				placeholder: inputPlaceholder,
 				ref: inputRef,
-				onChange: event => {
+				onChange: (/** @type {any} */ event) => {
 					//keeps input field in sync
 					const value = event.target.value;
 					setInput(value);				
 				},
-				onKeyDown: event => {
+				onKeyDown: (/** @type {any} */ event) => {
 					if (event.code == 'Enter' && !event.shiftKey) {
 						event.preventDefault();
 						if (input) {
@@ -714,7 +743,7 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 					'select', {
 							value: target,
 							ref: targetRef,
-							onChange: (event) => {
+							onChange: (/** @type {any} */ event) => {
 								inputTarget = event.target.value;
 								setTarget(event.target.value);
 								inputRef.current?.focus();

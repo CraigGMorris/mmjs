@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -17,6 +18,20 @@
 */
 'use strict';
 
+/** @typedef {import('./MMApp.js').ViewProps} ViewProps */
+/** @typedef {import('./MMApp.js').Actions} Actions */
+/** @typedef {import('./MMApp.js').ViewInfo} ViewInfo */
+
+/**
+ * @typedef {Object} UnitPickerProps
+ * @property {(key: string, options?: any) => string} t
+ * @property {Actions} actions
+ * @property {string} [unitName]
+ * @property {string} [unitType]
+ * @property {(unit: string, index: number) => void} apply
+ * @property {() => void} cancel
+ */
+
 const e = React.createElement;
 const useState = React.useState;
 const useEffect = React.useEffect;
@@ -24,8 +39,10 @@ const useEffect = React.useEffect;
 /**
  * @class UnitsView
  * select unit sets or customize units or unit sets
+ * @extends {React.Component<ViewProps, any>}
  */
 export class UnitsView extends React.Component {
+	/** @param {ViewProps} props */
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -41,6 +58,7 @@ export class UnitsView extends React.Component {
 			/unitsys.sets get defaultSetName`);
 	}
 
+	/** @param {any} results */
 	setsList(results) {
 		let list = [];
 		if (results.length > 1 && results[0].results) {
@@ -55,7 +73,7 @@ export class UnitsView extends React.Component {
 					},
 					e('input', {
 						id: id,
-						onChange: (event) => {
+						onChange: (/** @type {any} */ event) => {
 							let newName = event.target.value;
 							this.props.actions.doCommand(`/unitsys.sets set defaultSetName ${newName}`, () => {
 									this.props.actions.updateView(this.props.viewInfo.stackIndex);
@@ -113,8 +131,10 @@ export class UnitsView extends React.Component {
 /**
  * @class UserUnitsView
  * add or edit user units
+ * @extends {React.Component<ViewProps, any>}
  */
 export class UserUnitsView extends React.Component {
+	/** @param {ViewProps} props */
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -130,6 +150,7 @@ export class UserUnitsView extends React.Component {
 
 	/** @method handleSelectClick
 	* click on unit puts definition in input
+	* @param {any} event
 	*/
 	handleSelectClick(event) {
 		this.setState({input: event.target.dataset.definition});
@@ -198,11 +219,11 @@ export class UserUnitsView extends React.Component {
 						id: 'user-units__input',
 						value: this.state.input,
 						placeholder: t('react:userUnitsPlaceHolder'),
-						onChange: (event) => {
+						onChange: (/** @type {any} */ event) => {
 							// keeps input field in sync
 							this.setState({input: event.target.value});
 						},
-						onKeyDown: (event) => {
+						onKeyDown: (/** @type {any} */ event) => {
 							// watches for Enter and sends command when it see it
 							if (event.code == 'Enter') {
 								this.props.actions.doCommand(`/unitsys.units adduserunit ${this.state.input}`, () => {
@@ -233,8 +254,10 @@ export class UserUnitsView extends React.Component {
 /**
  * @class UnitSetsView
  * clone or edit unit sets
+ * @extends {React.Component<ViewProps, any>}
  */
 export class UnitSetsView extends React.Component {
+	/** @param {ViewProps} props */
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -251,6 +274,7 @@ export class UnitSetsView extends React.Component {
 	
 	/** @method handleSelectClick
 	* click on set selects it
+	* @param {any} event
 	*/
 	handleSelectClick(event) {
 		let name = event.target.dataset.name;
@@ -298,7 +322,7 @@ export class UnitSetsView extends React.Component {
 							'button', {
 								id: 'unit-sets__info',
 								value: set.name,
-								onClick: (event) => {
+								onClick: (/** @type {any} */ event) => {
 									let setName = event.target.value;
 									this.props.actions.pushView('unitset', setName, {path: `/unitsys.sets.${setName}`});
 									event.stopPropagation();
@@ -330,12 +354,12 @@ export class UnitSetsView extends React.Component {
 						id: 'unit-sets__name-field',
 						placeholder: '',
 						value: this.state.input,
-						width: this.props.infoWidth - 25,
-						onChange: (event) => {
+						width: (/** @type {any} */ (this.props.infoWidth)) - 25,
+						onChange: (/** @type {any} */ event) => {
 							// keeps input field in sync
 							this.setState({input: event.target.value});
 						},
-						onKeyDown: (event) => {
+						onKeyDown: (/** @type {any} */ event) => {
 							// watches for Enter and sends command when it see it
 							if (event.code == 'Enter') {
 								this.props.actions.doCommand(`/unitsys.sets.${this.state.selected} renameto ${this.state.input}`, () => {
@@ -349,9 +373,9 @@ export class UnitSetsView extends React.Component {
 				e(
 					'button', {
 						id: 'unit-sets__clone-button',
-						onClick: (event) => {
+						onClick: (/** @type {any} */ event) => {
 							if (this.state.input == this.state.selected) {
-								this.props.actions.doCommand(`/unitsys.sets clone ${this.state.input}`, (cmds) => {
+								this.props.actions.doCommand(`/unitsys.sets clone ${this.state.input}`, (/** @type {any} */ cmds) => {
 									if (cmds.length) {
 										let newName = cmds[0].results;
 										this.setState({selected: newName, input: newName});
@@ -383,8 +407,10 @@ export class UnitSetsView extends React.Component {
 /**
  * @class UnitSetView
  * edit user unit set
+ * @extends {React.Component<ViewProps, any>}
  */
 export class UnitSetView extends React.Component {
+	/** @param {ViewProps} props */
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -404,14 +430,14 @@ export class UnitSetView extends React.Component {
 
 	/** @method handleKeyDown
 	 * watches for Enter and sends command when it see it
-	 * @param {Event} event
+	 * @param {any} event
 	 */
 	handleKeyDown(event) {
 		if (event.code == 'Enter') {
 			let name = this.state.nameInput;
 			let unit = this.state.unitInput;
 			if (name.length && unit.length) {
-				this.props.actions.doCommand(`${this.props.viewInfo.path} addtype ${name} ${unit}`, (cmds) => {
+				this.props.actions.doCommand(`${this.props.viewInfo.path} addtype ${name} ${unit}`, (/** @type {any} */ cmds) => {
 					if (!cmds.error) {
 						this.setState({
 							selected: '',
@@ -427,6 +453,7 @@ export class UnitSetView extends React.Component {
 
 	/** @method handleSelectClick
 	* click to select the unit type and fill in the input fields
+	* @param {any} event
 	*/
 	handleSelectClick(event) {
 		let name = event.target.dataset.name;
@@ -474,7 +501,7 @@ export class UnitSetView extends React.Component {
 							'button', {
 								className: 'unit-set__delete',
 								value: unitType.name,
-								onClick: (event) => {
+								onClick: (/** @type {any} */ event) => {
 									// click to delete the unit type
 									let name = event.target.value;
 									if (name == this.state.selected) {
@@ -515,7 +542,7 @@ export class UnitSetView extends React.Component {
 						id: 'unit-set___name-field',
 						value: this.state.nameInput,
 						placeholder: '',
-						onChange: (event) => {
+						onChange: (/** @type {any} */ event) => {
 							// keeps input field in sync
 							this.setState({nameInput: event.target.value});
 						},
@@ -534,7 +561,7 @@ export class UnitSetView extends React.Component {
 						id: 'unitset__unit-field',
 						value: this.state.unitInput,
 						placeholder: '',
-						onChange: (event) => {
+						onChange: (/** @type {any} */ event) => {
 							// keeps input field in sync
 							this.setState({unitInput: event.target.value});
 						},
@@ -548,7 +575,7 @@ export class UnitSetView extends React.Component {
 					e(
 						'button', {
 							id: 'unit-set__delete-set',
-							onClick: (event) => {
+							onClick: (/** @type {any} */ event) => {
 								// click to delete the user set
 								let pathParts = this.props.viewInfo.path.split('.');
 								let name = pathParts[pathParts.length - 1];
@@ -563,7 +590,7 @@ export class UnitSetView extends React.Component {
 					e(
 						'button', {
 							id: 'unit-set__clear-selection',
-							onClick: (event) => {
+							onClick: (/** @type {any} */ event) => {
 								// click to clear the input fields so new type can be defined
 								this.setState({
 									selected: '',
@@ -589,20 +616,24 @@ export class UnitSetView extends React.Component {
 
 
 
-// unit picker component
+/**
+ * unit picker component
+ * @param {UnitPickerProps} props
+ */
 export function UnitPicker(props) {
+	/** @type {React.MutableRefObject<any>} */
 	const inputRef = React.useRef();
 	let t = props.t;
 
-	const [unitTypes, setUnitTypes] = useState([]);
+	const [unitTypes, setUnitTypes] = useState(/** @type {any[]} */ ([]));
 	const [defaultSetName, setDefaultSetName] = useState('');
 	const [selectedType, setSelectedType] = useState('');
-	const [unitNames, setUnitNames] = useState([]);
+	const [unitNames, setUnitNames] = useState(/** @type {any[]} */ ([]));
 	const [selectedUnit, setSelectedUnit] = useState('');
 
 	useEffect(() => {
 		if (defaultSetName) {
-			props.actions.doCommand(`/unitsys.sets.${defaultSetName} listTypes`, (cmds) => {
+			props.actions.doCommand(`/unitsys.sets.${defaultSetName} listTypes`, (/** @type {any} */ cmds) => {
 				setUnitTypes(cmds[0].results);
 			});
 		}
@@ -610,7 +641,7 @@ export function UnitPicker(props) {
 	},[defaultSetName]);
 
 	useEffect(() => {
-		props.actions.doCommand('/unitsys.sets get defaultSetName', (cmds) => {
+		props.actions.doCommand('/unitsys.sets get defaultSetName', (/** @type {any} */ cmds) => {
 			setDefaultSetName(cmds[0].results);
 		});
 		if (inputRef.current) {
@@ -624,7 +655,7 @@ export function UnitPicker(props) {
 			let foundType = false;
 			for (let type of unitTypes) {
 				if (type.name === selectedType) {
-					props.actions.doCommand(`/unitsys.units unitsfordim ${type.dim}`, (cmds) => {
+					props.actions.doCommand(`/unitsys.units unitsfordim ${type.dim}`, (/** @type {any} */ cmds) => {
 						setUnitNames(cmds[0].results);
 					});
 					foundType = true;
@@ -632,7 +663,7 @@ export function UnitPicker(props) {
 				}
 			}
 			if (!foundType && props.unitName) {
-				props.actions.doCommand(`/unitsys.units unitsofsametype ${props.unitName}`, (cmds) => {
+				props.actions.doCommand(`/unitsys.units unitsofsametype ${props.unitName}`, (/** @type {any} */ cmds) => {
 					setUnitNames(cmds[0].results);
 				});
 			}
@@ -711,11 +742,11 @@ export function UnitPicker(props) {
 				id: 'unit-picker__input',
 				ref: inputRef,
 				value: selectedUnit,
-				onChange: (event) => {
+				onChange: (/** @type {any} */ event) => {
 					// keeps input field in sync
 					setSelectedUnit(event.target.value);
 				},
-				onKeyDown: e => {
+				onKeyDown: (/** @type {any} */ e) => {
 					if (e.code == 'Enter') {
 						props.apply(`${selectedUnit}`, 0);
 					}

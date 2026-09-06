@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -23,6 +24,8 @@ import {TableView} from './TableView.js';
 import {UnitPicker} from './UnitsView.js';
 import {MMFormatValue} from './MMApp.js';
 
+/** @typedef {import('./MMApp.js').ViewProps} ViewProps */
+
 const e = React.createElement;
 const useState = React.useState;
 const useEffect = React.useEffect;
@@ -43,10 +46,11 @@ const ExpressionDisplay = Object.freeze({
 /**
  * ExpressionView
  * info view for expression
+ * @param {ViewProps} props
  */
 export function ExpressionView(props) {
-	const [display, setDisplay] = useState(ExpressionDisplay.expression);
-	const [stringDisplay, setStringDisplay] = useState();
+	const [display, setDisplay] = useState(/** @type {number} */ (ExpressionDisplay.expression));
+	const [stringDisplay, setStringDisplay] = useState(/** @type {any} */ (null));
 	const [selectedCell, setSelectedCell] = useState([0,0]);
 	const [editOptions, setEditOptions] = useState({});
 	const [formatString, setFormatString] = useState('');
@@ -81,7 +85,7 @@ export function ExpressionView(props) {
 	}, [props.viewInfo.updateResults, selectedCell, updateResults])
 
 	const t = props.t;
-	if (updateResults.error) {
+	if ((/** @type {any} */ (updateResults)).error) {
 		// use empty command just to defer popView
 		props.actions.doCommand('', () => {
 			props.actions.popView();
@@ -89,6 +93,7 @@ export function ExpressionView(props) {
 		return null;
 	}
 
+	/** @param {string} formula */
 	const applyChanges = (formula) => {
 		props.actions.doCommand(`${path}.${formulaName} set formula ${formula}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
@@ -97,7 +102,7 @@ export function ExpressionView(props) {
 	}
 
 	const addNewExpression = () => {
-		props.actions.doCommand('addTool Expression',(results) => {
+		props.actions.doCommand('addTool Expression',(/** @type {any} */ results) => {
 			if (results && results.length) {
 				const name = results[0].results;
 				props.actions.viewTool(name, 'Expression');			
@@ -119,6 +124,7 @@ export function ExpressionView(props) {
 		);
 	}
 	const isTable = (value && value.t) === 't';
+	/** @type {string | undefined} */
 	let unitType;
 	let valueUnit;
 	if (isTable) {	
@@ -168,7 +174,7 @@ export function ExpressionView(props) {
 					cancel: () => {
 						setDisplay(ExpressionDisplay.expression);
 					},
-					apply: (unit) => {
+					apply: (/** @type {string} */ unit) => {
 						const cmd = isTable ?
 							`${props.viewInfo.path} setcolumnunit ${selectedCell[1]} ${unit}`
 							:
@@ -238,7 +244,7 @@ export function ExpressionView(props) {
 				break;
 	
 		case ExpressionDisplay.expression: {
-			const cellClick = (row, column) => {
+			const cellClick = (/** @type {number} */ row, /** @type {number} */ column) => {
 				if (row === 0 && column === 0) {
 					setSelectedCell([0,0]);
 					return;
@@ -264,7 +270,7 @@ export function ExpressionView(props) {
 					return;
 				}
 	
-				const formatValue = (v, format) => {
+				const formatValue = (/** @type {any} */ v, /** @type {string} */ format) => {
 					if (typeof v === 'string') {
 						return v;
 					}
@@ -279,7 +285,7 @@ export function ExpressionView(props) {
 					}
 				}
 
-				const displayV = (row, column) => {
+				const displayV = (/** @type {number} */ row, /** @type {number} */ column) => {
 					setSelectedCell([row,column]);
 					if (value.t === 't') {
 						const tableColumn = value.v[column - 1];
@@ -296,7 +302,9 @@ export function ExpressionView(props) {
 				setDisplay(value.t === 't' ? ExpressionDisplay.tableRow : ExpressionDisplay.stringValue);
 			}
 
+			/** @type {any} */
 			let displayedUnit = '';
+			/** @type {any} */
 			let formatInput = '';
 			if (unitType && valueUnit) {
 				displayedUnit = `${unitType}: ${valueUnit}`;
@@ -306,11 +314,11 @@ export function ExpressionView(props) {
 						tabIndex: -1,
 						placeholder: 'format',
 						value: formatString,
-						onChange: (event) => {
+						onChange: (/** @type {any} */ event) => {
 								// keeps input field in sync
 								setFormatString(event.target.value);
 						},
-						onKeyDown: e => {
+						onKeyDown: (/** @type {any} */ e) => {
 							if (e.code == 'Enter') {
 								e.target.blur();
 							}
@@ -336,7 +344,7 @@ export function ExpressionView(props) {
 					'span', {
 						id: 'expression__string-type'
 					},
-					{'s': 'String', j: 'JSON', tool: 'Tool'}[value.t]
+					(/** @type {any} */ ({'s': 'String', j: 'JSON', tool: 'Tool'}))[value.t]
 				);
 				if (value.nr === 1 && value.nc === 1) {
 					formatInput = e(
@@ -394,7 +402,7 @@ export function ExpressionView(props) {
 									tabIndex: -1,
 									type: 'checkbox',
 									checked: results.isInput || false,
-									onChange: (event) => {
+									onChange: (/** @type {any} */ event) => {
 										// toggle the isInput property
 										event.stopPropagation();
 										event.preventDefault();					
@@ -427,7 +435,7 @@ export function ExpressionView(props) {
 									tabIndex: -1,
 									type: 'checkbox',
 									checked: results.showInput || false,
-									onChange: (event) => {
+									onChange: (/** @type {any} */ event) => {
 										// toggle the isOutput property
 										event.stopPropagation();
 										event.preventDefault();					
@@ -461,7 +469,7 @@ export function ExpressionView(props) {
 							formula: results.formula || '',
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setDisplay(ExpressionDisplay.formulaEditor);
 							},
@@ -499,7 +507,7 @@ export function ExpressionView(props) {
 						value: results.value,
 						actions: props.actions,
 						viewInfo: props.viewInfo,
-						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 4*nInputHeight - 14],
+						viewBox: [0, 0, (/** @type {any} */ (props.infoWidth)) - 2*nInfoViewPadding, (/** @type {any} */ (props.infoHeight)) - 4*nInputHeight - 14],
 						currentCell: selectedCell[0] === 0 && selectedCell[1] === 0 ? null : selectedCell,
 						cellClick: cellClick,
 					}
@@ -519,6 +527,9 @@ export function ExpressionView(props) {
 	);
 }
 
+/**
+ * @param {any} props
+ */
 function ShowRowView(props) {
 	const [row, column] = props.selectedCell;
 	const t = props.t;
@@ -569,7 +580,7 @@ function ShowRowView(props) {
 	return e(
 		'div', {
 			id: 'expression__row-view',
-			onKeyDown: e => {
+			onKeyDown: (/** @type {any} */ e) => {
 				if (e.code === 'Escape') {
 					e.preventDefault();
 					props.setDisplay(ExpressionDisplay.expression);

@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -27,7 +28,7 @@ const useEffect = React.useEffect;
 /**
  * Enum for model display types.
  * @readonly
- * @enum {string}
+ * @enum {number}
  */
  const ModelDisplay = Object.freeze({
 	model: 0,
@@ -37,14 +38,15 @@ const useEffect = React.useEffect;
 /**
  * ImportMenuView
  * used to select the session to import in an imported model
+ * @param {any} props
  */
 function ImportMenuView(props) {
-	const [sessionPaths, setSessionPaths] = useState([]);
+	const [sessionPaths, setSessionPaths] = useState(/** @type {any[]} */ ([]));
 	const [rootFolder, setRootFolder] = useState('');
 
 	useEffect(() => {
 		if (sessionPaths.length === 0) {
-			props.actions.doCommand(`/ listsessions`, (results) => {
+			props.actions.doCommand(`/ listsessions`, (/** @type {any} */ results) => {
 				setSessionPaths(results[0].results.paths);
 			});
 		}
@@ -153,7 +155,7 @@ function ImportMenuView(props) {
 							props.actions.doCommand(`${props.currentModel} import /${path}`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);
 								props.setShowingImportMenu(false);
-								props.updateDiagram(true);
+								(/** @type {any} */ (props.updateDiagram))(true);
 							})
 						},
 					},
@@ -176,6 +178,7 @@ function ImportMenuView(props) {
 /**
  * ModelView
  * info view for model
+ * @param {import('./MMApp.js').ViewProps} props
  */
 export function ModelView(props) {
 
@@ -184,11 +187,11 @@ export function ModelView(props) {
 
 	const [importSource, setImportSource] = useState('');
 	const [indexToolName, setIndexToolName] = useState('');
-	const [display, setDisplay] = useState(ModelDisplay.model);
+	const [display, setDisplay] = useState(/** @type {number} */ (ModelDisplay.model));
 	const [showingImportMenu, setShowingImportMenu] = useState(false);
 	const [htmlResults, setHtmlResults] = useState(null);
 
-	const editOptions = {}
+	/** @type {any} */ const editOptions = {}
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
@@ -214,13 +217,13 @@ export function ModelView(props) {
 		// return null; // removed this to prevent error on undo of new model Why originally needed?
 	}
 
-	const htmlAction = React.useCallback(e => {
+	const htmlAction = React.useCallback((/** @type {any} */ e) => {
 		if (!updateResults.error) {
 			const results = updateResults.length ? updateResults[0].results : {};
 			if (results.path) {
 				const source = e.source
 				const message = e.data.substring(8)
-				props.actions.doCommand(`${results.path} htmlaction ${message}`, (results) => {
+				props.actions.doCommand(`${results.path} htmlaction ${message}`, (/** @type {any} */ results) => {
 					if (results && results[0] && results[0].results) {
 						const received = results[0].results;
 						if (received.results) {
@@ -231,18 +234,18 @@ export function ModelView(props) {
 						if (received.didLoad) {
 							if (received.resetInfo) {
 								props.actions.resetInfoStack('root', received.resetInfo);
-								props.actions.updateDiagram(true);
+								(/** @type {any} */ (props.actions.updateDiagram))(true);
 							}
 						}
 						else if (received.view) {
 							// console.log(`view ${received.view.name} ${received.view.type}`);
 							props.actions.viewTool(received.view.name, received.view.type);
-							props.actions.updateDiagram();
+							(/** @type {any} */ (props.actions.updateDiagram))();
 						}
 						else if (received.push) {
 							// console.log(`push ${received.push.name} ${received.push.type}`);
 							props.actions.pushTool(received.push.name, received.push.path, received.push.type);
-							props.actions.updateDiagram();
+							(/** @type {any} */ (props.actions.updateDiagram))();
 						}
 						else if (received.update) {
 							// console.log('updating');
@@ -254,7 +257,7 @@ export function ModelView(props) {
 							//window.open(`help/${page.toLowerCase()}.html`,'MM Help');
 						}
 						else {
-							props.actions.updateDiagram();
+							(/** @type {any} */ (props.actions.updateDiagram))();
 						}
 						// setDisplay(HtmlPageDisplay.main);
 					}
@@ -265,7 +268,7 @@ export function ModelView(props) {
 
 	useEffect(() => {
 		// handle messages from the html page
-		const handleMessage = (e) => {
+		const handleMessage = (/** @type {any} */ e) => {
 			if (typeof e.data === "string" && e.data.startsWith('htmlPage')) {
 				htmlAction(e);
 			}
@@ -276,7 +279,7 @@ export function ModelView(props) {
 		}
 	}, [htmlAction]);
 
-	const applyInputChanges = (formula, path) => {
+	const applyInputChanges = (/** @type {any} */ formula, /** @type {any} */ path) => {
 		props.actions.doCommand(`${path} set formula ${formula}`, () => {
 			props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(ModelDisplay.model);
@@ -288,11 +291,11 @@ export function ModelView(props) {
 		id: 'model__import-menu',
 		actions: props.actions,
 		viewInfo: props.viewInfo,
-		updateView: props.updateView,
+		updateView: (/** @type {any} */ (props)).updateView,
 		currentModel: props.viewInfo.path,
 		updateDiagram: props.updateDiagram,
 		setImportSource: setImportSource,
-		setShowingImportMenu: (v) => setShowingImportMenu(v),
+		setShowingImportMenu: (/** @type {any} */ v) => setShowingImportMenu(v),
 		t: t,
 	}) : null;
 
@@ -311,7 +314,7 @@ export function ModelView(props) {
 					cancelAction: () => {
 						setDisplay(ModelDisplay.model);
 					},
-					applyChanges: (formula) => {
+					applyChanges: (/** @type {any} */ formula) => {
 						applyInputChanges(formula, editOptions.path)
 					},	
 				}
@@ -358,11 +361,11 @@ export function ModelView(props) {
 					'input', {
 						id: 'model__indextool-input',
 						value: indexToolName,
-						onChange: (event) => {
+						onChange: (/** @type {any} */ event) => {
 							// keeps input field in sync
 							setIndexToolName(event.target.value);
 						},
-						onKeyDown: (event) => {
+						onKeyDown: (/** @type {any} */ event) => {
 							// watches for Enter and sends command when it see it
 							if (event.code == 'Enter') {
 								props.actions.doCommand(`${props.viewInfo.path} set indexTool ${indexToolName}`, () => {

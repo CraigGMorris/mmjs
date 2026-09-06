@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -24,9 +25,10 @@ const e = React.createElement;
 /**
  * @class SessionsView
  * view for managing sessions
+ * @extends {React.Component<import('./MMApp.js').ViewProps, any>}
  */
 export class SessionsView extends React.Component {
-	constructor(props) {
+	constructor(/** @type {any} */ props) {
 		super(props);
 		this.state = {
 			menuPath: '',
@@ -53,7 +55,7 @@ export class SessionsView extends React.Component {
 	render() {
 		let t = this.props.t;
 		let results = this.props.viewInfo.updateResults;
-		let sessionPaths = [];
+		/** @type {string[]} */ let sessionPaths = [];
 		let currentPath = '';
 		let remoteUrl = null;
 		if (results.length) {
@@ -63,7 +65,7 @@ export class SessionsView extends React.Component {
 		}
 		let sessionList = [];
 		let key = 0;
-		let loadSession = async e => {
+		let loadSession = async (/** @type {any} */ e) => {
 			let shouldLoad = true;
 			if (currentPath === '(unnamed)') {
 				shouldLoad = confirm(t('react:sessionConfirmUnsaved'));
@@ -73,13 +75,13 @@ export class SessionsView extends React.Component {
 					`/ load ${e.target.getAttribute('value')}`,
 					(results) => {
 						this.props.actions.resetInfoStack('root', results ? results[0].results : null);
-						this.props.updateDiagram(true);
+						(/** @type {any} */ (this.props.updateDiagram))(true);
 					}
 				);
 			}
 		}
 
-		let importFile = (event) => {
+		let importFile = (/** @type {any} */ event) => {
 			let shouldLoad = true;
 			if (currentPath === '(unnamed)') {
 				shouldLoad = confirm(t('react:sessionConfirmUnsaved'));
@@ -90,12 +92,12 @@ export class SessionsView extends React.Component {
 		
 				if (f) {
 					let r = new FileReader();
-					r.onload = (e) => { 
+					r.onload = (/** @type {any} */ e) => { 
 						let contents = e.target.result;
 						contents = `/ import ${this.props.viewInfo.rootFolder}:` + contents;
 						this.props.actions.doCommand(contents, (results) => {
 							this.props.actions.resetInfoStack('root', results ? results[0].results : null);
-							this.props.updateDiagram(true);
+							(/** @type {any} */ (this.props.updateDiagram))(true);
 						});
 					};
 					r.readAsText(f);
@@ -107,7 +109,7 @@ export class SessionsView extends React.Component {
 			}
 		}
 
-		let copyPath = async (oldName, newName) => {
+		let copyPath = async (/** @type {any} */ oldName, /** @type {any} */ newName) => {
 			if (newName) {
 				if (oldName.endsWith('/')) {
 					if (!newName.endsWith('/')) {
@@ -144,7 +146,7 @@ export class SessionsView extends React.Component {
 			}
 		}
 
-		let saveToPath = async path => {
+		let saveToPath = async (/** @type {any} */ path) => {
 			if (!path) {
 				// no name given
 				this.setState({
@@ -162,7 +164,7 @@ export class SessionsView extends React.Component {
 			);			
 		}
 	
-		let deletePath = async path => {
+		let deletePath = async (/** @type {any} */ path) => {
 			const confirmMsg = path.endsWith('/') ? 'react:sessionsFolderDelete' : 'react:sessionsDeleteConfirm';
 			if (confirm(t(confirmMsg, {path: path}))) {
 				await this.props.actions.doCommand(
@@ -178,7 +180,7 @@ export class SessionsView extends React.Component {
 			}							
 		}
 
-		let renamePath = async (oldName, newName) => {
+		let renamePath = async (/** @type {any} */ oldName, /** @type {any} */ newName) => {
 			if (newName && newName !== oldName) {
 				if (oldName.endsWith('/')) {
 					if (!newName.endsWith('/')) {
@@ -216,13 +218,13 @@ export class SessionsView extends React.Component {
 							menuAction: '',
 							promptValue: ''
 						});
-						this.props.updateDiagram(true);
+						(/** @type {any} */ (this.props.updateDiagram))(true);
 					}
 				);
 			}
 		}
 
-		let clipSession = async (path) => {
+		let clipSession = async (/** @type {any} */ path) => {
 			await this.props.actions.doCommand(
 				`/ getjson ${path}`,
 				async (results) => {
@@ -244,7 +246,7 @@ export class SessionsView extends React.Component {
 			)
 		}
 
-		let exportPath = async path => {
+		let exportPath = async (/** @type {any} */ path) => {
 			await this.props.actions.doCommand(
 				`/ getjson ${path}`,
 				(results) => {
@@ -303,14 +305,14 @@ export class SessionsView extends React.Component {
 					id: 'sessions__prompt-input',
 					key: 'prompt-input',
 					value: this.state.promptValue,
-					onKeyDown: (event) => {
+					onKeyDown: (/** @type {any} */ event) => {
 						if (event.code === 'Enter') {
 							event.preventDefault();
 							event.stopPropagation();
 							doAction();
 						}
 					},
-					onChange: (event) => {
+					onChange: (/** @type {any} */ event) => {
 						// keeps input field in sync
 						this.setState({promptValue: event.target.value});
 					},
@@ -399,7 +401,7 @@ export class SessionsView extends React.Component {
 					id: 'sessions__menu-clip',
 					key: 'menu-clip',
 					className: 'sessions__menu-button',
-					onPointerUp: (e) => {
+					onPointerUp: (/** @type {any} */ e) => {
 						e.stopPropagation();
 						e.preventDefault();
 						clipSession(this.state.menuPath);
@@ -462,7 +464,7 @@ export class SessionsView extends React.Component {
 									`/ new`,
 									() => {
 										this.props.actions.resetInfoStack('root', {new: true});
-										this.props.updateDiagram(true);
+										(/** @type {any} */ (this.props.updateDiagram))(true);
 									}
 								);
 							}	
@@ -505,7 +507,7 @@ export class SessionsView extends React.Component {
 						'input', {
 							id: 'sessions__import-input',
 							type: 'file',
-							onChange: e => {
+							onChange: (/** @type {any} */ e) => {
 								importFile(e);
 							},
 						}
@@ -515,7 +517,7 @@ export class SessionsView extends React.Component {
 					'button', {
 						id: 'sessions__export-button',
 						onClick: async () => {
-							exportPath(rootFolder.length ? rootFolder : '/');
+							exportPath((/** @type {any} */ (rootFolder)).length ? rootFolder : '/');
 						},
 					},
 					t('react:sessionsExportAllButton'),
@@ -540,7 +542,7 @@ export class SessionsView extends React.Component {
 			}
 
 			const foundFolders = new Set();
-			const rootFolder = this.props.viewInfo.rootFolder;
+			const rootFolder = /** @type {string} */ (this.props.viewInfo.rootFolder);
 			const regex = new RegExp('^' + rootFolder + '.*?/');
 			for (let path of sessionPaths) {
 				let showPath = path.startsWith(rootFolder);
@@ -592,7 +594,7 @@ export class SessionsView extends React.Component {
 										'div', {
 											className: 'sessions__entry-menu',
 											value: path,
-											onClick: e => {
+											onClick: (/** @type {any} */ e) => {
 												let path = e.target.getAttribute('value');
 												this.setState({menuPath: path});
 											}
@@ -626,13 +628,13 @@ export class SessionsView extends React.Component {
 								value: path,
 								onClick: loadSession,
 							},
-							path.substring(rootFolder.length)
+							path.substring((/** @type {any} */ (rootFolder)).length)
 						),
 						e(
 							'div', {
 								className: 'sessions__entry-menu',
 								value: path,
-								onClick: e => {
+								onClick: (/** @type {any} */ e) => {
 									let path = e.target.getAttribute('value');
 									this.setState({menuPath: path});
 								}

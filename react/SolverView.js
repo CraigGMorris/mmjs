@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -27,7 +28,7 @@ const useState = React.useState;
 /**
  * Enum for solver display types.
  * @readonly
- * @enum {string}
+ * @enum {number}
  */
 const SolverDisplay = Object.freeze({
 	input: 0,
@@ -37,9 +38,10 @@ const SolverDisplay = Object.freeze({
 /**
  * SolverView
  * info view for equation solver
+ * @param {import('./MMApp.js').ViewProps} props
  */
 export function SolverView(props) {
-	const [display, setDisplay] = useState(SolverDisplay.input);
+	const [display, setDisplay] = useState(/** @type {number} */ (SolverDisplay.input));
 	const [formulaName, setFormulaName] = useState('')
 	const [editOptions, setEditOptions] = useState({});
 
@@ -69,9 +71,9 @@ export function SolverView(props) {
 		);
 	}
 
-	const applyChanges = (name) => {
+	const applyChanges = (/** @type {any} */ name) => {
 		const path = `${results.path}.${name}`;
-		return (formula) => {
+		return (/** @type {any} */ formula) => {
 			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(SolverDisplay.input);
@@ -127,7 +129,7 @@ export function SolverView(props) {
 						formula: results.formulas[funcName],
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						editAction: (editOptions) => {
+						editAction: (/** @type {any} */ editOptions) => {
 							setEditOptions(editOptions);
 							setFormulaName(funcName);
 							setDisplay(SolverDisplay.formulaEditor);
@@ -151,7 +153,7 @@ export function SolverView(props) {
 						formula: results.formulas[countName],
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						editAction: (editOptions) => {
+						editAction: (/** @type {any} */ editOptions) => {
 							setEditOptions(editOptions);
 							setFormulaName(countName);
 							setDisplay(SolverDisplay.formulaEditor);
@@ -224,7 +226,7 @@ export function SolverView(props) {
 						formula: results.formulas.maxIter,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						editAction: (editOptions) => {
+						editAction: (/** @type {any} */ editOptions) => {
 							setEditOptions(editOptions);
 							setFormulaName('maxIter');
 							setDisplay(SolverDisplay.formulaEditor);
@@ -247,7 +249,7 @@ export function SolverView(props) {
 						formula: results.formulas.maxJacobian,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						editAction: (editOptions) => {
+						editAction: (/** @type {any} */ editOptions) => {
 							setEditOptions(editOptions);
 							setFormulaName('maxJacobian');
 							setDisplay(SolverDisplay.formulaEditor);

@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -29,7 +30,7 @@ const useState = React.useState;
 /**
  * Enum fordisplay types.
  * @readonly
- * @enum {string}
+ * @enum {number}
  */
 const DisplayType = Object.freeze({
 	none: 0,
@@ -57,12 +58,13 @@ const MMGraphLineType = Object.freeze({
 /**
  * GraphView
  * info view for graph
+ * @param {import('./MMApp.js').ViewProps} props
  */
 export function GraphView(props) {
 
-	const [display, setDisplay] = useState(DisplayType.none);
+	const [display, setDisplay] = useState(/** @type {number} */ (DisplayType.none));
 	const [formulaName, setFormulaName] = useState('');
-	const [editOptions, setEditOptions] = useState({});
+	const [editOptions, setEditOptions] = useState(/** @type {any} */ ({}));
 	const [unitLineName, setUnitLineName] = useState('x1');
 	const [unitType, setUnitType] = useState('');
 	const [unitName, setUnitName] = useState('');
@@ -76,7 +78,7 @@ export function GraphView(props) {
 
 		// figure out what view to show first - graph if at least x has formula
 		if (results.isKnown) {
-			props.actions.doCommand(`${props.viewInfo.path} plotInfo`, (infoResults) => {
+			props.actions.doCommand(`${props.viewInfo.path} plotInfo`, (/** @type {any} */ infoResults) => {
 				setPlotInfo(infoResults[0].results);
 				setDisplay(DisplayType.graph);						
 				props.actions.updateView(props.viewInfo.stackIndex);
@@ -107,9 +109,9 @@ export function GraphView(props) {
 		});
 		return null;
 	}
-	const applyChanges = (name) => {
+	const applyChanges = (/** @type {string} */ name) => {
 		const path = `${results.path}.${name}`;
-		return (formula) => {
+		return (/** @type {string} */ formula) => {
 			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(DisplayType.input);
@@ -147,7 +149,7 @@ export function GraphView(props) {
 				cancel: () => {
 					setDisplay(DisplayType.input);
 				},
-				apply: (unit) => {
+				apply: (/** @type {string} */ unit) => {
 					const cmd = `${props.viewInfo.path} setUnit ${unitLineName} ${unit}`;
 
 					props.actions.doCommand(cmd, () => {
@@ -159,9 +161,9 @@ export function GraphView(props) {
 		);
 	}
 	else if (display === DisplayType.input) {
-		const makeRow = (value) => {
+		const makeRow = (/** @type {any} */ value) => {
 			const name = value.name;
-			const typeClick = (type) => {
+			const typeClick = (/** @type {string} */ type) => {
 				props.actions.doCommand(`${props.viewInfo.path} setLineType ${name} ${type}`, () => {
 					props.actions.updateView(props.viewInfo.stackIndex);
 				})
@@ -261,7 +263,7 @@ export function GraphView(props) {
 							formula: value.v,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setFormulaName(name);
 								setDisplay(DisplayType.formulaEditor);
@@ -297,7 +299,7 @@ export function GraphView(props) {
 							formula: value.vmin,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setFormulaName(`min${name}`);
 								setDisplay(DisplayType.formulaEditor);
@@ -327,7 +329,7 @@ export function GraphView(props) {
 							formula: value.vmax,
 							viewInfo: props.viewInfo,
 							infoWidth: props.infoWidth,
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setFormulaName(`max${name}`);
 								setDisplay(DisplayType.formulaEditor);
@@ -406,7 +408,7 @@ export function GraphView(props) {
 						id: 'graph__plot-button',
 						tabIndex: -1,
 						onClick: () => {
-							props.actions.doCommand(`${props.viewInfo.path} plotInfo`, (infoResults) => {
+							props.actions.doCommand(`${props.viewInfo.path} plotInfo`, (/** @type {any} */ infoResults) => {
 								setPlotInfo(infoResults[0].results);
 								setDisplay(DisplayType.graph);						
 								props.actions.updateView(props.viewInfo.stackIndex);
@@ -464,7 +466,7 @@ export function GraphView(props) {
 	);
 }
 
-const convertDateValue = (seconds, unit) => {
+const convertDateValue = (/** @type {number} */ seconds, /** @type {string} */ unit) => {
 	const date = new Date(seconds * 1000);
 	let result = 0;
 	let year = date.getUTCFullYear();
@@ -498,9 +500,10 @@ const convertDateValue = (seconds, unit) => {
  * react component that creates svg to display 2d graph
  * implemented as a class in order to use addEventListener with option passive
  * need ref for that
+ * @extends {React.Component<any, any>}
  */
 class Plot2D extends React.Component {
-	constructor(props) {
+	constructor(/** @type {any} */ props) {
 		super(props);
 		let lineCount = 0;
 		const info = this.props.info;
@@ -520,11 +523,11 @@ class Plot2D extends React.Component {
 		this.plotHeight = this.height - this.topMargin - this.bottomMargin;
 
 		this.panSum = 0;
-		this.eventCache = [];
+		/** @type {any[]} */ this.eventCache = [];
 		this.pinch = 0;
-		let initialState;
+		/** @type {any} */ let initialState;
 		if (props.selected) {
-			const nSelected = props.selected.split('_').map(s => parseInt(s));
+			const nSelected = props.selected.split('_').map((/** @type {any} */ s) => parseInt(s));
 			initialState = {
 				xAxisIndex: nSelected[0],
 				yAxisIndex: nSelected[1]	
@@ -548,7 +551,7 @@ class Plot2D extends React.Component {
 
 	componentDidMount() {
 		this.node.addEventListener('wheel', this.onWheel, {passive: false});
-		this.setState((state) => {
+		this.setState((/** @type {any} */ state) => {
 			return this.checkAxis(state.xAxisIndex, state.yAxisIndex, state.xAxisIndex, state.yAxisIndex);
 		})
 	}
@@ -559,7 +562,7 @@ class Plot2D extends React.Component {
 		this.node.removeEventListener('wheel', this.onWheel);
 	}
 
-	onPointerDown(e) {
+	onPointerDown(/** @type {any} */ e) {
     e.stopPropagation();
     e.preventDefault();
 		this.pointerStartTime = new Date().getTime();
@@ -596,14 +599,14 @@ class Plot2D extends React.Component {
 		})
   }
 
-	onPointerUp(e) {
+	onPointerUp(/** @type {any} */ e) {
 		e.stopPropagation();
 		e.preventDefault();
 		let eCache = this.eventCache;
 		if (eCache.length === 1 && this.pinch === 0) {
 			if (this.panSum < 5) {
 				const t = new Date().getTime();
-				if (t - this.pointerStartTime > 500) {
+				if (t - /** @type {any} */ (this.pointerStartTime) > 500) {
 					// reset to home
 					const svgPoint = this.pointerToSvg({x: e.offsetX, y: e.offsetY})
 					let isScalingX = true;
@@ -647,14 +650,14 @@ class Plot2D extends React.Component {
 								const yNumber = traceNumber - traceCount - 1;
 								const y = x.yInfo[yNumber];
 								if (xNumber === this.state.xAxisIndex && yNumber === this.state.yAxisIndex) {
-									this.setState((state) => {
+									this.setState((/** @type {any} */ state) => {
 										return {
 											highlightTrace: !state.highlightTrace
 										}
 									});			
 								} else {
-									this.setState((state) => {
-										const newState = this.checkAxis(xNumber, yNumber,
+									this.setState((/** @type {any} */ state) => {
+										/** @type {any} */ const newState = this.checkAxis(xNumber, yNumber,
 												this.state.xAxisIndex, this.state.yAxisIndex
 											);
 										newState.highlightTrace = true;
@@ -721,7 +724,7 @@ class Plot2D extends React.Component {
 		}
 	}
 	
-  onPointerMove(e) {
+  onPointerMove(/** @type {any} */ e) {
 		e.stopPropagation();
 		e.preventDefault();
 		let eCache = this.eventCache;
@@ -733,7 +736,7 @@ class Plot2D extends React.Component {
 			this.touch0 = {x: e.clientX, y: e.clientY};
 			const boxWidth = this.node.width.baseVal.value;
 
-			this.setState((state) => {
+			this.setState((/** @type {any} */ state) => {
 				const dx = e.clientX - state.lastPointer.x;
 				const dy = e.clientY - state.lastPointer.y;
 				return {
@@ -765,7 +768,7 @@ class Plot2D extends React.Component {
 				this.panSum += this.pinch;
 			}
 
-			this.setState((state) => {
+			this.setState((/** @type {any} */ state) => {
 				const newXScale = Math.max(0.01, state.xScale * ratio);
 				const newYScale = Math.max(0.01, state.yScale * ratio);
 				const newTranslate = {
@@ -781,7 +784,7 @@ class Plot2D extends React.Component {
 		}
 	}
 	
-	onWheel(e){
+	onWheel(/** @type {any} */ e){
 		e.preventDefault();
 		e.stopPropagation();
 		const deltaY = e.deltaY;
@@ -795,7 +798,7 @@ class Plot2D extends React.Component {
 			isScalingX = false;
 		}
 
-		this.setState((state) => {
+		this.setState((/** @type {any} */ state) => {
 			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 5*(state.xScale + state.yScale));
 			const newXScale = isScalingX ? Math.max(0.01, state.xScale + rate / 100) : state.xScale;
 			const newYScale = isScalingY ?  Math.max(0.01, state.yScale + rate / 100) : state.yScale;
@@ -814,8 +817,8 @@ class Plot2D extends React.Component {
 	/**
 	 * @method pointerToSvg(point)
 	 * converts pointer click to svg location
-	 * @param {Object} point - {x, y} from pointer event
-	 * @returns {Object} - {x, y} location in svg
+	 * @param {{x: number, y: number}} point - {x, y} from pointer event
+	 * @returns {{x: number, y: number}} - {x, y} location in svg
 	 */
 	pointerToSvg(point) {
 		// determine if container width if greater than height
@@ -842,6 +845,10 @@ class Plot2D extends React.Component {
 	/**
 	 * @method checkAxis
 	 * check to ensure selected axis isn't hidden. If so move to first unhidden
+	 * @param {any} xAxisIndex
+	 * @param {any} yAxisIndex
+	 * @param {any} currentXAxis
+	 * @param {any} currentYAxis
 	 */
 	checkAxis(xAxisIndex, yAxisIndex, currentXAxis, currentYAxis) {
 		const nXValues = this.props.info.xInfo.length;
@@ -942,7 +949,7 @@ class Plot2D extends React.Component {
 		];
 
 		if (axisX.minLabel != null) {
-			const labelText = (labelValue) => {
+			const labelText = (/** @type {any} */ labelValue) => {
 				if (labelValue != 0.0 && (Math.abs(labelValue) > 100000000.0 || Math.abs(labelValue) < 0.01)) {
 					return labelValue.toExponential(2);
 				}
@@ -956,7 +963,7 @@ class Plot2D extends React.Component {
 				}
 			}
 	
-			const gridFormat = (key, x1, x2, y1, y2) => {
+			const gridFormat = (/** @type {any} */ key, /** @type {any} */ x1, /** @type {any} */ x2, /** @type {any} */ y1, /** @type {any} */ y2) => {
 				return e(
 					'line', {
 						className: 'svg_gridlines',
@@ -1104,7 +1111,7 @@ class Plot2D extends React.Component {
 			}
 
 			// lines
-			const lines = [];
+			const lines = /** @type {any[]} */ ([]);
 			const xCount = info.xInfo.length;
 			let colorNumber = 0;
 			let yTitleNumber = 0;
@@ -1200,7 +1207,7 @@ class Plot2D extends React.Component {
 								}
 							));
 							if (isXString) {
-								elements.push(barLabel);
+								elements.push(/** @type {any} */ (barLabel));
 							}
 						}
 						let yTitle = y.title;
@@ -1254,7 +1261,7 @@ class Plot2D extends React.Component {
 					width: '100%',
 				},
 				viewBox: viewBox,
-				ref: node => this.node = node,
+				ref: (/** @type {any} */ node) => this.node = node,
 				onPointerDown: this.onPointerDown,
 			},
 			e(
@@ -1278,15 +1285,16 @@ class Plot2D extends React.Component {
  * react component that creates svg to display 3d graph
  * implemented as a class in order to use addEventListener with option passive
  * need ref for that
+ * @extends {React.Component<any, any>}
  */
 class Plot3D extends React.Component {
-	constructor(props) {
+	constructor(/** @type {any} */ props) {
 		super(props);
 		this.height = 500.0;
 		this.width = 500.0;
 		this.panSum = 0;
 		this.isPanning = false;
-		this.eventCache = [];
+		/** @type {any[]} */ this.eventCache = [];
 		this.pinch = 0;
 		this.isRotating = false;
 		this.lastRotationX = null;
@@ -1314,7 +1322,7 @@ class Plot3D extends React.Component {
 
 	componentDidMount() {
 		this.node.addEventListener('wheel', this.onWheel, {passive: false});
-		this.setState((state) => {
+		this.setState((/** @type {any} */ state) => {
 			return {xAxisIndex: this.checkAxis(state.xAxisIndex, state.xAxisIndex)};
 		});
 	}
@@ -1325,7 +1333,7 @@ class Plot3D extends React.Component {
 		this.node.removeEventListener('wheel', this.onWheel);
 	}
 
-	onPointerDown(e) {
+	onPointerDown(/** @type {any} */ e) {
     e.stopPropagation();
     e.preventDefault();
 		this.pointerStartTime = new Date().getTime();
@@ -1357,7 +1365,7 @@ class Plot3D extends React.Component {
 		}
   }
 
-	onPointerUp(e) {
+	onPointerUp(/** @type {any} */ e) {
 		e.stopPropagation();
 		e.preventDefault();
 		let eCache = this.eventCache;
@@ -1371,7 +1379,7 @@ class Plot3D extends React.Component {
 		else if (eCache.length === 1 && this.pinch === 0) {
 			if (this.panSum < 5) {
 				const t = new Date().getTime();
-				if (t - this.pointerStartTime > 500) {
+				if (t - /** @type {any} */ (this.pointerStartTime) > 500) {
 					// reset to home
 					this.setState({
 						pinchScale: 1.0,
@@ -1412,7 +1420,7 @@ class Plot3D extends React.Component {
 		}
 	}
 	
-  onPointerMove(e) {
+  onPointerMove(/** @type {any} */ e) {
 		e.stopPropagation();
 		e.preventDefault();
 		let eCache = this.eventCache;
@@ -1426,7 +1434,7 @@ class Plot3D extends React.Component {
 			if (!this.isPanning && (this.isRotating || svgPoint.y < 50)) {
 				this.isRotating = true;
 				if (this.lastRotationX !== null) {
-					this.setState((state) => {
+					this.setState((/** @type {any} */ state) => {
 						return {
 							rotation: state.rotation + (e.clientX - this.lastRotationX) / 100.0,
 						}
@@ -1436,7 +1444,7 @@ class Plot3D extends React.Component {
 			}
 			else {
 				this.isPanning = true;
-				this.setState((state) => {
+				this.setState((/** @type {any} */ state) => {
 					let dx = e.clientX - state.lastPointer.x;
 					let dy = e.clientY - state.lastPointer.y;
 					let dz = 0;
@@ -1486,7 +1494,7 @@ class Plot3D extends React.Component {
 				this.panSum += this.pinch;
 			}
 
-			this.setState((state) => {
+			this.setState((/** @type {any} */ state) => {
 				const newScale = Math.max(0.01, state.pinchScale * ratio);
 				return {
 					pinchScale: newScale,
@@ -1495,11 +1503,11 @@ class Plot3D extends React.Component {
 		}
 	}
 	
-	onWheel(e){
+	onWheel(/** @type {any} */ e){
 		e.preventDefault();
 		e.stopPropagation();
 		const deltaY = e.deltaY;
-		this.setState((state) => {
+		this.setState((/** @type {any} */ state) => {
 			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 10*state.pinchScale);
 			const newScale = Math.max(0.01, state.pinchScale + rate/100);
 			return {
@@ -1511,8 +1519,8 @@ class Plot3D extends React.Component {
 	/**
 	 * @method pointerToSvg(point)
 	 * converts pointer click to svg location
-	 * @param {Object} point - {x, y} from pointer event
-	 * @returns {Object} - {x, y} location in svg
+	 * @param {{x: number, y: number}} point - {x, y} from pointer event
+	 * @returns {{x: number, y: number}} - {x, y} location in svg
 	 */
 	pointerToSvg(point) {
 		// determine if container width if greater than height
@@ -1538,6 +1546,8 @@ class Plot3D extends React.Component {
 
 	/**
 	 * @method checkAxis
+	 * @param {any} xAxisIndex
+	 * @param {any} [currentXAxis]
 	 */
 	checkAxis(xAxisIndex, currentXAxis) {
 		const nXValues = this.props.info.xInfo.length;
@@ -1562,7 +1572,7 @@ class Plot3D extends React.Component {
 	 * @method incrementXAxis
 	 */
 	incrementXAxis() {
-		this.setState((state) => {
+		this.setState((/** @type {any} */ state) => {
 			const nXValues = this.props.info.xInfo.length;
 			const newIndex = (state.xAxisIndex + 1) % nXValues;
 			return {xAxisIndex: this.checkAxis(newIndex, state.xAxisIndex)};
@@ -1605,7 +1615,7 @@ class Plot3D extends React.Component {
 		];
 
 		// define transform functions needed
-		const pitchForAngle = (angle) => {
+		const pitchForAngle = (/** @type {any} */ angle) => {
 			const v = new Float64Array(16);
 			v[0] = 1.0;	// [1,1] (1 based)
 			v[5] = Math.cos( angle );	// [2,2]
@@ -1616,7 +1626,7 @@ class Plot3D extends React.Component {
 			return v;
 		}
 
-		const rollForAngle = (angle) => {
+		const rollForAngle = (/** @type {any} */ angle) => {
 			const v = new Float64Array(16);
 			v[0] = Math.cos( angle );	// [1,1] (1 based)
 			v[1] = Math.sin( angle );	// [1,2]
@@ -1628,7 +1638,7 @@ class Plot3D extends React.Component {
 		}
 
 		// dot product of two 4x4 matricies represented as Float64Arrays
-		const matrixMultiply4x4 = (a, b) => {
+		const matrixMultiply4x4 = (/** @type {any} */ a, /** @type {any} */ b) => {
 			const nRows = 4;
 			const nColumns = 4;
 			const v = new Float64Array(nRows*nColumns);	
@@ -1646,7 +1656,7 @@ class Plot3D extends React.Component {
 
 		// Creates a 4x4 transformation matrix corresponding to an x, y, z translation
 		// using the three coordinates of the a array.
-		const translateArray = (a) => {
+		const translateArray = (/** @type {any} */ a) => {
 			const v = new Float64Array(16);
 			v[3] = a[0];	// [1,4] (1 based)
 			v[7] = a[1];	// [2,4]
@@ -1687,7 +1697,7 @@ class Plot3D extends React.Component {
 		/**
 		 * multiple Float64Array a by Number b returning new Float64Arra
 		 */
-		const multiply = (a, b) => {
+		const multiply = (/** @type {any} */ a, /** @type {any} */ b) => {
 			const l = a.length;
 			const v = new Float64Array(l);
 			for (let i = 0; i < l; i++) {
@@ -1699,7 +1709,7 @@ class Plot3D extends React.Component {
 		/**
 		 * subtract scalar b from Float64Array a returning new Float64Arra
 		 */
-		const subtract = (a, b) => {
+		const subtract = (/** @type {any} */ a, /** @type {any} */ b) => {
 			const l = a.length;
 			const v = new Float64Array(l);
 			for (let i = 0; i < l; i++) {
@@ -1711,7 +1721,7 @@ class Plot3D extends React.Component {
 		/**
 		 * append column b to matrix a, where rowCount is the number of rows
 		 */
-		const append = (rowCount, a, b) => {
+		const append = (/** @type {any} */ rowCount, /** @type {any} */ a, /** @type {any} */ b) => {
 			const aColumnCount = a.length / rowCount;
 			const bColumnCount = b.length / rowCount;
 			const columnCount = aColumnCount + bColumnCount;
@@ -1758,7 +1768,7 @@ class Plot3D extends React.Component {
 		}
 	
 		const coords = new Float64Array(9);
-		const gridFormat = (key, x1, y1, x2, y2, x3, y3) => {
+		const gridFormat = (/** @type {any} */ key, /** @type {any} */ x1, /** @type {any} */ y1, /** @type {any} */ x2, /** @type {any} */ y2, /** @type {any} */ x3, /** @type {any} */ y3) => {
 			return e(
 				'path', {
 					className: "svg_gridlines",
@@ -1769,7 +1779,7 @@ class Plot3D extends React.Component {
 			)
 		}
 
-		const textFormat = (key, className, x, y, color, anchor, text) => {
+		const textFormat = (/** @type {any} */ key, /** @type {any} */ className, /** @type {any} */ x, /** @type {any} */ y, /** @type {any} */ color, /** @type {any} */ anchor, /** @type {any} */ text) => {
 			return e(
 				'text', {
 					className: className,
@@ -1783,17 +1793,17 @@ class Plot3D extends React.Component {
 			)
 		}
 
-		const labelFormat = (key, x, y, color, anchor, text) => {
+		const labelFormat = (/** @type {any} */ key, /** @type {any} */ x, /** @type {any} */ y, /** @type {any} */ color, /** @type {any} */ anchor, /** @type {any} */ text) => {
 			return textFormat(key, 'svg_label', x, y, color, anchor, text)
 		}
-		const titleFormat = (key, x, y, color, anchor, text) => {
+		const titleFormat = (/** @type {any} */ key, /** @type {any} */ x, /** @type {any} */ y, /** @type {any} */ color, /** @type {any} */ anchor, /** @type {any} */ text) => {
 			return textFormat(key, 'svg_title', x, y, color, anchor, text)
 		}
-		const unitFormat = (key, x, y, color, anchor, text) => {
+		const unitFormat = (/** @type {any} */ key, /** @type {any} */ x, /** @type {any} */ y, /** @type {any} */ color, /** @type {any} */ anchor, /** @type {any} */ text) => {
 			return textFormat(key, 'svg_unit', x, y, color, anchor, text)
 		}
 		
-		const labelValues = (labelPan, minLabel, maxLabel, nLabels, unit) => {
+		const labelValues = (/** @type {any} */ labelPan, /** @type {any} */ minLabel, /** @type {any} */ maxLabel, /** @type {any} */ nLabels, /** @type {any} */ unit) => {
 			const labels = [];
 			const labelScale = (minLabel === maxLabel) ? 0.1 : pinchScale / (maxLabel - minLabel);
 			const isDate = (unit === 'date' || unit === 'dated' || unit === 'datem');
@@ -1813,7 +1823,7 @@ class Plot3D extends React.Component {
 			return labels;
 		}
 		
-		const gridElements = [];
+		const gridElements = /** @type {any[]} */ ([]);
 
 		// x labels and grid
 		let gridXElements = [];
@@ -1985,8 +1995,8 @@ class Plot3D extends React.Component {
 
 		// add the lines
 
-		const renderLines = (lines, height, lineColor, lineClass, lineType, lineOpacity, output) => {
-			const isnormal = (n) => {
+		const renderLines = (/** @type {any} */ lines, /** @type {any} */ height, /** @type {any} */ lineColor, /** @type {any} */ lineClass, /** @type {any} */ lineType, /** @type {any} */ lineOpacity, /** @type {any} */ output) => {
+			const isnormal = (/** @type {any} */ n) => {
 				return !isNaN(n) && n !== Infinity && n !== -Infinity;
 			}
 			const v = lines;
@@ -2185,7 +2195,7 @@ class Plot3D extends React.Component {
 					width: '100%',
 				},
 				viewBox: viewBox,
-				ref: node => this.node = node,
+				ref: (/** @type {any} */ node) => this.node = node,
 				onPointerDown: this.onPointerDown,
 			},
 			e(

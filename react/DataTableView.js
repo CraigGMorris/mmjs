@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -30,7 +31,7 @@ const useEffect = React.useEffect;
 /**
  * Enum for data table display types.
  * @readonly
- * @enum {string}
+ * @enum {number}
  */
 const DataTableDisplay = Object.freeze({
 	table: 0,
@@ -43,6 +44,7 @@ const DataTableDisplay = Object.freeze({
 });
 
 /** Edit Column Component
+ * @param {any} props
  */
 function EditColumnView(props) {
 	const t = props.t;
@@ -50,7 +52,7 @@ function EditColumnView(props) {
 	const columnProperties = props.columnProperties;
 	const path = props.path;
 
-	const [editColumnDisplay, setEditColumnDisplay] = useState(DataTableDisplay.editColumn);
+	const [editColumnDisplay, setEditColumnDisplay] = useState(/** @type {number} */ (DataTableDisplay.editColumn));
 	const [columnName, setColumnName] = useState(columnProperties.name);
 	const [columnNumber, setColumnNumber] = useState(columnProperties.columnNumber);
 	const [columnFormat, setColumnFormat] = useState(columnProperties.format ? columnProperties.format : '');
@@ -177,7 +179,7 @@ function EditColumnView(props) {
 					cancelAction: () => {
 						setEditColumnDisplay(DataTableDisplay.editColumn);
 					},
-					applyChanges: (formula) => {
+					applyChanges: (/** @type {any} */ formula) => {
 						setDefaultValue(formula);
 						setEditColumnDisplay(DataTableDisplay.editColumn);
 					}
@@ -195,7 +197,7 @@ function EditColumnView(props) {
 					cancel: () => {
 						setEditColumnDisplay(DataTableDisplay.editColumn);
 					},
-					apply: (unit) => {
+					apply: (/** @type {any} */ unit) => {
 						setDisplayUnit(unit);
 						setEditColumnDisplay(DataTableDisplay.editColumn);
 					},
@@ -230,7 +232,7 @@ function EditColumnView(props) {
 						'input', {
 							id: 'datatable__column-name-field',
 							value: columnName,
-							onChange: (event) => {
+							onChange: (/** @type {any} */ event) => {
 								// keeps input field in sync
 								setColumnName(event.target.value);
 							},
@@ -253,7 +255,7 @@ function EditColumnView(props) {
 						'input', {
 							id: 'datatable__column-position-field',
 							value: columnNumber,
-							onChange: (event) => {
+							onChange: (/** @type {any} */ event) => {
 								// keeps input field in sync
 								setColumnNumber(event.target.value);
 							},
@@ -290,11 +292,11 @@ function EditColumnView(props) {
 							path: `${path}.${name}`,
 							formula: defaultValue,
 							viewInfo: props.viewInfo,
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setEditColumnDisplay(DataTableDisplay.defaultEditor);
 							},
-							applyChanges: (formula) => {
+							applyChanges: (/** @type {any} */ formula) => {
 								setDefaultValue(formula);
 								setEditColumnDisplay(DataTableDisplay.editColumn);
 							}
@@ -339,7 +341,7 @@ function EditColumnView(props) {
 						'input', {
 							id: 'datatable__column-format-field',
 							value: columnFormat,
-							onChange: (event) => {
+							onChange: (/** @type {any} */ event) => {
 								// keeps input field in sync
 								setColumnFormat(event.target.value);
 							},
@@ -356,12 +358,12 @@ function EditColumnView(props) {
 
 /**
  * Edit Row Component
- * 
+ * @param {any} props
  */
 function EditRowView(props) {
 	const [row, column] = props.selectedCell;
 	const t = props.t;
-	const [editRowDisplay, setEditRowDisplay] = useState(DataTableDisplay.editRow);
+	const [editRowDisplay, setEditRowDisplay] = useState(/** @type {number} */ (DataTableDisplay.editRow));
 	const [selectedField, setSelectedField] = useState(column);
 	const [selectedRow, setSelectedRow] = useState(row);
 	const [editOptions, setEditOptions] = useState({});
@@ -426,7 +428,7 @@ function EditRowView(props) {
 						'select', {
 							className: 'datatable__row-menu-select',
 							value: v,
-							onChange: (e) => {
+							onChange: (/** @type {any} */ e) => {
 								const newValue = e.target.value;
 								if (newValue != v) {
 									const replacement = column.v.unit ? newValue + ' ' + column.v.unit : newValue;
@@ -451,7 +453,7 @@ function EditRowView(props) {
 							actions: props.actions,
 							formula: formulaString,
 							key: rowN, // need to ensure each formula field is unique when moving through rows
-							applyChanges: (formula) => {
+							applyChanges: (/** @type {any} */ formula) => {
 								const path = props.viewInfo.path;
 								props.actions.doCommand(`${path} setcell ${displayedRow} ${columnNumber + 1} ${formula}`,() => {
 									setEditRowDisplay(DataTableDisplay.editRow);
@@ -462,7 +464,7 @@ function EditRowView(props) {
 								setSelectedField(columnNumber + 1);
 							},
 
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setSelectedField(columnNumber + 1);
 								setEditOptions(editOptions);
 								setEditRowDisplay(DataTableDisplay.editCell);
@@ -491,7 +493,7 @@ function EditRowView(props) {
 			return e(
 				'div', {
 					id: 'datatable__row-view',
-					onKeyDown: e => {
+					onKeyDown: (/** @type {any} */ e) => {
 						if (e.code === 'Escape') {
 							e.preventDefault();
 							props.setDisplay(DataTableDisplay.table);
@@ -618,7 +620,7 @@ function EditRowView(props) {
 					cancelAction: () => {
 						setEditRowDisplay(DataTableDisplay.editRow);
 					},
-					applyChanges: (formula) => {
+					applyChanges: (/** @type {any} */ formula) => {
 						const path = props.viewInfo.path;
 						props.actions.doCommand(`${path} setcell ${displayedRow} ${selectedField} ${formula}`,() => {
 							setEditRowDisplay(DataTableDisplay.editRow);
@@ -636,25 +638,26 @@ function EditRowView(props) {
 /**
  * DataTableView
  * info view for data table
+ * @param {import('./MMApp.js').ViewProps} props
  */
 
 export function DataTableView(props) {
-	const [display, setDisplay] = useState(DataTableDisplay.table);
+	const [display, setDisplay] = useState(/** @type {number} */ (DataTableDisplay.table));
 	const [selectedCell, setSelectedCell] = useState([0,0]);
-	const [selectedRows, setSelectedRows] = useState();
+	const [selectedRows, setSelectedRows] = useState(/** @type {any} */ (undefined));
 	const [editOptions, setEditOptions] = useState({});
 
 	useEffect(() => {
 		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
 			`${props.viewInfo.path} toolViewInfo`);
 
-		const state = props.viewInfo.dataTableViewState;
+		const state = (/** @type {any} */ (props.viewInfo)).dataTableViewState;
 		if (state) {
 			setDisplay(state.display);
 			setSelectedCell(state.selectedCell);
 		}
 		else {
-			props.viewInfo.dataTableViewState = {
+			(/** @type {any} */ (props.viewInfo)).dataTableViewState = {
 				display: display,
 				selectedCell: selectedCell,
 			};
@@ -664,11 +667,11 @@ export function DataTableView(props) {
 	}, []);
 
 	useEffect(() => {
-		props.viewInfo.dataTableViewState.display = display;
+		(/** @type {any} */ (props.viewInfo)).dataTableViewState.display = display;
 	}, [display, props.viewInfo])
 
 	useEffect(() => {
-		props.viewInfo.dataTableViewState.selectedCell = selectedCell;
+		(/** @type {any} */ (props.viewInfo)).dataTableViewState.selectedCell = selectedCell;
 	}, [selectedCell, props.viewInfo])
 
 	const t = props.t;
@@ -703,11 +706,11 @@ export function DataTableView(props) {
 	let displayComponent;
 	switch (display) {
 		case DataTableDisplay.table: {
-			const cellClick = (row, column) => {
+			const cellClick = (/** @type {any} */ row, /** @type {any} */ column) => {
 				if (column === 0 && row > 0) {  // row selection
-					let rowSet = new Set()
+					let rowSet = /** @type {any} */ (new Set())
 					if (selectedRows) {
-						selectedRows.forEach(v => rowSet.add(v));
+						selectedRows.forEach((/** @type {any} */ v) => rowSet.add(v));
 					}
 					if (rowSet.has(row)) {
 						rowSet.delete(row);
@@ -744,13 +747,13 @@ export function DataTableView(props) {
 				}
 			}
 
-			const longPress = (row, column) => {
+			const longPress = (/** @type {any} */ row, /** @type {any} */ column) => {
 				if (selectedRows && column === 0 && row > 0) {
 					let lastRow = selectedCell[0];
 					if (row != lastRow) {
 						setSelectedCell([row, column]);
-						const rowSet = new Set();
-						selectedRows.forEach(v => rowSet.add(v));
+						const rowSet = /** @type {any} */ (new Set());
+						selectedRows.forEach((/** @type {any} */ v) => rowSet.add(v));
 						if (row < lastRow) {
 							[row, lastRow] = [lastRow, row];
 						}
@@ -840,11 +843,11 @@ export function DataTableView(props) {
 							path: `${path}.filterFormula`,
 							formula: results.value.filter || '',
 							viewInfo: props.viewInfo,
-							editAction: (editOptions) => {
+							editAction: (/** @type {any} */ editOptions) => {
 								setEditOptions(editOptions);
 								setDisplay(DataTableDisplay.filterEditor);
 							},
-							applyChanges: (formula) => {
+							applyChanges: (/** @type {any} */ formula) => {
 								const path = props.viewInfo.path;
 								props.actions.doCommand(`${path}.filterFormula set formula ${formula}`,() => {
 									props.actions.updateView(props.viewInfo.stackIndex);
@@ -859,7 +862,7 @@ export function DataTableView(props) {
 						value: results.value,
 						actions: props.actions,
 						viewInfo: props.viewInfo,
-						viewBox: [0, 0, props.infoWidth - 2*nInfoViewPadding, props.infoHeight - 3*nInputHeight - 24],
+						viewBox: [0, 0, /** @type {number} */ (props.infoWidth) - 2*nInfoViewPadding, /** @type {number} */ (props.infoHeight) - 3*nInputHeight - 24],
 						selectedRows: selectedRows,
 						currentCell: selectedCell[0] === 0 && selectedCell[1] === 0 ? null : selectedCell,
 						cellClick: cellClick,
@@ -882,7 +885,7 @@ export function DataTableView(props) {
 					cancelAction: () => {
 						setDisplay(DataTableDisplay.table);
 					},
-					applyChanges: (formula) => {
+					applyChanges: (/** @type {any} */ formula) => {
 						const path = props.viewInfo.path;
 						props.actions.doCommand(`${path}.filterFormula set formula ${formula}`,() => {
 							props.actions.updateView(props.viewInfo.stackIndex);
@@ -978,7 +981,7 @@ export function DataTableView(props) {
 					cancelAction: () => {
 						setDisplay(DataTableDisplay.table);
 					},
-					applyChanges: (formula) => {
+					applyChanges: (/** @type {any} */ formula) => {
 						const path = props.viewInfo.path;
 						props.actions.doCommand(`${path} setcell ${row} ${column} ${formula}`,() => {
 							setDisplay(DataTableDisplay.table);

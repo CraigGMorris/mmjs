@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -17,6 +18,21 @@
 */
 'use strict';
 import {MMFormatValue} from './MMApp.js';
+
+/** @typedef {import('./MMApp.js').ViewInfo} ViewInfo */
+
+/**
+ * @typedef {Object} TableViewProps
+ * @property {string} [id]
+ * @property {any} value
+ * @property {ViewInfo} [viewInfo]
+ * @property {number[]} viewBox
+ * @property {any} [cellInputs]
+ * @property {number[]} [currentCell]
+ * @property {Set<number>} [selectedRows]
+ * @property {(row: number, col: number) => void} [cellClick]
+ * @property {(row: number, col: number) => void} [longPress]
+ */
 
 const e = React.createElement;
 const useState = React.useState;
@@ -39,14 +55,16 @@ const TableViewDragType = Object.freeze({
 	fastY: 'fastY'
 });
 
+/** @type {number} */
 let pointerStartTime;
 
 /**
  * TableView
  * view for MMValue as a table
+ * @param {TableViewProps} props
  */
 export function TableView(props) {
-	const [dragType, setDragType] = useState(TableViewDragType.none);
+	const [dragType, setDragType] = useState(/** @type {string} */ (TableViewDragType.none));
 	const [dragOrigin, setDragOrigin] = useState({x: 0, y: 0});
 	const [pointerCaptured, setPointerCaptured] = useState(false);
 	const [initialOffset, setInitialOffset] = useState({x: 0, y: 0});
@@ -154,9 +172,9 @@ export function TableView(props) {
 
 	const offset = tableViewOffset;
 	const nRowCells = Math.min(maxDisplayedRows, nRows);
-	const rowOrigin = Math.max(0, Math.floor(Math.min(offset.y / cellHeight), nRows - nRowCells));
+	const rowOrigin = Math.max(0, /** @type {any} */ (Math.floor)(Math.min(offset.y / cellHeight), nRows - nRowCells));
 	const nColumnCells = Math.min(Math.floor((viewBox[2]- rowLabelWidth) / cellWidth) + 2, nColumns);
-	const columnOrigin = Math.max(0, Math.floor(Math.min(offset.x / cellWidth), nColumns - nColumnCells));
+	const columnOrigin = Math.max(0, /** @type {any} */ (Math.floor)(Math.min(offset.x / cellWidth), nColumns - nColumnCells));
 	const yPadding = 0; // pixel gap at top
 	const xPadding = 0; // pixel gap at left
 
@@ -167,7 +185,7 @@ export function TableView(props) {
 		e.preventDefault();
 
 		pointerStartTime = new Date().getTime();
-		let newDragType = TableViewDragType.cell;
+		let newDragType = /** @type {string} */ (TableViewDragType.cell);
 		if (y < cellHeight) {
 			if (x < rowLabelWidth) {
 				newDragType = TableViewDragType.origin;
@@ -255,7 +273,7 @@ const pointerMove = useCallback(e => {
 		e.stopPropagation();
 		e.preventDefault();
 
-		const cellPan = (deltaX, deltaY) => {
+		const cellPan = (/** @type {number} */ deltaX, /** @type {number} */ deltaY) => {
 			let offsetX = Math.max(0, deltaX + initialOffset.x);
 			let offsetY = Math.max(0, deltaY + initialOffset.y);
 			const maxY = viewBox[3];
@@ -269,14 +287,14 @@ const pointerMove = useCallback(e => {
 			setTableViewOffset({x: offsetX, y: offsetY});
 		}
 
-		const fastPanX = (deltaX) => {
+		const fastPanX = (/** @type {number} */ deltaX) => {
 			const maxX = viewBox[2];
 			//const nColumns = value.nc;
 			deltaX = (deltaX/(maxX - rowLabelWidth)) * nColumns * cellWidth * 2;
 			cellPan(deltaX, 0);
 		}
 
-		const fastPanY = (deltaY) => {
+		const fastPanY = (/** @type {number} */ deltaY) => {
 			const maxY = viewBox[3];
 			//const nRows = value.nr;
 			deltaY = (deltaY/(maxY - cellHeight)) * nRows * cellHeight * 2;

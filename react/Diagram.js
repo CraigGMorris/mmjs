@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -27,8 +28,8 @@ const e = React.createElement;
 
 /**
  * @function snapPosition
- * @param {Object} pos 
- * @returns {Object}
+ * @param {{x: number, y: number}} pos 
+ * @returns {{x: number, y: number}}
  */
 function snapPosition(pos) {
 	let newX, newY;
@@ -72,13 +73,14 @@ const ContextMenuType = Object.freeze({
 /**
  * @class Diagram
  * the main mind map diagram
+ * @extends {React.Component<any, any>}
  */
 export class Diagram extends React.Component {
-	constructor(props) {
+	constructor(/** @type {any} */ props) {
 		super(props);
 
 		this.panSum = 0;
-		this.eventCache = [];
+		/** @type {any[]} */ this.eventCache = [];
 		this.pinch = 0;
 		this.maxIcons = 300;
 
@@ -111,14 +113,14 @@ export class Diagram extends React.Component {
 
 	/**
 	 * @method getModelInfo
-	 * @param {Boolean} rescale
+	 * @param {Boolean} [rescale]
 	 */
 	getModelInfo(rescale = false) {
-		this.props.actions.doCommand('/ dgminfo', (results) => {
+		this.props.actions.doCommand('/ dgminfo', (/** @type {any} */ results) => {
 			if (results.length && results[0].results) {
 				const modelInfo = results[0].results;
 				this.setState(() => {
-					let newState = {
+					/** @type {any} */ let newState = {
 						path: modelInfo.path,
 						tools: modelInfo.tools,
 						selectedObject: modelInfo.selectedObject,
@@ -166,7 +168,7 @@ export class Diagram extends React.Component {
 	/**
 	 * @method doCommand
 	 * @param {String} command
-	 * @param {Boolean} rescale - true if diagram should be rescaled
+	 * @param {Boolean} [rescale] - true if diagram should be rescaled
 	 * shortcut to props.actions.doCommand with automatic getModelInfo
 	 */
 	doCommand(command, rescale) {
@@ -188,13 +190,13 @@ export class Diagram extends React.Component {
 
 	/**
 	 * @method setDragType
-	 * @param {DiagramDragType} dragType
-	 * @param {Object} lastPointerPosition
-	 * @param {Object} options
+	 * @param {string} [dragType]
+	 * @param {Object} [lastPointerPosition]
+	 * @param {any} [options]
 	 * if type is tool, options should contain tool name
 	 */
 	setDragType(dragType, lastPointerPosition, options) {
-		this.setState((state) => {
+		this.setState((/** @type {any} */ state) => {
 			switch (dragType) {
 				case DiagramDragType.pan: 
 					return {
@@ -281,13 +283,13 @@ export class Diagram extends React.Component {
 	 * @param {Number} y 
 	 */
 	draggedTo(x, y) {
-		this.setState((state) => {
+		this.setState((/** @type {any} */ state) => {
 			if (state.dragType == null) {
 				return {};
 			}
 			const dx = x - state.lastPointer.x;
 			const dy = y - state.lastPointer.y;
-			function updateDragSelection(dragSelection) {
+			function updateDragSelection(/** @type {any} */ dragSelection) {
 				if (!dragSelection) {
 					return null;
 				}
@@ -315,7 +317,7 @@ export class Diagram extends React.Component {
 				case DiagramDragType.tool: 
 					if (state.dragSelection) {
 						let dragSelection = updateDragSelection(state.dragSelection);
-						const tools = this.updateToolInfoPositions(dragSelection, state);
+						const tools = this.updateToolInfoPositions(/** @type {Map<any, any>} */ (dragSelection), state);
 						return {
 							tools: tools,
 							lastPointer: {x: x, y: y},
@@ -328,7 +330,7 @@ export class Diagram extends React.Component {
 					const sb = state.selectionBox;
 					const scale = state.scale;
 					const dragSelection = updateDragSelection(state.dragSelection);
-					const tools = this.updateToolInfoPositions(dragSelection, state);
+					const tools = this.updateToolInfoPositions(/** @type {Map<any, any>} */ (dragSelection), state);
 					return {
 						tools: tools,
 						dragSelection: dragSelection,
@@ -377,13 +379,13 @@ export class Diagram extends React.Component {
 	/**
 	 * @method toolsInBox
 	 * @param {Object} selectionBox
-	 * @param {Object} tools - toolInfos
-	 * @returns {Map}
+	 * @param {Record<string, any>} tools - toolInfos
+	 * @returns {Map<any, any>}
 	 * returns a drag selection map of all tools found in rectangle
 	 * described by top left and bottom positions
 	 */
 	toolsInBox(selectionBox, tools) {
-		function intersectRect(r1, r2) {
+		function intersectRect(/** @type {any} */ r1, /** @type {any} */ r2) {
 			return !(r2.left > r1.right || 
 				r2.right < r1.left || 
 				r2.top > r1.bottom ||
@@ -410,8 +412,8 @@ export class Diagram extends React.Component {
 
 	/**
 	 * @method updateToolInfoPositions
-	 * @param {Map} positions
-	 * @param {Object} state
+	 * @param {Map<any, any>} positions
+	 * @param {any} state
 	 * @returns {Object} new tools object
 	 */
 	updateToolInfoPositions(positions, state) {
@@ -434,7 +436,7 @@ export class Diagram extends React.Component {
 	 * x, y is top left corner
 	 */
 	createSelectionBox(x, y) {
-		this.setState((state) => {
+		this.setState((/** @type {any} */ state) => {
 			const scale = state.scale;
 			const topLeft = {
 				x: x / scale - state.translate.x,
@@ -456,7 +458,7 @@ export class Diagram extends React.Component {
 		});
 	}
 
-	onPointerDown(e) {
+	onPointerDown(/** @type {any} */ e) {
 		e.stopPropagation();
 		e.preventDefault();
 		// console.log(`down ${this.eventCache.length}`);
@@ -488,7 +490,7 @@ export class Diagram extends React.Component {
 		}
   }
 
-	onPointerUp(e) {
+	onPointerUp(/** @type {any} */ e) {
 		// console.log(`up ${this.eventCache.length}`);
 		e.stopPropagation();
 		e.preventDefault();
@@ -496,7 +498,7 @@ export class Diagram extends React.Component {
 		if ( eCache.length === 1 && this.pinch === 0) {
 			if (this.panSum < 5) {
 				const t = new Date().getTime();
-				if (t - this.pointerStartTime > 500) {
+				if (t - /** @type {any} */ (this.pointerStartTime) > 500) {
 					this.createSelectionBox(e.clientX, e.clientY);
 				}
 				else {
@@ -505,7 +507,7 @@ export class Diagram extends React.Component {
 					}
 					else if (e.clientY - this.props.diagramBox.top > 25) {
 						// bring up context menu, but only if click is below title and return text
-						this.setState((state) => {
+						this.setState((/** @type {any} */ state) => {
 							const scale = state.scale;
 							let position = {
 								x: state.lastPointer.x / scale - state.translate.x,
@@ -548,7 +550,7 @@ export class Diagram extends React.Component {
 		}
 	}
 	
-  onPointerMove(e) {
+  onPointerMove(/** @type {any} */ e) {
 		e.stopPropagation();
 		e.preventDefault();
 		let eCache = this.eventCache;
@@ -582,7 +584,7 @@ export class Diagram extends React.Component {
 			const clientX = (eCache[0].x + eCache[1].x) / 2;
 			const clientY = (eCache[0].y + eCache[1].y) / 2;
 
-			this.setState((state) => {
+			this.setState((/** @type {any} */ state) => {
 				const newScale = Math.min(5.0, Math.max(0.2, state.scale * ratio));
 				const newTranslate = {
 					x: clientX/newScale - clientX/state.scale + state.translate.x,
@@ -596,7 +598,7 @@ export class Diagram extends React.Component {
 		}
 	}
 
-	onWheel(e) {
+	onWheel(/** @type {any} */ e) {
 		if (this.state.showClipboard) {
 			return;
 		}
@@ -606,7 +608,7 @@ export class Diagram extends React.Component {
 		const deltaY = e.deltaY;
 		const pageX = e.pageX;
 		const pageY = e.pageY;
-		this.setState((state) => {
+		this.setState((/** @type {any} */ state) => {
 			const rate = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 10*state.scale);
 			const newScale = Math.min(5.0, Math.max(0.2, state.scale - rate / 100));
 			const newTranslate = {
@@ -642,7 +644,7 @@ export class Diagram extends React.Component {
 				highlight = true;
 			}
 
-			const setToolHover = (toolName) => {
+			const setToolHover = (/** @type {any} */ toolName) => {
 				this.setState({toolHover: toolName});
 			}
 
@@ -660,7 +662,7 @@ export class Diagram extends React.Component {
 				updateView: this.props.actions.updateView,
 				dimmed: this.state.selectedObject && toolName !== this.state.selectedObject,
 				setToolHover: setToolHover,
-				showContext: (shouldShow) => {
+				showContext: (/** @type {any} */ shouldShow) => {
 					this.setState({
 						showContext: shouldShow,
 					});
@@ -837,7 +839,7 @@ export class Diagram extends React.Component {
 				updateView: this.props.actions.updateView,
 				translate: this.state.translate,
 				scale: scale,
-				showContext: (shouldShow) => {
+				showContext: (/** @type {any} */ shouldShow) => {
 					this.setState({
 						showContext: shouldShow,
 					});
@@ -897,7 +899,7 @@ export class Diagram extends React.Component {
 					text: '+',
 					size: 30,
 					textClick: () => {
-						this.setState((state) => {
+						this.setState((/** @type {any} */ state) => {
 							const newScale = Math.max(0.1, state.scale * 1.2);
 							const clientX = boxWidth/2;
 							const clientY = boxHeight/2;
@@ -922,7 +924,7 @@ export class Diagram extends React.Component {
 					text: '-',
 					size: 50,
 					textClick: () => {
-						this.setState((state) => {
+						this.setState((/** @type {any} */ state) => {
 							const newScale = Math.max(0.1, state.scale / 1.2);
 							const clientX = boxWidth/2;
 							const clientY = boxHeight/2;
@@ -976,9 +978,9 @@ export class Diagram extends React.Component {
 
 		let contextMenu;
 		if (this.state.showContext) {
-			const addTool = (type) => {
+			const addTool = (/** @type {any} */ type) => {
 				const position = this.state.showContext.info;
-				this.props.actions.doCommand(`${this.state.path} addtool ${type} ${position.x} ${position.y}`, (results) => {
+				this.props.actions.doCommand(`${this.state.path} addtool ${type} ${position.x} ${position.y}`, (/** @type {any} */ results) => {
 					this.setState({showContext: null});
 					const toolName = results[0].results;
 					if (type === 'Import') {
@@ -1081,7 +1083,7 @@ export class Diagram extends React.Component {
 				}
 					break;
 				case ContextMenuType.tool: {
-					const deleteTool = (info) => {
+					const deleteTool = (/** @type {any} */ info) => {
 						if (info.name === this.state.selectedObject) {
 							this.props.actions.viewTool();  // empty parameters clears infostack
 						}
@@ -1101,8 +1103,8 @@ export class Diagram extends React.Component {
 						{
 							text: this.props.t('react:dgmButtonCopy'),
 							info: this.state.showContext.info,
-							action: (info) => {
-								this.props.actions.doCommand(`${this.state.path} copytool ${info.name}`, (results) => {
+							action: (/** @type {any} */ info) => {
+								this.props.actions.doCommand(`${this.state.path} copytool ${info.name}`, (/** @type {any} */ results) => {
 									if (!results.error) {
 										writeClipboard(results[0].results);
 									}
@@ -1113,8 +1115,8 @@ export class Diagram extends React.Component {
 						{
 							text: this.props.t('react:dgmButtonCut'),
 							info: this.state.showContext.info,
-							action: (info) => {
-								this.props.actions.doCommand(`${this.state.path} copytool  ${info.name}`, (results) => {
+							action: (/** @type {any} */ info) => {
+								this.props.actions.doCommand(`${this.state.path} copytool  ${info.name}`, (/** @type {any} */ results) => {
 									if (!results.error) {
 										writeClipboard(results[0].results).then(() => {
 											deleteTool(info);
@@ -1128,8 +1130,8 @@ export class Diagram extends React.Component {
 						menuEntries.push({
 							text: this.props.t('react:dgmButtonCopyTable'),
 							info: this.state.showContext.info,
-							action: (info) => {
-								this.props.actions.doCommand(`${this.state.path} copyastable ${info.name}`, (results) => {
+							action: (/** @type {any} */ info) => {
+								this.props.actions.doCommand(`${this.state.path} copyastable ${info.name}`, (/** @type {any} */ results) => {
 									if (!results.error) {
 										writeClipboard(results[0].results);
 									}
@@ -1278,13 +1280,13 @@ export class Diagram extends React.Component {
 						break;
 
 					case ContextMenuType.selection: {
-					const copyTools = (deleteAfterCopy) => {
+					const copyTools = (/** @type {any} */ deleteAfterCopy) => {
 						const sel = this.toolsInBox(this.state.selectionBox, this.state.tools);
 						const names = [];
 						for (let name of sel.keys()) {
 							names.push(name);
 						}
-						this.props.actions.doCommand(`${this.state.path} copytool ${names.join(' ')}`, (results) => {
+						this.props.actions.doCommand(`${this.state.path} copytool ${names.join(' ')}`, (/** @type {any} */ results) => {
 							if (!results.error) {
 								writeClipboard(results[0].results);
 								if (deleteAfterCopy) {
@@ -1364,8 +1366,8 @@ export class Diagram extends React.Component {
 		return e(
 			'div', {
 				id: 'diagram__wrapper',
-				ref: node => this.node = node,
-				onContextMenu: event => event.preventDefault(),
+				ref: (/** @type {any} */ node) => this.node = node,
+				onContextMenu: (/** @type {any} */ event) => event.preventDefault(),
 				style: {
 					height: dgmBox.height,
 					width: dgmBox.width,
@@ -1400,9 +1402,10 @@ export class Diagram extends React.Component {
 /**
  * @class ToolIcon
  * the main mind map diagram
+ * @extends {React.Component<any, any>}
  */
 class ToolIcon extends React.Component {
-	constructor(props) {
+	constructor(/** @type {any} */ props) {
 		super(props);
 		this.state = {
 			dragging: null,
@@ -1410,7 +1413,7 @@ class ToolIcon extends React.Component {
 		};
 
 		this.panSum = 0;
-		this.eventCache = [];
+		/** @type {any[]} */ this.eventCache = [];
 
 		this.onPointerDown = this.onPointerDown.bind(this);
 		this.onPointerUp = this.onPointerUp.bind(this);
@@ -1424,7 +1427,7 @@ class ToolIcon extends React.Component {
 		this.node.removeEventListener('pointerup', this.onPointerUp);
 	}
 
-	onPointerDown(e) {
+	onPointerDown(/** @type {any} */ e) {
     e.stopPropagation();
     e.preventDefault();
 		this.eventCache.push({
@@ -1447,14 +1450,14 @@ class ToolIcon extends React.Component {
 		}
   }
 
-	onPointerUp(e) {
+	onPointerUp(/** @type {any} */ e) {
 		let eCache = this.eventCache;
 		e.stopPropagation();
 		e.preventDefault();
 		if ( eCache.length === 1) {
 			if (this.panSum < 5) {
 				const t = new Date().getTime();
-				if (t - this.pointerStartTime > 500) {
+				if (t - /** @type {any} */ (this.pointerStartTime) > 500) {
 					this.props.showContext({
 						type: ContextMenuType.tool,
 						info: this.props.info,
@@ -1493,7 +1496,7 @@ class ToolIcon extends React.Component {
 
 	}
 	
-  onPointerMove(e) {
+  onPointerMove(/** @type {any} */ e) {
 		e.stopPropagation();
 		e.preventDefault();
 		if (!this.state.dragging) return
@@ -1508,12 +1511,12 @@ class ToolIcon extends React.Component {
 		}
 	}
 
-	onPointerEnter(e) {
+	onPointerEnter(/** @type {any} */ e) {
 		// console.log('onPointerEnter');
 		this.props.setToolHover(this.props.info.name);
 	}
 	
-	onPointerLeave(e) {
+	onPointerLeave(/** @type {any} */ e) {
 		// console.log('onPointerLeave');
 		this.props.setToolHover(null);
 	}
@@ -1528,7 +1531,7 @@ class ToolIcon extends React.Component {
 		const scale = this.props.scale;
 		const textColor = this.props.highlight ? 'blue' : 'black';
 		const toolTypeColor = this.props.highlight ? textColor : 'rgb(0,102,0)';
-		const toolColors = {
+		/** @type {Record<string, string>} */ const toolColors = {
 			Expression: 'rgba(247,247,230,.8)',
 			Model: 'rgba(230,255,255,.8)',
 			Matrix: 'rgba(223,233,223,.8)',
@@ -1546,11 +1549,11 @@ class ToolIcon extends React.Component {
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;
 		if (info.toolTypeName === 'Expression') {
-			const resultColor = info.resultType ? {
+			const resultColor = info.resultType ? (/** @type {Record<string, string>} */ ({
 				n: textColor,
 				s: 'green',
 				t: 'blue'
-			}[info.resultType]
+			}))[info.resultType]
 				: textColor;
 			textComponents = e(
 				'svg', {
@@ -1743,7 +1746,7 @@ class ToolIcon extends React.Component {
 					stroke: textColor,
 					fill: fillColor
 				},
-				ref: node => this.node = node,
+				ref: (/** @type {any} */ node) => this.node = node,
 			},
 			e(
 				'rect', {
@@ -1768,7 +1771,7 @@ class ToolIcon extends React.Component {
 						stroke: "transparent",
 						fill: "transparent"
 					},
-					onPointerDown: (e) => {
+					onPointerDown: (/** @type {any} */ e) => {
 						e.stopPropagation();
 						e.preventDefault();
 						alert(info.notes);
@@ -1782,16 +1785,17 @@ class ToolIcon extends React.Component {
 /**
  * @class SelectionBox
  * the main mind map diagram
+ * @extends {React.Component<any, any>}
  */
 class SelectionBox extends React.Component {
-	constructor(props) {
+	constructor(/** @type {any} */ props) {
 		super(props);
 		this.state = {
 			dragging: null,
 		};
 
 		this.panSum = 0;
-		this.eventCache = [];
+		/** @type {any[]} */ this.eventCache = [];
 
 		this.onPointerDown = this.onPointerDown.bind(this);
 		this.onPointerUp = this.onPointerUp.bind(this);
@@ -1807,7 +1811,8 @@ class SelectionBox extends React.Component {
 	 * @method determineDragType
 	 * @param {Number} clientX 
 	 * @param {Number} clientY
-	 * @returns {DiagramDragType}
+	 * @param {Number} corner
+	 * @returns {string}
 	 */
 	determineDragType(clientX, clientY, corner) {
 		const scale = this.props.scale;
@@ -1828,7 +1833,7 @@ class SelectionBox extends React.Component {
 		return dragType
 	}
 
-	onPointerDown(e) {
+	onPointerDown(/** @type {any} */ e) {
     e.stopPropagation();
 		e.preventDefault();
 		this.eventCache.push({
@@ -1850,7 +1855,7 @@ class SelectionBox extends React.Component {
 		}
   }
 
-	onPointerUp(e) {
+	onPointerUp(/** @type {any} */ e) {
     e.stopPropagation();
 		e.preventDefault();
 		if (this.panSum < 5) {
@@ -1881,7 +1886,7 @@ class SelectionBox extends React.Component {
 		}
 	}
 	
-  onPointerMove(e) {
+  onPointerMove(/** @type {any} */ e) {
 		this.panSum += Math.abs(e.movementX) + Math.abs(e.movementY);
 		this.props.draggedTo(e.clientX, e.clientY);
     e.stopPropagation()
@@ -1905,7 +1910,7 @@ class SelectionBox extends React.Component {
 		},
 			e('rect', {
 				onPointerDown: this.onPointerDown,
-				onClick: this.onClick,
+				onClick: (/** @type {any} */ (this)).onClick,
 				x: x,
 				y: y,
 				width: width,
@@ -1930,9 +1935,10 @@ class SelectionBox extends React.Component {
 /**
  * @class ClickableDiagramText
  * the main mind map diagram
+ * @extends {React.Component<any, any>}
  */
 class ClickableDiagramText extends React.Component {
-	constructor(props) {
+	constructor(/** @type {any} */ props) {
 		super(props);
 		// this.onClick = this.onClick.bind(this);
 		this.onPointerDown = this.onPointerDown.bind(this);
@@ -1942,19 +1948,19 @@ class ClickableDiagramText extends React.Component {
 		this.size = props.size || 20;
 	}
 
-	onPointerDown(e) {
+	onPointerDown(/** @type {any} */ e) {
 		this.pointerDown = true;
 		e.stopPropagation();
 		e.preventDefault();
 	}
 
-	onPointerLeave(e) {
+	onPointerLeave(/** @type {any} */ e) {
 		this.pointerDown = false;
 		e.stopPropagation();
 		e.preventDefault();
 	}
 
-	onPointerUp(e) {
+	onPointerUp(/** @type {any} */ e) {
 	// only left Pointer button
 		if (!this.pointerDown) { 
 			return;
@@ -1986,8 +1992,12 @@ class ClickableDiagramText extends React.Component {
 	}
 }
 
+/**
+ * @class Divider
+ * @extends {React.Component<any, any>}
+ */
 class Divider extends React.Component {
-	constructor(props) {
+	constructor(/** @type {any} */ props) {
 		super(props);
 		// this.onClick = this.onClick.bind(this);
 		this.onPointerDown = this.onPointerDown.bind(this);
@@ -1995,14 +2005,14 @@ class Divider extends React.Component {
 		this.onPointerMove = this.onPointerMove.bind(this);
 	}
 
-	onPointerDown(e) {
+	onPointerDown(/** @type {any} */ e) {
 		e.stopPropagation();
 		e.preventDefault();					
 		this.dividerPointer = e.clientX;
 		e.target.setPointerCapture(e.pointerId);
 	}
 
-	onPointerMove(e) {
+	onPointerMove(/** @type {any} */ e) {
 		if (this.dividerPointer) {
 			e.stopPropagation();
 			e.preventDefault();
@@ -2020,7 +2030,7 @@ class Divider extends React.Component {
 		}		
 	}
 
-	onPointerUp(e) {
+	onPointerUp(/** @type {any} */ e) {
 		e.stopPropagation();
 		e.preventDefault();					
 		e.target.releasePointerCapture(e.pointerId);
@@ -2048,8 +2058,12 @@ class Divider extends React.Component {
 	}
 }
 
+/**
+ * @class ContextMenu
+ * @extends {React.Component<any, any>}
+ */
 class ContextMenu extends React.Component {
-	constructor(props) {
+	constructor(/** @type {any} */ props) {
 		super(props);
 		this.onPointerDown = this.onPointerDown.bind(this);
 		this.onPointerUp = this.onPointerUp.bind(this);
@@ -2071,18 +2085,18 @@ class ContextMenu extends React.Component {
 		this.node.removeEventListener('pointerup', this.onPointerUp);
 	}
 
-	onPointerDown(e) {
+	onPointerDown(/** @type {any} */ e) {
     e.stopPropagation();
     e.preventDefault();
 		e.target.addEventListener('pointerup', this.onPointerUp);
 		this.lineNumberDown = Math.floor((e.clientY - this.config.offset.y - 10) / this.config.itemHeight);
 	}
 
-	onPointerUp(e) {
+	onPointerUp(/** @type {any} */ e) {
 		e.stopPropagation();
 		e.preventDefault();
 		e.target.removeEventListener('pointerup', this.onPointerUp);
-		const lineNumber = this.lineNumberDown;
+		const lineNumber = /** @type {any} */ (this.lineNumberDown);
 		if (lineNumber >= 0 && lineNumber < this.props.menu.length) {
 			const menuItem = this.props.menu[lineNumber];
 			menuItem.action(menuItem.info);
@@ -2110,7 +2124,7 @@ class ContextMenu extends React.Component {
 		return e(
 			'g', {
 				id: 'diagram__context-menu',
-				ref: node => this.node = node,
+				ref: (/** @type {any} */ node) => this.node = node,
 			},
 			e(
 				'rect', {

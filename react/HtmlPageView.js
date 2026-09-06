@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -27,7 +28,7 @@ const useState = React.useState;
 /**
  * Enum for html page display types.
  * @readonly
- * @enum {string}
+ * @enum {number}
  */
 const HtmlPageDisplay = Object.freeze({
 	main: 0,
@@ -45,9 +46,10 @@ const HtmlPageDisplay = Object.freeze({
  * The actual work of generating the processed html and responding to mm_post calls
  * is done by the webworker MMHtmlPage.  Communication with it is also by message
  * passing using the MMApp doCommand in props.actions
+ * @param {import('./MMApp.js').ViewProps} props
  */
 export function HtmlPageView(props) {
-	const [display, setDisplay] = useState(HtmlPageDisplay.input);
+	const [display, setDisplay] = useState(/** @type {number} */ (/** @type {any} */ (HtmlPageDisplay).input));
 	const [editOptions, setEditOptions] = useState({});
 	const [htmlResults, setHtmlResults] = useState(null);
 
@@ -69,13 +71,13 @@ export function HtmlPageView(props) {
 		}
 	}, [updateResults]);
 
-	const htmlAction = React.useCallback(e => {
+	const htmlAction = React.useCallback((/** @type {any} */ e) => {
 		if (!updateResults.error) {
 			const results = updateResults.length ? updateResults[0].results : {};
 			if (results.path) {
 				const source = e.source
 				const message = e.data.substring(8)
-				props.actions.doCommand(`${results.path} htmlaction ${message}`, (results) => {
+				props.actions.doCommand(`${results.path} htmlaction ${message}`, (/** @type {any} */ results) => {
 					if (results && results[0] && results[0].results) {
 						const received = results[0].results;
 						if (received.results) {
@@ -119,7 +121,7 @@ export function HtmlPageView(props) {
 
 	useEffect(() => {
 		// handle messages from the html page
-		const handleMessage = (e) => {
+		const handleMessage = (/** @type {any} */ e) => {
 			if (typeof e.data === "string" && e.data.startsWith('htmlPage')) {
 				htmlAction(e);
 			}
@@ -141,7 +143,7 @@ export function HtmlPageView(props) {
 
 	const applyChanges = () => {
 		const path = `${results.path}.Formula`;
-		return (formula) => {
+		return (/** @type {any} */ formula) => {
 			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(HtmlPageDisplay.main);
@@ -187,7 +189,7 @@ export function HtmlPageView(props) {
 						formula: results.formula || '',
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						editAction: (editOptions) => {
+						editAction: (/** @type {any} */ editOptions) => {
 							setEditOptions(editOptions);
 							setDisplay(HtmlPageDisplay.formulaEditor);
 						},

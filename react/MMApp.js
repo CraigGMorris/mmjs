@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -38,6 +39,98 @@ import {ButtonView} from './ButtonView.js';
 import {MenuView} from './MenuView.js';
 import {FlashView} from './FlashView.js';
 
+/**
+ * @typedef {Object} UpdateResultItem
+ * @property {string} [verb]
+ * @property {any} [results]
+ * @property {any} [error]
+ * @property {any} [warning]
+ * @property {any} [undo]
+ * @property {string} [expression]
+ * @property {string} [path]
+ * @property {string} [action]
+ * @property {string} [formula]
+ * @property {string} [target]
+ * @property {string} [labelFormula]
+ * @property {string} [targetFormula]
+ * @property {string} [notes]
+ * @property {boolean} [diagramNotes]
+ * @property {boolean} [htmlNotes]
+ * @property {boolean} [justAdded]
+ * @property {any} [selected]
+ * @property {string[]} [paths]
+ * @property {boolean} [isKnown]
+ * @property {any} [xValues]
+ */
+
+/**
+ * @typedef {Object} ViewInfo
+ * @property {string} title
+ * @property {string} path
+ * @property {number} stackIndex
+ * @property {string} updateCommands
+ * @property {Array<UpdateResultItem> & {error?: any}} updateResults
+ * @property {string} viewKey
+ * @property {string} [type]
+ * @property {any} [selected]
+ * @property {any} [options]
+ * @property {string} [formula]
+ * @property {any} [applyChanges]
+ * @property {string} [modelPath]
+ * @property {string} [rootFolder]
+ * @property {string[]} [sessionPaths]
+ */
+
+/**
+ * @typedef {Object} Actions
+ * @property {(cmd: string, callback?: (results: any) => void, errorHandler?: (msg: string) => void) => void} doCommand
+ * @property {(modelName?: string, successCallBack?: (path?: string) => void, failCallBack?: (error?: any) => void) => void} pushModel
+ * @property {(modelName?: string) => any} popModel
+ * @property {(toolName?: string, toolType?: string) => void} viewTool
+ * @property {(toolName: string, path: string, toolType: string) => void} pushTool
+ * @property {(viewKey: string, title?: string, options?: any) => void} pushView
+ * @property {() => string | undefined} popView
+ * @property {(rootName: string, resetInfo?: any) => void} resetInfoStack
+ * @property {(stackIndex: number, commands: string) => void} setUpdateCommands
+ * @property {(stackIndex?: number | null, rescaleDiagram?: boolean, doAutoSave?: boolean) => void} updateView
+ * @property {(rescale?: boolean) => void} updateDiagram
+ * @property {(path: string, newName: string) => void} renameTool
+ * @property {() => void} toggleConsole
+ */
+
+/**
+ * @typedef {Object} DiagramBox
+ * @property {number} top
+ * @property {number} left
+ * @property {number} height
+ * @property {number} width
+ */
+
+/**
+ * @typedef {Object} ViewProps
+ * @property {Actions} actions
+ * @property {ViewInfo} viewInfo
+ * @property {(key: string, options?: any) => string} t
+ * @property {string} [className]
+ * @property {DiagramBox} [diagramBox]
+ * @property {number} [docHeight]
+ * @property {number} [docWidth]
+ * @property {string} [focus]
+ * @property {number} [fontSize]
+ * @property {number} [infoHeight]
+ * @property {number} [infoWidth]
+ * @property {number} [rightPaneWidth]
+ * @property {boolean} [twoPane]
+ * @property {number} [viewType]
+ * @property {string} [key]
+ * @property {(rescale?: boolean) => void} [updateDiagram]
+ * @property {number} [stackNumber]
+ * @property {any} [editOptions]
+ * @property {() => void} [cancelAction]
+ * @property {(formula: string) => void} [applyChanges]
+ * @property {string} [id]
+ */
+
 const e = React.createElement;
 const useState = React.useState;
 const useEffect = React.useEffect;
@@ -47,7 +140,7 @@ const useRef = React.useRef;
 /**
  * Enum for view types.
  * @readonly
- * @enum {string}
+ * @enum {number}
  */
 const ViewType = Object.freeze({
 	diagram: 0,
@@ -55,22 +148,22 @@ const ViewType = Object.freeze({
 	twoPanes: 2
 });
 
-// {MMCommandPipe} pipe - pipe to worker
+/** @type {MMCommandPipe} */
 const pipe = new MMCommandPipe();
 
 // {Integer} tag to ensure correct callback is used with doCommand
 let callBackId = 1;
 
-// {Array} commandCallBacks - a Map keyed by and id so callbacks are called in correct order
+/** @type {Map<number, ((results: any) => void) | undefined>} */
 const commandCallBacks = new Map();
 
-// {Array} dgmStateStack - keeps diagram state when model is pushed over it
+/** @type {any[]} */
 let dgmStateStack = [];
 
 // time value used to avoid multiple alerts from same user operation
 let lastErrorTime = 0;
 
-// information need to generate initial root view component
+/** @type {ViewInfo} */
 const initialInfo = {
 	title: 'root',
 	path: '/.root',
@@ -80,29 +173,37 @@ const initialInfo = {
 	viewKey: 'Model',
 };
 
-// stacks for undo and redo
+/** @type {string[]} */
 let undoStack = [];
+/** @type {string[]} */
 let redoStack = [];
 
-// infoStack keeps the information necessary to render all the info views pushed 
+/** @type {ViewInfo[]} */
 let infoStack = [initialInfo];
 
 /**
  * @class ErrorBoundary
  * slightly modified boiler plate from react
+ * @extends {React.Component<{ children?: React.ReactNode, handleBoundraryError?: () => void, width?: number, height?: number }, { hasError: boolean }>}
  */
 class ErrorBoundary extends React.Component {
+  /** @param {any} props */
   constructor(props) {
     super(props);
     this.state = { hasError: false };
   }
 
 	// eslint-disable-next-line no-unused-vars
+  /** @param {any} error */
   static getDerivedStateFromError(error) {
     // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
 
+  /**
+   * @param {any} error
+   * @param {any} errorInfo
+   */
   componentDidCatch(error, errorInfo) {
     // You can also log the error to an error reporting service
 		//logErrorToMyService(error, errorInfo);
@@ -136,9 +237,9 @@ class ErrorBoundary extends React.Component {
 
 /**
  * MMFormatValue
- * @param {Number | String} v 
- * @param {String} format 
- * @returns {String}
+ * @param {number | string} v 
+ * @param {string} [format] 
+ * @returns {string}
  */
 export function MMFormatValue(v, format) {
 	if (typeof v === 'string') {
@@ -221,11 +322,13 @@ export function MMFormatValue(v, format) {
 /**
  * MMApp
  * the main Math Minion window
+ * @param {{ t: (key: string, options?: any) => string }} props
  */
 export function MMApp(props) {
 	const t = props.t;
 
 	// {Object} infoViews - classes of info views used to construct the react component appearing in the info view
+	/** @type {Record<string, any>} */
 	const infoViews = {
 		'console': ConsoleView,
 		'clipboard': ClipboardView,
@@ -251,6 +354,7 @@ export function MMApp(props) {
 	}
 
 	// information need to generate a console view component
+	/** @type {React.MutableRefObject<ViewInfo>} */
 	const consoleInfo = useRef({
 		title: 'react:consoleTitle',
 		path: '',
@@ -267,12 +371,13 @@ export function MMApp(props) {
 	const twoPane = docWidth >= 640;
 	const defaultRightPaneWidth = Math.max(320, docWidth/2);
 	const [allow2Pane, setAllow2Pane] = useState(twoPane);
-	const [viewType, setViewType] = useState(twoPane ? ViewType.twoPanes : ViewType.info);
+	const [viewType, setViewType] = useState(/** @type {number} */ (twoPane ? ViewType.twoPanes : ViewType.info));
 	const [rightPaneWidth, setRightPaneWidth] = useState(defaultRightPaneWidth);
 	const [viewInfo, setViewInfo] = useState(initialInfo);
 	const [statusMessage, setStatusMessage] = useState('');
 	const [showConsole, setShowConsole] = useState(false);
 
+	/** @type {React.MutableRefObject<any>} */
 	const diagramRef = React.useRef(null);
 
 	useEffect(() => {
@@ -309,7 +414,7 @@ export function MMApp(props) {
 
 	useEffect(() => {
 		if (!autoLoadComplete) {
-			let cmd = document.baseURI.split('?cmd=').splice(1);
+			let cmd = /** @type {any} */ (document.baseURI.split('?cmd=').splice(1));
 			// console.log(`cmd = "${cmd}"`);
 			if (cmd.length) {
 				cmd = decodeURI(cmd);
@@ -347,7 +452,7 @@ export function MMApp(props) {
 		}
 		if (newType === ViewType.info) {
 			if (diagramRef.current) {
-				dgmStateStack.push({...diagramRef.current.state});
+				dgmStateStack.push({.../** @type {any} */ (diagramRef.current).state});
 			}
 			else {
 				dgmStateStack.push(null);
@@ -361,13 +466,14 @@ export function MMApp(props) {
 	 * clears all views and optionally fills infoStack with new view state
 	 * - called when new case loaded
 	 * @param {string} rootName
-	 * @param {string} resetInfo - optional object containing modelStack,
+	 * @param {any} [resetInfo] - optional object containing modelStack,
 	 * an array of model names to be pushed to the info stack and
 	 * an optional selectedTool containing information
 	 * for a tool in the top most model to be viewed immediately
 	 */
 	const resetInfoStack = useCallback((rootName, resetInfo) => {
 		let path = `/.${rootName}`;
+		/** @type {ViewInfo} */
 		let infoState = {
 			title: rootName,
 			path: path,
@@ -405,7 +511,7 @@ export function MMApp(props) {
 					modelPath: modelPath,
 					stackIndex: stackIndex++,
 					updateCommands: updateCommand,			// commands used to update the view state
-					updateResults: [resetInfo.selected.info],		// result of doCommand on the updateCommands
+					updateResults: [/** @type {any} */ (resetInfo.selected.info)],		// result of doCommand on the updateCommands
 					viewKey: resetInfo.selected.type,
 				};
 				infoStack.push(infoState);		
@@ -422,9 +528,10 @@ export function MMApp(props) {
 	/**
 	 * doCommand - sends command to worker
 	 * @param {string} cmd
-	 * @param {function} callBack - (cmds[]) => {}
-	 * @param {function} errorHandler (String) => {} - optional - alert if not provided
+	 * @param {function} [callBack] - (cmds[]) => {}
+	 * @param {function} [errorHandler] - (String) => {} - optional - alert if not provided
 	 */
+	/** @type {(cmd: string, callBack?: (results?: any) => void, errorHandler?: (msg: string) => void) => void} */
 	const doCommand = useCallback((cmd, callBack, errorHandler) => {
 		// console.log(`doCommand ${cmd}`);
 		/**
@@ -472,7 +579,7 @@ export function MMApp(props) {
 				setStatusMessage(props.t('mmcmd:calculating'));
 		}, 500);
 		let cmdObject = {cmdString: cmd, id: callBackId++, timeoutId: timeoutId};
-		pipe.doCommand(cmdObject, (results) => {
+		pipe.doCommand(/** @type {any} */ (cmdObject), (results) => {
 			clearTimeout(results.timeoutId);
 			let error = results.error;
 			let warning;
@@ -505,7 +612,7 @@ export function MMApp(props) {
 					}
 				}
 			}
-			let stringify = (msg) => {
+			let stringify = (/** @type {any} */ msg) => {
 				let s = props.t(msg.msgKey, msg.args);
 				if (msg.child) {
 					s = stringify(msg.child) + '\n' + s;
@@ -545,19 +652,21 @@ export function MMApp(props) {
 
 	/**
 	 * updateDiagram
-	 * @param {Boolean} rescale - should diagram be rescaled - default false
+	 * @param {Boolean} [rescale] - should diagram be rescaled - default false
 	 */
 	const updateDiagram = useCallback((rescale = false) => {
 		if (diagramRef.current) {
-			diagramRef.current.getModelInfo(rescale);
+			(/** @type {any} */ (diagramRef.current)).getModelInfo(rescale);
 		}
 	}, []);
 
 	/** updateView
-	 * @param {Number} stackIndex = info stack position of view
-	 * @param {Boolean} rescaleDiagram - should diagram be rescaled - default false
+	 * @param {Number} [stackIndex] - info stack position of view
+	 * @param {Boolean} [rescaleDiagram] - should diagram be rescaled - default false
+	 * @param {Boolean} [doAutoSave]
 	 * call doCommand with updateCommands to update th info view state
 	 */
+	/** @type {(stackIndex?: number | null, rescaleDiagram?: boolean, doAutoSave?: boolean) => void} */
 	const updateView = useCallback((stackIndex, rescaleDiagram = false, doAutoSave = true) => {
 		if (stackIndex == null) {
 			// assume top view
@@ -585,10 +694,11 @@ export function MMApp(props) {
 	/** pushView
 	 * pushes the creation information for a new info view onto the infoStack
 	 * @param {string} viewKey - key to view class in infoViews
-	 * @param {string} title
-	 * @param	{Object} options - options to append to infoState
+	 * @param {string} [title]
+	 * @param	{Object} [options] - options to append to infoState
 	 */
 	const pushView = useCallback((viewKey, title, options = {}) => {
+		/** @type {ViewInfo} */
 		let newInfoState = {
 			title: (title ? title : ''),
 			path: '',
@@ -608,15 +718,15 @@ export function MMApp(props) {
 	 */
 	const popView = useCallback(() => {
 		if (infoStack.length > 1) {
-			const oldTop = infoStack.pop();
+			const oldTop = /** @type {ViewInfo} */ (infoStack.pop());
 			switch (oldTop.viewKey) {
 				case 'Model':
 					doCommand('/ popmodel', () => {
 						let rescale = false;
 						if (dgmStateStack.length) {
-							const dgmState = dgmStateStack.pop();
+							const dgmState = /** @type {any} */ (dgmStateStack.pop());
 							if (dgmState && diagramRef.current) {
-								diagramRef.current.setState(dgmState);
+								(/** @type {any} */ (diagramRef.current)).setState(dgmState);
 							}
 						}
 						else {
@@ -644,8 +754,11 @@ export function MMApp(props) {
 	/**
 	 * pushModel
 	 * pushes model named on to the diagram and infoview
-	 * @param {String} modelName 
+	 * @param {String} [modelName] 
+	 * @param {function} [successCallBack]
+	 * @param {function} [failCallBack]
 	 */
+	/** @type {(modelName?: string, successCallBack?: (path?: string) => void, failCallBack?: (error?: any) => void) => void} */
 	const pushModel = useCallback((modelName, successCallBack, failCallBack) => {
 		doCommand(`/ pushmodel ${modelName}`, (cmds) => {
 			if (cmds[0].error) {
@@ -660,7 +773,7 @@ export function MMApp(props) {
 				}
 			}
 			if (diagramRef.current) {
-				dgmStateStack.push({...diagramRef.current.state});
+				dgmStateStack.push({.../** @type {any} */ (diagramRef.current).state});
 			}
 			else {
 				dgmStateStack.push(null);
@@ -671,7 +784,7 @@ export function MMApp(props) {
 					infoStack.pop();
 				}
 				const modelInfoState = {
-					title: modelName,
+					title: /** @type {string} */ (modelName),
 					path: path,
 					stackIndex: infoStack.length,
 					updateCommands: '',
@@ -707,7 +820,7 @@ export function MMApp(props) {
 	 */
 	const popModel = useCallback(() => {
 		while (infoStack.length > 1 && infoStack[infoStack.length-1].viewKey !== 'Model') {
-			const oldTop = infoStack.pop();
+			const oldTop = /** @type {ViewInfo} */ (infoStack.pop());
 			if (oldTop.viewKey === 'console') {
 				consoleInfo.current = oldTop;
 			}

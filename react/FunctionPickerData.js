@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -18,9 +19,29 @@
 'use strict';
 
 /**
+ * @typedef {Object} FunctionItem
+ * @property {string} f
+ * @property {string} desc
+ */
+
+/**
+ * @typedef {Object} FunctionSection
+ * @property {string} header
+ * @property {FunctionItem[]} functions
+ * @property {string} [comment]
+ */
+
+/**
+ * @typedef {Object} FunctionPickerDataSet
+ * @property {string} title
+ * @property {string} instructions
+ * @property {FunctionSection[]} sections
+ */
+
+/**
  * @method functionPickerData
- * @param {*} language - for possible future use
- * textual data for function picker
+ * @param {any} [language] - for possible future use
+ * @returns {FunctionPickerDataSet} textual data for function picker
  */
 	// eslint-disable-next-line no-unused-vars
 	export function functionPickerData(language) {

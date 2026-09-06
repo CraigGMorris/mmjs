@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -25,8 +26,10 @@ var clipboardText = '';
 var importedFileText = '';
 var clipboard = navigator.clipboard;
 
+/** @returns {boolean} */
 export function hasSystemClipboard() { return !!clipboard; } 
 
+/** @returns {Promise<string>} */
 export async function readClipboard() {
 	if (clipboard) {
 		let result = await clipboard.readText();
@@ -42,6 +45,10 @@ export async function readClipboard() {
 	}
 }
 
+/**
+ * @param {string} text
+ * @returns {Promise<any>}
+ */
 export async function writeClipboard(text) {
 	if (clipboard) {
 			const result = await clipboard.writeText(text);
@@ -55,6 +62,9 @@ export async function writeClipboard(text) {
 		}
 }
 
+/**
+ * @param {{ t: (key: string, options?: any) => string, close: () => void }} props
+ */
 export function ClipboardView(props) {
 	const [displayedText, setDisplayedText] = useState(clipboardText);
 	useEffect(() => {
@@ -86,10 +96,12 @@ export function ClipboardView(props) {
 					'input', {
 						id: 'clipboard__import-input',
 						type: 'file',
+						/** @param {any} event */
 						onChange: event => {
 							var f = event.target.files[0];		
 							if (f) {
 								let r = new FileReader();
+								/** @param {any} e */
 								r.onload = (e) => { 
 									let contents = e.target.result;
 									importedFileText = contents;
@@ -108,6 +120,7 @@ export function ClipboardView(props) {
 			'textarea',{
 				id: 'clipboard__display',
 				value: displayedText,
+				/** @param {any} event */
 				onChange: (event) => {
 					// keeps input field in sync
 					setDisplayedText(event.target.value);	

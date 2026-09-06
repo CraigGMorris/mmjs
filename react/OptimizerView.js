@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -27,7 +28,7 @@ const useState = React.useState;
 /**
  * Enum for matrix display types.
  * @readonly
- * @enum {string}
+ * @enum {number}
  */
 const OptimizerDisplay = Object.freeze({
 	input: 0,
@@ -37,9 +38,10 @@ const OptimizerDisplay = Object.freeze({
 /**
  * OptimizerView
  * info view for optimizer
+ * @param {import('./MMApp.js').ViewProps} props
  */
 export function OptimizerView(props) {
-	const [display, setDisplay] = useState(OptimizerDisplay.input);
+	const [display, setDisplay] = useState(/** @type {number} */ (OptimizerDisplay.input));
 	const [formulaName, setFormulaName] = useState('')
 	const [editOptions, setEditOptions] = useState({});
 
@@ -69,9 +71,9 @@ export function OptimizerView(props) {
 		);
 	}
 
-	const applyChanges = (name) => {
+	const applyChanges = (/** @type {any} */ name) => {
 		const path = `${results.path}.${name}`;
-		return (formula) => {
+		return (/** @type {any} */ formula) => {
 			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(OptimizerDisplay.input);
@@ -146,7 +148,7 @@ export function OptimizerView(props) {
 						formula: results.formulas.optFormula,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						editAction: (editOptions) => {
+						editAction: (/** @type {any} */ editOptions) => {
 							setEditOptions(editOptions);
 							setFormulaName('optFormula');
 							setDisplay(OptimizerDisplay.formulaEditor);
@@ -193,7 +195,7 @@ export function OptimizerView(props) {
 						formula: results.formulas.countFormula,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						editAction: (editOptions) => {
+						editAction: (/** @type {any} */ editOptions) => {
 							setEditOptions(editOptions);
 							setFormulaName('countFormula');
 							setDisplay(OptimizerDisplay.formulaEditor);

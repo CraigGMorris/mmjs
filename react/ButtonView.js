@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -20,6 +21,8 @@
 import {ToolView} from './ToolView.js';
 import {FormulaField, FormulaEditor} from './FormulaView.js';
 
+/** @typedef {import('./MMApp.js').ViewProps} ViewProps */
+
 const e = React.createElement;
 const useEffect = React.useEffect;
 const useState = React.useState;
@@ -38,9 +41,10 @@ const ButtonDisplay = Object.freeze({
 /**
  * ButtonView
  * info view for button tool
+ * @param {ViewProps} props
  */
 export function ButtonView(props) {
-	const [display, setDisplay] = useState(ButtonDisplay.main);
+	const [display, setDisplay] = useState(/** @type {number} */ (ButtonDisplay.main));
 	const [editOptions, setEditOptions] = useState({});
 
 	useEffect(() => {
@@ -53,7 +57,7 @@ export function ButtonView(props) {
 	const updateResults = props.viewInfo.updateResults;
 	const toolPath = props.viewInfo.path;
 
-	if (updateResults.error) {
+	if ((/** @type {any} */ (updateResults)).error) {
 		// use empty command just to defer popView
 		props.actions.doCommand('', () => {
 			props.actions.popView();
@@ -62,6 +66,7 @@ export function ButtonView(props) {
 	}
 	const results = updateResults.length ? updateResults[0].results : {};
 
+	/** @param {string} formula */
 	const applyLabelChanges = (formula) => {
 			const path = `${toolPath}.labelFormula`;
 			props.actions.doCommand(`${path} set formula ${formula}`, () => {
@@ -70,6 +75,7 @@ export function ButtonView(props) {
 			});
 		};
 
+	/** @param {string} formula */
 	const applyTargetChanges = (formula) => {
 		const path = `${toolPath}.targetFormula`;
 		props.actions.doCommand(`${path} set formula ${formula}`, () => {
@@ -117,6 +123,10 @@ export function ButtonView(props) {
 	}
 	else {	// main display
 		const actionOptions = [];
+		/**
+		 * @param {string} action
+		 * @param {string} label
+		 */
 		const actionOption = (action, label) => {
 			actionOptions.push(e(
 				'option', {
@@ -150,7 +160,7 @@ export function ButtonView(props) {
 			e(
 				'select', {
 					className: 'button__action_select',
-					onChange: (e) => {
+					onChange: (/** @type {any} */ e) => {
 						const newValue = e.target.value;
 						if (newValue !== results.action) {
 							const path = props.viewInfo.path;
@@ -191,7 +201,7 @@ export function ButtonView(props) {
 						formula: results.labelFormula || '',
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						editAction: (editOptions) => {
+						editAction: (/** @type {any} */ editOptions) => {
 							setEditOptions(editOptions);
 							setDisplay(ButtonDisplay.labelFormulaEditor);
 						},
@@ -221,7 +231,7 @@ export function ButtonView(props) {
 						formula: results.targetFormula || '',
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						editAction: (editOptions) => {
+						editAction: (/** @type {any} */ editOptions) => {
 							setEditOptions(editOptions);
 							setDisplay(ButtonDisplay.targetFormulaEditor);
 						},

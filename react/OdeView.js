@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -27,7 +28,7 @@ const useState = React.useState;
 /**
  * Enum for matrix display types.
  * @readonly
- * @enum {string}
+ * @enum {number}
  */
 const OdeDisplay = Object.freeze({
 	input: 0,
@@ -37,10 +38,11 @@ const OdeDisplay = Object.freeze({
 /**
  * OdeView
  * info view for ode
+ * @param {import('./MMApp.js').ViewProps} props
  */
 export function OdeView(props) {
-	const [display, setDisplay] = useState(OdeDisplay.input);
-	const [formulaIndex, setFormulaIndex] = useState('')
+	const [display, setDisplay] = useState(/** @type {number} */ (OdeDisplay.input));
+	const [formulaIndex, setFormulaIndex] = useState(/** @type {any} */ (''))
 	const [editOptions, setEditOptions] = useState({});
 
 	useEffect(() => {
@@ -60,9 +62,9 @@ export function OdeView(props) {
 	}
 	const results = updateResults.length ? updateResults[0].results : {};
 
-	const applyChanges = (name) => {
+	const applyChanges = (/** @type {any} */ name) => {
 		const path = `${results.path}.${name}`;
-		return (formula) => {
+		return (/** @type {any} */ formula) => {
 			props.actions.doCommand(`${path} set formula ${formula}`, () => {
 				props.actions.updateView(props.viewInfo.stackIndex);
 				setDisplay(OdeDisplay.input);
@@ -148,7 +150,7 @@ export function OdeView(props) {
 						formula: formula,
 						viewInfo: props.viewInfo,
 						infoWidth: props.infoWidth,
-						editAction: (editOptions) => {
+						editAction: (/** @type {any} */ editOptions) => {
 							setEditOptions(editOptions);
 							setFormulaIndex(i);
 							setDisplay(OdeDisplay.formulaEditor);

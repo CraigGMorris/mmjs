@@ -1,3 +1,4 @@
+// @ts-check
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -21,6 +22,42 @@ import {UnitPicker} from './UnitsView.js';
 import {functionPickerData} from './FunctionPickerData.js';
 import {TableView} from './TableView.js';
 
+/** @typedef {import('./MMApp.js').ViewProps} ViewProps */
+/** @typedef {import('./MMApp.js').Actions} Actions */
+/** @typedef {import('./MMApp.js').ViewInfo} ViewInfo */
+
+/**
+ * @typedef {Object} FormulaFieldProps
+ * @property {string} [id]
+ * @property {(key: string, options?: any) => string} t
+ * @property {Actions} [actions]
+ * @property {string} [path]
+ * @property {string} [formula]
+ * @property {ViewInfo} viewInfo
+ * @property {number} [infoWidth]
+ * @property {number} [infoHeight]
+ * @property {(editOptions: any) => void} [editAction]
+ * @property {(formula: string) => void} [applyChanges]
+ * @property {any} [selectedCell]
+ * @property {() => void} [ctrlEnterAction]
+ * @property {() => void} [gotFocusAction]
+ */
+
+/**
+ * @typedef {Object} FormulaEditorProps
+ * @property {string} [id]
+ * @property {(key: string, options?: any) => string} t
+ * @property {ViewInfo} viewInfo
+ * @property {number} [infoWidth]
+ * @property {number} [infoHeight]
+ * @property {Actions} actions
+ * @property {any} [editOptions]
+ * @property {() => void} [cancelAction]
+ * @property {(formula: string) => void} [applyChanges]
+ * @property {string} [key]
+ * @property {any} [value]
+ */
+
 const e = React.createElement;
 const useState = React.useState;
 const useEffect = React.useEffect;
@@ -36,14 +73,21 @@ const FormulaDisplay = Object.freeze({
 	functiions: 2
 });
 
+/**
+ * @param {string} f
+ * @returns {string}
+ */
 const replaceSmartQuotes = (f) => {
 	f = f.replace(/[“”]/g,'"');	// defeat smart quotes
 	f = f.replace(/[‘’]/g, "'");
 	return f;
 }
 
+/**
+ * @param {FormulaFieldProps} props
+ */
 export function FormulaField(props) {
-	const [formula, setFormula] = useState(props.formula !== undefined ? props.formula : props.viewInfo.formula);
+	const [formula, setFormula] = useState(/** @type {string} */ (props.formula !== undefined ? props.formula : props.viewInfo.formula));
 	const [initialFormula, setInitialFormula] = useState('');
 	const [nameSpace, setNameSpace] = useState('');
 
@@ -64,8 +108,8 @@ export function FormulaField(props) {
 
 	useEffect(() => {
 		const f = pFormula !== undefined ? pFormula : pViewInfo.formula;
-		setFormula(f);
-		setInitialFormula(f);
+		setFormula(/** @type {string} */ (f));
+		setInitialFormula(/** @type {string} */ (f));
 	}, [pFormula, pViewInfo]);
 
 	useEffect(() => {
@@ -77,10 +121,12 @@ export function FormulaField(props) {
 		
 	}, [props.viewInfo.updateResults]);
 
+	/** @type {React.MutableRefObject<any>} */
 	const latestFormula = React.useRef(null);
   useEffect(() => {
     latestFormula.current = formula;
   }, [formula]);
+	/** @type {React.MutableRefObject<any>} */
 	const latestInitial = React.useRef(null);
   useEffect(() => {
     latestInitial.current = initialFormula;
@@ -96,8 +142,10 @@ export function FormulaField(props) {
 		};
 	}, []);
 
+	/** @type {React.MutableRefObject<any>} */
 	const fieldInputRef = React.useRef(null);
 
+	/** @param {string} formula */
 	const applyChanges = (formula) => {
 		formula = replaceSmartQuotes(formula);
 		if (formula !== initialFormula) { // only apply if changed
@@ -105,6 +153,7 @@ export function FormulaField(props) {
 		}
 	}
 
+	/** @type {{ formula: string, initialFormula: string, nameSpace: string, selectionStart?: number, selectionEnd?: number }} */
 	const editOptions = {
 		formula: formula,
 		initialFormula: initialFormula,
@@ -118,20 +167,23 @@ export function FormulaField(props) {
 			onBlur: () => {
 				applyChanges(formula);
 			},
+			tabIndex: -1,
+			onClick: (/** @type {any} */ event) => {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 		},
 		e(
 			'input', {
-				className: 'formula-field__text-display',
+				id: props.id ? props.id : 'formula-field',
+				type: 'text',
 				ref: fieldInputRef,
-				value: formula?.slice(0,200) || '',
-				width: String(props.infoWidth - 25),
-				spellCheck: "false",
-				title: props.t('react:formulaFieldInputHover'),
-				onChange: (event) => {
+				value: formula,
+				onChange: (/** @type {any} */ event) => {
 					// keeps input field in sync
 					setFormula(event.target.value);
 				},
-				onKeyDown: e => {
+				onKeyDown: (/** @type {any} */ e) => {
 					if (e.code == 'Enter') {
 						if (e.shiftKey ) {
 							// watches for Shift Enter and sends command when it see it
@@ -164,7 +216,7 @@ export function FormulaField(props) {
 					}
 				},
 
-				onFocus: e => {
+				onFocus: (/** @type {any} */ e) => {
 					if (!showEditor) {
 						// focus not from clicking in field
 						if (formula?.length > 100 || formula?.includes('\n')) {
@@ -207,10 +259,10 @@ export function FormulaField(props) {
 		e(
 			'div', {
 				className: 'formula-field__refresh',
-				onClick: e => {
+				onClick: (/** @type {any} */ e) => {
 					e.stopPropagation();
-					props.actions.doCommand(`${props.path} refresh`, () => {
-						props.actions.updateView(props.viewInfo.stackIndex);
+					(/** @type {any} */ (props.actions)).doCommand(`${props.path} refresh`, () => {
+						(/** @type {any} */ (props.actions)).updateView(props.viewInfo.stackIndex);
 					});
 				},
 			},
@@ -219,7 +271,7 @@ export function FormulaField(props) {
 		e(
 			'div', {
 				className: 'formula-field__edit-button',
-				onClick: e => {
+				onClick: (/** @type {any} */ e) => {
 					e.stopPropagation();
 					let selStart = fieldInputRef.current.selectionStart;
 					editOptions.selectionStart = Math.max(0, selStart);
@@ -236,6 +288,9 @@ export function FormulaField(props) {
 	);
 }
 
+/**
+ * @param {any} props
+ */
 function FunctionPicker(props) {
 	let t = props.t;
 	let sections = [];
@@ -350,7 +405,7 @@ function FunctionPicker(props) {
 			e(
 				'button', {
 					id: 'f-picker__cancel',
-					onClick: e => {
+					onClick: (/** @type {any} */ e) => {
 						e.preventDefault();
 						props.cancel();
 					},
@@ -385,30 +440,34 @@ const FormulaPreviewCalcType = Object.freeze({
 });
 
 
+/**
+ * @param {FormulaEditorProps} props
+ */
 export function FormulaEditor(props) {
 	let t = props.t;
 	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding'));
 
-	const [display, setDisplay] = useState(FormulaDisplay.editor);
+	const [display, setDisplay] = useState(/** @type {number} */ (FormulaDisplay.editor));
 	const editOptions = props.editOptions || {};
 	const [formula, setFormula] = useState(editOptions.formula || '');
 	const selStart = editOptions.selectionStart ? editOptions.selectionStart : 0;
 	const selEnd = editOptions.selectionEnd ? editOptions.selectionEnd : selStart;
 	const [selection, setSelection] = useState([selStart,selEnd]);
 	const [previewValue, setPreviewValue] = useState(props.value || '');
-	const [previewCalcType, setPreviewCalcType] = useState(FormulaPreviewCalcType.current);
-	const [errorMessage, setErrorMessage] = useState(null);
+	const [previewCalcType, setPreviewCalcType] = useState(/** @type {number} */ (FormulaPreviewCalcType.current));
+	const [errorMessage, setErrorMessage] = useState(/** @type {any} */ (null));
 
 	// parameters to allow resizing the editor preview
-	const [previewParam, setPreviewParam] = useState(null);
-	const [previewHeight, setPreviewHeight] = useState(Math.min(300, props.infoHeight -150));
-	const [dividerPointer, setDividerPointer] = useState(null);
+	const [previewParam, setPreviewParam] = useState(/** @type {any} */ (null));
+	const [previewHeight, setPreviewHeight] = useState(Math.min(300, (/** @type {any} */ (props.infoHeight)) - 150));
+	const [dividerPointer, setDividerPointer] = useState(/** @type {any} */ (null));
 
 	// following is used to trigger text parsing for preview - updated on anything that
 	// could change caret position.
 	const [eventHitCount, setEventHitCount] = useState(0);
 
 	// reference to editor textarea to keep track of selection and focus
+	/** @type {React.MutableRefObject<any>} */
 	const editInputRef = React.useRef(null);
 //	const normalClose = React.useRef(false);
 
@@ -425,7 +484,7 @@ export function FormulaEditor(props) {
 		const f = pEditOptions.initialFormula;
 		const nameSpace = pEditOptions.nameSpace;
 		if (typeof(f) ===  "string") {
-			pActions.doCommand(`${pViewInfo.path} fpreview ${nameSpace} ${f}`, (results) => {
+			pActions.doCommand(`${pViewInfo.path} fpreview ${nameSpace} ${f}`, (/** @type {any} */ results) => {
 				if (results) {
 					setPreviewValue(results[0].results);
 					setPreviewCalcType(FormulaPreviewCalcType.current);
@@ -443,6 +502,7 @@ export function FormulaEditor(props) {
 		setPreviewCalcType(FormulaPreviewCalcType.current);
 	}, []);
 
+	/** @type {React.MutableRefObject<any>} */
 	const latestFormula = React.useRef(null);
   useEffect(() => {
     latestFormula.current = formula;
@@ -508,7 +568,7 @@ export function FormulaEditor(props) {
 		});	
 	},[pActions]);
 
-	const makeFunctionPreview = (start) => {
+	const makeFunctionPreview = (/** @type {string} */ start) => {
 		const data = functionPickerData();
 		const prefix = '{' + start;
 		const functions = new Set();
@@ -617,7 +677,7 @@ export function FormulaEditor(props) {
 
 		const prevChar = selStart >= 0 ? targetValue[selStart] : '';
 		const pathTokens = pathChars.reverse().join('').split('.');
-		const start = pathTokens.pop().toLowerCase();
+		const start = (/** @type {string} */ (pathTokens.pop())).toLowerCase();
 		const path = pathTokens.join('.');
 		// ensure the path is preceded by appropriate operator
 		if (prevChar === '{') {
@@ -631,6 +691,7 @@ export function FormulaEditor(props) {
 		makeParamPreview(path, start);
 	},[eventHitCount, formula, makeParamPreview, makeUnitPreview]);
 
+	/** @param {string} formula */
 	const applyChanges = (formula) => {
 		formula = replaceSmartQuotes(formula);
 		latestFormula.current = props.editOptions.initialFormula; // block the unmount action
@@ -638,6 +699,7 @@ export function FormulaEditor(props) {
 		f(formula);
 	}
 
+	/** @param {any} s */
 	const previewErrorHandler = (s) => {
 		setErrorMessage(s);
 	}
@@ -650,7 +712,7 @@ export function FormulaEditor(props) {
 		let f = (selStart === selEnd) ? formula : editInputRef.current.value.substring(selStart, selEnd);
 		f = replaceSmartQuotes(f);
 		const nameSpace = editOptions.nameSpace;
-		props.actions.doCommand(`${props.viewInfo.path} fpreview ${nameSpace} ${f}`, (results) => {
+		props.actions.doCommand(`${props.viewInfo.path} fpreview ${nameSpace} ${f}`, (/** @type {any} */ results) => {
 			if (results) {
 				setPreviewValue(results[0].results);
 				setPreviewCalcType((selStart === selEnd) ?
@@ -661,13 +723,13 @@ export function FormulaEditor(props) {
 		}, previewErrorHandler);
 	}
 
-	let importFile = (event) => {
+	let importFile = (/** @type {any} */ event) => {
 		//Retrieve the first (and only!) File from the FileList object
 		var f = event.target.files[0]; 
 
 		if (f) {
 			let r = new FileReader();
-			r.onload = (e) => {
+			r.onload = (/** @type {any} */ e) => {
 				let contents = e.target.result;
 				setFormula("'" + contents);
 			};
@@ -677,14 +739,14 @@ export function FormulaEditor(props) {
 		}
 	}
 
-	const pickerButtonClick = (picker) => {
+	const pickerButtonClick = (/** @type {any} */ picker) => {
 			const selectionStart = editInputRef.current.selectionStart;
 			const selectionEnd = editInputRef.current.selectionEnd;
 			setSelection([selectionStart, selectionEnd]);
 			setDisplay(picker);
 	}
 
-	const onFocusHandler = event => {
+	const onFocusHandler = (/** @type {any} */ event) => {
 		if (!event.target.value.length) {
 			makeParamPreview('','');
 		}
@@ -694,7 +756,7 @@ export function FormulaEditor(props) {
 		setEventHitCount(eventHitCount+1);
 	}
 
-	const keyDownHandler = event => {
+	const keyDownHandler = (/** @type {any} */ event) => {
 		if (event.code.startsWith('Arrow')) {
 			setEventHitCount(eventHitCount+1);
 		}
@@ -912,7 +974,7 @@ export function FormulaEditor(props) {
 					value: previewValue,
 					viewInfo: props.viewInfo,
 					viewBox: [0, 0,
-						props.infoWidth - 2*nInfoViewPadding,
+						(/** @type {any} */ (props.infoWidth)) - 2*nInfoViewPadding,
 						previewHeight - 20],
 				}
 			),
@@ -931,7 +993,7 @@ export function FormulaEditor(props) {
 				'input', {
 					id: 'formula-editor__import-input',
 					type: 'file',
-					onChange: e => {
+					onChange: (/** @type {any} */ e) => {
 						importFile(e);
 					},
 				}
@@ -1004,7 +1066,7 @@ export function FormulaEditor(props) {
 				autoCorrect: "off",
 				autoCapitalize: "none",
 				autoComplete: "off",
-				onChange: (e) => {
+				onChange: (/** @type {any} */ e) => {
 					// keeps input field in sync
 					setFormula(e.target.value);
 				},
@@ -1041,26 +1103,26 @@ export function FormulaEditor(props) {
 					id: 'formula-editor__preview-resize',
 					title: t('react:formulaEditorPreviewResize'),
 
-					onPointerDown: (e) => {
+					onPointerDown: (/** @type {any} */ e) => {
 						e.stopPropagation();
 						e.preventDefault();
 						setDividerPointer(e.clientY);
 						e.target.setPointerCapture(e.pointerId);
 					},
 				
-					onPointerMove: (e) => {
+					onPointerMove: (/** @type {any} */ e) => {
 						if (dividerPointer) {
 							e.stopPropagation();
 							e.preventDefault();
 							const change = dividerPointer - e.clientY;
 							let newPreviewHeight = Math.max(80, previewHeight + change);
-							newPreviewHeight = Math.min(props.infoHeight - 150, newPreviewHeight);
+							newPreviewHeight = Math.min((/** @type {any} */ (props.infoHeight)) - 150, newPreviewHeight);
 							setPreviewHeight(newPreviewHeight);
 							setDividerPointer(e.clientY);
 						}		
 					},
 				
-					onPointerUp: (e) => {
+					onPointerUp: (/** @type {any} */ e) => {
 						e.stopPropagation();
 						e.preventDefault();
 						e.target.releasePointerCapture(e.pointerId);
@@ -1073,6 +1135,7 @@ export function FormulaEditor(props) {
 		previewComponent,
 	);
 
+	/** @param {string} value */
 	const insertParam = (value) => {
 		if (!value || value.length === 0) {
 			return;
@@ -1118,6 +1181,7 @@ export function FormulaEditor(props) {
 	}
 
 
+	/** @param {string} value */
 	const apply = (value) => {
 		const targetValue = editInputRef.current.value;
 		const selectionStart = editInputRef.current.selectionStart;
