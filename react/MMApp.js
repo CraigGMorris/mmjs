@@ -38,6 +38,7 @@ import {HtmlPageView} from './HtmlPageView.js';
 import {ButtonView} from './ButtonView.js';
 import {MenuView} from './MenuView.js';
 import {FlashView} from './FlashView.js';
+import {ColumnView} from './ColumnView.js';
 
 /**
  * @typedef {Object} UpdateResultItem
@@ -351,6 +352,7 @@ export function MMApp(props) {
 		'Button' : ButtonView,
 		'Menu' : MenuView,
 		'Flash': FlashView,
+		'Column': ColumnView,
 	}
 
 	// information need to generate a console view component

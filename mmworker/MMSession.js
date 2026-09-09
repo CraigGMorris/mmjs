@@ -1,4 +1,5 @@
 // @ts-check
+/// <reference path="./globals.d.ts" />
 /*
 	This file is part of Math Minion, a javascript based calculation program
 	Copyright 2021, Craig Morris
@@ -37,6 +38,7 @@ import { MMParent, MMPropertyType, MMCommandMessage } from './MMCommandProcessor
 	theMMSession:readonly
 	MMToolValue:readonly
 	MMFlash:readonly
+	MMColumn:readonly
 	MMFormula:readonly
 */
 
@@ -65,6 +67,7 @@ import { MMParent, MMPropertyType, MMCommandMessage } from './MMCommandProcessor
 /** @typedef {import('./MMButton.js').MMButton} MMButton */
 /** @typedef {import('./MMMenu.js').MMMenu} MMMenu */
 /** @typedef {import('./MMFlash.js').MMFlash} MMFlash */
+/** @typedef {import('./MMColumn.js').MMColumn} MMColumn */
 
 /** @class MMPoint
  * simple point class
@@ -269,15 +272,15 @@ export class MMIndexedDBStorage  {
 // eslint-disable-next-line no-unused-vars
 export class MMSession extends MMParent {
 	/** @type {MMModel} */
-	rootModel;
+	rootModel = /** @type {any} */ (null);
 	/** @type {MMModel} */
-	currentModel;
+	currentModel = /** @type {any} */ (null);
 	/** @type {MMModel[]} */
-	modelStack;
+	modelStack = [];
 	/** @type {string} */
-	storePath;
+	storePath = '';
 	/** @type {MMPoint} */
-	nextToolLocation;
+	nextToolLocation = /** @type {any} */ (null);
 	/** @type {MMIndexedDBStorage} */
 	storage;
 	/** @type {string} */
@@ -293,11 +296,11 @@ export class MMSession extends MMParent {
 	/** @type {string} */
 	lastNews;
 	/** @type {boolean} */
-	noRun;
+	noRun = false;
 	/** @type {string} */
-	selectedObject;
+	selectedObject = '';
 	/** @type {boolean} */
-	isLoadingCase;
+	isLoadingCase = false;
 	/** @type {number|undefined} */
 	detailWidth;
 	/** @type {number|undefined} */
@@ -307,7 +310,7 @@ export class MMSession extends MMParent {
 	/** @type {any} */
 	remoteDBCommand;
 	/** @type {boolean} */
-	isAutoSaving;
+	isAutoSaving = false;
 
 	// session creation and storage commands
 
@@ -1432,5 +1435,9 @@ export const MMToolTypes = /** @type {Record<string, {factory: (name: string, pa
 	"Flash": {
 		factory: (name, parent) => {return new MMFlash(name, parent)},
 		displayName: new MMCommandMessage('thermo:flashDisplayName'),
+	},
+	"Column": {
+		factory: (name, parent) => {return new MMColumn(name, parent)},
+		displayName: new MMCommandMessage('thermo:columnDisplayName'),
 	},
 });

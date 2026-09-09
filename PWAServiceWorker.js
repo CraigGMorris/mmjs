@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "2026.09.06";
+const VERSION = "2026.09.08";
 
 // The name of the cache
 const CACHE_NAME = `mathminion-${VERSION}`;
@@ -231,6 +231,7 @@ const APP_STATIC_RESOURCES = [
 	"ai/openai/info/menu.yml",
 	"ai/openai/info/iterator.yml",
 	"mmworker/MMFlash.js",
+	"mmworker/MMColumn.js",
 	"mmworker/thermo/index.js",
 	"mmworker/thermo/eos/mixing-rules.js",
 	"mmworker/thermo/eos/peng-robinson.js",
@@ -259,6 +260,7 @@ const APP_STATIC_RESOURCES = [
 	"mmworker/thermo/types/index.js",
 	"mmworker/thermo/types/memory.js",
 	"react/FlashView.js",
+	"react/ColumnView.js",
 ];
 
 // On install, cache the static resources

@@ -374,6 +374,15 @@ export async function setupImports() {
 	globalScope.MMFlash = MMFlash;
 	globalScope.MMFlashPhaseValue = MMFlashPhaseValue;
 	globalScope.parseThermoDefinition = parseThermoDefinition;
+
+	await updateProgress('Column Tool');
+	const [
+		{ MMColumn }
+	] = await Promise.all([
+		import('./MMColumn.js')
+	]);
+	globalScope.MMColumn = MMColumn;
+
 	await updateProgress('__All_modules_loaded__');
 
 	console.log('All modules loaded and attached to global scope');

@@ -47,6 +47,13 @@
  */
 
 /**
+ * @typedef {Object} MMBroydenWarmState
+ * @property {Float64Array} [r]
+ * @property {Float64Array} [qt]
+ * @property {Float64Array} [d]
+ */
+
+/**
  * @typedef {Object} MMBroydenOptions
  * @property {number} [maxIterations]
  * @property {number} [maxJacobians]
@@ -56,6 +63,7 @@
  * @property {number} [maxStepLength]
  * @property {number} [minTolerance]
  * @property {boolean} [startWithIdentity]
+ * @property {MMBroydenWarmState} [warmState]
  */
 
 export const MMMath = {
@@ -1535,7 +1543,27 @@ export const MMMath = {
 		const stepMax = maxStepLength * Math.max(Math.sqrt(sum), n );		
 		let tStart = new Date().getTime();
 
+		const saveWarmState = () => {
+			if (options.warmState) {
+				if (!options.warmState.r || !options.warmState.qt || !options.warmState.d || options.warmState.r.length !== n * n) {
+					options.warmState.r = new Float64Array(n * n);
+					options.warmState.qt = new Float64Array(n * n);
+					options.warmState.d = new Float64Array(n);
+				}
+				options.warmState.r.set(r);
+				options.warmState.qt.set(qt);
+				options.warmState.d.set(d);
+			}
+		};
+
 		let restrt = true;    // Ensure initial Jacobian gets computed
+		if (options.warmState && options.warmState.r && options.warmState.qt && options.warmState.d &&
+			options.warmState.r.length === n * n && options.warmState.d.length === n) {
+			r.set(options.warmState.r);
+			qt.set(options.warmState.qt);
+			d.set(options.warmState.d);
+			restrt = false;
+		}
 		let iter;
 		for (let jacobTry = 1; jacobTry <= maxJacobians; jacobTry++) {
 			for (iter = 1; iter <= maxIterations; iter++) {   // start interation loop
@@ -1673,6 +1701,7 @@ export const MMMath = {
 				}
 	
 				if (test < fTolerance) {
+					saveWarmState();
 					return;
 				}
 				if (check) {   // true if line search failed to find a new x
@@ -1708,6 +1737,7 @@ export const MMMath = {
 						}
 					}				
 					if (test < dxTolerance)  {
+						saveWarmState();
 						return   // success
 					}
 				}

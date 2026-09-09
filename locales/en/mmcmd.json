@@ -107,6 +107,7 @@
 	"menuDisplayName": "Menu",
 	"modelDisplayName": "Model",
 	"modelFlashDisplayName": "Flash",
+	"modelColumnDisplayName": "Column",
 	"modelImportDisplayName": "Imported Model",
 	"modelImportJsonError": "The imported model named {{name}} could not be interpreted\n\nin model {{path}}.\n\nIt has been placed in an expression as a string",
 	"sessionImportNotFound": "The imported model named {{name}} could not be found\n\nin model {{path}}.",

@@ -1226,6 +1226,12 @@ export class Diagram extends React.Component {
 										addTool('Flash');
 									}
 								},
+								{
+									text: this.props.t('mmcmd:modelColumnDisplayName'),
+									action: () => {
+										addTool('Column');
+									}
+								},
 							]
 						}
 					)
@@ -1544,7 +1550,8 @@ class ToolIcon extends React.Component {
 			HtmlPage: 'rgba(217,204,230,.8)',
 			Button: 'rgba(239,239,255,.8)',
 			Menu: 'rgba(255, 255, 255, .8)',
-			Flash: 'rgba(93, 180, 246, 0.8)'
+			Flash: 'rgba(93, 180, 246, 0.8)',
+			Column: 'rgba(95, 156, 162, .8)'
 		}
 		const fillColor = toolColors[info.toolTypeName]
 		let textComponents;

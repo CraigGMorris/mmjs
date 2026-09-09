@@ -64,6 +64,7 @@ declare global {
 	var MMFlash: typeof import("./MMFlash.js").MMFlash;
 	var MMFlashPhaseValue: typeof import("./MMFlash.js").MMFlashPhaseValue;
 	var parseThermoDefinition: typeof import("./MMFlash.js").parseThermoDefinition;
+	var MMColumn: typeof import("./MMColumn.js").MMColumn;
 
 	/**
 	 * Worker communication message types

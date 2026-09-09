@@ -1,0 +1,598 @@
+// @ts-check
+/*
+	This file is part of Math Minion, a javascript based calculation program
+	Copyright 2026, Craig Morris
+
+	Math Minion is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	Math Minion is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with Math Minion.  If not, see <https://www.gnu.org/licenses/>.
+*/
+'use strict';
+
+import { ToolView } from './ToolView.js';
+import { FormulaField, FormulaEditor } from './FormulaView.js';
+import { TableView } from './TableView.js';
+
+const e = React.createElement;
+const useState = React.useState;
+const useEffect = React.useEffect;
+
+/*
+	Enum for column display modes.
+	@readonly
+	@enum {number}
+*/
+const ColumnDisplay = Object.freeze({
+	main: 0,
+	formulaEditor: 1
+});
+
+/*
+	ColumnView component
+	React UI view for distillation and fractionation column tools
+	@param {import('./MMApp.js').ViewProps} props
+*/
+export function ColumnView(props) {
+	const [display, setDisplay] = useState(/** @type {number} */ (ColumnDisplay.main));
+	const [activeTab, setActiveTab] = useState('profiles'); // 'profiles' | 'setup' | 'feedsDraws' | 'specs'
+	const [formulaName, setFormulaName] = useState('');
+	const [editOptions, setEditOptions] = useState({});
+
+	// Add item draft states
+	const [newFeedStage, setNewFeedStage] = useState('5');
+	const [newFeedFormula, setNewFeedFormula] = useState('');
+	const [newDrawStage, setNewDrawStage] = useState('1');
+	const [newDrawPhase, setNewDrawPhase] = useState('l');
+	const [newDrawName, setNewDrawName] = useState('');
+	const [newSpecName, setNewSpecName] = useState('');
+	const [newSpecFormula, setNewSpecFormula] = useState('');
+	const [newSpecScale, setNewSpecScale] = useState('1.0');
+
+	useEffect(() => {
+		props.actions.setUpdateCommands(props.viewInfo.stackIndex,
+			`${props.viewInfo.path} toolViewInfo`);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const t = props.t;
+	const updateResults = props.viewInfo.updateResults;
+	if (updateResults.error) {
+		props.actions.doCommand('', () => {
+			props.actions.popView();
+		});
+		return null;
+	}
+	const results = updateResults.length ? updateResults[0].results : {};
+
+	const applyChanges = (/** @type {string} */ name) => {
+		const path = `${results.path}.${name}`;
+		return (/** @type {string} */ formula) => {
+			props.actions.doCommand(`${path} set formula ${formula}`, () => {
+				props.actions.updateView(props.viewInfo.stackIndex);
+				setDisplay(ColumnDisplay.main);
+			});
+		};
+	};
+
+	if (display === ColumnDisplay.formulaEditor) {
+		return e(
+			ToolView, {
+				id: 'tool-view',
+				displayComponent: e(
+					FormulaEditor, {
+						id: 'column-formula-editor',
+						key: 'editor',
+						t: t,
+						viewInfo: props.viewInfo,
+						infoWidth: props.infoWidth,
+						infoHeight: props.infoHeight,
+						actions: props.actions,
+						editOptions: editOptions,
+						cancelAction: () => {
+							setDisplay(ColumnDisplay.main);
+						},
+						applyChanges: applyChanges(formulaName)
+					}
+				),
+				...props
+			}
+		);
+	}
+
+	const nInputHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--input--height')) || 30;
+	const nInfoViewPadding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--info-view--padding')) || 4;
+	const availWidth = (props.infoWidth || 400) - 2 * nInfoViewPadding;
+	const availHeight = (props.infoHeight || 500) - 95;
+
+	// Status badge
+	let statusText = '○ Not Solved';
+	let statusColor = 'gray';
+	if (results.isInError) {
+		statusText = '● Error';
+		statusColor = '#ff6b6b';
+	}
+	else if (results.isSolved) {
+		statusText = '● Solved';
+		statusColor = '#51cf66';
+	}
+
+	// Tab header buttons
+	const tabs = [
+		{ id: 'profiles', label: t('thermo:columnProfilesLabel') || 'Profiles' },
+		{ id: 'setup', label: t('thermo:columnStagesLabel') || 'Setup' },
+		{ id: 'feedsDraws', label: `${t('thermo:columnFeedsLabel') || 'Feeds'}/${t('thermo:columnDrawsLabel') || 'Draws'}` },
+		{ id: 'specs', label: t('thermo:columnSpecsLabel') || 'Specs' }
+	];
+
+	const tabButtons = e(
+		'div', {
+			id: 'column__tabs',
+			key: 'tabs',
+			style: {
+				display: 'flex',
+				gap: '4px',
+				marginBottom: '6px',
+				borderBottom: '1px solid var(--border--color)'
+			}
+		},
+		tabs.map(tab => e(
+			'button', {
+				key: tab.id,
+				className: activeTab === tab.id ? 'column__tab-btn active' : 'column__tab-btn',
+				style: {
+					padding: '4px 10px',
+					cursor: 'pointer',
+					fontWeight: activeTab === tab.id ? 'bold' : 'normal',
+					borderBottom: activeTab === tab.id ? '2px solid var(--bold--color)' : 'none',
+					backgroundColor: 'transparent',
+					color: 'inherit',
+					borderTop: 'none',
+					borderLeft: 'none',
+					borderRight: 'none'
+				},
+				onClick: () => setActiveTab(tab.id)
+			},
+			tab.label
+		))
+	);
+
+	// Action Bar: Status, Solve, Reset
+	const actionBar = e(
+		'div', {
+			id: 'column__action-bar',
+			key: 'actions',
+			style: {
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'space-between',
+				marginBottom: '8px',
+				padding: '2px 4px'
+			}
+		},
+		e(
+			'div', {
+				style: { color: statusColor, fontWeight: 'bold', fontSize: '11pt' }
+			},
+			statusText
+		),
+		e(
+			'div', {
+				style: { display: 'flex', gap: '8px' }
+			},
+			e(
+				'button', {
+					style: { padding: '4px 12px', cursor: 'pointer', fontWeight: 'bold' },
+					onClick: () => {
+						props.actions.doCommand(`${results.path} solve`, () => {
+							props.actions.updateView(props.viewInfo.stackIndex);
+						});
+					}
+				},
+				t('thermo:columnSolveButton') || 'Solve'
+			),
+			e(
+				'button', {
+					style: { padding: '4px 8px', cursor: 'pointer' },
+					onClick: () => {
+						props.actions.doCommand(`${results.path} reset`, () => {
+							props.actions.updateView(props.viewInfo.stackIndex);
+						});
+					}
+				},
+				t('thermo:columnResetButton') || 'Reset'
+			)
+		)
+	);
+
+	let contentComponent;
+
+	// Tab 1: Profiles
+	if (activeTab === 'profiles') {
+		contentComponent = results.displayTable ? e(
+			TableView, {
+				id: 'column__display-table',
+				key: 'table',
+				value: results.displayTable,
+				actions: props.actions,
+				viewInfo: props.viewInfo,
+				viewBox: [0, 0, availWidth, Math.max(180, availHeight)],
+				cellClick: () => {}
+			}
+		) : e('div', { key: 'empty' }, 'No table available');
+	}
+	// Tab 2: Column Setup
+	else if (activeTab === 'setup') {
+		contentComponent = e(
+			'div', {
+				id: 'column__setup',
+				key: 'setup',
+				style: {
+					display: 'grid',
+					gridTemplateColumns: '110px 1fr',
+					gridRowGap: '8px',
+					alignItems: 'center',
+					overflowY: 'auto',
+					maxHeight: `${availHeight}px`
+				}
+			},
+			// Thermo
+			e('div', { key: 'tl' }, t('thermo:columnThermoLabel') || 'Thermo:'),
+			e(FormulaField, {
+				id: 'column__thermo',
+				key: 'tf',
+				t: t,
+				actions: props.actions,
+				path: `${results.path}.thermo`,
+				formula: results.thermoFormula,
+				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
+				editAction: (opt) => {
+					setEditOptions(opt);
+					setFormulaName('thermo');
+					setDisplay(ColumnDisplay.formulaEditor);
+				},
+				applyChanges: applyChanges('thermo')
+			}),
+			// Stages
+			e('div', { key: 'sl' }, t('thermo:columnStagesLabel') || 'Stages:'),
+			e(FormulaField, {
+				id: 'column__nstages',
+				key: 'sf',
+				t: t,
+				actions: props.actions,
+				path: `${results.path}.nstages`,
+				formula: results.stageCountFormula,
+				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
+				editAction: (opt) => {
+					setEditOptions(opt);
+					setFormulaName('nstages');
+					setDisplay(ColumnDisplay.formulaEditor);
+				},
+				applyChanges: applyChanges('nstages')
+			}),
+			// Top Pressure
+			e('div', { key: 'tpl' }, t('thermo:columnPTopLabel') || 'Top P:'),
+			e(FormulaField, {
+				id: 'column__ptop',
+				key: 'tpf',
+				t: t,
+				actions: props.actions,
+				path: `${results.path}.ptop`,
+				formula: results.pTopFormula,
+				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
+				editAction: (opt) => {
+					setEditOptions(opt);
+					setFormulaName('ptop');
+					setDisplay(ColumnDisplay.formulaEditor);
+				},
+				applyChanges: applyChanges('ptop')
+			}),
+			// Bottom Pressure
+			e('div', { key: 'bpl' }, t('thermo:columnPBottomLabel') || 'Bottom P:'),
+			e(FormulaField, {
+				id: 'column__pbottom',
+				key: 'bpf',
+				t: t,
+				actions: props.actions,
+				path: `${results.path}.pbottom`,
+				formula: results.pBottomFormula,
+				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
+				editAction: (opt) => {
+					setEditOptions(opt);
+					setFormulaName('pbottom');
+					setDisplay(ColumnDisplay.formulaEditor);
+				},
+				applyChanges: applyChanges('pbottom')
+			}),
+			// Total Condenser Toggle
+			e('div', { key: 'tcl' }, t('thermo:columnTotalCondenserLabel') || 'Total Condenser:'),
+			e(
+				'div', { key: 'tcc' },
+				e('input', {
+					type: 'checkbox',
+					checked: Boolean(results.totalCondenser),
+					onChange: (ev) => {
+						props.actions.doCommand(`${results.path} settotalcondenser ${ev.target.checked}`, () => {
+							props.actions.updateView(props.viewInfo.stackIndex);
+						});
+					}
+				})
+			)
+		);
+	}
+	// Tab 3: Feeds and Draws
+	else if (activeTab === 'feedsDraws') {
+		const feedRows = (results.feeds || []).map((f) => e(
+			'div', {
+				key: f.name,
+				style: {
+					display: 'grid',
+					gridTemplateColumns: '70px 1fr 30px',
+					alignItems: 'center',
+					gap: '4px',
+					marginBottom: '4px'
+				}
+			},
+			e('span', { style: { fontSize: '9pt', color: 'var(--subtext--color)' } }, `Stg ${f.stage}:`),
+			e(FormulaField, {
+				id: `column__feed_${f.name}`,
+				t: t,
+				actions: props.actions,
+				path: `${results.path}.${f.name}`,
+				formula: f.formula,
+				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
+				editAction: (opt) => {
+					setEditOptions(opt);
+					setFormulaName(f.name);
+					setDisplay(ColumnDisplay.formulaEditor);
+				},
+				applyChanges: applyChanges(f.name)
+			}),
+			e('button', {
+				style: { color: 'red', cursor: 'pointer', border: 'none', background: 'transparent' },
+				onClick: () => {
+					props.actions.doCommand(`${results.path} removefeed ${f.index}`, () => {
+						props.actions.updateView(props.viewInfo.stackIndex);
+					});
+				}
+			}, '✕')
+		));
+
+		const drawRows = (results.draws || []).map((d) => e(
+			'div', {
+				key: d.name,
+				style: {
+					display: 'grid',
+					gridTemplateColumns: '70px 40px 1fr 30px',
+					alignItems: 'center',
+					gap: '4px',
+					marginBottom: '4px'
+				}
+			},
+			e('span', { style: { fontSize: '9pt', color: 'var(--subtext--color)' } }, `Stg ${d.stage}:`),
+			e('span', { style: { fontWeight: 'bold' } }, d.phase.toUpperCase()),
+			e('span', null, `${d.name} ${d.isBasis ? '(Basis)' : ''}`),
+			!d.isBasis ? e('button', {
+				style: { color: 'red', cursor: 'pointer', border: 'none', background: 'transparent' },
+				onClick: () => {
+					props.actions.doCommand(`${results.path} removedraw ${d.index}`, () => {
+						props.actions.updateView(props.viewInfo.stackIndex);
+					});
+				}
+			}, '✕') : e('span')
+		));
+
+		contentComponent = e(
+			'div', {
+				id: 'column__feeds-draws',
+				key: 'feeds-draws',
+				style: { overflowY: 'auto', maxHeight: `${availHeight}px` }
+			},
+			// Feeds Section
+			e('h4', { style: { margin: '6px 0 4px 0' } }, t('thermo:columnFeedsLabel') || 'Feeds'),
+			feedRows.length ? feedRows : e('div', { style: { fontStyle: 'italic', marginBottom: '6px' } }, 'No feeds'),
+			// Add Feed row
+			e(
+				'div', {
+					style: { display: 'flex', gap: '4px', marginTop: '6px', marginBottom: '14px', alignItems: 'center' }
+				},
+				e('input', {
+					type: 'number',
+					placeholder: 'Stage',
+					style: { width: '55px', height: '24px' },
+					value: newFeedStage,
+					onChange: (ev) => setNewFeedStage(ev.target.value)
+				}),
+				e('input', {
+					type: 'text',
+					placeholder: 'Feed Formula / Stream',
+					style: { flex: 1, height: '24px' },
+					value: newFeedFormula,
+					onChange: (ev) => setNewFeedFormula(ev.target.value)
+				}),
+				e('button', {
+					style: { padding: '3px 8px', cursor: 'pointer' },
+					onClick: () => {
+						if (newFeedFormula) {
+							props.actions.doCommand(`${results.path} addfeed ${newFeedStage} ${newFeedFormula}`, () => {
+								setNewFeedFormula('');
+								props.actions.updateView(props.viewInfo.stackIndex);
+							});
+						}
+					}
+				}, `+ ${t('thermo:columnAddFeed') || 'Feed'}`)
+			),
+
+			// Draws Section
+			e('h4', { style: { margin: '6px 0 4px 0' } }, t('thermo:columnDrawsLabel') || 'Draws'),
+			drawRows.length ? drawRows : e('div', { style: { fontStyle: 'italic', marginBottom: '6px' } }, 'No draws'),
+			// Add Draw row
+			e(
+				'div', {
+					style: { display: 'flex', gap: '4px', marginTop: '6px', alignItems: 'center' }
+				},
+				e('input', {
+					type: 'number',
+					placeholder: 'Stage',
+					style: { width: '55px', height: '24px' },
+					value: newDrawStage,
+					onChange: (ev) => setNewDrawStage(ev.target.value)
+				}),
+				e(
+					'select', {
+						style: { height: '24px' },
+						value: newDrawPhase,
+						onChange: (ev) => setNewDrawPhase(ev.target.value)
+					},
+					e('option', { value: 'l' }, 'Liq'),
+					e('option', { value: 'v' }, 'Vap')
+				),
+				e('input', {
+					type: 'text',
+					placeholder: 'Draw Name',
+					style: { flex: 1, height: '24px' },
+					value: newDrawName,
+					onChange: (ev) => setNewDrawName(ev.target.value)
+				}),
+				e('button', {
+					style: { padding: '3px 8px', cursor: 'pointer' },
+					onClick: () => {
+						if (newDrawName) {
+							props.actions.doCommand(`${results.path} adddraw ${newDrawStage} ${newDrawPhase} ${newDrawName}`, () => {
+								setNewDrawName('');
+								props.actions.updateView(props.viewInfo.stackIndex);
+							});
+						}
+					}
+				}, `+ ${t('thermo:columnAddDraw') || 'Draw'}`)
+			)
+		);
+	}
+	// Tab 4: Specifications
+	else if (activeTab === 'specs') {
+		const specRows = (results.specs || []).map((s) => e(
+			'div', {
+				key: s.name,
+				style: {
+					display: 'grid',
+					gridTemplateColumns: '70px 1fr 50px 30px',
+					alignItems: 'center',
+					gap: '4px',
+					marginBottom: '6px'
+				}
+			},
+			e('span', { style: { fontWeight: 'bold' } }, s.name),
+			e(FormulaField, {
+				id: `column__spec_${s.name}`,
+				t: t,
+				actions: props.actions,
+				path: `${results.path}.${s.name}`,
+				formula: s.formula,
+				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
+				editAction: (opt) => {
+					setEditOptions(opt);
+					setFormulaName(s.name);
+					setDisplay(ColumnDisplay.formulaEditor);
+				},
+				applyChanges: applyChanges(s.name)
+			}),
+			e('span', { style: { fontSize: '8pt', color: 'var(--subtext--color)' } }, `/${s.scale}`),
+			results.specs.length > 2 ? e('button', {
+				style: { color: 'red', cursor: 'pointer', border: 'none', background: 'transparent' },
+				onClick: () => {
+					props.actions.doCommand(`${results.path} removespec ${s.index}`, () => {
+						props.actions.updateView(props.viewInfo.stackIndex);
+					});
+				}
+			}, '✕') : e('span')
+		));
+
+		contentComponent = e(
+			'div', {
+				id: 'column__specs',
+				key: 'specs',
+				style: { overflowY: 'auto', maxHeight: `${availHeight}px` }
+			},
+			e('h4', { style: { margin: '6px 0 6px 0' } }, t('thermo:columnSpecsLabel') || 'Specifications'),
+			specRows.length ? specRows : e('div', { style: { fontStyle: 'italic' } }, 'No specs'),
+			// Add Spec row
+			e(
+				'div', {
+					style: { display: 'flex', gap: '4px', marginTop: '10px', alignItems: 'center' }
+				},
+				e('input', {
+					type: 'text',
+					placeholder: 'Name',
+					style: { width: '65px', height: '24px' },
+					value: newSpecName,
+					onChange: (ev) => setNewSpecName(ev.target.value)
+				}),
+				e('input', {
+					type: 'text',
+					placeholder: 'Spec Formula (drives to 0)',
+					style: { flex: 1, height: '24px' },
+					value: newSpecFormula,
+					onChange: (ev) => setNewSpecFormula(ev.target.value)
+				}),
+				e('input', {
+					type: 'number',
+					placeholder: 'Scale',
+					style: { width: '50px', height: '24px' },
+					value: newSpecScale,
+					onChange: (ev) => setNewSpecScale(ev.target.value)
+				}),
+				e('button', {
+					style: { padding: '3px 8px', cursor: 'pointer' },
+					onClick: () => {
+						if (newSpecName && newSpecFormula) {
+							props.actions.doCommand(`${results.path} addspec ${newSpecName} ${newSpecFormula} ${newSpecScale || 1.0}`, () => {
+								setNewSpecName('');
+								setNewSpecFormula('');
+								props.actions.updateView(props.viewInfo.stackIndex);
+							});
+						}
+					}
+				}, `+ ${t('thermo:columnAddSpec') || 'Spec'}`)
+			)
+		);
+	}
+
+	const mainComponent = e(
+		'div', {
+			id: 'column',
+			key: 'column',
+			style: {
+				height: '100%',
+				display: 'flex',
+				flexDirection: 'column',
+				boxSizing: 'border-box',
+				padding: '2px 4px'
+			}
+		},
+		tabButtons,
+		actionBar,
+		contentComponent
+	);
+
+	return e(
+		ToolView, {
+			id: 'tool-view',
+			displayComponent: mainComponent,
+			...props
+		}
+	);
+}

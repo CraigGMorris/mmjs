@@ -278,6 +278,11 @@ export class MMModel extends MMTool {
 			}
 		}
 
+		const foundKey = Object.keys(MMToolTypes).find(k => k.toLowerCase() === typeName.toLowerCase());
+		if (foundKey) {
+			typeName = foundKey;
+		}
+
 		if (!name) {
 			const baseName = (typeName === 'Expression') ? 'x' : typeName;
 			let n = 2;
