@@ -219,11 +219,18 @@ export class MMColumn extends MMTool {
 		this.cachedVdraw = null;
 		/** @type {MMNumberValue|null} */
 		this.cachedLdraw = null;
+		/** @type {MMNumberValue|null} */
+		this.cachedHl = null;
+		/** @type {MMNumberValue|null} */
+		this.cachedHv = null;
 		/** @type {Map<string, MMNumberValue>} */
 		this.cachedCompProfiles = new Map();
 
+		/** @type {Record<string, string>} */
+		this.displayUnits = {};
+
 		// Set default draws: top vapor distillate and bottom liquid bottoms
-		this.draws.push({ stage: 1, phase: 'v', name: 'Distillate', isBasis: true });
+		this.draws.push({ stage: 1, phase: 'v', name: 'Overhead', isBasis: true });
 		this.draws.push({ stage: 10, phase: 'l', name: 'Bottoms', isBasis: true });
 
 		// Set default specs: 2 specs
@@ -463,6 +470,8 @@ export class MMColumn extends MMTool {
 			this.cachedQ = new MMNumberValue(n, 1, [2, 1, -3, 0, 0, 0, 0]);
 			this.cachedVdraw = new MMNumberValue(n, 1, [0, 0, -1, 0, 0, 1, 0]);
 			this.cachedLdraw = new MMNumberValue(n, 1, [0, 0, -1, 0, 0, 1, 0]);
+			this.cachedHl = new MMNumberValue(n, 1, [2, 1, -2, 0, 0, -1, 0]);
+			this.cachedHv = new MMNumberValue(n, 1, [2, 1, -2, 0, 0, -1, 0]);
 		}
 		if (this.v.length !== nTotal) {
 			this.v = new Float64Array(nTotal);
@@ -1031,27 +1040,33 @@ export class MMColumn extends MMTool {
 		(/** @type {MMNumberValue} */ (this.cachedP)).values.set(this.P);
 		(/** @type {MMNumberValue} */ (this.cachedVf)).values.set(this.V);
 		(/** @type {MMNumberValue} */ (this.cachedLf)).values.set(this.L);
+		if (this.cachedHl) (/** @type {MMNumberValue} */ (this.cachedHl)).values.set(this.hl);
+		if (this.cachedHv) (/** @type {MMNumberValue} */ (this.cachedHv)).values.set(this.hv);
 
 		const vdraws = (/** @type {MMNumberValue} */ (this.cachedVdraw)).values;
 		const ldraws = (/** @type {MMNumberValue} */ (this.cachedLdraw)).values;
 		vdraws.fill(0.0);
 		ldraws.fill(0.0);
+		const sideLDraws = new Float64Array(N);
+		const sideVDraws = new Float64Array(N);
 		for (const draw of this.draws) {
 			const stg = draw.stage - 1;
 			if (draw.phase === 'v') {
 				const flow = draw.isBasis ? this.V[stg] : (this.V[stg] * Math.max(0.0, (this.RvTerm ? this.RvTerm[stg] - 1.0 : 0.0)));
 				vdraws[stg] += flow;
 				draw.flow = flow;
+				if (!draw.isBasis) sideVDraws[stg] += flow;
 			}
 			else {
 				const flow = draw.isBasis ? this.L[stg] : (this.L[stg] * Math.max(0.0, (this.RlTerm ? this.RlTerm[stg] - 1.0 : 0.0)));
 				ldraws[stg] += flow;
 				draw.flow = flow;
+				if (!draw.isBasis) sideLDraws[stg] += flow;
 			}
 		}
 
 		// 2. Heat balances
-		// Ene_j = Q_feed,j + L_{j-1}*hl_{j-1} + V_{j+1}*hv_{j+1} - (L_j + L_draw,j)*hl_j - (V_j + V_draw,j)*hv_j - Q_j
+		// Ene_j = Q_feed,j + L_{j-1}*hl_{j-1} + V_{j+1}*hv_{j+1} - (L_j + sideLDraws_j)*hl_j - (V_j + sideVDraws_j)*hv_j - Q_j
 		const heatErrors = new Float64Array(N);
 		const scale = new Float64Array(N);
 		for (let j = 0; j < N; j++) {
@@ -1069,8 +1084,8 @@ export class MMColumn extends MMTool {
 				hScale += Math.abs(vIn);
 			}
 
-			const lOut = (this.L[j] + ldraws[j]) * this.hl[j];
-			const vOut = (this.V[j] + vdraws[j]) * this.hv[j];
+			const lOut = (this.L[j] + sideLDraws[j]) * this.hl[j];
+			const vOut = (this.V[j] + sideVDraws[j]) * this.hv[j];
 			hScale += Math.abs(lOut) + Math.abs(vOut);
 
 			heatErrors[j] = hIn - (lOut + vOut);
@@ -1157,13 +1172,16 @@ export class MMColumn extends MMTool {
 				return;
 			}
 
-			const maxOuter = 20;
-			const outerTol = 1e-5;
+			const isColdStart = !this.isSolved;
+			const maxOuter = 25;
+			const outerTol = 0.05;
 			let outerIter = 0;
 			let outerConverged = false;
+			const prevT = new Float64Array(this.nStages);
 
 			while (outerIter < maxOuter && !outerConverged) {
 				outerIter++;
+				prevT.set(this.T);
 
 				// Update outer properties from current (T, P, x, y)
 				this.initOuterProperties();
@@ -1207,27 +1225,23 @@ export class MMColumn extends MMTool {
 				}
 				this.logSFactors.set(currentX);
 
-				// Outer loop convergence check: sum_i (x_ji * alpha_ji * Kb_j) - 1.0
-				let maxOuterErr = 0.0;
-				const nComp = this.nComponents;
-				for (let j = totCond; j < this.nStages; j++) {
-					let sumYi = 0.0;
-					const lnKb = this.A[j] - this.B[j] / this.T[j];
-					const Kb = Math.exp(lnKb);
-					for (let i = 0; i < nComp; i++) {
-						sumYi += this.x[j * nComp + i] * this.alpha[j * nComp + i] * Kb;
-					}
-					const err = Math.abs(sumYi - 1.0);
-					if (err > maxOuterErr) maxOuterErr = err;
+				// Outer loop convergence check: temperature profile stability
+				let maxDeltaT = 0.0;
+				for (let j = 0; j < this.nStages; j++) {
+					const dt = Math.abs(this.T[j] - prevT[j]);
+					if (dt > maxDeltaT) maxDeltaT = dt;
 				}
 
-				if (maxOuterErr < outerTol) {
+				if ((!isColdStart || outerIter > 1) && maxDeltaT < outerTol) {
 					outerConverged = true;
 					break;
 				}
 			}
 
 			if (outerConverged) {
+				this.initOuterProperties();
+				const dummyFx = new Float64Array(this.logSFactors.length);
+				this.innerErrors(dummyFx);
 				this.isSolved = true;
 				this.forgetStep();
 			}
@@ -1303,6 +1317,10 @@ export class MMColumn extends MMTool {
 				return this.cachedVdraw;
 			case 'ldraw':
 				return this.cachedLdraw;
+			case 'hl':
+				return this.cachedHl;
+			case 'hv':
+				return this.cachedHv;
 
 
 			case 'vx':
@@ -1365,7 +1383,60 @@ export class MMColumn extends MMTool {
 		verbs['settotalcondenser'] = this.setTotalCondenserCommand;
 		verbs['reset'] = this.resetCommand;
 		verbs['solve'] = this.solveCommand;
+		verbs['setcolumnunit'] = this.setColumnUnitCommand;
 		return verbs;
+	}
+
+	/**
+	 * @method getVerbUsageKey
+	 * @override
+	 * @param {MMCommand} command
+	 * @returns {string}
+	 */
+	getVerbUsageKey(command) {
+		switch (command.verb) {
+			case 'setcolumnunit':
+				return 'mmcmd:_exprSetColumnUnit';
+			default:
+				return super.getVerbUsageKey(command);
+		}
+	}
+
+	/**
+	 * @method setColumnUnitCommand
+	 * @param {MMCommand} command
+	 */
+	setColumnUnitCommand(command) {
+		const parts = String(command.args).trim().split(/\s+/);
+		if (parts.length >= 2) {
+			let colKey = parts[0];
+			const colIndex = parseInt(colKey);
+			const colNames = ['T', 'P', 'V', 'L', 'Q'];
+			if (!isNaN(colIndex) && colIndex >= 1 && colIndex <= colNames.length) {
+				colKey = colNames[colIndex - 1];
+			}
+			const unitName = parts[1];
+			const unit = theMMSession.unitSystem.unitNamed(unitName);
+			if (unit) {
+				this.displayUnits[colKey] = unitName;
+				this.forgetCalculated();
+				command.results = unitName;
+			}
+			else {
+				this.setError('mmcmd:unknownUnit', { unit: unitName });
+			}
+		}
+		else if (parts.length === 1 && parts[0]) {
+			let colKey = parts[0];
+			const colIndex = parseInt(colKey);
+			const colNames = ['T', 'P', 'V', 'L', 'Q'];
+			if (!isNaN(colIndex) && colIndex >= 1 && colIndex <= colNames.length) {
+				colKey = colNames[colIndex - 1];
+			}
+			delete this.displayUnits[colKey];
+			this.forgetCalculated();
+			command.results = '';
+		}
 	}
 
 	/**
@@ -1635,6 +1706,8 @@ export class MMColumn extends MMTool {
 		this.cachedT = null;
 		this.cachedP = null;
 		this.cachedQ = null;
+		this.cachedHl = null;
+		this.cachedHv = null;
 		this.isInError = false;
 		this.lastErrorKey = null;
 		this.lastErrorArgs = null;
@@ -1683,6 +1756,10 @@ export class MMColumn extends MMTool {
 			scale: s.scale
 		}));
 
+		if (this.displayUnits && Object.keys(this.displayUnits).length) {
+			o['displayUnits'] = { ...this.displayUnits };
+		}
+
 		return o;
 	}
 
@@ -1728,6 +1805,8 @@ export class MMColumn extends MMTool {
 				});
 			}
 
+			this.displayUnits = saved.displayUnits ? { ...saved.displayUnits } : {};
+
 		}
 		finally {
 			this.isLoadingCase = false;
@@ -1740,8 +1819,6 @@ export class MMColumn extends MMTool {
 	 */
 	displayTable() {
 		const N = this.nStages || 10;
-		const stageVals = new MMNumberValue(N, 1);
-		for (let i = 0; i < N; i++) stageVals.values[i] = i + 1;
 
 		const tVals = new MMNumberValue(N, 1, [0, 0, 0, 0, 1, 0, 0]);
 		if (this.T.length === N) tVals.values.set(this.T);
@@ -1758,7 +1835,7 @@ export class MMColumn extends MMTool {
 		const qVals = new MMNumberValue(N, 1, [2, 1, -3, 0, 0, 0, 0]);
 		if (this.Q.length === N) qVals.values.set(this.Q);
 
-		const portStrs = [];
+		const feedsDrawsStrs = [];
 		for (let j = 0; j < N; j++) {
 			const stgNum = j + 1;
 			const parts = [];
@@ -1768,17 +1845,16 @@ export class MMColumn extends MMTool {
 			for (const d of this.draws) {
 				if (d.stage === stgNum) parts.push(`D:${d.name}(${d.phase.toUpperCase()})`);
 			}
-			portStrs.push(parts.join(', '));
+			feedsDrawsStrs.push(parts.join(', '));
 		}
 
 		const cols = [
-			new MMTableValueColumn({ name: 'Stage', displayUnit: '', value: stageVals }),
-			new MMTableValueColumn({ name: 'T', displayUnit: 'K', value: tVals }),
-			new MMTableValueColumn({ name: 'P', displayUnit: 'kPa', value: pVals }),
-			new MMTableValueColumn({ name: 'V', displayUnit: 'mol/s', value: vVals }),
-			new MMTableValueColumn({ name: 'L', displayUnit: 'mol/s', value: lVals }),
-			new MMTableValueColumn({ name: 'Q', displayUnit: 'kW', value: qVals }),
-			new MMTableValueColumn({ name: 'Ports', displayUnit: 'string', value: MMStringValue.stringArrayValue(portStrs) })
+			new MMTableValueColumn({ name: 'T', displayUnit: this.displayUnits['T'], value: tVals }),
+			new MMTableValueColumn({ name: 'P', displayUnit: this.displayUnits['P'], value: pVals }),
+			new MMTableValueColumn({ name: 'V', displayUnit: this.displayUnits['V'], value: vVals }),
+			new MMTableValueColumn({ name: 'L', displayUnit: this.displayUnits['L'], value: lVals }),
+			new MMTableValueColumn({ name: 'Q', displayUnit: this.displayUnits['Q'], value: qVals }),
+			new MMTableValueColumn({ name: 'Feeds & Draws', displayUnit: 'string', value: MMStringValue.stringArrayValue(feedsDrawsStrs) })
 		];
 
 		const table = new MMTableValue({ columns: cols });

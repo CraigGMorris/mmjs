@@ -21,6 +21,7 @@
 import { ToolView } from './ToolView.js';
 import { FormulaField, FormulaEditor } from './FormulaView.js';
 import { TableView } from './TableView.js';
+import { UnitPicker } from './UnitsView.js';
 
 const e = React.createElement;
 const useState = React.useState;
@@ -33,7 +34,8 @@ const useEffect = React.useEffect;
 */
 const ColumnDisplay = Object.freeze({
 	main: 0,
-	formulaEditor: 1
+	formulaEditor: 1,
+	unitPicker: 2
 });
 
 /**
@@ -47,6 +49,7 @@ export function ColumnView(props) {
 	const [activeTab, setActiveTab] = useState('profiles'); // 'profiles' | 'setup' | 'feedsDraws' | 'specs'
 	const [formulaName, setFormulaName] = useState('');
 	const [editOptions, setEditOptions] = useState({});
+	const [selectedCell, setSelectedCell] = useState([0, 0]);
 
 	// Add item draft states
 	const [newFeedStage, setNewFeedStage] = useState('5');
@@ -84,6 +87,16 @@ export function ColumnView(props) {
 		};
 	};
 
+	let unitType = '';
+	let valueUnit = '';
+	if (results.displayTable && selectedCell[1] > 0 && selectedCell[1] <= results.displayTable.nc) {
+		const col = results.displayTable.v[selectedCell[1] - 1];
+		if (col && col.v) {
+			unitType = col.v.unitType || '';
+			valueUnit = col.v.unit || col.dUnit || '';
+		}
+	}
+
 	if (display === ColumnDisplay.formulaEditor) {
 		return e(
 			ToolView, {
@@ -102,6 +115,35 @@ export function ColumnView(props) {
 							setDisplay(ColumnDisplay.main);
 						},
 						applyChanges: applyChanges(formulaName)
+					}
+				),
+				...props
+			}
+		);
+	}
+
+	if (display === ColumnDisplay.unitPicker) {
+		return e(
+			ToolView, {
+				id: 'tool-view',
+				displayComponent: e(
+					UnitPicker, {
+						key: 'unit',
+						t: t,
+						actions: props.actions,
+						unitType: unitType,
+						unitName: valueUnit,
+						cancel: () => {
+							setDisplay(ColumnDisplay.main);
+						},
+						apply: (/** @type {string} */ unit) => {
+							const colIdx = selectedCell[1];
+							const cmd = `${results.path} setcolumnunit ${colIdx} ${unit}`;
+							props.actions.doCommand(cmd, () => {
+								props.actions.updateView(props.viewInfo.stackIndex);
+								setDisplay(ColumnDisplay.main);
+							});
+						}
 					}
 				),
 				...props
@@ -223,16 +265,71 @@ export function ColumnView(props) {
 
 	// Tab 1: Profiles
 	if (activeTab === 'profiles') {
+		const displayedUnit = (unitType && valueUnit) ? `${unitType}: ${valueUnit}` : '';
+		const unitBar = e(
+			'div', {
+				id: 'column__units-bar',
+				key: 'units-bar',
+				style: {
+					display: 'flex',
+					alignItems: 'center',
+					minHeight: '22px',
+					marginBottom: '4px',
+					padding: '0 4px',
+					color: 'var(--link--color)',
+					cursor: unitType ? 'pointer' : 'default'
+				},
+				onClick: () => {
+					if (unitType) {
+						setDisplay(ColumnDisplay.unitPicker);
+					}
+				}
+			},
+			displayedUnit ? e(
+				'span', {
+					id: 'column__units',
+					style: {
+						textDecoration: 'underline'
+					}
+				},
+				displayedUnit
+			) : null
+		);
+
 		contentComponent = results.displayTable ? e(
-			TableView, {
-				id: 'column__display-table',
-				key: 'table',
-				value: results.displayTable,
-				actions: props.actions,
-				viewInfo: props.viewInfo,
-				viewBox: [0, 0, availWidth, Math.max(180, availHeight)],
-				cellClick: () => {}
-			}
+			'div', {
+				key: 'profiles-container',
+				style: {
+					display: 'flex',
+					flexDirection: 'column',
+					flex: 1
+				}
+			},
+			unitBar,
+			e(
+				TableView, {
+					id: 'column__display-table',
+					key: 'table',
+					value: results.displayTable,
+					actions: props.actions,
+					viewInfo: props.viewInfo,
+					viewBox: [0, 0, availWidth, Math.max(180, availHeight - 26)],
+					currentCell: (selectedCell[0] === 0 && selectedCell[1] === 0) ? null : selectedCell,
+					cellClick: (row, column) => {
+						if (row === 0 && column === 0) {
+							setSelectedCell([0, 0]);
+							return;
+						}
+						const displayTable = results.displayTable;
+						if (displayTable && column >= 1 && column <= displayTable.nc) {
+							setSelectedCell([row, column]);
+						}
+						else {
+							setSelectedCell([0, 0]);
+						}
+					}
+				}
+			)
 		) : e('div', { key: 'empty' }, 'No table available');
 	}
 	// Tab 2: Column Setup
