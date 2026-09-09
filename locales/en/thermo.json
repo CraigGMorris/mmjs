@@ -36,5 +36,12 @@
 	"columnAddFeed": "Add Feed",
 	"columnAddDraw": "Add Draw",
 	"columnAddSpec": "Add Spec",
-	"columnDelete": "Delete"
+	"columnDelete": "Delete",
+	"columnNoFeedsError": "No feed flow specified for column\n{{path}}",
+	"columnNoThermoError": "No thermodynamic system specified for column\n{{path}}",
+	"columnInvalidStagesError": "Column must have at least 2 stages\n{{path}}",
+	"columnSpecsCountError": "Specification count mismatch (found {{count}}, required {{required}})\n{{path}}",
+	"columnOuterIterExceeded": "Outer loop iterations exceeded ({{iter}}/{{maxIter}})\n{{path}}",
+	"columnSpecEvaluationError": "Specification '{{name}}' formula did not evaluate to a numeric value\n{{path}}\n\n{{formula}}",
+	"columnSolveFailed": "Column calculation failed\n{{path}}\n\n{{msg}}"
 }

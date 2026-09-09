@@ -36,12 +36,13 @@ const ColumnDisplay = Object.freeze({
 	formulaEditor: 1
 });
 
-/*
-	ColumnView component
-	React UI view for distillation and fractionation column tools
-	@param {import('./MMApp.js').ViewProps} props
-*/
+/**
+ * ColumnView component
+ * React UI view for distillation and fractionation column tools
+ * @param {import('./MMApp.js').ViewProps} props
+ */
 export function ColumnView(props) {
+
 	const [display, setDisplay] = useState(/** @type {number} */ (ColumnDisplay.main));
 	const [activeTab, setActiveTab] = useState('profiles'); // 'profiles' | 'setup' | 'feedsDraws' | 'specs'
 	const [formulaName, setFormulaName] = useState('');
@@ -116,8 +117,12 @@ export function ColumnView(props) {
 	// Status badge
 	let statusText = '○ Not Solved';
 	let statusColor = 'gray';
+	let fullErrorText = '';
 	if (results.isInError) {
-		statusText = '● Error';
+		const errDetail = results.lastErrorKey ? t(results.lastErrorKey, results.lastErrorArgs) : '';
+		fullErrorText = errDetail || '';
+		const firstLine = errDetail ? errDetail.split('\n')[0].trim() : '';
+		statusText = firstLine ? `● Error: ${firstLine}` : '● Error';
 		statusColor = '#ff6b6b';
 	}
 	else if (results.isSolved) {
@@ -180,7 +185,8 @@ export function ColumnView(props) {
 		},
 		e(
 			'div', {
-				style: { color: statusColor, fontWeight: 'bold', fontSize: '11pt' }
+				style: { color: statusColor, fontWeight: 'bold', fontSize: '11pt', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: `${availWidth - 160}px` },
+				title: fullErrorText || undefined
 			},
 			statusText
 		),

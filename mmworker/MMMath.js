@@ -1468,10 +1468,7 @@ export const MMMath = {
 		const rootEps = Math.sqrt(eps);
 		for (let j = 0; j < n; j++) {
 			const temp = x[j];
-			let h = rootEps * Math.abs( temp );
-			if (h == 0.0) {
-				h = rootEps;
-			}
+			let h = rootEps * Math.max(Math.abs( temp ), 1.0);
 			x[j] = temp + h;     // trick to reduce finite precision error
 			h = x[j] - temp;
 			calcFx(n, x, dummyF);
