@@ -529,7 +529,7 @@ class MMFlash extends MMTool {
 				this.flow = null;
 				this.moleX = null;
 				this.massX = null;
-				this.propList = null;
+				// this.propList = null;
 			}
 			finally {
 				this.forgetRecursionBlockIsOn = false;
