@@ -388,16 +388,22 @@ export function solveInsideOutInner(
 		let cpV_ig = 0.0;
 		let cpL_ig = 0.0;
 
+		const invSumX = sumX > 0.0 ? 1.0 / sumX : 1.0;
+		const invSumY = sumY > 0.0 ? 1.0 / sumY : 1.0;
+
 		if (isEnthalpy) {
 			for (let i = 0; i < N; i++) {
 				const cpCorr = compounds[i].cpIdeal;
 				const h_ig_i = cpCorr ? integrateCpIdeal(cpCorr, T_STD, T) : 0.0;
 				const cp_i = cpCorr ? evaluateDippr(cpCorr, T) : 30.0;
 
-				propV_ig += outY[i] * h_ig_i;
-				propL_ig += outX[i] * h_ig_i;
-				cpV_ig += outY[i] * cp_i;
-				cpL_ig += outX[i] * cp_i;
+				const xiNorm = outX[i] * invSumX;
+				const yiNorm = outY[i] * invSumY;
+
+				propV_ig += yiNorm * h_ig_i;
+				propL_ig += xiNorm * h_ig_i;
+				cpV_ig += yiNorm * cp_i;
+				cpL_ig += xiNorm * cp_i;
 			}
 		} else {
 			// Entropy
@@ -406,13 +412,16 @@ export function solveInsideOutInner(
 				const s_ig_i = cpCorr ? integrateCpIdealOverT(cpCorr, T_STD, T) : 0.0;
 				const cp_i = cpCorr ? evaluateDippr(cpCorr, T) : 30.0;
 
-				const sMixV = -R_GAS * Math.log(Math.max(EPSILON, outY[i]));
-				const sMixL = -R_GAS * Math.log(Math.max(EPSILON, outX[i]));
+				const xiNorm = outX[i] * invSumX;
+				const yiNorm = outY[i] * invSumY;
 
-				propV_ig += outY[i] * (s_ig_i + sMixV);
-				propL_ig += outX[i] * (s_ig_i + sMixL);
-				cpV_ig += outY[i] * cp_i;
-				cpL_ig += outX[i] * cp_i;
+				const sMixV = -R_GAS * Math.log(Math.max(EPSILON, yiNorm));
+				const sMixL = -R_GAS * Math.log(Math.max(EPSILON, xiNorm));
+
+				propV_ig += yiNorm * (s_ig_i + sMixV);
+				propL_ig += xiNorm * (s_ig_i + sMixL);
+				cpV_ig += yiNorm * cp_i;
+				cpL_ig += xiNorm * cp_i;
 			}
 			const sPres = -R_GAS * Math.log(Math.max(EPSILON, P / P_STD));
 			propV_ig += sPres;
@@ -431,7 +440,7 @@ export function solveInsideOutInner(
 		const J11 = isEnthalpy ? -T * T * cpBulk : -T * cpBulk; // dE2/du
 
 		// Convergence check
-		const scaleE2 = Math.max(1000.0, Math.abs(targetSpec));
+		const scaleE2 = isEnthalpy ? Math.max(1000.0, Math.abs(targetSpec)) : Math.max(10.0, Math.abs(targetSpec));
 		finalError = Math.max(Math.abs(E1), Math.abs(E2) / scaleE2);
 
 		if (finalError < tol) {
@@ -475,13 +484,26 @@ export function solveInsideOutInner(
 	}
 
 		evaluateSimpleK(params, u, outK, N);
+		let finalSumX = 0.0;
+		let finalSumY = 0.0;
 		for (let i = 0; i < N; i++) {
 			const den = 1.0 + beta * (outK[i] - 1.0);
 			outX[i] = z[i] / den;
 			outY[i] = outX[i] * outK[i];
+			finalSumX += outX[i];
+			finalSumY += outY[i];
+		}
+		if (finalSumX > 0.0) {
+			const invX = 1.0 / finalSumX;
+			for (let i = 0; i < N; i++) outX[i] *= invX;
+		}
+		if (finalSumY > 0.0) {
+			const invY = 1.0 / finalSumY;
+			for (let i = 0; i < N; i++) outY[i] *= invY;
 		}
 
 		return { beta, u, T, P, converged, iterations: iterCount, error: finalError };
+
 	}
 
 	// Case 5: Simultaneous 2x2 Inner Loop for TH, TS (T is fixed, beta and P are solved)
@@ -507,10 +529,16 @@ export function solveInsideOutInner(
 			}
 
 			// Material balance compositions
+			let sumX = 0.0;
+			let sumY = 0.0;
 			for (let i = 0; i < N; i++) {
 				const den = 1.0 + beta * (outK[i] - 1.0);
-				outX[i] = z[i] / den;
-				outY[i] = outX[i] * outK[i];
+				const xi = z[i] / den;
+				const yi = xi * outK[i];
+				outX[i] = xi;
+				outY[i] = yi;
+				sumX += xi;
+				sumY += yi;
 			}
 
 			// Evaluate objective function E1 and derivative dE1/dbeta, dE1/dv
@@ -531,14 +559,19 @@ export function solveInsideOutInner(
 			let propV = 0.0;
 			let propL = 0.0;
 
+			const invSumX = sumX > 0.0 ? 1.0 / sumX : 1.0;
+			const invSumY = sumY > 0.0 ? 1.0 / sumY : 1.0;
+
 			if (isEnthalpy) {
 				let propV_ig = 0.0;
 				let propL_ig = 0.0;
 				for (let i = 0; i < N; i++) {
 					const cpCorr = compounds[i].cpIdeal;
 					const h_ig_i = cpCorr ? integrateCpIdeal(cpCorr, T_STD, T) : 0.0;
-					propV_ig += outY[i] * h_ig_i;
-					propL_ig += outX[i] * h_ig_i;
+					const xiNorm = outX[i] * invSumX;
+					const yiNorm = outY[i] * invSumY;
+					propV_ig += yiNorm * h_ig_i;
+					propL_ig += xiNorm * h_ig_i;
 				}
 				propV = propV_ig + params.hVStar;
 				propL = propL_ig + params.hLStar;
@@ -548,10 +581,12 @@ export function solveInsideOutInner(
 				for (let i = 0; i < N; i++) {
 					const cpCorr = compounds[i].cpIdeal;
 					const s_ig_i = cpCorr ? integrateCpIdealOverT(cpCorr, T_STD, T) : 0.0;
-					const sMixV = -R_GAS * Math.log(Math.max(EPSILON, outY[i]));
-					const sMixL = -R_GAS * Math.log(Math.max(EPSILON, outX[i]));
-					propV_ig += outY[i] * (s_ig_i + sMixV);
-					propL_ig += outX[i] * (s_ig_i + sMixL);
+					const xiNorm = outX[i] * invSumX;
+					const yiNorm = outY[i] * invSumY;
+					const sMixV = -R_GAS * Math.log(Math.max(EPSILON, yiNorm));
+					const sMixL = -R_GAS * Math.log(Math.max(EPSILON, xiNorm));
+					propV_ig += yiNorm * (s_ig_i + sMixV);
+					propL_ig += xiNorm * (s_ig_i + sMixL);
 				}
 				const sPres = -R_GAS * Math.log(Math.max(EPSILON, P / P_STD));
 				propV = propV_ig + sPres + params.sVStar;
@@ -599,11 +634,23 @@ export function solveInsideOutInner(
 
 		P = PRef * Math.exp(-v);
 		const expAv = Math.exp(Math.max(-80.0, Math.min(80.0, params.A + v)));
+		let finalSumX = 0.0;
+		let finalSumY = 0.0;
 		for (let i = 0; i < N; i++) {
 			outK[i] = params.alpha[i] * expAv;
 			const den = 1.0 + beta * (outK[i] - 1.0);
 			outX[i] = z[i] / den;
 			outY[i] = outX[i] * outK[i];
+			finalSumX += outX[i];
+			finalSumY += outY[i];
+		}
+		if (finalSumX > 0.0) {
+			const invX = 1.0 / finalSumX;
+			for (let i = 0; i < N; i++) outX[i] *= invX;
+		}
+		if (finalSumY > 0.0) {
+			const invY = 1.0 / finalSumY;
+			for (let i = 0; i < N; i++) outY[i] *= invY;
 		}
 
 		return { beta, u: 0.0, T, P, converged, iterations: iterCount, error: finalError };

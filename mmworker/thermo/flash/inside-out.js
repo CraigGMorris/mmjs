@@ -955,9 +955,26 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 			const comp = eos.compounds[i];
 			const Tr = T / comp.tc;
 			ws.K[i] = Math.exp(Math.log(comp.pc / P) + 5.373 * (1.0 + comp.omega) * (1.0 - 1.0 / Tr));
-			const den = 1.0 + beta * (ws.K[i] - 1.0);
-			ws.x[i] = ws.z[i] / den;
-			ws.y[i] = ws.x[i] * ws.K[i];
+		}
+		const rr = solveRachfordRice(ws.z, ws.K, N, ws.x, ws.y);
+		if (rr.converged && rr.beta > 0.0 && rr.beta < 1.0) {
+			beta = rr.beta;
+		} else {
+			for (let i = 0; i < N; i++) {
+				const den = 1.0 + beta * (ws.K[i] - 1.0);
+				ws.x[i] = ws.z[i] / den;
+				ws.y[i] = ws.x[i] * ws.K[i];
+			}
+			let sumX = 0.0, sumY = 0.0;
+			for (let i = 0; i < N; i++) { sumX += ws.x[i]; sumY += ws.y[i]; }
+			if (sumX > 0.0) {
+				const invX = 1.0 / sumX;
+				for (let i = 0; i < N; i++) ws.x[i] *= invX;
+			}
+			if (sumY > 0.0) {
+				const invY = 1.0 / sumY;
+				for (let i = 0; i < N; i++) ws.y[i] *= invY;
+			}
 		}
 
 		let zL = 1.0, zV = 1.0;
@@ -967,6 +984,22 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 
 		for (let iter = 0; iter < maxOuterIterations; iter++) {
 			iterations = iter + 1;
+
+			let sumX = 0.0, sumY = 0.0;
+			for (let i = 0; i < N; i++) {
+				if (ws.x[i] < 0.0) ws.x[i] = 0.0;
+				if (ws.y[i] < 0.0) ws.y[i] = 0.0;
+				sumX += ws.x[i];
+				sumY += ws.y[i];
+			}
+			if (sumX > 0.0) {
+				const invX = 1.0 / sumX;
+				for (let i = 0; i < N; i++) ws.x[i] *= invX;
+			}
+			if (sumY > 0.0) {
+				const invY = 1.0 / sumY;
+				for (let i = 0; i < N; i++) ws.y[i] *= invY;
+			}
 
 			eos.calculateZFactors(T, P, ws.x, ws.zFactors, undefined, ws);
 			zL = ws.zFactors[0];
@@ -1010,34 +1043,40 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 
 			if (beta <= 0.0) {
 				const singleL = solveSinglePhaseT(eos, P, ws.z, 'LIQUID', targetSpec, isEnthalpy, T, ws);
-				eos.calculateFugacityCoefficients(singleL.T, P, ws.z, singleL.zFactor, ws.lnPhiL, undefined, ws);
-				for (let i = 0; i < N; i++) {
-					ws.x[i] = ws.z[i];
-					ws.y[i] = ws.z[i];
-					ws.K[i] = 1.0;
-					ws.lnPhiV[i] = ws.lnPhiL[i];
+				if (singleL.converged) {
+					eos.calculateFugacityCoefficients(singleL.T, P, ws.z, singleL.zFactor, ws.lnPhiL, undefined, ws);
+					for (let i = 0; i < N; i++) {
+						ws.x[i] = ws.z[i];
+						ws.y[i] = ws.z[i];
+						ws.K[i] = 1.0;
+						ws.lnPhiV[i] = ws.lnPhiL[i];
+					}
+					return assembleFlashResult(singleL.T, P, ws.z, 0.0, ws.x, ws.y, ws.K, singleL.zFactor, singleL.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
+						converged: true,
+						iterations: iterations + singleL.iterations,
+						residual: 0.0
+					});
 				}
-				return assembleFlashResult(singleL.T, P, ws.z, 0.0, ws.x, ws.y, ws.K, singleL.zFactor, singleL.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
-					converged: singleL.converged,
-					iterations: iterations + singleL.iterations,
-					residual: 0.0
-				});
+				beta = 0.01;
 			}
 
 			if (beta >= 1.0) {
 				const singleV = solveSinglePhaseT(eos, P, ws.z, 'VAPOR', targetSpec, isEnthalpy, T, ws);
-				eos.calculateFugacityCoefficients(singleV.T, P, ws.z, singleV.zFactor, ws.lnPhiV, undefined, ws);
-				for (let i = 0; i < N; i++) {
-					ws.x[i] = ws.z[i];
-					ws.y[i] = ws.z[i];
-					ws.K[i] = 1.0;
-					ws.lnPhiL[i] = ws.lnPhiV[i];
+				if (singleV.converged) {
+					eos.calculateFugacityCoefficients(singleV.T, P, ws.z, singleV.zFactor, ws.lnPhiV, undefined, ws);
+					for (let i = 0; i < N; i++) {
+						ws.x[i] = ws.z[i];
+						ws.y[i] = ws.z[i];
+						ws.K[i] = 1.0;
+						ws.lnPhiL[i] = ws.lnPhiV[i];
+					}
+					return assembleFlashResult(singleV.T, P, ws.z, 1.0, ws.x, ws.y, ws.K, singleV.zFactor, singleV.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
+						converged: true,
+						iterations: iterations + singleV.iterations,
+						residual: 0.0
+					});
 				}
-				return assembleFlashResult(singleV.T, P, ws.z, 1.0, ws.x, ws.y, ws.K, singleV.zFactor, singleV.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
-					converged: singleV.converged,
-					iterations: iterations + singleV.iterations,
-					residual: 0.0
-				});
+				beta = 0.99;
 			}
 		}
 
@@ -1212,34 +1251,40 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 
 			if (beta <= 0.0) {
 				const singleL = solveSinglePhaseP(eos, T, ws.z, 'LIQUID', targetSpec, isEnthalpy, P, ws);
-				eos.calculateFugacityCoefficients(T, singleL.P, ws.z, singleL.zFactor, ws.lnPhiL, undefined, ws);
-				for (let i = 0; i < N; i++) {
-					ws.x[i] = ws.z[i];
-					ws.y[i] = ws.z[i];
-					ws.K[i] = 1.0;
-					ws.lnPhiV[i] = ws.lnPhiL[i];
+				if (singleL.converged) {
+					eos.calculateFugacityCoefficients(T, singleL.P, ws.z, singleL.zFactor, ws.lnPhiL, undefined, ws);
+					for (let i = 0; i < N; i++) {
+						ws.x[i] = ws.z[i];
+						ws.y[i] = ws.z[i];
+						ws.K[i] = 1.0;
+						ws.lnPhiV[i] = ws.lnPhiL[i];
+					}
+					return assembleFlashResult(T, singleL.P, ws.z, 0.0, ws.x, ws.y, ws.K, singleL.zFactor, singleL.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
+						converged: true,
+						iterations: iterations + singleL.iterations,
+						residual: 0.0
+					});
 				}
-				return assembleFlashResult(T, singleL.P, ws.z, 0.0, ws.x, ws.y, ws.K, singleL.zFactor, singleL.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
-					converged: singleL.converged,
-					iterations: iterations + singleL.iterations,
-					residual: 0.0
-				});
+				beta = 0.01;
 			}
 
 			if (beta >= 1.0) {
 				const singleV = solveSinglePhaseP(eos, T, ws.z, 'VAPOR', targetSpec, isEnthalpy, P, ws);
-				eos.calculateFugacityCoefficients(T, singleV.P, ws.z, singleV.zFactor, ws.lnPhiV, undefined, ws);
-				for (let i = 0; i < N; i++) {
-					ws.x[i] = ws.z[i];
-					ws.y[i] = ws.z[i];
-					ws.K[i] = 1.0;
-					ws.lnPhiL[i] = ws.lnPhiV[i];
+				if (singleV.converged) {
+					eos.calculateFugacityCoefficients(T, singleV.P, ws.z, singleV.zFactor, ws.lnPhiV, undefined, ws);
+					for (let i = 0; i < N; i++) {
+						ws.x[i] = ws.z[i];
+						ws.y[i] = ws.z[i];
+						ws.K[i] = 1.0;
+						ws.lnPhiL[i] = ws.lnPhiV[i];
+					}
+					return assembleFlashResult(T, singleV.P, ws.z, 1.0, ws.x, ws.y, ws.K, singleV.zFactor, singleV.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
+						converged: true,
+						iterations: iterations + singleV.iterations,
+						residual: 0.0
+					});
 				}
-				return assembleFlashResult(T, singleV.P, ws.z, 1.0, ws.x, ws.y, ws.K, singleV.zFactor, singleV.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
-					converged: singleV.converged,
-					iterations: iterations + singleV.iterations,
-					residual: 0.0
-				});
+				beta = 0.99;
 			}
 		}
 
