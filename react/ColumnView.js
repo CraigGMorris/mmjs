@@ -479,13 +479,36 @@ export function ColumnView(props) {
 				key: f.name,
 				style: {
 					display: 'grid',
-					gridTemplateColumns: '70px 1fr 30px',
+					gridTemplateColumns: '68px 1fr 24px',
 					alignItems: 'center',
 					gap: '4px',
 					marginBottom: '4px'
 				}
 			},
-			e('span', { style: { fontSize: '9pt', color: 'var(--subtext--color)' } }, `Stg ${f.stage}:`),
+			e('div', { style: { display: 'flex', alignItems: 'center', gap: '2px' } },
+				e('span', { style: { fontSize: '9pt', color: 'var(--subtext--color)' } }, 'Stg'),
+				e('input', {
+					type: 'number',
+					min: 1,
+					max: results.nStages || 100,
+					defaultValue: f.stage,
+					key: `${f.name}_stg_${f.stage}`,
+					style: { width: '40px', height: '22px', fontSize: '9pt', textAlign: 'center' },
+					onBlur: (ev) => {
+						const val = parseInt(ev.target.value);
+						if (!isNaN(val) && val !== f.stage) {
+							props.actions.doCommand(`${results.path} setfeedstage ${f.index} ${val}`, () => {
+								props.actions.updateView(props.viewInfo.stackIndex);
+							});
+						}
+					},
+					onKeyDown: (ev) => {
+						if (ev.key === 'Enter') {
+							ev.target.blur();
+						}
+					}
+				})
+			),
 			e(FormulaField, {
 				id: `column__feed_${f.name}`,
 				t: t,
@@ -516,13 +539,36 @@ export function ColumnView(props) {
 				key: d.name,
 				style: {
 					display: 'grid',
-					gridTemplateColumns: '55px 35px 75px 1fr 24px',
+					gridTemplateColumns: '68px 32px 70px 1fr 24px',
 					alignItems: 'center',
 					gap: '4px',
 					marginBottom: '4px'
 				}
 			},
-			e('span', { style: { fontSize: '9pt', color: 'var(--subtext--color)' } }, `Stg ${d.stage}:`),
+			e('div', { style: { display: 'flex', alignItems: 'center', gap: '2px' } },
+				e('span', { style: { fontSize: '9pt', color: 'var(--subtext--color)' } }, 'Stg'),
+				e('input', {
+					type: 'number',
+					min: 1,
+					max: results.nStages || 100,
+					defaultValue: d.stage,
+					key: `${d.name}_stg_${d.stage}`,
+					style: { width: '40px', height: '22px', fontSize: '9pt', textAlign: 'center' },
+					onBlur: (ev) => {
+						const val = parseInt(ev.target.value);
+						if (!isNaN(val) && val !== d.stage) {
+							props.actions.doCommand(`${results.path} setdrawstage ${d.index} ${val}`, () => {
+								props.actions.updateView(props.viewInfo.stackIndex);
+							});
+						}
+					},
+					onKeyDown: (ev) => {
+						if (ev.key === 'Enter') {
+							ev.target.blur();
+						}
+					}
+				})
+			),
 			e('span', { style: { fontWeight: 'bold' } }, d.phase.toUpperCase()),
 			e('span', null, `${d.name}${d.isBasis ? ' (B)' : ''}`),
 			e(FormulaField, {
@@ -598,7 +644,7 @@ export function ColumnView(props) {
 				e('div', {
 					style: {
 						display: 'grid',
-						gridTemplateColumns: '55px 35px 75px 1fr 24px',
+						gridTemplateColumns: '68px 32px 70px 1fr 24px',
 						gap: '4px',
 						fontSize: '8pt',
 						color: 'var(--subtext--color)',

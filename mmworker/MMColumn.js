@@ -452,9 +452,25 @@ export class MMColumn extends MMTool {
 		else {
 			n = Math.floor(n);
 		}
-		if (this.nStages !== n) {
-			this.nStages = n;
+		const oldN = this.nStages;
+		this.nStages = n;
+		if (oldN !== n) {
 			this.broydenWarmState = null;
+		}
+		for (const d of this.draws) {
+			if (d.isBasis && d.stage > 1) {
+				if (d.name.toLowerCase() === 'bottoms' || d.stage === oldN || d.stage > n || oldN !== n) {
+					d.stage = n;
+				}
+			}
+			else if (d.stage > n) {
+				d.stage = n;
+			}
+		}
+		for (const f of this.feeds) {
+			if (f.stage > n) {
+				f.stage = n;
+			}
 		}
 		return this.nStages;
 	}
@@ -1554,6 +1570,8 @@ export class MMColumn extends MMTool {
 		verbs['removespec'] = this.removeSpecCommand;
 		verbs['restorespec'] = this.restoreSpecCommand;
 		verbs['setstages'] = this.setStagesCommand;
+		verbs['setdrawstage'] = this.setDrawStageCommand;
+		verbs['setfeedstage'] = this.setFeedStageCommand;
 		verbs['settotalcondenser'] = this.setTotalCondenserCommand;
 		verbs['reset'] = this.resetCommand;
 		verbs['solve'] = this.solveCommand;
@@ -1688,6 +1706,33 @@ export class MMColumn extends MMTool {
 	}
 
 	/**
+	 * @method setFeedStageCommand
+	 * @param {MMCommand} command
+	 */
+	setFeedStageCommand(command) {
+		const cmd = /** @type {any} */ (command);
+		const parts = String(cmd.args || '').trim().split(/\s+/);
+		if (parts.length < 2) return;
+		let feed = null;
+		const idx = parseInt(parts[0]);
+		if (!isNaN(idx) && idx >= 1 && idx <= this.feeds.length) {
+			feed = this.feeds[idx - 1];
+		}
+		else {
+			feed = this.feeds.find(f => f.name.toLowerCase() === parts[0].toLowerCase());
+		}
+		if (feed) {
+			const prevStage = feed.stage;
+			const n = this.ensureStageCount();
+			const newStage = Math.max(1, Math.min(n, parseInt(parts[1]) || 1));
+			feed.stage = newStage;
+			this.forgetCalculated();
+			cmd.results = newStage;
+			cmd.undo = `${this.getPath()} setfeedstage ${parts[0]} ${prevStage}`;
+		}
+	}
+
+	/**
 	 * @method addDrawCommand
 	 * @param {MMCommand} command
 	 */
@@ -1775,6 +1820,33 @@ export class MMColumn extends MMTool {
 		}
 		catch (e) {
 			this.setError('mmcmd:drawRestoreError', { path: this.getPath() });
+		}
+	}
+
+	/**
+	 * @method setDrawStageCommand
+	 * @param {MMCommand} command
+	 */
+	setDrawStageCommand(command) {
+		const cmd = /** @type {any} */ (command);
+		const parts = String(cmd.args || '').trim().split(/\s+/);
+		if (parts.length < 2) return;
+		let draw = null;
+		const idx = parseInt(parts[0]);
+		if (!isNaN(idx) && idx >= 1 && idx <= this.draws.length) {
+			draw = this.draws[idx - 1];
+		}
+		else {
+			draw = this.draws.find(d => d.name.toLowerCase() === parts[0].toLowerCase());
+		}
+		if (draw) {
+			const prevStage = draw.stage;
+			const n = this.ensureStageCount();
+			const newStage = Math.max(1, Math.min(n, parseInt(parts[1]) || 1));
+			draw.stage = newStage;
+			this.forgetCalculated();
+			cmd.results = newStage;
+			cmd.undo = `${this.getPath()} setdrawstage ${parts[0]} ${prevStage}`;
 		}
 	}
 
@@ -1876,6 +1948,7 @@ export class MMColumn extends MMTool {
 		const prev = this.stageCountFormula.formula;
 		const val = cmd.args !== undefined ? String(cmd.args) : String(cmd.stageCount || '10');
 		this.stageCountFormula.formula = val;
+		this.ensureStageCount();
 		this.forgetCalculated();
 		cmd.undo = `${this.getPath()} setstages ${prev}`;
 	}
@@ -2082,6 +2155,7 @@ export class MMColumn extends MMTool {
 	 */
 	async toolViewInfo(command) {
 		await super.toolViewInfo(command);
+		this.ensureStageCount();
 		const results = command.results;
 		results['thermoFormula'] = this.thermoFormula.formula;
 		results['stageCountFormula'] = this.stageCountFormula.formula;
