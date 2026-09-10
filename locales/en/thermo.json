@@ -26,6 +26,8 @@
 	"columnStagesLabel": "Stages",
 	"columnPTopLabel": "Top P",
 	"columnPBottomLabel": "Bottom P",
+	"columnTTopEstLabel": "Top T Est",
+	"columnTBotEstLabel": "Bottom T Est",
 	"columnTotalCondenserLabel": "Total Condenser",
 	"columnFeedsLabel": "Feeds",
 	"columnDrawsLabel": "Draws",

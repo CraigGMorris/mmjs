@@ -64,6 +64,7 @@ import { calculateIdealGasEnthalpy } from './thermo/flash/properties.js';
  * @property {string} name
  * @property {boolean} isBasis - true if primary basis draw (e.g. overhead or bottoms)
  * @property {number} [flow] - solved flow rate in mol/s
+ * @property {MMFormula} [flowEst] - optional flow estimate formula
  */
 
 /**
@@ -126,6 +127,12 @@ export class MMColumn extends MMTool {
 		/** @type {MMFormula} */
 		this.outerTolFormula = new MMFormula('outerTol', this);
 		this.outerTolFormula.formula = '1e-3';
+
+		/** @type {MMFormula} */
+		this.tTopEstFormula = new MMFormula('ttopest', this);
+
+		/** @type {MMFormula} */
+		this.tBotEstFormula = new MMFormula('tbotest', this);
 
 		/** @type {boolean} */
 		this._totalCondenser = false;
@@ -230,8 +237,13 @@ export class MMColumn extends MMTool {
 		this.displayUnits = {};
 
 		// Set default draws: top vapor distillate and bottom liquid bottoms
-		this.draws.push({ stage: 1, phase: 'v', name: 'Overhead', isBasis: true });
-		this.draws.push({ stage: 10, phase: 'l', name: 'Bottoms', isBasis: true });
+		const d1Est = new MMFormula('Overhead_est', this);
+		d1Est.nameSpace = /** @type {any} */ ((parentModel && parentModel.typeName === 'Model') ? parentModel : theMMSession.currentModel);
+		this.draws.push({ stage: 1, phase: 'v', name: 'Overhead', isBasis: true, flowEst: d1Est });
+
+		const d2Est = new MMFormula('Bottoms_est', this);
+		d2Est.nameSpace = /** @type {any} */ ((parentModel && parentModel.typeName === 'Model') ? parentModel : theMMSession.currentModel);
+		this.draws.push({ stage: 10, phase: 'l', name: 'Bottoms', isBasis: true, flowEst: d2Est });
 
 		// Set default specs: 2 specs
 		const spec1 = new MMFormula('spec1', this);
@@ -280,6 +292,8 @@ export class MMColumn extends MMTool {
 			this.stageCountFormula,
 			this.pTopFormula,
 			this.pBottomFormula,
+			this.tTopEstFormula,
+			this.tBotEstFormula,
 			this.maxInnerLoopsFormula,
 			this.maxOuterLoopsFormula,
 			this.innerTolFormula,
@@ -287,6 +301,9 @@ export class MMColumn extends MMTool {
 		];
 		for (const feed of this.feeds) {
 			list.push(feed.formula);
+		}
+		for (const draw of this.draws) {
+			if (draw.flowEst) list.push(draw.flowEst);
 		}
 		for (const spec of this.specs) {
 			list.push(spec.formula);
@@ -629,19 +646,109 @@ export class MMColumn extends MMTool {
 			combinedFeedZ[i] /= totalFeedFlow;
 		}
 
-		// 4. Initial Temperature Profile Estimate
-		let tTopEst = 300.0;
-		let tBotEst = 400.0;
-		try {
-			const dewRes = engine.flash({ type: 'PQ', P: this.P[0], Q: 1.0 }, combinedFeedZ);
-			if (dewRes && dewRes.converged) tTopEst = dewRes.T;
-			const bubRes = engine.flash({ type: 'PQ', P: this.P[N - 1], Q: 0.0 }, combinedFeedZ);
-			if (bubRes && bubRes.converged) tBotEst = bubRes.T;
+		// 4. Initial Temperature Profile and Flow Estimates
+		const compounds = /** @type {PureCompound[]} */ (this.compounds);
+
+		// Distillate rate estimate: check top draw (stage 1) user flow estimate, then bottom draw (stage N)
+		let estD = NaN;
+		for (const draw of this.draws) {
+			if (draw.stage === 1 && draw.flowEst && draw.flowEst.formula) {
+				const fVal = draw.flowEst.value();
+				if (fVal instanceof MMNumberValue && fVal.valueCount > 0 && fVal.values[0] > 0) {
+					estD = fVal.values[0];
+					break;
+				}
+			}
 		}
-		catch (e) {
-			tTopEst = 300.0;
-			tBotEst = 350.0;
+		if (isNaN(estD)) {
+			for (const draw of this.draws) {
+				if (draw.stage === N && draw.flowEst && draw.flowEst.formula) {
+					const fVal = draw.flowEst.value();
+					if (fVal instanceof MMNumberValue && fVal.valueCount > 0 && fVal.values[0] > 0) {
+						estD = Math.max(0.01 * totalFeedFlow, totalFeedFlow - fVal.values[0]);
+						break;
+					}
+				}
+			}
 		}
+		// Fallback: check if an explicit anchored distillate flow spec was given: $.vf[1] - <val>
+		if (isNaN(estD)) {
+			for (const spec of this.specs) {
+				const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.trim().toLowerCase() : '';
+				const mD = text.match(/^\s*\$\.(?:vf|vdraw)\[\s*1\s*\]\s*-\s*([0-9.]+)/);
+				if (mD) {
+					estD = parseFloat(mD[1]);
+					break;
+				}
+			}
+		}
+		if (isNaN(estD)) {
+			estD = 0.5 * totalFeedFlow;
+		}
+		estD = Math.max(0.05 * totalFeedFlow, Math.min(0.95 * totalFeedFlow, estD));
+		const estB = totalFeedFlow - estD;
+
+		const compOrder = [];
+		for (let i = 0; i < nComp; i++) {
+			compOrder.push({ idx: i, tc: (compounds[i] && compounds[i].tc) ? compounds[i].tc : 300.0 });
+		}
+		compOrder.sort((a, b) => a.tc - b.tc);
+		const zD = new Float64Array(nComp);
+		const zB = new Float64Array(nComp);
+		let remD = estD;
+		for (const c of compOrder) {
+			const compFeedFlow = combinedFeedZ[c.idx] * totalFeedFlow;
+			if (remD > 0) {
+				const take = Math.min(remD, compFeedFlow);
+				zD[c.idx] = take;
+				zB[c.idx] = compFeedFlow - take;
+				remD -= take;
+			}
+			else {
+				zB[c.idx] = compFeedFlow;
+			}
+		}
+		for (let i = 0; i < nComp; i++) {
+			zD[i] /= estD;
+			zB[i] /= estB;
+		}
+
+		// Initial Temperature Profile: check user estimates first, fallback to flash
+		let tTopEst = NaN;
+		let tBotEst = NaN;
+
+		if (this.tTopEstFormula && this.tTopEstFormula.formula) {
+			const tv = this.tTopEstFormula.value();
+			if (tv instanceof MMNumberValue && tv.valueCount > 0 && tv.values[0] > 0) {
+				tTopEst = tv.values[0];
+			}
+		}
+		if (this.tBotEstFormula && this.tBotEstFormula.formula) {
+			const tv = this.tBotEstFormula.value();
+			if (tv instanceof MMNumberValue && tv.valueCount > 0 && tv.values[0] > 0) {
+				tBotEst = tv.values[0];
+			}
+		}
+
+		if (isNaN(tTopEst) || isNaN(tBotEst)) {
+			try {
+				if (isNaN(tTopEst)) {
+					const qTop = this._totalCondenser ? 0.0 : 1.0;
+					const dewRes = engine.flash({ type: 'PQ', P: this.P[0], Q: qTop }, zD);
+					if (dewRes && dewRes.converged) tTopEst = dewRes.T;
+				}
+				if (isNaN(tBotEst)) {
+					const bubRes = engine.flash({ type: 'PQ', P: this.P[N - 1], Q: 0.0 }, zB);
+					if (bubRes && bubRes.converged) tBotEst = bubRes.T;
+				}
+			}
+			catch (e) {
+				if (isNaN(tTopEst)) tTopEst = 300.0;
+				if (isNaN(tBotEst)) tBotEst = 350.0;
+			}
+		}
+		if (isNaN(tTopEst)) tTopEst = 300.0;
+		if (isNaN(tBotEst)) tBotEst = tTopEst + 30.0;
 		if (tBotEst <= tTopEst) {
 			tBotEst = tTopEst + 20.0;
 		}
@@ -649,9 +756,34 @@ export class MMColumn extends MMTool {
 			this.T[j] = tTopEst + (tBotEst - tTopEst) * (j / Math.max(1, N - 1));
 		}
 
-		// 5. Initial K-values via Wilson Correlation and Relative Volatilities
-		const compounds = /** @type {PureCompound[]} */ (this.compounds);
+		// 5. Select reference component: prefer subcritical key component at column conditions
+		let bestRef = -1;
+		let maxZ = -1;
+		const minTc = 0.95 * tBotEst;
+		for (let i = 0; i < nComp; i++) {
+			const tc = compounds[i] ? compounds[i].tc : 300.0;
+			if (tc >= minTc && combinedFeedZ[i] > maxZ) {
+				maxZ = combinedFeedZ[i];
+				bestRef = i;
+			}
+		}
+		if (bestRef < 0) {
+			let maxTc = -1;
+			for (let i = 0; i < nComp; i++) {
+				const tc = compounds[i] ? compounds[i].tc : 300.0;
+				if (tc > maxTc) {
+					maxTc = tc;
+					bestRef = i;
+				}
+			}
+		}
+		if (bestRef >= 0) {
+			this.refComponent = bestRef;
+		}
 		const b = this.refComponent;
+
+		// 6. Initial K-values via Wilson Correlation and Relative Volatilities
+		const KbArray = new Float64Array(N);
 		for (let j = 0; j < N; j++) {
 			const Tj = this.T[j];
 			const Pj = this.P[j];
@@ -664,40 +796,45 @@ export class MMColumn extends MMTool {
 				this.alpha[j * nComp + i] = Ki;
 				if (i === b) Kb = Ki;
 			}
+			KbArray[j] = Math.max(1e-6, Kb);
 			for (let i = 0; i < nComp; i++) {
-				this.alpha[j * nComp + i] /= Math.max(1e-6, Kb);
+				this.alpha[j * nComp + i] /= KbArray[j];
 			}
 		}
 
-		// 6. Internal Traffic Estimates (CMO)
-		const nominalReflux = 1.5;
-		const estDistillate = 0.5 * totalFeedFlow;
-		const estBottoms = 0.5 * totalFeedFlow;
+		// 7. Internal Traffic Estimates (CMO)
+		let nominalReflux = 1.5;
+		for (const spec of this.specs) {
+			const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.toLowerCase() : '';
+			const m = text.match(/\$\.lf\[\s*1\s*\]\s*\/\s*\$\.vf\[\s*1\s*\]\s*-\s*([0-9.]+)/);
+			if (m) {
+				nominalReflux = Math.max(0.2, parseFloat(m[1]));
+				break;
+			}
+		}
 
-		let Lcurrent = nominalReflux * estDistillate;
-		let Vcurrent = (nominalReflux + 1.0) * estDistillate;
+		let feedStage = Math.floor(N / 2);
+		for (let j = 0; j < N; j++) {
+			let stageFeed = 0.0;
+			for (let i = 0; i < nComp; i++) stageFeed += this.f[j * nComp + i];
+			if (stageFeed > 0.5 * totalFeedFlow) feedStage = j;
+		}
 
 		for (let j = 0; j < N; j++) {
-			// Add stage feeds
-			let stageFeedFlow = 0.0;
-			for (let i = 0; i < nComp; i++) {
-				stageFeedFlow += this.f[j * nComp + i];
+			let Lcurr, Vcurr;
+			if (j < feedStage) {
+				Lcurr = nominalReflux * estD;
+				Vcurr = (1.0 + nominalReflux) * estD;
 			}
-			Lcurrent += 0.5 * stageFeedFlow;
-
-			// Subtract draws
-			for (const draw of this.draws) {
-				if (draw.stage - 1 === j) {
-					if (draw.phase === 'l') Lcurrent -= (j === N - 1 ? estBottoms : 0.1 * totalFeedFlow);
-					if (draw.phase === 'v') Vcurrent -= (j === 0 ? estDistillate : 0.1 * totalFeedFlow);
-				}
+			else {
+				Lcurr = nominalReflux * estD + totalFeedFlow;
+				Vcurr = (1.0 + nominalReflux) * estD;
 			}
-
-			this.L[j] = Math.max(1e-4 * totalFeedFlow, Lcurrent);
-			this.V[j] = (j === 0 && this._totalCondenser) ? 0.0 : Math.max(1e-4 * totalFeedFlow, Vcurrent);
+			this.L[j] = Math.max(1e-4 * totalFeedFlow, Lcurr);
+			this.V[j] = (j === 0 && this._totalCondenser) ? 0.0 : Math.max(1e-4 * totalFeedFlow, Vcurr);
 		}
 
-		// 7. Initial Stripping Factors ln(S_j) = ln(V_j / L_j)
+		// 8. Initial Stripping Factors ln(S_j) = ln(Kb_j * V_j / L_j)
 		const totCond = this._totalCondenser ? 1 : 0;
 		const numNonBasisDraws = this.draws.filter(d => !d.isBasis).length;
 		const numInner = N - totCond + numNonBasisDraws;
@@ -707,18 +844,24 @@ export class MMColumn extends MMTool {
 
 		let varIdx = 0;
 		for (let j = totCond; j < N; j++) {
-			this.logSFactors[varIdx++] = Math.log(Math.max(1e-5, this.V[j] / this.L[j]));
+			this.logSFactors[varIdx++] = Math.log(Math.max(1e-5, KbArray[j] * this.V[j] / this.L[j]));
 		}
 		for (const draw of this.draws) {
 			if (!draw.isBasis) {
 				const stg = draw.stage - 1;
 				const baseFlow = draw.phase === 'v' ? this.V[stg] : this.L[stg];
-				const defaultRatio = (this._totalCondenser && stg === 0) ? (1.0 / nominalReflux) : (0.1 * baseFlow / Math.max(1e-4, baseFlow));
+				let defaultRatio = (this._totalCondenser && stg === 0) ? (1.0 / nominalReflux) : (0.1 * baseFlow / Math.max(1e-4, baseFlow));
+				if (draw.flowEst && draw.flowEst.formula) {
+					const fVal = draw.flowEst.value();
+					if (fVal instanceof MMNumberValue && fVal.valueCount > 0 && fVal.values[0] > 0) {
+						defaultRatio = fVal.values[0] / Math.max(1e-4, baseFlow);
+					}
+				}
 				this.logSFactors[varIdx++] = Math.log(Math.max(1e-5, defaultRatio));
 			}
 		}
 
-		// 8. Reconcile Mass Balance and Invert Temperatures
+		// 9. Reconcile Mass Balance and Invert Temperatures
 		this.solveFlowMatrix(this.logSFactors);
 		this.calculateTemperatures();
 
@@ -969,7 +1112,14 @@ export class MMColumn extends MMTool {
 
 			const dtInv = (1.0 / T2 - 1.0 / T);
 			const Bval = (lnKb1 - lnKb2) / dtInv;
-			this.B[j] = Math.max(50.0, Math.min(100000.0, Math.abs(Bval)));
+			const refComp = (/** @type {PureCompound[]} */ (this.compounds))[b];
+			const B_ref = refComp ? 5.373 * (1.0 + refComp.omega) * refComp.tc : 2000.0;
+			if (isNaN(Bval) || Bval <= 100.0 || Bval > 25000.0) {
+				this.B[j] = B_ref;
+			}
+			else {
+				this.B[j] = Bval;
+			}
 			this.A[j] = lnKb1 + this.B[j] / T;
 		}
 	}
@@ -1020,6 +1170,30 @@ export class MMColumn extends MMTool {
 			if (k >= 1 && k <= N) {
 				const target = parseFloat(lfMatch[2]);
 				return this.L[k - 1] - target;
+			}
+		}
+
+		// 5. Stage composition: $.lx[k, "compound"] - <val> or $.vx[k, "compound"] - <val>
+		const compMatch = text.match(/^\$\.(lx|vx)\[\s*(-?\d+)\s*,\s*["']([^"']+)["']\s*\]\s*-\s*([0-9.]+)/);
+		if (compMatch) {
+			const phase = compMatch[1];
+			let k = parseInt(compMatch[2], 10);
+			if (k < 0) k = N + k + 1;
+			const stageIdx = k - 1;
+			if (stageIdx >= 0 && stageIdx < N) {
+				const queryName = compMatch[3].trim().toLowerCase().replace(/[\s-_]/g, '');
+				const compIdx = this.componentNames.findIndex((c, i) => {
+					const cClean = c.toLowerCase().replace(/[\s-_]/g, '');
+					const compObj = this.compounds ? (/** @type {PureCompound[]} */ (this.compounds))[i] : null;
+					const fClean = (compObj && compObj.formula) ? compObj.formula.toLowerCase().replace(/[\s-_]/g, '') : '';
+					const nClean = (compObj && compObj.name) ? compObj.name.toLowerCase().replace(/[\s-_]/g, '') : '';
+					return cClean === queryName || fClean === queryName || nClean === queryName;
+				});
+				if (compIdx >= 0) {
+					const target = parseFloat(compMatch[4]);
+					const arr = phase === 'lx' ? this.x : this.y;
+					return arr[stageIdx * this.nComponents + compIdx] - target;
+				}
 			}
 		}
 
@@ -1519,22 +1693,29 @@ export class MMColumn extends MMTool {
 	 */
 	addDrawCommand(command) {
 		const cmd = /** @type {any} */ (command);
-		let stg = 1, phase = 'l', name = '';
+		let stg = 1, phase = 'l', name = '', estStr = '';
 		if (cmd.args) {
 			const parts = String(cmd.args).trim().split(/\s+/);
 			if (parts.length >= 3) {
 				stg = parseInt(parts[0]);
 				phase = parts[1].toLowerCase() === 'v' ? 'v' : 'l';
 				name = parts[2];
+				if (parts.length >= 4) {
+					estStr = parts.slice(3).join(' ');
+				}
 			}
 		}
 		else if (cmd.stage !== undefined) {
 			stg = parseInt(cmd.stage);
 			phase = String(cmd.phase).toLowerCase() === 'v' ? 'v' : 'l';
 			name = String(cmd.name);
+			if (cmd.flowEst) estStr = String(cmd.flowEst);
 		}
 		if (name) {
-			this.draws.push({ stage: stg, phase: /** @type {'v'|'l'} */ (phase), name, isBasis: false });
+			const flowEst = new MMFormula(`${name}_est`, this);
+			flowEst.formula = estStr;
+			flowEst.nameSpace = /** @type {any} */ ((this.parent && (/** @type {any} */ (this.parent)).typeName === 'Model') ? this.parent : theMMSession.currentModel);
+			this.draws.push({ stage: stg, phase: /** @type {'v'|'l'} */ (phase), name, isBasis: false, flowEst });
 			this.forgetCalculated();
 			cmd.results = this.draws.length;
 			cmd.undo = `${this.getPath()} removedraw ${this.draws.length}`;
@@ -1559,8 +1740,17 @@ export class MMColumn extends MMTool {
 		}
 		if (idx >= 0 && idx < this.draws.length) {
 			const removed = this.draws.splice(idx, 1)[0];
+			if (this.children && removed && removed.name) {
+				delete this.children[`${removed.name}_est`.toLowerCase()];
+			}
 			this.forgetCalculated();
-			cmd.undo = `${this.getPath()} restoredraw ${JSON.stringify(removed)}`;
+			cmd.undo = `${this.getPath()} restoredraw ${JSON.stringify({
+				stage: removed.stage,
+				phase: removed.phase,
+				name: removed.name,
+				isBasis: removed.isBasis,
+				flowEst: removed.flowEst ? removed.flowEst.formula : ''
+			})}`;
 		}
 	}
 
@@ -1571,7 +1761,16 @@ export class MMColumn extends MMTool {
 	restoreDrawCommand(command) {
 		try {
 			const data = JSON.parse(command.args);
-			this.draws.push(data);
+			const flowEst = new MMFormula(`${data.name}_est`, this);
+			flowEst.formula = data.flowEst || '';
+			flowEst.nameSpace = /** @type {any} */ ((this.parent && (/** @type {any} */ (this.parent)).typeName === 'Model') ? this.parent : theMMSession.currentModel);
+			this.draws.push({
+				stage: data.stage,
+				phase: data.phase,
+				name: data.name,
+				isBasis: Boolean(data.isBasis),
+				flowEst
+			});
 			this.forgetCalculated();
 		}
 		catch (e) {
@@ -1740,6 +1939,9 @@ export class MMColumn extends MMTool {
 		o['pbottom'] = { Formula: this.pBottomFormula.formula };
 		o['totalCondenser'] = this.totalCondenser;
 
+		if (this.tTopEstFormula && this.tTopEstFormula.formula) o['ttopest'] = { Formula: this.tTopEstFormula.formula };
+		if (this.tBotEstFormula && this.tBotEstFormula.formula) o['tbotest'] = { Formula: this.tBotEstFormula.formula };
+
 		o['feeds'] = this.feeds.map(f => ({
 			stage: f.stage,
 			formula: f.formula.formula,
@@ -1750,7 +1952,8 @@ export class MMColumn extends MMTool {
 			stage: d.stage,
 			phase: d.phase,
 			name: d.name,
-			isBasis: d.isBasis
+			isBasis: d.isBasis,
+			flowEst: d.flowEst ? d.flowEst.formula : ''
 		}));
 
 		o['specs'] = this.specs.map(s => ({
@@ -1779,6 +1982,8 @@ export class MMColumn extends MMTool {
 			if (saved.nstages) this.stageCountFormula.formula = saved.nstages.Formula;
 			if (saved.ptop) this.pTopFormula.formula = saved.ptop.Formula;
 			if (saved.pbottom) this.pBottomFormula.formula = saved.pbottom.Formula;
+			if (saved.ttopest) this.tTopEstFormula.formula = saved.ttopest.Formula;
+			if (saved.tbotest) this.tBotEstFormula.formula = saved.tbotest.Formula;
 			this.totalCondenser = Boolean(saved.totalCondenser);
 
 			if (Array.isArray(saved.feeds)) {
@@ -1791,12 +1996,18 @@ export class MMColumn extends MMTool {
 			}
 
 			if (Array.isArray(saved.draws)) {
-				this.draws = saved.draws.map(d => ({
-					stage: d.stage,
-					phase: d.phase,
-					name: d.name,
-					isBasis: Boolean(d.isBasis)
-				}));
+				this.draws = saved.draws.map(d => {
+					const flowEst = new MMFormula(`${d.name}_est`, this);
+					flowEst.formula = d.flowEst || '';
+					flowEst.nameSpace = /** @type {any} */ ((this.parent && (/** @type {any} */ (this.parent)).typeName === 'Model') ? this.parent : theMMSession.currentModel);
+					return {
+						stage: d.stage,
+						phase: d.phase,
+						name: d.name,
+						isBasis: Boolean(d.isBasis),
+						flowEst
+					};
+				});
 			}
 
 			if (Array.isArray(saved.specs)) {
@@ -1876,6 +2087,8 @@ export class MMColumn extends MMTool {
 		results['stageCountFormula'] = this.stageCountFormula.formula;
 		results['pTopFormula'] = this.pTopFormula.formula;
 		results['pBottomFormula'] = this.pBottomFormula.formula;
+		results['tTopEstFormula'] = this.tTopEstFormula.formula;
+		results['tBotEstFormula'] = this.tBotEstFormula.formula;
 		results['totalCondenser'] = this.totalCondenser;
 		results['isSolved'] = this.isSolved;
 		results['isInError'] = this.isInError;
@@ -1893,7 +2106,9 @@ export class MMColumn extends MMTool {
 			stage: d.stage,
 			phase: d.phase,
 			name: d.name,
-			isBasis: Boolean(d.isBasis)
+			isBasis: Boolean(d.isBasis),
+			flowEstFormula: d.flowEst ? d.flowEst.formula : '',
+			flowEstName: d.flowEst ? d.flowEst.name : `${d.name}_est`
 		}));
 
 		results['specs'] = this.specs.map((s, idx) => ({

@@ -57,6 +57,7 @@ export function ColumnView(props) {
 	const [newDrawStage, setNewDrawStage] = useState('1');
 	const [newDrawPhase, setNewDrawPhase] = useState('l');
 	const [newDrawName, setNewDrawName] = useState('');
+	const [newDrawEst, setNewDrawEst] = useState('');
 	const [newSpecName, setNewSpecName] = useState('');
 	const [newSpecFormula, setNewSpecFormula] = useState('');
 	const [newSpecScale, setNewSpecScale] = useState('1.0');
@@ -419,6 +420,42 @@ export function ColumnView(props) {
 				},
 				applyChanges: applyChanges('pbottom')
 			}),
+			// Top Temperature Estimate
+			e('div', { key: 'ttestl' }, t('thermo:columnTTopEstLabel') || 'Top T Est:'),
+			e(FormulaField, {
+				id: 'column__ttopest',
+				key: 'ttestf',
+				t: t,
+				actions: props.actions,
+				path: `${results.path}.ttopest`,
+				formula: results.tTopEstFormula,
+				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
+				editAction: (opt) => {
+					setEditOptions(opt);
+					setFormulaName('ttopest');
+					setDisplay(ColumnDisplay.formulaEditor);
+				},
+				applyChanges: applyChanges('ttopest')
+			}),
+			// Bottom Temperature Estimate
+			e('div', { key: 'btestl' }, t('thermo:columnTBotEstLabel') || 'Bottom T Est:'),
+			e(FormulaField, {
+				id: 'column__tbotest',
+				key: 'btestf',
+				t: t,
+				actions: props.actions,
+				path: `${results.path}.tbotest`,
+				formula: results.tBotEstFormula,
+				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
+				editAction: (opt) => {
+					setEditOptions(opt);
+					setFormulaName('tbotest');
+					setDisplay(ColumnDisplay.formulaEditor);
+				},
+				applyChanges: applyChanges('tbotest')
+			}),
 			// Total Condenser Toggle
 			e('div', { key: 'tcl' }, t('thermo:columnTotalCondenserLabel') || 'Total Condenser:'),
 			e(
@@ -479,7 +516,7 @@ export function ColumnView(props) {
 				key: d.name,
 				style: {
 					display: 'grid',
-					gridTemplateColumns: '70px 40px 1fr 30px',
+					gridTemplateColumns: '55px 35px 75px 1fr 24px',
 					alignItems: 'center',
 					gap: '4px',
 					marginBottom: '4px'
@@ -487,7 +524,22 @@ export function ColumnView(props) {
 			},
 			e('span', { style: { fontSize: '9pt', color: 'var(--subtext--color)' } }, `Stg ${d.stage}:`),
 			e('span', { style: { fontWeight: 'bold' } }, d.phase.toUpperCase()),
-			e('span', null, `${d.name} ${d.isBasis ? '(Basis)' : ''}`),
+			e('span', null, `${d.name}${d.isBasis ? ' (B)' : ''}`),
+			e(FormulaField, {
+				id: `column__draw_est_${d.name}`,
+				t: t,
+				actions: props.actions,
+				path: `${results.path}.${d.flowEstName}`,
+				formula: d.flowEstFormula,
+				viewInfo: props.viewInfo,
+				infoWidth: props.infoWidth,
+				editAction: (opt) => {
+					setEditOptions(opt);
+					setFormulaName(d.flowEstName);
+					setDisplay(ColumnDisplay.formulaEditor);
+				},
+				applyChanges: applyChanges(d.flowEstName)
+			}),
 			!d.isBasis ? e('button', {
 				style: { color: 'red', cursor: 'pointer', border: 'none', background: 'transparent' },
 				onClick: () => {
@@ -541,7 +593,26 @@ export function ColumnView(props) {
 
 			// Draws Section
 			e('h4', { style: { margin: '6px 0 4px 0' } }, t('thermo:columnDrawsLabel') || 'Draws'),
-			drawRows.length ? drawRows : e('div', { style: { fontStyle: 'italic', marginBottom: '6px' } }, 'No draws'),
+			drawRows.length ? e(
+				'div', null,
+				e('div', {
+					style: {
+						display: 'grid',
+						gridTemplateColumns: '55px 35px 75px 1fr 24px',
+						gap: '4px',
+						fontSize: '8pt',
+						color: 'var(--subtext--color)',
+						marginBottom: '2px'
+					}
+				},
+				e('span', null, 'Stage'),
+				e('span', null, 'Phase'),
+				e('span', null, 'Name'),
+				e('span', null, 'Flow Est (opt)'),
+				e('span')
+				),
+				drawRows
+			) : e('div', { style: { fontStyle: 'italic', marginBottom: '6px' } }, 'No draws'),
 			// Add Draw row
 			e(
 				'div', {
@@ -550,7 +621,7 @@ export function ColumnView(props) {
 				e('input', {
 					type: 'number',
 					placeholder: 'Stage',
-					style: { width: '55px', height: '24px' },
+					style: { width: '50px', height: '24px' },
 					value: newDrawStage,
 					onChange: (ev) => setNewDrawStage(ev.target.value)
 				}),
@@ -566,16 +637,27 @@ export function ColumnView(props) {
 				e('input', {
 					type: 'text',
 					placeholder: 'Draw Name',
-					style: { flex: 1, height: '24px' },
+					style: { width: '80px', height: '24px' },
 					value: newDrawName,
 					onChange: (ev) => setNewDrawName(ev.target.value)
+				}),
+				e('input', {
+					type: 'text',
+					placeholder: 'Flow Est (opt)',
+					style: { flex: 1, height: '24px' },
+					value: newDrawEst,
+					onChange: (ev) => setNewDrawEst(ev.target.value)
 				}),
 				e('button', {
 					style: { padding: '3px 8px', cursor: 'pointer' },
 					onClick: () => {
 						if (newDrawName) {
-							props.actions.doCommand(`${results.path} adddraw ${newDrawStage} ${newDrawPhase} ${newDrawName}`, () => {
+							const cmdStr = newDrawEst ?
+								`${results.path} adddraw ${newDrawStage} ${newDrawPhase} ${newDrawName} ${newDrawEst}` :
+								`${results.path} adddraw ${newDrawStage} ${newDrawPhase} ${newDrawName}`;
+							props.actions.doCommand(cmdStr, () => {
 								setNewDrawName('');
+								setNewDrawEst('');
 								props.actions.updateView(props.viewInfo.stackIndex);
 							});
 						}
