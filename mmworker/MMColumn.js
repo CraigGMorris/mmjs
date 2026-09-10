@@ -1390,15 +1390,18 @@ export class MMColumn extends MMTool {
 	/**
 	 * @method getVerbUsageKey
 	 * @override
-	 * @param {MMCommand} command
-	 * @returns {string}
+	 * @param {string} command - command to get the usage key for
+	 * @returns {string|undefined} - the i18n key, if it exists
 	 */
 	getVerbUsageKey(command) {
-		switch (command.verb) {
-			case 'setcolumnunit':
-				return 'mmcmd:_exprSetColumnUnit';
-			default:
-				return super.getVerbUsageKey(command);
+		let key = {
+			setcolumnunit: 'mmcmd:_exprSetColumnUnit',
+		}[command];
+		if (key) {
+			return key;
+		}
+		else {
+			return super.getVerbUsageKey(command);
 		}
 	}
 
