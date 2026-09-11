@@ -47,6 +47,7 @@
  * @member {MMUnit} _displayUnit
  * @member {MMValue} _value
  * @member {String} format
+ * @member {string[]} [prefixes]
  */
 export class MMTableValueColumn {
 	/** @type {string} */
@@ -57,6 +58,8 @@ export class MMTableValueColumn {
 	_value;
 	/** @type {string|undefined} */
 	format;
+	/** @type {string[]|undefined} */
+	prefixes;
 
 	/** @method exceptionWith
 	 * throws a MMCommandMessage
@@ -76,6 +79,7 @@ export class MMTableValueColumn {
 	 * @param {string|null} [context.displayUnit]
 	 * @param {MMValue|null} [context.value]
 	 * @param {string} [context.format]
+	 * @param {string[]} [context.prefixes]
 	 * @param {MMNumberValue} [context.rowNumbers]
 	 * @param {MMTableValueColumn} [context.column]
 	 */

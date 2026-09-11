@@ -1611,8 +1611,11 @@ export class MMColumn extends MMTool {
 				return this.cachedVdraw;
 			case 'ldraw':
 				return this.cachedLdraw;
+			case 'lh':
 			case 'hl':
 				return this.cachedHl;
+			case 'lv':
+			case 'vh':
 			case 'hv':
 				return this.cachedHv;
 
@@ -1657,6 +1660,31 @@ export class MMColumn extends MMTool {
 			default:
 				return super.valueDescribedBy(description, requestor);
 		}
+	}
+
+	/**
+	 * @override
+	 * @method parameters
+	 * @returns {string[]}
+	 */
+	parameters() {
+		let p = super.parameters();
+		p.push('t');
+		p.push('p');
+		p.push('vf');
+		p.push('lf');
+		p.push('q');
+		p.push('vdraw');
+		p.push('ldraw');
+		p.push('lh');
+		p.push('lv');
+		p.push('vx');
+		p.push('lx');
+		p.push('nstages');
+		p.push('stagecount');
+		p.push('solved');
+		p.push('thermo');
+		return p;
 	}
 
 	// ==================== Command Verbs ====================
