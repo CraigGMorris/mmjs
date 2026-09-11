@@ -698,6 +698,32 @@ export class MMColumn extends MMTool {
 				}
 			}
 		}
+		// Fallback: infer estD from component purity specifications (e.g. light key in bottoms)
+		if (isNaN(estD)) {
+			for (const spec of this.specs) {
+				const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.trim().toLowerCase() : '';
+				const m = text.match(/\$\.lx\[\s*(?:-1|\d+)\s*(?:,\s*["']?([a-zA-Z0-9_-]+)["']?)?\s*\](?:\.([a-zA-Z0-9_-]+))?\s*-\s*([0-9.]+)/);
+				if (m) {
+					const compName = m[1] || m[2];
+					const target = parseFloat(m[3]);
+					if (target <= 0.1 && compName) {
+						const keyIdx = this.componentNames.findIndex(c => c.toLowerCase().replace(/[-_]/g, '') === compName.replace(/[-_]/g, ''));
+						if (keyIdx >= 0) {
+							const keyTc = (compounds[keyIdx] && compounds[keyIdx].tc) ? compounds[keyIdx].tc : 300.0;
+							let sumD = 0.0;
+							for (let i = 0; i < nComp; i++) {
+								const tc_i = (compounds[i] && compounds[i].tc) ? compounds[i].tc : 300.0;
+								if (tc_i <= keyTc + 0.1) {
+									sumD += combinedFeedZ[i] * totalFeedFlow;
+								}
+							}
+							estD = Math.max(0.05 * totalFeedFlow, Math.min(0.95 * totalFeedFlow, sumD));
+							break;
+						}
+					}
+				}
+			}
+		}
 		if (isNaN(estD)) {
 			estD = 0.5 * totalFeedFlow;
 		}
@@ -743,6 +769,23 @@ export class MMColumn extends MMTool {
 			const tv = this.tBotEstFormula.value();
 			if (tv instanceof MMNumberValue && tv.valueCount > 0 && tv.values[0] > 0) {
 				tBotEst = tv.values[0];
+			}
+		}
+
+		// For uncooled overheads (e.g. demethanizers), ensure tTopEst is not warmer than cold feeds entering at stage 1
+		for (const feed of this.feeds) {
+			if (feed.stage === 1) {
+				const fTarget = feed.formula && feed.formula.value();
+				const target = (fTarget instanceof MMToolValue && fTarget.valueCount > 0) ? fTarget.values[0] : fTarget;
+				if (target && typeof target.valueDescribedBy === 'function') {
+					const tVal = target.valueDescribedBy('t') || target.valueDescribedBy('b.t');
+					if (tVal instanceof MMNumberValue && tVal.valueCount > 0 && tVal.values[0] > 0) {
+						const fT = tVal.values[0];
+						if (!isNaN(tTopEst) && tTopEst > fT) {
+							tTopEst = fT;
+						}
+					}
+				}
 			}
 		}
 
@@ -898,7 +941,7 @@ export class MMColumn extends MMTool {
 		let varIdx = 0;
 		if (totCond) S[0] = 0.0;
 		for (let j = totCond; j < N; j++) {
-			S[j] = Math.exp(Math.max(-10.0, Math.min(10.0, logS[varIdx++])));
+			S[j] = Math.exp(Math.max(-25.0, Math.min(25.0, logS[varIdx++])));
 		}
 
 		// Draw ratio terms
@@ -907,7 +950,7 @@ export class MMColumn extends MMTool {
 		for (const draw of this.draws) {
 			const j = draw.stage - 1;
 			if (!draw.isBasis) {
-				const rRatio = Math.exp(Math.max(-10.0, Math.min(10.0, logS[varIdx++])));
+				const rRatio = Math.exp(Math.max(-25.0, Math.min(25.0, logS[varIdx++])));
 				if (draw.phase === 'v') RvTerm[j] += rRatio;
 				else RlTerm[j] += rRatio;
 			}
@@ -1075,15 +1118,34 @@ export class MMColumn extends MMTool {
 		const lnPhiV = new Float64Array(nComp);
 
 		for (let j = 0; j < N; j++) {
-			const T = this.T[j];
+			let stageT = this.T[j];
 			const P = this.P[j];
 			for (let i = 0; i < nComp; i++) {
 				zL[i] = this.x[j * nComp + i];
 				zV[i] = this.y[j * nComp + i];
 			}
 
+			// Validate liquid root existence; if single root or collapsed to vapor root, reset stage T to bubble point
+			const numRootsL = eos.calculateZFactors(stageT, P, zL);
+			const zL_root = eos.workspace.zFactors[0];
+			const zV_root = eos.workspace.zFactors[1];
+			if (numRootsL === 1 || Math.abs(zL_root - zV_root) < 1e-4 || zL_root > 0.35) {
+				try {
+					const engine = /** @type {any} */ (this.engine);
+					const bubRes = engine.flash({ type: 'PQ', P: P, Q: 0.0 }, zL);
+					if (bubRes && bubRes.converged && bubRes.T > 50.0 && bubRes.T < 1000.0) {
+						stageT = bubRes.T;
+						this.T[j] = stageT;
+						eos.calculateZFactors(stageT, P, zL);
+					}
+				}
+				catch (e) {
+					// retain best effort
+				}
+			}
+			const T = stageT;
+
 			// Rigorous Liquid
-			eos.calculateZFactors(T, P, zL);
 			const Z_L = eos.workspace.zFactors[0];
 			eos.calculateFugacityCoefficients(T, P, zL, Z_L, lnPhiL);
 			const depL = eos.calculateDepartures(T, P, zL, Z_L);
@@ -1113,7 +1175,7 @@ export class MMColumn extends MMTool {
 				this.alpha[j * nComp + i] /= Math.max(1e-12, Kb);
 			}
 
-			// Numerical temperature derivative for Boston-Britt B parameter
+			// Numerical temperature derivative for Russell / Boston-Britt B parameter
 			const T2 = T + 1.0;
 			eos.calculateZFactors(T2, P, zL);
 			const Z_L2 = eos.workspace.zFactors[0];
