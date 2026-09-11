@@ -357,6 +357,7 @@ class MMFlash extends MMTool {
 			'f': '.2f',
 			'h': '.2f',
 			's': '.2f',
+			'hflow': '.1f',
 			'dmolar': '.2f'
 		};
 	}
@@ -1280,7 +1281,7 @@ class MMFlash extends MMTool {
 		const beta = flashResult.beta;
 		const thermoEngine = (typeof self !== 'undefined' ? (/** @type {any} */ (self)).thermo : null) || (typeof thermo !== 'undefined' ? thermo : null);
 
-		this.propList = ['q', 't', 'p', 'f', 'h', 's', 'dmolar', 'mwt', 'x'].concat(this.additionalProperties);
+		this.propList = ['q', 't', 'p', 'f', 'h', 's', 'hflow', 'x'].concat(this.additionalProperties);
 
 		const bulkZ = this.moleX ? this.moleX.values : this.convertMassFracToMole(/** @type {MMNumberValue} */ (this.massX).values);
 		const bulkProps = this.calculatePhaseProperties(flashResult.bulk, bulkZ, T, P, beta >= 0.5, beta);
