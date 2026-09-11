@@ -748,13 +748,23 @@ a:hover {
 
 .formula-input-field {
 	display: grid;
-	grid-template-columns: 20px 1fr 20px;
+	grid-template-columns: 20px minmax(0, 1fr) 20px;
 	grid-template-rows: 1fr;
 	grid-template-areas: "formula-refresh formula-display formula-edit";
 	width: 100%;
+	min-width: 0;
 	box-sizing: border-box;
 	color: var(--link--color);
 	cursor: pointer;
+}
+
+.formula-input-field input {
+	min-width: 0;
+	grid-area: formula-display;
+}
+
+#column__tabs::-webkit-scrollbar {
+	display: none;
 }
 
 .formula-field__text-display:hover, .formula-field__refresh:hover, .formula-field__edit-button:hover {

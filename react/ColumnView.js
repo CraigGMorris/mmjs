@@ -189,7 +189,10 @@ export function ColumnView(props) {
 				display: 'flex',
 				gap: '4px',
 				marginBottom: '6px',
-				borderBottom: '1px solid var(--border--color)'
+				borderBottom: '1px solid var(--border--color)',
+				overflowX: 'auto',
+				flexShrink: 0,
+				scrollbarWidth: 'none'
 			}
 		},
 		tabs.map(tab => e(
@@ -335,24 +338,34 @@ export function ColumnView(props) {
 	}
 	// Tab 2: Column Setup
 	else if (activeTab === 'setup') {
+		const setupRow = (/** @type {string} */ key, /** @type {string} */ labelText, /** @type {any} */ field) => e(
+			'div', {
+				key: key,
+				style: {
+					display: 'grid',
+					gridTemplateColumns: '88px minmax(0, 1fr)',
+					alignItems: 'center',
+					gap: '4px',
+					marginBottom: '6px'
+				}
+			},
+			e('span', null, labelText),
+			field
+		);
+
 		contentComponent = e(
 			'div', {
 				id: 'column__setup',
 				key: 'setup',
 				style: {
-					display: 'grid',
-					gridTemplateColumns: '110px 1fr',
-					gridRowGap: '8px',
-					alignItems: 'center',
 					overflowY: 'auto',
+					overflowX: 'hidden',
 					maxHeight: `${availHeight}px`
 				}
 			},
 			// Thermo
-			e('div', { key: 'tl' }, t('thermo:columnThermoLabel') || 'Thermo:'),
-			e(FormulaField, {
+			setupRow('thermo', t('thermo:columnThermoLabel') || 'Thermo:', e(FormulaField, {
 				id: 'column__thermo',
-				key: 'tf',
 				t: t,
 				actions: props.actions,
 				path: `${results.path}.thermo`,
@@ -365,12 +378,10 @@ export function ColumnView(props) {
 					setDisplay(ColumnDisplay.formulaEditor);
 				},
 				applyChanges: applyChanges('thermo')
-			}),
+			})),
 			// Stages
-			e('div', { key: 'sl' }, t('thermo:columnStagesLabel') || 'Stages:'),
-			e(FormulaField, {
+			setupRow('nstages', t('thermo:columnStagesLabel') || 'Stages:', e(FormulaField, {
 				id: 'column__nstages',
-				key: 'sf',
 				t: t,
 				actions: props.actions,
 				path: `${results.path}.nstages`,
@@ -383,12 +394,10 @@ export function ColumnView(props) {
 					setDisplay(ColumnDisplay.formulaEditor);
 				},
 				applyChanges: applyChanges('nstages')
-			}),
+			})),
 			// Top Pressure
-			e('div', { key: 'tpl' }, t('thermo:columnPTopLabel') || 'Top P:'),
-			e(FormulaField, {
+			setupRow('ptop', t('thermo:columnPTopLabel') || 'Top P:', e(FormulaField, {
 				id: 'column__ptop',
-				key: 'tpf',
 				t: t,
 				actions: props.actions,
 				path: `${results.path}.ptop`,
@@ -401,12 +410,10 @@ export function ColumnView(props) {
 					setDisplay(ColumnDisplay.formulaEditor);
 				},
 				applyChanges: applyChanges('ptop')
-			}),
+			})),
 			// Bottom Pressure
-			e('div', { key: 'bpl' }, t('thermo:columnPBottomLabel') || 'Bottom P:'),
-			e(FormulaField, {
+			setupRow('pbottom', t('thermo:columnPBottomLabel') || 'Bottom P:', e(FormulaField, {
 				id: 'column__pbottom',
-				key: 'bpf',
 				t: t,
 				actions: props.actions,
 				path: `${results.path}.pbottom`,
@@ -419,12 +426,10 @@ export function ColumnView(props) {
 					setDisplay(ColumnDisplay.formulaEditor);
 				},
 				applyChanges: applyChanges('pbottom')
-			}),
+			})),
 			// Top Temperature Estimate
-			e('div', { key: 'ttestl' }, t('thermo:columnTTopEstLabel') || 'Top T Est:'),
-			e(FormulaField, {
+			setupRow('ttopest', t('thermo:columnTTopEstLabel') || 'Top T Est:', e(FormulaField, {
 				id: 'column__ttopest',
-				key: 'ttestf',
 				t: t,
 				actions: props.actions,
 				path: `${results.path}.ttopest`,
@@ -437,12 +442,10 @@ export function ColumnView(props) {
 					setDisplay(ColumnDisplay.formulaEditor);
 				},
 				applyChanges: applyChanges('ttopest')
-			}),
+			})),
 			// Bottom Temperature Estimate
-			e('div', { key: 'btestl' }, t('thermo:columnTBotEstLabel') || 'Bottom T Est:'),
-			e(FormulaField, {
+			setupRow('tbotest', t('thermo:columnTBotEstLabel') || 'Bottom T Est:', e(FormulaField, {
 				id: 'column__tbotest',
-				key: 'btestf',
 				t: t,
 				actions: props.actions,
 				path: `${results.path}.tbotest`,
@@ -455,20 +458,32 @@ export function ColumnView(props) {
 					setDisplay(ColumnDisplay.formulaEditor);
 				},
 				applyChanges: applyChanges('tbotest')
-			}),
+			})),
 			// Total Condenser Toggle
-			e('div', { key: 'tcl' }, t('thermo:columnTotalCondenserLabel') || 'Total Condenser:'),
 			e(
-				'div', { key: 'tcc' },
-				e('input', {
-					type: 'checkbox',
-					checked: Boolean(results.totalCondenser),
-					onChange: (ev) => {
-						props.actions.doCommand(`${results.path} settotalcondenser ${ev.target.checked}`, () => {
-							props.actions.updateView(props.viewInfo.stackIndex);
-						});
+				'div', {
+					key: 'tc',
+					style: {
+						display: 'grid',
+						gridTemplateColumns: '110px minmax(0, 1fr)',
+						alignItems: 'center',
+						gap: '4px',
+						marginBottom: '6px'
 					}
-				})
+				},
+				e('span', null, t('thermo:columnTotalCondenserLabel') || 'Total Condenser:'),
+				e(
+					'div', null,
+					e('input', {
+						type: 'checkbox',
+						checked: Boolean(results.totalCondenser),
+						onChange: (ev) => {
+							props.actions.doCommand(`${results.path} settotalcondenser ${ev.target.checked}`, () => {
+								props.actions.updateView(props.viewInfo.stackIndex);
+							});
+						}
+					})
+				)
 			)
 		);
 	}
@@ -811,7 +826,10 @@ export function ColumnView(props) {
 				display: 'flex',
 				flexDirection: 'column',
 				boxSizing: 'border-box',
-				padding: '2px 4px'
+				padding: '2px 4px',
+				width: '100%',
+				maxWidth: '100%',
+				overflowX: 'hidden'
 			}
 		},
 		tabButtons,
