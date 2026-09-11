@@ -484,6 +484,32 @@ export function ColumnView(props) {
 						}
 					})
 				)
+			),
+			// Reboiler Toggle
+			e(
+				'div', {
+					key: 'reb',
+					style: {
+						display: 'grid',
+						gridTemplateColumns: '110px minmax(0, 1fr)',
+						alignItems: 'center',
+						gap: '4px',
+						marginBottom: '6px'
+					}
+				},
+				e('span', null, t('thermo:columnReboilerLabel') || 'Reboiler:'),
+				e(
+					'div', null,
+					e('input', {
+						type: 'checkbox',
+						checked: results.reboiler !== false,
+						onChange: (ev) => {
+							props.actions.doCommand(`${results.path} setreboiler ${ev.target.checked}`, () => {
+								props.actions.updateView(props.viewInfo.stackIndex);
+							});
+						}
+					})
+				)
 			)
 		);
 	}
@@ -549,67 +575,73 @@ export function ColumnView(props) {
 			}, '✕')
 		));
 
-		const drawRows = (results.draws || []).map((d) => e(
-			'div', {
-				key: d.name,
-				style: {
-					display: 'grid',
-					gridTemplateColumns: '68px 32px 70px 1fr 24px',
-					alignItems: 'center',
-					gap: '4px',
-					marginBottom: '4px'
-				}
-			},
-			e('div', { style: { display: 'flex', alignItems: 'center', gap: '2px' } },
-				e('span', { style: { fontSize: '9pt', color: 'var(--subtext--color)' } }, 'Stg'),
-				e('input', {
-					type: 'number',
-					min: 1,
-					max: results.nStages || 100,
-					defaultValue: d.stage,
-					key: `${d.name}_stg_${d.stage}`,
-					style: { width: '40px', height: '22px', fontSize: '9pt', textAlign: 'center' },
-					onBlur: (ev) => {
-						const val = parseInt(ev.target.value);
-						if (!isNaN(val) && val !== d.stage) {
-							props.actions.doCommand(`${results.path} setdrawstage ${d.index} ${val}`, () => {
+		const isTotalCond = Boolean(results.totalCondenser);
+		const drawRows = (results.draws || [])
+			.filter((d) => !(isTotalCond && d.stage === 1 && d.phase === 'v' && d.isBasis))
+			.map((d) => {
+				const isBasisLike = d.isBasis || (isTotalCond && d.stage === 1 && d.phase === 'l');
+				return e(
+					'div', {
+						key: d.name,
+						style: {
+							display: 'grid',
+							gridTemplateColumns: '68px 32px 70px 1fr 24px',
+							alignItems: 'center',
+							gap: '4px',
+							marginBottom: '4px'
+						}
+					},
+					e('div', { style: { display: 'flex', alignItems: 'center', gap: '2px' } },
+						e('span', { style: { fontSize: '9pt', color: 'var(--subtext--color)' } }, 'Stg'),
+						e('input', {
+							type: 'number',
+							min: 1,
+							max: results.nStages || 100,
+							defaultValue: d.stage,
+							key: `${d.name}_stg_${d.stage}`,
+							style: { width: '40px', height: '22px', fontSize: '9pt', textAlign: 'center' },
+							onBlur: (ev) => {
+								const val = parseInt(ev.target.value);
+								if (!isNaN(val) && val !== d.stage) {
+									props.actions.doCommand(`${results.path} setdrawstage ${d.index} ${val}`, () => {
+										props.actions.updateView(props.viewInfo.stackIndex);
+									});
+								}
+							},
+							onKeyDown: (ev) => {
+								if (ev.key === 'Enter') {
+									ev.target.blur();
+								}
+							}
+						})
+					),
+					e('span', { style: { fontWeight: 'bold' } }, d.phase.toUpperCase()),
+					e('span', null, `${d.name}${isBasisLike ? ' (B)' : ''}`),
+					e(FormulaField, {
+						id: `column__draw_est_${d.name}`,
+						t: t,
+						actions: props.actions,
+						path: `${results.path}.${d.flowEstName}`,
+						formula: d.flowEstFormula,
+						viewInfo: props.viewInfo,
+						infoWidth: props.infoWidth,
+						editAction: (opt) => {
+							setEditOptions(opt);
+							setFormulaName(d.flowEstName);
+							setDisplay(ColumnDisplay.formulaEditor);
+						},
+						applyChanges: applyChanges(d.flowEstName)
+					}),
+					!isBasisLike ? e('button', {
+						style: { color: 'red', cursor: 'pointer', border: 'none', background: 'transparent' },
+						onClick: () => {
+							props.actions.doCommand(`${results.path} removedraw ${d.index}`, () => {
 								props.actions.updateView(props.viewInfo.stackIndex);
 							});
 						}
-					},
-					onKeyDown: (ev) => {
-						if (ev.key === 'Enter') {
-							ev.target.blur();
-						}
-					}
-				})
-			),
-			e('span', { style: { fontWeight: 'bold' } }, d.phase.toUpperCase()),
-			e('span', null, `${d.name}${d.isBasis ? ' (B)' : ''}`),
-			e(FormulaField, {
-				id: `column__draw_est_${d.name}`,
-				t: t,
-				actions: props.actions,
-				path: `${results.path}.${d.flowEstName}`,
-				formula: d.flowEstFormula,
-				viewInfo: props.viewInfo,
-				infoWidth: props.infoWidth,
-				editAction: (opt) => {
-					setEditOptions(opt);
-					setFormulaName(d.flowEstName);
-					setDisplay(ColumnDisplay.formulaEditor);
-				},
-				applyChanges: applyChanges(d.flowEstName)
-			}),
-			!d.isBasis ? e('button', {
-				style: { color: 'red', cursor: 'pointer', border: 'none', background: 'transparent' },
-				onClick: () => {
-					props.actions.doCommand(`${results.path} removedraw ${d.index}`, () => {
-						props.actions.updateView(props.viewInfo.stackIndex);
-					});
-				}
-			}, '✕') : e('span')
-		));
+					}, '✕') : e('span')
+				);
+			});
 
 		contentComponent = e(
 			'div', {
@@ -757,7 +789,7 @@ export function ColumnView(props) {
 				applyChanges: applyChanges(s.name)
 			}),
 			e('span', { style: { fontSize: '8pt', color: 'var(--subtext--color)' } }, `/${s.scale}`),
-			results.specs.length > 2 ? e('button', {
+			(results.specs.length > (results.requiredSpecs !== undefined ? results.requiredSpecs : 1)) ? e('button', {
 				style: { color: 'red', cursor: 'pointer', border: 'none', background: 'transparent' },
 				onClick: () => {
 					props.actions.doCommand(`${results.path} removespec ${s.index}`, () => {
@@ -773,7 +805,7 @@ export function ColumnView(props) {
 				key: 'specs',
 				style: { overflowY: 'auto', maxHeight: `${availHeight}px` }
 			},
-			e('h4', { style: { margin: '6px 0 6px 0' } }, t('thermo:columnSpecsLabel') || 'Specifications'),
+			e('h4', { style: { margin: '6px 0 6px 0' } }, `${t('thermo:columnSpecsLabel') || 'Specifications'}${results.requiredSpecs !== undefined ? ` (${results.requiredSpecs} ${t('thermo:columnRequired') || 'required'})` : ''}`),
 			specRows.length ? specRows : e('div', { style: { fontStyle: 'italic' } }, 'No specs'),
 			// Add Spec row
 			e(

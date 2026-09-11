@@ -243,10 +243,16 @@ class ErrorBoundary extends React.Component {
  * @returns {string}
  */
 export function MMFormatValue(v, format) {
+	if (v === null || v === undefined) {
+		return '';
+	}
 	if (typeof v === 'string') {
 		return v;
 	}
 	else if (typeof v === 'number') {
+		if (isNaN(v)) {
+			return '';
+		}
 		if (format) {
 			let leadingPadChar = ' ';
 			const parts = format.split('.');	// split on decimal point, if there is one

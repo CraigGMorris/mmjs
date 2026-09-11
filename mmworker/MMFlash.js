@@ -1657,7 +1657,7 @@ class MMFlash extends MMTool {
 			else if (!justPhase || justPhase === 'b') {
 				// show the defined bulk properties
 				if (!this.propList) {
-					this.propList = ['q', 't', 'p', 'f', 'h', 's', 'dmolar', 'mwt', 'x'].concat(this.additionalProperties);
+					this.propList = ['q', 't', 'p', 'f', 'h', 's', 'hflow', 'x'].concat(this.additionalProperties);
 				}
 				/** @type {Record<string, any>} */
 				const bulk = {};

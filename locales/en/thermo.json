@@ -29,6 +29,8 @@
 	"columnTTopEstLabel": "Top T Est",
 	"columnTBotEstLabel": "Bottom T Est",
 	"columnTotalCondenserLabel": "Total Condenser",
+	"columnReboilerLabel": "Reboiler",
+	"columnRequired": "required",
 	"columnFeedsLabel": "Feeds",
 	"columnDrawsLabel": "Draws",
 	"columnSpecsLabel": "Specifications",

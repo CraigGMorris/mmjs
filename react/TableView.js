@@ -375,6 +375,9 @@ const pointerMove = useCallback(e => {
 	}, [dragType]);
 
 	const formatValue = useCallback((v, format) => {
+		if (v === null || v === undefined || (typeof v === 'number' && isNaN(v))) {
+			return '';
+		}
 		return MMFormatValue(v, format);
 	}, []);
 
@@ -453,6 +456,9 @@ const pointerMove = useCallback(e => {
 							const tableColumn = value.v[row + rowOrigin];
 							v = tableColumn.v.v[column + columnOrigin];
 							displayedV = formatValue(v, tableColumn.format);
+							if (tableColumn.prefixes && tableColumn.prefixes[column + columnOrigin] && displayedV) {
+								displayedV = `${tableColumn.prefixes[column + columnOrigin]} ${displayedV.trim()}`.padStart(14);
+							}
 						} else {
 							displayedV = '';
 						}
@@ -461,6 +467,9 @@ const pointerMove = useCallback(e => {
 						const tableColumn = value.v[column + columnOrigin];
 						v = tableColumn.v.v[row + rowOrigin];
 						displayedV = formatValue(v, tableColumn.format);
+						if (tableColumn.prefixes && tableColumn.prefixes[row + rowOrigin] && displayedV) {
+							displayedV = `${tableColumn.prefixes[row + rowOrigin]} ${displayedV.trim()}`.padStart(14);
+						}
 					}
 				}
 				else {

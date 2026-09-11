@@ -84,6 +84,7 @@ export class MMTableValueColumn {
 			this.name = context.name;
 			this._value = context.value;
 			this.format = context.format;
+			this.prefixes = context.prefixes;
 			if (this._value) {
 				if (this._value instanceof MMNumberValue) {
 					if (context.displayUnit) {
@@ -566,13 +567,18 @@ export class MMTableValueColumn {
 			}
 		}
 		const displayUnitName = (displayUnit) ? displayUnit.displayName : '';
-		return {
+		/** @type {Record<string, any>} */
+		const o = {
 			t: 'tc',
 			name: this.name,
 			dUnit: displayUnitName,
 			format: format ? format : this.format,
 			v: (/** @type {MMValue} */ (this._value)).jsonValue(displayUnit),
+		};
+		if (this.prefixes) {
+			o.prefixes = this.prefixes;
 		}
+		return o;
 	}
 }
 

@@ -138,6 +138,9 @@ export class MMColumn extends MMTool {
 		this._totalCondenser = false;
 
 		/** @type {boolean} */
+		this._reboiler = true;
+
+		/** @type {boolean} */
 		this.isSolving = false;
 		/** @type {boolean} */
 		this.isSolved = false;
@@ -277,6 +280,18 @@ export class MMColumn extends MMTool {
 					this.draws.push({ stage: 1, phase: 'l', name: 'DistillateLiq', isBasis: false });
 				}
 			}
+			this.forgetCalculated();
+		}
+	}
+
+	get reboiler() {
+		return this._reboiler;
+	}
+
+	set reboiler(val) {
+		const bVal = Boolean(val);
+		if (this._reboiler !== bVal) {
+			this._reboiler = bVal;
 			this.forgetCalculated();
 		}
 	}
@@ -691,7 +706,7 @@ export class MMColumn extends MMTool {
 		if (isNaN(estD)) {
 			for (const spec of this.specs) {
 				const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.trim().toLowerCase() : '';
-				const mD = text.match(/^\s*\$\.(?:vf|vdraw)\[\s*1\s*\]\s*-\s*([0-9.]+)/);
+				const mD = text.match(/^\s*\$\.(?:vf|vdraw|ldraw)\[\s*1\s*\]\s*-\s*([0-9.]+)/);
 				if (mD) {
 					estD = parseFloat(mD[1]);
 					break;
@@ -865,7 +880,7 @@ export class MMColumn extends MMTool {
 		let nominalReflux = 1.5;
 		for (const spec of this.specs) {
 			const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.toLowerCase() : '';
-			const m = text.match(/\$\.lf\[\s*1\s*\]\s*\/\s*\$\.vf\[\s*1\s*\]\s*-\s*([0-9.]+)/);
+			const m = text.match(/\$\.lf\[\s*1\s*\]\s*\/\s*\$\.(?:vf|ldraw)\[\s*1\s*\]\s*-\s*([0-9.]+)/);
 			if (m) {
 				nominalReflux = Math.max(0.2, parseFloat(m[1]));
 				break;
@@ -1124,6 +1139,19 @@ export class MMColumn extends MMTool {
 				zL[i] = this.x[j * nComp + i];
 				zV[i] = this.y[j * nComp + i];
 			}
+			if (j === 0 && this._totalCondenser) {
+				let sumY = 0.0;
+				for (let i = 0; i < nComp; i++) {
+					const yi = Math.max(1e-12, this.alpha[0 * nComp + i] * zL[i]);
+					zV[i] = yi;
+					sumY += yi;
+				}
+				const invSumY = sumY > 0.0 ? 1.0 / sumY : 1.0;
+				for (let i = 0; i < nComp; i++) {
+					zV[i] *= invSumY;
+					this.y[0 * nComp + i] = zV[i];
+				}
+			}
 
 			// Validate liquid root existence; if single root or collapsed to vapor root, reset stage T to bubble point
 			const numRootsL = eos.calculateZFactors(stageT, P, zL);
@@ -1337,7 +1365,7 @@ export class MMColumn extends MMTool {
 			}
 
 			const lOut = (this.L[j] + sideLDraws[j]) * this.hl[j];
-			const vOut = (this.V[j] + sideVDraws[j]) * this.hv[j];
+			const vOut = (j === 0 && this._totalCondenser) ? 0.0 : ((this.V[j] + sideVDraws[j]) * this.hv[j]);
 			hScale += Math.abs(lOut) + Math.abs(vOut);
 
 			heatErrors[j] = hIn - (lOut + vOut);
@@ -1346,7 +1374,12 @@ export class MMColumn extends MMTool {
 
 		// Stage 0 condenser duty and stage N-1 reboiler duty absorption
 		this.Q[0] = -heatErrors[0];
-		this.Q[N - 1] = -heatErrors[N - 1];
+		if (this._reboiler) {
+			this.Q[N - 1] = -heatErrors[N - 1];
+		}
+		else {
+			this.Q[N - 1] = 0.0;
+		}
 		(/** @type {MMNumberValue} */ (this.cachedQ)).values.set(this.Q);
 
 		// 3. Invalidate downstream requestors so formulas evaluate current column values
@@ -1355,8 +1388,9 @@ export class MMColumn extends MMTool {
 		// 4. Populate inner error vector fx
 		let eqIdx = 0;
 
-		// Intermediate stages (1 to N-2) enforce adiabatic heat balance
-		for (let j = 1; j < N - 1; j++) {
+		// Stages enforcing adiabatic heat balance
+		const maxAdiabaticStage = this._reboiler ? (N - 1) : N;
+		for (let j = 1; j < maxAdiabaticStage; j++) {
 			fx[eqIdx++] = heatErrors[j] / scale[j];
 		}
 
@@ -1417,7 +1451,8 @@ export class MMColumn extends MMTool {
 			const totCond = this._totalCondenser ? 1 : 0;
 			const numNonBasisDraws = this.draws.filter(d => !d.isBasis).length;
 			const numInner = this.nStages - totCond + numNonBasisDraws;
-			const requiredSpecs = numInner - (this.nStages - 2);
+			const numEnergyEquations = this._reboiler ? (this.nStages - 2) : (this.nStages - 1);
+			const requiredSpecs = Math.max(0, numInner - numEnergyEquations);
 			if (this.specs.length !== requiredSpecs) {
 				this.setError('thermo:columnSpecsCountError', { path: this.getPath(), count: this.specs.length, required: requiredSpecs });
 				this.isInError = true;
@@ -1642,6 +1677,7 @@ export class MMColumn extends MMTool {
 		verbs['setdrawstage'] = this.setDrawStageCommand;
 		verbs['setfeedstage'] = this.setFeedStageCommand;
 		verbs['settotalcondenser'] = this.setTotalCondenserCommand;
+		verbs['setreboiler'] = this.setReboilerCommand;
 		verbs['reset'] = this.resetCommand;
 		verbs['solve'] = this.solveCommand;
 		verbs['setcolumnunit'] = this.setColumnUnitCommand;
@@ -1672,10 +1708,10 @@ export class MMColumn extends MMTool {
 	 */
 	setColumnUnitCommand(command) {
 		const parts = String(command.args).trim().split(/\s+/);
+		const colNames = ['T', 'P', 'V', 'L', 'Q', 'Feeds', 'Draws'];
 		if (parts.length >= 2) {
 			let colKey = parts[0];
 			const colIndex = parseInt(colKey);
-			const colNames = ['T', 'P', 'V', 'L', 'Q'];
 			if (!isNaN(colIndex) && colIndex >= 1 && colIndex <= colNames.length) {
 				colKey = colNames[colIndex - 1];
 			}
@@ -1693,7 +1729,6 @@ export class MMColumn extends MMTool {
 		else if (parts.length === 1 && parts[0]) {
 			let colKey = parts[0];
 			const colIndex = parseInt(colKey);
-			const colNames = ['T', 'P', 'V', 'L', 'Q'];
 			if (!isNaN(colIndex) && colIndex >= 1 && colIndex <= colNames.length) {
 				colKey = colNames[colIndex - 1];
 			}
@@ -2035,6 +2070,18 @@ export class MMColumn extends MMTool {
 	}
 
 	/**
+	 * @method setReboilerCommand
+	 * @param {MMCommand} command
+	 */
+	setReboilerCommand(command) {
+		const cmd = /** @type {any} */ (command);
+		const prev = this.reboiler;
+		const str = cmd.args !== undefined ? String(cmd.args) : String(cmd.reboiler !== undefined ? cmd.reboiler : '');
+		this.reboiler = str.toLowerCase().startsWith('t') || str === '1';
+		cmd.undo = `${this.getPath()} setreboiler ${prev}`;
+	}
+
+	/**
 	 * @method resetCommand
 	 * @param {MMCommand} command
 	 */
@@ -2080,6 +2127,7 @@ export class MMColumn extends MMTool {
 		o['ptop'] = { Formula: this.pTopFormula.formula };
 		o['pbottom'] = { Formula: this.pBottomFormula.formula };
 		o['totalCondenser'] = this.totalCondenser;
+		o['reboiler'] = this.reboiler;
 
 		if (this.tTopEstFormula && this.tTopEstFormula.formula) o['ttopest'] = { Formula: this.tTopEstFormula.formula };
 		if (this.tBotEstFormula && this.tBotEstFormula.formula) o['tbotest'] = { Formula: this.tBotEstFormula.formula };
@@ -2127,6 +2175,7 @@ export class MMColumn extends MMTool {
 			if (saved.ttopest) this.tTopEstFormula.formula = saved.ttopest.Formula;
 			if (saved.tbotest) this.tBotEstFormula.formula = saved.tbotest.Formula;
 			this.totalCondenser = Boolean(saved.totalCondenser);
+			if (saved.reboiler !== undefined) this.reboiler = Boolean(saved.reboiler);
 
 			if (Array.isArray(saved.feeds)) {
 				this.feeds = saved.feeds.map(f => {
@@ -2175,6 +2224,7 @@ export class MMColumn extends MMTool {
 	 */
 	displayTable() {
 		const N = this.nStages || 10;
+		const nComp = this.nComponents || 1;
 
 		const tVals = new MMNumberValue(N, 1, [0, 0, 0, 0, 1, 0, 0]);
 		if (this.T.length === N) tVals.values.set(this.T);
@@ -2183,34 +2233,111 @@ export class MMColumn extends MMTool {
 		if (this.P.length === N) pVals.values.set(this.P);
 
 		const vVals = new MMNumberValue(N, 1, [0, 0, -1, 0, 0, 1, 0]);
-		if (this.V.length === N) vVals.values.set(this.V);
+		if (this.V.length === N) {
+			vVals.values.set(this.V);
+		}
+		else {
+			vVals.values.fill(NaN);
+		}
+		vVals.values[0] = NaN;
 
 		const lVals = new MMNumberValue(N, 1, [0, 0, -1, 0, 0, 1, 0]);
-		if (this.L.length === N) lVals.values.set(this.L);
+		if (this.L.length === N) {
+			lVals.values.set(this.L);
+		}
+		else {
+			lVals.values.fill(NaN);
+		}
+		lVals.values[N - 1] = NaN;
 
 		const qVals = new MMNumberValue(N, 1, [2, 1, -3, 0, 0, 0, 0]);
 		if (this.Q.length === N) qVals.values.set(this.Q);
 
-		const feedsDrawsStrs = [];
-		for (let j = 0; j < N; j++) {
-			const stgNum = j + 1;
-			const parts = [];
-			for (const f of this.feeds) {
-				if (f.stage === stgNum) parts.push(`F:${f.name}`);
+		const feedVals = new MMNumberValue(N, 1, [0, 0, -1, 0, 0, 1, 0]);
+		feedVals.values.fill(NaN);
+		if (this.f && this.f.length === N * nComp) {
+			for (let j = 0; j < N; j++) {
+				let stageFeed = 0.0;
+				for (let i = 0; i < nComp; i++) {
+					stageFeed += this.f[j * nComp + i];
+				}
+				if (stageFeed > 0) {
+					feedVals.values[j] = stageFeed;
+				}
 			}
-			for (const d of this.draws) {
-				if (d.stage === stgNum) parts.push(`D:${d.name}(${d.phase.toUpperCase()})`);
+		}
+		if (this.feeds && this.feeds.length > 0) {
+			for (const feed of this.feeds) {
+				const stg = feed.stage - 1;
+				if (stg >= 0 && stg < N && isNaN(feedVals.values[stg])) {
+					let fFlow = 0.0;
+					const feedVal = feed.formula.value();
+					const target = (feedVal instanceof MMToolValue && feedVal.valueCount > 0) ? feedVal.values[0] : feedVal;
+					if (target && typeof target.valueDescribedBy === 'function') {
+						let flowVal = target.valueDescribedBy('f') || target.valueDescribedBy('b.f') || target.valueDescribedBy('flow');
+						if (flowVal instanceof MMNumberValue && flowVal.valueCount > 0) {
+							fFlow = flowVal.values[0];
+						}
+					}
+					if (fFlow <= 0.0 && target && target.flowFormula) {
+						const fv = target.flowFormula.value();
+						if (fv instanceof MMNumberValue && fv.valueCount > 0) {
+							fFlow = fv.values[0];
+						}
+					}
+					if (fFlow <= 0.0 && feedVal instanceof MMNumberValue && feedVal.valueCount > 0) {
+						fFlow = feedVal.values[0];
+					}
+					if (fFlow > 0.0) {
+						feedVals.values[stg] = (isNaN(feedVals.values[stg]) ? 0.0 : feedVals.values[stg]) + fFlow;
+					}
+				}
 			}
-			feedsDrawsStrs.push(parts.join(', '));
 		}
 
+		const drawVals = new MMNumberValue(N, 1, [0, 0, -1, 0, 0, 1, 0]);
+		drawVals.values.fill(NaN);
+		const drawPrefixes = new Array(N).fill('');
+		for (const d of this.draws) {
+			if (this._totalCondenser && d.stage === 1 && d.phase === 'v' && d.isBasis) continue;
+			const stg = d.stage - 1;
+			if (stg < 0 || stg >= N) continue;
+			let flow = d.flow;
+			if (flow === undefined || isNaN(flow)) {
+				if (d.isBasis) {
+					if (d.phase === 'v' && this.V.length === N) flow = this.V[stg];
+					else if (d.phase === 'l' && this.L.length === N) flow = this.L[stg];
+				}
+				if ((flow === undefined || isNaN(flow)) && d.flowEst) {
+					const estVal = d.flowEst.value();
+					if (estVal instanceof MMNumberValue && estVal.valueCount > 0) {
+						flow = estVal.values[0];
+					}
+				}
+			}
+			if (flow !== undefined && !isNaN(flow)) {
+				drawVals.values[stg] = (isNaN(drawVals.values[stg]) ? 0.0 : drawVals.values[stg]) + flow;
+				const p = (d.phase || '').toUpperCase();
+				if (p) {
+					if (!drawPrefixes[stg]) {
+						drawPrefixes[stg] = p;
+					}
+					else if (!drawPrefixes[stg].includes(p)) {
+						drawPrefixes[stg] += ',' + p;
+					}
+				}
+			}
+		}
+
+		const flowUnit = this.displayUnits['V'] || this.displayUnits['L'];
 		const cols = [
 			new MMTableValueColumn({ name: 'T', displayUnit: this.displayUnits['T'], value: tVals }),
 			new MMTableValueColumn({ name: 'P', displayUnit: this.displayUnits['P'], value: pVals }),
 			new MMTableValueColumn({ name: 'V', displayUnit: this.displayUnits['V'], value: vVals }),
 			new MMTableValueColumn({ name: 'L', displayUnit: this.displayUnits['L'], value: lVals }),
 			new MMTableValueColumn({ name: 'Q', displayUnit: this.displayUnits['Q'], value: qVals }),
-			new MMTableValueColumn({ name: 'Feeds & Draws', displayUnit: 'string', value: MMStringValue.stringArrayValue(feedsDrawsStrs) })
+			new MMTableValueColumn({ name: 'Feeds', displayUnit: this.displayUnits['Feeds'] || flowUnit, value: feedVals }),
+			new MMTableValueColumn({ name: 'Draws', displayUnit: this.displayUnits['Draws'] || flowUnit, value: drawVals, prefixes: drawPrefixes })
 		];
 
 		const table = new MMTableValue({ columns: cols });
@@ -2233,9 +2360,16 @@ export class MMColumn extends MMTool {
 		results['tTopEstFormula'] = this.tTopEstFormula.formula;
 		results['tBotEstFormula'] = this.tBotEstFormula.formula;
 		results['totalCondenser'] = this.totalCondenser;
+		results['reboiler'] = this.reboiler;
 		results['isSolved'] = this.isSolved;
 		results['isInError'] = this.isInError;
 		results['nStages'] = this.nStages;
+
+		const totCond = this._totalCondenser ? 1 : 0;
+		const numNonBasisDraws = this.draws.filter(d => !d.isBasis).length;
+		const numInner = this.nStages - totCond + numNonBasisDraws;
+		const numEnergyEquations = this._reboiler ? (this.nStages - 2) : (this.nStages - 1);
+		results['requiredSpecs'] = Math.max(0, numInner - numEnergyEquations);
 
 		results['feeds'] = this.feeds.map((f, idx) => ({
 			index: idx + 1,
