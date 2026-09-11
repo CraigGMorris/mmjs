@@ -1542,6 +1542,13 @@ export class MMColumn extends MMTool {
 			return null;
 		}
 
+		if (prop === 'thermo') {
+			if (this.thermoFormula) {
+				this.addRequestor(requestor);
+				return this.thermoFormula.value();
+			}
+		}
+
 		if (prop === 'nstages' || prop === 'stagecount') {
 			this.addRequestor(requestor);
 			return MMNumberValue.scalarValue(this.nStages);
