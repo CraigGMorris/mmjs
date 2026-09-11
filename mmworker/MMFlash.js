@@ -660,6 +660,9 @@ class MMFlash extends MMTool {
 
 		if (!this.moleX) {
 			this.moleX = this.moleFracFormula.value();
+			if (this.moleX instanceof MMTableValue) {
+				this.moleX = this.moleX.numberValue();
+			}
 			if (!this.moleX && this.nComponents === 1) {
 				this.moleX = MMNumberValue.scalarValue(1);
 			}
@@ -1012,8 +1015,9 @@ class MMFlash extends MMTool {
 
 		let usingMoleFracs = true;
 		let z = [];
-		if (this.moleX && this.moleX instanceof MMNumberValue && this.moleX.valueCount > 0) {
-			if (this.moleX.valueCount !== this.nComponents) {
+		const inputX = this.moleX instanceof MMTableValue ? this.moleX.numberValue() : this.moleX;
+		if (inputX && inputX instanceof MMNumberValue && inputX.valueCount > 0) {
+			if (inputX.valueCount !== this.nComponents) {
 				this.setError('thermo:flashWrongCmpCount', {path: this.getPath()});
 				return;
 			}
