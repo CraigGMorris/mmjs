@@ -79,8 +79,7 @@
 					<li><b>f</b> - molar flow rate</li>
 					<li><b>h</b> -  Mole-based enthalpy</li>
 					<li><b>s</b> -  Mole-based entropy</li>
-					<li><b>dmolar</b> -  Mole-based density</li>
-					<li><b>mwt</b> -  molecular weight</li>
+					<li><b>hflow</b> -  Heat flow</li>
 					<li><b>x</b> -  Mole fractions</li>
 				</ul>
 				<p>
@@ -200,6 +199,7 @@
 					<li><b>feed.p</b> = the feed pressure</li>
 					<li><b>feed.x</b> = the bulk fluid mole fractions</li>
 					<li><b>feed.v.x</b> = the vapour phase mole fractions</li>
+					<li><b>feed.v.xt</b> = the vapour phase mole fractions as a single row table where column headers are compound names</li>
 					<li><b>feed.l</b> = the liquid phase properties. If this were entered in an expression named "inlet",
 						then <b>inlet.f</b> would be the flow rate of the vapour phase of <b>feed</b>.
 					</li>
@@ -214,7 +214,7 @@
 					<li><b>l2</b> = the second liquid (aqueous) phase if present</li>
 				</ul>
 				<p>
-					The following properties are always calculated and available as property parameters:
+					The following properties are always calculated and displayed:
 				</p>
 				<ul>
 					<li><b>q</b> -  vapour fraction</li>
@@ -223,18 +223,19 @@
 					<li><b>f</b> - molar flow rate</li>
 					<li><b>h</b> -  Mole-based enthalpy</li>
 					<li><b>s</b> -  Mole-based entropy</li>
-					<li><b>dmolar</b> -  Mole-based density</li>
-					<li><b>mwt</b> -  molecular weight</li>
+					<li><b>hflow</b> -  Heat flow</li>
 					<li><b>x</b> -  Mole fractions</li>
 				</ul>
 				<p>
-					The properties below are optional and are only calculated and available when
-					they have been included in the thermo definition as described above:
+					The properties below are optional and are only displayed when
+					they have been included in the thermo definition as described above. However they can always be referenced in a formula:
 				</p>
 				<ul>
 					<li><b>massf</b> - mass flow rate</li>
 					<li><b>massx</b> -  Mass fractions</li>
-					<li><b>hflow</b> - Energy flow</li>
+					<li><b>xt</b> -  Mole fractions as a single row table where column headers are compound names</li>
+					<li><b>massxt</b> -  Mass fractions as a single row table where column headers are compound names</li>
+					<li><b>mwt</b> -  molecular weight</li>
 					<li><b>cpmolar</b> -  Mole-based constant-pressure specific heat</li>
 					<li><b>cp0molar</b> -  Mole-based ideal-gas constant-pressure specific heat</li>
 					<li><b>cvmolar</b> -  Mole-based constant-volume specific heat</li>
@@ -243,6 +244,7 @@
 					<li><b>cpmass</b> -  Mass-based constant-pressure specific heat</li>
 					<li><b>cp0mass</b> -  Mass-based ideal-gas constant-pressure specific heat</li>
 					<li><b>cvmass</b> -  Mass-based constant-volume specific heat</li>
+					<li><b>dmolar</b> -  Mole-based density</li>
 					<li><b>dmass</b> -  Mass-based density</li>
 					<li><b>umass</b> -  Mass-based internal energy</li>
 					<li><b>gmass</b> -  Mass-based Gibbs energy</li>

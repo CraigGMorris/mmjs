@@ -150,6 +150,20 @@ class MMFlashPhaseValue extends MMValue {
 	}
 
 	/**
+	 * @returns {MMTableValue|null}
+	 */
+	get xt() {
+		return /** @type {MMTableValue|null} */ (this.valueDescribedBy('xt'));
+	}
+
+	/**
+	 * @returns {MMTableValue|null}
+	 */
+	get massxt() {
+		return /** @type {MMTableValue|null} */ (this.valueDescribedBy('massxt'));
+	}
+
+	/**
 	 * @returns {string[]}
 	 */
 	parameters() {
@@ -302,6 +316,8 @@ class MMFlash extends MMTool {
 			'x': 'Dimensionless',
 			'massf': 'MassFlow',
 			'massx': 'Dimensionless',
+			'xt': 'Dimensionless',
+			'massxt': 'Dimensionless',
 			'hflow': 'Power',
 			'cpmolar': 'MolarSpecificHeat',
 			'cp0molar': 'MolarSpecificHeat',
@@ -493,6 +509,8 @@ class MMFlash extends MMTool {
 		p.push('massf');
 		p.push('x');
 		p.push('massx');
+		p.push('xt');
+		p.push('massxt');
 		p.push('fugacities');
 		for (const propName of Object.keys(MMFlashPropertyDefinitions)) {
 			p.push(propName);
@@ -672,6 +690,9 @@ class MMFlash extends MMTool {
 		}
 		if (!this.massX) {
 			this.massX = this.massFracFormula.value();
+			if (this.massX instanceof MMTableValue) {
+				this.massX = this.massX.numberValue();
+			}
 			if (!this.massX && this.nComponents === 1) {
 				this.massX = MMNumberValue.scalarValue(1);
 			}
@@ -707,6 +728,52 @@ class MMFlash extends MMTool {
 				}
 				return this.massX;
 			}
+			else if (property === 'xt') {
+				let xVal = null;
+				if (!this.moleX && this.massX && this.mwts) {
+					xVal = this.convertMassFracToMole(this.massX.values);
+				}
+				else if (this.moleX) {
+					xVal = this.moleX.values;
+				}
+				if (xVal) {
+					const xt = this.createFractionTable(xVal);
+					if (xt) {
+						if (descParts.length > 0) {
+							const subCol = xt.columns.find(c => c.name.toLowerCase() === descParts[0]);
+							if (subCol) {
+								this.addRequestor(requestor);
+								return subCol.value;
+							}
+						}
+						this.addRequestor(requestor);
+					}
+					return xt;
+				}
+			}
+			else if (property === 'massxt') {
+				let massVal = null;
+				if (this.moleX && !this.massX && this.mwts) {
+					massVal = this.convertMoleFracToMass(this.moleX.values);
+				}
+				else if (this.massX) {
+					massVal = this.massX.values;
+				}
+				if (massVal) {
+					const massxt = this.createFractionTable(massVal);
+					if (massxt) {
+						if (descParts.length > 0) {
+							const subCol = massxt.columns.find(c => c.name.toLowerCase() === descParts[0]);
+							if (subCol) {
+								this.addRequestor(requestor);
+								return subCol.value;
+							}
+						}
+						this.addRequestor(requestor);
+					}
+					return massxt;
+				}
+			}
 		}
 		else {
 			if (!this.moleX && !this.massX) {
@@ -737,7 +804,24 @@ class MMFlash extends MMTool {
 						this.calculateFlows();
 						prop = resultPhase[/** @type {string} */ (property)];
 					}
+					if (!prop && (property === 'xt' || property === 'massxt')) {
+						if (property === 'xt' && resultPhase.x) {
+							prop = this.createFractionTable(resultPhase.x.values);
+							resultPhase.xt = prop;
+						}
+						else if (property === 'massxt' && resultPhase.massx) {
+							prop = this.createFractionTable(resultPhase.massx.values);
+							resultPhase.massxt = prop;
+						}
+					}
 					if (prop) {
+						if (descParts.length > 0 && prop instanceof MMTableValue) {
+							const subCol = prop.columns.find(c => c.name.toLowerCase() === descParts[0]);
+							if (subCol) {
+								this.addRequestor(requestor);
+								return subCol.value;
+							}
+						}
 						this.addRequestor(requestor);
 					}
 					return prop;
@@ -764,6 +848,40 @@ class MMFlash extends MMTool {
 						returnValue = this.massX;
 					}
 					break;
+				case 'xt': {
+					let tVal = null;
+					if (!this.moleX && this.massX && this.mwts) {
+						tVal = this.createFractionTable(this.convertMassFracToMole(this.massX.values));
+					}
+					else if (this.moleX) {
+						tVal = this.createFractionTable(this.moleX.values);
+					}
+					if (tVal && descParts.length > 0) {
+						const subCol = tVal.columns.find(c => c.name.toLowerCase() === descParts[0]);
+						returnValue = subCol ? subCol.value : tVal;
+					}
+					else {
+						returnValue = tVal;
+					}
+					break;
+				}
+				case 'massxt': {
+					let tVal = null;
+					if (this.moleX && !this.massX && this.mwts) {
+						tVal = this.createFractionTable(this.convertMoleFracToMass(this.moleX.values));
+					}
+					else if (this.massX) {
+						tVal = this.createFractionTable(this.massX.values);
+					}
+					if (tVal && descParts.length > 0) {
+						const subCol = tVal.columns.find(c => c.name.toLowerCase() === descParts[0]);
+						returnValue = subCol ? subCol.value : tVal;
+					}
+					else {
+						returnValue = tVal;
+					}
+					break;
+				}
 				case 'f': {
 					if (!this.flow) { this.flow = this.flowFormula.value(); }
 					if (this.flow && MMUnitSystem.areDimensionsEqual(this.flow.unitDimensions, [0, 0, -1, 0, 0, 1, 0])) {
@@ -929,6 +1047,25 @@ class MMFlash extends MMTool {
 			}
 		}
 		return massFracs;
+	}
+
+	/**
+	 * @param {ArrayLike<number>} fracs
+	 * @returns {MMTableValue|null}
+	 */
+	createFractionTable(fracs) {
+		if (!this.componentNames || !this.componentNames.length || !fracs) {
+			return null;
+		}
+		const columns = [];
+		const nComp = this.componentNames.length;
+		for (let i = 0; i < nComp; i++) {
+			const cName = this.componentNames[i];
+			const val = i < fracs.length ? fracs[i] : 0;
+			const colVal = MMNumberValue.scalarValue(val);
+			columns.push(new MMTableValueColumn({ name: cName, value: colVal }));
+		}
+		return new MMTableValue({ columns });
 	}
 
 	/**
@@ -1140,11 +1277,11 @@ class MMFlash extends MMTool {
 	 * @param {number} P
 	 * @param {boolean} isVapor
 	 * @param {number} qValue
-	 * @returns {Record<string, MMNumberValue>}
+	 * @returns {Record<string, any>}
 	 */
 	calculatePhaseProperties(phaseData, phaseZ, T, P, isVapor, qValue) {
 		const thermoEngine = /** @type {any} */ ((typeof self !== 'undefined' ? (/** @type {any} */ (self)).thermo : null) || (typeof thermo !== 'undefined' ? thermo : null));
-		/** @type {Record<string, MMNumberValue>} */
+		/** @type {Record<string, any>} */
 		const props = {};
 		const N = /** @type {number} */ (this.nComponents);
 		const compounds = /** @type {PureCompound[]} */ (this.compounds);
@@ -1258,6 +1395,8 @@ class MMFlash extends MMTool {
 		// Mole and mass fraction arrays
 		props.x = MMNumberValue.numberArrayValue(/** @type {number[]} */ (phaseZ));
 		props.massx = MMNumberValue.numberArrayValue(this.convertMoleFracToMass(/** @type {number[]} */ (phaseZ)));
+		props.xt = this.createFractionTable(phaseZ);
+		props.massxt = this.createFractionTable(props.massx.values);
 
 		// Fugacities
 		const fugs = [];
