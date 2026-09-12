@@ -730,29 +730,41 @@ export class MMColumn extends MMTool {
 		if (isNaN(estD)) {
 			for (const spec of this.specs) {
 				const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.trim().toLowerCase() : '';
-				const mD = text.match(/^\s*\$\.(?:vf|vdraw|ldraw)\[\s*1\s*\]\s*-\s*([0-9.]+)/);
+				const mD = text.match(/^\s*\$\.(?:vf|vdraw|ldraw)\[\s*1\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?/);
 				if (mD) {
-					estD = parseFloat(mD[1]);
+					let val = parseFloat(mD[1]);
+					if (mD[2] && typeof theMMSession !== 'undefined' && theMMSession.unitSystem) {
+						const u = theMMSession.unitSystem.unitNamed(mD[2].trim());
+						if (u && typeof u.convertToBase === 'function') {
+							val = u.convertToBase(val);
+						}
+					}
+					estD = val;
 					break;
 				}
 			}
 		}
-		// Fallback: infer estD from component purity specifications (e.g. light key in bottoms)
+		// Fallback: infer estD from component purity specifications (e.g. light key in bottoms or heavy key in distillate)
 		if (isNaN(estD)) {
 			for (const spec of this.specs) {
 				const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.trim().toLowerCase() : '';
-				const m = text.match(/\$\.lx\[\s*(?:-1|\d+)\s*(?:,\s*["']?([a-zA-Z0-9_-]+)["']?)?\s*\](?:\.([a-zA-Z0-9_-]+))?\s*-\s*([0-9.]+)/);
+				const m = text.match(/\$\.lx\[\s*(-1|\d+)\s*(?:,\s*["']?([a-zA-Z0-9_-]+)["']?)?\s*\](?:\.([a-zA-Z0-9_-]+))?\s*-\s*([0-9.]+)/);
 				if (m) {
-					const compName = m[1] || m[2];
-					const target = parseFloat(m[3]);
+					const stageNum = parseInt(m[1], 10);
+					const compName = m[2] || m[3];
+					const target = parseFloat(m[4]);
 					if (target <= 0.1 && compName) {
 						const keyIdx = this.componentNames.findIndex(c => c.toLowerCase().replace(/[-_]/g, '') === compName.replace(/[-_]/g, ''));
 						if (keyIdx >= 0) {
 							const keyTc = (compounds[keyIdx] && compounds[keyIdx].tc) ? compounds[keyIdx].tc : 300.0;
 							let sumD = 0.0;
+							const isTopStage = (stageNum === 1);
 							for (let i = 0; i < nComp; i++) {
 								const tc_i = (compounds[i] && compounds[i].tc) ? compounds[i].tc : 300.0;
-								if (tc_i <= keyTc + 0.1) {
+								// For top stage (distillate), target is heavy key impurity: include only components strictly lighter
+								// For bottom stage, target is light key impurity: include this key and everything lighter
+								const shouldInclude = isTopStage ? (tc_i < keyTc - 0.1) : (tc_i <= keyTc + 0.1);
+								if (shouldInclude) {
 									sumD += combinedFeedZ[i] * totalFeedFlow;
 								}
 							}
@@ -1347,15 +1359,15 @@ export class MMColumn extends MMTool {
 			}
 		}
 
-		// 7. Stage composition: $.lx[k, "compound"] - <val> or $.vx[k, "compound"] - <val>
-		const compMatch = text.match(/^\$\.(lx|vx)\[\s*(-?\d+)\s*,\s*["']([^"']+)["']\s*\]\s*-\s*([0-9.]+)/);
+		// 7. Stage composition: $.lx[k, "compound"] - <val>, $.vx[k, "compound"] - <val>, $.lx[k].compound - <val>, or $.lx[k]["compound"] - <val>
+		const compMatch = text.match(/^\$\.(lx|vx)\[\s*(-?\d+)\s*(?:,\s*["']?([a-zA-Z0-9_\-]+)["']?\]|\]\s*(?:\.\s*([a-zA-Z0-9_\-]+)|\[\s*["']?([a-zA-Z0-9_\-]+)["']?\s*\]))\s*-\s*([0-9.]+)/);
 		if (compMatch) {
 			const phase = compMatch[1];
 			let k = parseInt(compMatch[2], 10);
 			if (k < 0) k = N + k + 1;
 			const stageIdx = k - 1;
 			if (stageIdx >= 0 && stageIdx < N) {
-				const queryName = compMatch[3].trim().toLowerCase().replace(/[\s-_]/g, '');
+				const queryName = (compMatch[3] || compMatch[4] || compMatch[5]).trim().toLowerCase().replace(/[\s-_]/g, '');
 				const compIdx = this.componentNames.findIndex((c, i) => {
 					const cClean = c.toLowerCase().replace(/[\s-_]/g, '');
 					const compObj = this.compounds ? (/** @type {PureCompound[]} */ (this.compounds))[i] : null;
@@ -1364,7 +1376,7 @@ export class MMColumn extends MMTool {
 					return cClean === queryName || fClean === queryName || nClean === queryName;
 				});
 				if (compIdx >= 0) {
-					const target = parseFloat(compMatch[4]);
+					const target = parseFloat(compMatch[6]);
 					const arr = phase === 'lx' ? this.x : this.y;
 					return arr[stageIdx * this.nComponents + compIdx] - target;
 				}
@@ -1466,13 +1478,12 @@ export class MMColumn extends MMTool {
 		for (let s = 0; s < this.specs.length; s++) {
 			const spec = this.specs[s];
 			if (spec && spec.formula) {
-				let err = NaN;
-				const sVal = spec.formula.value();
-				if (sVal instanceof MMNumberValue && Number.isFinite(sVal.values[0])) {
-					err = sVal.values[0];
-				}
-				else {
-					err = this.evaluateSpecDirectly(spec);
+				let err = this.evaluateSpecDirectly(spec);
+				if (!Number.isFinite(err)) {
+					const sVal = spec.formula.value();
+					if (sVal instanceof MMNumberValue && Number.isFinite(sVal.values[0])) {
+						err = sVal.values[0];
+					}
 				}
 
 				if (Number.isFinite(err)) {
@@ -1508,11 +1519,11 @@ export class MMColumn extends MMTool {
 		try {
 			// Cold or warm initialization
 			if (!this.isSolved || !this.broydenWarmState) {
-				this.broydenWarmState = {};
 				if (!this.initScratch()) {
 					this.isInError = true;
 					return;
 				}
+				this.broydenWarmState = {};
 			}
 
 			// Verify degrees of freedom (specifications count)
