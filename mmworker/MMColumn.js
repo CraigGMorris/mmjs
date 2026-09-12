@@ -1191,11 +1191,10 @@ export class MMColumn extends MMTool {
 				}
 			}
 
-			// Validate liquid root existence; if single root or collapsed to vapor root, reset stage T to bubble point
-			const numRootsL = eos.calculateZFactors(stageT, P, zL);
+			// Validate liquid root existence; if collapsed to vapor root, reset stage T to bubble point
+			eos.calculateZFactors(stageT, P, zL);
 			const zL_root = eos.workspace.zFactors[0];
-			const zV_root = eos.workspace.zFactors[1];
-			if (numRootsL === 1 || Math.abs(zL_root - zV_root) < 1e-4 || zL_root > 0.35) {
+			if (isNaN(zL_root) || zL_root <= 0.0 || zL_root > 0.35) {
 				try {
 					const engine = /** @type {any} */ (this.engine);
 					const bubRes = engine.flash({ type: 'PQ', P: P, Q: 0.0 }, zL);
