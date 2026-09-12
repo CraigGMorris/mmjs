@@ -1246,21 +1246,25 @@ class MMFlash extends MMTool {
 
 			const flashResult = this.engine.flash(spec, z, options);
 			if (flashResult && !flashResult.converged) {
-				this.setError('thermo:flashFailed', {
-					path: this.getPath(),
-					msg: `Calculation did not converge t=${flashResult.T-273.15}, p=${flashResult.P/1000}`
-				});
+				if (!((typeof theMMSession !== 'undefined' && theMMSession.isLoadingCase) || this.isLoadingCase)) {
+					this.setError('thermo:flashFailed', {
+						path: this.getPath(),
+						msg: `Calculation did not converge t=${flashResult.T-273.15}, p=${flashResult.P/1000}`
+					});
+				}
 				return;
 			}
 			this.flashResults = this.getFlashResults(flashResult, usingMoleFracs);
 			this.calculateFlows();
 		}
 		catch (e) {
-			const msg = (/** @type {any} */ (e)).message || '';
-			this.setError('thermo:flashFailed', {
-				path: this.getPath(),
-				msg: msg
-			});
+			if (!((typeof theMMSession !== 'undefined' && theMMSession.isLoadingCase) || this.isLoadingCase)) {
+				const msg = (/** @type {any} */ (e)).message || '';
+				this.setError('thermo:flashFailed', {
+					path: this.getPath(),
+					msg: msg
+				});
+			}
 		}
 		finally {
 			if (this.processor && this.processor.statusCallBack) {
@@ -1532,7 +1536,7 @@ class MMFlash extends MMTool {
 				for (let row = 0; row < (/** @type {string[]} */ (this.propList)).length; row++) {
 					const propName = (/** @type {string[]} */ (this.propList))[row];
 					const propValue = phase[propName];
-					if (propValue) {
+					if (propValue && propValue.valueCount > 0) {
 						const propCount = propValue.valueCount;
 						const unitName = this.displayUnits[row + 1];
 						let unit = unitName && typeof theMMSession !== 'undefined' ? theMMSession.unitSystem.unitNamed(unitName) : null;
@@ -1544,7 +1548,16 @@ class MMFlash extends MMTool {
 						}
 
 						for (let j = 1; j <= propCount; j++) {
-							strings.push(propValue.stringForRowColumnUnit(j, 1, unit, this.formatStrings[propName]));
+							let str = '';
+							try {
+								const r = (propValue.columnCount > 0) ? Math.floor((j - 1) / propValue.columnCount) + 1 : j;
+								const c = (propValue.columnCount > 0) ? ((j - 1) % propValue.columnCount) + 1 : 1;
+								str = propValue.stringForRowColumnUnit(r, c, unit, this.formatStrings[propName]);
+							}
+							catch {
+								str = '';
+							}
+							strings.push(str);
 						}
 					}
 					else {
@@ -1560,7 +1573,7 @@ class MMFlash extends MMTool {
 				for (let i = 0; i < (/** @type {string[]} */ (this.propList)).length; i++) {
 					const propName = (/** @type {string[]} */ (this.propList))[i];
 					const propValue = bulkProps[propName];
-					if (propValue) {
+					if (propValue && propValue.valueCount > 0) {
 						const propCount = propValue.valueCount;
 						const unitName = this.displayUnits[i + 1] || (propValue.defaultUnit ? propValue.defaultUnit.name : '');
 						if (propCount === 1) {
@@ -1699,11 +1712,7 @@ class MMFlash extends MMTool {
 			}
 		}
 		catch (e) {
-			const msg = (/** @type {any} */ (e)).message || '';
-			this.setError('thermo:flashFailed', {
-				path: this.getPath(),
-				msg: msg
-			});
+			return null;
 		}
 	}
 
