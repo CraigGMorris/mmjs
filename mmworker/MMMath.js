@@ -1415,7 +1415,7 @@ export const MMMath = {
 				return [true, f];
 			}
 			else if (f <= fold + alf * alam * slope) {
-				return [false, 0];   // insufficient function decrease
+				return [false, f];   // sufficient function decrease
 			}
 			else {             // back track
 				if (alam == 1.0) {

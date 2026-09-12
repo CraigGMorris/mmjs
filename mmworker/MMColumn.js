@@ -1112,7 +1112,7 @@ export class MMColumn extends MMTool {
 			const denom = this.A[j] + Math.log(sumAlphaX);
 			if (denom > 0.5 && this.B[j] > 0.0) {
 				const targetT = this.B[j] / denom;
-				this.T[j] = Math.max(100.0, Math.min(1000.0, targetT));
+				this.T[j] = Math.max(50.0, Math.min(1000.0, targetT));
 			}
 		}
 	}
