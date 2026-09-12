@@ -279,6 +279,30 @@ export class MMColumn extends MMTool {
 				if (!hasL1) {
 					this.draws.push({ stage: 1, phase: 'l', name: 'DistillateLiq', isBasis: false });
 				}
+				// If default specs are unmodified, update them for total condenser
+				for (const s of this.specs) {
+					if (s && s.formula) {
+						if (s.formula.formula.trim() === '$.vf[1] - 50 mol/s') {
+							s.formula.formula = '$.ldraw[1] - 50 mol/s';
+						}
+						else if (s.formula.formula.trim() === '$.lf[1] / $.vf[1] - 1.5') {
+							s.formula.formula = '$.lf[1] / $.ldraw[1] - 1.5';
+						}
+					}
+				}
+			}
+			else {
+				// If default specs are unmodified for total condenser, revert back for partial condenser
+				for (const s of this.specs) {
+					if (s && s.formula) {
+						if (s.formula.formula.trim() === '$.ldraw[1] - 50 mol/s') {
+							s.formula.formula = '$.vf[1] - 50 mol/s';
+						}
+						else if (s.formula.formula.trim() === '$.lf[1] / $.ldraw[1] - 1.5') {
+							s.formula.formula = '$.lf[1] / $.vf[1] - 1.5';
+						}
+					}
+				}
 			}
 			this.forgetCalculated();
 		}
@@ -1241,45 +1265,89 @@ export class MMColumn extends MMTool {
 		const text = spec.formula.formula.trim().toLowerCase();
 		const N = this.nStages;
 
-		// 1. Reflux ratio: $.lf[1] / $.vf[1] - <val>
-		const refluxMatch = text.match(/^\$\.lf\[\s*1\s*\]\s*\/\s*\$\.vf\[\s*1\s*\]\s*-\s*([0-9.]+)/);
+		const parseTargetWithUnit = (numStr, unitStr) => {
+			let val = parseFloat(numStr);
+			if (unitStr && typeof theMMSession !== 'undefined' && theMMSession.unitSystem) {
+				const u = theMMSession.unitSystem.unitNamed(unitStr.trim());
+				if (u && typeof u.convertToBase === 'function') {
+					val = u.convertToBase(val);
+				}
+			}
+			return val;
+		};
+
+		// 1. Reflux ratio: $.lf[1] / $.vf[1] - <val> or $.lf[1] / $.ldraw[1] - <val>
+		const refluxMatch = text.match(/^\$\.lf\[\s*1\s*\]\s*\/\s*\$\.(?:vf|ldraw|vdraw)\[\s*1\s*\]\s*-\s*([0-9.]+)/);
 		if (refluxMatch) {
 			const target = parseFloat(refluxMatch[1]);
-			const v1 = Math.max(1e-6, this.V[0]);
-			const l1 = this.L[0];
-			return (l1 / v1) - target;
+			const isLdraw = text.includes('.ldraw');
+			let dFlow = (this._totalCondenser || isLdraw)
+				? ((this.cachedLdraw && !isNaN(this.cachedLdraw.values[0]))
+					? this.cachedLdraw.values[0]
+					: (this.L[0] * Math.max(0.0, (this.RlTerm ? this.RlTerm[0] - 1.0 : 0.0))))
+				: Math.max(1e-6, this.V[0]);
+			dFlow = Math.max(1e-6, dFlow);
+			return (this.L[0] / dFlow) - target;
 		}
 
 		// 2. Reboiler liquid flow: $.lf[$.nstages] - <val> or $.lf[10] - <val>
-		const reboilerMatch = text.match(/^\$\.lf\[\s*(?:\$\.nstages|stagecount|\d+)\s*\]\s*-\s*([0-9.]+)/);
+		const reboilerMatch = text.match(/^\$\.lf\[\s*(?:\$\.nstages|stagecount|\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?/);
 		if (reboilerMatch) {
-			const target = parseFloat(reboilerMatch[1]);
 			if (text.includes('nstages') || text.includes('stagecount') || text.includes(`[${N}]`) || text.includes(`[ ${N} ]`)) {
+				const target = parseTargetWithUnit(reboilerMatch[1], reboilerMatch[2]);
 				return this.L[N - 1] - target;
 			}
 		}
 
 		// 3. Stage vapor flow: $.vf[k] - <val>
-		const vfMatch = text.match(/^\$\.vf\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)/);
+		const vfMatch = text.match(/^\$\.vf\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?/);
 		if (vfMatch) {
 			const k = parseInt(vfMatch[1], 10);
 			if (k >= 1 && k <= N) {
-				const target = parseFloat(vfMatch[2]);
+				const target = parseTargetWithUnit(vfMatch[2], vfMatch[3]);
 				return this.V[k - 1] - target;
 			}
 		}
 
 		// 4. Stage liquid flow: $.lf[k] - <val>
-		const lfMatch = text.match(/^\$\.lf\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)/);
+		const lfMatch = text.match(/^\$\.lf\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?/);
 		if (lfMatch) {
 			const k = parseInt(lfMatch[1], 10);
 			if (k >= 1 && k <= N) {
-				const target = parseFloat(lfMatch[2]);
+				const target = parseTargetWithUnit(lfMatch[2], lfMatch[3]);
 				return this.L[k - 1] - target;
 			}
 		}
 
-		// 5. Stage composition: $.lx[k, "compound"] - <val> or $.vx[k, "compound"] - <val>
+		// 5. Stage liquid draw: $.ldraw[k] - <val>
+		const ldrawMatch = text.match(/^\$\.ldraw\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?/);
+		if (ldrawMatch) {
+			const k = parseInt(ldrawMatch[1], 10);
+			if (k >= 1 && k <= N) {
+				const target = parseTargetWithUnit(ldrawMatch[2], ldrawMatch[3]);
+				const stg = k - 1;
+				const flow = (this.cachedLdraw && !isNaN(this.cachedLdraw.values[stg]))
+					? this.cachedLdraw.values[stg]
+					: (this.L[stg] * Math.max(0.0, (this.RlTerm ? this.RlTerm[stg] - 1.0 : 0.0)));
+				return flow - target;
+			}
+		}
+
+		// 6. Stage vapor draw: $.vdraw[k] - <val>
+		const vdrawMatch = text.match(/^\$\.vdraw\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?/);
+		if (vdrawMatch) {
+			const k = parseInt(vdrawMatch[1], 10);
+			if (k >= 1 && k <= N) {
+				const target = parseTargetWithUnit(vdrawMatch[2], vdrawMatch[3]);
+				const stg = k - 1;
+				const flow = (this.cachedVdraw && !isNaN(this.cachedVdraw.values[stg]))
+					? this.cachedVdraw.values[stg]
+					: (this.V[stg] * Math.max(0.0, (this.RvTerm ? this.RvTerm[stg] - 1.0 : 0.0)));
+				return flow - target;
+			}
+		}
+
+		// 7. Stage composition: $.lx[k, "compound"] - <val> or $.vx[k, "compound"] - <val>
 		const compMatch = text.match(/^\$\.(lx|vx)\[\s*(-?\d+)\s*,\s*["']([^"']+)["']\s*\]\s*-\s*([0-9.]+)/);
 		if (compMatch) {
 			const phase = compMatch[1];
@@ -1400,14 +1468,14 @@ export class MMColumn extends MMTool {
 			if (spec && spec.formula) {
 				let err = NaN;
 				const sVal = spec.formula.value();
-				if (sVal instanceof MMNumberValue && !isNaN(sVal.values[0])) {
+				if (sVal instanceof MMNumberValue && Number.isFinite(sVal.values[0])) {
 					err = sVal.values[0];
 				}
 				else {
 					err = this.evaluateSpecDirectly(spec);
 				}
 
-				if (!isNaN(err)) {
+				if (Number.isFinite(err)) {
 					fx[eqIdx++] = err / (spec.scale || 1.0);
 				}
 				else {
@@ -2127,6 +2195,8 @@ export class MMColumn extends MMTool {
 		this.cachedQ = null;
 		this.cachedHl = null;
 		this.cachedHv = null;
+		this.cachedLdraw = null;
+		this.cachedVdraw = null;
 		this.isInError = false;
 		this.lastErrorKey = null;
 		this.lastErrorArgs = null;
