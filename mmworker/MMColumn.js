@@ -407,7 +407,9 @@ export class MMColumn extends MMTool {
 	 * @param {import('./MMCommandProcessor.js').MMCommandMessage} [child]
 	 */
 	setError(key, args, child) {
-		super.setError(key, args, child);
+		if (!((typeof theMMSession !== 'undefined' && theMMSession.isLoadingCase) || this.isLoadingCase)) {
+			super.setError(key, args, child);
+		}
 		if (!this.lastErrorKey || (this.lastErrorKey === 'mmcmd:mathJacobianSingular' && key !== 'mmcmd:mathJacobianSingular')) {
 			this.lastErrorKey = key;
 			this.lastErrorArgs = args || null;
@@ -1518,12 +1520,11 @@ export class MMColumn extends MMTool {
 
 		try {
 			// Cold or warm initialization
-			if (!this.isSolved || !this.broydenWarmState) {
+			if (!this.isSolved) {
 				if (!this.initScratch()) {
 					this.isInError = true;
 					return;
 				}
-				this.broydenWarmState = {};
 			}
 
 			// Verify degrees of freedom (specifications count)
@@ -1581,8 +1582,7 @@ export class MMColumn extends MMTool {
 						fTolerance: 1e-4,
 						dxTolerance: 1e-8,
 						eps: 1e-10,
-						maxStepLength: 0.5,
-						warmState: this.broydenWarmState || undefined
+						maxStepLength: 0.5
 					}
 				);
 
