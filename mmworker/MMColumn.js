@@ -65,6 +65,7 @@ import { calculateIdealGasEnthalpy } from './thermo/flash/properties.js';
  * @property {boolean} isBasis - true if primary basis draw (e.g. overhead or bottoms)
  * @property {number} [flow] - solved flow rate in mol/s
  * @property {MMFormula} [flowEst] - optional flow estimate formula
+ * @property {number} [ratio] - draw ratio
  */
 
 /**
@@ -1803,6 +1804,7 @@ export class MMColumn extends MMTool {
 		verbs['addspec'] = this.addSpecCommand;
 		verbs['removespec'] = this.removeSpecCommand;
 		verbs['restorespec'] = this.restoreSpecCommand;
+		verbs['setspecscale'] = this.setSpecScaleCommand;
 		verbs['setstages'] = this.setStagesCommand;
 		verbs['setdrawstage'] = this.setDrawStageCommand;
 		verbs['setfeedstage'] = this.setFeedStageCommand;
@@ -2170,6 +2172,34 @@ export class MMColumn extends MMTool {
 		}
 		catch (e) {
 			this.setError('mmcmd:specRestoreError', { path: this.getPath() });
+		}
+	}
+
+	/**
+	 * @method setSpecScaleCommand
+	 * @param {MMCommand} command
+	 */
+	setSpecScaleCommand(command) {
+		const cmd = /** @type {any} */ (command);
+		const parts = String(cmd.args || '').trim().split(/\s+/);
+		if (parts.length < 2) return;
+		let spec = null;
+		const idx = parseInt(parts[0]);
+		if (!isNaN(idx) && idx >= 1 && idx <= this.specs.length) {
+			spec = this.specs[idx - 1];
+		}
+		else {
+			spec = this.specs.find(s => s.name.toLowerCase() === parts[0].toLowerCase());
+		}
+		if (spec) {
+			const prevScale = spec.scale;
+			const newScale = parseFloat(parts[1]);
+			if (!isNaN(newScale) && isFinite(newScale) && newScale > 0) {
+				spec.scale = newScale;
+				this.forgetCalculated();
+				cmd.results = newScale;
+				cmd.undo = `${this.getPath()} setspecscale ${parts[0]} ${prevScale}`;
+			}
 		}
 	}
 

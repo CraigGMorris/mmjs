@@ -23,6 +23,7 @@
 	"flashMoleFracPropLabel": "Mole Fracs",
 	"flashMassFracPropLabel": "Mass Fracs",
 	"columnThermoLabel": "Thermo",
+	"columnSetupLabel": "Setup",
 	"columnStagesLabel": "Stages",
 	"columnPTopLabel": "Top P",
 	"columnPBottomLabel": "Bottom P",

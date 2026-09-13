@@ -26,6 +26,7 @@ import { UnitPicker } from './UnitsView.js';
 const e = React.createElement;
 const useState = React.useState;
 const useEffect = React.useEffect;
+const useRef = React.useRef;
 
 /*
 	Enum for column display modes.
@@ -46,7 +47,12 @@ const ColumnDisplay = Object.freeze({
 export function ColumnView(props) {
 
 	const [display, setDisplay] = useState(/** @type {number} */ (ColumnDisplay.main));
-	const [activeTab, setActiveTab] = useState('profiles'); // 'profiles' | 'setup' | 'feedsDraws' | 'specs'
+	const updateResults = props.viewInfo.updateResults;
+	const initialRes = (updateResults && updateResults.length) ? updateResults[0].results : null;
+	const [activeTab, setActiveTab] = useState(() => {
+		return (initialRes && (!initialRes.thermoFormula || !initialRes.thermoFormula.trim())) ? 'setup' : 'profiles';
+	});
+	const initialTabSetRef = useRef(Boolean(initialRes));
 	const [formulaName, setFormulaName] = useState('');
 	const [editOptions, setEditOptions] = useState({});
 	const [selectedCell, setSelectedCell] = useState([0, 0]);
@@ -68,8 +74,17 @@ export function ColumnView(props) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	useEffect(() => {
+		if (!initialTabSetRef.current && updateResults && updateResults.length) {
+			initialTabSetRef.current = true;
+			const res = updateResults[0].results;
+			if (res && (!res.thermoFormula || !res.thermoFormula.trim())) {
+				setActiveTab('setup');
+			}
+		}
+	}, [updateResults]);
+
 	const t = props.t;
-	const updateResults = props.viewInfo.updateResults;
 	if (updateResults.error) {
 		props.actions.doCommand('', () => {
 			props.actions.popView();
@@ -176,7 +191,7 @@ export function ColumnView(props) {
 	// Tab header buttons
 	const tabs = [
 		{ id: 'profiles', label: t('thermo:columnProfilesLabel') || 'Profiles' },
-		{ id: 'setup', label: t('thermo:columnStagesLabel') || 'Setup' },
+		{ id: 'setup', label: t('thermo:columnSetupLabel') || 'Setup' },
 		{ id: 'feedsDraws', label: `${t('thermo:columnFeedsLabel') || 'Feeds'}/${t('thermo:columnDrawsLabel') || 'Draws'}` },
 		{ id: 'specs', label: t('thermo:columnSpecsLabel') || 'Specs' }
 	];
@@ -210,7 +225,10 @@ export function ColumnView(props) {
 					borderLeft: 'none',
 					borderRight: 'none'
 				},
-				onClick: () => setActiveTab(tab.id)
+				onClick: () => {
+					initialTabSetRef.current = true;
+					setActiveTab(tab.id);
+				}
 			},
 			tab.label
 		))
@@ -766,7 +784,7 @@ export function ColumnView(props) {
 				key: s.name,
 				style: {
 					display: 'grid',
-					gridTemplateColumns: '70px 1fr 50px 30px',
+					gridTemplateColumns: '70px 1fr 62px 24px',
 					alignItems: 'center',
 					gap: '4px',
 					marginBottom: '6px'
@@ -788,7 +806,28 @@ export function ColumnView(props) {
 				},
 				applyChanges: applyChanges(s.name)
 			}),
-			e('span', { style: { fontSize: '8pt', color: 'var(--subtext--color)' } }, `/${s.scale}`),
+			e('div', { style: { display: 'flex', alignItems: 'center', gap: '2px' } },
+				e('span', { style: { fontSize: '10pt', color: 'var(--subtext--color)' } }, '/'),
+				e('input', {
+					type: 'number',
+					defaultValue: s.scale,
+					key: `${s.name}_scale_${s.scale}`,
+					style: { width: '48px', height: '22px', fontSize: '10pt', textAlign: 'center' },
+					onBlur: (ev) => {
+						const val = parseFloat(ev.target.value);
+						if (!isNaN(val) && val > 0 && val !== s.scale) {
+							props.actions.doCommand(`${results.path} setspecscale ${s.index} ${val}`, () => {
+								props.actions.updateView(props.viewInfo.stackIndex);
+							});
+						}
+					},
+					onKeyDown: (ev) => {
+						if (ev.key === 'Enter') {
+							ev.target.blur();
+						}
+					}
+				})
+			),
 			(results.specs.length > (results.requiredSpecs !== undefined ? results.requiredSpecs : 1)) ? e('button', {
 				style: { color: 'red', cursor: 'pointer', border: 'none', background: 'transparent' },
 				onClick: () => {
