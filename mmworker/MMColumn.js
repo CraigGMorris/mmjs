@@ -1000,6 +1000,7 @@ export class MMColumn extends MMTool {
 			const j = draw.stage - 1;
 			if (!draw.isBasis) {
 				const rRatio = Math.exp(Math.max(-25.0, Math.min(25.0, logS[varIdx++])));
+				draw.ratio = rRatio;
 				if (draw.phase === 'v') RvTerm[j] += rRatio;
 				else RlTerm[j] += rRatio;
 			}
@@ -1029,7 +1030,7 @@ export class MMColumn extends MMTool {
 					else {
 						const jPrev = j - 1;
 						const alphaSprevInv = 1.0 / Math.max(1e-12, this.alpha[jPrev * nComp + i] * S[jPrev]);
-						a[m] = -RlTerm[jPrev] * alphaSprevInv;
+						a[m] = -alphaSprevInv;
 						b[m] = RvTerm[j] + RlTerm[j] * alphaSjInv;
 						c[m] = (m < M - 1) ? -1.0 : 0.0;
 						d[m] = this.f[j * nComp + i];
@@ -1081,7 +1082,7 @@ export class MMColumn extends MMTool {
 
 					b[j] = RvTerm[j] + RlTerm[j] * alphaSjInv;
 					c[j] = (j < N - 1) ? -1.0 : 0.0;
-					a[j] = (j > 0) ? -(RlTerm[j - 1] / Math.max(1e-12, this.alpha[(j - 1) * nComp + i] * S[j - 1])) : 0.0;
+					a[j] = (j > 0) ? -(1.0 / Math.max(1e-12, this.alpha[(j - 1) * nComp + i] * S[j - 1])) : 0.0;
 					d[j] = this.f[j * nComp + i];
 				}
 
@@ -1430,13 +1431,13 @@ export class MMColumn extends MMTool {
 		for (const draw of this.draws) {
 			const stg = draw.stage - 1;
 			if (draw.phase === 'v') {
-				const flow = draw.isBasis ? this.V[stg] : (this.V[stg] * Math.max(0.0, (this.RvTerm ? this.RvTerm[stg] - 1.0 : 0.0)));
+				const flow = draw.isBasis ? this.V[stg] : (this.V[stg] * (draw.ratio !== undefined ? draw.ratio : Math.max(0.0, (this.RvTerm ? this.RvTerm[stg] - 1.0 : 0.0))));
 				vdraws[stg] += flow;
 				draw.flow = flow;
 				if (!draw.isBasis) sideVDraws[stg] += flow;
 			}
 			else {
-				const flow = draw.isBasis ? this.L[stg] : (this.L[stg] * Math.max(0.0, (this.RlTerm ? this.RlTerm[stg] - 1.0 : 0.0)));
+				const flow = draw.isBasis ? this.L[stg] : (this.L[stg] * (draw.ratio !== undefined ? draw.ratio : Math.max(0.0, (this.RlTerm ? this.RlTerm[stg] - 1.0 : 0.0))));
 				ldraws[stg] += flow;
 				draw.flow = flow;
 				if (!draw.isBasis) sideLDraws[stg] += flow;
@@ -2230,6 +2231,10 @@ export class MMColumn extends MMTool {
 		this.cachedHv = null;
 		this.cachedLdraw = null;
 		this.cachedVdraw = null;
+		for (const d of this.draws) {
+			delete d.flow;
+			delete d.ratio;
+		}
 		this.isInError = false;
 		this.lastErrorKey = null;
 		this.lastErrorArgs = null;
