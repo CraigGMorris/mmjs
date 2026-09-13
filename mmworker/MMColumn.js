@@ -252,11 +252,11 @@ export class MMColumn extends MMTool {
 		// Set default specs: 2 specs
 		const spec1 = new MMFormula('spec1', this);
 		spec1.nameSpace = /** @type {any} */ ((parentModel && parentModel.typeName === 'Model') ? parentModel : theMMSession.currentModel);
-		spec1.formula = '$.vf[1] - 50 mol/s';
+		spec1.formula = "$.vf[1] - 100 kmol/h 'Vapour Draw";
 		const spec2 = new MMFormula('spec2', this);
 		spec2.nameSpace = /** @type {any} */ ((parentModel && parentModel.typeName === 'Model') ? parentModel : theMMSession.currentModel);
-		spec2.formula = '$.lf[1] / $.vf[1] - 1.5';
-		this.specs.push({ name: 'Spec1', formula: spec1, scale: 50 });
+		spec2.formula = "$.lf[1] / $.vf[1] - 1.5 'Reflux Ratio";
+		this.specs.push({ name: 'Spec1', formula: spec1, scale: 28 });
 		this.specs.push({ name: 'Spec2', formula: spec2, scale: 1.0 });
 
 
@@ -283,11 +283,12 @@ export class MMColumn extends MMTool {
 				// If default specs are unmodified, update them for total condenser
 				for (const s of this.specs) {
 					if (s && s.formula) {
-						if (s.formula.formula.trim() === '$.vf[1] - 50 mol/s') {
-							s.formula.formula = '$.ldraw[1] - 50 mol/s';
+						const fTrim = s.formula.formula.trim();
+						if (fTrim === "$.vf[1] - 100 kmol/h 'Vapour Draw" || fTrim === '$.vf[1] - 50 mol/s') {
+							s.formula.formula = "$.ldraw[1] - 100 kmol/h 'Liquid Draw";
 						}
-						else if (s.formula.formula.trim() === '$.lf[1] / $.vf[1] - 1.5') {
-							s.formula.formula = '$.lf[1] / $.ldraw[1] - 1.5';
+						else if (fTrim === "$.lf[1] / $.vf[1] - 1.5 'Reflux Ratio" || fTrim === '$.lf[1] / $.vf[1] - 1.5') {
+							s.formula.formula = "$.lf[1] / $.ldraw[1] - 1.5 'Reflux Ratio";
 						}
 					}
 				}
@@ -296,11 +297,12 @@ export class MMColumn extends MMTool {
 				// If default specs are unmodified for total condenser, revert back for partial condenser
 				for (const s of this.specs) {
 					if (s && s.formula) {
-						if (s.formula.formula.trim() === '$.ldraw[1] - 50 mol/s') {
-							s.formula.formula = '$.vf[1] - 50 mol/s';
+						const fTrim = s.formula.formula.trim();
+						if (fTrim === "$.ldraw[1] - 100 kmol/h 'Liquid Draw" || fTrim === '$.ldraw[1] - 50 mol/s') {
+							s.formula.formula = "$.vf[1] - 100 kmol/h 'Vapour Draw";
 						}
-						else if (s.formula.formula.trim() === '$.lf[1] / $.ldraw[1] - 1.5') {
-							s.formula.formula = '$.lf[1] / $.vf[1] - 1.5';
+						else if (fTrim === "$.lf[1] / $.ldraw[1] - 1.5 'Reflux Ratio" || fTrim === '$.lf[1] / $.ldraw[1] - 1.5') {
+							s.formula.formula = "$.lf[1] / $.vf[1] - 1.5 'Reflux Ratio";
 						}
 					}
 				}
