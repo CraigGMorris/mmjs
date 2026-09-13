@@ -364,13 +364,18 @@ export class MMColumn extends MMTool {
 	}
 
 	/**
-	 * @method forgetStep
-	 * Invalidates only requestors downstream of this tool without global cascade
+	 * @override
+	 * @method forgetCalculated
 	 */
-	forgetStep() {
+	forgetCalculated() {
 		if (!this.forgetRecursionBlockIsOn) {
 			try {
 				this.forgetRecursionBlockIsOn = true;
+				this.isSolved = false;
+				this.isInError = false;
+				this.broydenWarmState = null;
+				this.lastErrorKey = null;
+				this.lastErrorArgs = null;
 				for (const requestor of this.valueRequestors) {
 					if (requestor !== this) {
 						requestor.forgetCalculated();
@@ -378,27 +383,11 @@ export class MMColumn extends MMTool {
 				}
 				this.valueRequestors.clear();
 				super.forgetCalculated();
-
-
 			}
 			finally {
 				this.forgetRecursionBlockIsOn = false;
 			}
-
 		}
-	}
-
-	/**
-	 * @override
-	 * @method forgetCalculated
-	 */
-	forgetCalculated() {
-		this.isSolved = false;
-		this.isInError = false;
-		this.broydenWarmState = null;
-		this.lastErrorKey = null;
-		this.lastErrorArgs = null;
-		this.forgetStep();
 	}
 
 	/**
@@ -1215,9 +1204,30 @@ export class MMColumn extends MMTool {
 					// retain best effort
 				}
 			}
+
+			// Validate vapor root existence; if collapsed to liquid root, reset stage T to dew point
+			if (!(j === 0 && this._totalCondenser)) {
+				eos.calculateZFactors(stageT, P, zV);
+				const zV_root = eos.workspace.zFactors[1];
+				if (isNaN(zV_root) || zV_root < 0.35) {
+					try {
+						const engine = /** @type {any} */ (this.engine);
+						const dewRes = engine.flash({ type: 'PQ', P: P, Q: 1.0 }, zV);
+						if (dewRes && dewRes.converged && dewRes.T > 50.0 && dewRes.T < 1000.0) {
+							stageT = Math.max(stageT, dewRes.T);
+							this.T[j] = stageT;
+							eos.calculateZFactors(stageT, P, zL);
+						}
+					}
+					catch (e) {
+						// retain best effort
+					}
+				}
+			}
 			const T = stageT;
 
 			// Rigorous Liquid
+			eos.calculateZFactors(T, P, zL);
 			const Z_L = eos.workspace.zFactors[0];
 			eos.calculateFugacityCoefficients(T, P, zL, Z_L, lnPhiL);
 			const depL = eos.calculateDepartures(T, P, zL, Z_L);
@@ -1470,10 +1480,7 @@ export class MMColumn extends MMTool {
 		}
 		(/** @type {MMNumberValue} */ (this.cachedQ)).values.set(this.Q);
 
-		// 3. Invalidate downstream requestors so formulas evaluate current column values
-		this.forgetStep();
-
-		// 4. Populate inner error vector fx
+		// 3. Populate inner error vector fx
 		let eqIdx = 0;
 
 		// Stages enforcing adiabatic heat balance
@@ -1615,7 +1622,12 @@ export class MMColumn extends MMTool {
 				const dummyFx = new Float64Array(this.logSFactors.length);
 				this.innerErrors(dummyFx);
 				this.isSolved = true;
-				this.forgetStep();
+				for (const requestor of this.valueRequestors) {
+					if (requestor !== this) {
+						requestor.forgetCalculated();
+					}
+				}
+				this.valueRequestors.clear();
 			}
 			else {
 				this.isSolved = false;
@@ -1677,6 +1689,10 @@ export class MMColumn extends MMTool {
 		// Auto-trigger solve on query if not solved
 		if (!this.isSolved && !this.isSolving) {
 			this.solve();
+		}
+
+		if (!this.isSolved && requestor !== this) {
+			return null;
 		}
 
 		this.addRequestor(requestor);
