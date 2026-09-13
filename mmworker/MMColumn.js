@@ -394,6 +394,7 @@ export class MMColumn extends MMTool {
 	 */
 	forgetCalculated() {
 		this.isSolved = false;
+		this.isInError = false;
 		this.broydenWarmState = null;
 		this.lastErrorKey = null;
 		this.lastErrorArgs = null;
@@ -581,9 +582,16 @@ export class MMColumn extends MMTool {
 			this.P[j] = pTop + (pBot - pTop) * (j / Math.max(1, N - 1));
 		}
 
-		// 2. Clear Feed Loading Arrays
+		// 2. Clear Feed Loading and Property Arrays
 		this.f.fill(0.0);
 		this.fQ.fill(0.0);
+		this.A.fill(0.0);
+		this.B.fill(0.0);
+		this.Q.fill(0.0);
+		this.hl.fill(0.0);
+		this.hv.fill(0.0);
+		this.Cpl.fill(0.0);
+		this.Cpv.fill(0.0);
 		let totalFeedFlow = 0.0;
 		const combinedFeedZ = new Float64Array(nComp);
 
@@ -973,9 +981,8 @@ export class MMColumn extends MMTool {
 			}
 		}
 
-		// 9. Reconcile Mass Balance and Invert Temperatures
+		// 9. Reconcile Mass Balance
 		this.solveFlowMatrix(this.logSFactors);
-		this.calculateTemperatures();
 
 		return true;
 	}
