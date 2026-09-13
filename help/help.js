@@ -89,6 +89,7 @@ function rtSetupHeading(title, sections) {
 	<div class="contentlink subsection"><a href="ode.html">Ordinary Differential Equations</a></div>
 	<div class="contentlink subsection"><a href="optimizer.html">Optimizer</a></div>
 	<div class="contentlink subsection"><a href="flash.html">Flash</a></div>
+	<div class="contentlink subsection"><a href="column.html">Column</a></div>
 	<div class="contentlink subsection"><a href="importedmodel.html">Imported Model</a></div>
 	<div>&nbsp;</div>
 	<div class="contentlink subsection"><a href="graph.html">Graph</a></div>

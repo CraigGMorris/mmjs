@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="initial-scale=1.0">
+		<link rel="stylesheet" href="help.css" type="text/css">
+		<script type="text/javascript" src="help.js"></script>
+		<script type="text/javascript">
+			window.onload = () => {
+				rtSetupHeading('Column', {
+					overview: 'Overview',
+					info: 'Information View',
+					setup: 'Setup Tab',
+					feedsdraws: 'Feeds & Draws Tab',
+					specs: 'Specifications Tab',
+					profiles: 'Profiles Tab',
+					parameters: 'Formula Parameters'
+				});
+			};			
+		</script>	
+		<title>Column</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="heading"></div>
+			<div id="menubody"></div>
+			<div id="overview" class="section">
+				<h3>Overview</h3>
+				<p>
+					The Column tool performs rigorous multi-stage distillation and fractionation calculations.
+					Like the <a href="flash.html">Flash</a> tool, it uses a bespoke JavaScript implementation
+					of the Peng-Robinson (1978) equation of state coupled with thermodynamic data from
+					<a href="http://www.chemsep.org">ChemSep</a> and <a href="https://dwsim.org">DWSIM</a>.
+				</p>
+				<p>
+					The tool models multi-component columns (such as depropanizers, debutanizers, strippers,
+					and absorbers) with arbitrary feeds, vapour and liquid sidestreams using the Russell inside-out algorithm.
+					Formula based specifications allow a lot of flexibility without a complicated interface.
+				</p>
+				<p>
+					Stages are numbered 1 to N from top to bottom: <b>Stage 1</b> is the top stage (condenser if present)
+					and <b>Stage N</b> is the bottom stage (reboiler if present).
+				</p>
+			</div>
+			<div id="info" class="section">
+				<h3>Information View</h3>
+				<p>
+					The <a href="infoview.html">information view</a> for the Column tool consists of an action bar
+					at the top and four selectable tabs:
+				</p>
+				<ul>
+					<li><b>Profiles</b> - A stage-by-stage table of temperatures, pressures, flows, heat duties, feeds, and draws.</li>
+					<li><b>Setup</b> - Thermodynamic definition, stage count, top/bottom pressures, temperature estimates, and equipment options.</li>
+					<li><b>Feeds/Draws</b> - Feed stream definitions and product draw configurations.</li>
+					<li><b>Specifications</b> - Operating specifications and error formulations driving column convergence.</li>
+				</ul>
+				<p>
+					The action bar contains:
+				</p>
+				<ul>
+					<li>
+						<b>Status Indicator</b> - Displays <b>● Solved</b> in green when the column has successfully converged,
+						<b>○ Not Solved</b> in gray when inputs have changed and need calculation, or <b>● Error</b> in red
+						with diagnostic failure details if calculation failed.
+					</li>
+					<li>
+						<b>Solve Button</b> - Solves the column. Note that the column will also automatically solve on demand
+						whenever an external formula references any of its parameters.
+					</li>
+					<li>
+						<b>Reset Button</b> - Clears calculated profiles and resets the numerical solver state.
+					</li>
+				</ul>
+			</div>
+			<div id="setup" class="section">
+				<h3>Setup Tab</h3>
+				<p>
+					The Setup tab defines the overall column configuration:
+				</p>
+				<ul>
+					<li>
+						<b>Thermo</b> - A formula resolving to a string that defines the fluid system (components and optional package - case insensitive),
+						matching the format used by the <a href="flash.html#thermo">Flash</a> tool. For example:
+						<p class="formula">'Propane, Butane, Isobutane; dmolar'</p>
+					</li>
+					<li>
+						<b>Stages</b> - A formula resolving to the number of theoretical equilibrium stages (integer &ge; 2, default 10).
+					</li>
+					<li>
+						<b>Top P</b> - A formula for the operating pressure at stage 1 (e.g. <span class="formula">101.325 kPa</span> or <span class="formula">1.5 bar</span>).
+					</li>
+					<li>
+						<b>Bottom P</b> - A formula for the operating pressure at stage N (e.g. <span class="formula">105 kPa</span>).
+						The column establishes a linear pressure profile across intermediate stages between top and bottom.
+					</li>
+					<li>
+						<b>Top T Est</b> - (Optional) A formula providing an initial temperature estimate for the top stage (e.g. <span class="formula">45 degC</span>).
+					</li>
+					<li>
+						<b>Bottom T Est</b> - (Optional) A formula providing an initial temperature estimate for the bottom stage (e.g. <span class="formula">95 degC</span>).
+					</li>
+					<li>
+						<b>Total Condenser</b> - Checkbox toggle:
+						<ul>
+							<li><b>Unchecked (Partial Condenser)</b>: Distillate product is drawn as vapour from stage 1 (<span class="formula">vf[1]</span>).</li>
+							<li><b>Checked (Total Condenser)</b>: All overhead vapour is condensed to liquid on stage 1; vapour traffic from stage 1 is zero, and distillate is drawn as a liquid stream (<span class="formula">ldraw[1]</span>).</li>
+						</ul>
+					</li>
+					<li>
+						<b>Reboiler</b> - Checkbox toggle (checked by default). When checked, stage N functions as a partial reboiler generating stripping vapour.
+						When unchecked, the column operates without a reboiler (as in an absorber or stripper column).
+					</li>
+				</ul>
+			</div>
+			<div id="feedsdraws" class="section">
+				<h3>Feeds &amp; Draws Tab</h3>
+				<div class="subsection">
+					<h3>Feeds</h3>
+					<p>
+						Multiple feed streams can enter the column at any stage. Each feed specifies:
+					</p>
+					<ul>
+						<li><b>Stage</b> - The stage number (1 to N) where the feed enters.</li>
+						<li><b>Feed Formula</b> - A formula referencing a <a href="flash.html">Flash</a> tool or model that provides molar flow (<span class="formula">f</span>), temperature (<span class="formula">t</span>), pressure (<span class="formula">p</span>), enthalpy (<span class="formula">h</span>), and mole fractions (<span class="formula">x</span>).</li>
+					</ul>
+					<p>
+						When solving, each feed stream is automatically pre-flashed at the feed stage pressure via an isenthalpic (P-H) flash to determine its vapour/liquid split and thermal condition entering the column.
+					</p>
+					<p>
+						To add a feed, enter the stage number and formula in the entry row and tap <b>+ Feed</b>.
+						Existing feeds can be deleted by tapping the red <b>✕</b> button. The feed stage number and formula can be edited directly.
+					</p>
+				</div>
+				<div class="subsection">
+					<h3>Draws</h3>
+					<p>
+						Draws represent product streams leaving the column. By default, every column starts with two basis draws marked <b>(B)</b>:
+					</p>
+					<ul>
+						<li><b>Overhead</b> - Distillate stream from stage 1 (vapour for partial condenser, liquid for total condenser).</li>
+						<li><b>Bottoms</b> - Liquid bottoms stream from stage N.</li>
+					</ul>
+					<p>
+						Additional side draws (liquid or vapour) can be added to any stage:
+					</p>
+					<ul>
+						<li><b>Stage</b> - Stage number (1 to N).</li>
+						<li><b>Phase</b> - Liquid (<b>Liq</b>) or Vapour (<b>Vap</b>).</li>
+						<li><b>Name</b> - Name for the draw stream.</li>
+						<li><b>Flow Est</b> - (Optional) An initial estimated flow rate formula to help the numerical solver initialize column traffic.</li>
+					</ul>
+					<p>
+						Tap <b>+ Draw</b> to add a sidestream. Sidestreams can be removed by tapping the red <b>✕</b> button.
+					</p>
+				</div>
+			</div>
+			<div id="specs" class="section">
+				<h3>Specifications Tab</h3>
+				<p>
+					Distillation columns require operating specifications (degrees of freedom) to define a unique operating point.
+					For a standard column with a condenser, reboiler, and two product streams, <b>2 specifications</b> are required.
+					The header indicates how many specifications are required based on your column configuration.
+				</p>
+				<p>
+					Each specification consists of:
+				</p>
+				<ul>
+					<li><b>Name</b> - An identifier for the specification.</li>
+					<li><b>Formula</b> - An error formula that the solver drives to <b>zero</b>. Within the formula, <b>$</b> refers to the column itself.</li>
+					<li><b>Scale</b> - A divisor to scale the error magnitude to approximately order 1 for numerical conditioning (e.g. 28 for a 100 kmol/h flow, 1.0 for mole fractions or reflux ratios, or 1e6 for heat duty in Watts).</li>
+				</ul>
+				<p>
+					Common specification examples:
+				</p>
+				<ul>
+					<li>
+						<b>Distillate Vapour Rate (partial condenser)</b>:
+						<p class="formula">$.vf[1] - 100 kmol/h 'Vapour Draw</p>
+					</li>
+					<li>
+						<b>Distillate Liquid Rate (total condenser)</b>:
+						<p class="formula">$.ldraw[1] - 100 kmol/h 'Liquid Draw</p>
+					</li>
+					<li>
+						<b>Reflux Ratio (L/D)</b>:
+						<p class="formula">$.lf[1] / $.vf[1] - 1.5 'Reflux Ratio</p>
+						(or <span class="formula">$.lf[1] / $.ldraw[1] - 1.5 'Reflux Ratio</span> for total condenser)
+					</li>
+					<li>
+						<b>Bottoms Flow Rate</b>:
+						<p class="formula">$.ldraw[-1] - 100 kmol/h 'Bottoms Draw</p>
+					</li>
+					<li>
+						<b>Reboiler Duty</b>:
+						<p class="formula">$.q[-1] - 1.8 MW</p>
+					</li>
+					<li>
+						<b>Condenser Duty</b>:
+						<p class="formula">$.q[1] - -1.5 MW</p>
+						<p>
+							Note that a condenser is always assumed. For absorbers or reboiler absorbers, specify its duty to be zero.
+						</p>
+						<p class="formula">$.q[1]</p>
+					</li>
+					<li>
+						<b>Product Purity (Mole Fraction)</b>:
+						<p class="formula">$.lx[1, 'Propane'] - 0.98</p>
+					</li>
+					<li>
+						<b>Stage Temperature</b>:
+						<p class="formula">$.t[5] - 340 K</p>
+					</li>
+				</ul>
+				<p>
+					To add a specification, enter its name, formula, and scale, and tap <b>+ Spec</b>.
+					The scale factor can also be edited directly in the specification row.
+					When more specifications are present than required, unneeded specifications can be deleted with the red <b>✕</b> button.
+				</p>
+			</div>
+			<div id="profiles" class="section">
+				<h3>Profiles Tab</h3>
+				<p>
+					The Profiles tab displays the converged stage-by-stage results in a table from stage 1 to stage N:
+				</p>
+				<ul>
+					<li><b>T</b> - Temperature on each stage.</li>
+					<li><b>P</b> - Pressure on each stage.</li>
+					<li><b>V</b> - Vapour flow rate leaving the stage upward.</li>
+					<li><b>L</b> - Liquid flow rate leaving the stage downward.</li>
+					<li><b>Q</b> - Net heat duty on the stage (negative for condenser cooling, positive for reboiler heating).</li>
+					<li><b>Feeds</b> - Total molar feed flow entering each stage.</li>
+					<li><b>Draws</b> - Product draw flow rates on each stage, prefixed by phase (<b>V</b> or <b>L</b>).</li>
+				</ul>
+				<p>
+					Tapping on any column cell will create a link above the table containing the current conversion unit.
+					Clicking on this link opens the <a href="formulaeditor.html#ubrowser">Unit Picker</a> to customize the display unit for that column.
+				</p>
+			</div>
+			<div id="parameters" class="section">
+				<h3>Formula Parameters</h3>
+				<p class="reminder">Parameters that can be accessed in the form a.b where a is the column tool and b is the parameter</p>
+				<p>
+					The following parameters can be referenced in formulas throughout your model:
+				</p>
+				<ul>
+					<li><b>solved</b> - Returns 1 if the column solved successfully, otherwise empty.</li>
+					<li><b>thermo</b> - The thermodynamic definition string.</li>
+					<li><b>nstages</b> (or <b>stagecount</b>) - The number of stages as a scalar.</li>
+					<li><b>t</b> - Stage temperatures as a column array (N &times; 1).</li>
+					<li><b>p</b> - Stage pressures as a column array (N &times; 1).</li>
+					<li><b>vf</b> - Stage vapour flow rates as a column array (N &times; 1).</li>
+					<li><b>lf</b> - Stage liquid flow rates as a column array (N &times; 1).</li>
+					<li><b>q</b> - Stage heat duties as a column array (N &times; 1).</li>
+					<li><b>vdraw</b> - Stage vapour draw rates as a column array (N &times; 1).</li>
+					<li><b>ldraw</b> - Stage liquid draw rates as a column array (N &times; 1).</li>
+					<li><b>hl</b> (or <b>lh</b>) - Stage liquid molar enthalpies as a column array (N &times; 1).</li>
+					<li><b>hv</b> (or <b>vh</b>) - Stage vapour molar enthalpies as a column array (N &times; 1).</li>
+					<li><b>vx</b> - Stage vapour mole fractions. Returns a table of all components across stages, with the column
+						headers being the compound name.
+						<p>
+							Thus <span class="formula">col.lx.propane</span> would return an N &times; 1 column array
+						for that propane and <span class="formula">col.vx.propane[1]</span> would return the mole fraction of propane in the
+						top stage vapour. However if the compound name has a hyphen, it must be references with the index operator and
+						enclosed in quotes e.g.
+						<span class="formula">col.vx[1, "n-Decane"]</span> 
+						</p>
+					</li>
+					<li><b>lx</b> - Stage liquid mole fractions. Returns a table of all components across stages in the same manner as the stage vapour mole fractions.
+						For example <span class="formula">col.lx.propane[-1]</span> or <span class="formula">col.lx[-1, "propane"]</span> would return the mole fraction
+						of propane in the bottom stage liquid.</li>
+				</ul>
+				<p>
+					Values for individual stages can be accessed using standard indexing (1 for stage 1, -1 for the bottom stage):
+				</p>
+				<ul>
+					<li><b>col.t[1]</b> - Condenser / top stage temperature.</li>
+					<li><b>col.t[-1]</b> - Reboiler / bottom stage temperature.</li>
+					<li><b>col.t[3]</b> - Third stage temperature.</li>					
+					<li><b>col.vf[1]</b> - Overhead vapour distillate flow rate.</li>
+					<li><b>col.ldraw[1]</b> - Liquid distillate flow rate (total condenser).</li>
+					<li><b>col.lf[1]</b> - Reflux flow rate leaving stage 1.</li>
+					<li><b>col.ldraw[-1]</b> - Bottoms product liquid flow rate.</li>
+					<li><b>col.q[1]</b> - Condenser cooling duty.</li>
+					<li><b>col.q[-1]</b> - Reboiler heating duty.</li>
+					<li><b>col.lx[1, 'Propane']</b> or <b>col.lx.propane[1]</b> - Liquid mole fraction of Propane on stage 1.</li>
+					<li><b>col.vx[-1, 'n-Butane']</b> or <b>col.vx.nbutane[-1]</b> - Vapour mole fraction of n-Butane on the bottom stage.</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>
