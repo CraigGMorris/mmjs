@@ -350,6 +350,7 @@ class MMFlash extends MMTool {
 	constructor(name, parentModel) {
 		super(name, parentModel, 'Flash');
 		this.thermoFormula = new MMFormula('thermoFormula', this);
+		this.thermoDefnString = null;
 		this.thermoPkg = null;
 		this.firstPropertyFormula = new MMFormula('firstPropFormula', this);
 		this.secondPropertyFormula = new MMFormula('secondPropFormula', this);
@@ -519,6 +520,78 @@ class MMFlash extends MMTool {
 	}
 
 	/**
+	 * @method initThermo
+	 * @returns {boolean}
+	 */
+	initThermo() {
+		const thermoEngine = (typeof self !== 'undefined' ? (/** @type {any} */ (self)).thermo : null) || (typeof thermo !== 'undefined' ? thermo : null);
+		if (!thermoEngine || !thermoEngine.defaultRegistry) {
+			return false;
+		}
+		const thermoDefn = this.thermoFormula.value();
+		if (!thermoDefn || !(thermoDefn instanceof MMStringValue) || thermoDefn.valueCount === 0) {
+			this.thermoDefn = null;
+			this.thermoDefnString = null;
+			this.thermoPkg = null;
+			this.componentString = null;
+			this.nComponents = null;
+			this.componentNames = null;
+			this.compounds = null;
+			this.eos = null;
+			this.engine = null;
+			this.additionalProperties = [];
+			this.mwts = null;
+			return false;
+		}
+
+		const rawThermo = thermoDefn.values[0] || '';
+		if (this.thermoDefnString === rawThermo && this.engine && this.eos && this.thermoPkg) {
+			this.thermoDefn = thermoDefn;
+			return true;
+		}
+
+		this.thermoDefn = thermoDefn;
+		this.thermoDefnString = rawThermo;
+		const cleanThermo = rawThermo.replace(/^['"`]+|['"`]+$/g, '').trim();
+		const phaseSplit = cleanThermo.split('@');
+		if (phaseSplit.length > 1) {
+			this.imposedPhase = phaseSplit[1].trim().toLowerCase();
+		}
+		else {
+			this.imposedPhase = null;
+		}
+
+		const pkgSplit = phaseSplit[0].split('::');
+		if (pkgSplit.length > 1) {
+			this.thermoPkg = (/** @type {string} */ (pkgSplit.shift())).trim();
+		}
+		else {
+			this.thermoPkg = 'PR';
+		}
+		const parsed = parseThermoDefinition(pkgSplit.join('::'));
+		this.componentNames = parsed.compounds;
+		this.nComponents = this.componentNames.length;
+		this.componentString = this.componentNames.join(',');
+		this.additionalProperties = parsed.properties;
+
+		thermoEngine.defaultRegistry.loadAll();
+		const compounds = [];
+		for (const cName of this.componentNames) {
+			let comp = thermoEngine.defaultRegistry.get(cName);
+			if (!comp) {
+				this.setError('thermo:flashThermoDefnError', {path: this.getPath()});
+				return false;
+			}
+			compounds.push(comp);
+		}
+		this.compounds = compounds;
+		this.mwts = compounds.map(c => c.mw * 1000); // g/mol for mass fraction conversions
+		this.eos = new thermoEngine.PengRobinson(compounds);
+		this.engine = new thermoEngine.FlashEngine(this.eos);
+		return true;
+	}
+
+	/**
 	 * @override forgetCalculated
 	 */
 	forgetCalculated() {
@@ -530,16 +603,6 @@ class MMFlash extends MMTool {
 				}
 				this.valueRequestors.clear();
 				super.forgetCalculated();
-				this.thermoDefn = null;
-				this.thermoPkg = null;
-				this.componentString = null;
-				this.nComponents = null;
-				this.componentNames = null;
-				this.compounds = null;
-				this.eos = null;
-				this.engine = null;
-				this.additionalProperties = [];
-				this.mwts = null;
 				this.flashResults = null;
 				this.firstProperty = null;
 				this.firstPropertyType = null;
@@ -548,7 +611,6 @@ class MMFlash extends MMTool {
 				this.flow = null;
 				this.moleX = null;
 				this.massX = null;
-				// this.propList = null;
 			}
 			finally {
 				this.forgetRecursionBlockIsOn = false;
@@ -599,50 +661,8 @@ class MMFlash extends MMTool {
 			return null;
 		}
 
-		if (!this.thermoDefn) {
-			this.thermoDefn = this.thermoFormula.value();
-		}
-
-		if (!this.thermoPkg || !this.componentString || !this.engine) {
-			const thermoDefn = this.thermoFormula.value();
-			if (thermoDefn && thermoDefn instanceof MMStringValue && thermoDefn.valueCount > 0) {
-				this.thermoDefn = thermoDefn;
-				const cleanThermo = thermoDefn.values[0].replace(/^['"`]+|['"`]+$/g, '').trim();
-				const phaseSplit = cleanThermo.split('@');
-				if (phaseSplit.length > 1) {
-					this.imposedPhase = phaseSplit[1].trim().toLowerCase();
-				}
-
-				const pkgSplit = phaseSplit[0].split('::');
-				if (pkgSplit.length > 1) {
-					this.thermoPkg = (/** @type {string} */ (pkgSplit.shift())).trim();
-				}
-				else {
-					this.thermoPkg = 'PR';
-				}
-				const parsed = parseThermoDefinition(pkgSplit.join('::'));
-				this.componentNames = parsed.compounds;
-				this.nComponents = this.componentNames.length;
-				this.componentString = this.componentNames.join(',');
-				this.additionalProperties = parsed.properties;
-
-				if (thermoEngine && thermoEngine.defaultRegistry) {
-					thermoEngine.defaultRegistry.loadAll();
-					const compounds = [];
-					for (const cName of this.componentNames) {
-						let comp = thermoEngine.defaultRegistry.get(cName);
-						if (!comp) {
-							this.setError('thermo:flashThermoDefnError', {path: this.getPath()});
-							return null;
-						}
-						compounds.push(comp);
-					}
-					this.compounds = compounds;
-					this.mwts = compounds.map(c => c.mw * 1000); // g/mol for mass fraction conversions
-					this.eos = new thermoEngine.PengRobinson(compounds);
-					this.engine = new thermoEngine.FlashEngine(this.eos);
-				}
-			}
+		if (!this.initThermo()) {
+			return null;
 		}
 
 		const descParts = lcDescription.split('.');
@@ -1077,7 +1097,9 @@ class MMFlash extends MMTool {
 		}
 
 		if (!this.thermoPkg || !this.componentString || !this.engine || !this.eos) {
-			return;
+			if (!this.initThermo()) {
+				return;
+			}
 		}
 		if (!this.firstProperty) {
 			this.firstProperty = this.firstPropertyFormula.value();
@@ -1135,6 +1157,31 @@ class MMFlash extends MMTool {
 			this.setError('thermo:flashDuplicatePropTypes', {path: this.getPath()});
 			this.secondProperty = null;
 			this.secondPropertyType = null;
+		}
+
+		if (!this.moleX && !this.massX) {
+			this.moleX = this.moleFracFormula.value();
+			if (this.moleX instanceof MMTableValue) {
+				this.moleX = this.moleX.numberValue();
+			}
+			if (!this.moleX && this.nComponents === 1) {
+				this.moleX = MMNumberValue.scalarValue(1);
+			}
+			if (this.moleX) {
+				this.moleX = this.moleX.divideBy(this.moleX.sum());
+			}
+			if (!this.moleX) {
+				this.massX = this.massFracFormula.value();
+				if (this.massX instanceof MMTableValue) {
+					this.massX = this.massX.numberValue();
+				}
+				if (!this.massX && this.nComponents === 1) {
+					this.massX = MMNumberValue.scalarValue(1);
+				}
+				if (this.massX) {
+					this.massX = this.massX.divideBy(this.massX.sum());
+				}
+			}
 		}
 
 		if (
@@ -1480,7 +1527,9 @@ class MMFlash extends MMTool {
 	envelope() {
 		try {
 			if (!this.thermoPkg || !this.componentString || !this.engine || !this.eos) {
-				return null;
+				if (!this.initThermo()) {
+					return null;
+				}
 			}
 			const z = this.moleX ? this.moleX.values : this.convertMassFracToMole(this.massX.values);
 			const envResult = this.engine.generatePhaseEnvelope(z);

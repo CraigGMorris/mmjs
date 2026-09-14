@@ -732,7 +732,7 @@ export class MMColumn extends MMTool {
 		if (isNaN(estD)) {
 			for (const spec of this.specs) {
 				const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.trim().toLowerCase() : '';
-				const mD = text.match(/^\s*\$\.(?:vf|vdraw|ldraw)\[\s*1\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?/);
+				const mD = text.match(/^\s*\$\.(?:vf|vdraw|ldraw)\[\s*1\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?\s*$/);
 				if (mD) {
 					let val = parseFloat(mD[1]);
 					if (mD[2] && typeof theMMSession !== 'undefined' && theMMSession.unitSystem) {
@@ -744,13 +744,20 @@ export class MMColumn extends MMTool {
 					estD = val;
 					break;
 				}
+				else if (/^\s*\$\.(?:vf|vdraw|ldraw)\[\s*1\s*\]\s*-/i.test(text)) {
+					const sVal = spec.formula ? spec.formula.value() : null;
+					if (sVal instanceof MMNumberValue && Number.isFinite(sVal.values[0]) && sVal.values[0] < 0) {
+						estD = -sVal.values[0];
+						break;
+					}
+				}
 			}
 		}
 		// Fallback: infer estD from component purity specifications (e.g. light key in bottoms or heavy key in distillate)
 		if (isNaN(estD)) {
 			for (const spec of this.specs) {
 				const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.trim().toLowerCase() : '';
-				const m = text.match(/\$\.lx\[\s*(-1|\d+)\s*(?:,\s*["']?([a-zA-Z0-9_-]+)["']?)?\s*\](?:\.([a-zA-Z0-9_-]+))?\s*-\s*([0-9.]+)/);
+				const m = text.match(/\$\.lx\[\s*(-1|\d+)\s*(?:,\s*["']?([a-zA-Z0-9_-]+)["']?)?\s*\](?:\.([a-zA-Z0-9_-]+))?\s*-\s*([0-9.]+)\s*$/);
 				if (m) {
 					const stageNum = parseInt(m[1], 10);
 					const compName = m[2] || m[3];
@@ -918,7 +925,7 @@ export class MMColumn extends MMTool {
 		let nominalReflux = 1.5;
 		for (const spec of this.specs) {
 			const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.toLowerCase() : '';
-			const m = text.match(/\$\.lf\[\s*1\s*\]\s*\/\s*\$\.(?:vf|ldraw)\[\s*1\s*\]\s*-\s*([0-9.]+)/);
+			const m = text.match(/\$\.lf\[\s*1\s*\]\s*\/\s*\$\.(?:vf|ldraw|vdraw)\[\s*1\s*\]\s*-\s*([0-9.]+)\s*$/);
 			if (m) {
 				nominalReflux = Math.max(0.2, parseFloat(m[1]));
 				break;
@@ -1311,7 +1318,7 @@ export class MMColumn extends MMTool {
 		};
 
 		// 1. Reflux ratio: $.lf[1] / $.vf[1] - <val> or $.lf[1] / $.ldraw[1] - <val>
-		const refluxMatch = text.match(/^\$\.lf\[\s*1\s*\]\s*\/\s*\$\.(?:vf|ldraw|vdraw)\[\s*1\s*\]\s*-\s*([0-9.]+)/);
+		const refluxMatch = text.match(/^\$\.lf\[\s*1\s*\]\s*\/\s*\$\.(?:vf|ldraw|vdraw)\[\s*1\s*\]\s*-\s*([0-9.]+)\s*$/);
 		if (refluxMatch) {
 			const target = parseFloat(refluxMatch[1]);
 			const isLdraw = text.includes('.ldraw');
@@ -1325,7 +1332,7 @@ export class MMColumn extends MMTool {
 		}
 
 		// 2. Reboiler liquid flow: $.lf[$.nstages] - <val> or $.lf[10] - <val>
-		const reboilerMatch = text.match(/^\$\.lf\[\s*(?:\$\.nstages|stagecount|\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?/);
+		const reboilerMatch = text.match(/^\$\.lf\[\s*(?:\$\.nstages|stagecount|\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?\s*$/);
 		if (reboilerMatch) {
 			if (text.includes('nstages') || text.includes('stagecount') || text.includes(`[${N}]`) || text.includes(`[ ${N} ]`)) {
 				const target = parseTargetWithUnit(reboilerMatch[1], reboilerMatch[2]);
@@ -1334,7 +1341,7 @@ export class MMColumn extends MMTool {
 		}
 
 		// 3. Stage vapor flow: $.vf[k] - <val>
-		const vfMatch = text.match(/^\$\.vf\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?/);
+		const vfMatch = text.match(/^\$\.vf\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?\s*$/);
 		if (vfMatch) {
 			const k = parseInt(vfMatch[1], 10);
 			if (k >= 1 && k <= N) {
@@ -1344,7 +1351,7 @@ export class MMColumn extends MMTool {
 		}
 
 		// 4. Stage liquid flow: $.lf[k] - <val>
-		const lfMatch = text.match(/^\$\.lf\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?/);
+		const lfMatch = text.match(/^\$\.lf\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?\s*$/);
 		if (lfMatch) {
 			const k = parseInt(lfMatch[1], 10);
 			if (k >= 1 && k <= N) {
@@ -1354,7 +1361,7 @@ export class MMColumn extends MMTool {
 		}
 
 		// 5. Stage liquid draw: $.ldraw[k] - <val>
-		const ldrawMatch = text.match(/^\$\.ldraw\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?/);
+		const ldrawMatch = text.match(/^\$\.ldraw\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?\s*$/);
 		if (ldrawMatch) {
 			const k = parseInt(ldrawMatch[1], 10);
 			if (k >= 1 && k <= N) {
@@ -1368,7 +1375,7 @@ export class MMColumn extends MMTool {
 		}
 
 		// 6. Stage vapor draw: $.vdraw[k] - <val>
-		const vdrawMatch = text.match(/^\$\.vdraw\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?/);
+		const vdrawMatch = text.match(/^\$\.vdraw\[\s*(\d+)\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?\s*$/);
 		if (vdrawMatch) {
 			const k = parseInt(vdrawMatch[1], 10);
 			if (k >= 1 && k <= N) {
@@ -1382,7 +1389,7 @@ export class MMColumn extends MMTool {
 		}
 
 		// 7. Stage composition: $.lx[k, "compound"] - <val>, $.vx[k, "compound"] - <val>, $.lx[k].compound - <val>, or $.lx[k]["compound"] - <val>
-		const compMatch = text.match(/^\$\.(lx|vx)\[\s*(-?\d+)\s*(?:,\s*["'`]?([a-zA-Z0-9_\-\s]+)["'`]?\]|\]\s*(?:\.\s*([a-zA-Z0-9_\-]+)|\[\s*["'`]?([a-zA-Z0-9_\-\s]+)["'`]?\s*\]))\s*-\s*([0-9.]+)/);
+		const compMatch = text.match(/^\$\.(lx|vx)\[\s*(-?\d+)\s*(?:,\s*["'`]?([a-zA-Z0-9_\-\s]+)["'`]?\]|\]\s*(?:\.\s*([a-zA-Z0-9_\-]+)|\[\s*["'`]?([a-zA-Z0-9_\-\s]+)["'`]?\s*\]))\s*-\s*([0-9.]+)\s*$/);
 		if (compMatch) {
 			const phase = compMatch[1];
 			let k = parseInt(compMatch[2], 10);
