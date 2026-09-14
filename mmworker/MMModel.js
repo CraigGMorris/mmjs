@@ -640,6 +640,9 @@ export class MMModel extends MMTool {
 				const originX = parseFloat(parts[0]);
 				const originY = parseFloat(parts[1]);
 				const json = command.args.substring(indicesMatch[0].length);
+				if (!json || json.length === 0) {
+					return;
+				}
 				const c = json[0];
 				if (c.match(/[-\d]/) || json.startsWith('matrix')) {
 					// starts with number or word matrix - assume matrix
@@ -660,7 +663,9 @@ export class MMModel extends MMTool {
 						else {
 							newTool.initFromNumberString(json);
 						}
-						command.results = true;
+						command.undo = `${this.getPath()} removetool ${name}`;
+						command.results = {name: name, type: 'Matrix'};
+						this.forgetCalculated();
 					}
 				}
 				else if (json.startsWith('table')) {
@@ -678,7 +683,9 @@ export class MMModel extends MMTool {
 					if (newTool) {
 						newTool.position = new MMPoint(originX, originY);
 						newTool.initFromTableValue(tableValue);
-						command.results = true;
+						command.undo = `${this.getPath()} removetool ${name}`;
+						command.results = {name: name, type: 'DataTable'};
+						this.forgetCalculated();
 					}
 				}
 				else {
@@ -719,7 +726,14 @@ export class MMModel extends MMTool {
 								names.push(toolInfo.name);
 								await this.restoreTool(toolInfo);
 							}
-							command.undo = `${this.getPath()} removetool ${names.join(' ')}`
+							command.undo = `${this.getPath()} removetool ${names.join(' ')}`;
+							if (names.length > 0) {
+								const firstTool = this.childNamed(names[0]);
+								command.results = {name: names[0], type: firstTool ? firstTool.typeName : 'Tool'};
+							}
+							else {
+								command.results = true;
+							}
 						}
 						else {
 							let name;
@@ -750,6 +764,9 @@ export class MMModel extends MMTool {
 								if (model) {
 									model.position = new MMPoint(originX, originY);
 									model.contentsFromJsonObject(saved);
+									command.undo = `${this.getPath()} removetool ${name}`;
+									command.results = {name: name, type: 'Model'};
+									this.forgetCalculated();
 								}
 								return;
 								// return; // invalid object
@@ -761,10 +778,10 @@ export class MMModel extends MMTool {
 								name = `${name}_${number++}`;
 							}
 							tool.name = name;
-							this.restoreTool(tool);
-							command.undo = `${this.getPath()} removetool ${name}`
+							await this.restoreTool(tool);
+							command.undo = `${this.getPath()} removetool ${name}`;
+							command.results = {name: name, type: 'Model'};
 						}
-						command.results = true;
 					}
 					else {
 						// don't know what it is, so create expression with string
@@ -773,9 +790,11 @@ export class MMModel extends MMTool {
 							name = `x${this.nextToolNumber++}`;
 						}	
 						const exp = new MMExpression(name, /** @type {any} */ (this));
-						exp.position = new MMPoint(originX, originY)
+						exp.position = new MMPoint(originX, originY);
 						exp.formula.formula = "'" + json;
-						command.undo = `${this.getPath()} removetool ${name}`			
+						command.undo = `${this.getPath()} removetool ${name}`;
+						command.results = {name: name, type: 'Expression'};
+						this.forgetCalculated();
 					}
 				}
 			}

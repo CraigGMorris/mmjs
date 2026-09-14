@@ -1046,9 +1046,20 @@ export class Diagram extends React.Component {
 							action: () => {
 								readClipboard().then(clipText => {
 									const position = this.state.showContext.info;
-									this.props.actions.doCommand(`${this.state.path} paste ${position.x} ${position.y} ${clipText}`, () => {
+									this.props.actions.doCommand(`${this.state.path} paste ${position.x} ${position.y} ${clipText}`, (/** @type {any} */ results) => {
 										this.setState({showContext: null});
-										this.props.actions.updateView();
+										const toolInfo = results && results.length && results[0].results;
+										if (toolInfo && toolInfo.name) {
+											if (toolInfo.type === 'Model') {
+												this.props.actions.pushModel(toolInfo.name);
+											}
+											else {
+												this.props.actions.viewTool(toolInfo.name, toolInfo.type);
+											}
+										}
+										else {
+											this.props.actions.updateView();
+										}
 									});
 								});
 							}
