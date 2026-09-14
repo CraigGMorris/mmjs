@@ -1382,7 +1382,7 @@ export class MMColumn extends MMTool {
 		}
 
 		// 7. Stage composition: $.lx[k, "compound"] - <val>, $.vx[k, "compound"] - <val>, $.lx[k].compound - <val>, or $.lx[k]["compound"] - <val>
-		const compMatch = text.match(/^\$\.(lx|vx)\[\s*(-?\d+)\s*(?:,\s*["']?([a-zA-Z0-9_\-]+)["']?\]|\]\s*(?:\.\s*([a-zA-Z0-9_\-]+)|\[\s*["']?([a-zA-Z0-9_\-]+)["']?\s*\]))\s*-\s*([0-9.]+)/);
+		const compMatch = text.match(/^\$\.(lx|vx)\[\s*(-?\d+)\s*(?:,\s*["'`]?([a-zA-Z0-9_\-\s]+)["'`]?\]|\]\s*(?:\.\s*([a-zA-Z0-9_\-]+)|\[\s*["'`]?([a-zA-Z0-9_\-\s]+)["'`]?\s*\]))\s*-\s*([0-9.]+)/);
 		if (compMatch) {
 			const phase = compMatch[1];
 			let k = parseInt(compMatch[2], 10);
