@@ -213,7 +213,7 @@ export function ConsoleView(props) {
 				'/ aimodel',
 				(results) => {
 					const modelName = results?.[0]?.results;
-					aiValues.model = modelName || '~google/gemini-flash-latest';
+					aiValues.model = modelName || '~google/gemini-3.7-flash';
 				});
 		}
 	}
