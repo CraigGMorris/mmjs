@@ -50,7 +50,7 @@ I will execute these inspection commands and return:
     - `. dgminfo`
     - `. list` / `.toolName list`
     - `.toolName toolviewinfo`
-    - `.toolName.valueName value`
+    - `.toolName.childFormulaName value`
     - `/ aiquery <topic>`
 
 ---
@@ -58,10 +58,15 @@ I will execute these inspection commands and return:
 usageNote: |
 	The dgminfo verb is particularly useful for determining information about a model and its contents.
 	See dgminfo in the verbs section of MMModel for details.
-	To find the children of an object use the list verb
-		Example:  .optimizer list
-	To get all information about a tool use the toolviewinfo verb
-		Example .optimizer toolviewinfo
+	To find the children of an object use the list verb:
+		Example: .optimizer list
+		Example: .feed list (returns formula children such as thermoFormula, flowFormula, etc.)
+	To get all information about a tool (including all its formulas and current properties) use the toolviewinfo verb:
+		Example: .optimizer toolviewinfo
+		Example: .feed toolviewinfo
+	CRITICAL INSPECTION RULE:
+	- Always run `.toolName list` or `.toolName toolviewinfo` to discover the exact names of a tool's children before querying them with `value`.
+	- The `value` verb applies ONLY to child `MMFormula` objects (e.g. `.feed.thermoFormula value`), NEVER directly to tool parameter names (e.g. `.feed.thermo value` fails because `thermo` is a parameter, not a child object; the child object is `thermoFormula`).
 
 # Errors
 
@@ -391,6 +396,12 @@ usageNote: |
 		properties:
 			formula:
 				desc: the text of the formula. Can span multiple lines.
+
+		formulaRules: >
+			- NEVER enclose an entire formula in quotes when setting or passing it (e.g. do NOT write `.addspec Overhead "$.lx[1, ...] - 0.001" 1.0` or `.ptop set formula "120 kPa"`). Quoting an entire formula causes Math Minion to evaluate it as a string literal instead of calculating a numeric value. Pass formulas UNQUOTED.
+			- Strings in Math Minion have to be in double quotes ("...") or backticks (`...`) unless the single quote (') is the first character of the formula, in which case the rest is taken as a string.
+			- A single quote (') anywhere other than the first character of a formula starts a comment.
+			- NEVER use single quotes for string literals or component/column names inside formulas (e.g. `$.lx[1, 'ethyl benzene']` is INVALID because `'` starts a comment, discarding the rest of the formula). Use double quotes or backticks (e.g. `$.lx[1, `ethyl benzene`]` or property access `$.lx.ethylbenzene[1]`).
 
 		parameters: {}
 		
@@ -1216,12 +1227,249 @@ desc: >
 			- Property types for `torp`, `secondprop`, and `flow` are inferred automatically from their conversion unit types (e.g., `degC`, `kPa`, `kJ/mol`, `kg/s`).
 			- Use dot notation to extract phase-specific values in downstream formulas (e.g., `feed.v.x`, `feed.l.f`, `feed.p`).
 			- Available fluids can be queried from any flash tool using its `fluids` parameter (e.g., `myFlash.fluids`).
-			- Set string properties such as `thermo` using enclosing quotes:
-				`.myFlash.thermo set formula "Ethanol,Water;massx"`
+			- Formula child names for Flash tools are: `thermoFormula`, `firstPropFormula`, `secondPropFormula`, `flowFormula`, `moleFracFormula`, `massFracFormula`.
+			- Set the fluid definition using `thermoFormula`:
+				`.myFlash.thermoFormula set formula 'Ethanol,Water;massx`
+			- Query the fluid definition using `.myFlash.thermoFormula value` (or inspect with `.myFlash list` / `.myFlash toolviewinfo`).
 			- Math Minion enthalpies (`h`, `hflow`) use arbitrary, independent reference states per fluid and do NOT contain heats of formation (ΔHf°).
 				- NEVER equate inlet and outlet enthalpy/hflow across a reaction (e.g., `outlet.hflow = inlet.hflow` is invalid for a reactor).
 				- NEVER calculate reaction heat as `outlet.hflow - inlet.hflow`.
 				- For reactors and chemical reactions, calculate the standard heat of reaction (ΔHrxn° at 298.15 K) separately using standard heats of formation (ΔHf°), and use Flash `h` only for sensible enthalpy changes relative to 298.15 K (e.g., `h(T) - h(298.15 degK)`).
+
+	MMColumn:
+		extends: MMTool
+		typeName: Column
+
+		desc: >
+			Performs rigorous multi-stage distillation and fractionation calculations using the Peng-Robinson (1978)
+			equation of state coupled with pure compound and binary interaction data from ChemSep and DWSIM.
+			Solves the stage-by-stage MESH (Material balance, Equilibrium, Summation, and Heat balance) equations
+			simultaneously across all stages using an inside-out / Broyden numerical algorithm.
+			Supports arbitrary feeds (flashed at feed stage pressure), multiple liquid and vapor draws, total or partial
+			condensers, reboilers, and customizable operating specifications.
+
+			Stages are numbered 1 to N from top to bottom:
+			- Stage 1 is the top stage (condenser if present).
+			- Stage N is the bottom stage (reboiler if present).
+
+		formulas:
+			thermo:
+				desc: >
+					String formula specifying the fluid components and optional property package (e.g. `'Propane,n-Butane,Isobutane'`
+					or `'PR::Ethanol,Water'`), following the same syntax as the Flash tool.
+					Set via `.myCol.thermo set formula 'Propane,n-Butane`
+			stageCountFormula:
+				desc: >
+					Formula for the number of theoretical stages (integer >= 2, default 10).
+					Can also be set via the verb: `.myCol setstages 15` or `.myCol.nstages set formula 15`
+			pTopFormula:
+				desc: >
+					Formula for operating pressure at stage 1 (top stage). Defaults to `101.325 kPa`.
+					Set via `.myCol.ptop set formula 120 kPa`
+			pBottomFormula:
+				desc: >
+					Formula for operating pressure at stage N (bottom stage). Defaults to `101.325 kPa`.
+					The column establishes a linear pressure profile across stages between top and bottom.
+					Set via `.myCol.pbottom set formula 135 kPa`
+			tTopEstFormula:
+				desc: >
+					Optional formula for initial temperature estimate at the top stage (e.g. `45 degC`).
+					Set via `.myCol.ttopest set formula 45 degC`
+			tBotEstFormula:
+				desc: >
+					Optional formula for initial temperature estimate at the bottom stage (e.g. `95 degC`).
+					Set via `.myCol.tbotest set formula 95 degC`
+
+		properties:
+			totalCondenser:
+				desc: >
+					Boolean (`true`/`false`). When false (default), stage 1 is a partial condenser with vapor distillate (`vf[1]`).
+					When true, all vapor at stage 1 is condensed to liquid, stage 1 vapor traffic is zero, and distillate is
+					drawn as liquid (`ldraw[1]`). Set via verb: `.myCol settotalcondenser true`
+			reboiler:
+				desc: >
+					Boolean (`true`/`false`, default true). When true, stage N functions as a reboiler generating stripping vapor.
+					When false, the column operates without a reboiler (e.g. absorber or stripper).
+					Set via verb: `.myCol setreboiler false`
+
+		verbs:
+			addfeed:
+				desc: >
+					Adds a feed stream entering at a designated stage. The feed formula can reference a Flash tool or
+					stream tool providing flow (`f`), temperature (`t`), pressure (`p`), enthalpy (`h`), and composition (`x`).
+					Feeds automatically undergo an adiabatic isenthalpic (P-H) flash at the feed stage pressure upon entry.
+				args:
+					- stage number (1 to N)
+					- feed formula or stream reference
+				example:
+					.myCol addfeed 5 myFeedFlash
+					.myCol addfeed 8 feedStream
+			removefeed:
+				desc: Removes a feed by index (1-based).
+				args:
+					- feed index
+				example:
+					.myCol removefeed 1
+			setfeedstage:
+				desc: Changes the stage number where an existing feed enters.
+				args:
+					- feed index or name
+					- new stage number
+				example:
+					.myCol setfeedstage 1 7
+			adddraw:
+				desc: >
+					Adds a product draw stream. By default, every column starts with two basis draws: `Overhead` (stage 1)
+					and `Bottoms` (stage N). Use `adddraw` to add intermediate sidestreams or extra draws.
+				args:
+					- stage number (1 to N)
+					- phase (`v` for vapor, `l` for liquid)
+					- draw name
+					- optional flow estimate formula
+				example:
+					.myCol adddraw 4 l SideLiquid 25 kmol/h
+			removedraw:
+				desc: Removes a product draw stream by index or name (basis draws cannot be removed).
+				args:
+					- draw index or name
+				example:
+					.myCol removedraw SideLiquid
+			setdrawstage:
+				desc: Changes the stage number of an existing draw.
+				args:
+					- draw index or name
+					- new stage number
+				example:
+					.myCol setdrawstage SideLiquid 5
+			addspec:
+				desc: >
+					Adds an operating specification. The formula represents an error expression that the solver drives to zero.
+					Within the formula, `$` refers to the column tool itself. A scale divisor normalizes the error magnitude
+					to order 1 for numerical solver conditioning. Trailing comments starting with `'` describe the spec.
+					⚠️ CRITICAL RULES FOR SPECIFICATIONS:
+					- NEVER enclose the formula in quotes (double quotes or backticks). Quoting a formula causes Math Minion to evaluate it as a string literal instead of a numeric calculation, producing "Specification formula did not evaluate to a numeric value" errors.
+					- Pass the formula UNQUOTED in the command: `.myCol addspec DistFlow $.vf[1] - 100 kmol/h 'Vapor Draw 28`
+					- Strings inside the formula (e.g. compound names) MUST use backticks (`...`) or property access (e.g. `$.lx[1, `Propane`]` or `$.lx.propane[1]`), NEVER single quotes ('). Single quotes anywhere other than the very first character of a formula start a comment.
+				args:
+					- specification name
+					- error formula (drives to 0)
+					- scale factor (number, defaults to 1.0)
+				example:
+					.myCol addspec DistFlow $.vf[1] - 100 kmol/h 'Vapor Draw 28
+					.myCol addspec Reflux $.lf[1] / $.vf[1] - 2.0 'Reflux Ratio 1.0
+					.myCol addspec ReboilerDuty $.q[-1] - 1.5 MW 'Reboiler Duty 1e6
+					.myCol addspec Purity $.lx[1, `Propane`] - 0.98 'Distillate Purity 1.0
+			removespec:
+				desc: Removes a specification by index (1-based) or name.
+				args:
+					- spec index or name
+				example:
+					.myCol removespec 1
+			setspecscale:
+				desc: Updates the scale factor for an existing specification.
+				args:
+					- spec index or name
+					- new scale value
+				example:
+					.myCol setspecscale 1 50
+			setstages:
+				desc: Sets the number of equilibrium stages (minimum 2).
+				args:
+					- number of stages
+				example:
+					.myCol setstages 16
+			settotalcondenser:
+				desc: Enables or disables total condenser mode.
+				args:
+					- boolean string (`true` or `false`)
+				example:
+					.myCol settotalcondenser true
+			setreboiler:
+				desc: Enables or disables the reboiler.
+				args:
+					- boolean string (`true` or `false`)
+				example:
+					.myCol setreboiler false
+			solve:
+				desc: Solves the column. (Also triggers automatically when column parameters are queried in formulas).
+				args: []
+				example:
+					.myCol solve
+			reset:
+				desc: Clears calculated stage profiles and resets the numerical solver warm-start state.
+				args: []
+				example:
+					.myCol reset
+			setcolumnunit:
+				desc: Sets the display unit for a stage profile table column (`T`, `P`, `V`, `L`, `Q`, `Feeds`, or `Draws`).
+				args:
+					- column name or 1-based column index
+					- unit name
+				example:
+					.myCol setcolumnunit T degC
+
+		parameters:
+			solved: Returns 1 if the column converged, null otherwise.
+			thermo: The thermodynamic definition string.
+			nstages: Number of stages (scalar, alias `stagecount`).
+			t: Stage temperatures as an N x 1 column array.
+			p: Stage pressures as an N x 1 column array.
+			vf: Stage vapor flow rates leaving each stage upward as an N x 1 column array (mol/s).
+			lf: Stage liquid flow rates leaving each stage downward as an N x 1 column array (mol/s).
+			q: Stage heat duties as an N x 1 column array (W). Stage 1 is condenser duty (< 0), stage N is reboiler duty (> 0).
+			vdraw: Stage vapor product draw flows as an N x 1 column array (mol/s).
+			ldraw: Stage liquid product draw flows as an N x 1 column array (mol/s).
+			hl: Stage liquid molar enthalpies as an N x 1 column array (J/mol, alias `lh`).
+			hv: Stage vapor molar enthalpies as an N x 1 column array (J/mol, alias `vh`, `lv`).
+			vx: >
+				Vapor mole fractions across stages. Access as a table of all components across stages,
+				or by compound name: `col.vx.compoundName` (e.g. `col.vx.propane`) returning an N x 1 column array.
+			lx: >
+				Liquid mole fractions across stages. Access as a table of all components across stages,
+				or by compound name: `col.lx.compoundName` (e.g. `col.lx.butane`) returning an N x 1 column array.
+			Indexing:
+				- `col.t[1]`: Top stage (condenser) temperature.
+				- `col.t[-1]`: Bottom stage (reboiler) temperature.
+				- `col.vf[1]`: Overhead vapor distillate flow rate (partial condenser).
+				- `col.ldraw[1]`: Overhead liquid distillate flow rate (total condenser).
+				- `col.lf[1]`: Reflux flow rate returning to stage 2.
+				- `col.ldraw[-1]`: Bottoms liquid product flow rate.
+				- `col.q[1]`: Condenser heat duty (negative/cooling).
+				- `col.q[-1]`: Reboiler heat duty (positive/heating).
+				- `col.lx[1, "Propane"]`, `col.lx[1, `Propane`]`, or `col.lx.propane[1]`: Mole fraction of Propane on stage 1 liquid.
+
+		usageNote: >
+			- Standard Column Workflow:
+				1. Create the column:
+					`. addtool Column myCol`
+				2. Set the thermodynamic components:
+					`.myCol.thermo set formula 'Propane,n-Butane`
+				3. Set stage count and pressures:
+					`.myCol setstages 15`
+					`.myCol.ptop set formula 150 kPa`
+					`.myCol.pbottom set formula 170 kPa`
+				4. Add feed stream(s):
+					`.myCol addfeed 8 myFeed`
+				5. Check and configure specifications:
+					- A standard column with condenser and reboiler requires 2 specifications.
+					- Newly created columns are pre-populated with default specifications using kmol/h and trailing comments:
+						- Spec1: `$.vf[1] - 100 kmol/h 'Vapor Draw` (scale: 28)
+						- Spec2: `$.lf[1] / $.vf[1] - 1.5 'Reflux Ratio` (scale: 1.0)
+					- When `totalCondenser` is toggled to true, the default specs automatically update:
+						- Spec1: `$.ldraw[1] - 100 kmol/h 'Liquid Draw` (scale: 28)
+						- Spec2: `$.lf[1] / $.ldraw[1] - 1.5 'Reflux Ratio` (scale: 1.0)
+					- You can modify these formulas or remove them and add custom specifications (such as product purity or duty).
+					- In spec error formulas, write expressions that drive to zero (e.g. `$.param - target`).
+					- NEVER enclose the spec formula in quotes in the `addspec` command. Provide it unquoted:
+						`.myCol addspec Overhead $.lx[1, `ethyl benzene`] - 0.001 'Overhead Ethylbenzene 1.0`
+						or `.myCol addspec Overhead $.lx.ethylbenzene[1] - 0.001 'Overhead Ethylbenzene 1.0`
+					- Strings inside formulas must use backticks (e.g. `$.lx[1, `Propane`]`) or property access (`$.lx.propane[1]`), NEVER single quotes. Single quotes anywhere after the first character start a comment.
+				6. Solve and access results:
+					`.myCol solve`
+					- Parameter values can be referenced by downstream expressions and flash drums:
+						`distillateFlow = myCol.vf[1]` (or `myCol.ldraw[1]`)
+						`bottomsFlow = myCol.ldraw[-1]`
+						`reboilerHeat = myCol.q[-1]`
 
 	MMHtmlPage:
 		extends: MMTool
@@ -1355,7 +1603,9 @@ Formulas:
 				- Table columns (e.g., `mytable.total`)
 				- $ is a built-in symbol representing the name of the tool in which the formula appears.
 		
-			NEVER use `'` for quoting strings. Always use double quotes `"..."` for simple strings, or backticks `` `...` `` for strings that contain quotes.
+			Strings in Math Minion have to be in double quotes ("...") or backticks (`...`) unless the single quote (') is the first character of the formula, in which case the rest is taken as a string literal.
+			A single quote (') appearing anywhere other than the first character of a formula starts a comment!
+			Therefore, NEVER use single quotes for quoting strings or indexing compound/column names inside formulas (e.g., `$.lx[1, 'ethyl benzene']` is INVALID because `'` starts a comment, discarding the rest of the formula). Always use double quotes `"..."` for simple strings, or backticks `` `...` `` for strings inside outer quotes or containing quotes (e.g., `$.lx[1, `ethyl benzene`]` or property access `$.lx.ethylbenzene[1]`).
 			NEVER start a tool name with a dot.
 				✅ Correct: Bob.Ted
 				❌ Incorrect: .Bob.Ted
