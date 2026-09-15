@@ -728,7 +728,7 @@ export class MMModel extends MMTool {
 							}
 							command.undo = `${this.getPath()} removetool ${names.join(' ')}`;
 							if (names.length > 0) {
-								const firstTool = this.childNamed(names[0]);
+								const firstTool = /** @type {MMTool|undefined} */ (this.childNamed(names[0]));
 								command.results = {name: names[0], type: firstTool ? firstTool.typeName : 'Tool'};
 							}
 							else {
