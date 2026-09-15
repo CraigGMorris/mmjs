@@ -10,7 +10,7 @@
 	],
 	"CaseName": "MM_News",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "Sept_16_2026",
+	"SelectedObject": "",
 	"ModelPath": "/.root.Older_Articles.Sept_16_2026",
 	"RootModel": {
 		"name": "root",
@@ -5552,6 +5552,9 @@
 										"Type": "Equation Solver",
 										"f0": "(dewpt.t - dewpttarget) / 1 K",
 										"c0": "1",
+										"o0": [
+											0.07108654590214561
+										],
 										"maxIter": 200,
 										"maxJacobians": 5,
 										"Enabled": "y"
@@ -6616,6 +6619,9 @@
 										"Type": "Equation Solver",
 										"f0": "vpcalc.p - 9 psia",
 										"c0": "1",
+										"o0": [
+											0.08312419989809185
+										],
 										"maxIter": 200,
 										"maxJacobians": 5,
 										"Enabled": "y"
@@ -6676,7 +6682,7 @@
 								"isOutput": "y",
 								"Type": "HTML Form",
 								"Formula": {
-									"Formula": "'\n<style>\n\tli {\n\t\tmargin-bottom: 5px;\n\t}\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t.quote\n\t{\n\t\tcolor: green;\n\t\tmargin-left: 30px;\n\t}\n\t.main {\n\t\tbackground-color: #f2f2f2;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t}\n</style>\n<div class=\"main\">\n<h4>Sept 3, 2026</h4>\n<p>\n<b>MM has grown a Column</b><br>\n\tPerhaps it was echos of a long gone youth or just that the flash tool looked lonely, but for some reason I decided to add a fractionation column tool to Math Minion. I did virtually none of the coding, but rather sat back directing and critiquing while the AI did the work. It harkened back to a distant time when I actually had staff and it turns out I like having staff again, especially very fast and cheap staff. Perhaps this is what my cats feel like, alluding to the old joke that dogs have masters and cats have staff.\n</p>\n<p>\n\tAnyway it is a fairly basic column program, without pump arounds or side strippers and limited to systems appropriate for the Peng Robinson thermo package. It is also MM quirky with formula based specifications that might require a bit of extra thinking, but seem to me less tedious and more flexible than some of the convoluted user interfaces I have seen.\n</p>\n<p>\n\tBelow is a fictional basic gasplant design with a liquids stabilizer. There is also a two column N2 rejection example on the\n\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'examples/thermo/index.html'})\">\n\t\t\t\tthermo examples page\n\t</span>.\n</p>\n</p>\n\t\n<p>\n<b>New Getting Started session</b><br>\n\tThere have been changes to the Getting Started session.  Please\n\t<span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\">get a fresh copy</span>.\n</p>"
+									"Formula": "'\n<style>\n\tli {\n\t\tmargin-bottom: 5px;\n\t}\n\t.link {\n\t\tcolor: blue;\n\t\tfont-weight: bold;\n\t\tcursor: pointer;\n\t}\n\t.quote\n\t{\n\t\tcolor: green;\n\t\tmargin-left: 30px;\n\t}\n\t.main {\n\t\tbackground-color: #f2f2f2;\n\t\tborder: solid 1px;\n\t\tpadding: 5px;\n\t}\n</style>\n<div class=\"main\">\n<h4>Sept 16, 2026</h4>\n<p>\n<b>MM has grown a Column</b><br>\n\tPerhaps it was echos of a long gone youth or just that the flash tool looked lonely, but for some reason I decided to add a fractionation column tool to Math Minion. I did virtually none of the coding, but rather sat back directing and critiquing while the AI did the work. It harkened back to a distant time when I actually had staff and it turns out I like having staff again, especially very fast and cheap staff. Perhaps this is what my cats feel like, alluding to the old joke that dogs have masters and cats have staff.\n</p>\n<p>\n\tAnyway it is a fairly basic column program, without pump arounds or side strippers and limited to systems appropriate for the Peng Robinson thermo package. It is also MM quirky with formula based specifications that might require a bit of extra thinking, but seem to me less tedious and more flexible than some of the convoluted user interfaces I have seen.\n</p>\n<p>\n\tBelow is a fictional basic gasplant design with a liquids stabilizer. There is also a two column N2 rejection example on the\n\t<span class=\"link\"\n\t\t\t\tonClick=\"mmpost([], {mm_viewurl: 'examples/thermo/index.html'})\">\n\t\t\t\tthermo examples page\n\t</span>.\n</p>\n</p>\n\t\n<p>\n<b>New Getting Started session</b><br>\n\tThere have been changes to the Getting Started session.  Please\n\t<span class=\"link\" onClick=\"mmpost({}, {mm_loadurl: '../help/Getting%20Started.txt', mm_view: 'Welcome'});\">get a fresh copy</span>.\n</p>"
 								}
 							}
 						]
