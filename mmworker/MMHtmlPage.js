@@ -645,10 +645,10 @@ export class MMHtmlPageProcessor {
 				width: 100%;
 			}
 			.model-form__input-name {
-				width:100px;
+				width:150px;
 				border: solid 1px black;
 				padding: 5px;
-				overflow: scroll;
+				overflow-wrap: break-word;
 			}
 
 			.model-form__input	{
@@ -667,10 +667,10 @@ export class MMHtmlPageProcessor {
 				border: solid 1px;
 			}
 			.model-form__output-name {
-				width:100px;
+				width:150px;
 				border: solid 1px black;
 				padding: 5px;
-				overflow: scroll;
+				overflow-wrap: break-word;
 			}
 			.model-form__output-table, .model-form__output-tool {
 				margin-top: 5px;
@@ -682,7 +682,7 @@ export class MMHtmlPageProcessor {
 				background-color: #e8e8ff;
 			}
 			.model-form__output-row .model-form__output-name {
-				width:100px;
+				width:150px;
 				border: solid 1px black;
 				padding: 5px;
 			}
