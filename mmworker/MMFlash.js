@@ -1111,9 +1111,6 @@ class MMFlash extends MMTool {
 			else if (MMFlash.isPropertyType(this.firstProperty, 'p')) {
 				this.firstPropertyType = 'P';
 			}
-			else if (MMFlash.isPropertyType(this.firstProperty, 'dmolar')) {
-				this.firstPropertyType = 'DMolar';
-			}
 			else {
 				this.setError('thermo:flashFirstPropNotTorPorD', {path: this.getPath()});
 				this.firstProperty = null;
@@ -1251,28 +1248,6 @@ class MMFlash extends MMTool {
 			}
 			else if (this.secondPropertyType === 'S') {
 				spec = { type: thermoEngine.FlashType.PS, P: val1, S: val2 };
-			}
-		}
-		else if (this.firstPropertyType === 'DMolar') {
-			// Single component density flash
-			if (this.secondPropertyType === 'T') {
-				const T = val2;
-				const dmolar = val1;
-				const vCorr = 1.0 / dmolar;
-				const ws = this.eos.workspace;
-				const mix = this.eos.calculateMixtureParams(T, z, ws.mixtureParams, ws);
-				const vUntrans = Math.max(mix.b * 1.001, vCorr + mix.c);
-				const RT = thermoEngine.R_GAS * T;
-				const P = (RT / (vUntrans - mix.b)) - (mix.a / (vUntrans * vUntrans + 2.0 * mix.b * vUntrans - mix.b * mix.b));
-				spec = { type: thermoEngine.FlashType.TP, T: T, P: Math.max(100.0, P) };
-			}
-			else if (this.secondPropertyType === 'P') {
-				const P = val2;
-				const dmolar = val1;
-				// Initial temperature estimate using ideal gas law
-				let T = (P / (dmolar * thermoEngine.R_GAS));
-				T = Math.max(50.0, Math.min(2000.0, T));
-				spec = { type: thermoEngine.FlashType.TP, T: T, P: P };
 			}
 		}
 
