@@ -2395,9 +2395,13 @@ export class MMColumn extends MMTool {
 
 	/**
 	 * @method displayTable
+	 * @param {MMTool} [requestor]
 	 * @returns {Record<string, any>|null}
 	 */
-	displayTable() {
+	displayTable(requestor) {
+		if (requestor) {
+			this.addRequestor(requestor);
+		}
 		const N = this.nStages || 10;
 		const nComp = this.nComponents || 1;
 
@@ -2574,4 +2578,82 @@ export class MMColumn extends MMTool {
 		results['lastErrorKey'] = this.lastErrorKey;
 		results['lastErrorArgs'] = this.lastErrorArgs;
 	}
+
+	/**
+	 * @method htmlValue
+	 * @param {MMTool} [requestor]
+	 * @returns {string}
+	 */
+	htmlValue(requestor) {
+		if (requestor) {
+			this.addRequestor(requestor);
+		}
+		if (!this.isSolved && !this.isSolving) {
+			this.solve();
+		}
+		if (!this.isSolved) {
+			return '<b>Column not calculated</b>';
+		}
+		const table = /** @type {Record<string, any>|null} */ (this.displayTable(requestor));
+		if (!table) {
+			return '<b>Column not calculated</b>';
+		}
+		const lines = [];
+		const maxColumn = table.nc;
+		const maxRow = table.nr;
+		lines.push('\n<table class="tvalue">');
+		lines.push('\t<tr class="row0">');
+		lines.push('\t\t<th class="col1">Stage</th>');
+		for (let column = 0; column < maxColumn; column++) {
+			const colObj = table.v[column];
+			let header = colObj.name;
+			if (colObj.dUnit) {
+				header += `<br>${colObj.dUnit}`;
+			}
+			lines.push(`\t\t<th class="col${column + 2}">${header}</th>`);
+		}
+		lines.push('\t</tr>');
+		for (let row = 0; row < maxRow; row++) {
+			lines.push(`<tr class="row${row + 1}">`);
+			lines.push(`\t\t<td class="col1">${row + 1}</td>`);
+			for (let column = 0; column < maxColumn; column++) {
+				try {
+					const colObj = table.v[column];
+					const v = colObj.v ? colObj.v.v[row] : null;
+					const prefix = colObj.prefixes ? colObj.prefixes[row] : null;
+					let formatted = '';
+					if (v !== null && v !== undefined && (typeof v !== 'number' || !isNaN(v))) {
+						if (typeof v === 'number') {
+							if (colObj.format) {
+								formatted = MMUnitSystem.format(v, colObj.format);
+							}
+							else {
+								const absV = Math.abs(v);
+								if (absV !== 0 && (absV >= 1e8 || absV < 1e-3)) {
+									formatted = v.toExponential(5);
+								}
+								else {
+									formatted = v.toFixed(5);
+								}
+							}
+						}
+						else {
+							formatted = String(v);
+						}
+						if (prefix) {
+							formatted = `${prefix} ${formatted.trim()}`;
+						}
+					}
+					lines.push(`\t\t<td class="col${column + 2}">${formatted}</td>`);
+				}
+				catch (e) {
+					lines.push(`\t\t<td class="col${column + 2}">???</td>`);
+				}
+			}
+			lines.push('\t</tr>');
+		}
+		lines.push('</table>\n');
+		return lines.join('\n');
+	}
 }
+
