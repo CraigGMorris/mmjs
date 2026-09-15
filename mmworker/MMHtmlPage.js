@@ -587,6 +587,14 @@ export class MMHtmlPageProcessor {
 				border: solid 2px blue;
 				border-radius: 5px;
 			}
+
+			svg {
+				width: 100%;
+				height: auto;
+				max-width: 1150px;
+				display: block;
+				margin: 0 auto; /* centers the diagram if container is wider */
+			}
 			
 			select, button {
 				font-size: 12pt;
