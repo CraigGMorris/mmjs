@@ -22120,6 +22120,9 @@
 										"Type": "Equation Solver",
 										"f0": "parabolaCopy - lineCopy",
 										"c0": "1",
+										"o0": [
+											-0.363410456900679
+										],
 										"maxIter": 200,
 										"maxJacobians": 5,
 										"Enabled": "y"
@@ -22178,10 +22181,19 @@
 								"Type": "Equation Solver",
 								"f0": "3 * $.1 - {cos $.2 * $.3} - 0.5",
 								"c0": "1",
+								"o0": [
+									0.49999999999998873
+								],
 								"f1": "$.1*$.1 - 81*($.2 + 0.1)^2 + {sin $.3} + 1.06",
 								"c1": "1",
+								"o1": [
+									-1.2677831394093036e-12
+								],
 								"f2": "{exp $.1*$.2} + 20*$.3 + (10*{pi} - 3.) / 3.0",
 								"c2": "1",
+								"o2": [
+									-0.5235987755982688
+								],
 								"maxIter": 200,
 								"maxJacobians": 5,
 								"Enabled": "y"
@@ -22236,6 +22248,9 @@
 								"Type": "Equation Solver",
 								"f0": "(f - area) * 100",
 								"c0": "1",
+								"o0": [
+									0.8712051491097295
+								],
 								"maxIter": 200,
 								"maxJacobians": 5,
 								"Enabled": "y"
@@ -27082,6 +27097,56 @@
 								"Type": "Equation Solver",
 								"f0": "lhs-rhs",
 								"c0": "{nrows Re}",
+								"o0": [
+									-0.8887540926871242,
+									-0.8927647432974941,
+									-0.896516748514088,
+									-0.9000331562086875,
+									-0.9033344523302349,
+									-0.9064388963169019,
+									-0.9093628064559125,
+									-0.9121208034755356,
+									-0.9147260191536628,
+									-0.9171902755191668,
+									-0.9195242392451719,
+									-0.9217375550401421,
+									-0.9238389611961344,
+									-0.925836389924471,
+									-0.9277370546743084,
+									-0.9295475262707973,
+									-0.9312737994120959,
+									-0.9329213508167357,
+									-0.934495190105314,
+									-0.9359999043256446,
+									-0.9374396968821733,
+									-0.93881842150373,
+									-0.9401396117745107,
+									-0.9414065066584367,
+									-0.9426220723642642,
+									-0.9437890208263809,
+									-0.9449098250132045,
+									-0.9459867312215863,
+									-0.9470217684728667,
+									-0.948016755097071,
+									-0.948973302581122,
+									-0.9498928167726053,
+									-0.9507764965838145,
+									-0.9516253304470439,
+									-0.9524400909514531,
+									-0.9532213283681678,
+									-0.9539693641683412,
+									-0.954684286177395,
+									-0.9553659476872528,
+									-0.9560139736262816,
+									-0.9566277776525363,
+									-0.957206594574145,
+									-0.9577495324692326,
+									-0.9582556478280404,
+									-0.9587240445211733,
+									-0.9591539931806856,
+									-0.959545061977357,
+									-0.9598972439245489
+								],
 								"maxIter": 200,
 								"maxJacobians": 5,
 								"Enabled": "y"
@@ -35380,7 +35445,7 @@
 								"HtmlNotes": "n",
 								"Type": "Expression",
 								"Formula": {
-									"Formula": "'\n<html>\n\t<head>\n\t\t<style>\n\t\t\tbody {\n\t\t\t\tbackground-color: rgb(255, 253, 225) !important;\n\t\t\t\tcolor: black;\n\t\t\t\t-webkit-print-color-adjust: exact;\n\t\t\t}\n\t\t\ttable {\n\t\t\t\twidth: 100%;\n\t\t\t\tborder-collapse: collapse;\n\t\t\t}\n\t\t\ttd, th {\n\t\t\t\tborder: 1px solid black;\n\t\t\t\tpadding: 4px;\n\t\t\t}\n\t\t\ttd {\n\t\t\t\ttext-align: center;\n\t\t\t}\n\n\t\t\ttr:nth-child(odd){background-color: #f2f2f2;}\n\t\t\ttr:nth-child(even){background-color: #ffffff;}\n\n\t\t\ttr:hover {background-color: #ddd;}\n\n\t\t\tth {\n\t\t\t\ttext-align: center;\n\t\t\t\tbackground-color: #e8e8ff;\n\t\t\t\tcolor: black;\n\t\t\t}\n\t\t\tth.col0, td.col0 {\n\t\t\t\t/* display: none; */\n\t\t\t\twidth: 50px;\n\t\t\t}\n\n\t\t\tinput:focus-visible, textarea:focus-visible {\n\t\t\t\toutline: 1px solid white;\n\t\t\t\tborder: solid 2px blue;\n\t\t\t\tborder-radius: 5px;\n\t\t\t}\n\t\t\t\n\t\t\tselect, button {\n\t\t\t\tfont-size: 12pt;\n\t\t\t}\n\n\t\t\t.tvalue .col0 {\n\t\t\t\tdisplay: none;\n\t\t\t}\n\n\t\t\t.formula {\n\t\t\t\tcolor: navy;\n\t\t\t\tfont-weight: bold;\n\t\t\t}\n\n\t\t\t.model-form {\n\t\t\t\tmargin-top: 10px;\n\t\t\t}\n\n\t\t\t.model-form__title {\n\t\t\t\tfont-size: 12pt;\n\t\t\t\tfont-weight: bold;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t.model-form__buttons {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 1fr;\n\t\t\t\tfloat: right;\n\t\t\t\tposition: sticky;\n\t\t\t\ttop: 10px;\n\t\t\t\tmargin-right: 10px;\n\t\t\t\tcursor: pointer;\n\t\t\t}\n\t\t\t\n\t\t\t@media print {\n\t\t\t\t.model-form__print {\n\t\t\t\t\tvisibility: hidden;\n\t\t\t\t}\n\t\t\t}\n\t\t\t.model-form__default-name {\n\t\t\t\tborder-bottom: solid 1px black;\n\t\t\t\tpadding: 5px;\n\t\t\t\tcolor: blue;\n\t\t\t}\n\t\t\t.model-form__input-row {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 112px 1fr;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t\twidth: 100%;\n\t\t\t}\n\t\t\t.model-form__input-name {\n\t\t\t\twidth:100px;\n\t\t\t\tborder: solid 1px black;\n\t\t\t\tpadding: 5px;\n\t\t\t\toverflow: scroll;\n\t\t\t}\n\n\t\t\t.model-form__input\t{\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t}\n\n\t\t\t.model-form__input input {\n\t\t\t\twidth: calc(100% - 10px);\n\t\t\t}\n\n\t\t\t.model-form__output-row {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 112px 1fr;\n\t\t\t\tbackground-color: #e8e8ff;\n\t\t\t\tborder: solid 1px;\n\t\t\t}\n\t\t\t.model-form__output-name {\n\t\t\t\twidth:100px;\n\t\t\t\tborder: solid 1px black;\n\t\t\t\tpadding: 5px;\n\t\t\t\toverflow: scroll;\n\t\t\t}\n\t\t\t.model-form__output-table, .model-form__output-tool {\n\t\t\t\tmargin-top: 5px;\n\t\t\t}\n\t\t\t.model-form__output-table .model-form__output-name {\n\t\t\t\tbackground-color: #e8e8ff;\n\t\t\t}\n\t\t\t.model-form__output-tool .model-form__output-name {\n\t\t\t\tbackground-color: #e8e8ff;\n\t\t\t}\n\t\t\t.model-form__output-row .model-form__output-name {\n\t\t\t\twidth:100px;\n\t\t\t\tborder: solid 1px black;\n\t\t\t\tpadding: 5px;\n\t\t\t}\n\t\t\t.model-form__output-row .model-form__output-value {\n\t\t\t\twhite-space: pre-wrap;\n\t\t\t\tborder: solid 1px black;\n\t\t\t\tpadding: 5px;\n\t\t\t}\n\t\t\t.model-form__input-name:hover, .model-form__output-name:hover, .model-form__default-name:hover, .model-form__multiline-formula:hover {\n\t\t\t\tcursor: pointer;\n\t\t\t}\n\t\t\t.model-form__output-value\t{\n\t\t\t\tbackground-color: white;\n\t\t\t}\n\t\t\t.model-form__output-row, .model-form__input-row {\n\t\t\t\tmargin-top: 5px;\n\t\t\t}\n\n\t\t\t.model-form__output-row, .model-form__output-tool {\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\n\t\t\t.model-form__multiline-formula {\n\t\t\t\twhite-space: pre-wrap;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t}\n\t\t\t.model-form__input-row:hover, .model-form__output-row:hover {background-color: #ddd;}\n\n\t\t\t.model-form__notes {\n\t\t\t\twhite-space: pre-wrap;\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t\tcursor: pointer;\n\t\t\t}\n\n\t\t\t.model-form-nested .model-form__input-name:hover,\n\t\t\t.model-form-nested .model-form__output-name:hover,\n\t\t\t.model-form-nested .model-form__multiline-formula:hover,\n\t\t\t.model-form-nested .model-form__notes {\n\t\t\t\tcursor: auto;\n\t\t\t}\n\n\t\t\t/* .model-form-nested .model-form__output-name:hover {\n\t\t\t\tcursor: auto;\n\t\t\t} */\n\n\t\t\t.button-tool {\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t\ttext-align: center;\n\t\t\t}\n\n\t\t\t.graph__svg {\n\t\t\t\tbackground-color: white;\n\t\t\t}\n\t\t</style>\n\t\t\n<script>\nwindow.onerror = function (e) {\n\talert('Error: ' + e);\n};\n</script>\n<script> \nvar callBackNumber = 1;\nconst callBacks = {}\n\nconst handleMessage = (e) => {\n\tconst results = e.data;\n\tif (results && results.callBackNumber) {\n\t\tcallBacks[results.callBackNumber](results.results);\n\t\tdelete callBacks[results.callBackNumber]\n\t}\n}\nwindow.addEventListener('message', handleMessage);\nconst mmpost = (inputs, requests, callBack) => {\n\tif (Array.isArray(inputs)) {\n\t\tinputs = mminputs(inputs);\n\t}\n\tconst message = {\n\t\tinputs: inputs\n\t}\n\tif (requests) {\n\t\tmessage.requests = requests;\n\t}\n\tif (callBack) {\n\t\tmessage.callBackNumber = callBackNumber;\n\t\tcallBacks[callBackNumber++] = callBack;\n\t}\n\tmessage.scrollY = window.scrollY;\n\twindow.parent.postMessage('htmlPage' + JSON.stringify(message), '*');\n}\nconst mminputs = (idNames) => {\n\tconst inputs = {};\n\tfor(let a of idNames) {\n\t\tconst e = document.getElementById(a);\n\t\tif (e) {\n\t\t\tinputs[a] = e.value;\n\t\t}\n\t}\n\treturn inputs;\n}\n</script>\n\n\t</head>\n\t<body>\n\t\t\n<style>\nbody {\n\tbackground-color: #EEFFEE;\n}\n\n\n/* Tables\n * --------------------------------------------------------------------- */\n\n\ttable {\n\t\tborder-top:     0px solid #ddd;\n\t\tborder-left:    0px solid #ddd;\n\t\tmargin-top: 0px;\n\t\tmargin-bottom: 0.5em;\n\t\twidth:300px;\n\t\tfont-size: x-large;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t}\n\tth,td {\n\t\tborder-bottom:  0px solid #ddd;\n\t\tborder-right:   0px solid #ddd;\n\t\tvertical-align: top;\n\t}\n/* Default Classes\n * --------------------------------------------------------------------- */\n\n\tp.title, a.title, div.title {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 2.0em;\n\t\ttext-align: center;\n\t}\n\n\tp.subtitle {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 1.1em;\n\t}\n\t\n\t.explain {\n\t\tcolor: #000;\n\t\tfont-size: 1.2em;\n\t}\n\t\n\t.explain a {\n\t\tcolor: blue;\n\t\ttext-decoration: underline;\n\t}\n\t\n\t.html {\n\t\tcolor: navy;\n\t\tfont-weight: bold;\n\t}\n\t\n\t.htmlresult {\n\t\tcolor: navy;\n\t\tfont-weight: bold;\n\t}\n\t\n\t.center {\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\twidth=320px;\n\t\ttext-align: center;\n\t}\n\t\n\t.input {\n\t\twidth: 100%;\n\t\tfont-size: large;\n\t}\n\tbutton {\n\t\tfont-size: large;\n\t\tmargin-left: 10px;\n\t\tmargin-right: 10px;\n\t\twidth: 120px;\n\t}\n\n\t.result {\n\t\ttext-align: center;\n\t\tfont-size: x-large;\n\t}\t\t\n\n\t.indent {\n\t\tmargin-left: 1\n\t\tem;\n\t}\n\t\n\t.buttonrow {\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\twidth: 300px;\n\t\ttext-align: center;\n\t}\n</style>\n<p>This is a second page.</p>\n<p>\n\t<button onClick=\"mmpost({},{mm_push: 'css'})\">Push CSS</button>\n</p>\n<p>\n\t<button onClick=\"mmpost({},{mm_view: 'htmlIn2'})\">View htmlIn2</button>\n</p>\n<p>\n\t<button onClick=\"mmpost({},{mm_refresh: 'htmlIn1'})\">Refresh htmlIn1</button>\n</p>\n<p>\n\t<button onClick=\"mmpost({},{mm_load: 'junk'})\">Load junk</button>\n</p>\n<p>\n\t<button onClick=\"mmpost({},{mm_junk: 'junk'})\">Bad Action</button>\n</p>\n\t</body>\n</html>"
+									"Formula": "'\n<html>\n\t<head>\n\t\t<style>\n\t\t\tbody {\n\t\t\t\tbackground-color: rgb(255, 253, 225) !important;\n\t\t\t\tcolor: black;\n\t\t\t\t-webkit-print-color-adjust: exact;\n\t\t\t}\n\t\t\ttable {\n\t\t\t\twidth: 100%;\n\t\t\t\tborder-collapse: collapse;\n\t\t\t}\n\t\t\ttd, th {\n\t\t\t\tborder: 1px solid black;\n\t\t\t\tpadding: 4px;\n\t\t\t}\n\t\t\ttd {\n\t\t\t\ttext-align: center;\n\t\t\t}\n\n\t\t\ttr:nth-child(odd){background-color: #f2f2f2;}\n\t\t\ttr:nth-child(even){background-color: #ffffff;}\n\n\t\t\ttr:hover {background-color: #ddd;}\n\n\t\t\tth {\n\t\t\t\ttext-align: center;\n\t\t\t\tbackground-color: #e8e8ff;\n\t\t\t\tcolor: black;\n\t\t\t}\n\t\t\tth.col0, td.col0 {\n\t\t\t\t/* display: none; */\n\t\t\t\twidth: 50px;\n\t\t\t}\n\n\t\t\tinput:focus-visible, textarea:focus-visible {\n\t\t\t\toutline: 1px solid white;\n\t\t\t\tborder: solid 2px blue;\n\t\t\t\tborder-radius: 5px;\n\t\t\t}\n\n\t\t\tsvg {\n\t\t\t\twidth: 100%;\n\t\t\t\theight: auto;\n\t\t\t\tmax-width: 1150px;\n\t\t\t\tdisplay: block;\n\t\t\t\tmargin: 0 auto; /* centers the diagram if container is wider */\n\t\t\t}\n\t\t\t\n\t\t\tselect, button {\n\t\t\t\tfont-size: 12pt;\n\t\t\t}\n\n\t\t\t.tvalue .col0 {\n\t\t\t\tdisplay: none;\n\t\t\t}\n\n\t\t\t.formula {\n\t\t\t\tcolor: navy;\n\t\t\t\tfont-weight: bold;\n\t\t\t}\n\n\t\t\t.model-form {\n\t\t\t\tmargin-top: 10px;\n\t\t\t}\n\n\t\t\t.model-form__title {\n\t\t\t\tfont-size: 12pt;\n\t\t\t\tfont-weight: bold;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t.model-form__buttons {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 1fr;\n\t\t\t\tfloat: right;\n\t\t\t\tposition: sticky;\n\t\t\t\ttop: 10px;\n\t\t\t\tmargin-right: 10px;\n\t\t\t\tcursor: pointer;\n\t\t\t}\n\t\t\t\n\t\t\t@media print {\n\t\t\t\t.model-form__print {\n\t\t\t\t\tvisibility: hidden;\n\t\t\t\t}\n\t\t\t}\n\t\t\t.model-form__default-name {\n\t\t\t\tborder-bottom: solid 1px black;\n\t\t\t\tpadding: 5px;\n\t\t\t\tcolor: blue;\n\t\t\t}\n\t\t\t.model-form__input-row {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 112px 1fr;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t\twidth: 100%;\n\t\t\t}\n\t\t\t.model-form__input-name {\n\t\t\t\twidth:150px;\n\t\t\t\tborder: solid 1px black;\n\t\t\t\tpadding: 5px;\n\t\t\t\toverflow-wrap: break-word;\n\t\t\t}\n\n\t\t\t.model-form__input\t{\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t}\n\n\t\t\t.model-form__input input {\n\t\t\t\twidth: calc(100% - 10px);\n\t\t\t}\n\n\t\t\t.model-form__output-row {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 112px 1fr;\n\t\t\t\tbackground-color: #e8e8ff;\n\t\t\t\tborder: solid 1px;\n\t\t\t}\n\t\t\t.model-form__output-name {\n\t\t\t\twidth:150px;\n\t\t\t\tborder: solid 1px black;\n\t\t\t\tpadding: 5px;\n\t\t\t\toverflow-wrap: break-word;\n\t\t\t}\n\t\t\t.model-form__output-table, .model-form__output-tool {\n\t\t\t\tmargin-top: 5px;\n\t\t\t}\n\t\t\t.model-form__output-table .model-form__output-name {\n\t\t\t\tbackground-color: #e8e8ff;\n\t\t\t}\n\t\t\t.model-form__output-tool .model-form__output-name {\n\t\t\t\tbackground-color: #e8e8ff;\n\t\t\t}\n\t\t\t.model-form__output-row .model-form__output-name {\n\t\t\t\twidth:150px;\n\t\t\t\tborder: solid 1px black;\n\t\t\t\tpadding: 5px;\n\t\t\t\toverflow-wrap: break-word;\n\t\t\t}\n\t\t\t.model-form__output-row .model-form__output-value {\n\t\t\t\twhite-space: pre-wrap;\n\t\t\t\tborder: solid 1px black;\n\t\t\t\tpadding: 5px;\n\t\t\t}\n\t\t\t.model-form__input-name:hover, .model-form__output-name:hover, .model-form__default-name:hover, .model-form__multiline-formula:hover {\n\t\t\t\tcursor: pointer;\n\t\t\t}\n\t\t\t.model-form__output-value\t{\n\t\t\t\tbackground-color: white;\n\t\t\t}\n\t\t\t.model-form__output-row, .model-form__input-row {\n\t\t\t\tmargin-top: 5px;\n\t\t\t}\n\n\t\t\t.model-form__output-row, .model-form__output-tool {\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\n\t\t\t.model-form__multiline-formula {\n\t\t\t\twhite-space: pre-wrap;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t}\n\t\t\t.model-form__input-row:hover, .model-form__output-row:hover {background-color: #ddd;}\n\n\t\t\t.model-form__notes {\n\t\t\t\twhite-space: pre-wrap;\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tborder: solid 1px;\n\t\t\t\tpadding: 5px;\n\t\t\t\tbackground-color: #f2f2f2;\n\t\t\t\tcursor: pointer;\n\t\t\t}\n\n\t\t\t.model-form-nested .model-form__input-name:hover,\n\t\t\t.model-form-nested .model-form__output-name:hover,\n\t\t\t.model-form-nested .model-form__multiline-formula:hover,\n\t\t\t.model-form-nested .model-form__notes {\n\t\t\t\tcursor: auto;\n\t\t\t}\n\n\t\t\t/* .model-form-nested .model-form__output-name:hover {\n\t\t\t\tcursor: auto;\n\t\t\t} */\n\n\t\t\t.button-tool {\n\t\t\t\tmargin-top: 10px;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t\ttext-align: center;\n\t\t\t}\n\n\t\t\t.graph__svg {\n\t\t\t\tbackground-color: white;\n\t\t\t}\n\t\t</style>\n\t\t\n<script>\nwindow.onerror = function (e) {\n\talert('Error: ' + e);\n};\n</script>\n<script> \nvar callBackNumber = 1;\nconst callBacks = {}\n\nconst handleMessage = (e) => {\n\tconst results = e.data;\n\tif (results && results.callBackNumber) {\n\t\tcallBacks[results.callBackNumber](results.results);\n\t\tdelete callBacks[results.callBackNumber]\n\t}\n}\nwindow.addEventListener('message', handleMessage);\nconst mmpost = (inputs, requests, callBack) => {\n\tif (Array.isArray(inputs)) {\n\t\tinputs = mminputs(inputs);\n\t}\n\tconst message = {\n\t\tinputs: inputs\n\t}\n\tif (requests) {\n\t\tmessage.requests = requests;\n\t}\n\tif (callBack) {\n\t\tmessage.callBackNumber = callBackNumber;\n\t\tcallBacks[callBackNumber++] = callBack;\n\t}\n\tmessage.scrollY = window.scrollY;\n\twindow.parent.postMessage('htmlPage' + JSON.stringify(message), '*');\n}\nconst mminputs = (idNames) => {\n\tconst inputs = {};\n\tfor(let a of idNames) {\n\t\tconst e = document.getElementById(a);\n\t\tif (e) {\n\t\t\tinputs[a] = e.value;\n\t\t}\n\t}\n\treturn inputs;\n}\n</script>\n\n\t</head>\n\t<body>\n\t\t\n<style>\nbody {\n\tbackground-color: #EEFFEE;\n}\n\n\n/* Tables\n * --------------------------------------------------------------------- */\n\n\ttable {\n\t\tborder-top:     0px solid #ddd;\n\t\tborder-left:    0px solid #ddd;\n\t\tmargin-top: 0px;\n\t\tmargin-bottom: 0.5em;\n\t\twidth:300px;\n\t\tfont-size: x-large;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t}\n\tth,td {\n\t\tborder-bottom:  0px solid #ddd;\n\t\tborder-right:   0px solid #ddd;\n\t\tvertical-align: top;\n\t}\n/* Default Classes\n * --------------------------------------------------------------------- */\n\n\tp.title, a.title, div.title {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 2.0em;\n\t\ttext-align: center;\n\t}\n\n\tp.subtitle {\n\t\tcolor: #040;\n\t\tfont-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n\t\tfont-size: 1.1em;\n\t}\n\t\n\t.explain {\n\t\tcolor: #000;\n\t\tfont-size: 1.2em;\n\t}\n\t\n\t.explain a {\n\t\tcolor: blue;\n\t\ttext-decoration: underline;\n\t}\n\t\n\t.html {\n\t\tcolor: navy;\n\t\tfont-weight: bold;\n\t}\n\t\n\t.htmlresult {\n\t\tcolor: navy;\n\t\tfont-weight: bold;\n\t}\n\t\n\t.center {\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\twidth=320px;\n\t\ttext-align: center;\n\t}\n\t\n\t.input {\n\t\twidth: 100%;\n\t\tfont-size: large;\n\t}\n\tbutton {\n\t\tfont-size: large;\n\t\tmargin-left: 10px;\n\t\tmargin-right: 10px;\n\t\twidth: 120px;\n\t}\n\n\t.result {\n\t\ttext-align: center;\n\t\tfont-size: x-large;\n\t}\t\t\n\n\t.indent {\n\t\tmargin-left: 1\n\t\tem;\n\t}\n\t\n\t.buttonrow {\n\t\tmargin-left: auto;\n\t\tmargin-right: auto;\n\t\twidth: 300px;\n\t\ttext-align: center;\n\t}\n</style>\n<p>This is a second page.</p>\n<p>\n\t<button onClick=\"mmpost({},{mm_push: 'css'})\">Push CSS</button>\n</p>\n<p>\n\t<button onClick=\"mmpost({},{mm_view: 'htmlIn2'})\">View htmlIn2</button>\n</p>\n<p>\n\t<button onClick=\"mmpost({},{mm_refresh: 'htmlIn1'})\">Refresh htmlIn1</button>\n</p>\n<p>\n\t<button onClick=\"mmpost({},{mm_load: 'junk'})\">Load junk</button>\n</p>\n<p>\n\t<button onClick=\"mmpost({},{mm_junk: 'junk'})\">Bad Action</button>\n</p>\n\t</body>\n</html>"
 								}
 							},
 							{

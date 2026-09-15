@@ -10,8 +10,8 @@
 	],
 	"CaseName": "thermo",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "",
-	"ModelPath": "/.root",
+	"SelectedObject": "ErrorCount",
+	"ModelPath": "/.root.Columns",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
@@ -8391,7 +8391,7 @@
 				"HtmlNotes": "n",
 				"Type": "Expression",
 				"Formula": {
-					"Formula": "EtOH_Azeotrope.errorCount +\nORC.errorCount +\nTH_Flash_Solver.errorCount +\ncascade_refrig.errorCount +\ngasplant.errorCheck +\nliqair.errorCheck +\nsteam_turbine.errorCheck +\nmisc_Flashes.errorCheck"
+					"Formula": "EtOH_Azeotrope.errorCount +\nORC.errorCount +\nTH_Flash_Solver.errorCount +\ncascade_refrig.errorCount +\ngasplant.errorCheck +\nliqair.errorCheck +\nsteam_turbine.errorCheck +\nmisc_Flashes.errorCheck +\nColumns.errorCount"
 				}
 			},
 			{
@@ -50296,6 +50296,4542 @@
 								],
 								"Filter": {
 									"Formula": ""
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "Columns",
+				"Notes": "",
+				"DiagramX": 125,
+				"DiagramY": 415,
+				"HideInfo": "n",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "absorber",
+						"Notes": "",
+						"DiagramX": 130,
+						"DiagramY": 200,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "TopFeed",
+								"Notes": "",
+								"DiagramX": 125,
+								"DiagramY": 255,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "'methane, ethane, propane, butane, pentane, N-dodecane"
+								},
+								"firstprop": {
+									"Formula": "400 psia"
+								},
+								"secondprop": {
+									"Formula": "90 degf"
+								},
+								"molefrac": {
+									"Formula": "{cc 0,0,0,0,0,1}"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "165 lbmol/h"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "abs",
+								"Notes": "",
+								"DiagramX": 125,
+								"DiagramY": 315,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Column",
+								"thermo": {
+									"Formula": "topfeed.thermo"
+								},
+								"nstages": {
+									"Formula": "6"
+								},
+								"ptop": {
+									"Formula": "400 psia"
+								},
+								"pbottom": {
+									"Formula": "400 psia"
+								},
+								"totalCondenser": false,
+								"reboiler": true,
+								"feeds": [
+									{
+										"stage": 1,
+										"formula": "topfeed",
+										"name": "feed1"
+									},
+									{
+										"stage": 6,
+										"formula": "btmfeed",
+										"name": "feed2"
+									}
+								],
+								"draws": [
+									{
+										"stage": 1,
+										"phase": "v",
+										"name": "Overhead",
+										"isBasis": true,
+										"flowEst": ""
+									},
+									{
+										"stage": 6,
+										"phase": "l",
+										"name": "Bottoms",
+										"isBasis": true,
+										"flowEst": ""
+									}
+								],
+								"specs": [
+									{
+										"name": "Spec1",
+										"formula": "$.q[1]",
+										"scale": 50
+									},
+									{
+										"name": "Spec2",
+										"formula": "$.q[-1]",
+										"scale": 1
+									}
+								]
+							},
+							{
+								"name": "btmfeed",
+								"Notes": "",
+								"DiagramX": 125,
+								"DiagramY": 285,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "topfeed.thermo"
+								},
+								"firstprop": {
+									"Formula": "400 psia"
+								},
+								"secondprop": {
+									"Formula": "105 degf"
+								},
+								"molefrac": {
+									"Formula": "{cc 160, 370, 240, 25, 5, 0}"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "800 lbmol/h"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "stageT",
+								"Notes": "",
+								"DiagramX": 125,
+								"DiagramY": 340,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "abs.t"
+								}
+							},
+							{
+								"name": "stageVx",
+								"Notes": "",
+								"DiagramX": 125,
+								"DiagramY": 365,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "abs.vx"
+								}
+							},
+							{
+								"name": "stageLx",
+								"Notes": "",
+								"DiagramX": 125,
+								"DiagramY": 390,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "abs.lx"
+								}
+							},
+							{
+								"name": "ExpectedT",
+								"Notes": "",
+								"DiagramX": 210,
+								"DiagramY": 255,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "1",
+										"displayUnit": "degC",
+										"nValues": [
+											336.23553350739996,
+											340.84263060539996,
+											342.5658104965,
+											342.9878464799,
+											341.6302392176,
+											335.4838174616
+										],
+										"unitDimensions": "0 0 0 0 1 0 0",
+										"defaultValue": "0 degC"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "ExpectedVx",
+								"Notes": "",
+								"DiagramX": 210,
+								"DiagramY": 280,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "methane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.2845721652,
+											0.2348530031,
+											0.2254497745,
+											0.2223942198,
+											0.2200819622,
+											0.2155340653
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "ethane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.5240380036,
+											0.5142093619,
+											0.4989155196,
+											0.4905264516,
+											0.4852791628,
+											0.4790783884
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "propane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.1886605645,
+											0.2455814618,
+											0.2673589932,
+											0.2754095171,
+											0.2787255431,
+											0.2830784082
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "butane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.0023690649,
+											0.0048790917,
+											0.0076993351,
+											0.0109251304,
+											0.0147807539,
+											0.02011042
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "pentane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.0000086692,
+											0.0000326056,
+											0.0000954106,
+											0.0002585206,
+											0.0006875676,
+											0.0018970837
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "N-dodecane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.0003515326,
+											0.0004444759,
+											0.000480967,
+											0.0004861605,
+											0.0004450104,
+											0.0003016344
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "ExpectedLx",
+								"Notes": "",
+								"DiagramX": 210,
+								"DiagramY": 305,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "methane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.0382619726,
+											0.0315263718,
+											0.0302418552,
+											0.0298892726,
+											0.0298903153,
+											0.0304984896
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "ethane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.2393690536,
+											0.2256543211,
+											0.2157729646,
+											0.2114732474,
+											0.2121371381,
+											0.2232238597
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "propane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.2111278452,
+											0.2568254011,
+											0.2729963906,
+											0.279532956,
+											0.2878175693,
+											0.3171083717
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "butane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.0063614617,
+											0.0119141,
+											0.0181868724,
+											0.0255686745,
+											0.0352643745,
+											0.0527214271
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "pentane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.0000537655,
+											0.0001781475,
+											0.0004985227,
+											0.0013322813,
+											0.0036150806,
+											0.0110741886
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "N-dodecane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.5048259015,
+											0.4739016586,
+											0.4623033945,
+											0.4522035683,
+											0.4312755223,
+											0.3653736633
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "TError",
+								"Notes": "",
+								"DiagramX": 210,
+								"DiagramY": 340,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {gt {abs stageT - expectedT.1} , 0.1 K}}"
+								}
+							},
+							{
+								"name": "VxError",
+								"Notes": "",
+								"DiagramX": 210,
+								"DiagramY": 365,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {gt {abs {numeric stageVx} - {numeric ExpectedVx}}, 1e-4}}"
+								}
+							},
+							{
+								"name": "LxError",
+								"Notes": "",
+								"DiagramX": 210,
+								"DiagramY": 390,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum {gt {abs {numeric stageLx} - {numeric ExpectedLx}}, 1e-4}}"
+								}
+							},
+							{
+								"name": "ErrorCount",
+								"Notes": "",
+								"DiagramX": 210,
+								"DiagramY": 415,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "TError + VxError + LxError"
+								}
+							}
+						]
+					},
+					{
+						"name": "ErrorCount",
+						"Notes": "",
+						"DiagramX": 225,
+						"DiagramY": 200,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "absorber.errorCount +\nethylbenzene.errorCount +\nc3splitter.errorCount +\nn2reject.errorCount +\nturboExpand.errorCount"
+						}
+					},
+					{
+						"name": "ethylbenzene",
+						"Notes": "",
+						"DiagramX": 130,
+						"DiagramY": 250,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "Feed",
+								"Notes": "ChemSep example\nhttp://chemsep.org/downloads/data/AIChE57p655_EthylBenzene.png",
+								"DiagramX": 110,
+								"DiagramY": 240,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "'ethylene, benzene, ethyl benzene, P-diethylbenzene"
+								},
+								"firstprop": {
+									"Formula": "19 atm"
+								},
+								"secondprop": {
+									"Formula": "432 k"
+								},
+								"molefrac": {
+									"Formula": "{cc 0.0001, 0.515, 0.3352, 0.1497}"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "1883 kmol/h"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "C1",
+								"Notes": "",
+								"DiagramX": 110,
+								"DiagramY": 275,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Column",
+								"thermo": {
+									"Formula": "feed.thermo"
+								},
+								"nstages": {
+									"Formula": "19"
+								},
+								"ptop": {
+									"Formula": "0.3 atm"
+								},
+								"pbottom": {
+									"Formula": "0.3 atm"
+								},
+								"totalCondenser": true,
+								"reboiler": true,
+								"feeds": [
+									{
+										"stage": 10,
+										"formula": "feed",
+										"name": "feed1"
+									}
+								],
+								"draws": [
+									{
+										"stage": 1,
+										"phase": "v",
+										"name": "Overhead",
+										"isBasis": true,
+										"flowEst": ""
+									},
+									{
+										"stage": 19,
+										"phase": "l",
+										"name": "Bottoms",
+										"isBasis": true,
+										"flowEst": ""
+									},
+									{
+										"stage": 1,
+										"phase": "l",
+										"name": "DistillateLiq",
+										"isBasis": false,
+										"flowEst": ""
+									}
+								],
+								"specs": [
+									{
+										"name": "Spec1",
+										"formula": "$.lx[1, \"ethyl benzene\"] - 0.001",
+										"scale": 50
+									},
+									{
+										"name": "Spec2",
+										"formula": "$.lx[-1].benzene / $.lx[-1, \"ethyl benzene\"] - 0.0005",
+										"scale": 1
+									}
+								]
+							},
+							{
+								"name": "rr1",
+								"Notes": "",
+								"DiagramX": 195,
+								"DiagramY": 240,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "c1.lf[1]/c1.ldraw[1]"
+								}
+							},
+							{
+								"name": "c1_btms",
+								"Notes": "",
+								"DiagramX": 110,
+								"DiagramY": 300,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "c1.thermo"
+								},
+								"firstprop": {
+									"Formula": "c1.p[-1]"
+								},
+								"secondprop": {
+									"Formula": "c1.t[-1]"
+								},
+								"molefrac": {
+									"Formula": "c1.lx[-1]"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "c1.ldraw[-1]"
+								},
+								"displayUnits": [
+									null,
+									null,
+									"K"
+								],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "C2",
+								"Notes": "",
+								"DiagramX": 110,
+								"DiagramY": 325,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Column",
+								"thermo": {
+									"Formula": "c1_btms.thermo"
+								},
+								"nstages": {
+									"Formula": "23"
+								},
+								"ptop": {
+									"Formula": ".1 atm"
+								},
+								"pbottom": {
+									"Formula": ".1 atm"
+								},
+								"totalCondenser": true,
+								"reboiler": true,
+								"feeds": [
+									{
+										"stage": 15,
+										"formula": "c1_btms",
+										"name": "feed1"
+									}
+								],
+								"draws": [
+									{
+										"stage": 1,
+										"phase": "v",
+										"name": "Overhead",
+										"isBasis": true,
+										"flowEst": ""
+									},
+									{
+										"stage": 23,
+										"phase": "l",
+										"name": "Bottoms",
+										"isBasis": true,
+										"flowEst": ""
+									},
+									{
+										"stage": 1,
+										"phase": "l",
+										"name": "DistillateLiq",
+										"isBasis": false,
+										"flowEst": ""
+									}
+								],
+								"specs": [
+									{
+										"name": "Spec1",
+										"formula": "$.lx[1, \"P-diethylbenzene\"] - 0.0005",
+										"scale": 50
+									},
+									{
+										"name": "Spec2",
+										"formula": "$.lx[-1, \"ethylbenzene\"] - 0.001",
+										"scale": 1
+									}
+								]
+							},
+							{
+								"name": "c2_btms",
+								"Notes": "",
+								"DiagramX": 110,
+								"DiagramY": 350,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "c2.thermo"
+								},
+								"firstprop": {
+									"Formula": "c2.p[-1]"
+								},
+								"secondprop": {
+									"Formula": "c2.t[-1]"
+								},
+								"molefrac": {
+									"Formula": "c2.lx[-1]"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "c2.ldraw[-1]"
+								},
+								"displayUnits": [
+									null,
+									null,
+									"K"
+								],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "c2_ovhd",
+								"Notes": "",
+								"DiagramX": 195,
+								"DiagramY": 300,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "c2.thermo"
+								},
+								"firstprop": {
+									"Formula": "c2.p[1]"
+								},
+								"secondprop": {
+									"Formula": "c2.t[1]"
+								},
+								"molefrac": {
+									"Formula": "c2.lx[1]"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "c2.ldraw[1]"
+								},
+								"displayUnits": [
+									null,
+									null,
+									"K"
+								],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "rr2",
+								"Notes": "",
+								"DiagramX": 195,
+								"DiagramY": 275,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "c2.lf[1]/c2.ldraw[1]"
+								}
+							},
+							{
+								"name": "C2_WithDraw",
+								"Notes": "",
+								"DiagramX": 110,
+								"DiagramY": 380,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Column",
+								"thermo": {
+									"Formula": "c1_btms.thermo"
+								},
+								"nstages": {
+									"Formula": "23"
+								},
+								"ptop": {
+									"Formula": ".1 atm"
+								},
+								"pbottom": {
+									"Formula": ".1 atm"
+								},
+								"totalCondenser": true,
+								"reboiler": true,
+								"feeds": [
+									{
+										"stage": 15,
+										"formula": "c1_btms",
+										"name": "feed1"
+									}
+								],
+								"draws": [
+									{
+										"stage": 1,
+										"phase": "v",
+										"name": "Overhead",
+										"isBasis": true,
+										"flowEst": ""
+									},
+									{
+										"stage": 23,
+										"phase": "l",
+										"name": "Bottoms",
+										"isBasis": true,
+										"flowEst": ""
+									},
+									{
+										"stage": 1,
+										"phase": "l",
+										"name": "DistillateLiq",
+										"isBasis": false,
+										"flowEst": ""
+									},
+									{
+										"stage": 20,
+										"phase": "l",
+										"name": "test_draw",
+										"isBasis": false,
+										"flowEst": ""
+									},
+									{
+										"stage": 18,
+										"phase": "v",
+										"name": "vap_side",
+										"isBasis": false,
+										"flowEst": ""
+									}
+								],
+								"specs": [
+									{
+										"name": "Spec1",
+										"formula": "$.lx[1, \"P-diethylbenzene\"] - 0.0005",
+										"scale": 50
+									},
+									{
+										"name": "Spec2",
+										"formula": "$.lx[-1, \"ethylbenzene\"] - 0.001",
+										"scale": 1
+									},
+									{
+										"name": "draw",
+										"formula": "$.ldraw[20] - 80 kmol/h",
+										"scale": 1
+									},
+									{
+										"name": "vside",
+										"formula": "$.vdraw[18] - 20 kmol/h",
+										"scale": 1
+									}
+								]
+							},
+							{
+								"name": "lsidedraw",
+								"Notes": "",
+								"DiagramX": 110,
+								"DiagramY": 430,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "c2_withdraw.thermo"
+								},
+								"firstprop": {
+									"Formula": "c2_withdraw.p[20]"
+								},
+								"secondprop": {
+									"Formula": "c2_withdraw.t[20]"
+								},
+								"molefrac": {
+									"Formula": "c2_withdraw.lx[20]"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "c2_withdraw.ldraw[20]"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "vsidedraw",
+								"Notes": "",
+								"DiagramX": 110,
+								"DiagramY": 405,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "c2_withdraw.thermo"
+								},
+								"firstprop": {
+									"Formula": "c2_withdraw.p[18]"
+								},
+								"secondprop": {
+									"Formula": "c2_withdraw.t[18]"
+								},
+								"molefrac": {
+									"Formula": "c2_withdraw.vx[18]"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "c2_withdraw.vdraw[18]"
+								},
+								"displayUnits": [
+									null,
+									null,
+									"K"
+								],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "tCheck",
+								"Notes": "",
+								"DiagramX": 195,
+								"DiagramY": 325,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum\n\t{gt\n\t\t{abs c2_withdraw.t - {numeric expectedT}},\n\t\t0.1 K\n\t}\n}"
+								}
+							},
+							{
+								"name": "ExpectedT",
+								"Notes": "",
+								"DiagramX": 270,
+								"DiagramY": 325,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "1",
+										"displayUnit": "degC",
+										"nValues": [
+											339.9006939884,
+											340.0089462846,
+											340.09269281859997,
+											340.2293413538,
+											340.45550445,
+											340.8197830205,
+											341.38104000429996,
+											342.1897967085,
+											343.25080124569996,
+											344.4858155398,
+											345.7408235691,
+											346.8545046598,
+											347.73266010249995,
+											348.36591506139996,
+											348.7974310369,
+											350.23883152559995,
+											354.3526291382,
+											362.63074181499996,
+											371.8693272755,
+											377.65263682679995,
+											380.0965575488,
+											380.886228998,
+											381.12745134389996
+										],
+										"unitDimensions": "0 0 0 0 1 0 0",
+										"defaultValue": "0 degC"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "vxCheck",
+								"Notes": "",
+								"DiagramX": 195,
+								"DiagramY": 355,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum\n\t{gt\n\t\t{abs {numeric c2_withdraw.vx} - {numeric expectedVx}},\n\t\t0.0001\n\t}\n}"
+								}
+							},
+							{
+								"name": "ExpectedVx",
+								"Notes": "",
+								"DiagramX": 270,
+								"DiagramY": 355,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "ethylene",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "benzene",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.0034202598,
+											0.0005129268,
+											0.0003822224,
+											0.000376522,
+											0.0003765223,
+											0.0003769308,
+											0.0003775752,
+											0.000378501,
+											0.0003797115,
+											0.000381117,
+											0.0003825401,
+											0.0003837903,
+											0.0003847493,
+											0.0003853968,
+											0.0003857789,
+											0.0000617381,
+											0.0000094647,
+											0.0000012604,
+											1.332e-7,
+											1.09e-8,
+											7e-10,
+											0,
+											0
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "ethyl benzene",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.9964925166,
+											0.9989870574,
+											0.9984131811,
+											0.9972254468,
+											0.99523114,
+											0.991972381,
+											0.9868382301,
+											0.9791918524,
+											0.968698648,
+											0.955789999,
+											0.941860765,
+											0.9287742777,
+											0.9179548707,
+											0.909883666,
+											0.9042760253,
+											0.8850029044,
+											0.8213596263,
+											0.6531037088,
+											0.3850318652,
+											0.1622482137,
+											0.0530435398,
+											0.0158218588,
+											0.0043947174
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "P-diethylbenzene",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.0000872237,
+											0.0005000158,
+											0.0012045965,
+											0.0023980312,
+											0.0043923377,
+											0.0076506882,
+											0.0127841947,
+											0.0204296467,
+											0.0309216404,
+											0.043828884,
+											0.057756695,
+											0.070841932,
+											0.08166038,
+											0.0897309372,
+											0.0953381958,
+											0.1149353575,
+											0.178630909,
+											0.3468950308,
+											0.6149680016,
+											0.8377517754,
+											0.9469564595,
+											0.9841781411,
+											0.9956052826
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "ExpectedLx",
+								"Notes": "",
+								"DiagramX": 270,
+								"DiagramY": 380,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "ethylene",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "benzene",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.0005129268,
+											0.000076646,
+											0.0000569505,
+											0.0000558373,
+											0.000055404,
+											0.0000547742,
+											0.0000538243,
+											0.0000524937,
+											0.0000508152,
+											0.0000489549,
+											0.0000471631,
+											0.0000456507,
+											0.0000445027,
+											0.0000436898,
+											0.0000431312,
+											0.0000065981,
+											8.923e-7,
+											9.36e-8,
+											7.7e-9,
+											5e-10,
+											0,
+											0,
+											0
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "ethyl benzene",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.9989870574,
+											0.9970715043,
+											0.9930983154,
+											0.9864010272,
+											0.9753880105,
+											0.9578643966,
+											0.9313807881,
+											0.8943009507,
+											0.8475426391,
+											0.7957071865,
+											0.7457466937,
+											0.7035811005,
+											0.6717058068,
+											0.6494577255,
+											0.6346676875,
+											0.5873172118,
+											0.4660208744,
+											0.2741189557,
+											0.1178473993,
+											0.0411724023,
+											0.012463296,
+											0.0036272522,
+											0.0010000016
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "P-diethylbenzene",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.0005000158,
+											0.0028518497,
+											0.0068447341,
+											0.0135431355,
+											0.0245565855,
+											0.0420808292,
+											0.0685653876,
+											0.1056465557,
+											0.1524065456,
+											0.2042438586,
+											0.2542061433,
+											0.2963732487,
+											0.3282496905,
+											0.3504985847,
+											0.3652891813,
+											0.41267619,
+											0.5339782333,
+											0.7258809507,
+											0.882152593,
+											0.9588275971,
+											0.987536704,
+											0.9963727478,
+											0.9989999984
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "lxCheck",
+								"Notes": "",
+								"DiagramX": 195,
+								"DiagramY": 380,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum\n\t{gt\n\t\t{abs {numeric c2_withdraw.lx} - {numeric expectedlx}},\n\t\t0.0001\n\t}\n}"
+								}
+							},
+							{
+								"name": "errorCount",
+								"Notes": "",
+								"DiagramX": 195,
+								"DiagramY": 405,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "tCheck + vxCheck + lxCheck"
+								}
+							}
+						]
+					},
+					{
+						"name": "c3splitter",
+						"Notes": "",
+						"DiagramX": 130,
+						"DiagramY": 225,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "Feed",
+								"Notes": "",
+								"DiagramX": 65,
+								"DiagramY": 100,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "'propane,propylene"
+								},
+								"firstprop": {
+									"Formula": "280 psia"
+								},
+								"secondprop": {
+									"Formula": "1"
+								},
+								"molefrac": {
+									"Formula": "{cc 0.4, 0.6}"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "1322.76 lbmol/h"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "splitter",
+								"Notes": "",
+								"DiagramX": 65,
+								"DiagramY": 125,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Column",
+								"thermo": {
+									"Formula": "feed.thermo"
+								},
+								"nstages": {
+									"Formula": "185"
+								},
+								"ptop": {
+									"Formula": "280 psia"
+								},
+								"pbottom": {
+									"Formula": "280 psia"
+								},
+								"totalCondenser": true,
+								"reboiler": true,
+								"ttopest": {
+									"Formula": "115 degf"
+								},
+								"tbotest": {
+									"Formula": "130 degf"
+								},
+								"feeds": [
+									{
+										"stage": 138,
+										"formula": "feed",
+										"name": "feed1"
+									}
+								],
+								"draws": [
+									{
+										"stage": 1,
+										"phase": "v",
+										"name": "Overhead",
+										"isBasis": true,
+										"flowEst": ""
+									},
+									{
+										"stage": 185,
+										"phase": "l",
+										"name": "Bottoms",
+										"isBasis": true,
+										"flowEst": ""
+									},
+									{
+										"stage": 1,
+										"phase": "l",
+										"name": "DistillateLiq",
+										"isBasis": false,
+										"flowEst": "774.3 lbmol/h"
+									}
+								],
+								"specs": [
+									{
+										"name": "Spec1",
+										"formula": "$.ldraw[1] - 774.3 lbmol/h",
+										"scale": 50
+									},
+									{
+										"name": "Spec2",
+										"formula": "$.lf[1] / $.ldraw[1] - 16.4 ' reflux ratio",
+										"scale": 1
+									}
+								]
+							},
+							{
+								"name": "vx",
+								"Notes": "",
+								"DiagramX": 65,
+								"DiagramY": 150,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "splitter.vx"
+								}
+							},
+							{
+								"name": "lx",
+								"Notes": "",
+								"DiagramX": 65,
+								"DiagramY": 175,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "splitter.lx"
+								}
+							},
+							{
+								"name": "t",
+								"Notes": "",
+								"DiagramX": 65,
+								"DiagramY": 200,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "splitter.t"
+								}
+							},
+							{
+								"name": "ExpectedVx",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 150,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "propane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.0060916265,
+											0.0066411357,
+											0.0072057356,
+											0.0077858322,
+											0.0083818421,
+											0.0089941923,
+											0.0096233205,
+											0.0102696757,
+											0.0109337177,
+											0.0116159179,
+											0.0123167596,
+											0.0130367374,
+											0.0137763585,
+											0.0145361421,
+											0.0153166199,
+											0.0161183364,
+											0.0169418489,
+											0.0177877278,
+											0.0186565568,
+											0.019548933,
+											0.0204654672,
+											0.0214067837,
+											0.0223735211,
+											0.0233663317,
+											0.0243858823,
+											0.0254328537,
+											0.026507941,
+											0.0276118541,
+											0.0287453169,
+											0.0299090681,
+											0.0311038607,
+											0.0323304621,
+											0.0335896541,
+											0.0348822328,
+											0.0362090082,
+											0.0375708045,
+											0.0389684593,
+											0.0404028237,
+											0.0418747619,
+											0.0433851508,
+											0.0449348796,
+											0.0465248489,
+											0.0481559709,
+											0.0498291679,
+											0.0515453723,
+											0.0533055252,
+											0.0551105759,
+											0.0569614807,
+											0.0588592019,
+											0.0608047063,
+											0.0627989646,
+											0.0648429491,
+											0.0669376327,
+											0.0690839871,
+											0.0712829809,
+											0.0735355776,
+											0.0758427339,
+											0.0782053967,
+											0.0806245014,
+											0.0831009689,
+											0.0856357029,
+											0.0882295873,
+											0.0908834826,
+											0.0935982231,
+											0.096374613,
+											0.0992134232,
+											0.1021153872,
+											0.1050811973,
+											0.1081115001,
+											0.1112068925,
+											0.1143679171,
+											0.1175950573,
+											0.1208887327,
+											0.1242492941,
+											0.1276770182,
+											0.1311721027,
+											0.1347346604,
+											0.1383647147,
+											0.1420621931,
+											0.1458269225,
+											0.1496586235,
+											0.1535569046,
+											0.1575212576,
+											0.1615510513,
+											0.1656455271,
+											0.169803794,
+											0.1740248235,
+											0.1783074455,
+											0.182650344,
+											0.1870520536,
+											0.1915109562,
+											0.196025278,
+											0.2005930875,
+											0.2052122941,
+											0.2098806466,
+											0.2145957336,
+											0.2193549838,
+											0.2241556674,
+											0.2289948986,
+											0.2338696384,
+											0.2387766993,
+											0.24371275,
+											0.2486743217,
+											0.2536578152,
+											0.2586595093,
+											0.2636755698,
+											0.2687020594,
+											0.2737349494,
+											0.2787701313,
+											0.2838034299,
+											0.2888306168,
+											0.293847425,
+											0.2988495635,
+											0.3038327332,
+											0.3087926427,
+											0.3137250241,
+											0.3186256497,
+											0.3234903482,
+											0.3283150204,
+											0.3330956556,
+											0.337828347,
+											0.342509306,
+											0.3471348771,
+											0.3517015509,
+											0.3562059766,
+											0.3606449733,
+											0.3650155407,
+											0.3693148676,
+											0.3735403401,
+											0.3776895483,
+											0.3817602908,
+											0.3857505792,
+											0.3896586402,
+											0.3934829168,
+											0.3972220682,
+											0.4008749685,
+											0.4044407036,
+											0.4079185682,
+											0.4125319973,
+											0.4175080072,
+											0.4228693306,
+											0.4286390589,
+											0.4348404242,
+											0.4414965359,
+											0.4486300657,
+											0.4562628803,
+											0.464415616,
+											0.4731071984,
+											0.4823543056,
+											0.4921707813,
+											0.5025670044,
+											0.5135492268,
+											0.5251188967,
+											0.537271987,
+											0.5499983548,
+											0.5632811638,
+											0.5770964009,
+											0.5914125243,
+											0.6061902799,
+											0.6213827163,
+											0.6369354304,
+											0.652787059,
+											0.6688700261,
+											0.6851115388,
+											0.7014348098,
+											0.7177604679,
+											0.7340081064,
+											0.750097904,
+											0.7659522503,
+											0.7814973019,
+											0.7966644027,
+											0.8113913078,
+											0.8256231662,
+											0.8393132313,
+											0.8524232877,
+											0.8649237979,
+											0.8767937886,
+											0.8880205066,
+											0.8985988855,
+											0.9085308654,
+											0.9178246108,
+											0.9264936705,
+											0.934556116,
+											0.9420336936,
+											0.9489510137
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "propylene",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.9939083735,
+											0.9933588643,
+											0.9927942644,
+											0.9922141678,
+											0.9916181579,
+											0.9910058077,
+											0.9903766795,
+											0.9897303243,
+											0.9890662823,
+											0.9883840821,
+											0.9876832404,
+											0.9869632626,
+											0.9862236415,
+											0.9854638579,
+											0.9846833801,
+											0.9838816636,
+											0.9830581511,
+											0.9822122722,
+											0.9813434432,
+											0.980451067,
+											0.9795345328,
+											0.9785932163,
+											0.9776264789,
+											0.9766336683,
+											0.9756141177,
+											0.9745671463,
+											0.973492059,
+											0.9723881459,
+											0.9712546831,
+											0.9700909319,
+											0.9688961393,
+											0.9676695379,
+											0.9664103459,
+											0.9651177672,
+											0.9637909918,
+											0.9624291955,
+											0.9610315407,
+											0.9595971763,
+											0.9581252381,
+											0.9566148492,
+											0.9550651204,
+											0.9534751511,
+											0.9518440291,
+											0.9501708321,
+											0.9484546277,
+											0.9466944748,
+											0.9448894241,
+											0.9430385193,
+											0.9411407981,
+											0.9391952937,
+											0.9372010354,
+											0.9351570509,
+											0.9330623673,
+											0.9309160129,
+											0.9287170191,
+											0.9264644224,
+											0.9241572661,
+											0.9217946033,
+											0.9193754986,
+											0.9168990311,
+											0.9143642971,
+											0.9117704127,
+											0.9091165174,
+											0.9064017769,
+											0.903625387,
+											0.9007865768,
+											0.8978846128,
+											0.8949188027,
+											0.8918884999,
+											0.8887931075,
+											0.8856320829,
+											0.8824049427,
+											0.8791112673,
+											0.8757507059,
+											0.8723229818,
+											0.8688278973,
+											0.8652653396,
+											0.8616352853,
+											0.8579378069,
+											0.8541730775,
+											0.8503413765,
+											0.8464430954,
+											0.8424787424,
+											0.8384489487,
+											0.8343544729,
+											0.830196206,
+											0.8259751765,
+											0.8216925545,
+											0.817349656,
+											0.8129479464,
+											0.8084890438,
+											0.803974722,
+											0.7994069125,
+											0.7947877059,
+											0.7901193534,
+											0.7854042664,
+											0.7806450162,
+											0.7758443326,
+											0.7710051014,
+											0.7661303616,
+											0.7612233007,
+											0.75628725,
+											0.7513256783,
+											0.7463421848,
+											0.7413404907,
+											0.7363244302,
+											0.7312979406,
+											0.7262650506,
+											0.7212298687,
+											0.7161965701,
+											0.7111693832,
+											0.706152575,
+											0.7011504365,
+											0.6961672668,
+											0.6912073573,
+											0.6862749759,
+											0.6813743503,
+											0.6765096518,
+											0.6716849796,
+											0.6669043444,
+											0.662171653,
+											0.657490694,
+											0.6528651229,
+											0.6482984491,
+											0.6437940234,
+											0.6393550267,
+											0.6349844593,
+											0.6306851324,
+											0.6264596599,
+											0.6223104517,
+											0.6182397092,
+											0.6142494208,
+											0.6103413598,
+											0.6065170832,
+											0.6027779318,
+											0.5991250315,
+											0.5955592964,
+											0.5920814318,
+											0.5874680027,
+											0.5824919928,
+											0.5771306694,
+											0.5713609411,
+											0.5651595758,
+											0.5585034641,
+											0.5513699343,
+											0.5437371197,
+											0.535584384,
+											0.5268928016,
+											0.5176456944,
+											0.5078292187,
+											0.4974329956,
+											0.4864507732,
+											0.4748811033,
+											0.462728013,
+											0.4500016452,
+											0.4367188362,
+											0.4229035991,
+											0.4085874757,
+											0.3938097201,
+											0.3786172837,
+											0.3630645696,
+											0.347212941,
+											0.3311299739,
+											0.3148884612,
+											0.2985651902,
+											0.2822395321,
+											0.2659918936,
+											0.249902096,
+											0.2340477497,
+											0.2185026981,
+											0.2033355973,
+											0.1886086922,
+											0.1743768338,
+											0.1606867687,
+											0.1475767123,
+											0.1350762021,
+											0.1232062114,
+											0.1119794934,
+											0.1014011145,
+											0.0914691346,
+											0.0821753892,
+											0.0735063295,
+											0.065443884,
+											0.0579663064,
+											0.0510489863
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "ExpectedLx",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 175,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "propane",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.0066411357,
+											0.007240162,
+											0.0078556291,
+											0.0084879788,
+											0.0091376642,
+											0.0098051496,
+											0.0104909111,
+											0.0111954367,
+											0.0119192265,
+											0.0126627928,
+											0.0134266606,
+											0.0142113678,
+											0.0150174651,
+											0.0158455165,
+											0.0166960997,
+											0.0175698057,
+											0.0184672395,
+											0.0193890204,
+											0.0203357817,
+											0.0213081711,
+											0.0223068511,
+											0.0233324988,
+											0.0243858062,
+											0.0254674804,
+											0.0265782436,
+											0.0277188332,
+											0.0288900019,
+											0.0300925176,
+											0.0313271637,
+											0.0325947389,
+											0.033896057,
+											0.0352319473,
+											0.036603254,
+											0.0380108363,
+											0.0394555681,
+											0.0409383378,
+											0.0424600481,
+											0.0440216154,
+											0.0456239696,
+											0.0472680535,
+											0.0489548226,
+											0.0506852439,
+											0.0524602955,
+											0.0542809662,
+											0.0561482539,
+											0.0580631652,
+											0.060026714,
+											0.0620399208,
+											0.0641038109,
+											0.0662194131,
+											0.0683877586,
+											0.0706098789,
+											0.0728868042,
+											0.0752195613,
+											0.0776091719,
+											0.08005665,
+											0.0825629996,
+											0.0851292121,
+											0.0877562639,
+											0.0904451129,
+											0.0931966958,
+											0.0960119248,
+											0.0988916841,
+											0.1018368261,
+											0.1048481677,
+											0.107926486,
+											0.1110725146,
+											0.1142869386,
+											0.1175703903,
+											0.1209234443,
+											0.1243466126,
+											0.1278403393,
+											0.1314049957,
+											0.1350408742,
+											0.1387481838,
+											0.1425270432,
+											0.1463774761,
+											0.1502994051,
+											0.1542926454,
+											0.1583568998,
+											0.1624917524,
+											0.166696663,
+											0.1709709613,
+											0.1753138422,
+											0.1797243594,
+											0.1842014215,
+											0.1887437866,
+											0.1933500582,
+											0.1980186815,
+											0.2027479395,
+											0.2075359503,
+											0.2123806648,
+											0.2172798651,
+											0.2222311632,
+											0.2272320011,
+											0.2322796513,
+											0.2373712184,
+											0.2425036414,
+											0.247673697,
+											0.2528780045,
+											0.2581130308,
+											0.2633750969,
+											0.2686603858,
+											0.2739649509,
+											0.2792847259,
+											0.2846155357,
+											0.2899531076,
+											0.2952930849,
+											0.3006310399,
+											0.3059624887,
+											0.3112829064,
+											0.3165877431,
+											0.3218724399,
+											0.3271324463,
+											0.3323632369,
+											0.3375603288,
+											0.3427192989,
+											0.3478358009,
+											0.3529055822,
+											0.3579245004,
+											0.3628885387,
+											0.3677938211,
+											0.372636627,
+											0.3774134035,
+											0.3821207786,
+											0.386755571,
+											0.3913148007,
+											0.3957956966,
+											0.4001957038,
+											0.4045124888,
+											0.4087439438,
+											0.4128881892,
+											0.4169435747,
+											0.4209086793,
+											0.4247823097,
+											0.4285634976,
+											0.4322514957,
+											0.4358457723,
+											0.4406071675,
+											0.4457372841,
+											0.4512582233,
+											0.4571922217,
+											0.4635613991,
+											0.4703874577,
+											0.4776913295,
+											0.4854927705,
+											0.4938099002,
+											0.5026586879,
+											0.5120523915,
+											0.5220009534,
+											0.5325103672,
+											0.5435820295,
+											0.5552120974,
+											0.567390875,
+											0.5801022605,
+											0.5933232831,
+											0.6070237666,
+											0.6211661528,
+											0.635705516,
+											0.6505897979,
+											0.6657602776,
+											0.6811522871,
+											0.6966961643,
+											0.7123184223,
+											0.7279430999,
+											0.7434932432,
+											0.7588924568,
+											0.7740664594,
+											0.7889445733,
+											0.8034610835,
+											0.8175564093,
+											0.8311780447,
+											0.8442812389,
+											0.8568294051,
+											0.8687942608,
+											0.8801557196,
+											0.8909015624,
+											0.9010269268,
+											0.9105336569,
+											0.9194295548,
+											0.9277275765,
+											0.9354450083,
+											0.9426026542,
+											0.9492240612,
+											0.9553347993
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									},
+									{
+										"name": "propylene",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.9933588643,
+											0.992759838,
+											0.9921443709,
+											0.9915120212,
+											0.9908623358,
+											0.9901948504,
+											0.9895090889,
+											0.9888045633,
+											0.9880807735,
+											0.9873372072,
+											0.9865733394,
+											0.9857886322,
+											0.9849825349,
+											0.9841544835,
+											0.9833039003,
+											0.9824301943,
+											0.9815327605,
+											0.9806109796,
+											0.9796642183,
+											0.9786918289,
+											0.9776931489,
+											0.9766675012,
+											0.9756141938,
+											0.9745325196,
+											0.9734217564,
+											0.9722811668,
+											0.9711099981,
+											0.9699074824,
+											0.9686728363,
+											0.9674052611,
+											0.966103943,
+											0.9647680527,
+											0.963396746,
+											0.9619891637,
+											0.9605444319,
+											0.9590616622,
+											0.9575399519,
+											0.9559783846,
+											0.9543760304,
+											0.9527319465,
+											0.9510451774,
+											0.9493147561,
+											0.9475397045,
+											0.9457190338,
+											0.9438517461,
+											0.9419368348,
+											0.939973286,
+											0.9379600792,
+											0.9358961891,
+											0.9337805869,
+											0.9316122414,
+											0.9293901211,
+											0.9271131958,
+											0.9247804387,
+											0.9223908281,
+											0.91994335,
+											0.9174370004,
+											0.9148707879,
+											0.9122437361,
+											0.9095548871,
+											0.9068033042,
+											0.9039880752,
+											0.9011083159,
+											0.8981631739,
+											0.8951518323,
+											0.892073514,
+											0.8889274854,
+											0.8857130614,
+											0.8824296097,
+											0.8790765557,
+											0.8756533874,
+											0.8721596607,
+											0.8685950043,
+											0.8649591258,
+											0.8612518162,
+											0.8574729568,
+											0.8536225239,
+											0.8497005949,
+											0.8457073546,
+											0.8416431002,
+											0.8375082476,
+											0.833303337,
+											0.8290290387,
+											0.8246861578,
+											0.8202756406,
+											0.8157985785,
+											0.8112562134,
+											0.8066499418,
+											0.8019813185,
+											0.7972520605,
+											0.7924640497,
+											0.7876193352,
+											0.7827201349,
+											0.7777688368,
+											0.7727679989,
+											0.7677203487,
+											0.7626287816,
+											0.7574963586,
+											0.752326303,
+											0.7471219955,
+											0.7418869692,
+											0.7366249031,
+											0.7313396142,
+											0.7260350491,
+											0.7207152741,
+											0.7153844643,
+											0.7100468924,
+											0.7047069151,
+											0.6993689601,
+											0.6940375113,
+											0.6887170936,
+											0.6834122569,
+											0.6781275601,
+											0.6728675537,
+											0.6676367631,
+											0.6624396712,
+											0.6572807011,
+											0.6521641991,
+											0.6470944178,
+											0.6420754996,
+											0.6371114613,
+											0.6322061789,
+											0.627363373,
+											0.6225865965,
+											0.6178792214,
+											0.613244429,
+											0.6086851993,
+											0.6042043034,
+											0.5998042962,
+											0.5954875112,
+											0.5912560562,
+											0.5871118108,
+											0.5830564253,
+											0.5790913207,
+											0.5752176903,
+											0.5714365024,
+											0.5677485043,
+											0.5641542277,
+											0.5593928325,
+											0.5542627159,
+											0.5487417767,
+											0.5428077783,
+											0.5364386009,
+											0.5296125423,
+											0.5223086705,
+											0.5145072295,
+											0.5061900998,
+											0.4973413121,
+											0.4879476085,
+											0.4779990466,
+											0.4674896328,
+											0.4564179705,
+											0.4447879026,
+											0.432609125,
+											0.4198977395,
+											0.4066767169,
+											0.3929762334,
+											0.3788338472,
+											0.364294484,
+											0.3494102021,
+											0.3342397224,
+											0.3188477129,
+											0.3033038357,
+											0.2876815777,
+											0.2720569001,
+											0.2565067568,
+											0.2411075432,
+											0.2259335406,
+											0.2110554267,
+											0.1965389165,
+											0.1824435907,
+											0.1688219553,
+											0.1557187611,
+											0.1431705949,
+											0.1312057392,
+											0.1198442804,
+											0.1090984376,
+											0.0989730732,
+											0.0894663431,
+											0.0805704452,
+											0.0722724235,
+											0.0645549917,
+											0.0573973458,
+											0.0507759388,
+											0.0446652007
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "ExpectedT",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 200,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "1",
+										"displayUnit": "degC",
+										"nValues": [
+											320.0075832576,
+											320.01111657079997,
+											320.0147487293,
+											320.0184824946,
+											320.02232070419996,
+											320.0262662733,
+											320.0303221974,
+											320.0344915533,
+											320.0387775022,
+											320.043183291,
+											320.04771225449997,
+											320.0523678181,
+											320.057153499,
+											320.0620729091,
+											320.0671297569,
+											320.07232784949997,
+											320.0776710952,
+											320.08316350539997,
+											320.08880919669997,
+											320.0946123935,
+											320.10057742979996,
+											320.1067087514,
+											320.11301091819996,
+											320.1194886062,
+											320.12614660959997,
+											320.13298984259995,
+											320.1400233417,
+											320.1472522671,
+											320.1546819048,
+											320.16231766839996,
+											320.17016509999996,
+											320.1782298724,
+											320.18651778969996,
+											320.1950347889,
+											320.2037869404,
+											320.21278044909997,
+											320.22202165439995,
+											320.2315170306,
+											320.24127318679996,
+											320.25129686639997,
+											320.26159494639995,
+											320.27217443629996,
+											320.28304247619997,
+											320.29420633489997,
+											320.30567340759995,
+											320.3174512125,
+											320.3295473871,
+											320.34196968419997,
+											320.3547259666,
+											320.36782420139997,
+											320.38127245379997,
+											320.3950788793,
+											320.40925171559996,
+											320.42379927359997,
+											320.43872992689995,
+											320.45405210039996,
+											320.469774258,
+											320.48590488879995,
+											320.5024524923,
+											320.51942556179995,
+											320.5368325665,
+											320.5546819329,
+											320.57298202339996,
+											320.5917411142,
+											320.6109673712,
+											320.63066882429996,
+											320.6508533398,
+											320.67152859109996,
+											320.69270202769997,
+											320.7143808419,
+											320.73657193409997,
+											320.7592818761,
+											320.782516872,
+											320.80628271859996,
+											320.830584762,
+											320.85542785459995,
+											320.88081630849996,
+											320.906753849,
+											320.9332435656,
+											320.96028786209996,
+											320.9878884053,
+											321.01604607369995,
+											321.0447609043,
+											321.07403204039997,
+											321.10385767789995,
+											321.13423501309995,
+											321.16516019079995,
+											321.19662825309996,
+											321.2286330903,
+											321.2611673934,
+											321.2942226092,
+											321.3277888989,
+											321.3618550993,
+											321.3964086896,
+											321.4314357615,
+											321.4669209957,
+											321.50284764419996,
+											321.5391975187,
+											321.57595098679997,
+											321.6130869755,
+											321.65058298279996,
+											321.68841509839996,
+											321.7265580331,
+											321.76498515779997,
+											321.8036685519,
+											321.8425790618,
+											321.8816863693,
+											321.920959069,
+											321.96036475669996,
+											321.99987012559995,
+											322.03944107279995,
+											322.0790428127,
+											322.1186399994,
+											322.1581968547,
+											322.19767730309997,
+											322.2370451105,
+											322.27626402759995,
+											322.3152979355,
+											322.3541109922,
+											322.3926677793,
+											322.43093344759995,
+											322.46887385929995,
+											322.5064557266,
+											322.54364674479996,
+											322.5804157188,
+											322.6167326822,
+											322.65256900689997,
+											322.6878975043,
+											322.72269251489996,
+											322.7569299873,
+											322.790587546,
+											322.8236445468,
+											322.85608212019997,
+											322.88788320279997,
+											322.9190325569,
+											322.9495167779,
+											322.97932429049996,
+											323.0084453341,
+											323.04716819419997,
+											323.08902719959997,
+											323.13423472709997,
+											323.1830094518,
+											323.23557480399995,
+											323.2921570086,
+											323.3529826525,
+											323.4182757311,
+											323.48825412739995,
+											323.5631254911,
+											323.6430824972,
+											323.7282974905,
+											323.8189165477,
+											323.9150530306,
+											324.01678074529997,
+											324.12412687759996,
+											324.2370649276,
+											324.35550792659996,
+											324.4793022686,
+											324.60822253289996,
+											324.74196769829996,
+											324.8801591478,
+											325.02234083149995,
+											325.16798188629997,
+											325.31648190659996,
+											325.4671789219,
+											325.6193599728,
+											325.7722740028,
+											325.92514661229995,
+											326.0771960738,
+											326.2276499011,
+											326.37576120989996,
+											326.520824116,
+											326.66218748349996,
+											326.7992664551,
+											326.9315513573,
+											327.0586137519,
+											327.18010959139997,
+											327.29577960039995,
+											327.4054471514,
+											327.5090140009,
+											327.60645432169997,
+											327.6978074863,
+											327.7831700521,
+											327.86268735989995,
+											327.9365451041,
+											328.00496116899996
+										],
+										"unitDimensions": "0 0 0 0 1 0 0",
+										"defaultValue": "0 degC"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "ExpectedLf",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 225,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "1",
+										"displayUnit": "kmol/h",
+										"nValues": [
+											1599.989228685028,
+											1600.0083716314168,
+											1600.0280145466945,
+											1600.048169328778,
+											1600.0688480900558,
+											1600.090063154639,
+											1600.1118270630002,
+											1600.1341525635278,
+											1600.1570526149999,
+											1600.1805403902779,
+											1600.2046292576667,
+											1600.229332798389,
+											1600.2546647839445,
+											1600.2806391850277,
+											1600.3072701641947,
+											1600.3345720627499,
+											1600.3625594053058,
+											1600.391246887111,
+											1600.4206493701113,
+											1600.4507818694444,
+											1600.4816595501945,
+											1600.5132977115834,
+											1600.5457117839169,
+											1600.5789173080834,
+											1600.61292992825,
+											1600.6477653776112,
+											1600.6834394599446,
+											1600.719968037528,
+											1600.7573670089166,
+											1600.7956522965833,
+											1600.8348398179444,
+											1600.8749454759723,
+											1600.915985124,
+											1600.9579745483334,
+											1601.000929440861,
+											1601.0448653705835,
+											1601.0897977561945,
+											1601.1357418322502,
+											1601.182712621,
+											1601.2307248933055,
+											1601.279793133639,
+											1601.3299315032777,
+											1601.3811538009447,
+											1601.4334734169167,
+											1601.486903292639,
+											1601.5414558721668,
+											1601.5971430590557,
+											1601.6539761586669,
+											1601.7119658325555,
+											1601.7711220440556,
+											1601.8314539983335,
+											1601.8929700881945,
+											1601.9556778359722,
+											1602.0195838254722,
+											1602.0846936468888,
+											1602.1510118285,
+											1602.218541767361,
+											1602.2872856701945,
+											1602.3572444741944,
+											1602.4284177878335,
+											1602.5008038116669,
+											1602.5743992714167,
+											1602.6491993506113,
+											1602.7251976069444,
+											1602.8023859155833,
+											1602.8807543907224,
+											1602.9602913162223,
+											1603.0409830785557,
+											1603.122814105139,
+											1603.2057667919169,
+											1603.289821451139,
+											1603.3749562471946,
+											1603.4611471508613,
+											1603.548367883528,
+											1603.636589879528,
+											1603.7257822440558,
+											1603.8159117291111,
+											1603.90694270625,
+											1603.9988371558056,
+											1604.091554657278,
+											1604.1850524011668,
+											1604.2792851964723,
+											1604.3742055051946,
+											1604.4697634749168,
+											1604.565906994139,
+											1604.6625817581112,
+											1604.7597313470835,
+											1604.8572973157222,
+											1604.9552193083612,
+											1605.0534351749168,
+											1605.1518811119724,
+											1605.2504918083332,
+											1605.3492006212778,
+											1605.4479397427224,
+											1605.546640398639,
+											1605.645233046611,
+											1605.74364759625,
+											1605.8418136198611,
+											1605.9396605915001,
+											1606.0371181133057,
+											1606.1341161547223,
+											1606.2305852910279,
+											1606.3264569394166,
+											1606.4216635931111,
+											1606.5161390428336,
+											1606.6098186053334,
+											1606.702639325139,
+											1606.7945401751113,
+											1606.8854622400834,
+											1606.9753488828333,
+											1607.06414589825,
+											1607.1518016467223,
+											1607.2382671650278,
+											1607.3234962784445,
+											1607.4074456600836,
+											1607.4900749113888,
+											1607.5713465915,
+											1607.651226251361,
+											1607.7296824460834,
+											1607.8066867251111,
+											1607.88221362125,
+											1607.9562406253056,
+											1608.0287481367225,
+											1608.0997194252502,
+											1608.1691405714444,
+											1608.2370004040001,
+											1608.3032904357779,
+											1608.3680047823611,
+											1608.4311400978888,
+											1608.4926954818056,
+											1608.5526724092501,
+											1608.611074636639,
+											1608.6679081253335,
+											1608.7231809403336,
+											1608.7769031773057,
+											1608.8290868575557,
+											1608.8797458397778,
+											1608.92849316525,
+											1608.9905856130279,
+											1609.0569321690834,
+											1609.1277040572777,
+											1609.2030614253056,
+											1609.2831506985556,
+											1609.3681020053054,
+											1609.4580268121667,
+											1609.553015906528,
+											1609.6531378585003,
+											1609.7584381442223,
+											1609.8689390404445,
+											1609.984640411389,
+											1610.1055213865834,
+											1610.231542944861,
+											1610.3626511988334,
+											1610.4987811406668,
+											1610.6398604291667,
+											1610.7858127069167,
+											1610.9365598318889,
+											1611.092022401639,
+											1611.2521179481946,
+											1611.4167564168333,
+											1611.5858326685557,
+											1611.7592161867221,
+											1611.9367385009446,
+											1612.11817923775,
+											1612.3032520924166,
+											1612.4915921987224,
+											1612.6827464673056,
+											1612.876168274278,
+											1613.071217628139,
+											1613.2671673337502,
+											1613.4632151716667,
+											1613.6585014595832,
+											1613.8521308570832,
+											1614.04319686825,
+											1614.2308073266668,
+											1614.4141091333333,
+											1614.5923107010278,
+											1614.7647008874721,
+											1614.93066358,
+											1615.0896875479445,
+											1615.2413715191112,
+											1615.3854248345278,
+											1615.5216642069724,
+											1615.6500073174723,
+											69.10464868441667
+										],
+										"unitDimensions": "0 0 -1 0 0 1 0",
+										"defaultValue": "0 kmol/h"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "q",
+								"Notes": "",
+								"DiagramX": 65,
+								"DiagramY": 250,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "splitter.q"
+								}
+							},
+							{
+								"name": "ExpectedQ",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 250,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "1",
+										"displayUnit": "W",
+										"nValues": [
+											-20405006.092718102,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											18417341.307560153
+										],
+										"unitDimensions": "2 1 -3 0 0 0 0",
+										"defaultValue": "0 W"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "CheckVx",
+								"Notes": "",
+								"DiagramX": 65,
+								"DiagramY": 275,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum\n\t{gt\n\t\t{abs {numeric vx} - {numeric expectedVx}},\n\t\t0.0001\n\t}\n}"
+								}
+							},
+							{
+								"name": "CheckT",
+								"Notes": "",
+								"DiagramX": 65,
+								"DiagramY": 300,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum\n\t{gt\n\t\t{abs t - {numeric expectedT}},\n\t\t0.01 K\n\t}\n}"
+								}
+							},
+							{
+								"name": "lf",
+								"Notes": "",
+								"DiagramX": 65,
+								"DiagramY": 225,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "splitter.lf"
+								}
+							},
+							{
+								"name": "CheckLx",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 275,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum\n\t{gt\n\t\t{abs {numeric lx} - {numeric expectedLx}},\n\t\t0.0001\n\t}\n}"
+								}
+							},
+							{
+								"name": "CheckLf",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 300,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum\n\t{gt\n\t\t{abs lf - {numeric expectedLf}},\n\t\t0.01 kmol/h\n\t}\n}"
+								}
+							},
+							{
+								"name": "CheckQ",
+								"Notes": "",
+								"DiagramX": 65,
+								"DiagramY": 325,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum\n\t{gt\n\t\t{abs q - {numeric expectedQ}},\n\t\t1 kW\n\t}\n}"
+								}
+							},
+							{
+								"name": "ErrorCount",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 325,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "CheckVx + CheckLx + CheckLf + CheckQ"
+								}
+							}
+						]
+					},
+					{
+						"name": "n2reject",
+						"Notes": "",
+						"DiagramX": 130,
+						"DiagramY": 275,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "hp_feed",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 75,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "'nitrogen,methane,ethane,propane,isobutane,butane,isopentane,pentane"
+								},
+								"firstprop": {
+									"Formula": "-215 degf"
+								},
+								"secondprop": {
+									"Formula": "380 psia"
+								},
+								"molefrac": {
+									"Formula": "{cc 0.5454, 0.4153, 0.0347, 0.0036, 0.0004, 0.0003, 0.0002, 0.0001}"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "1000 lbmol/h"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "HPColumn",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 100,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Column",
+								"thermo": {
+									"Formula": "hp_feed.thermo"
+								},
+								"nstages": {
+									"Formula": "10"
+								},
+								"ptop": {
+									"Formula": "370 psia"
+								},
+								"pbottom": {
+									"Formula": "btm_p"
+								},
+								"totalCondenser": true,
+								"reboiler": false,
+								"feeds": [
+									{
+										"stage": 10,
+										"formula": "hp_feed",
+										"name": "feed1"
+									}
+								],
+								"draws": [
+									{
+										"stage": 1,
+										"phase": "v",
+										"name": "Overhead",
+										"isBasis": true,
+										"flowEst": ""
+									},
+									{
+										"stage": 10,
+										"phase": "l",
+										"name": "Bottoms",
+										"isBasis": true,
+										"flowEst": ""
+									},
+									{
+										"stage": 1,
+										"phase": "l",
+										"name": "DistillateLiq",
+										"isBasis": false,
+										"flowEst": ""
+									}
+								],
+								"specs": [
+									{
+										"name": "Spec2",
+										"formula": "$.lx[1].nitrogen - 0.99 ' purity spec",
+										"scale": 1
+									}
+								]
+							},
+							{
+								"name": "heat_values",
+								"Notes": "",
+								"DiagramX": 135,
+								"DiagramY": 75,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{table\n\t\"Nitrogen\", 0 kJ/mol,\n\t\"Methane\",890.36 kJ/mol,\n\t\"Ethane\", 1559.9 kJ/mol,\n\t\"Propane\", 2220.0 kJ/mol,\n\t\"isoButane\", 2868.6 kJ/mol,\n\t\"Butane\", 2878.5 kJ/mol,\n\t\"isoPentane\", 3529.2 kJ/mol,\n\t\"Pentane\", 3536.1 kJ/mol\n}"
+								}
+							},
+							{
+								"name": "hp_btms",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 130,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "hpcolumn.thermo"
+								},
+								"firstprop": {
+									"Formula": "hpcolumn.p[-1]"
+								},
+								"secondprop": {
+									"Formula": "0"
+								},
+								"molefrac": {
+									"Formula": "{tr {numeric hpcolumn.lx[-1]}}"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "hpcolumn.lf[-1]"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "hp_ovhd",
+								"Notes": "",
+								"DiagramX": 135,
+								"DiagramY": 130,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "hpcolumn.thermo"
+								},
+								"firstprop": {
+									"Formula": "hpcolumn.p[1]"
+								},
+								"secondprop": {
+									"Formula": "1"
+								},
+								"molefrac": {
+									"Formula": "{tr {numeric hpcolumn.lx[1]}}"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "hpcolumn.lf[1]"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "e2_out",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 160,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "hp_btms.thermo"
+								},
+								"firstprop": {
+									"Formula": "-230 degf"
+								},
+								"secondprop": {
+									"Formula": "hp_btms.p - 0.5 psia"
+								},
+								"molefrac": {
+									"Formula": "hp_btms.x"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "hp_btms.f"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "LP_Feed",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 185,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "e2_out.thermo"
+								},
+								"firstprop": {
+									"Formula": "2 atm"
+								},
+								"secondprop": {
+									"Formula": "e2_out.h"
+								},
+								"molefrac": {
+									"Formula": "e2_out.x"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "e2_out.f"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "e1_out",
+								"Notes": "",
+								"DiagramX": 135,
+								"DiagramY": 160,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "hp_ovhd.thermo"
+								},
+								"firstprop": {
+									"Formula": "-275 degf + solver1.1 * 5 degr"
+								},
+								"secondprop": {
+									"Formula": "hp_ovhd.p - 0.5 psia"
+								},
+								"molefrac": {
+									"Formula": "hp_ovhd.x"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "hp_ovhd.f"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "LP_Reflux",
+								"Notes": "",
+								"DiagramX": 135,
+								"DiagramY": 185,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "e1_out.thermo"
+								},
+								"firstprop": {
+									"Formula": "2 atm"
+								},
+								"secondprop": {
+									"Formula": "e1_out.h"
+								},
+								"molefrac": {
+									"Formula": "e1_out.x"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "e1_out.f"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "LPColumn",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 210,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Column",
+								"thermo": {
+									"Formula": "LP_Feed.thermo"
+								},
+								"nstages": {
+									"Formula": "6"
+								},
+								"ptop": {
+									"Formula": "2 atm"
+								},
+								"pbottom": {
+									"Formula": "2.5 atm"
+								},
+								"totalCondenser": false,
+								"reboiler": true,
+								"ttopest": {
+									"Formula": "-308 degf"
+								},
+								"tbotest": {
+									"Formula": "-250 degf"
+								},
+								"feeds": [
+									{
+										"stage": 1,
+										"formula": "LP_Reflux",
+										"name": "feed1"
+									},
+									{
+										"stage": 3,
+										"formula": "LP_Feed",
+										"name": "feed2"
+									}
+								],
+								"draws": [
+									{
+										"stage": 1,
+										"phase": "v",
+										"name": "Overhead",
+										"isBasis": true,
+										"flowEst": "500 lbmol/h"
+									},
+									{
+										"stage": 6,
+										"phase": "l",
+										"name": "Bottoms",
+										"isBasis": true,
+										"flowEst": ""
+									}
+								],
+								"specs": [
+									{
+										"name": "Spec1",
+										"formula": "$.q[1]",
+										"scale": 10
+									},
+									{
+										"name": "Spec2",
+										"formula": "$.q[-1] + hpcolumn.q[1] ' heat from hpcolumn",
+										"scale": 10
+									}
+								]
+							},
+							{
+								"name": "N2_Rich",
+								"Notes": "",
+								"DiagramX": 135,
+								"DiagramY": 210,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "LPColumn.thermo"
+								},
+								"firstprop": {
+									"Formula": "LPColumn.p[1] - 0.5 psia"
+								},
+								"secondprop": {
+									"Formula": "(lpcolumn.vh[1] * lpcolumn.vf [1]+ hp_ovhd.hflow - lp_reflux.hflow)\n/\nlpcolumn.vf[1]"
+								},
+								"molefrac": {
+									"Formula": "lpcolumn.vx[1]"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "lpcolumn.vf[1]"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "feed_HHV",
+								"Notes": "",
+								"DiagramX": 135,
+								"DiagramY": 100,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum hp_feed.x * {tr {numeric heat_values}}}"
+								},
+								"displayUnit": "btu/scf"
+							},
+							{
+								"name": "HC_Stream",
+								"Notes": "",
+								"DiagramX": 135,
+								"DiagramY": 235,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "lpcolumn.thermo"
+								},
+								"firstprop": {
+									"Formula": "lpcolumn.p[-1] - 0.5 psia"
+								},
+								"secondprop": {
+									"Formula": "(lpcolumn.lh[-1] * lpcolumn.lf[-1] + hp_btms.hflow - e2_out.hflow)\n/\nlpcolumn.lf[-1]"
+								},
+								"molefrac": {
+									"Formula": "lpcolumn.lx[-1]"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "lpcolumn.lf[-1]"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "HC_HHV",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 235,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{sum hc_stream.x * {numeric heat_values}}"
+								},
+								"displayUnit": "btu/scf"
+							},
+							{
+								"name": "btm_p",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 50,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "377 psia"
+								}
+							},
+							{
+								"name": "Solver1",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 265,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Equation Solver",
+								"f0": "hc_hhv - 940 btu/scf",
+								"c0": "1",
+								"maxIter": 200,
+								"maxJacobians": 5,
+								"Enabled": "y"
+							},
+							{
+								"name": "tCheck",
+								"Notes": "",
+								"DiagramX": 135,
+								"DiagramY": 290,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{not lpcolumn.solved} + {gt {abs hc_stream.t - -163.80 degc}, 0.02 K}"
+								}
+							},
+							{
+								"name": "n2richXCheck",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 290,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{gt\n\t{abs n2_rich.x[1,1] - 0.99755},\n\t0.0001\n}"
+								}
+							},
+							{
+								"name": "errorCount",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 315,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "solver1.1 * 0 +\nhhvcheck +\ntCheck +\nn2richXCheck\n' first line is to trigger solver"
+								}
+							},
+							{
+								"name": "HHVCheck",
+								"Notes": "",
+								"DiagramX": 140,
+								"DiagramY": 265,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{gt {abs HC_HHV - 940 btu/scf}, 0.1 btu/scf}"
+								}
+							}
+						]
+					},
+					{
+						"name": "turboexpand",
+						"Notes": "",
+						"DiagramX": 130,
+						"DiagramY": 300,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "feed",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 180,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "'Nitrogen, CarbonDioxide, Methane, Ethane, Propane, IsoButane, nButane, isoPentane, nPentane, nHexane"
+								},
+								"firstprop": {
+									"Formula": "60 degf"
+								},
+								"secondprop": {
+									"Formula": "600 psia"
+								},
+								"molefrac": {
+									"Formula": "{cc 1.49, 0.2, 91.22, 4.96, 1.48, 0.26, 0.20, 0.10, 0.06, 0.03}"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "100 lbmol/h"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "cooled_feed",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 205,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "feed.thermo"
+								},
+								"firstprop": {
+									"Formula": "-105 degf"
+								},
+								"secondprop": {
+									"Formula": "feed.p - 15 psia"
+								},
+								"molefrac": {
+									"Formula": "feed.x"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "feed.f"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "flashed_feed",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 180,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "cooled_feed.thermo"
+								},
+								"firstprop": {
+									"Formula": "turboexpander.out.p + 5  psia"
+								},
+								"secondprop": {
+									"Formula": "cooled_feed.l.h"
+								},
+								"molefrac": {
+									"Formula": "cooled_feed.l.x"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "cooled_feed.l.f"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "TurboExpander",
+								"Notes": "Basic expander calculation.",
+								"DiagramX": 60,
+								"DiagramY": 230,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "n",
+								"Type": "Model",
+								"diagramScale": 1,
+								"Objects": [
+									{
+										"name": "Feed",
+										"DiagramX": 120,
+										"DiagramY": 145,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "cooled_feed.v"
+										},
+										"isInput": "y",
+										"showInput": "y"
+									},
+									{
+										"name": "e",
+										"Notes": "If efficiency is greater than one, assume it is a percentage",
+										"DiagramX": 230,
+										"DiagramY": 135,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "{if {gt efficiency, 1.0},\n\tefficiency/100,\n\tefficiency\n}"
+										}
+									},
+									{
+										"name": "OutletP",
+										"DiagramX": 120,
+										"DiagramY": 170,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "step_p.x"
+										},
+										"isInput": "y",
+										"showInput": "y"
+									},
+									{
+										"name": "Efficiency",
+										"DiagramX": 120,
+										"DiagramY": 195,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ".75"
+										},
+										"isInput": "y",
+										"showInput": "y"
+									},
+									{
+										"name": "H",
+										"Notes": "The outlet enthalpy is determined by dividing the difference between the inlet and ideal outlet enthalpies by the efficiency and adding the result to the feed enthalpy.",
+										"DiagramX": 230,
+										"DiagramY": 255,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feedH + \n(IdealOut.h - feedH) * e"
+										}
+									},
+									{
+										"name": "Power",
+										"DiagramX": 230,
+										"DiagramY": 205,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "(feed.h - outfluid.h)*Feed.f"
+										}
+									},
+									{
+										"name": "OutFluid",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 250,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "IdealOut.thermo"
+										},
+										"firstprop": {
+											"Formula": "OutletP"
+										},
+										"secondprop": {
+											"Formula": "h"
+										},
+										"molefrac": {
+											"Formula": "idealout.x"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "idealout.f"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "IdealOut",
+										"Notes": "Ideal expansion is isentropic",
+										"DiagramX": 120,
+										"DiagramY": 220,
+										"HideInfo": "y",
+										"DiagramNotes": "y",
+										"HtmlNotes": "n",
+										"Type": "Flash",
+										"thermo": {
+											"Formula": "feed.thermo"
+										},
+										"firstprop": {
+											"Formula": "OutletP"
+										},
+										"secondprop": {
+											"Formula": "feed.s"
+										},
+										"molefrac": {
+											"Formula": "Feed.x"
+										},
+										"massfrac": {
+											"Formula": ""
+										},
+										"flow": {
+											"Formula": "Feed.f"
+										},
+										"displayUnits": [],
+										"formatStrings": {
+											"t": ".2f",
+											"p": ".2f",
+											"f": ".2f",
+											"h": ".2f",
+											"s": ".2f",
+											"dmolar": ".2f"
+										}
+									},
+									{
+										"name": "Out",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 180,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "OutFluid"
+										}
+									},
+									{
+										"name": "polyEff",
+										"Notes": "",
+										"DiagramX": 230,
+										"DiagramY": 230,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"isOutput": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "polytropic.polyeff"
+										}
+									},
+									{
+										"name": "feedH",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 310,
+										"HideInfo": "y",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": "feed.h"
+										}
+									},
+									{
+										"name": "polytropic",
+										"Notes": "",
+										"DiagramX": 120,
+										"DiagramY": 280,
+										"HideInfo": "n",
+										"DiagramNotes": "n",
+										"HtmlNotes": "n",
+										"Type": "Model",
+										"diagramScale": 1,
+										"Objects": [
+											{
+												"name": "n",
+												"Notes": "n - polytropic path exponent",
+												"DiagramX": 280,
+												"DiagramY": 255,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "logpratio / {ln InletV / OutletV}"
+												}
+											},
+											{
+												"name": "logPRatio",
+												"Notes": "Log pressure ratio",
+												"DiagramX": 280,
+												"DiagramY": 195,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "{ln outlet.p / inletP}"
+												}
+											},
+											{
+												"name": "ns",
+												"Notes": "ns - isentropic path exponent",
+												"DiagramX": 280,
+												"DiagramY": 225,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "logpratio / {ln InletV / IdealV}"
+												}
+											},
+											{
+												"name": "IdealV",
+												"Notes": "vs - Isentropic outlet molar volume",
+												"DiagramX": 180,
+												"DiagramY": 320,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "1/Ideal.dmolar"
+												}
+											},
+											{
+												"name": "InletV",
+												"Notes": "v1 - Inlet molar volume",
+												"DiagramX": 180,
+												"DiagramY": 165,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "1/feed.dmolar"
+												},
+												"isInput": "y",
+												"showInput": "y"
+											},
+											{
+												"name": "OutletV",
+												"Notes": "va - Actual outlet molar volume",
+												"DiagramX": 280,
+												"DiagramY": 165,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "1/Outlet.dmolar"
+												}
+											},
+											{
+												"name": "Ideal",
+												"Notes": "Isentropic outlet fluid",
+												"DiagramX": 180,
+												"DiagramY": 255,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "IdealOut"
+												},
+												"isInput": "y",
+												"showInput": "y"
+											},
+											{
+												"name": "Outlet",
+												"Notes": "Actual outlet fluid",
+												"DiagramX": 180,
+												"DiagramY": 285,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "OutFluid"
+												},
+												"isInput": "y",
+												"showInput": "y"
+											},
+											{
+												"name": "inletP",
+												"Notes": "p1 - Inlet Pressure",
+												"DiagramX": 180,
+												"DiagramY": 195,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "feed.p"
+												},
+												"isInput": "y",
+												"showInput": "y"
+											},
+											{
+												"name": "InletH",
+												"Notes": "hin - Inlet molar enthalpy",
+												"DiagramX": 180,
+												"DiagramY": 225,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "feed.h"
+												},
+												"isInput": "y",
+												"showInput": "y"
+											},
+											{
+												"name": "adEff",
+												"Notes": "Ea - Adiabatic efficiency",
+												"DiagramX": 280,
+												"DiagramY": 285,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "(ideal.h - inletH)/(outlet.h - inletH)"
+												}
+											},
+											{
+												"name": "polyEff",
+												"Notes": "Ep - Polytropic Efficiency",
+												"DiagramX": 280,
+												"DiagramY": 345,
+												"HideInfo": "y",
+												"DiagramNotes": "y",
+												"HtmlNotes": "n",
+												"isOutput": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "{if {lt inletP, Outlet.p}\n\tCompPolyEff,\n\t1/CompPolyEff\n}"
+												}
+											},
+											{
+												"name": "Overview",
+												"Notes": "<h3>Polytropic Efficiency</h3>\nThis model calculates the polytropic efficiency for a <a href=\"https://en.wikipedia.org/wiki/Compressor\" target=\"_blank\">compressor</a>.\n\nThe input expressions are:\n\t<b>InletV</b> - the molar volume of the inlet fluid\n\t<b>inletP</b> - the pressure of the inlet fluid\n\t<b>inletH</b> - the molar enthalpy of the inlet fluid\n\t<b>Ideal</b> - the flash results for the outlet fluid assuming isentropic compression.\n\t<b>Outlet</b> - the flash results for the actual outlet fluid\n\nThe outlet expression is <b>polyEff</b>, the polytropic efficiency.\n\nThe other expressions implement the calculation outlined below and where the expression calculates a variable mentioned here the the variable's symbol is listed in the expression notes.\n<h4>Calculation overview</h4>Polytropic efficiency can be defined as:\n\n\t<b>Ep = Wp / Wa</b>\n\nwhere:\n\t<b>Ep</b> = polytropic efficiency\n\t<b>Wp</b> = polytropic work\n\t<b>Wa</b> = actual work\n\nwhere the actual work <b>Wa</b> is:\n\n\t<b>Wa = Ws / Ea</b>\n\nwhere:\n\t<b>Ea</b> = adiabatic efficiency\n\t<b>Ws</b> = isentropic work\n\nand the adiabatic efficiency <b>Eq</b> can be calculated from:\n\n\t<b>Ea = (hIout - hin) / (hAout - hin)</b>\n\nwhere:\n\t<b>hin</b> is the enthalpy of the inlet fluid.\n\t<b>hIOut</b> is the enthalpy of the outlet for the ideal (isentropic) process.\n\t<b>hAout</b> is the enthalpy of the outlet for tne nonideal process.\n\nBack substituting Wa into the polytropic efficiency formula becomes:\n\n\t<b>Ep = Ea * Wp / Ws</b>\n\nThe formulas for <b>Wp</b> and <b>Ws</b> are of the same form and after eliminating common terms from the numerator and denominator, we get\n\n\t<b>Ep = Ea * (\n\t\tn/(n-1) * ((p2/p1)^((n-1)/n) - 1)\n\t\t\t/\n\t\tns/(ns-1) * ((p2/p1)^((ns-1)/ns) - 1)\n\t)</b>\n\nwhere:\n\t<b>n</b> = ln(p2/p1) / ln(v1/vs)\n\t<b>ns</b> = ln(p2/p1) / ln(v1/va)\n\t<b>p1</b> = inlet pressure, p2 = outlet pressure\n\t<b>v1</b> = inlet molar volume\n\t<b>vs</b> = isentropic outlet molar volume\n\t<b>va</b> = actual outlet molar volume\n\nIf this is an expander then the actual efficiency is 1/Ep.",
+												"DiagramX": 280,
+												"DiagramY": 375,
+												"HideInfo": "n",
+												"DiagramNotes": "n",
+												"HtmlNotes": "y",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": ""
+												}
+											},
+											{
+												"name": "CompPolyEff",
+												"Notes": "",
+												"DiagramX": 280,
+												"DiagramY": 320,
+												"HideInfo": "y",
+												"DiagramNotes": "n",
+												"HtmlNotes": "n",
+												"Type": "Expression",
+												"Formula": {
+													"Formula": "adEff *\n(\n\tn / (n - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p\n\t\t\t/\n\t\t\tinletP\n\t\t)^((n-1)/n)\n\t\t - 1\n\t)\n)\n/\n(\n\tns/ (ns - 1) *\n\t(\n\t\t(\n\t\t\tOutlet.p\n\t\t\t/\n\t\t\tinletP\n\t\t)^((ns-1)/ns)\n\t\t- 1\n\t)\n)"
+												}
+											}
+										]
+									},
+									{
+										"name": "Overview",
+										"Notes": "<h3>Expander Overview</h3>This model represents a thermodynamic model of an expander, which is a device that extracts work from the expansion of a fluid.  It is essentially a compressor in reverse.\n\nThe input expressions are:\n\n\t<b>feed</b> - a flash result or similar representing the inlet fluid</li>\n\t<b>outletP</b> - the outlet pressure that the fluid will be reduced to.\n\t<b>efficiency</b> - the actual power produced divided by the ideal power produced.\n\nThe outlet expressions are:\n\n\t<b>out</b> - the outlet fluid flash</li>\n\t<b>power</b> - the power produced by the expansion\n  \t<b>polyEff</b> - the calculated polytropic efficiency\n\nAn ideal expander is first modeled by performing an isentropic flash using the outlet pressure and the feed entropy in tool <b>IdealOut</b>.\n\nThe efficiency, e, of an non-ideal expander is taken to be:\n\n\t<b>e = (hAout - hin) / (hIout - hin)</b>\n\nwhere:\n\n\t<b>hin</b> is the enthalpy of the inlet fluid.\n\t<b>hIOut</b> is the enthalpy of the outlet for the ideal (isentropic) process.\n\t<b>hAout</b> is the enthalpy of the outlet for tne nonideal process.\n\nThe desired efficiency is supplied in the input expression <b>Efficiency</b> so by rearranging, the expression <b>H</b> can calculate the nonideal outlet enthalpy, which is used with the outlet pressure to perform an isenthalpic flash in <b>OutFluid</b>.\n\nThe power produced by the expander can then be calculated in expression <b>Power</b> by multiplying the flow by the difference between the inlet fluid enthalpy and the outlet fluid enthalpy.",
+										"DiagramX": 230,
+										"DiagramY": 320,
+										"HideInfo": "n",
+										"DiagramNotes": "n",
+										"HtmlNotes": "y",
+										"Type": "Expression",
+										"Formula": {
+											"Formula": ""
+										}
+									}
+								]
+							},
+							{
+								"name": "demeth",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 260,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Column",
+								"thermo": {
+									"Formula": "turboexpander.out.thermo"
+								},
+								"nstages": {
+									"Formula": "6"
+								},
+								"ptop": {
+									"Formula": "turboexpander.out.p"
+								},
+								"pbottom": {
+									"Formula": "flashed_feed.p"
+								},
+								"totalCondenser": false,
+								"reboiler": true,
+								"ttopest": {
+									"Formula": "-120 degf"
+								},
+								"tbotest": {
+									"Formula": "0 degf"
+								},
+								"feeds": [
+									{
+										"stage": 1,
+										"formula": "LP_sep.l",
+										"name": "feed1"
+									},
+									{
+										"stage": 2,
+										"formula": "flashed_feed",
+										"name": "feed2"
+									}
+								],
+								"draws": [
+									{
+										"stage": 1,
+										"phase": "v",
+										"name": "Overhead",
+										"isBasis": true,
+										"flowEst": "22 lbmol/h"
+									},
+									{
+										"stage": 6,
+										"phase": "l",
+										"name": "Bottoms",
+										"isBasis": true,
+										"flowEst": ""
+									}
+								],
+								"specs": [
+									{
+										"name": "Spec1",
+										"formula": "$.q[1]",
+										"scale": 50
+									},
+									{
+										"name": "Spec2",
+										"formula": "$.lx[-1].methane - 0.01",
+										"scale": 1
+									}
+								]
+							},
+							{
+								"name": "feed_cooler_q",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 205,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "feed.hflow - cooled_feed.hflow"
+								}
+							},
+							{
+								"name": "LP_Sep",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 230,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "cooled_feed.thermo"
+								},
+								"firstprop": {
+									"Formula": "turboexpander.out.t"
+								},
+								"secondprop": {
+									"Formula": "turboexpander.out.p"
+								},
+								"molefrac": {
+									"Formula": "{numeric turboexpander.out.x}"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "turboexpander.out.f"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "demeth_ovhd",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 285,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "demeth.thermo"
+								},
+								"firstprop": {
+									"Formula": "demeth.t[1]"
+								},
+								"secondprop": {
+									"Formula": "demeth.p[1]"
+								},
+								"molefrac": {
+									"Formula": "{numeric demeth.vx[1]}"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "demeth.vf[1]"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "demeth_btms",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 310,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "lp_sep.thermo"
+								},
+								"firstprop": {
+									"Formula": "demeth.t[-1]"
+								},
+								"secondprop": {
+									"Formula": "demeth.p[-1]"
+								},
+								"molefrac": {
+									"Formula": "{tr {numeric demeth.lx[-1]}}"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "demeth.lf[-1]"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "step_p",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 260,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Iterator",
+								"whileFormula": {
+									"Formula": "{le $.x, 501 psia}"
+								},
+								"initXFormula": {
+									"Formula": "350 psia"
+								},
+								"nextXFormula": {
+									"Formula": "$.x + 25 psia,"
+								},
+								"recFormulas": [
+									{
+										"Formula": "$.x 'P"
+									},
+									{
+										"Formula": "C2_Recovery"
+									},
+									{
+										"Formula": "$.i"
+									}
+								],
+								"AutoRun": "y"
+							},
+							{
+								"name": "Recovery_Graph",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 285,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"isOutput": "y",
+								"Type": "Graph",
+								"X1": {
+									"v": "step_p.p",
+									"vmin": "",
+									"vmax": "",
+									"Y1": {
+										"v": "step_p.C2_Recovery",
+										"vmin": "30 %",
+										"vmax": "70. %",
+										"unit": "%",
+										"lineType": 0
+									}
+								}
+							},
+							{
+								"name": "expectedRec",
+								"Notes": "",
+								"DiagramX": 60,
+								"DiagramY": 335,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Data Table",
+								"Columns": [
+									{
+										"name": "1",
+										"displayUnit": "Fraction",
+										"nValues": [
+											0.6810816709,
+											0.6410412483,
+											0.5953074495,
+											0.5430978748,
+											0.484121803,
+											0.4187764576,
+											0.3482757723
+										],
+										"unitDimensions": "0 0 0 0 0 0 0",
+										"defaultValue": "0 Fraction"
+									}
+								],
+								"Filter": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "ErrorCount",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 335,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "step_p.i * 0 +\n{sum\n\t{gt\n\t\t{abs recovery_graph.y1_1 - {numeric expectedRec}},\n\t\t0.001\n\t}\n}"
+								}
+							},
+							{
+								"name": "C2_Recovery",
+								"Notes": "",
+								"DiagramX": 160,
+								"DiagramY": 310,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "(demeth_btms.x[4] * demeth_btms.f) / (feed.x[4] * feed.f)"
 								}
 							}
 						]
