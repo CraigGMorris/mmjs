@@ -51,7 +51,12 @@
 				"flow": {
 					"Formula": "feed.v.f"
 				},
-				"displayUnits": [],
+				"displayUnits": [
+					null,
+					null,
+					null,
+					"kPa"
+				],
 				"formatStrings": {
 					"t": ".2f",
 					"p": ".2f",
@@ -493,6 +498,9 @@
 				"Type": "Equation Solver",
 				"f0": "(dewpt.t - dewpttarget) / 1 K",
 				"c0": "1",
+				"o0": [
+					0.07108654590214561
+				],
 				"maxIter": 200,
 				"maxJacobians": 5,
 				"Enabled": "y"
@@ -513,7 +521,7 @@
 			{
 				"name": "Envelopes",
 				"Notes": "",
-				"DiagramX": 140,
+				"DiagramX": 45,
 				"DiagramY": 250,
 				"HideInfo": "y",
 				"DiagramNotes": "n",
@@ -547,7 +555,7 @@
 			},
 			{
 				"name": "Overview",
-				"Notes": "<h3>Natural Gas Dew Point Control</h3>Below is a diagram of the front end of a simple hydrocarbon dew point control process for natural gas.\n\n<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"background: #ffffff; background-color: #ffffff; color-scheme: light;\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"679px\" height=\"350px\" viewBox=\"-0.5 -0.5 679 350\"><defs/><rect fill=\"#ffffff\" width=\"100%\" height=\"100%\" x=\"0\" y=\"0\" style=\"fill: rgb(255, 255, 255);\"/><g><g data-cell-id=\"0\"><g data-cell-id=\"1\"><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-1\"><g><rect x=\"140\" y=\"160\" width=\"40\" height=\"95\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/><path d=\"M 180 167.66 L 180 247.34 C 180 251.57 171.05 255 160 255 C 148.95 255 140 251.57 140 247.34 L 140 167.66 C 140 163.43 148.95 160 160 160 C 171.05 160 180 163.43 180 167.66 Z M 140 167.66 L 180 167.66 M 140 247.34 L 180 247.34\" fill=\"#ffffff\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-6\"><g><rect x=\"610\" y=\"150\" width=\"40\" height=\"95\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/><path d=\"M 650 157.66 L 650 237.34 C 650 241.57 641.05 245 630 245 C 618.95 245 610 241.57 610 237.34 L 610 157.66 C 610 153.43 618.95 150 630 150 C 641.05 150 650 153.43 650 157.66 Z M 610 157.66 L 650 157.66 M 610 237.34 L 650 237.34\" fill=\"#ffffff\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-7\"><g><path d=\"M 510 120 L 560.5 120.5 L 560.5 197.5 L 603.63 197.5\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/><path d=\"M 608.88 197.5 L 601.88 201 L 603.63 197.5 L 601.88 194 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-9\"><g><rect x=\"260\" y=\"90\" width=\"60\" height=\"60\" fill=\"none\" stroke=\"none\" transform=\"rotate(90,290,120)\" pointer-events=\"all\"/><ellipse cx=\"290\" cy=\"120\" rx=\"30\" ry=\"30\" fill=\"#ffffff\" stroke=\"#000000\" transform=\"rotate(90,290,120)\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/><path d=\"M 267.5 100 L 305 100 L 275 120 L 305 140 L 267.5 140\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" transform=\"rotate(90,290,120)\" pointer-events=\"all\" style=\"stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-10\"><g><path d=\"M 160 160 L 160 120 L 253.63 120\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/><path d=\"M 258.88 120 L 251.88 123.5 L 253.63 120 L 251.88 116.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-11\"><g><path d=\"M 320 120 L 385 120 L 443.63 120\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/><path d=\"M 448.88 120 L 441.88 123.5 L 443.63 120 L 441.88 116.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-15\"><g><rect x=\"0\" y=\"105\" width=\"80\" height=\"30\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/></g><g><g><switch><foreignObject style=\"overflow: visible; text-align: left;\" pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 120px; margin-left: 40px;\"><div style=\"box-sizing: border-box; font-size: 0; text-align: center; color: #000000; \"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: nowrap; \">Sales Gas</div></div></div></foreignObject><text x=\"40\" y=\"124\" fill=\"light-dark(#000000, #ffffff)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Sales Gas</text></switch></g></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-16\"><g><path d=\"M 268.7 98.7 L 270 98.67 L 270 56 L 100 56 L 100 121 L 86.37 120.99\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/><path d=\"M 81.12 120.99 L 88.12 117.49 L 86.37 120.99 L 88.12 124.49 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-17\"><g><rect x=\"450\" y=\"90\" width=\"60\" height=\"60\" fill=\"none\" stroke=\"none\" transform=\"rotate(270,480,120)\" pointer-events=\"all\"/><ellipse cx=\"480\" cy=\"120\" rx=\"30\" ry=\"30\" fill=\"#ffffff\" stroke=\"#000000\" transform=\"rotate(270,480,120)\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/><path d=\"M 457.5 100 L 495 100 L 465 120 L 495 140 L 457.5 140\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" transform=\"rotate(270,480,120)\" pointer-events=\"all\" style=\"stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-18\"><g><rect x=\"600\" y=\"320\" width=\"60\" height=\"30\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/></g><g><g><switch><foreignObject style=\"overflow: visible; text-align: left;\" pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 335px; margin-left: 630px;\"><div style=\"box-sizing: border-box; font-size: 0; text-align: center; color: #000000; \"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: nowrap; \">Liquids</div></div></div></foreignObject><text x=\"630\" y=\"339\" fill=\"light-dark(#000000, #ffffff)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Liquids</text></switch></g></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-21\"><g><path d=\"M 390 230 L 470 230 L 470 270 L 390 270 L 390 230 Z\" fill=\"#ffffff\" stroke=\"none\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255);\"/><path d=\"M 390 230 L 390 270 L 390 270 L 470 270 L 470 230 L 390 230\" fill=\"transparent\" stroke=\"none\" pointer-events=\"all\" style=\"fill: transparent;\"/><path d=\"M 390 230 L 470 230 L 470 270 L 390 270 L 390 230 Z\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-22\"><g><path d=\"M 501.3 141.3 L 501.33 247 L 478.37 247\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/><path d=\"M 473.12 247 L 480.12 243.5 L 478.37 247 L 480.12 250.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-23\"><g><path d=\"M 390 250 L 350 250 L 350 190 L 458.67 190 L 458.7 147.67\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/><path d=\"M 458.7 142.42 L 462.19 149.42 L 458.7 147.67 L 455.19 149.42 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-24\"><g><rect x=\"385\" y=\"240\" width=\"90\" height=\"40\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/></g><g><g><switch><foreignObject style=\"overflow: visible; text-align: left;\" pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 260px; margin-left: 430px;\"><div style=\"box-sizing: border-box; font-size: 0; text-align: center; color: #000000; \"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: nowrap; \">Refrigeration<div><br /></div></div></div></div></foreignObject><text x=\"430\" y=\"264\" fill=\"light-dark(#000000, #ffffff)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Refrigeration&#xa;</text></switch></g></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-26\"><g><rect x=\"15\" y=\"192.5\" width=\"50\" height=\"30\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/></g><g><g><switch><foreignObject style=\"overflow: visible; text-align: left;\" pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 208px; margin-left: 40px;\"><div style=\"box-sizing: border-box; font-size: 0; text-align: center; color: #000000; \"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: nowrap; \">Feed</div></div></div></foreignObject><text x=\"40\" y=\"211\" fill=\"light-dark(#000000, #ffffff)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Feed</text></switch></g></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-28\"><g><path d=\"M 65 207.5 L 133.63 207.5\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/><path d=\"M 138.88 207.5 L 131.88 211 L 133.63 207.5 L 131.88 204 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-29\"><g><rect x=\"170\" y=\"255\" width=\"80\" height=\"40\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/></g><g><g><switch><foreignObject style=\"overflow: visible; text-align: left;\" pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 275px; margin-left: 210px;\"><div style=\"box-sizing: border-box; font-size: 0; text-align: center; color: #000000; \"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: nowrap; \">Inlet<div>Separator</div></div></div></div></foreignObject><text x=\"210\" y=\"279\" fill=\"light-dark(#000000, #ffffff)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Inlet...</text></switch></g></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-30\"><g><rect x=\"180\" y=\"70\" width=\"80\" height=\"40\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/></g><g><g><switch><foreignObject style=\"overflow: visible; text-align: left;\" pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 90px; margin-left: 220px;\"><div style=\"box-sizing: border-box; font-size: 0; text-align: center; color: #000000; \"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: nowrap; \">Gas/Gas<div>Exchanger</div></div></div></div></foreignObject><text x=\"220\" y=\"94\" fill=\"light-dark(#000000, #ffffff)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Gas/Gas...</text></switch></g></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-31\"><g><rect x=\"390\" y=\"80\" width=\"60\" height=\"30\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/></g><g><g><switch><foreignObject style=\"overflow: visible; text-align: left;\" pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 95px; margin-left: 420px;\"><div style=\"box-sizing: border-box; font-size: 0; text-align: center; color: #000000; \"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: nowrap; \">Chiller</div></div></div></foreignObject><text x=\"420\" y=\"99\" fill=\"light-dark(#000000, #ffffff)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Chiller</text></switch></g></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-32\"><g><rect x=\"520\" y=\"245\" width=\"120\" height=\"40\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/></g><g><g><switch><foreignObject style=\"overflow: visible; text-align: left;\" pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 265px; margin-left: 580px;\"><div style=\"box-sizing: border-box; font-size: 0; text-align: center; color: #000000; \"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: nowrap; \">Low Temperature<div>Separator</div></div></div></div></foreignObject><text x=\"580\" y=\"269\" fill=\"light-dark(#000000, #ffffff)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Low Temperature...</text></switch></g></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-36\"><g><path d=\"M 40 90 L 40 30 L 670 30 L 670 197.5 L 656.37 197.5\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" stroke-dasharray=\"3 3\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/><path d=\"M 651.12 197.5 L 658.12 194 L 656.37 197.5 L 658.12 201 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-37\"><g><rect x=\"270\" y=\"0\" width=\"120\" height=\"30\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/></g><g><g><switch><foreignObject style=\"overflow: visible; text-align: left;\" pointer-events=\"none\" width=\"100%\" height=\"100%\" requiredFeatures=\"http://www.w3.org/TR/SVG11/feature#Extensibility\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 15px; margin-left: 330px;\"><div style=\"box-sizing: border-box; font-size: 0; text-align: center; color: #000000; \"><div style=\"display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: nowrap; \">Dew Point Control</div></div></div></foreignObject><text x=\"330\" y=\"19\" fill=\"light-dark(#000000, #ffffff)\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Dew Point Control</text></switch></g></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-38\"><g><path d=\"M 630 245 L 630 313.63\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/><path d=\"M 630 318.88 L 626.5 311.88 L 630 313.63 L 633.5 311.88 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-39\"><g><path d=\"M 160 255 L 160 339 L 594.65 338.99\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/><path d=\"M 599.9 338.99 L 592.9 342.49 L 594.65 338.99 L 592.9 335.49 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/></g></g><g data-cell-id=\"RrKsteavkeXCkB7qzfHI-8\"><g><path d=\"M 630 150 L 630 70 L 311.33 70 L 311.31 92.33\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/><path d=\"M 311.3 97.58 L 307.81 90.58 L 311.31 92.33 L 314.81 90.59 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/></g></g></g></g></g></svg>\n<I>Flowsheet SVG created with drawio and pasted in note</I>\n\nThe vapour from a feed stream is passed through a gas to gas exchanger and then a chiller, reducing the temperature to condense out heavier components.  The vapour from the low temperature separator is then reheated in the gas to gas exchanger to become the sales gas, while pre-cooling the inlet separator vapour. The dew point of the sales gas is checked against a target value and the temperature of the low temperature separator is adjusted until that target is met.\n\nThe feed conditions are known and given pressure drops for the gas to gas exchanger and chiller all that is needed is an initial estimate for the low temperature separator temperature to define it. A temperature approach between the inlet separator vapour and the sales gas allows the sale gas to be completely determined. With three of the four gas/gas stream known, a heat balance allows the temperature to the chiller to be determined.\n\nA refrigeration model from the ToolBox model is used for the chiller cooling.\n\nFinally the phase envelopes for the feed and sales gas streams are plotted.",
+				"Notes": "<h3>Natural Gas Dew Point Control</h3>Below is a diagram of the front end of a simple hydrocarbon dew point control process for natural gas.\n\n<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"background: #ffffff; background-color: #ffffff; color-scheme: light;\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"1150px\" height=\"380px\" viewBox=\"-0.5 -0.5 1150 380\">\n  <defs/>\n  <rect fill=\"#ffffff\" width=\"100%\" height=\"100%\" x=\"0\" y=\"0\" style=\"fill: rgb(255, 255, 255);\"/>\n  <g>\n    <!-- Inlet Separator -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-1\">\n      <rect x=\"140\" y=\"160\" width=\"40\" height=\"95\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/>\n      <path d=\"M 180 167.66 L 180 247.34 C 180 251.57 171.05 255 160 255 C 148.95 255 140 251.57 140 247.34 L 140 167.66 C 140 163.43 148.95 160 160 160 C 171.05 160 180 163.43 180 167.66 Z M 140 167.66 L 180 167.66 M 140 247.34 L 180 247.34\" fill=\"#ffffff\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Low Temperature Separator (LTS) -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-6\">\n      <rect x=\"610\" y=\"150\" width=\"40\" height=\"95\" fill=\"none\" stroke=\"none\" pointer-events=\"all\"/>\n      <path d=\"M 650 157.66 L 650 237.34 C 650 241.57 641.05 245 630 245 C 618.95 245 610 241.57 610 237.34 L 610 157.66 C 610 153.43 618.95 150 630 150 C 641.05 150 650 153.43 650 157.66 Z M 610 157.66 L 650 157.66 M 610 237.34 L 650 237.34\" fill=\"#ffffff\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Stream: Chiller to LTS -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-7\">\n      <path d=\"M 510 120 L 560.5 120.5 L 560.5 197.5 L 603.63 197.5\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 608.88 197.5 L 601.88 201 L 603.63 197.5 L 601.88 194 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Gas/Gas Exchanger -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-9\">\n      <rect x=\"260\" y=\"90\" width=\"60\" height=\"60\" fill=\"none\" stroke=\"none\" transform=\"rotate(90,290,120)\" pointer-events=\"all\"/>\n      <ellipse cx=\"290\" cy=\"120\" rx=\"30\" ry=\"30\" fill=\"#ffffff\" stroke=\"#000000\" transform=\"rotate(90,290,120)\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 267.5 100 L 305 100 L 275 120 L 305 140 L 267.5 140\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" transform=\"rotate(90,290,120)\" pointer-events=\"all\" style=\"stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Stream: Inlet Sep Gas to Gas/Gas Exchanger -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-10\">\n      <path d=\"M 160 160 L 160 120 L 253.63 120\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 258.88 120 L 251.88 123.5 L 253.63 120 L 251.88 116.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Stream: Gas/Gas Exchanger to Chiller -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-11\">\n      <path d=\"M 320 120 L 385 120 L 443.63 120\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 448.88 120 L 441.88 123.5 L 443.63 120 L 441.88 116.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Label: Sales Gas -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-15\">\n      <text x=\"40\" y=\"124\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Sales Gas</text>\n    </g>\n\n    <!-- Stream: LTS Gas through Exchanger to Sales Gas -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-16\">\n      <path d=\"M 268.7 98.7 L 270 98.67 L 270 56 L 100 56 L 100 121 L 86.37 120.99\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 81.12 120.99 L 88.12 117.49 L 86.37 120.99 L 88.12 124.49 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Chiller -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-17\">\n      <rect x=\"450\" y=\"90\" width=\"60\" height=\"60\" fill=\"none\" stroke=\"none\" transform=\"rotate(270,480,120)\" pointer-events=\"all\"/>\n      <ellipse cx=\"480\" cy=\"120\" rx=\"30\" ry=\"30\" fill=\"#ffffff\" stroke=\"#000000\" transform=\"rotate(270,480,120)\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 457.5 100 L 495 100 L 465 120 L 495 140 L 457.5 140\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" transform=\"rotate(270,480,120)\" pointer-events=\"all\" style=\"stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Refrigeration Unit Box -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-21\">\n      <path d=\"M 390 230 L 470 230 L 470 270 L 390 270 L 390 230 Z\" fill=\"#ffffff\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Refrigeration Stream to Chiller -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-22\">\n      <path d=\"M 501.3 141.3 L 501.33 247 L 478.37 247\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 473.12 247 L 480.12 243.5 L 478.37 247 L 480.12 250.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Refrigeration Return Stream -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-23\">\n      <path d=\"M 390 250 L 350 250 L 350 190 L 458.67 190 L 458.7 147.67\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 458.7 142.42 L 462.19 149.42 L 458.7 147.67 L 455.19 149.42 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Label: Refrigeration -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-24\">\n      <text x=\"430\" y=\"254\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Refrigeration</text>\n    </g>\n\n    <!-- Label: Feed -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-26\">\n      <text x=\"40\" y=\"211\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Feed</text>\n    </g>\n\n    <!-- Stream: Feed to Inlet Separator -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-28\">\n      <path d=\"M 65 207.5 L 133.63 207.5\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 138.88 207.5 L 131.88 211 L 133.63 207.5 L 131.88 204 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Label: Inlet Separator -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-29\">\n      <text x=\"210\" y=\"272\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Inlet</text>\n      <text x=\"210\" y=\"286\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Separator</text>\n    </g>\n\n    <!-- Label: Gas/Gas Exchanger -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-30\">\n      <text x=\"220\" y=\"87\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Gas/Gas</text>\n      <text x=\"220\" y=\"101\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Exchanger</text>\n    </g>\n\n    <!-- Label: Chiller -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-31\">\n      <text x=\"420\" y=\"99\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Chiller</text>\n    </g>\n\n    <!-- Label: Low Temperature Separator -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-32\">\n      <text x=\"575\" y=\"262\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Low Temperature</text>\n      <text x=\"575\" y=\"276\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Separator</text>\n    </g>\n\n    <!-- Dashed Glycol/Boundary Line: Dew Point Control -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-36\">\n      <path d=\"M 40 90 L 40 30 L 670 30 L 670 197.5 L 656.37 197.5\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" stroke-dasharray=\"3 3\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 651.12 197.5 L 658.12 194 L 656.37 197.5 L 658.12 201 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Label: Dew Point Control -->\n    <g data-cell-id=\"vEMUBFXnjKXrsMb9j2vV-37\">\n      <text x=\"330\" y=\"19\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Dew Point Control</text>\n    </g>\n\n    <!-- Stream: LTS Overhead Gas to Gas/Gas Exchanger Shell -->\n    <g data-cell-id=\"RrKsteavkeXCkB7qzfHI-8\">\n      <path d=\"M 630 150 L 630 70 L 311.33 70 L 311.31 92.33\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 311.3 97.58 L 307.81 90.58 L 311.31 92.33 L 314.81 90.59 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Stream: LTS Liquid to Stabilizer Stage 3 -->\n    <g data-cell-id=\"stabilizer-feed-stage3\">\n      <path d=\"M 630 245 L 630 275 L 715 275 L 715 154 L 764.75 154\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 770 154 L 763 157.5 L 764.75 154 L 763 150.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n      <text x=\"740\" y=\"148\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"9px\" text-anchor=\"middle\">Stage 3</text>\n    </g>\n\n    <!-- Stream: Inlet Separator Liquid to Stabilizer Stage 5 -->\n    <g data-cell-id=\"stabilizer-feed-stage5\">\n      <path d=\"M 160 255 L 160 340 L 740 340 L 740 184 L 764.75 184\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 770 184 L 763 187.5 L 764.75 184 L 763 180.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n      <text x=\"755\" y=\"178\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"9px\" text-anchor=\"middle\">Stage 5</text>\n    </g>\n\n    <!-- Stabilizer Column Shell -->\n    <g data-cell-id=\"stabilizer-column-shell\">\n      <path d=\"M 820 110 L 820 290 C 820 295.52 808.81 300 795 300 C 781.19 300 770 295.52 770 290 L 770 110 C 770 104.48 781.19 100 795 100 C 808.81 100 820 104.48 820 110 Z M 770 110 L 820 110 M 770 290 L 820 290\" fill=\"#ffffff\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Stabilizer 10 Stages -->\n    <g data-cell-id=\"stabilizer-stages\">\n      <line x1=\"775\" y1=\"124\" x2=\"788\" y2=\"124\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n      <text x=\"795\" y=\"127\" font-family=\"Helvetica\" font-size=\"9px\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#000000\">1</text>\n      <line x1=\"802\" y1=\"124\" x2=\"815\" y2=\"124\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n\n      <line x1=\"775\" y1=\"139\" x2=\"788\" y2=\"139\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n      <text x=\"795\" y=\"142\" font-family=\"Helvetica\" font-size=\"9px\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#000000\">2</text>\n      <line x1=\"802\" y1=\"139\" x2=\"815\" y2=\"139\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n\n      <line x1=\"775\" y1=\"154\" x2=\"788\" y2=\"154\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n      <text x=\"795\" y=\"157\" font-family=\"Helvetica\" font-size=\"9px\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#000000\">3</text>\n      <line x1=\"802\" y1=\"154\" x2=\"815\" y2=\"154\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n\n      <line x1=\"775\" y1=\"169\" x2=\"788\" y2=\"169\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n      <text x=\"795\" y=\"172\" font-family=\"Helvetica\" font-size=\"9px\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#000000\">4</text>\n      <line x1=\"802\" y1=\"169\" x2=\"815\" y2=\"169\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n\n      <line x1=\"775\" y1=\"184\" x2=\"788\" y2=\"184\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n      <text x=\"795\" y=\"187\" font-family=\"Helvetica\" font-size=\"9px\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#000000\">5</text>\n      <line x1=\"802\" y1=\"184\" x2=\"815\" y2=\"184\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n\n      <line x1=\"775\" y1=\"199\" x2=\"788\" y2=\"199\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n      <text x=\"795\" y=\"202\" font-family=\"Helvetica\" font-size=\"9px\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#000000\">6</text>\n      <line x1=\"802\" y1=\"199\" x2=\"815\" y2=\"199\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n\n      <line x1=\"775\" y1=\"214\" x2=\"788\" y2=\"214\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n      <text x=\"795\" y=\"217\" font-family=\"Helvetica\" font-size=\"9px\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#000000\">7</text>\n      <line x1=\"802\" y1=\"214\" x2=\"815\" y2=\"214\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n\n      <line x1=\"775\" y1=\"229\" x2=\"788\" y2=\"229\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n      <text x=\"795\" y=\"232\" font-family=\"Helvetica\" font-size=\"9px\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#000000\">8</text>\n      <line x1=\"802\" y1=\"229\" x2=\"815\" y2=\"229\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n\n      <line x1=\"775\" y1=\"244\" x2=\"788\" y2=\"244\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n      <text x=\"795\" y=\"247\" font-family=\"Helvetica\" font-size=\"9px\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#000000\">9</text>\n      <line x1=\"802\" y1=\"244\" x2=\"815\" y2=\"244\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n\n      <line x1=\"775\" y1=\"259\" x2=\"786\" y2=\"259\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n      <text x=\"795\" y=\"262\" font-family=\"Helvetica\" font-size=\"9px\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#000000\">10</text>\n      <line x1=\"804\" y1=\"259\" x2=\"815\" y2=\"259\" stroke=\"#000000\" stroke-width=\"1\" stroke-dasharray=\"2 1\"/>\n    </g>\n\n    <!-- Column Overhead to Partial Condenser -->\n    <g data-cell-id=\"stabilizer-overhead-line\">\n      <path d=\"M 795 100 L 795 55 L 854.75 55\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 860 55 L 853 58.5 L 854.75 55 L 853 51.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Partial Condenser -->\n    <g data-cell-id=\"stabilizer-condenser\">\n      <ellipse cx=\"880\" cy=\"55\" rx=\"20\" ry=\"20\" fill=\"#ffffff\" stroke=\"#000000\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 870 45 L 890 45 L 870 55 L 890 55 L 870 65 L 890 65\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <text x=\"880\" y=\"87\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"11px\" text-anchor=\"middle\">Condenser</text>\n    </g>\n\n    <!-- Condenser to Reflux Drum -->\n    <g data-cell-id=\"condenser-to-reflux-drum\">\n      <path d=\"M 900 55 L 929.75 55\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 935 55 L 928 58.5 L 929.75 55 L 928 51.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Reflux Drum -->\n    <g data-cell-id=\"stabilizer-reflux-drum\">\n      <path d=\"M 961 41 L 961 75 C 961 78.31 955.18 81 948 81 C 940.82 81 935 78.31 935 75 L 935 41 C 935 37.69 940.82 35 948 35 C 955.18 35 961 37.69 961 41 Z M 935 41 L 961 41 M 935 75 L 961 75\" fill=\"#ffffff\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/>\n      <text x=\"948\" y=\"95\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"10px\" text-anchor=\"middle\">Reflux Drum</text>\n    </g>\n\n    <!-- Overhead Vapour Product Stream -->\n    <g data-cell-id=\"overhead-vapour-product\">\n      <path d=\"M 948 35 L 948 20 L 1024.75 20\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 1030 20 L 1023 23.5 L 1024.75 20 L 1023 16.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n      <text x=\"1038\" y=\"24\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"start\">Overhead Vapour</text>\n    </g>\n\n    <!-- Reflux Line to Stage 1 -->\n    <g data-cell-id=\"reflux-line-to-stage1\">\n      <path d=\"M 948 81 L 948 105 L 840 105 L 840 124 L 825.25 124\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 820 124 L 827 120.5 L 825.25 124 L 827 127.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n      <text x=\"835\" y=\"118\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"9px\" text-anchor=\"start\">Reflux</text>\n    </g>\n\n    <!-- Bottom Liquid Line to Reboiler -->\n    <g data-cell-id=\"stabilizer-bottoms-to-reboiler\">\n      <path d=\"M 795 300 L 795 330 L 854.75 330\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 860 330 L 853 333.5 L 854.75 330 L 853 326.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Reboiler -->\n    <g data-cell-id=\"stabilizer-reboiler\">\n      <ellipse cx=\"880\" cy=\"330\" rx=\"20\" ry=\"20\" fill=\"#ffffff\" stroke=\"#000000\" pointer-events=\"all\" style=\"fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 870 320 L 890 320 L 870 330 L 890 330 L 870 340 L 890 340\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <text x=\"880\" y=\"365\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"11px\" text-anchor=\"middle\">Reboiler</text>\n    </g>\n\n    <!-- Reboiler Vapour Return to Column Bottom -->\n    <g data-cell-id=\"reboiler-vapour-return\">\n      <path d=\"M 880 310 L 880 278 L 825.25 278\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 820 278 L 827 274.5 L 825.25 278 L 827 281.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Bottoms Liquid Product Stream -->\n    <g data-cell-id=\"bottoms-liquid-product\">\n      <path d=\"M 900 330 L 1024.75 330\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 1030 330 L 1023 333.5 L 1024.75 330 L 1023 326.5 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n      <text x=\"1038\" y=\"334\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"start\">Bottoms Liquid</text>\n    </g>\n\n    <!-- Dotted Line: Vapour Pressure Control -->\n    <g data-cell-id=\"vapour-pressure-control-line\">\n      <path d=\"M 1000 330 L 1000 192 M 1000 162 L 1000 25.25\" fill=\"none\" stroke=\"#000000\" stroke-miterlimit=\"10\" stroke-dasharray=\"3 3\" pointer-events=\"stroke\" style=\"stroke: rgb(0, 0, 0);\"/>\n      <path d=\"M 1000 20 L 996.5 27 L 1000 25.25 L 1003.5 27 Z\" fill=\"#000000\" stroke=\"#000000\" stroke-miterlimit=\"10\" pointer-events=\"all\" style=\"fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);\"/>\n    </g>\n\n    <!-- Label: Vapour Pressure Control -->\n    <g data-cell-id=\"vapour-pressure-control-label\">\n      <rect x=\"925\" y=\"165\" width=\"150\" height=\"22\" fill=\"#ffffff\" stroke=\"none\"/>\n      <text x=\"1000\" y=\"181\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" text-anchor=\"middle\">Vapour Pressure Control</text>\n    </g>\n\n    <!-- Label: Stabilizer -->\n    <g data-cell-id=\"stabilizer-label\">\n      <text x=\"795\" y=\"365\" fill=\"#000000\" font-family=\"Helvetica\" font-size=\"12px\" font-weight=\"bold\" text-anchor=\"middle\">Stabilizer</text>\n    </g>\n  </g>\n</svg>\n<I>Externally created flowsheet SVG pasted into note</I>\n\nThe vapour from a feed stream is passed through a gas to gas exchanger and then a chiller, reducing the temperature to condense out heavier components.  The vapour from the low temperature separator is then reheated in the gas to gas exchanger to become the sales gas, while pre-cooling the inlet separator vapour. The dew point of the sales gas is checked against a target value and the temperature of the low temperature separator is adjusted until that target is met.\n\nThe feed conditions are known and given pressure drops for the gas to gas exchanger and chiller all that is needed is an initial estimate for the low temperature separator temperature to define it. A temperature approach between the inlet separator vapour and the sales gas allows the sale gas to be completely determined. With three of the four gas/gas stream known, a heat balance allows the temperature to the chiller to be determined.\n\nA refrigeration model from the ToolBox model is used for the chiller cooling.\n\nThe liquids from the inlet and low temperature separators are fed to a stabilizer. A solver adjusts the overhead flow rate to meet a desired vapour pressure in the bottoms product.\n\nA phase envelopes for the feed and sales gas streams are plotted.",
 				"DiagramX": 45,
 				"DiagramY": 70,
 				"HideInfo": "n",
@@ -1349,6 +1357,263 @@
 						]
 					}
 				]
+			},
+			{
+				"name": "Stab",
+				"Notes": "",
+				"DiagramX": 240,
+				"DiagramY": 160,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Column",
+				"thermo": {
+					"Formula": "lts.thermo"
+				},
+				"nstages": {
+					"Formula": "10"
+				},
+				"ptop": {
+					"Formula": "StabTopP"
+				},
+				"pbottom": {
+					"Formula": "StabTopP + 50 kpa"
+				},
+				"totalCondenser": false,
+				"reboiler": true,
+				"feeds": [
+					{
+						"stage": 3,
+						"formula": "ltsStabFeed",
+						"name": "feed1"
+					},
+					{
+						"stage": 5,
+						"formula": "FeedStabFeed",
+						"name": "feed2"
+					}
+				],
+				"draws": [
+					{
+						"stage": 1,
+						"phase": "v",
+						"name": "Overhead",
+						"isBasis": true,
+						"flowEst": "1600 kmol/h + 100 kmol/h * vpsolver.1"
+					},
+					{
+						"stage": 10,
+						"phase": "l",
+						"name": "Bottoms",
+						"isBasis": true,
+						"flowEst": ""
+					}
+				],
+				"specs": [
+					{
+						"name": "Spec1",
+						"formula": "$.vf[1] - 1600 kmol/h - 200 kmol/h * vpsolver.1 'Vapour Draw",
+						"scale": 28
+					},
+					{
+						"name": "Spec2",
+						"formula": "$.lf[1]/$.vf[1] - 2 'reflux ratio",
+						"scale": 1
+					}
+				],
+				"displayUnits": {
+					"Q": "kW"
+				}
+			},
+			{
+				"name": "StabTopP",
+				"Notes": "",
+				"DiagramX": 140,
+				"DiagramY": 245,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "1300 kpa"
+				}
+			},
+			{
+				"name": "LtsStabFeed",
+				"Notes": "",
+				"DiagramX": 240,
+				"DiagramY": 135,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "lts.thermo"
+				},
+				"firstprop": {
+					"Formula": "stabTopP"
+				},
+				"secondprop": {
+					"Formula": "lts.l.h"
+				},
+				"molefrac": {
+					"Formula": "lts.l.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "lts.l.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "FeedStabFeed",
+				"Notes": "",
+				"DiagramX": 140,
+				"DiagramY": 270,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "feed.thermo"
+				},
+				"firstprop": {
+					"Formula": "stabTopP + 10 kpa"
+				},
+				"secondprop": {
+					"Formula": "feed.l.h"
+				},
+				"molefrac": {
+					"Formula": "feed.l.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "feed.l.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "StabBtms",
+				"Notes": "",
+				"DiagramX": 240,
+				"DiagramY": 185,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "stab.thermo"
+				},
+				"firstprop": {
+					"Formula": "stab.p[-1]"
+				},
+				"secondprop": {
+					"Formula": "stab.lh[-1]"
+				},
+				"molefrac": {
+					"Formula": "stab.lx[-1]"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "stab.ldraw[-1]"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "VPSolver",
+				"Notes": "",
+				"DiagramX": 140,
+				"DiagramY": 295,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Equation Solver",
+				"f0": "vpcalc.p - 9 psia",
+				"c0": "1",
+				"o0": [
+					0.08313110054220145
+				],
+				"maxIter": 200,
+				"maxJacobians": 5,
+				"Enabled": "y"
+			},
+			{
+				"name": "VPCalc",
+				"Notes": "",
+				"DiagramX": 240,
+				"DiagramY": 210,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "stab.thermo"
+				},
+				"firstprop": {
+					"Formula": "38.8 degC"
+				},
+				"secondprop": {
+					"Formula": "0"
+				},
+				"molefrac": {
+					"Formula": "stab.lx[-1]"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "stab.ldraw[-1]"
+				},
+				"displayUnits": [
+					null,
+					null,
+					null,
+					"psia"
+				],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
 			}
 		]
 	}
