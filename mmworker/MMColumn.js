@@ -731,7 +731,8 @@ export class MMColumn extends MMTool {
 		// Fallback: check if an explicit anchored distillate flow spec was given: $.vf[1] - <val>
 		if (isNaN(estD)) {
 			for (const spec of this.specs) {
-				const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.trim().toLowerCase() : '';
+				const raw = (spec.formula && spec.formula.formula) ? spec.formula.formula : '';
+				const text = MMColumn.stripFormulaComment(raw).toLowerCase();
 				const mD = text.match(/^\s*\$\.(?:vf|vdraw|ldraw)\[\s*1\s*\]\s*-\s*([0-9.]+)(?:\s*([a-zA-Z0-9_\/]+))?\s*$/);
 				if (mD) {
 					let val = parseFloat(mD[1]);
@@ -756,7 +757,8 @@ export class MMColumn extends MMTool {
 		// Fallback: infer estD from component purity specifications (e.g. light key in bottoms or heavy key in distillate)
 		if (isNaN(estD)) {
 			for (const spec of this.specs) {
-				const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.trim().toLowerCase() : '';
+				const raw = (spec.formula && spec.formula.formula) ? spec.formula.formula : '';
+				const text = MMColumn.stripFormulaComment(raw).toLowerCase();
 				const m = text.match(/\$\.lx\[\s*(-1|\d+)\s*(?:,\s*["']?([a-zA-Z0-9_-]+)["']?)?\s*\](?:\.([a-zA-Z0-9_-]+))?\s*-\s*([0-9.]+)\s*$/);
 				if (m) {
 					const stageNum = parseInt(m[1], 10);
@@ -924,7 +926,8 @@ export class MMColumn extends MMTool {
 		// 7. Internal Traffic Estimates (CMO)
 		let nominalReflux = 1.5;
 		for (const spec of this.specs) {
-			const text = (spec.formula && spec.formula.formula) ? spec.formula.formula.toLowerCase() : '';
+			const raw = (spec.formula && spec.formula.formula) ? spec.formula.formula : '';
+			const text = MMColumn.stripFormulaComment(raw).toLowerCase();
 			const m = text.match(/\$\.lf\[\s*1\s*\]\s*\/\s*\$\.(?:vf|ldraw|vdraw)\[\s*1\s*\]\s*-\s*([0-9.]+)\s*$/);
 			if (m) {
 				nominalReflux = Math.max(0.2, parseFloat(m[1]));
@@ -1296,6 +1299,33 @@ export class MMColumn extends MMTool {
 	}
 
 	/**
+	 * Strips trailing comment designated by ' from formula text, ignoring characters inside quotes.
+	 * @param {string} formulaStr
+	 * @returns {string}
+	 */
+	static stripFormulaComment(formulaStr) {
+		if (!formulaStr) return '';
+		let inQuote = false;
+		let quoteChar = '';
+		for (let i = 0; i < formulaStr.length; i++) {
+			const c = formulaStr[i];
+			if (!inQuote) {
+				if (c === '"' || c === '`') {
+					inQuote = true;
+					quoteChar = c;
+				}
+				else if (c === "'") {
+					return formulaStr.substring(0, i).trim();
+				}
+			}
+			else if (c === quoteChar) {
+				inQuote = false;
+			}
+		}
+		return formulaStr.trim();
+	}
+
+	/**
 	 * Direct numerical evaluation of common column specifications
 	 * Used as a robust fallback if formula engine encounters worker/namespace evaluation issues
 	 * @param {{name: string, formula: MMFormula, scale?: number}} spec
@@ -1303,7 +1333,7 @@ export class MMColumn extends MMTool {
 	 */
 	evaluateSpecDirectly(spec) {
 		if (!spec || !spec.formula || !spec.formula.formula) return NaN;
-		const text = spec.formula.formula.trim().toLowerCase();
+		const text = MMColumn.stripFormulaComment(spec.formula.formula).toLowerCase();
 		const N = this.nStages;
 
 		const parseTargetWithUnit = (numStr, unitStr) => {
