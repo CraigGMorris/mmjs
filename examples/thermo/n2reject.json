@@ -1,0 +1,596 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [
+		null,
+		null
+	],
+	"CaseName": "n2reject",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "",
+	"ModelPath": "/.root",
+	"RootModel": {
+		"name": "root",
+		"Notes": "",
+		"DiagramX": 0,
+		"DiagramY": 0,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"HtmlNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "hp_feed",
+				"Notes": "Nitrogen Rich Natural Gas Feed",
+				"DiagramX": 80,
+				"DiagramY": 90,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "'nitrogen,methane,ethane,propane,isobutane,butane,isopentane,pentane"
+				},
+				"firstprop": {
+					"Formula": "-215 degf"
+				},
+				"secondprop": {
+					"Formula": "lpcol_topP + 10 psia"
+				},
+				"molefrac": {
+					"Formula": "{cc 0.5454, 0.4153, 0.0347, 0.0036, 0.0004, 0.0003, 0.0002, 0.0001}"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "1000 lbmol/h"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "HPColumn",
+				"Notes": "",
+				"DiagramX": 80,
+				"DiagramY": 120,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Column",
+				"thermo": {
+					"Formula": "hp_feed.thermo"
+				},
+				"nstages": {
+					"Formula": "10"
+				},
+				"ptop": {
+					"Formula": "lpcol_topP"
+				},
+				"pbottom": {
+					"Formula": "lpcol_topP + 7 psia"
+				},
+				"totalCondenser": true,
+				"reboiler": false,
+				"feeds": [
+					{
+						"stage": 10,
+						"formula": "hp_feed",
+						"name": "feed1"
+					}
+				],
+				"draws": [
+					{
+						"stage": 1,
+						"phase": "v",
+						"name": "Overhead",
+						"isBasis": true,
+						"flowEst": ""
+					},
+					{
+						"stage": 10,
+						"phase": "l",
+						"name": "Bottoms",
+						"isBasis": true,
+						"flowEst": ""
+					},
+					{
+						"stage": 1,
+						"phase": "l",
+						"name": "DistillateLiq",
+						"isBasis": false,
+						"flowEst": ""
+					}
+				],
+				"specs": [
+					{
+						"name": "Spec2",
+						"formula": "$.lx[1].nitrogen - 0.99",
+						"scale": 1
+					}
+				]
+			},
+			{
+				"name": "heat_values",
+				"Notes": "",
+				"DiagramX": 195,
+				"DiagramY": 180,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{table\n\t\"Nitrogen\", 0 kJ/mol,\n\t\"Methane\",890.36 kJ/mol,\n\t\"Ethane\", 1559.9 kJ/mol,\n\t\"Propane\", 2220.0 kJ/mol,\n\t\"isoButane\", 2868.6 kJ/mol,\n\t\"Butane\", 2878.5 kJ/mol,\n\t\"isoPentane\", 3529.2 kJ/mol,\n\t\"Pentane\", 3536.1 kJ/mol\n}"
+				}
+			},
+			{
+				"name": "hp_btms",
+				"Notes": "",
+				"DiagramX": 80,
+				"DiagramY": 170,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "hpcolumn.thermo"
+				},
+				"firstprop": {
+					"Formula": "hpcolumn.p[-1]"
+				},
+				"secondprop": {
+					"Formula": "0"
+				},
+				"molefrac": {
+					"Formula": "{tr {numeric hpcolumn.lx[-1]}}"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "hpcolumn.lf[-1]"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "hp_ovhd",
+				"Notes": "",
+				"DiagramX": 80,
+				"DiagramY": 145,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "hpcolumn.thermo"
+				},
+				"firstprop": {
+					"Formula": "hpcolumn.p[1]"
+				},
+				"secondprop": {
+					"Formula": "1"
+				},
+				"molefrac": {
+					"Formula": "{tr {numeric hpcolumn.lx[1]}}"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "hpcolumn.lf[1]"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "e2_out",
+				"Notes": "",
+				"DiagramX": 80,
+				"DiagramY": 195,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "hp_btms.thermo"
+				},
+				"firstprop": {
+					"Formula": "-230 degf"
+				},
+				"secondprop": {
+					"Formula": "hp_btms.p - 0.5 psia"
+				},
+				"molefrac": {
+					"Formula": "hp_btms.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "hp_btms.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "LP_Feed",
+				"Notes": "Valves are assumed to be adiabatic, so giving pressure and the inlet enthalpy determines the temperature.",
+				"DiagramX": 80,
+				"DiagramY": 220,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "e2_out.thermo"
+				},
+				"firstprop": {
+					"Formula": "2 atm"
+				},
+				"secondprop": {
+					"Formula": "e2_out.h"
+				},
+				"molefrac": {
+					"Formula": "e2_out.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "e2_out.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "e1_out",
+				"Notes": "",
+				"DiagramX": 195,
+				"DiagramY": 35,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "hp_ovhd.thermo"
+				},
+				"firstprop": {
+					"Formula": "-275 degf"
+				},
+				"secondprop": {
+					"Formula": "hp_ovhd.p - 0.5 psia"
+				},
+				"molefrac": {
+					"Formula": "hp_ovhd.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "hp_ovhd.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "LP_Reflux",
+				"Notes": "Like E-2, a p-h flash is used to represent the valve",
+				"DiagramX": 195,
+				"DiagramY": 60,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "e1_out.thermo"
+				},
+				"firstprop": {
+					"Formula": "2 atm"
+				},
+				"secondprop": {
+					"Formula": "e1_out.h"
+				},
+				"molefrac": {
+					"Formula": "e1_out.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "e1_out.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "LPColumn",
+				"Notes": "",
+				"DiagramX": 80,
+				"DiagramY": 250,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Column",
+				"thermo": {
+					"Formula": "LP_Feed.thermo"
+				},
+				"nstages": {
+					"Formula": "6"
+				},
+				"ptop": {
+					"Formula": "2 atm"
+				},
+				"pbottom": {
+					"Formula": "2.5 atm"
+				},
+				"totalCondenser": false,
+				"reboiler": true,
+				"ttopest": {
+					"Formula": "-308 degf"
+				},
+				"tbotest": {
+					"Formula": "-250 degf"
+				},
+				"feeds": [
+					{
+						"stage": 1,
+						"formula": "LP_Reflux",
+						"name": "feed1"
+					},
+					{
+						"stage": 3,
+						"formula": "LP_Feed",
+						"name": "feed2"
+					}
+				],
+				"draws": [
+					{
+						"stage": 1,
+						"phase": "v",
+						"name": "Overhead",
+						"isBasis": true,
+						"flowEst": "500 lbmol/h"
+					},
+					{
+						"stage": 6,
+						"phase": "l",
+						"name": "Bottoms",
+						"isBasis": true,
+						"flowEst": ""
+					}
+				],
+				"specs": [
+					{
+						"name": "Spec1",
+						"formula": "$.q[1]",
+						"scale": 50
+					},
+					{
+						"name": "Spec2",
+						"formula": "$.q[-1] + hpcolumn.q[1]",
+						"scale": 1
+					}
+				]
+			},
+			{
+				"name": "N2_Rich",
+				"Notes": "The outlet temperature is determined by heat balance.",
+				"DiagramX": 195,
+				"DiagramY": 90,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "LPColumn.thermo"
+				},
+				"firstprop": {
+					"Formula": "LPColumn.p[1] - 0.5 psia"
+				},
+				"secondprop": {
+					"Formula": "(lpcolumn.vh[1] * lpcolumn.vf [1]+ hp_ovhd.hflow - lp_reflux.hflow)\n/\nlpcolumn.vf[1]"
+				},
+				"molefrac": {
+					"Formula": "lpcolumn.vx[1]"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "lpcolumn.vf[1]"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "feed_HHV",
+				"Notes": "",
+				"DiagramX": 195,
+				"DiagramY": 205,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{sum hp_feed.x * {tr {numeric heat_values}}}"
+				},
+				"displayUnit": "btu/scf"
+			},
+			{
+				"name": "HC_Stream",
+				"Notes": "Again a heat balance is used to determine the temperature",
+				"DiagramX": 195,
+				"DiagramY": 120,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "lpcolumn.thermo"
+				},
+				"firstprop": {
+					"Formula": "lpcolumn.p[-1] - 0.5 psia"
+				},
+				"secondprop": {
+					"Formula": "(lpcolumn.lh[-1] * lpcolumn.lf[-1] + hp_btms.hflow - e2_out.hflow)\n/\nlpcolumn.lf[-1]"
+				},
+				"molefrac": {
+					"Formula": "lpcolumn.lx[-1]"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "lpcolumn.lf[-1]"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "HC_HHV",
+				"Notes": "",
+				"DiagramX": 195,
+				"DiagramY": 230,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"isOutput": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "{sum hc_stream.x * {numeric heat_values}}"
+				},
+				"displayUnit": "btu/scf"
+			},
+			{
+				"name": "Overview",
+				"Notes": "<b>Nitrogen Rejection Unit</b>\n\nI took this example from a 35 year old Hysim (ancestor to Hysys) manual I still had lying around. It uses a two column process to produce high purity nitrogen and a natural gas stream. The feed has a large amount of nitrogen, apparently from using nitrogen for enhanced oil recovery.\n\nThe condenser of the high pressure column serves as the reboiler of the low pressure one.\n\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 980 730\" width=\"100%\" height=\"100%\">\n  <defs>\n    <style>\n      .title-text {\n        font-family: \"Times New Roman\", Georgia, serif;\n        font-size: 36px;\n        font-style: italic;\n        fill: #111;\n      }\n      .equip-label {\n        font-family: Arial, Helvetica, sans-serif;\n        font-size: 18px;\n        font-style: italic;\n        font-weight: bold;\n        fill: #111;\n      }\n      .sub-equip-label {\n        font-family: Arial, Helvetica, sans-serif;\n        font-size: 15px;\n        font-style: italic;\n        font-weight: bold;\n        fill: #111;\n      }\n      .stream-text {\n        font-family: Consolas, \"Courier New\", Courier, monospace;\n        font-size: 13.5px;\n        font-weight: bold;\n        fill: #111;\n      }\n      .tray-num {\n        font-family: \"Times New Roman\", Georgia, serif;\n        font-size: 14px;\n        font-style: italic;\n        font-weight: bold;\n        fill: #111;\n        text-anchor: middle;\n        dominant-baseline: central;\n      }\n      .pipe {\n        stroke: #111;\n        stroke-width: 1.5;\n        fill: none;\n        stroke-linecap: round;\n        stroke-linejoin: round;\n      }\n      .energy-stream {\n        stroke: #111;\n        stroke-width: 1.5;\n        stroke-dasharray: 6,4;\n        fill: none;\n        stroke-linecap: round;\n        stroke-linejoin: round;\n      }\n      .vessel {\n        stroke: #111;\n        stroke-width: 1.6;\n        fill: #fff;\n      }\n      .tray-line {\n        stroke: #111;\n        stroke-width: 1.2;\n      }\n    </style>\n\n    <!-- Valve symbol -->\n    <g id=\"valve-h\">\n      <polygon points=\"-10,-6 0,0 -10,6\" fill=\"#fff\" stroke=\"#111\" stroke-width=\"1.3\" />\n      <polygon points=\"10,-6 0,0 10,6\" fill=\"#fff\" stroke=\"#111\" stroke-width=\"1.3\" />\n    </g>\n  </defs>\n\n  <!-- Title -->\n  <text x=\"160\" y=\"52\" class=\"title-text\">Nitrogen Rejection Unit</text>\n\n  <!-- ================= LPCOLUMN ================= -->\n  <!-- Column shell: X: 550 to 600 -->\n  <path d=\"M 550,165 A 25,18 0 0,1 600,165 L 600,315 A 25,18 0 0,1 550,315 Z\" class=\"vessel\" />\n  \n  <!-- Trays 1 to 6 -->\n  <line x1=\"550\" y1=\"180\" x2=\"600\" y2=\"180\" class=\"tray-line\" />\n  <line x1=\"550\" y1=\"205\" x2=\"600\" y2=\"205\" class=\"tray-line\" />\n  <line x1=\"550\" y1=\"230\" x2=\"600\" y2=\"230\" class=\"tray-line\" />\n  <line x1=\"550\" y1=\"255\" x2=\"600\" y2=\"255\" class=\"tray-line\" />\n  <line x1=\"550\" y1=\"280\" x2=\"600\" y2=\"280\" class=\"tray-line\" />\n  <line x1=\"550\" y1=\"305\" x2=\"600\" y2=\"305\" class=\"tray-line\" />\n\n  <text x=\"575\" y=\"171\" class=\"tray-num\">1</text>\n  <text x=\"575\" y=\"193\" class=\"tray-num\">2</text>\n  <text x=\"575\" y=\"218\" class=\"tray-num\">3</text>\n  <text x=\"575\" y=\"243\" class=\"tray-num\">4</text>\n  <text x=\"575\" y=\"268\" class=\"tray-num\">5</text>\n  <text x=\"575\" y=\"293\" class=\"tray-num\">6</text>\n\n  <text x=\"625\" y=\"255\" class=\"equip-label\">LPCOLUMN</text>\n\n  <!-- ================= LP REBOILER ================= -->\n  <circle cx=\"475\" cy=\"310\" r=\"18\" class=\"vessel\" />\n  <path d=\"M 463,310 C 468,302 471,318 475,310 C 479,302 482,318 487,310\" fill=\"none\" stroke=\"#111\" stroke-width=\"1.3\" />\n  \n  <!-- Reboiler liquid draw from column bottom -->\n  <path d=\"M 550,320 L 505,320 L 505,310 L 493,310\" class=\"pipe\" />\n  <!-- Reboiler vapor return below Tray 6 -->\n  <path d=\"M 475,292 L 475,285 L 530,285 L 530,300 L 550,300\" class=\"pipe\" />\n\n  <!-- ================= HPCOLUMN ================= -->\n  <!-- Column shell: X: 312 to 358 -->\n  <path d=\"M 312,465 A 23,17 0 0,1 358,465 L 358,665 A 23,17 0 0,1 312,665 Z\" class=\"vessel\" />\n\n  <!-- Trays 2 to 10 -->\n  <line x1=\"312\" y1=\"485\" x2=\"358\" y2=\"485\" class=\"tray-line\" />\n  <line x1=\"312\" y1=\"507\" x2=\"358\" y2=\"507\" class=\"tray-line\" />\n  <line x1=\"312\" y1=\"529\" x2=\"358\" y2=\"529\" class=\"tray-line\" />\n  <line x1=\"312\" y1=\"551\" x2=\"358\" y2=\"551\" class=\"tray-line\" />\n  <line x1=\"312\" y1=\"573\" x2=\"358\" y2=\"573\" class=\"tray-line\" />\n  <line x1=\"312\" y1=\"595\" x2=\"358\" y2=\"595\" class=\"tray-line\" />\n  <line x1=\"312\" y1=\"617\" x2=\"358\" y2=\"617\" class=\"tray-line\" />\n  <line x1=\"312\" y1=\"639\" x2=\"358\" y2=\"639\" class=\"tray-line\" />\n  <line x1=\"312\" y1=\"661\" x2=\"358\" y2=\"661\" class=\"tray-line\" />\n\n  <text x=\"335\" y=\"475\" class=\"tray-num\">2</text>\n  <text x=\"335\" y=\"496\" class=\"tray-num\">3</text>\n  <text x=\"335\" y=\"518\" class=\"tray-num\">4</text>\n  <text x=\"335\" y=\"540\" class=\"tray-num\">5</text>\n  <text x=\"335\" y=\"562\" class=\"tray-num\">6</text>\n  <text x=\"335\" y=\"584\" class=\"tray-num\">7</text>\n  <text x=\"335\" y=\"606\" class=\"tray-num\">8</text>\n  <text x=\"335\" y=\"628\" class=\"tray-num\">9</text>\n  <text x=\"335\" y=\"650\" class=\"tray-num\">10</text>\n\n  <text x=\"385\" y=\"575\" class=\"equip-label\">HPCOLUMN</text>\n\n  <!-- ================= HP CONDENSER & REFLUX DRUM ================= -->\n  <!-- Total Condenser for HP Column -->\n  <circle cx=\"390\" cy=\"425\" r=\"18\" class=\"vessel\" />\n  <path d=\"M 390,413 C 382,418 398,421 390,425 C 382,429 398,432 390,437\" fill=\"none\" stroke=\"#111\" stroke-width=\"1.3\" />\n\n  <!-- Energy Stream: COND/REB to LP Reboiler -->\n  <path d=\"M 390,407 L 390,310 L 455,310\" class=\"energy-stream\" />\n  <polygon points=\"453,306 463,310 453,314\" fill=\"#111\" />\n  <text x=\"398\" y=\"380\" class=\"stream-text\">COND/REB</text>\n\n  <!-- Reflux Drum (Total Condenser - Liquid Accumulator) -->\n  <path d=\"M 450,413 A 12,12 0 0,0 450,437 L 514,437 A 12,12 0 0,0 514,413 Z\" class=\"vessel\" />\n  <line x1=\"498\" y1=\"413\" x2=\"498\" y2=\"437\" stroke=\"#111\" stroke-width=\"1.2\" />\n  <g fill=\"#111\">\n    <circle cx=\"503\" cy=\"419\" r=\"0.8\" /><circle cx=\"507\" cy=\"419\" r=\"0.8\" /><circle cx=\"511\" cy=\"419\" r=\"0.8\" />\n    <circle cx=\"505\" cy=\"423\" r=\"0.8\" /><circle cx=\"509\" cy=\"423\" r=\"0.8\" /><circle cx=\"513\" cy=\"423\" r=\"0.8\" />\n  </g>\n\n  <!-- HP Overhead Vapor to Condenser -->\n  <path d=\"M 335,448 L 335,425 L 372,425\" class=\"pipe\" />\n\n  <!-- Condenser outlet to Drum -->\n  <line x1=\"408\" y1=\"425\" x2=\"438\" y2=\"425\" class=\"pipe\" />\n\n  <!-- Reflux liquid to HPCOLUMN Tray 2 -->\n  <path d=\"M 466,437 L 466,485 L 358,485\" class=\"pipe\" />\n  <polygon points=\"366,482 358,485 366,488\" fill=\"#111\" />\n\n  <!-- HP_OVHD: Distillate liquid draw to E-1 -->\n  <path d=\"M 506,437 L 506,535 L 770,535 L 770,290 L 788,290\" class=\"pipe\" />\n  <text x=\"635\" y=\"527\" class=\"stream-text\" text-anchor=\"middle\">HP_OVHD</text>\n\n  <!-- ================= EXCHANGER E-1 ================= -->\n  <!-- Shell vessel -->\n  <circle cx=\"810\" cy=\"290\" r=\"22\" class=\"vessel\" />\n  \n  <!-- Tube Zigzag (HP_OVHD -> E1_OUT) -->\n  <path d=\"M 788,290 L 797,278 L 806,302 L 815,278 L 823,302 L 832,290\" class=\"pipe\" />\n\n  <!-- Shell Stream: LP_OVHD into top, N2_RICH out of bottom -->\n  <line x1=\"810\" y1=\"120\" x2=\"810\" y2=\"268\" class=\"pipe\" />\n  <path d=\"M 810,312 L 810,350 L 880,350\" class=\"pipe\" />\n  <polygon points=\"878,346 888,350 878,354\" fill=\"#111\" />\n  <text x=\"888\" y=\"375\" class=\"stream-text\" text-anchor=\"middle\">N2_RICH</text>\n\n  <!-- E-1 Label: positioned cleanly in open space -->\n  <text x=\"845\" y=\"260\" class=\"sub-equip-label\">E-1</text>\n\n  <!-- ================= EXCHANGER E-2 ================= -->\n  <!-- Shell vessel -->\n  <circle cx=\"170\" cy=\"340\" r=\"22\" class=\"vessel\" />\n\n  <!-- Tube Zigzag (HP_BTMS -> E-2_OUT) -->\n  <path d=\"M 170,362 L 158,353 L 182,344 L 158,335 L 182,326 L 170,318\" class=\"pipe\" />\n\n  <!-- Shell Stream: LP_BTMS into right side, HC_STREAM out of left side -->\n  <!-- E-2 Label: positioned cleanly in open quadrant -->\n  <text x=\"205\" y=\"295\" class=\"sub-equip-label\">E-2</text>\n\n  <!-- ================= VALVES JT-1 & JT-2 ================= -->\n  <!-- JT-1 -->\n  <g transform=\"translate(338, 180)\">\n    <use href=\"#valve-h\" />\n  </g>\n  <text x=\"338\" y=\"163\" class=\"sub-equip-label\" text-anchor=\"middle\">JT-1</text>\n\n  <!-- JT-2 -->\n  <g transform=\"translate(338, 230)\">\n    <use href=\"#valve-h\" />\n  </g>\n  <text x=\"338\" y=\"255\" class=\"sub-equip-label\" text-anchor=\"middle\">JT-2</text>\n\n  <!-- ================= PROCESS PIPELINES ================= -->\n\n  <!-- Line: E1_OUT (E-1 tube outlet across top to JT-1) -->\n  <path d=\"M 832,290 L 900,290 L 900,80 L 190,80 L 190,180 L 328,180\" class=\"pipe\" />\n  <text x=\"520\" y=\"72\" class=\"stream-text\" text-anchor=\"middle\">E1_OUT</text>\n\n  <!-- Line: LP_REFLUX (JT-1 to LPCOLUMN Tray 1) -->\n  <line x1=\"348\" y1=\"180\" x2=\"542\" y2=\"180\" class=\"pipe\" />\n  <polygon points=\"542,177 550,180 542,183\" fill=\"#111\" />\n  <text x=\"445\" y=\"172\" class=\"stream-text\" text-anchor=\"middle\">LP_REFLUX</text>\n\n  <!-- Line: E-2_OUT (E-2 tube outlet to JT-2) -->\n  <path d=\"M 170,318 L 170,230 L 328,230\" class=\"pipe\" />\n  <text x=\"245\" y=\"222\" class=\"stream-text\" text-anchor=\"middle\">E-2_OUT</text>\n\n  <!-- Line: LP_FEED (JT-2 to LPCOLUMN Tray 3) -->\n  <line x1=\"348\" y1=\"230\" x2=\"542\" y2=\"230\" class=\"pipe\" />\n  <polygon points=\"542,227 550,230 542,233\" fill=\"#111\" />\n  <text x=\"445\" y=\"222\" class=\"stream-text\" text-anchor=\"middle\">LP_FEED</text>\n\n  <!-- Line: LP_OVHD (LPCOLUMN overhead vapor to E-1 shell) -->\n  <path d=\"M 575,147 L 575,120 L 810,120\" class=\"pipe\" />\n  <text x=\"690\" y=\"112\" class=\"stream-text\" text-anchor=\"middle\">LP_OVHD</text>\n\n  <!-- Line: LP_BTMS (LP bottom product into E-2 shell) -->\n  <!-- Underlay mask to cross cleanly over dashed energy stream -->\n  <line x1=\"382\" y1=\"340\" x2=\"398\" y2=\"340\" stroke=\"#fff\" stroke-width=\"6\" />\n  <path d=\"M 575,333 L 575,340 L 192,340\" class=\"pipe\" />\n  <text x=\"265\" y=\"332\" class=\"stream-text\" text-anchor=\"middle\">LP_BTMS</text>\n\n  <!-- Line: HC_STREAM (E-2 shell outlet product) -->\n  <path d=\"M 148,340 L 120,340 L 120,375 L 85,375\" class=\"pipe\" />\n  <polygon points=\"87,371 77,375 87,379\" fill=\"#111\" />\n  <text x=\"125\" y=\"398\" class=\"stream-text\" text-anchor=\"middle\">HC_STREAM</text>\n\n  <!-- Line: HP_FEED (Feed to HPCOLUMN Tray 9) -->\n  <line x1=\"225\" y1=\"639\" x2=\"304\" y2=\"639\" class=\"pipe\" />\n  <polygon points=\"304,635 312,639 304,643\" fill=\"#111\" />\n  <text x=\"265\" y=\"631\" class=\"stream-text\" text-anchor=\"middle\">HP_FEED</text>\n\n  <!-- Line: HP_BTMS (HP bottoms liquid to E-2 tube inlet) -->\n  <path d=\"M 335,682 L 335,700 L 170,700 L 170,362\" class=\"pipe\" />\n  <text x=\"255\" y=\"693\" class=\"stream-text\" text-anchor=\"middle\">HP_BTMS</text>\n\n</svg>",
+				"DiagramX": 80,
+				"DiagramY": 35,
+				"HideInfo": "n",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": ""
+				}
+			},
+			{
+				"name": "lpcol_topP",
+				"Notes": "",
+				"DiagramX": 80,
+				"DiagramY": 65,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "370 psia"
+				}
+			},
+			{
+				"name": "Cond_Reb_Duty",
+				"Notes": "The duty calculated for the condenser in the HPColumn is used as the heat for the LPColumn reboiler.",
+				"DiagramX": 195,
+				"DiagramY": 150,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "-hpcolumn.q[1]"
+				},
+				"displayUnit": "kW"
+			}
+		]
+	}
+}
