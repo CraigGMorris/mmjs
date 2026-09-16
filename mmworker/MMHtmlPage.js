@@ -645,7 +645,7 @@ export class MMHtmlPageProcessor {
 				width: 100%;
 			}
 			.model-form__input-name {
-				width:150px;
+				width:100px;
 				border: solid 1px black;
 				padding: 5px;
 				overflow-wrap: break-word;
@@ -667,7 +667,7 @@ export class MMHtmlPageProcessor {
 				border: solid 1px;
 			}
 			.model-form__output-name {
-				width:150px;
+				width:100px;
 				border: solid 1px black;
 				padding: 5px;
 				overflow-wrap: break-word;
@@ -682,7 +682,7 @@ export class MMHtmlPageProcessor {
 				background-color: #e8e8ff;
 			}
 			.model-form__output-row .model-form__output-name {
-				width:150px;
+				width:100px;
 				border: solid 1px black;
 				padding: 5px;
 			}
