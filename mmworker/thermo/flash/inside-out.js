@@ -441,8 +441,26 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 		const isPure = (N === 1 || maxZ > 0.99999);
 
 		// Initial Wilson estimation for bubble and dew points
-		let tBub = tcAvg * 0.7;
-		for (let k = 0; k < 15; k++) {
+		let tBubGuess = Infinity;
+		let tDewGuess = 0.0;
+		for (let i = 0; i < N; i++) {
+			if (ws.z[i] > 1e-6) {
+				const c = eos.compounds[i];
+				const denomDew = 1.0 - Math.log(ws.z[i] * P / c.pc) / (5.373 * (1.0 + c.omega));
+				if (denomDew > 0) {
+					const Ti = c.tc / denomDew;
+					if (Ti > tDewGuess) tDewGuess = Ti;
+				}
+				const denomBub = 1.0 + Math.log(ws.z[i] * c.pc / P) / (5.373 * (1.0 + c.omega));
+				if (denomBub > 0) {
+					const Ti = c.tc / denomBub;
+					if (Ti < tBubGuess) tBubGuess = Ti;
+				}
+			}
+		}
+
+		let tBub = isFinite(tBubGuess) ? Math.min(tBubGuess, tcAvg * 0.7) : tcAvg * 0.7;
+		for (let k = 0; k < 30; k++) {
 			let sumZK = 0.0, dSum_dT = 0.0;
 			for (let i = 0; i < N; i++) {
 				const c = eos.compounds[i];
@@ -459,8 +477,8 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 			if (tBub < 20.0) tBub = 20.0;
 		}
 
-		let tDew = tcAvg * 0.85;
-		for (let k = 0; k < 15; k++) {
+		let tDew = Math.max(tDewGuess, tcAvg * 0.85);
+		for (let k = 0; k < 30; k++) {
 			let sumZOverK = 0.0, dSum_dT = 0.0;
 			for (let i = 0; i < N; i++) {
 				const c = eos.compounds[i];
@@ -475,10 +493,6 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 			const clampedDelta = Math.max(-0.2 * tDew, Math.min(0.2 * tDew, delta));
 			tDew -= clampedDelta;
 			if (tDew < 20.0) tDew = 20.0;
-		}
-
-		if (!isPure && tDew > tcAvg * 1.35) {
-			tDew = tcAvg * 1.25;
 		}
 
 		T = (1.0 - Q) * tBub + Q * tDew;
@@ -857,8 +871,27 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 		P = spec.P || 101325.0;
 
 		// Calculate Wilson bubble and dew temperatures
-		let tBub = tcAvg * 0.7;
-		for (let k = 0; k < 15; k++) {
+		let tBubGuess = Infinity;
+		let tDewGuess = 0.0;
+		for (let i = 0; i < N; i++) {
+			if (ws.z[i] > 1e-6) {
+				const c = eos.compounds[i];
+				const denomDew = 1.0 - Math.log(ws.z[i] * P / c.pc) / (5.373 * (1.0 + c.omega));
+				if (denomDew > 0) {
+					const Ti = c.tc / denomDew;
+					if (Ti > tDewGuess) tDewGuess = Ti;
+				}
+				const denomBub = 1.0 + Math.log(ws.z[i] * c.pc / P) / (5.373 * (1.0 + c.omega));
+				if (denomBub > 0) {
+					const Ti = c.tc / denomBub;
+					if (Ti < tBubGuess) tBubGuess = Ti;
+				}
+			}
+		}
+
+		let tBub = isFinite(tBubGuess) ? Math.min(tBubGuess, tcAvg * 0.7) : tcAvg * 0.7;
+		let bubConverged = false;
+		for (let k = 0; k < 30; k++) {
 			let sumZK = 0.0, dSum_dT = 0.0;
 			for (let i = 0; i < N; i++) {
 				const c = eos.compounds[i];
@@ -868,15 +901,19 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				dSum_dT += ws.z[i] * Ki * (5.373 * (1.0 + c.omega) * c.tc / (tBub * tBub));
 			}
 			const diff = sumZK - 1.0;
-			if (Math.abs(diff) < 1e-4) break;
+			if (Math.abs(diff) < 1e-4) {
+				bubConverged = true;
+				break;
+			}
 			const delta = diff / (dSum_dT !== 0 ? dSum_dT : 1.0);
 			const clampedDelta = Math.max(-0.2 * tBub, Math.min(0.2 * tBub, delta));
 			tBub -= clampedDelta;
 			if (tBub < 20.0) tBub = 20.0;
 		}
 
-		let tDew = tcAvg * 0.85;
-		for (let k = 0; k < 15; k++) {
+		let tDew = Math.max(tDewGuess, tcAvg * 0.85);
+		let dewConverged = false;
+		for (let k = 0; k < 30; k++) {
 			let sumZOverK = 0.0, dSum_dT = 0.0;
 			for (let i = 0; i < N; i++) {
 				const c = eos.compounds[i];
@@ -886,67 +923,87 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				dSum_dT -= (ws.z[i] / Ki) * (5.373 * (1.0 + c.omega) * c.tc / (tDew * tDew));
 			}
 			const diff = sumZOverK - 1.0;
-			if (Math.abs(diff) < 1e-4) break;
+			if (Math.abs(diff) < 1e-4) {
+				dewConverged = true;
+				break;
+			}
 			const delta = diff / (dSum_dT !== 0 ? dSum_dT : 1.0);
 			const clampedDelta = Math.max(-0.2 * tDew, Math.min(0.2 * tDew, delta));
 			tDew -= clampedDelta;
 			if (tDew < 20.0) tDew = 20.0;
 		}
 
-		// Calculate property at Wilson bubble point
-		eos.calculateZFactors(tBub, P, ws.z, ws.zFactors, undefined, ws);
-		const zLBub = ws.zFactors[0];
-		const depBub = eos.calculateDepartures(tBub, P, ws.z, zLBub);
-		const propBub = isEnthalpy ?
-			(calculateIdealGasEnthalpy(eos.compounds, ws.z, tBub) + depBub.hDep) :
-			(calculateIdealGasEntropy(eos.compounds, ws.z, tBub, P) + depBub.sDep);
+		let propBub = -Infinity;
+		if (bubConverged) {
+			// Calculate property at Wilson bubble point
+			eos.calculateZFactors(tBub, P, ws.z, ws.zFactors, undefined, ws);
+			const zLBub = ws.zFactors[0];
+			const depBub = eos.calculateDepartures(tBub, P, ws.z, zLBub);
+			propBub = isEnthalpy ?
+				(calculateIdealGasEnthalpy(eos.compounds, ws.z, tBub) + depBub.hDep) :
+				(calculateIdealGasEntropy(eos.compounds, ws.z, tBub, P) + depBub.sDep);
 
-		// Calculate property at Wilson dew point
-		eos.calculateZFactors(tDew, P, ws.z, ws.zFactors, undefined, ws);
-		const zVDew = ws.zFactors[1];
-		const depDew = eos.calculateDepartures(tDew, P, ws.z, zVDew);
-		const propDew = isEnthalpy ?
-			(calculateIdealGasEnthalpy(eos.compounds, ws.z, tDew) + depDew.hDep) :
-			(calculateIdealGasEntropy(eos.compounds, ws.z, tDew, P) + depDew.sDep);
-
-		// If target < propBub: Subcooled liquid
-		if (targetSpec < propBub) {
-			const singleL = solveSinglePhaseT(eos, P, ws.z, 'LIQUID', targetSpec, isEnthalpy, tBub * 0.95, ws);
-			eos.calculateFugacityCoefficients(singleL.T, P, ws.z, singleL.zFactor, ws.lnPhiL, undefined, ws);
-			for (let i = 0; i < N; i++) {
-				ws.x[i] = ws.z[i];
-				ws.y[i] = ws.z[i];
-				ws.K[i] = 1.0;
-				ws.lnPhiV[i] = ws.lnPhiL[i];
+			// If target < propBub: Subcooled liquid
+			if (targetSpec < propBub) {
+				const singleL = solveSinglePhaseT(eos, P, ws.z, 'LIQUID', targetSpec, isEnthalpy, tBub * 0.95, ws);
+				eos.calculateFugacityCoefficients(singleL.T, P, ws.z, singleL.zFactor, ws.lnPhiL, undefined, ws);
+				for (let i = 0; i < N; i++) {
+					ws.x[i] = ws.z[i];
+					ws.y[i] = ws.z[i];
+					ws.K[i] = 1.0;
+					ws.lnPhiV[i] = ws.lnPhiL[i];
+				}
+				return assembleFlashResult(singleL.T, P, ws.z, 0.0, ws.x, ws.y, ws.K, singleL.zFactor, singleL.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
+					converged: singleL.converged,
+					iterations: singleL.iterations,
+					residual: 0.0
+				});
 			}
-			return assembleFlashResult(singleL.T, P, ws.z, 0.0, ws.x, ws.y, ws.K, singleL.zFactor, singleL.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
-				converged: singleL.converged,
-				iterations: singleL.iterations,
-				residual: 0.0
-			});
 		}
 
-		// If target > propDew: Superheated vapor
-		if (targetSpec > propDew) {
-			const initialGuessT = spec.T !== undefined ? spec.T : Math.max(300.0, tDew * 1.1);
-			const singleV = solveSinglePhaseT(eos, P, ws.z, 'VAPOR', targetSpec, isEnthalpy, initialGuessT, ws);
-			eos.calculateFugacityCoefficients(singleV.T, P, ws.z, singleV.zFactor, ws.lnPhiV, undefined, ws);
-			for (let i = 0; i < N; i++) {
-				ws.x[i] = ws.z[i];
-				ws.y[i] = ws.z[i];
-				ws.K[i] = 1.0;
-				ws.lnPhiL[i] = ws.lnPhiV[i];
+		let propDew = Infinity;
+		if (dewConverged) {
+			// Calculate property at Wilson dew point
+			eos.calculateZFactors(tDew, P, ws.z, ws.zFactors, undefined, ws);
+			const zVDew = ws.zFactors[1];
+			const depDew = eos.calculateDepartures(tDew, P, ws.z, zVDew);
+			propDew = isEnthalpy ?
+				(calculateIdealGasEnthalpy(eos.compounds, ws.z, tDew) + depDew.hDep) :
+				(calculateIdealGasEntropy(eos.compounds, ws.z, tDew, P) + depDew.sDep);
+
+			// If target > propDew: Superheated vapor
+			if (targetSpec > propDew) {
+				const initialGuessT = spec.T !== undefined ? spec.T : Math.max(300.0, tDew * 1.1);
+				const singleV = solveSinglePhaseT(eos, P, ws.z, 'VAPOR', targetSpec, isEnthalpy, initialGuessT, ws);
+				eos.calculateFugacityCoefficients(singleV.T, P, ws.z, singleV.zFactor, ws.lnPhiV, undefined, ws);
+				for (let i = 0; i < N; i++) {
+					ws.x[i] = ws.z[i];
+					ws.y[i] = ws.z[i];
+					ws.K[i] = 1.0;
+					ws.lnPhiL[i] = ws.lnPhiV[i];
+				}
+				return assembleFlashResult(singleV.T, P, ws.z, 1.0, ws.x, ws.y, ws.K, singleV.zFactor, singleV.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
+					converged: singleV.converged,
+					iterations: singleV.iterations,
+					residual: 0.0
+				});
 			}
-			return assembleFlashResult(singleV.T, P, ws.z, 1.0, ws.x, ws.y, ws.K, singleV.zFactor, singleV.zFactor, ws.lnPhiL, ws.lnPhiV, eos, ws, {
-				converged: singleV.converged,
-				iterations: singleV.iterations,
-				residual: 0.0
-			});
 		}
 
 		// Two-phase initial estimate
-		beta = Math.max(0.01, Math.min(0.99, (targetSpec - propBub) / (propDew - propBub)));
-		T = (1.0 - beta) * tBub + beta * tDew;
+		if (bubConverged && dewConverged && propDew > propBub) {
+			beta = Math.max(0.01, Math.min(0.99, (targetSpec - propBub) / (propDew - propBub)));
+			T = (1.0 - beta) * tBub + beta * tDew;
+		} else if (spec.T !== undefined) {
+			T = spec.T;
+			beta = 0.5;
+		} else if (dewConverged) {
+			T = tDew * 0.9;
+			beta = 0.5;
+		} else {
+			T = Math.max(298.15, tcAvg);
+			beta = 0.5;
+		}
 
 		const params = createInsideOutParams(eos, ws);
 		initInsideOutParams(eos, ws.z, T, P, params, ws);
