@@ -539,6 +539,17 @@ export class MMSolver extends MMTool {
 					}
 				}
 				
+				const varNames = [];
+				const eqnNames = [];
+				for (let i = 0; i < functionCount; i++) {
+					const func = this.functions[i];
+					const outputCount = func.outputs.length;
+					for (let j = 0; j < outputCount; j++) {
+						varNames.push(outputCount === 1 ? `o${i+1}` : `o${i+1}[${j}]`);
+						eqnNames.push(outputCount === 1 ? `f${i+1}` : `f${i+1}[${j}]`);
+					}
+				}
+				
 				MMMath.broydenSolve(totalNumberOfEqns, x, {
 					calcFx: (n, x, fx) => {
 						this.forgetStep();
@@ -575,11 +586,11 @@ export class MMSolver extends MMTool {
 							}
 						}
 					},
-					setError: (msgKey) => {
+					setError: (msgKey, msgArgs) => {
 						this.isInError = true;
 						this.isConverged = false;
 						const cmdMsg = new MMCommandMessage('mmcmd:solverError', {path: this.getPath()});
-						this.setError(msgKey, {}, cmdMsg);
+						this.setError(msgKey, msgArgs || {}, cmdMsg);
 						return;
 					},
 					setStatus: (msg) => {
@@ -588,7 +599,9 @@ export class MMSolver extends MMTool {
 				},
 				{
 					maxIterations: maxIterations.values[0],
-					maxJacobians: maxJacobians.values[0]
+					maxJacobians: maxJacobians.values[0],
+					varNames: varNames,
+					eqnNames: eqnNames
 				});
 				if (!this.isInError) {
 					this.isConverged = true;

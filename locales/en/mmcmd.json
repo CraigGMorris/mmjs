@@ -85,7 +85,7 @@
 	"mathBroydenIterExceeded": "Maximum iterations of {{iter}} exceeded in Broyden solution",
 	"mathBroydenSpurious": "A spurious solution with a zero gradient occurred in Broyden",
 	"mathJacobianCalc": "Jacobian Calc",
-	"mathJacobianSingular": "Jacobian is singular",
+	"mathJacobianSingular": "Jacobian is singular{{details}}",
 	"mathLineSearchFailed": "Line search failed in Broyden",
 	"mathLineSearchRoundOff": "Roundoff problem in line search",
 	"matrixCellValueNotScalar": "Cell value is not a scalar\n\npath: {{path}}\nrow: {{row}}\ncolumn: {{column}}\nformula: {{formula}}",

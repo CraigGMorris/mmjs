@@ -64,6 +64,8 @@
  * @property {number} [minTolerance]
  * @property {boolean} [startWithIdentity]
  * @property {MMBroydenWarmState} [warmState]
+ * @property {string[]|((idx: number) => string)} [varNames]
+ * @property {string[]|((idx: number) => string)} [eqnNames]
  */
 
 export const MMMath = {
@@ -1188,7 +1190,7 @@ export const MMMath = {
 				scale = Math.max( scale, Math.abs( a[i*n+k] ));
 			}
 			
-			if (scale == 0.0) {
+			if (scale == 0.0 || isNaN(scale)) {
 				singular = true;   // singular case
 				c[k] = 0.0;
 				d[k] = 0.0;
@@ -1222,7 +1224,7 @@ export const MMMath = {
 			}
 		}
 		d[n - 1] = a[(n - 1)*n + n-1];
-		if ( d[n - 1] == 0.0 )
+		if ( d[n - 1] == 0.0 || isNaN(d[n - 1]) )
 			singular = true;
 		
 		return singular;
@@ -1480,6 +1482,345 @@ export const MMMath = {
 	},
 
 	/**
+	 * Analyzes a singular or ill-conditioned Jacobian to diagnose root causes.
+	 * @param {number} n
+	 * @param {Float64Array|null} J - raw Jacobian (n x n)
+	 * @param {Float64Array|number[]} [x] - current variables
+	 * @param {Float64Array|number[]} [fx] - current residuals
+	 * @param {Object} [options]
+	 * @param {string[]|((idx: number) => string)} [options.varNames]
+	 * @param {string[]|((idx: number) => string)} [options.eqnNames]
+	 * @param {number} [options.eps]
+	 * @param {number} [options.iter]
+	 * @param {number} [options.jacobTry]
+	 * @param {'initial'|'reinit'|'update'} [options.phase]
+	 * @param {number} [options.zeroDiagIndex]
+	 * @returns {{ message: string, data: Record<string, any> }}
+	 */
+	diagnoseSingularJacobian: (n, J, x, fx, options = {}) => {
+		const getVarName = (j) => {
+			if (options.varNames) {
+				if (typeof options.varNames === 'function') {
+					const name = options.varNames(j);
+					if (name) return `'${name}' (x${j + 1})`;
+				}
+				else if (Array.isArray(options.varNames) && options.varNames[j]) {
+					return `'${options.varNames[j]}' (x${j + 1})`;
+				}
+			}
+			return `x${j + 1}`;
+		};
+
+		const getEqnName = (i) => {
+			if (options.eqnNames) {
+				if (typeof options.eqnNames === 'function') {
+					const name = options.eqnNames(i);
+					if (name) return `'${name}' (f${i + 1})`;
+				}
+				else if (Array.isArray(options.eqnNames) && options.eqnNames[i]) {
+					return `'${options.eqnNames[i]}' (f${i + 1})`;
+				}
+			}
+			return `f${i + 1}`;
+		};
+
+		let phaseDesc = '';
+		if (options.phase === 'update') {
+			phaseDesc = `during Broyden rank-1 update at iteration ${options.iter || 1}`;
+		}
+		else if (options.phase === 'reinit') {
+			phaseDesc = `during Jacobian re-initialization (attempt ${options.jacobTry || 1}, iteration ${options.iter || 1})`;
+		}
+		else {
+			phaseDesc = (options.iter && options.iter > 1) ? `at iteration ${options.iter}` : 'at initial calculation';
+		}
+
+		if (options.phase === 'update' && options.zeroDiagIndex !== undefined) {
+			const diagIdx = options.zeroDiagIndex;
+			const varName = getVarName(diagIdx);
+			const lines = [
+				`\n\nSingular update ${phaseDesc}:`,
+				`• Diagonal element R[${diagIdx + 1},${diagIdx + 1}] corresponding to variable ${varName} collapsed to zero during the secant update.`,
+				`  The Broyden approximation became singular (step was degenerate or collinear with previous directions).`
+			];
+			return {
+				message: lines.join('\n'),
+				data: {
+					reason: 'broyden_update_singular',
+					index: diagIdx,
+					variable: varName,
+					phase: options.phase,
+					iter: options.iter
+				}
+			};
+		}
+
+		if (!J) {
+			return {
+				message: `\n\nSingular Jacobian ${phaseDesc}.`,
+				data: { reason: 'unknown', phase: options.phase }
+			};
+		}
+
+		// 1. Non-finite values check
+		let nonFiniteInfo = null;
+		for (let j = 0; j < n; j++) {
+			for (let i = 0; i < n; i++) {
+				const val = J[i * n + j];
+				if (isNaN(val) || !isFinite(val)) {
+					nonFiniteInfo = { i, j, val };
+					break;
+				}
+			}
+			if (nonFiniteInfo) break;
+		}
+		if (nonFiniteInfo) {
+			const varName = getVarName(nonFiniteInfo.j);
+			const eqnName = getEqnName(nonFiniteInfo.i);
+			const valStr = isNaN(nonFiniteInfo.val) ? 'NaN' : (nonFiniteInfo.val > 0 ? '+Infinity' : '-Infinity');
+			const lines = [
+				`\n\nSingular Jacobian ${phaseDesc}:`,
+				`• Non-finite derivative (${valStr}) when perturbing variable ${varName} on equation ${eqnName}.`,
+				`  x[${nonFiniteInfo.j}] = ${x ? x[nonFiniteInfo.j] : 'unknown'}. The perturbation stepped into an undefined domain (e.g. division by zero, square root or logarithm of non-positive value).`
+			];
+			return {
+				message: lines.join('\n'),
+				data: {
+					reason: 'non_finite_derivative',
+					variableIndex: nonFiniteInfo.j,
+					equationIndex: nonFiniteInfo.i,
+					variable: varName,
+					equation: eqnName,
+					value: valStr
+				}
+			};
+		}
+
+		// 2. Invariant variables (zero / negligible columns)
+		const colNorms = new Float64Array(n);
+		const colMaxAbs = new Float64Array(n);
+		const invariantVars = [];
+		for (let j = 0; j < n; j++) {
+			let sum = 0.0;
+			let maxVal = 0.0;
+			for (let i = 0; i < n; i++) {
+				const absVal = Math.abs(J[i * n + j]);
+				sum += absVal * absVal;
+				if (absVal > maxVal) maxVal = absVal;
+			}
+			colNorms[j] = Math.sqrt(sum);
+			colMaxAbs[j] = maxVal;
+			if (maxVal <= 1e-13) {
+				invariantVars.push(j);
+			}
+		}
+
+		if (invariantVars.length > 0) {
+			const lines = [
+				`\n\nSingular Jacobian ${phaseDesc}:`,
+				invariantVars.length === 1
+					? `• Variable ${getVarName(invariantVars[0])} is invariant: perturbing it produced no change across any equation (max |Δf/h| = ${colMaxAbs[invariantVars[0]].toExponential(2)}).`
+					: `• ${invariantVars.length} variables are invariant (perturbing them produced no change across any equation):`
+			];
+			if (invariantVars.length > 1) {
+				for (const j of invariantVars) {
+					lines.push(`  - Variable ${getVarName(j)} (x = ${x ? x[j] : 'unknown'}, max |Δf/h| = ${colMaxAbs[j].toExponential(2)})`);
+				}
+			}
+			else if (x) {
+				const j = invariantVars[0];
+				const rootEps = Math.sqrt(options.eps || 1e-10);
+				const h = rootEps * Math.max(Math.abs(x[j]), 1.0);
+				lines.push(`  x[${j}] = ${x[j]}, perturbation step h = ${h.toExponential(2)}.`);
+			}
+			lines.push(`  The variable(s) appear decoupled from the equations, stuck at a boundary, or outside an active branch.`);
+			return {
+				message: lines.join('\n'),
+				data: {
+					reason: 'invariant_variables',
+					variables: invariantVars.map(j => ({ index: j, name: getVarName(j), x: x ? x[j] : undefined, maxDerivative: colMaxAbs[j] }))
+				}
+			};
+		}
+
+		// 3. Invariant equations (zero / negligible rows)
+		const rowNorms = new Float64Array(n);
+		const rowMaxAbs = new Float64Array(n);
+		const invariantEqns = [];
+		for (let i = 0; i < n; i++) {
+			let sum = 0.0;
+			let maxVal = 0.0;
+			for (let j = 0; j < n; j++) {
+				const absVal = Math.abs(J[i * n + j]);
+				sum += absVal * absVal;
+				if (absVal > maxVal) maxVal = absVal;
+			}
+			rowNorms[i] = Math.sqrt(sum);
+			rowMaxAbs[i] = maxVal;
+			if (maxVal <= 1e-13) {
+				invariantEqns.push(i);
+			}
+		}
+
+		if (invariantEqns.length > 0) {
+			const lines = [
+				`\n\nSingular Jacobian ${phaseDesc}:`,
+				invariantEqns.length === 1
+					? `• Equation ${getEqnName(invariantEqns[0])} is invariant: it did not respond to changes in any variable (residual = ${fx ? fx[invariantEqns[0]] : 'unknown'}).`
+					: `• ${invariantEqns.length} equations are invariant (no variables affected them):`
+			];
+			if (invariantEqns.length > 1) {
+				for (const i of invariantEqns) {
+					lines.push(`  - Equation ${getEqnName(i)} (residual = ${fx ? fx[i] : 'unknown'})`);
+				}
+			}
+			lines.push(`  The equation appears constant or decoupled from the independent variables being solved.`);
+			return {
+				message: lines.join('\n'),
+				data: {
+					reason: 'invariant_equations',
+					equations: invariantEqns.map(i => ({ index: i, name: getEqnName(i), residual: fx ? fx[i] : undefined }))
+				}
+			};
+		}
+
+		// 4. Collinear variables
+		let bestCollinearCols = null;
+		for (let j1 = 0; j1 < n; j1++) {
+			if (colNorms[j1] <= 1e-13) continue;
+			for (let j2 = j1 + 1; j2 < n; j2++) {
+				if (colNorms[j2] <= 1e-13) continue;
+				let dot = 0.0;
+				for (let i = 0; i < n; i++) {
+					dot += J[i * n + j1] * J[i * n + j2];
+				}
+				const cosTheta = Math.abs(dot / (colNorms[j1] * colNorms[j2]));
+				if (cosTheta >= 1.0 - 1e-5) {
+					bestCollinearCols = { j1, j2, corr: cosTheta };
+					break;
+				}
+			}
+			if (bestCollinearCols) break;
+		}
+
+		if (bestCollinearCols) {
+			const var1 = getVarName(bestCollinearCols.j1);
+			const var2 = getVarName(bestCollinearCols.j2);
+			const lines = [
+				`\n\nSingular Jacobian ${phaseDesc}:`,
+				`• Collinear variables: ${var1} and ${var2} have linearly dependent forward differences (correlation: ${(bestCollinearCols.corr * 100).toFixed(2)}%).`,
+				`  Both variables affect the equations in the same directional proportion (redundant degrees of freedom).`
+			];
+			return {
+				message: lines.join('\n'),
+				data: {
+					reason: 'collinear_variables',
+					variable1: var1,
+					variable2: var2,
+					index1: bestCollinearCols.j1,
+					index2: bestCollinearCols.j2,
+					correlation: bestCollinearCols.corr
+				}
+			};
+		}
+
+		// 5. Collinear equations
+		let bestCollinearRows = null;
+		for (let i1 = 0; i1 < n; i1++) {
+			if (rowNorms[i1] <= 1e-13) continue;
+			for (let i2 = i1 + 1; i2 < n; i2++) {
+				if (rowNorms[i2] <= 1e-13) continue;
+				let dot = 0.0;
+				for (let j = 0; j < n; j++) {
+					dot += J[i1 * n + j] * J[i2 * n + j];
+				}
+				const cosTheta = Math.abs(dot / (rowNorms[i1] * rowNorms[i2]));
+				if (cosTheta >= 1.0 - 1e-5) {
+					bestCollinearRows = { i1, i2, corr: cosTheta };
+					break;
+				}
+			}
+			if (bestCollinearRows) break;
+		}
+
+		if (bestCollinearRows) {
+			const eqn1 = getEqnName(bestCollinearRows.i1);
+			const eqn2 = getEqnName(bestCollinearRows.i2);
+			const lines = [
+				`\n\nSingular Jacobian ${phaseDesc}:`,
+				`• Collinear equations: ${eqn1} and ${eqn2} are linearly dependent (correlation: ${(bestCollinearRows.corr * 100).toFixed(2)}%).`,
+				`  These equations represent redundant constraints.`
+			];
+			return {
+				message: lines.join('\n'),
+				data: {
+					reason: 'collinear_equations',
+					equation1: eqn1,
+					equation2: eqn2,
+					index1: bestCollinearRows.i1,
+					index2: bestCollinearRows.i2,
+					correlation: bestCollinearRows.corr
+				}
+			};
+		}
+
+		// 6. Scale disparity
+		let minColNorm = Infinity;
+		let maxColNorm = 0.0;
+		let minColIdx = -1;
+		let maxColIdx = -1;
+		for (let j = 0; j < n; j++) {
+			if (colNorms[j] > 0) {
+				if (colNorms[j] < minColNorm) {
+					minColNorm = colNorms[j];
+					minColIdx = j;
+				}
+				if (colNorms[j] > maxColNorm) {
+					maxColNorm = colNorms[j];
+					maxColIdx = j;
+				}
+			}
+		}
+
+		if (minColNorm > 0 && maxColNorm / minColNorm > 1e12) {
+			const minVar = getVarName(minColIdx);
+			const maxVar = getVarName(maxColIdx);
+			const ratio = (maxColNorm / minColNorm).toExponential(2);
+			const lines = [
+				`\n\nSingular Jacobian ${phaseDesc}:`,
+				`• Extreme scaling disparity in Jacobian columns (sensitivity ratio ${ratio}):`,
+				`  - Most sensitive: ${maxVar} (norm = ${maxColNorm.toExponential(2)})`,
+				`  - Least sensitive: ${minVar} (norm = ${minColNorm.toExponential(2)})`,
+				`  Consider rescaling variables or equations to balance magnitudes.`
+			];
+			return {
+				message: lines.join('\n'),
+				data: {
+					reason: 'scaling_disparity',
+					minVariable: minVar,
+					maxVariable: maxVar,
+					ratio: maxColNorm / minColNorm
+				}
+			};
+		}
+
+		// 7. Fallback rank deficiency
+		const lines = [
+			`\n\nSingular Jacobian ${phaseDesc}:`,
+			`• Rank deficiency detected during QR decomposition.`,
+			`  A linear combination of variables produces no change across equations.`
+		];
+		return {
+			message: lines.join('\n'),
+			data: {
+				reason: 'rank_deficient',
+				phase: options.phase,
+				iter: options.iter
+			}
+		};
+	},
+
+	/**
 	 * @method broydenSolve
 	 * @param {number} n - number of equations
 	 * @param {Float64Array} x - starts as initial x
@@ -1494,6 +1835,7 @@ export const MMMath = {
 		const setStatus = required.setStatus;
 		
 		// get any available parameters or set defaults
+		options = options || {};
 		const maxIterations = options.maxIterations || 200;
 		const maxJacobians = options.maxJacobians || 5;
 		const eps = options.eps || 1e-10
@@ -1530,6 +1872,7 @@ export const MMMath = {
 		const fvold = new Float64Array(n);
 		const qt = new Float64Array(n*n);
 		const r = new Float64Array(n*n);
+		const rawJ = new Float64Array(n*n);
 		
 		// Calculate stpmax for line searches
 		let sum = 0.0;
@@ -1574,8 +1917,17 @@ export const MMMath = {
 					}
 					else {
 						MMMath.forwardDifference(n, x, fx, fvold, r, eps, calcFx);   // initialize or reinitialize Jacobian in r
+						rawJ.set(r);
 						if (MMMath.qrDecomp(n, r, c, d) ) {   // QR decomposition of Jacobian
-							setError('mmcmd:mathJacobianSingular');
+							const diag = MMMath.diagnoseSingularJacobian(n, rawJ, x, fx, {
+								varNames: options.varNames,
+								eqnNames: options.eqnNames,
+								eps: eps,
+								iter: iter,
+								jacobTry: jacobTry,
+								phase: (iter === 1 && jacobTry === 1) ? 'initial' : 'reinit'
+							});
+							setError('mmcmd:mathJacobianSingular', { details: diag.message, ...diag.data });
 							return;
 						}
 					}
@@ -1653,7 +2005,16 @@ export const MMMath = {
 						MMMath.qrUpdate(n, r, qt, t, s);  // update R and Q transpose
 						for (let i = 0; i < n; i++) {
 							if ( r[i*n+i] == 0.0) {
-								setError('mmcmd:mathJacobianSingular');
+								const diag = MMMath.diagnoseSingularJacobian(n, rawJ, x, fx, {
+									varNames: options.varNames,
+									eqnNames: options.eqnNames,
+									eps: eps,
+									iter: iter,
+									jacobTry: jacobTry,
+									phase: 'update',
+									zeroDiagIndex: i
+								});
+								setError('mmcmd:mathJacobianSingular', { details: diag.message, ...diag.data });
 								return;
 							}
 							d[i] = r[i*n+i];   // diagonal of R stored in d

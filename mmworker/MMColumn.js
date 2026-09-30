@@ -1610,6 +1610,26 @@ export class MMColumn extends MMTool {
 				// Inner Broyden solve
 				const nVars = this.logSFactors.length;
 				const currentX = new Float64Array(this.logSFactors);
+				// Build diagnostic names for variables and equations
+				const varNames = [];
+				for (let j = totCond; j < this.nStages; j++) {
+					varNames.push(`Stage ${j + 1} stripping factor`);
+				}
+				for (const draw of this.draws) {
+					if (!draw.isBasis) {
+						varNames.push(`Draw '${draw.name || 'unnamed'}' (stage ${draw.stage}) ratio`);
+					}
+				}
+
+				const eqnNames = [];
+				const maxAdiabaticStage = this._reboiler ? (this.nStages - 1) : this.nStages;
+				for (let j = 1; j < maxAdiabaticStage; j++) {
+					eqnNames.push(`Stage ${j + 1} energy balance`);
+				}
+				for (let s = 0; s < this.specs.length; s++) {
+					const spec = this.specs[s];
+					eqnNames.push(spec && spec.name ? `Spec: ${spec.name}` : `Spec ${s + 1}`);
+				}
 
 				MMMath.broydenSolve(
 					nVars,
@@ -1636,7 +1656,9 @@ export class MMColumn extends MMTool {
 						fTolerance: 1e-4,
 						dxTolerance: 1e-8,
 						eps: 1e-10,
-						maxStepLength: 0.5
+						maxStepLength: 0.5,
+						varNames: varNames,
+						eqnNames: eqnNames
 					}
 				);
 
