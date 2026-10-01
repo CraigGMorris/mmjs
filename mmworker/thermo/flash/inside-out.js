@@ -406,7 +406,7 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 					const lnK_next = (1.0 - q) * lnK_rig_curr + q * lnK_curr;
 					ws.lnK_prev1[i] = lnK_curr;
 					ws.lnK_calc[i] = lnK_rig_curr;
-					ws.K[i] = Math.exp(Math.max(-30.0, Math.min(30.0, lnK_next)));
+					ws.K[i] = Math.exp(Math.max(-300.0, Math.min(300.0, lnK_next)));
 				}
 			}
 		}
@@ -650,7 +650,7 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				for (let i = 0; i < N; i++) {
 					const lnK_rig = ws.lnPhiL[i] - ws.lnPhiV[i];
 					ws.temp1[i] = Math.exp(lnK_rig);
-					const res_i = Math.abs(Math.log(Math.max(1e-30, ws.K[i])) - lnK_rig);
+					const res_i = Math.abs(Math.log(Math.max(1e-300, ws.K[i])) - lnK_rig);
 					if (isNaN(res_i)) residual = 1.0;
 					else if (res_i > residual) residual = res_i;
 				}
@@ -829,7 +829,7 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 				for (let i = 0; i < N; i++) {
 					const lnK_rig = ws.lnPhiL[i] - ws.lnPhiV[i];
 					ws.temp1[i] = Math.exp(lnK_rig);
-					const res_i = Math.abs(Math.log(Math.max(1e-30, ws.K[i])) - lnK_rig);
+					const res_i = Math.abs(Math.log(Math.max(1e-300, ws.K[i])) - lnK_rig);
 					if (isNaN(res_i)) residual = 1.0;
 					else if (res_i > residual) residual = res_i;
 				}
@@ -1070,7 +1070,7 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 			for (let i = 0; i < N; i++) {
 				const lnK_rig = ws.lnPhiL[i] - ws.lnPhiV[i];
 				ws.temp1[i] = Math.exp(lnK_rig);
-				const res_i = Math.abs(Math.log(Math.max(1e-30, ws.K[i])) - lnK_rig);
+				const res_i = Math.abs(Math.log(Math.max(1e-300, ws.K[i])) - lnK_rig);
 				if (res_i > residual) residual = res_i;
 			}
 
@@ -1278,7 +1278,7 @@ export function insideOutFlash(spec, z, eos, options = {}, workspace) {
 			for (let i = 0; i < N; i++) {
 				const lnK_rig = ws.lnPhiL[i] - ws.lnPhiV[i];
 				ws.temp1[i] = Math.exp(lnK_rig);
-				const res_i = Math.abs(Math.log(Math.max(1e-30, ws.K[i])) - lnK_rig);
+				const res_i = Math.abs(Math.log(Math.max(1e-300, ws.K[i])) - lnK_rig);
 				if (res_i > residual) residual = res_i;
 			}
 

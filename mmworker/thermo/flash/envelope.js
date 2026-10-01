@@ -309,7 +309,7 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 	 * @param {number} Q
 	 * @param {number} maxSteps
 	 */
-	function traceBranch(initX, Q, maxSteps = 150) {
+	function traceBranch(initX, Q, maxSteps = 150, initialDirection = 1) {
 		let X = new Float64Array(initX);
 		let prevTangent = null;
 		let stepSize = baseStepSize;
@@ -358,7 +358,7 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 			const J = computeJacobian(X, Q, f0);
 			const tangent = computeTangent(J, prevTangent);
 			if (!tangent) break;
-			if (step === 0 && tangent[N + 1] < 0) {
+			if (step === 0 && Math.sign(tangent[N + 1]) !== Math.sign(initialDirection)) {
 				for (let j = 0; j < N + 2; j++) tangent[j] = -tangent[j];
 			}
 			prevTangent = tangent;
@@ -425,12 +425,33 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 
 	// Trace Bubble Curve (Q = 0)
 	const maxBranchSteps = Math.max(150, numPoints * 3);
-	const pq0 = insideOutFlash({ type: FlashType.PQ, P: pMin, Q: 0.0 }, ws.z, eos, { tol, maxIterations: maxIter }, ws);
-	const Xbub = new Float64Array(N + 2);
-	for (let i = 0; i < N; i++) Xbub[i] = Math.log(Math.max(1e-30, pq0.K[i]));
-	Xbub[N] = pq0.T;
-	Xbub[N + 1] = Math.log(pMin);
-	const bubbleCurve = traceBranch(Xbub, 0.0, maxBranchSteps);
+	let pq0 = insideOutFlash({ type: FlashType.PQ, P: pMin, Q: 0.0 }, ws.z, eos, { tol, maxIterations: maxIter }, ws);
+	let bubbleCurve = [];
+
+	if (!pq0 || !pq0.converged || isNaN(pq0.T) || pq0.T < 20.0) {
+		// Low-pressure bubble point failed (e.g. dissolved light gases). Search for initial bubble point at higher pressure/ambient temperature.
+		for (const tTry of [300.0, 250.0, 350.0, 200.0, 400.0, 150.0, 450.0, 100.0]) {
+			const resTQ = insideOutFlash({ type: FlashType.TQ, T: tTry, Q: 0.0 }, ws.z, eos, { tol, maxIterations: maxIter }, ws);
+			if (resTQ && resTQ.converged && !isNaN(resTQ.T) && resTQ.T >= 20.0 && resTQ.P >= pMin * 0.5) {
+				pq0 = resTQ;
+				break;
+			}
+		}
+	}
+
+	if (pq0 && pq0.converged && !isNaN(pq0.T) && pq0.T >= 20.0) {
+		const Xbub = new Float64Array(N + 2);
+		for (let i = 0; i < N; i++) Xbub[i] = Math.log(Math.max(1e-30, pq0.K[i]));
+		Xbub[N] = pq0.T;
+		Xbub[N + 1] = Math.log(pq0.P);
+		const bubbleAsc = traceBranch(Xbub, 0.0, maxBranchSteps, 1);
+		const bubbleDesc = traceBranch(Xbub, 0.0, maxBranchSteps, -1);
+		const filterPt = pt => pt.P >= pMin * 0.1 && pt.P <= pMax * 2.0 && pt.T >= 20.0 && !isNaN(pt.T) && !isNaN(pt.P);
+		const bubbleAscFiltered = bubbleAsc.filter(filterPt);
+		const bubbleDescFiltered = bubbleDesc.filter(filterPt);
+		const descReversed = bubbleDescFiltered.reverse();
+		bubbleCurve = [...descReversed.slice(0, Math.max(0, descReversed.length - 1)), ...bubbleAscFiltered];
+	}
 
 	// Trace Dew Curve (Q = 1)
 	const pq1 = insideOutFlash({ type: FlashType.PQ, P: pMin, Q: 1.0 }, ws.z, eos, { tol, maxIterations: maxIter }, ws);
