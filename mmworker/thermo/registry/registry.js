@@ -228,6 +228,52 @@ export class CompoundRegistry {
 	}
 
 	/**
+	 * Returns all compound names and optionally aliases/synonyms.
+	 *
+	 * @param {boolean} [includeAliases=true] - Whether to include synonyms and aliases
+	 * @returns {string[]} Array of unique compound names and aliases
+	 */
+	allNames(includeAliases = true) {
+		const names = new Set();
+		for (const comp of this.all()) {
+			if (comp.name) {
+				names.add(comp.name);
+			}
+			if (includeAliases && Array.isArray(comp.synonyms)) {
+				for (const alias of comp.synonyms) {
+					if (alias) {
+						names.add(alias);
+					}
+				}
+			}
+		}
+		return Array.from(names);
+	}
+
+	/**
+	 * Registers an alias for a compound.
+	 *
+	 * @param {string} alias - Alias or synonym name
+	 * @param {string|import('../types/compound.js').PureCompound} target - Compound instance or query identifier
+	 */
+	addAlias(alias, target) {
+		const comp = typeof target === 'object' && target !== null ? target : this.get(target);
+		if (!comp) {
+			throw new Error(`Cannot add alias "${alias}": compound "${target}" not found in registry`);
+		}
+		const normAlias = normalizeKey(alias);
+		if (normAlias) {
+			this._compoundsByAlias.set(normAlias, comp);
+			if (!Array.isArray(comp.synonyms)) {
+				comp.synonyms = [];
+			}
+			if (!comp.synonyms.includes(alias)) {
+				comp.synonyms.push(alias);
+			}
+		}
+	}
+
+	/**
 	 * Count of registered pure compounds.
 	 *
 	 * @type {number}

@@ -654,14 +654,30 @@ class MMFlash extends MMTool {
 		if (lcDescription === 'fluids') {
 			if (thermoEngine && thermoEngine.defaultRegistry) {
 				thermoEngine.defaultRegistry.loadAll();
-				const fluidsList = MMStringValue.stringArrayValue(thermoEngine.defaultRegistry.all().map(c => c.name).sort());
+				let names;
+				if (typeof thermoEngine.defaultRegistry.allNames === 'function') {
+					names = thermoEngine.defaultRegistry.allNames(true);
+				}
+				else {
+					const nameSet = new Set();
+					for (const c of thermoEngine.defaultRegistry.all()) {
+						if (c.name) {
+							nameSet.add(c.name);
+						}
+						if (Array.isArray(c.synonyms)) {
+							for (const alias of c.synonyms) {
+								if (alias) {
+									nameSet.add(alias);
+								}
+							}
+						}
+					}
+					names = Array.from(nameSet);
+				}
+				const fluidsList = MMStringValue.stringArrayValue(names.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }) || a.localeCompare(b)));
 				this.addRequestor(requestor);
 				return fluidsList;
 			}
-			return null;
-		}
-
-		if (!this.initThermo()) {
 			return null;
 		}
 
@@ -669,21 +685,19 @@ class MMFlash extends MMTool {
 		let phase = /** @type {string} */ (descParts.shift());
 		let property = /** @type {string} */ (descParts.shift());
 
+		if (phase === 'fluids' || property === 'fluids') {
+			return this.valueDescribedBy('fluids', requestor);
+		}
+
+		if (!this.initThermo()) {
+			return null;
+		}
+
 		if (phase === 'thermo' || property === 'thermo') {
 			if (this.thermoDefn) {
 				this.addRequestor(requestor);
 			}
 			return this.thermoDefn;
-		}
-
-		if (phase === 'fluids' || property === 'fluids') {
-			if (thermoEngine && thermoEngine.defaultRegistry) {
-				thermoEngine.defaultRegistry.loadAll();
-				const fluidsList = MMStringValue.stringArrayValue(thermoEngine.defaultRegistry.all().map(c => c.name));
-				this.addRequestor(requestor);
-				return fluidsList;
-			}
-			return null;
 		}
 
 		if (!property && phase !== 'envelope') {
