@@ -426,6 +426,7 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 	// Trace Bubble Curve (Q = 0)
 	const maxBranchSteps = Math.max(150, numPoints * 3);
 	let pq0 = insideOutFlash({ type: FlashType.PQ, P: pMin, Q: 0.0 }, ws.z, eos, { tol, maxIterations: maxIter }, ws);
+	/** @type {Array<{ T: number, P: number }>} */
 	let bubbleCurve = [];
 
 	if (!pq0 || !pq0.converged || isNaN(pq0.T) || pq0.T < 20.0) {
@@ -446,7 +447,8 @@ export function generatePhaseEnvelope(z, eos, options = {}, workspace) {
 		Xbub[N + 1] = Math.log(pq0.P);
 		const bubbleAsc = traceBranch(Xbub, 0.0, maxBranchSteps, 1);
 		const bubbleDesc = traceBranch(Xbub, 0.0, maxBranchSteps, -1);
-		const filterPt = pt => pt.P >= pMin * 0.1 && pt.P <= pMax * 2.0 && pt.T >= 20.0 && !isNaN(pt.T) && !isNaN(pt.P);
+		/** @param {{ T: number, P: number }} pt */
+		const filterPt = pt => pt.P >= pMin * 0.999 && pt.P <= pMax * 2.0 && pt.T >= 20.0 && !isNaN(pt.T) && !isNaN(pt.P);
 		const bubbleAscFiltered = bubbleAsc.filter(filterPt);
 		const bubbleDescFiltered = bubbleDesc.filter(filterPt);
 		const descReversed = bubbleDescFiltered.reverse();
