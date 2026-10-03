@@ -10,8 +10,8 @@
 	],
 	"CaseName": "thermo",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "ErrorCount",
-	"ModelPath": "/.root.Columns",
+	"SelectedObject": "errorCount",
+	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
@@ -10114,6 +10114,9 @@
 						"Type": "Equation Solver",
 						"f0": "tpflash.h - SolverFlash.h",
 						"c0": "1",
+						"o0": [
+							-0.13065822794645102
+						],
 						"maxIter": 200,
 						"maxJacobians": 5,
 						"Enabled": "y"
@@ -12849,6 +12852,9 @@
 						"Type": "Equation Solver",
 						"f0": "(dewpt.t - dewpttarget) / 1 K",
 						"c0": "1",
+						"o0": [
+							0.07108685337171373
+						],
 						"maxIter": 200,
 						"maxJacobians": 5,
 						"Enabled": "y"
@@ -14111,6 +14117,11 @@
 						"Type": "Equation Solver",
 						"f0": "CompError",
 						"c0": "{nrows MakeUpAir.x}",
+						"o0": [
+							0.7352401769269247,
+							-0.14620204755460653,
+							0.01343904674851953
+						],
 						"maxIter": 200,
 						"maxJacobians": 5,
 						"Enabled": "y"
@@ -53922,6 +53933,9 @@
 								"Type": "Equation Solver",
 								"f0": "hc_hhv - 940 btu/scf",
 								"c0": "1",
+								"o0": [
+									0.8123537724303184
+								],
 								"maxIter": 200,
 								"maxJacobians": 5,
 								"Enabled": "y"
