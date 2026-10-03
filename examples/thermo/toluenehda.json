@@ -1,0 +1,1761 @@
+{
+	"Program": "Rtm",
+	"Version": 3,
+	"DetailWidth": 320,
+	"DeviceWidth": 1024,
+	"UserUnitSets": {},
+	"UserUnits": [
+		null,
+		null
+	],
+	"CaseName": "tolueneHDA",
+	"DefaultUnitSet": "SI",
+	"SelectedObject": "",
+	"ModelPath": "/.root",
+	"RootModel": {
+		"name": "root",
+		"Notes": "",
+		"DiagramX": 0,
+		"DiagramY": 0,
+		"HideInfo": "n",
+		"DiagramNotes": "n",
+		"HtmlNotes": "n",
+		"Type": "Model",
+		"diagramScale": 1,
+		"Objects": [
+			{
+				"name": "Reactor",
+				"Notes": "A conversion extent reaction calculation.",
+				"DiagramX": 80,
+				"DiagramY": 485,
+				"HideInfo": "n",
+				"DiagramNotes": "y",
+				"HtmlNotes": "n",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "Feed",
+						"Notes": "Feed stream reference from upstream model",
+						"DiagramX": 105,
+						"DiagramY": 150,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "ReactorFeed"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "FeedFlash",
+						"Notes": "Equilibrium flash of the inlet reactor feed stream",
+						"DiagramX": 240,
+						"DiagramY": 115,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Flash",
+						"thermo": {
+							"Formula": "Feed.thermo"
+						},
+						"firstprop": {
+							"Formula": "feed.p"
+						},
+						"secondprop": {
+							"Formula": "feed.h"
+						},
+						"molefrac": {
+							"Formula": "feed.x"
+						},
+						"massfrac": {
+							"Formula": ""
+						},
+						"flow": {
+							"Formula": "feed.f"
+						},
+						"displayUnits": [],
+						"formatStrings": {
+							"t": ".2f",
+							"p": ".2f",
+							"f": ".2f",
+							"h": ".2f",
+							"s": ".2f",
+							"hflow": ".1f",
+							"dmolar": ".2f"
+						}
+					},
+					{
+						"name": "ReactOut",
+						"Notes": "Equilibrium flash of the product stream at outlet temperature and pressure",
+						"DiagramX": 240,
+						"DiagramY": 360,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Flash",
+						"thermo": {
+							"Formula": "FeedFlash.thermo"
+						},
+						"firstprop": {
+							"Formula": "outletT"
+						},
+						"secondprop": {
+							"Formula": "outletP"
+						},
+						"molefrac": {
+							"Formula": "minusCheck"
+						},
+						"massfrac": {
+							"Formula": ""
+						},
+						"flow": {
+							"Formula": "{sum minusCheck}"
+						},
+						"displayUnits": [],
+						"formatStrings": {
+							"t": ".2f",
+							"p": ".2f",
+							"f": ".2f",
+							"h": ".2f",
+							"s": ".2f",
+							"hflow": ".1f",
+							"dmolar": ".2f"
+						}
+					},
+					{
+						"name": "ReactCmpF",
+						"Notes": "Component molar flow rates exiting the reaction zone",
+						"DiagramX": 240,
+						"DiagramY": 285,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "feedFlows + {dot Stoichiometry, calcExtents}"
+						}
+					},
+					{
+						"name": "OutletP",
+						"Notes": "Reactor operating pressure",
+						"DiagramX": 105,
+						"DiagramY": 375,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "33.5 bar"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "OutletT",
+						"Notes": "Reactor operating temperature",
+						"DiagramX": 105,
+						"DiagramY": 345,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "620 degc"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "ReactorQ",
+						"Notes": "Reactor heat duty required to maintain isothermal operation",
+						"DiagramX": 240,
+						"DiagramY": 405,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "reactOut.hflow - feedFlash.hflow + {sum HeatRxn * calcExtents}"
+						},
+						"displayUnit": "kW"
+					},
+					{
+						"name": "minusCheck",
+						"Notes": "Checks for unphysical negative component flows and alerts if present",
+						"DiagramX": 240,
+						"DiagramY": 320,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if\n\t{lt {min ReactCmpF}, 0 kmol/h},\n\t{alert \"Negative reactant flow\n\" + {join {fmt \".4f\", ReactCmpF}, \"\n\"}},\n\tReactCmpF\n}"
+						}
+					},
+					{
+						"name": "nReactions",
+						"Notes": "Number of reactions",
+						"DiagramX": 105,
+						"DiagramY": 185,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "2"
+						},
+						"showInput": "y"
+					},
+					{
+						"name": "nCmp",
+						"Notes": "",
+						"DiagramX": 240,
+						"DiagramY": 175,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{nrows feed.x}"
+						}
+					},
+					{
+						"name": "FeedFlows",
+						"Notes": "",
+						"DiagramX": 240,
+						"DiagramY": 150,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "feed.x * feed.f"
+						}
+					},
+					{
+						"name": "Extents",
+						"Notes": "Target fractional conversion of the key components",
+						"DiagramX": 105,
+						"DiagramY": 310,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Matrix",
+						"columnUnits": [
+							"Fraction",
+							null
+						],
+						"columnFormats": [
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "0",
+							"1_1": ".78",
+							"2_1": ".0354 ' .146411"
+						},
+						"rowCount": "nReactions",
+						"columnCount": "1"
+					},
+					{
+						"name": "KeyCmps",
+						"Notes": "Index of the key components for reaction extent (1-based)",
+						"DiagramX": 105,
+						"DiagramY": 275,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Matrix",
+						"columnUnits": [
+							"Fraction",
+							null
+						],
+						"columnFormats": [
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "0",
+							"1_1": "4",
+							"2_1": "3"
+						},
+						"rowCount": "nReactions",
+						"columnCount": "1"
+					},
+					{
+						"name": "A",
+						"Notes": "",
+						"DiagramX": 240,
+						"DiagramY": 200,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Matrix",
+						"columnUnits": [
+							"Fraction",
+							null,
+							null
+						],
+						"columnFormats": [
+							null,
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "{if {eq {row}, {col}}\n\t{abs stoichiometry[KeyCmps[{row}], {row}]},\n\t-Extents[{row}] * {max 0, stoichiometry[KeyCmps[{row}], {col}]}\n}"
+						},
+						"rowCount": "nReactions",
+						"columnCount": "nReactions"
+					},
+					{
+						"name": "b",
+						"Notes": "",
+						"DiagramX": 240,
+						"DiagramY": 225,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Matrix",
+						"columnUnits": [
+							"kmol/h",
+							null
+						],
+						"columnFormats": [
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "Extents[{row}] * FeedFlows[keycmps[{row}]]"
+						},
+						"rowCount": "nReactions",
+						"columnCount": "1"
+					},
+					{
+						"name": "Stoichiometry",
+						"Notes": "Reaction stoichiometric coefficients (reactants negative, products positive, inerts zero). Each rows are compounds and columns are reactions.",
+						"DiagramX": 105,
+						"DiagramY": 215,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Matrix",
+						"columnUnits": [
+							"Fraction",
+							null,
+							null
+						],
+						"columnFormats": [
+							null,
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "0",
+							"1_1": "-1",
+							"2_1": "1",
+							"3_1": "1",
+							"4_1": "-1",
+							"1_2": "1",
+							"3_2": "-2",
+							"5_2": "1"
+						},
+						"rowCount": "ncmp",
+						"columnCount": "nReactions"
+					},
+					{
+						"name": "calcExtents",
+						"Notes": "Molar conversion rate of key component",
+						"DiagramX": 240,
+						"DiagramY": 250,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{dot {invert A}, b}"
+						}
+					},
+					{
+						"name": "HeatRxn",
+						"Notes": "Standard heat of reactions (exothermic: negative)",
+						"DiagramX": 105,
+						"DiagramY": 405,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Matrix",
+						"columnUnits": [
+							"kJ/kmol",
+							null
+						],
+						"columnFormats": [
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "0 kj/kmol",
+							"1_1": "-42.11 kJ/mol",
+							"2_1": "14.1 kj/mol"
+						},
+						"rowCount": "nReactions",
+						"columnCount": "1"
+					},
+					{
+						"name": "Overview",
+						"Notes": "This model calculates component molar flows and energy duty for simultaneous reactions based on fractional conversions.\n\nFeed component flows (FeedFlows) are determined from the inlet stream. Reaction extents (calcExtents) are solved simultaneously from the linear system A * xi = b using the reaction stoichiometry, key component indices, and target conversions (Extents).\n\nProduct component flows (ReactCmpF) are calculated as FeedFlows + Stoichiometry * calcExtents and verified for non-negative values with minusCheck. The product stream (ReactOut) is flashed at OutletT and OutletP, and the net reactor heat duty (ReactorQ) is calculated from the enthalpy difference between outlet and feed streams plus the standard heats of reaction (HeatRxn).",
+						"DiagramX": 105,
+						"DiagramY": 120,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ""
+						}
+					}
+				]
+			},
+			{
+				"name": "freshGas",
+				"Notes": "Fresh gas feed at 35 °C, 35 bar (95% H2, 5% CH4)",
+				"DiagramX": 80,
+				"DiagramY": 135,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "\"Hydrogen,Methane,Benzene,Toluene,Biphenyl;massf,hflow\""
+				},
+				"firstprop": {
+					"Formula": "35 degC"
+				},
+				"secondprop": {
+					"Formula": "38 bar"
+				},
+				"molefrac": {
+					"Formula": "{cc 0.95, 0.05, 0, 0, 0}"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "333 kmol/h"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "freshTol",
+				"Notes": "Fresh liquid toluene feed.",
+				"DiagramX": 80,
+				"DiagramY": 175,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "freshGas.thermo"
+				},
+				"firstprop": {
+					"Formula": "35 degC"
+				},
+				"secondprop": {
+					"Formula": "35 bar"
+				},
+				"molefrac": {
+					"Formula": "{cc 0, 0, 0, 1, 0}"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "167 kmol/h"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "ReactorFeed",
+				"Notes": "The reactor feed heated to 625 °C",
+				"DiagramX": 80,
+				"DiagramY": 250,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "MixedFeed.thermo"
+				},
+				"firstprop": {
+					"Formula": "620 degC"
+				},
+				"secondprop": {
+					"Formula": "34 bar"
+				},
+				"molefrac": {
+					"Formula": "MixedFeed.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "MixedFeed.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "RecycleGas",
+				"Notes": "High-pressure flash vapour stream rich in hydrogen and methane available for recycle. Ir is 1 - the vapour purge fraction of the flashed vapour.",
+				"DiagramX": 205,
+				"DiagramY": 140,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "CoolerOutlet.thermo"
+				},
+				"firstprop": {
+					"Formula": "CoolerOutlet.t"
+				},
+				"secondprop": {
+					"Formula": "CoolerOutlet.p"
+				},
+				"molefrac": {
+					"Formula": "CoolerOutlet.v.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "CoolerOutlet.v.f * (1 - VPurgeFrac)"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "HPRecycle",
+				"Notes": "Recycled gas stream compressed back to reactor loop pressure to be mixed with fresh feed.",
+				"DiagramX": 205,
+				"DiagramY": 200,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "RecycleGas.thermo"
+				},
+				"firstprop": {
+					"Formula": "freshTol.p"
+				},
+				"secondprop": {
+					"Formula": "RecycleGas.s"
+				},
+				"molefrac": {
+					"Formula": "RecycleGas.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "RecycleGas.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "RecycleEst",
+				"Notes": "An estimate of the gas recycle.",
+				"DiagramX": 80,
+				"DiagramY": 335,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "MixedFeed.thermo"
+				},
+				"firstprop": {
+					"Formula": "FreshTol.p"
+				},
+				"secondprop": {
+					"Formula": "45 degc"
+				},
+				"molefrac": {
+					"Formula": "{cc 0.55, 0.45, 0.01, 0.0001,0.000001}"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "1500 kmol/h"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "CoolerOutlet",
+				"Notes": "Reactor effluent cooled to condense aromatics.",
+				"DiagramX": 205,
+				"DiagramY": 105,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "reactor.reactout.thermo"
+				},
+				"firstprop": {
+					"Formula": "33 bar"
+				},
+				"secondprop": {
+					"Formula": "35 degc"
+				},
+				"molefrac": {
+					"Formula": "reactor.reactout.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "reactor.reactout.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "VapourPurge",
+				"Notes": "Vapour purge stream taken from the recycle loop to prevent methane build-up in the system.",
+				"DiagramX": 335,
+				"DiagramY": 475,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "CoolerOutlet.thermo"
+				},
+				"firstprop": {
+					"Formula": "CoolerOutlet.p"
+				},
+				"secondprop": {
+					"Formula": "CoolerOutlet.t"
+				},
+				"molefrac": {
+					"Formula": "CoolerOutlet.v.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "CoolerOutlet.v.f * vPurgeFrac"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "BzAndTolRecovery",
+				"Notes": "Fraction of aromatic hydrocarbons (benzene and toluene) retained in the process rather than lost to the vapor purge.",
+				"DiagramX": 205,
+				"DiagramY": 285,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "1 - {sum (vapourPurge.x * vapourPurge.f)[3:4]}\n/\n{sum (MixedFeed.x * mixedFeed.f)[3:4]}"
+				},
+				"displayUnit": "%",
+				"format": "'.1f"
+			},
+			{
+				"name": "PreheaterQ",
+				"Notes": "Thermal duty required to heat the mixed feed stream up to the reactor inlet temperature.",
+				"DiagramX": 80,
+				"DiagramY": 285,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "ReactorFeed.hflow - MixedFeed.hflow"
+				},
+				"displayUnit": "kW"
+			},
+			{
+				"name": "Stripper",
+				"Notes": "Distillation column to strip dissolved light gases (hydrogen and methane) overhead from liquid aromatics.",
+				"DiagramX": 335,
+				"DiagramY": 105,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Column",
+				"thermo": {
+					"Formula": "stripperFeed.thermo"
+				},
+				"nstages": {
+					"Formula": "10"
+				},
+				"ptop": {
+					"Formula": "4 bar"
+				},
+				"pbottom": {
+					"Formula": "4.2 bar"
+				},
+				"totalCondenser": false,
+				"reboiler": true,
+				"ttopest": {
+					"Formula": "35 degc"
+				},
+				"tbotest": {
+					"Formula": "150 degc"
+				},
+				"feeds": [
+					{
+						"stage": 3,
+						"formula": "StripperFeed",
+						"name": "feed1"
+					}
+				],
+				"draws": [
+					{
+						"stage": 1,
+						"phase": "v",
+						"name": "Overhead",
+						"isBasis": true,
+						"flowEst": "1.7 kmol/h"
+					},
+					{
+						"stage": 10,
+						"phase": "l",
+						"name": "Bottoms",
+						"isBasis": true,
+						"flowEst": ""
+					}
+				],
+				"specs": [
+					{
+						"name": "Spec1",
+						"formula": "$.vx[1,\"benzene\"] - 0.01",
+						"scale": 28
+					},
+					{
+						"name": "Spec2",
+						"formula": "$.lf[1] / $.vf[1] - 1.0 'Reflux Ratio",
+						"scale": 1
+					}
+				]
+			},
+			{
+				"name": "StripperBtms",
+				"Notes": "Stabilized liquid bottoms from the stripper column, free of light gases, fed to the benzene splitter.",
+				"DiagramX": 335,
+				"DiagramY": 210,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "Stripper.thermo"
+				},
+				"firstprop": {
+					"Formula": "stripper.p[-1]"
+				},
+				"secondprop": {
+					"Formula": "stripper.t[-1]"
+				},
+				"molefrac": {
+					"Formula": "stripper.lx[-1]"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "stripper.lf[-1]"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "Splitter",
+				"Notes": "Distillation column separating high-purity benzene overhead from unreacted toluene .",
+				"DiagramX": 335,
+				"DiagramY": 310,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Column",
+				"thermo": {
+					"Formula": "SplitterFeed.thermo"
+				},
+				"nstages": {
+					"Formula": "35"
+				},
+				"ptop": {
+					"Formula": "1.3 bar"
+				},
+				"pbottom": {
+					"Formula": "1.4 bar"
+				},
+				"totalCondenser": true,
+				"reboiler": true,
+				"feeds": [
+					{
+						"stage": 16,
+						"formula": "splitterFeed",
+						"name": "feed1"
+					}
+				],
+				"draws": [
+					{
+						"stage": 1,
+						"phase": "v",
+						"name": "Overhead",
+						"isBasis": true,
+						"flowEst": ""
+					},
+					{
+						"stage": 35,
+						"phase": "l",
+						"name": "Bottoms",
+						"isBasis": true,
+						"flowEst": ""
+					},
+					{
+						"stage": 1,
+						"phase": "l",
+						"name": "DistillateLiq",
+						"isBasis": false,
+						"flowEst": ""
+					}
+				],
+				"specs": [
+					{
+						"name": "Spec1",
+						"formula": "$.lx[1,\"benzene\"] - 0.995",
+						"scale": 28
+					},
+					{
+						"name": "Spec2",
+						"formula": "$.lx[-1,\"benzene\"] - 0.01",
+						"scale": 1
+					}
+				]
+			},
+			{
+				"name": "SplitterFeed",
+				"Notes": "Feed stream to the benzene/toluene splitter column at column inlet conditions.",
+				"DiagramX": 335,
+				"DiagramY": 260,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "stripperBtms.thermo"
+				},
+				"firstprop": {
+					"Formula": "1.4 bar"
+				},
+				"secondprop": {
+					"Formula": "0"
+				},
+				"molefrac": {
+					"Formula": "stripperBtms.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "stripperBtms.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "SplitterOvhd",
+				"Notes": "High-purity benzene product distillate recovered from the splitter column overhead.",
+				"DiagramX": 335,
+				"DiagramY": 525,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "Splitter.thermo"
+				},
+				"firstprop": {
+					"Formula": "Splitter.p[1]"
+				},
+				"secondprop": {
+					"Formula": "0"
+				},
+				"molefrac": {
+					"Formula": "Splitter.lx[1]"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "Splitter.ldraw[1]"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "SplitterBtms",
+				"Notes": "Bottoms liquid from the splitter column consisting primarily of unreacted toluene.",
+				"DiagramX": 335,
+				"DiagramY": 360,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "Splitter.thermo"
+				},
+				"firstprop": {
+					"Formula": "Splitter.p[-1]"
+				},
+				"secondprop": {
+					"Formula": "0"
+				},
+				"molefrac": {
+					"Formula": "Splitter.lx[-1]"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "Splitter.ldraw[-1]"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "RecycledToluene",
+				"Notes": "Recycled liquid toluene.",
+				"DiagramX": 80,
+				"DiagramY": 455,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "freshGas.thermo"
+				},
+				"firstprop": {
+					"Formula": "FreshTol.p"
+				},
+				"secondprop": {
+					"Formula": "recycle.tolOutlet.h"
+				},
+				"molefrac": {
+					"Formula": "recycle.tolOutlet.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "Recycle.tolOutlet.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "Overview",
+				"Notes": "This example represents a process for producing benzene from toluene by means of hydrodealkylation, including the biphenyl side reaction. It demonstrates a conversion reactor with 2 reactions and a modification of the recycle model to handle two recycles.\n\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1020 480\" width=\"100%\" height=\"100%\" style=\"font-family:sans-serif;font-size:12px;text-anchor:middle;\"><defs><marker id=\"arr\" viewBox=\"0 0 10 10\" refX=\"6\" refY=\"5\" markerWidth=\"6\" markerHeight=\"6\" orient=\"auto-start-reverse\"><path d=\"M 0 1.5 L 8 5 L 0 8.5 z\" fill=\"black\"/></marker></defs><g stroke=\"black\" stroke-width=\"1.5\" fill=\"none\"><path d=\"M 20 130 L 120 130\" marker-end=\"url(#arr)\"/><path d=\"M 20 210 L 120 210\" marker-end=\"url(#arr)\"/><path d=\"M 120 130 L 140 130 L 140 170 L 162 170\" marker-end=\"url(#arr)\"/><path d=\"M 120 210 L 140 210 L 140 170\"/><circle cx=\"180\" cy=\"170\" r=\"18\" fill=\"white\"/><path d=\"M 168 182 L 192 158\"/><path d=\"M 198 170 L 245 170\" marker-end=\"url(#arr)\"/><rect x=\"245\" y=\"110\" width=\"55\" height=\"120\" rx=\"15\" ry=\"15\" fill=\"white\"/><path d=\"M 300 170 L 352 170\" marker-end=\"url(#arr)\"/><circle cx=\"370\" cy=\"170\" r=\"18\" fill=\"white\"/><path d=\"M 358 182 L 382 158\"/><path d=\"M 388 170 L 440 170\" marker-end=\"url(#arr)\"/><rect x=\"440\" y=\"115\" width=\"60\" height=\"110\" rx=\"15\" ry=\"15\" fill=\"white\"/><path d=\"M 470 115 L 470 50 L 580 50\" marker-end=\"url(#arr)\"/><path d=\"M 470 50 L 375 50\" marker-end=\"url(#arr)\"/><polygon points=\"375,35 375,65 340,57 340,43\" fill=\"white\"/><path d=\"M 340 50 L 100 50 L 100 125\" marker-end=\"url(#arr)\"/><path d=\"M 470 225 L 470 260 L 570 260\" marker-end=\"url(#arr)\"/><rect x=\"570\" y=\"160\" width=\"55\" height=\"170\" rx=\"15\" ry=\"15\" fill=\"white\"/><line x1=\"575\" y1=\"205\" x2=\"620\" y2=\"205\" stroke=\"#888\" stroke-dasharray=\"2,2\"/><line x1=\"575\" y1=\"285\" x2=\"620\" y2=\"285\" stroke=\"#888\" stroke-dasharray=\"2,2\"/><path d=\"M 597.5 160 L 597.5 95\" marker-end=\"url(#arr)\"/><path d=\"M 597.5 330 L 597.5 365 L 680 365 L 680 270 L 710 270\" marker-end=\"url(#arr)\"/><rect x=\"710\" y=\"170\" width=\"55\" height=\"180\" rx=\"15\" ry=\"15\" fill=\"white\"/><line x1=\"715\" y1=\"225\" x2=\"760\" y2=\"225\" stroke=\"#888\" stroke-dasharray=\"2,2\"/><line x1=\"715\" y1=\"305\" x2=\"760\" y2=\"305\" stroke=\"#888\" stroke-dasharray=\"2,2\"/><path d=\"M 737.5 170 L 737.5 100 L 800 100\" marker-end=\"url(#arr)\"/><path d=\"M 737.5 350 L 737.5 375 L 820 375 L 820 270 L 850 270\" marker-end=\"url(#arr)\"/><rect x=\"850\" y=\"170\" width=\"55\" height=\"180\" rx=\"15\" ry=\"15\" fill=\"white\"/><line x1=\"855\" y1=\"225\" x2=\"900\" y2=\"225\" stroke=\"#888\" stroke-dasharray=\"2,2\"/><line x1=\"855\" y1=\"305\" x2=\"900\" y2=\"305\" stroke=\"#888\" stroke-dasharray=\"2,2\"/><path d=\"M 877.5 170 L 877.5 120 L 960 120 L 960 425 L 450 425\"/><path d=\"M 877.5 350 L 877.5 375 L 930 375\" marker-end=\"url(#arr)\"/><circle cx=\"436\" cy=\"425\" r=\"14\" fill=\"white\"/><path d=\"M 422 425 L 100 425 L 100 215\" marker-end=\"url(#arr)\"/></g><g fill=\"black\" stroke=\"none\"><text x=\"65\" y=\"122\">Fresh Gas (H₂)</text><text x=\"65\" y=\"202\">Fresh Toluene</text><text x=\"180\" y=\"142\">Preheater</text><text x=\"222\" y=\"163\">Feed</text><text x=\"272.5\" y=\"175\">Reactor</text><text x=\"326\" y=\"163\">Effluent</text><text x=\"370\" y=\"142\">Cooler</text><text x=\"470\" y=\"165\">Flash</text><text x=\"470\" y=\"181\">Separator</text><text x=\"357\" y=\"28\">Compressor</text><text x=\"220\" y=\"42\">Recycle Gas</text><text x=\"630\" y=\"54\">Vapour Purge</text><text x=\"520\" y=\"252\">Liquid Product</text><text x=\"597.5\" y=\"250\">Stripper</text><text x=\"597.5\" y=\"82\">Off-Gas (Lights)</text><text x=\"650\" y=\"357\">Stripper Btms</text><text x=\"737.5\" y=\"265\">Splitter</text><text x=\"860\" y=\"104\">Benzene Product</text><text x=\"780\" y=\"367\">Splitter Btms</text><text x=\"877.5\" y=\"255\">Biphenyl</text><text x=\"877.5\" y=\"271\">Column</text><text x=\"965\" y=\"370\">Biphenyl Purge</text><text x=\"436\" y=\"452\">Recycle Pump</text><text x=\"260\" y=\"417\">Recycled Toluene</text></g></svg>",
+				"DiagramX": 80,
+				"DiagramY": 105,
+				"HideInfo": "n",
+				"DiagramNotes": "n",
+				"HtmlNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": ""
+				}
+			},
+			{
+				"name": "biphenylCol",
+				"Notes": "Removes biphenyl from the recycled toluene.",
+				"DiagramX": 335,
+				"DiagramY": 410,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Column",
+				"thermo": {
+					"Formula": "splitterBtms.thermo"
+				},
+				"nstages": {
+					"Formula": "5"
+				},
+				"ptop": {
+					"Formula": "101.325 kPa"
+				},
+				"pbottom": {
+					"Formula": "101.325 kPa"
+				},
+				"totalCondenser": true,
+				"reboiler": true,
+				"feeds": [
+					{
+						"stage": 2,
+						"formula": "splitterbtms",
+						"name": "feed1"
+					}
+				],
+				"draws": [
+					{
+						"stage": 1,
+						"phase": "v",
+						"name": "Overhead",
+						"isBasis": true,
+						"flowEst": ""
+					},
+					{
+						"stage": 5,
+						"phase": "l",
+						"name": "Bottoms",
+						"isBasis": true,
+						"flowEst": "splitterbtms.xt[1,\"biphenyl\"] * splitterbtms.f"
+					},
+					{
+						"stage": 1,
+						"phase": "l",
+						"name": "DistillateLiq",
+						"isBasis": false,
+						"flowEst": ""
+					}
+				],
+				"specs": [
+					{
+						"name": "Spec1",
+						"formula": "$.ldraw[-1] - splitterbtms.xt[1,\"biphenyl\"] * splitterbtms.f",
+						"scale": 28
+					},
+					{
+						"name": "Spec2",
+						"formula": "$.lx[-1,\"toluene\"] - 0.01",
+						"scale": 1
+					}
+				]
+			},
+			{
+				"name": "CalcRecycleTol",
+				"Notes": "Toluene overhead stream from biphenyl removal column \\ pumped to reaction pressure (35 bar) for recycle back to the reactor feed.",
+				"DiagramX": 205,
+				"DiagramY": 345,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "SplitterBtms.thermo"
+				},
+				"firstprop": {
+					"Formula": "freshTol.p"
+				},
+				"secondprop": {
+					"Formula": "biphenylCol.lh[1]"
+				},
+				"molefrac": {
+					"Formula": "{tr biphenylCol.lx[1]}"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "biphenylCol.ldraw[1]"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "BiphenylPurge",
+				"Notes": "Removed biphenyl",
+				"DiagramX": 335,
+				"DiagramY": 445,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "biphenylcol.thermo"
+				},
+				"firstprop": {
+					"Formula": "biphenylcol.p[-1]"
+				},
+				"secondprop": {
+					"Formula": "biphenylcol.t[-1]"
+				},
+				"molefrac": {
+					"Formula": "biphenylcol.lx[-1]"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "biphenylcol.ldraw[-1]"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "VPurgeFrac",
+				"Notes": "Fraction of separator vapour to purge",
+				"DiagramX": 205,
+				"DiagramY": 250,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "0.1"
+				},
+				"showInput": "y",
+				"displayUnit": "%"
+			},
+			{
+				"name": "StripperFeed",
+				"Notes": "Liquid stream from the flash separator containing crude benzene and unreacted toluene sent to the stabilizer column.",
+				"DiagramX": 205,
+				"DiagramY": 400,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "coolerOutlet.thermo"
+				},
+				"firstprop": {
+					"Formula": "coolerOutlet.p"
+				},
+				"secondprop": {
+					"Formula": "coolerOutlet.t"
+				},
+				"molefrac": {
+					"Formula": "coolerOutlet.l.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "coolerOutlet.l.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "MassBalance",
+				"Notes": "",
+				"DiagramX": 205,
+				"DiagramY": 455,
+				"HideInfo": "y",
+				"DiagramNotes": "n",
+				"HtmlNotes": "n",
+				"Type": "Expression",
+				"Formula": {
+					"Formula": "freshGas.massf + freshTol.massf - biphenylPurge.massf - vapourPurge.massf - stripperOvhds.massf - splitterovhd.massf"
+				}
+			},
+			{
+				"name": "StripperOvhds",
+				"Notes": "Stabilized liquid bottoms from the stripper column, free of light gases, fed to the benzene splitter.",
+				"DiagramX": 335,
+				"DiagramY": 160,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "Stripper.thermo"
+				},
+				"firstprop": {
+					"Formula": "stripper.p[1]"
+				},
+				"secondprop": {
+					"Formula": "stripper.t[1]"
+				},
+				"molefrac": {
+					"Formula": "stripper.vx[1]"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "stripper.vf[1]"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "RecycleTolEst",
+				"Notes": "An estimate of the toluene recycle stream.",
+				"DiagramX": 80,
+				"DiagramY": 370,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "freshGas.thermo"
+				},
+				"firstprop": {
+					"Formula": "100 degC"
+				},
+				"secondprop": {
+					"Formula": "FreshTol.p"
+				},
+				"molefrac": {
+					"Formula": "{cc 1e-10, 1e-10, 0.01,, 0.99,0.003}"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "40 kmol/h"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "MixedFeed",
+				"Notes": "Combines the gas and toluene streams along with the recycled gas and toluene.",
+				"DiagramX": 80,
+				"DiagramY": 205,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"isOutput": "y",
+				"Type": "Flash",
+				"thermo": {
+					"Formula": "freshGas.thermo"
+				},
+				"firstprop": {
+					"Formula": "{min freshGas.p, freshTol.p}"
+				},
+				"secondprop": {
+					"Formula": "(freshGas.hflow + freshTol.hflow + Recycle.outlet.hflow + recycledToluene.hflow) /\n(freshGas.f + freshTol.f + Recycle.Outlet.f + recycledToluene.f)"
+				},
+				"molefrac": {
+					"Formula": "freshGas.x * freshGas.f +\nfreshTol.x * freshTol.f +\nrecycle.outlet.x * recycle.outlet.f+\nRecycledToluene.f * recycledToluene.x"
+				},
+				"massfrac": {
+					"Formula": ""
+				},
+				"flow": {
+					"Formula": "freshTol.f + freshGas.f + recycle.outlet.f + recycledToluene.f"
+				},
+				"displayUnits": [],
+				"formatStrings": {
+					"t": ".2f",
+					"p": ".2f",
+					"f": ".2f",
+					"h": ".2f",
+					"s": ".2f",
+					"hflow": ".1f",
+					"dmolar": ".2f"
+				}
+			},
+			{
+				"name": "Recycle",
+				"Notes": "Calculates the component and energy recycle flows for both the gas and toluene recycles.",
+				"DiagramX": 80,
+				"DiagramY": 410,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "n",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "CalcRecycle",
+						"Notes": "A reference to a Flash tool representing the recycle stream calculated using the Outlet flash in this model.",
+						"DiagramX": 100,
+						"DiagramY": 180,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "HPRecycle"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "Estimate",
+						"Notes": "Estimate of the recycle stream - normally a reference to a Flash tool.",
+						"DiagramX": 100,
+						"DiagramY": 150,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "RecycleEst"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "Error",
+						"Notes": "The calculated errors",
+						"DiagramX": 205,
+						"DiagramY": 215,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{cc\n\t(calcRecycle.f * calcRecycle.x - cmpFlows) / estimate.f,\n\t(calcRecycle.hflow - outlet.hflow) / estimate.hflow,\n\t(tolRecycle.f * {tr tolRecycle.x} - tolFlows) / tolEstimate.f,\n\t(tolRecycle.hflow - tolOutlet.hflow) / tolEstimate.hflow\n}"
+						}
+					},
+					{
+						"name": "Outlet",
+						"Notes": "The calculated estimate recycle stream to be used in calculating a new recycle stream.",
+						"DiagramX": 205,
+						"DiagramY": 250,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Flash",
+						"thermo": {
+							"Formula": "Estimate.thermo"
+						},
+						"firstprop": {
+							"Formula": "Estimate.p"
+						},
+						"secondprop": {
+							"Formula": "enthapy"
+						},
+						"molefrac": {
+							"Formula": "cmpFlows"
+						},
+						"massfrac": {
+							"Formula": ""
+						},
+						"flow": {
+							"Formula": "{sum cmpFlows}"
+						},
+						"displayUnits": [],
+						"formatStrings": {
+							"t": ".2f",
+							"p": ".2f",
+							"f": ".2f",
+							"h": ".2f",
+							"s": ".2f",
+							"hflow": ".1f",
+							"dmolar": ".2f"
+						}
+					},
+					{
+						"name": "Solver",
+						"Notes": "",
+						"DiagramX": 205,
+						"DiagramY": 120,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Equation Solver",
+						"f0": "error",
+						"c0": "2 * ncmp + 2 ' 2 cmp flows and 2 flows",
+						"o0": [
+							0.7068869099411552,
+							1.4071036889422428,
+							0.5057040608783903,
+							14.665162625145186,
+							-0.6194303558598184,
+							-0.5039899927565421,
+							-0.000003988020782340308,
+							-0.000003988020782340331,
+							0.19763882351817216,
+							0.10753193139108054,
+							-0.7494637691769545,
+							-0.06835931523987525
+						],
+						"maxIter": 200,
+						"maxJacobians": 5,
+						"Enabled": "y"
+					},
+					{
+						"name": "CmpFlows",
+						"Notes": "The calculated component flows",
+						"DiagramX": 205,
+						"DiagramY": 145,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "solver.1[1:ncmp] * CmpFRange + estimate.f * estimate.x"
+						}
+					},
+					{
+						"name": "nCmp",
+						"Notes": "",
+						"DiagramX": 100,
+						"DiagramY": 280,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{nrows estimate.x}"
+						}
+					},
+					{
+						"name": "CmpFRange",
+						"Notes": "The calculated maximum variation of component flows",
+						"DiagramX": 100,
+						"DiagramY": 240,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "Estimate.x * estimate.f * estRange"
+						}
+					},
+					{
+						"name": "EstRange",
+						"Notes": "The largest fraction of the estimate component and energy flows that can be used in the Outlet flash.  It defaults to 0.5 and must be greater than 0 and less than 1.",
+						"DiagramX": 100,
+						"DiagramY": 210,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "0.95"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "Overview",
+						"Notes": "This recycle model has been modified to also calculate the recycled toluene flow rate.  Column specifications make the toluene recycle composition essentially invariant.\n\nThis model performs a simple recycle operation. An outlet stream is created by varying the values of an estimated stream until they match those of a calculated stream.  The values that are adjusted are the component flow rates and energy flow. An input parameter adjusts how big an adjustment is possible as a fraction of the estimated values.  The default is 0.5.",
+						"DiagramX": 100,
+						"DiagramY": 120,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ""
+						}
+					},
+					{
+						"name": "Enthapy",
+						"Notes": "The calculated enthalpy of the outlet",
+						"DiagramX": 205,
+						"DiagramY": 180,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "(solver.1[ncmp + 1] * estRange * estimate.hflow + estimate.hflow)\n/  Estimate.f"
+						}
+					},
+					{
+						"name": "TolFRange",
+						"Notes": "",
+						"DiagramX": 100,
+						"DiagramY": 305,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "0.001 kmol/h + TolEstimate.x * TolEstimate.f * estRange"
+						}
+					},
+					{
+						"name": "TolEstimate",
+						"Notes": "Estimated flow rate of toluene recycle",
+						"DiagramX": 100,
+						"DiagramY": 335,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "RecycleTolEst"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "TolEnthapy",
+						"Notes": "The calculated enthalpy of the outlet",
+						"DiagramX": 205,
+						"DiagramY": 325,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "(solver.1[2*ncmp + 2] * estRange * tolEstimate.hflow + tolEstimate.hflow)\n/  tolEstimate.f"
+						}
+					},
+					{
+						"name": "TolFlows",
+						"Notes": "",
+						"DiagramX": 205,
+						"DiagramY": 300,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "solver.1[(ncmp +2):(2 * ncmp + 1)] * TolFRange + TolEstimate.f * TolEstimate.x"
+						}
+					},
+					{
+						"name": "TolOutlet",
+						"Notes": "The calculated toluene recycle stream for the next iteration.",
+						"DiagramX": 205,
+						"DiagramY": 365,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Flash",
+						"thermo": {
+							"Formula": "TolEstimate.thermo"
+						},
+						"firstprop": {
+							"Formula": "TolEstimate.p"
+						},
+						"secondprop": {
+							"Formula": "tolenthapy"
+						},
+						"molefrac": {
+							"Formula": "tolFlows"
+						},
+						"massfrac": {
+							"Formula": ""
+						},
+						"flow": {
+							"Formula": "{sum tolFlows}"
+						},
+						"displayUnits": [],
+						"formatStrings": {
+							"t": ".2f",
+							"p": ".2f",
+							"f": ".2f",
+							"h": ".2f",
+							"s": ".2f",
+							"hflow": ".1f",
+							"dmolar": ".2f"
+						}
+					},
+					{
+						"name": "TolRecycle",
+						"Notes": "The calculated flow rate of the toluene recycle.",
+						"DiagramX": 100,
+						"DiagramY": 370,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "CalcRecycleTol"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					}
+				]
+			}
+		]
+	}
+}

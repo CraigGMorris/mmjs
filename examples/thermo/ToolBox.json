@@ -10,15 +10,15 @@
 	],
 	"CaseName": "ToolBox",
 	"DefaultUnitSet": "SI",
-	"SelectedObject": "ThermoSelection",
-	"ModelPath": "/.root.SelectThermo",
+	"SelectedObject": "",
+	"ModelPath": "/.root",
 	"RootModel": {
 		"name": "root",
 		"Notes": "",
 		"DiagramX": 0,
 		"DiagramY": 0,
-		"HideInfo": "n",
-		"DiagramNotes": "n",
+		"HideInfo": "y",
+		"DiagramNotes": "y",
 		"HtmlNotes": "n",
 		"Type": "Model",
 		"diagramScale": 1,
@@ -26,8 +26,8 @@
 			{
 				"name": "Mix2",
 				"Notes": "Takes two flash results and produces thermo, p, f, h and x values for the combined fluid.",
-				"DiagramX": 155,
-				"DiagramY": 250,
+				"DiagramX": 235,
+				"DiagramY": 260,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
 				"HtmlNotes": "n",
@@ -36,19 +36,6 @@
 				"Objects": [
 					{
 						"name": "Feed1",
-						"DiagramX": 100,
-						"DiagramY": 80,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "n",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": ""
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "Feed2",
 						"DiagramX": 100,
 						"DiagramY": 105,
 						"HideInfo": "y",
@@ -61,9 +48,22 @@
 						"isInput": "y"
 					},
 					{
+						"name": "Feed2",
+						"DiagramX": 100,
+						"DiagramY": 130,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ""
+						},
+						"isInput": "y"
+					},
+					{
 						"name": "P",
 						"DiagramX": 100,
-						"DiagramY": 155,
+						"DiagramY": 180,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -116,7 +116,7 @@
 						"name": "thermo",
 						"Notes": "",
 						"DiagramX": 100,
-						"DiagramY": 130,
+						"DiagramY": 155,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -129,8 +129,8 @@
 					{
 						"name": "Overview",
 						"Notes": "<h3>Mix2 Overview</h3>From the mixing of two fluids this model calculates the properties required as <b>flash tool</b> inputs.\n\nThe input expressions are:\n\t<b>feed1</b> - a flash result or similar representing the inlet fluid. Must have thermo, pressure, flow and mole fraction properties.\n\t<b>feed2</b> - second feed with same requirements as feed1, except thermo is not used.\n\nThe outlet expressions are:\n\t<b>thermo</b> - thermo definition copied from feed1\n\t<b>p</b> - the outlet pressure, which is assumed to be the lessor of the two feed pressures\n  \t<b>f</b> - the combined molar flow\n  \t<b>h</b> - the mixture enthalpy\n  \t<b>x</b> - the mixture mole fraction",
-						"DiagramX": 200,
-						"DiagramY": 155,
+						"DiagramX": 100,
+						"DiagramY": 75,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -145,7 +145,7 @@
 				"name": "HeatExch",
 				"Notes": "Simple counter current heat exchanger",
 				"DiagramX": 235,
-				"DiagramY": 185,
+				"DiagramY": 190,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
 				"HtmlNotes": "n",
@@ -159,12 +159,13 @@
 						"DiagramY": 180,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
-						"HtmlNotes": "n",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": ""
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y"
 					},
 					{
 						"name": "Side1DP",
@@ -173,12 +174,13 @@
 						"DiagramY": 215,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
-						"HtmlNotes": "n",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "10 kpa"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y"
 					},
 					{
 						"name": "Side2In",
@@ -187,12 +189,13 @@
 						"DiagramY": 245,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
-						"HtmlNotes": "n",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": ""
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y"
 					},
 					{
 						"name": "Side2DP",
@@ -201,12 +204,13 @@
 						"DiagramY": 280,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
-						"HtmlNotes": "n",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "10 kpa"
 						},
-						"isInput": "y"
+						"isInput": "y",
+						"showInput": "y"
 					},
 					{
 						"name": "T2Out",
@@ -215,12 +219,13 @@
 						"DiagramY": 310,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
-						"HtmlNotes": "n",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": ""
 						},
 						"isInput": "y",
+						"showInput": "y",
 						"displayUnit": "degC"
 					},
 					{
@@ -230,12 +235,13 @@
 						"DiagramY": 340,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
-						"HtmlNotes": "n",
+						"HtmlNotes": "y",
 						"Type": "Expression",
 						"Formula": {
 							"Formula": "10 deltac"
 						},
 						"isInput": "y",
+						"showInput": "y",
 						"displayUnit": "deltaC"
 					},
 					{
@@ -245,7 +251,7 @@
 						"DiagramY": 215,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
-						"HtmlNotes": "n",
+						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
@@ -259,7 +265,7 @@
 						"DiagramY": 250,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
-						"HtmlNotes": "n",
+						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
@@ -269,12 +275,13 @@
 					},
 					{
 						"name": "Side1Flash",
-						"Notes": "Flash representing the side 1 outlet.\n\nThe pressure is determined by the inlet pressure and the pressure drop.\n\nThe second property is the fluid enthalpy, determined by a heat balance on the inlets and outlets.",
+						"Notes": "Flash representing the side 1 outlet.\nThe pressure is determined by the inlet pressure and the pressure drop.\nThe second property is the fluid enthalpy, determined by a heat balance on the inlets and outlets.",
 						"DiagramX": 265,
 						"DiagramY": 275,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
-						"HtmlNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
 						"Type": "Flash",
 						"thermo": {
 							"Formula": "Side1In.thermo"
@@ -306,12 +313,13 @@
 					},
 					{
 						"name": "Side2Flash",
-						"Notes": "Flash representing the side s outlet.\n\nThe pressure is determined by the inlet pressure and the pressure drop.\n\nThe second property is the temperature determined by either the value of T2Out or if it is missing, the side one inlet temperature and the value of dt.",
+						"Notes": "Flash representing the side s outlet.\nThe pressure is determined by the inlet pressure and the pressure drop.\nThe second property is the temperature determined by either the value of T2Out or if it is missing, the side one inlet temperature and the value of dt.",
 						"DiagramX": 265,
 						"DiagramY": 310,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
-						"HtmlNotes": "n",
+						"HtmlNotes": "y",
+						"isOutput": "y",
 						"Type": "Flash",
 						"thermo": {
 							"Formula": "side2in.thermo"
@@ -348,7 +356,7 @@
 						"DiagramY": 290,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
-						"HtmlNotes": "n",
+						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
@@ -362,7 +370,7 @@
 						"DiagramY": 320,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
-						"HtmlNotes": "n",
+						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
@@ -501,8 +509,8 @@
 					{
 						"name": "Overview",
 						"Notes": "<h3>Heat Exchanger Overview</h3>This model represents a thermodynamic heat balance on a simple counter current <a href=\"https://en.wikipedia.org/wiki/Heat_exchanger\" target=\"_blank\">heat exchanger</a>.\n\nThe input expressions are:\n\t<b>side1In</b> - a flash result or similar representing the inlet fluid on side 1.\n\t<b>side1Dp</b> - pressure drop across side 1, (inlet pressure - outlet pressure).\t\t\n\t<b>side2In</b> - a flash result or similar representing the inlet fluid on side 2.\n\t<b>side1Dp</b> - pressure drop across side 2, (inlet pressure - outlet pressure).\n\t<b>T2Out</b> - outlet temperature of side 2. Can be empty.\n\t<b>dt</b> - temperature difference between side 1 inlet and side 2 outlet. This is only used if T2Out is empty.\n\nThe outlet expressions are:\n\n\t<b>duty</b> - the energy flow from side 2 to side 1.\n\t<b>lmtd</b> - the log mean temperature difference.\n  \t<b>side1Out</b> - the flash result for the side 1 outlet fluid.\n  \t<b>side2Out</b> - the flash result for the side 2 outlet fluid.\n\nIt is assumed that both inlet fluids are completely known. This of course means the flow and compositions of the outlets are also known and because the pressure drops are also inputs, the outlet pressures are known.\n\nThe temperature of the side 2 outlet is either directly supplied by input expression <b>T2Out</b> or can be calculated from the side 1 inlet temperature and the supplied temperature approach from inlet expression <b>dt</b>.\n\nThis allows the conditions of the side 2 outlet to be evaluated, leaving only the side 1 outlet unknown. However it only needs one additional intensive variable and that can be supplied by doing an energy balance around the exchanger to give the side 1 outlet enthalpy.  This calculation is perform right in the formula for the 2nd property of <b>Side1Flash</b>.\n\nThe exchanger duty is calculated by subtracting the side 1 outlet energy flow from the inlet.\n\nFinally the <a href=\"https://en.wikipedia.org/wiki/Logarithmic_mean_temperature_difference\" target=\"_blank\">log mean temperature difference</a> is calculated in expression <b>lmtd</b>.",
-						"DiagramX": 370,
-						"DiagramY": 350,
+						"DiagramX": 155,
+						"DiagramY": 150,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -516,8 +524,8 @@
 			{
 				"name": "FFFPressDrop",
 				"Notes": "Fanning Friction Factor pressure drop calculation.",
-				"DiagramX": 315,
-				"DiagramY": 255,
+				"DiagramX": 235,
+				"DiagramY": 310,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
 				"HtmlNotes": "n",
@@ -528,7 +536,7 @@
 						"name": "Diameter",
 						"Notes": "Pipe diameter",
 						"DiagramX": 55,
-						"DiagramY": 55,
+						"DiagramY": 85,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -556,7 +564,7 @@
 						"name": "A",
 						"Notes": "pipe area",
 						"DiagramX": 55,
-						"DiagramY": 160,
+						"DiagramY": 190,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -610,7 +618,7 @@
 						"name": "g",
 						"Notes": "",
 						"DiagramX": 280,
-						"DiagramY": -15,
+						"DiagramY": -5,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -637,7 +645,7 @@
 						"name": "L",
 						"Notes": "Pipe length",
 						"DiagramX": 55,
-						"DiagramY": 125,
+						"DiagramY": 155,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -651,7 +659,7 @@
 						"name": "Pout",
 						"Notes": "Calculated outlet pressure",
 						"DiagramX": 55,
-						"DiagramY": 195,
+						"DiagramY": 225,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -665,7 +673,7 @@
 						"name": "average",
 						"Notes": "Flash at average pressure",
 						"DiagramX": 55,
-						"DiagramY": -5,
+						"DiagramY": 25,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -732,7 +740,7 @@
 						"name": "lhs",
 						"Notes": "Left hand side of the Colebrook formula",
 						"DiagramX": 280,
-						"DiagramY": 90,
+						"DiagramY": 100,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -745,7 +753,7 @@
 						"name": "ed",
 						"Notes": "e/D the roughness over diameter factor.",
 						"DiagramX": 55,
-						"DiagramY": 85,
+						"DiagramY": 115,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -772,7 +780,7 @@
 						"name": "rootf",
 						"Notes": "square root if the friction factor.",
 						"DiagramX": 280,
-						"DiagramY": 50,
+						"DiagramY": 60,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -785,7 +793,7 @@
 						"name": "f",
 						"Notes": "Fanning friction factor",
 						"DiagramX": 280,
-						"DiagramY": 15,
+						"DiagramY": 25,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -799,7 +807,7 @@
 						"name": "Inlet",
 						"Notes": "Inlet fluid (flash result)",
 						"DiagramX": 55,
-						"DiagramY": 25,
+						"DiagramY": 55,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -812,8 +820,8 @@
 					{
 						"name": "Overview",
 						"Notes": "<h3>Fanning Friction Factor Pressure Drop Overview</h3>This model calculates the pressure drop for a <b>single phase turbulent</b> fluid in a pipe using the <a href=\"https://en.wikipedia.org/wiki/Fanning_friction_factor\" target=\"_blank\">Fanning Friction Factor</a> calculation.\n\nThe input expressions are:\n\t<b>Inlet</b> - a flash result or similar representing the inlet fluid.\n\t<b>Diameter</b> - the inside diameter of the pipe.\n\t<b>ed</b> - e/D the roughness over diameter factor.\n\t<b>L</b> - the length of the pipe.\n\nThe outlet expressions are:\n\t<b>Pout</b> - the outlet pressure.\n\t<b>dp</b> - the pressure drop (inlet minus outlet pressure).\n\t<b>Q</b> - the volumentric flow rate.\n\t<b>Velocity</b> - the fluid velocity.\n\t<b>Re</b> - the Reynolds number.\n\t<b>f</b> - the Fanning Friction Factor.\n\nA flash tool (<b>average</b>) is used to calculate the fluid properties at the average pressure. Since the outlet pressure is not initially known, the <b>solver</b> tool is used to adjust the estimated outlet pressure (<b>estPOut</b>) until it matches the calculated one (<b>Pout</b>).  It simultaneously adjusts the root of the friction factor (<b>rootf</b>) until both sides of the <a href=\"https://en.wikipedia.org/wiki/Fanning_friction_factor#General_expression\" target=\"_blank\">Colebrook equation</a> match (<b>lhs</b> and <b>rhs</b>).",
-						"DiagramX": 280,
-						"DiagramY": 130,
+						"DiagramX": 55,
+						"DiagramY": -5,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -826,33 +834,16 @@
 			},
 			{
 				"name": "SelectThermo",
-				"Notes": "Use this model to easily create the component list and additional properties that comprise the thermo definition for flash tools.\n\nAfter clicking the apply button on this page, the definition will be available as parameter thermo for this model.\n\nThus in a flash tool in a model that also contains the model, you could define its thermo as just\n\nselectthermo.thermo",
+				"Notes": "Use this model to create the component list and additional properties that comprise the thermo definition for flash and column tools.",
 				"DiagramX": 155,
-				"DiagramY": 185,
-				"HideInfo": "n",
-				"DiagramNotes": "n",
+				"DiagramY": 345,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
 				"HtmlNotes": "n",
 				"Type": "Model",
 				"diagramScale": 1,
 				"indexTool": "thermoselection",
 				"Objects": [
-					{
-						"name": "ThermoSelection",
-						"Notes": "",
-						"DiagramX": 130,
-						"DiagramY": 45,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "n",
-						"Type": "HTML Form",
-						"Formula": {
-							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t\t<script>\n\t\t\twindow.onload = () => {\n\t\t\t\tconst fluidList = document.getElementById('fluid-list');\n\t\t\t\tconst fluids = '<mm>{join listFlash.fluids, \"!\"}</mm>'.split('!').sort();\n\t\t\t\tconst fluidsHtml = fluids.map((name) => {\n\t\t\t\t\treturn `<option value=\"${name}\">${name}</option>`;\n\t\t\t\t})\n\t\t\t\tfluidList.innerHTML = '<option value=\"\">Components</option>' + fluidsHtml.sort().join('\\n');\n\t\t\t\tmmpost({}, {thermo: 'thermo'}, (result) => {\n\t\t\t\t\tconsole.log(`current ${result.thermo}`);\n\t\t\t\t\tif (result && result.thermo) {\n\t\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\t\ttextArea.value = result.thermo;\n\t\t\t\t\t}\n\t\t\t\t})\n\t\t\t}\n\t\t\tconst fluidSelected = (name) => {\n\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\tif (textArea.value.length) {\n\t\t\t\t\ttextArea.value += ',\\n'\n\t\t\t\t}\n\t\t\t\ttextArea.value += `${name}`;\n\t\t\t\ttextArea.scrollTop = 99999;\n\t\t\t}\n\t\t\tconst propSelected = (name) => {\n\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\tlet value = textArea.value;\n\t\t\t\tif (name && value.length) {\n\t\t\t\t\tif (!value.match(/;/)) {\n\t\t\t\t\t\tvalue += `\\n;\\n${name}`;\n\t\t\t\t\t}\n\t\t\t\t\telse\n\t\t\t\t\tvalue += `,\\n${name}`;\n\t\t\t\t\ttextArea.value = value;\n\t\t\t\t\ttextArea.scrollTop = 99999;\n\t\t\t\t}\n\t\t\t}\n\t\t\tconst apply = () => {\n\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\tmmpost({thermo: textArea.value}, {});\n\t\t\t}\n\t\t</script>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Thermo Selection</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<div>\n\t\t\t<textarea id=\"thermo-string\" rows=\"5\"></textarea>\n\t\t\t<p>\n\t\t\t\tFirst select the components you from the dropdown below. They will be added to the text box above.\n\t\t\t</p>\n\t\t\t<select id=\"fluid-list\" onChange=\"fluidSelected(this.value);\">\n\t\t\t</select>\n\t\t\t<p>\n\t\t\t\tIf you want additional properties besides the default (q, t, p, f, h, s, dmolar, mwt, x), select them from the drop down below to have them added to the thermo definition,\n\t\t\t</p>\n\t\t\t<select id=\"prop-list\" onChange=\"propSelected(this.value);\">\n\t\t\t\t<option value=\"\">Properties</option>\n\t\t\t\t<option value=\"massf\">massf</option>\n\t\t\t\t<option value=\"massx\">massx</option>\n\t\t\t\t<option value=\"hflow\">hflow</option>\n\t\t\t\t<option value=\"cpmolar\">cpmolar</option>\n\t\t\t\t<option value=\"cp0molar\">cp0molar</option>\n\t\t\t\t<option value=\"cvmolar\">cvmolar</option>\n\t\t\t\t<option value=\"umolar\">umolar</option>\n\t\t\t\t<option value=\"gmolar\">gmolar</option>\n\t\t\t\t<option value=\"cpmass\">cpmass</option>\n\t\t\t\t<option value=\"cp0mass\">cp0mass</option>\n\t\t\t\t<option value=\"cvmass\">cvmass</option>\n\t\t\t\t<option value=\"dmass\">dmass</option>\n\t\t\t\t<option value=\"umass\">umass</option>\n\t\t\t\t<option value=\"gmass\">gmass</option>\n\t\t\t\t<option value=\"tmin\">tmin</option>\n\t\t\t\t<option value=\"tmax\">tmax</option>\n\t\t\t\t<option value=\"pmin\">pmin</option>\n\t\t\t\t<option value=\"pmax\">pmax</option>\n\t\t\t\t<option value=\"viscosity\">viscosity</option>\n\t\t\t\t<option value=\"conductivity\">conductivity</option>\n\t\t\t\t<option value=\"surfacetension\">surfacetension</option>\n\t\t\t\t<option value=\"prandtl\">prandtl</option>\n\t\t\t</select>\n\t\t\t<p>\n\t\t\t\t<button onClick=\"apply()\">Apply</button>\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tWhen done, edit the text box if necessary and then click the <b>Apply</b> button above. This will make the list available as property <b>thermo</b> for both this html page and the enclosing model.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tYou can return to this page and edit the thermo definition and click <b>Apply</b> again when done.\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
-						},
-						"inputs": {
-							"thermo": ""
-						},
-						"f0": "{join listFlash.fluids, \"!\"}"
-					},
 					{
 						"name": "listFlash",
 						"Notes": "Empty flash to get fluid list from",
@@ -903,6 +894,23 @@
 						"Formula": {
 							"Formula": "ThermoSelection.thermo"
 						}
+					},
+					{
+						"name": "ThermoSelection",
+						"Notes": "",
+						"DiagramX": 135,
+						"DiagramY": 45,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "HTML Form",
+						"Formula": {
+							"Formula": "'\n<html>\n\t<head>\n\t\t<link rel=\"stylesheet\" href=\"./help/help.css\" type=\"text/css\">\n\t\t<style>\n\t\t\t#header {\n\t\t\t\tdisplay: grid;\n\t\t\t\tgrid-template-columns: 1fr 65px;\n\t\t\t\tgrid-gap: 10px;\n\t\t\t\tborder-bottom: 1px solid black;\n\t\t\t\tmargin-bottom: 10px;\n\t\t\t}\n\t\t\t#header img {\n\t\t\t\talign-self: center;\n\t\t\t}\n\t\t</style>\n\t\t<script>\n\t\t\twindow.onload = () => {\n\t\t\t\tconst fluidList = document.getElementById('fluid-list');\n\t\t\t\tconst fluidFilter = document.getElementById('fluid-filter');\n\t\t\t\tconst fluidDatalist = document.getElementById('fluid-datalist');\n\t\t\t\tconst fluids = '<mm>{join listFlash.fluids, \"!\"}</mm>'.toLowerCase().split('!').sort();\n\n\t\t\t\tif (fluidDatalist) {\n\t\t\t\t\tfluidDatalist.innerHTML = fluids.map((name) => `<option value=\"${name}\">`).join('\\n');\n\t\t\t\t}\n\n\t\t\t\tconst updateFluidList = (filterText = '') => {\n\t\t\t\t\tconst filtered = fluids.filter((name) => name.toLowerCase().includes(filterText.toLowerCase()));\n\t\t\t\t\tconst fluidsHtml = filtered.map((name) => {\n\t\t\t\t\t\treturn `<option value=\"${name}\">${name}</option>`;\n\t\t\t\t\t});\n\t\t\t\t\tfluidList.innerHTML = '<option value=\"\">Components</option>' + fluidsHtml.join('\\n');\n\t\t\t\t};\n\t\t\t\tupdateFluidList();\n\n\t\t\t\tconst selectFluidFromFilter = () => {\n\t\t\t\t\tconst val = fluidFilter.value.trim();\n\t\t\t\t\tif (!val) return;\n\t\t\t\t\tconst exact = fluids.find((f) => f.toLowerCase() === val.toLowerCase());\n\t\t\t\t\tconst match = exact || fluids.find((f) => f.toLowerCase().includes(val.toLowerCase()));\n\t\t\t\t\tif (match) {\n\t\t\t\t\t\tfluidSelected(match);\n\t\t\t\t\t\tfluidFilter.value = '';\n\t\t\t\t\t\tupdateFluidList('');\n\t\t\t\t\t}\n\t\t\t\t};\n\n\t\t\t\tif (fluidFilter) {\n\t\t\t\t\tfluidFilter.oninput = (e) => {\n\t\t\t\t\t\tif (e.inputType === 'insertReplacementText' && fluids.includes(fluidFilter.value)) {\n\t\t\t\t\t\t\tfluidSelected(fluidFilter.value);\n\t\t\t\t\t\t\tfluidFilter.value = '';\n\t\t\t\t\t\t\tupdateFluidList('');\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tupdateFluidList(fluidFilter.value);\n\t\t\t\t\t\t}\n\t\t\t\t\t};\n\t\t\t\t\tfluidFilter.onchange = () => {\n\t\t\t\t\t\tif (fluids.includes(fluidFilter.value)) {\n\t\t\t\t\t\t\tfluidSelected(fluidFilter.value);\n\t\t\t\t\t\t\tfluidFilter.value = '';\n\t\t\t\t\t\t\tupdateFluidList('');\n\t\t\t\t\t\t}\n\t\t\t\t\t};\n\t\t\t\t\tfluidFilter.onkeydown = (e) => {\n\t\t\t\t\t\tif (e.key === 'Enter') {\n\t\t\t\t\t\t\te.preventDefault();\n\t\t\t\t\t\t\tselectFluidFromFilter();\n\t\t\t\t\t\t}\n\t\t\t\t\t};\n\t\t\t\t}\n\t\t\t\tmmpost({}, {thermo: 'thermo'}, (result) => {\n\t\t\t\t\tconsole.log(`current ${result.thermo}`);\n\t\t\t\t\tif (result && result.thermo) {\n\t\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\t\ttextArea.value = result.thermo;\n\t\t\t\t\t}\n\t\t\t\t})\n\t\t\t}\n\t\t\tconst fluidSelected = (name) => {\n\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\tif (textArea.value.length) {\n\t\t\t\t\ttextArea.value += ',\\n'\n\t\t\t\t}\n\t\t\t\ttextArea.value += `${name}`;\n\t\t\t\ttextArea.scrollTop = 99999;\n\t\t\t}\n\t\t\tconst propSelected = (name) => {\n\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\tlet value = textArea.value;\n\t\t\t\tif (name && value.length) {\n\t\t\t\t\tif (!value.match(/;/)) {\n\t\t\t\t\t\tvalue += `\\n;\\n${name}`;\n\t\t\t\t\t}\n\t\t\t\t\telse\n\t\t\t\t\tvalue += `,\\n${name}`;\n\t\t\t\t\ttextArea.value = value;\n\t\t\t\t\ttextArea.scrollTop = 99999;\n\t\t\t\t}\n\t\t\t}\n\t\t\tconst apply = () => {\n\t\t\t\tconst textArea = document.getElementById('thermo-string');\n\t\t\t\tmmpost({thermo: textArea.value}, {});\n\t\t\t}\n\t\t</script>\n\t</head>\n\t<body>\n\t\t<div id=\"page\">\n\t\t<div id=\"header\">\n\t\t<h3>Thermo Selection</h3>\n\t\t<img src=\"./help/minion64.png\"/>\n\t\t</div>\n\t\t<div>\n\t\t\t<p>\n\t\t\t\tBegin typing a compound name and select the one you want from the list that appears.\n\t\t\t\t<br>\n\t\t\t\t<input type=\"search\" id=\"fluid-filter\" name=\"fluid-search\" list=\"fluid-datalist\" placeholder=\"Filter components...\" autocomplete=\"off\" autocorrect=\"off\" autocapitalize=\"off\" spellcheck=\"false\">\n\t\t\t\t<datalist id=\"fluid-datalist\"></datalist>\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tAlternatively browse the full list:</br>\n\t\t\t\t<select id=\"fluid-list\" onChange=\"fluidSelected(this.value);\">\n\t\t\t\t</select>\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tIf you want additional properties besides the default (q, t, p, f, h, s, dmolar, mwt, x), select them from the drop down below to have them added to the thermo definition,\n\t\t\t</p>\n\t\t\t<select id=\"prop-list\" onChange=\"propSelected(this.value);\">\n\t\t\t\t<option value=\"\">Properties</option>\n\t\t\t\t<option value=\"massf\">massf</option>\n\t\t\t\t<option value=\"massx\">massx</option>\n\t\t\t\t<option value=\"hflow\">hflow</option>\n\t\t\t\t<option value=\"cpmolar\">cpmolar</option>\n\t\t\t\t<option value=\"cp0molar\">cp0molar</option>\n\t\t\t\t<option value=\"cvmolar\">cvmolar</option>\n\t\t\t\t<option value=\"umolar\">umolar</option>\n\t\t\t\t<option value=\"gmolar\">gmolar</option>\n\t\t\t\t<option value=\"cpmass\">cpmass</option>\n\t\t\t\t<option value=\"cp0mass\">cp0mass</option>\n\t\t\t\t<option value=\"cvmass\">cvmass</option>\n\t\t\t\t<option value=\"dmass\">dmass</option>\n\t\t\t\t<option value=\"umass\">umass</option>\n\t\t\t\t<option value=\"gmass\">gmass</option>\n\t\t\t\t<option value=\"tmin\">tmin</option>\n\t\t\t\t<option value=\"tmax\">tmax</option>\n\t\t\t\t<option value=\"pmin\">pmin</option>\n\t\t\t\t<option value=\"pmax\">pmax</option>\n\t\t\t\t<option value=\"viscosity\">viscosity</option>\n\t\t\t\t<option value=\"conductivity\">conductivity</option>\n\t\t\t\t<option value=\"surfacetension\">surfacetension</option>\n\t\t\t\t<option value=\"prandtl\">prandtl</option>\n\t\t\t</select>\n\t\t<p>\n\t\t\t\t<textarea id=\"thermo-string\" rows=\"5\"></textarea>\n\t\t\t\t<br>\n\t\t\t\t<button onClick=\"apply()\">Apply</button>\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tWhen done, edit the text box if necessary and then click the <b>Apply</b> button above. This will make the list available as property <b>thermo</b> for both this html page and the enclosing model.\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\tYou can return to this page and edit the thermo definition and click <b>Apply</b> again when done.\n\t\t\t</p>\n\t\t</div>\n\t</body>\n</html>"
+						},
+						"inputs": {
+							"thermo": ""
+						},
+						"f0": "{join listFlash.fluids, \"!\"}"
 					}
 				]
 			},
@@ -910,7 +918,7 @@
 				"name": "LMTD",
 				"Notes": "Log Mean Temperature Difference",
 				"DiagramX": 315,
-				"DiagramY": 220,
+				"DiagramY": 310,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
 				"HtmlNotes": "n",
@@ -921,7 +929,7 @@
 						"name": "side1Tin",
 						"Notes": "",
 						"DiagramX": 205,
-						"DiagramY": 300,
+						"DiagramY": 330,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -936,7 +944,7 @@
 						"name": "side1Tout",
 						"Notes": "",
 						"DiagramX": 205,
-						"DiagramY": 325,
+						"DiagramY": 355,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -951,7 +959,7 @@
 						"name": "side2Tin",
 						"Notes": "",
 						"DiagramX": 205,
-						"DiagramY": 350,
+						"DiagramY": 380,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -966,7 +974,7 @@
 						"name": "side2Tout",
 						"Notes": "",
 						"DiagramX": 205,
-						"DiagramY": 375,
+						"DiagramY": 405,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1023,8 +1031,8 @@
 					{
 						"name": "Overview",
 						"Notes": "<h3>Log Mean Temperature Difference</h3>This convenience model calculates the log mean temperature difference for a counter current heat exchanger.  The inputs are just the inlet and outlet temperatures, while the sole output is the <b>lmtd</b>.",
-						"DiagramX": 305,
-						"DiagramY": 415,
+						"DiagramX": 205,
+						"DiagramY": 300,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -1039,7 +1047,7 @@
 				"name": "refrigeration",
 				"Notes": "A simple single state refrigeration calculation",
 				"DiagramX": 155,
-				"DiagramY": 300,
+				"DiagramY": 310,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
 				"HtmlNotes": "n",
@@ -1050,8 +1058,8 @@
 					{
 						"name": "InletQ",
 						"Notes": "the cooling duty",
-						"DiagramX": 230,
-						"DiagramY": 310,
+						"DiagramX": 220,
+						"DiagramY": 420,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -1067,8 +1075,8 @@
 					{
 						"name": "condT",
 						"Notes": "condensing temperature",
-						"DiagramX": 230,
-						"DiagramY": 340,
+						"DiagramX": 220,
+						"DiagramY": 450,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -1082,8 +1090,8 @@
 					{
 						"name": "ColdT",
 						"Notes": "required coolant temperature",
-						"DiagramX": 230,
-						"DiagramY": 280,
+						"DiagramX": 220,
+						"DiagramY": 390,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -1111,8 +1119,8 @@
 					{
 						"name": "envPlot",
 						"Notes": "Plot of the T - P phase envelope\nAll of the flashes will be on this line",
-						"DiagramX": 425,
-						"DiagramY": 420,
+						"DiagramX": 220,
+						"DiagramY": 310,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -1234,8 +1242,8 @@
 					{
 						"name": "CoolerDp",
 						"Notes": "Cooler pressure drop",
-						"DiagramX": 230,
-						"DiagramY": 370,
+						"DiagramX": 220,
+						"DiagramY": 480,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -1250,8 +1258,8 @@
 					{
 						"name": "CondDp",
 						"Notes": "Condenser pressure drop",
-						"DiagramX": 230,
-						"DiagramY": 400,
+						"DiagramX": 220,
+						"DiagramY": 510,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -1398,8 +1406,8 @@
 					{
 						"name": "Overview1",
 						"Notes": "<h3>Simple Single Stage Refrigeration</h3>\nThis model shows how the properties of a simple single stage refrigeration loop can be calculated using basic thermodynamics.\n\nThe refrigeration loop looks like this:\n<svg width=\"100%\" height=\"100%\" viewBox=\"0 0 1024 650\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xml:space=\"preserve\" xmlns:serif=\"http://www.serif.com/\" style=\"fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;\">\n    <g id=\"Cooler\" transform=\"matrix(1,0,0,1,-30.5113,85.8962)\">\n        <g transform=\"matrix(1.36733,0,0,1.36733,-255.523,145.782)\">\n            <circle cx=\"735.181\" cy=\"167.587\" r=\"69.251\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-369.122,167.346)\">\n            <path d=\"M799.807,119.07L719.951,198.427\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-369.122,167.346)\">\n            <path d=\"M838.062,180.07L799.807,119.07\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-369.122,167.346)\">\n            <path d=\"M920.578,98.174L838.052,179.677\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(0.720399,0.720399,-1.05258,1.05258,311.159,-421.885)\">\n            <path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:0.78px;\"/>\n        </g>\n        <g transform=\"matrix(1.57389e-16,-1.05628,1.54333,3.14777e-16,671.041,981.596)\">\n            <path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:0.76px;\"/>\n        </g>\n        <g transform=\"matrix(1.51804e-16,-1.0188,1.48857,3.03608e-16,379.896,1023.27)\">\n            <path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:0.78px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-209.284,-307.928)\">\n            <path d=\"M671.848,300.131L521.605,300.131\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(7.59019e-17,1.0188,-1.48857,0,758.006,-544.194)\">\n            <path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:0.78px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-209.284,-307.928)\">\n            <path d=\"M413.681,500.652L616.726,500.652\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(7.59019e-17,1.0188,-1.48857,0,307.925,-545.726)\">\n            <path d=\"M903.829,69.599L911.659,83.318L896.016,83.318L903.829,69.599Z\" style=\"fill:rgb(19,6,6);stroke:black;stroke-width:0.78px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-209.284,-307.928)\">\n            <path d=\"M305.077,299.515L249.989,299.078\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-209.284,-307.928)\">\n            <path d=\"M249.989,299.078L249.989,500.15\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-209.284,-307.928)\">\n            <path d=\"M249.989,500.15L287.042,500.15\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-205.141,-284.519)\">\n            <text x=\"340.411px\" y=\"342.58px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">Condenser</text>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-239.696,-280.387)\">\n            <text x=\"670.252px\" y=\"365.729px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">Compressor</text>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-198.083,-292.803)\">\n            <text x=\"653.088px\" y=\"585.843px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">Cooler</text>\n        </g>\n        <g transform=\"matrix(1.36733,0,0,1.36733,-234.271,-284.603)\">\n            <text x=\"328.159px\" y=\"540.958px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:24px;\">JT V<tspan x=\"377.518px 390.866px \" y=\"540.958px 540.958px \">al</tspan>ve</text>\n        </g>\n        <g transform=\"matrix(1,0,0,1,30.5113,-85.8962)\">\n            <path d=\"M935.658,185.82L935.658,112.288\" style=\"fill:none;stroke:black;stroke-width:1px;\"/>\n        </g>\n        <g transform=\"matrix(1,0,0,1,-22.4075,-47.1565)\">\n            <text x=\"393.526px\" y=\"32.893px\" style=\"font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:30px;\">Single Stage Refrigeration</text>\n        </g>\n    </g>\n    <g id=\"air-cooler\" serif:id=\"air cooler\" transform=\"matrix(1,0,0,1,-395.102,-130.07)\">\n        <g transform=\"matrix(1.36733,0,0,1.36733,-384.927,-269.81)\">\n            <rect x=\"699.629\" y=\"400.285\" width=\"201.945\" height=\"59.617\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(1.21154,0,0,1.36733,-271.746,-282.141)\">\n            <ellipse cx=\"760.291\" cy=\"437.768\" rx=\"49.85\" ry=\"8.668\" style=\"fill:none;stroke:black;stroke-width:0.77px;\"/>\n        </g>\n        <g transform=\"matrix(-1.21154,-1.48371e-16,1.67449e-16,-1.36733,1691.29,915.004)\">\n            <ellipse cx=\"760.291\" cy=\"437.768\" rx=\"49.85\" ry=\"8.668\" style=\"fill:none;stroke:black;stroke-width:0.77px;\"/>\n        </g>\n    </g>\n    <g id=\"Expander\" transform=\"matrix(0.524246,0,0,0.524246,463.577,141.935)\">\n        <g transform=\"matrix(-1.36733,-1.67449e-16,1.67449e-16,-1.36733,956.369,493.079)\">\n            <path d=\"M303.232,196.136L303.232,401.492L398.208,340.215L398.208,259.875L303.232,196.136Z\" style=\"fill:none;stroke:black;stroke-width:1.4px;\"/>\n        </g>\n        <g transform=\"matrix(2.60818,0,0,2.60818,-1341.68,-694.267)\">\n            <path d=\"M771.686,499.722L859.838,499.722L859.838,298.722\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(2.60818,0,0,2.60818,-1341.68,-834.638)\">\n            <path d=\"M859.42,298.722L723.199,298.722\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n    </g>\n    <g id=\"valve\" transform=\"matrix(1,0,0,1,11.6746,366.757)\">\n        <g transform=\"matrix(8.42037e-17,1.36733,-1.36733,8.42037e-17,382.049,-341.754)\">\n            <path d=\"M318.772,105.125L347.185,160.635L290.359,160.635L318.772,105.125Z\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n        <g transform=\"matrix(8.32456e-17,-1.36733,1.36733,8.32456e-17,94.5681,529.978)\">\n            <path d=\"M318.772,105.125L347.185,160.635L290.359,160.635L318.772,105.125Z\" style=\"fill:none;stroke:black;stroke-width:0.73px;\"/>\n        </g>\n    </g>\n</svg>\n\nThe fluid being cooled has heat removed in the cooler by boiling the refrigerant. The resulting vapour is compressed to a higher pressure and hence a higher temperature. It is then condensed by an available coolant, here assumed to be air.\n\nThe condensed high pressure liquid is then let down to a lower pressure through a valve. The lower pressure causes some of the liquid to vapourize and the phase rule dictates that for a given pressure a two phase fluid's temperature is determined from its phase envelope.\n\nJumping ahead a bit, the graph below shows the phase envelope for the refrigerant we will use. It is just a line since we will use a pure component. The triangle represents the refrigerant conditions as it moves around the loop. The cooler conditions are at the lower left. Compressing the vapour raise both the temperature and pressure to the upper right point, while condensing moves it horizontally to the valve inlet condition at the upper left. Passing through the valve drops both temperature and pressure back to the cooler conditions.",
-						"DiagramX": 425,
-						"DiagramY": 390,
+						"DiagramX": 220,
+						"DiagramY": 280,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -1411,8 +1419,8 @@
 					{
 						"name": "Overview2",
 						"Notes": "What we need to determine is:\n\n\tthe pressures required for a required coolant temperature and available condensing temperature\n\tthe flow rate of the refrigerant\n\tthe duty of the condenser\n\tthe power required for the compressor\n\nWe will start with the refrigerant side of the cooler, represented by the <a href=\"../help/flash.html\" target=\"_blank\">flash tool</a> called <b>coolerOut</b>. In this case we will assume a single component refrigerant <a href=\"https://en.wikipedia.org/wiki/Difluoromethane\" target=\"blank\">difluormethane</a>, commonly called <b>R32</b> and so we will define the thermo parameter as:\n\n\t<b>'R32;massf,hflow</b>\n\nwhich is simply as string with the component name(s). Here we have followed it with a double colon and the name(s) of the properties we want included in addition to the default ones. In this case, just the mass flow and energy flow. The mole fractions input can simply be set to 1 as there is only one component.\n\nWe know the required coolant temperature and will set the first property to that. We also know that the coolant will be boiling, so we can set the second property to 1, which because it has a \"Fraction\" conversion unit type, will be taken as q, the vapour fraction. This means the vapour leaving the cooler should be a its dew point.\n\nThis allows the pressure and other properties to be calculated, but the flow rate is still unknown. We will come back to that.\n\nSimilar to the cooler, we know the condenser outlet temperature (presumably from available cooling) and can thus set the first property of the <b>condenserOut</b> flash tool. Since it is condensed, we can assume it will be at the bubble point and designate the second property to be 0.\n\nThis will determine the condensing pressure and other properties.\nSince a valve has no heat inputs or outputs, it is isenthalpic, so we know the enthalpy of the fluid leaving the value and going to the cooler is the same as the liquid leaving the condenser.\n\nBack at the <b>coolerOut</b> Flash, we know the cooling load from InletQ and now that we know the enthalpy of the entering fluid, namely that of valveOut which is the same as that of <b>condenserOut</b>, the flow can be calculated by dividing the duty by the enthalpy difference in and out.\n\nWith the flow rate known, we can calculate the condenser duty by the subtracting the energy flows of the inlet from the outlet, yielding a negative value.\n\nAll that remains is to determine the required compressor power. For that we can copy and paste a previously made model representing a compressor from the toolbox and fill in the input expressions.\n\nThat's it. All the values we wanted are now calculated.\n\nNote that the refrigerant can be changed in the thermo designation (Propane, Ammonia, etc). If multiple components are used, the mole fraction spec will have to change accordingly.",
-						"DiagramX": 425,
-						"DiagramY": 470,
+						"DiagramX": 220,
+						"DiagramY": 360,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -1827,92 +1835,10 @@
 				]
 			},
 			{
-				"name": "Splitter",
-				"Notes": "Component Splitter",
-				"DiagramX": 315,
-				"DiagramY": 185,
-				"HideInfo": "n",
-				"DiagramNotes": "y",
-				"HtmlNotes": "n",
-				"Type": "Model",
-				"diagramScale": 1,
-				"Objects": [
-					{
-						"name": "topFractions",
-						"Notes": "",
-						"DiagramX": 235,
-						"DiagramY": 190,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "n",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{cc 1, 1, 1, .9, .8, .5, .4, .1, 0, 0,}"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "Composition",
-						"Notes": "",
-						"DiagramX": 235,
-						"DiagramY": 160,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "n",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "{cc 70, 20, 10, 9, 8, 7, 6, 7, 4, 3}"
-						},
-						"isInput": "y"
-					},
-					{
-						"name": "top",
-						"Notes": "",
-						"DiagramX": 325,
-						"DiagramY": 160,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "n",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "composition * topFractions\n/\n{sum composition * topFractions}"
-						}
-					},
-					{
-						"name": "btm",
-						"Notes": "",
-						"DiagramX": 325,
-						"DiagramY": 190,
-						"HideInfo": "y",
-						"DiagramNotes": "n",
-						"HtmlNotes": "n",
-						"isOutput": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": "composition * (1 - topFractions)\n/\n{sum composition * (1 - topFractions)}"
-						}
-					},
-					{
-						"name": "Overview",
-						"Notes": "<h3>Component Splitter</h3>This model simply apportions an array, presumably a <b>composition</b>, into a <b>top</b> and a <b>btm</b> array according to a supplied array of fractions <b>topFractions</b>.",
-						"DiagramX": 325,
-						"DiagramY": 215,
-						"HideInfo": "n",
-						"DiagramNotes": "n",
-						"HtmlNotes": "y",
-						"Type": "Expression",
-						"Formula": {
-							"Formula": ""
-						}
-					}
-				]
-			},
-			{
 				"name": "Compressor",
 				"Notes": "Basic compressor calculation.",
 				"DiagramX": 155,
-				"DiagramY": 220,
+				"DiagramY": 225,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
 				"HtmlNotes": "n",
@@ -1922,7 +1848,7 @@
 					{
 						"name": "Feed",
 						"DiagramX": 120,
-						"DiagramY": 140,
+						"DiagramY": 170,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1949,7 +1875,7 @@
 					{
 						"name": "OutletP",
 						"DiagramX": 120,
-						"DiagramY": 170,
+						"DiagramY": 200,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -1963,7 +1889,7 @@
 					{
 						"name": "Efficiency",
 						"DiagramX": 120,
-						"DiagramY": 195,
+						"DiagramY": 225,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2004,7 +1930,7 @@
 						"name": "OutFluid",
 						"Notes": "",
 						"DiagramX": 120,
-						"DiagramY": 265,
+						"DiagramY": 295,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2041,7 +1967,7 @@
 						"name": "IdealOut",
 						"Notes": "Ideal compression is isentropic",
 						"DiagramX": 120,
-						"DiagramY": 225,
+						"DiagramY": 255,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -2106,7 +2032,7 @@
 						"name": "polytropic",
 						"Notes": "",
 						"DiagramX": 120,
-						"DiagramY": 295,
+						"DiagramY": 325,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2312,8 +2238,8 @@
 					{
 						"name": "Overview",
 						"Notes": "<h3>Compressor</h3>This model represents a thermodynamic model of a <a href=\"https://en.wikipedia.org/wiki/Compressor\" target=\"_blank\">compressor</a>, although it can also stand in for a pump.\n\nThe input expressions are:\n\t<b>feed</b> - a flash result or similar representing the inlet fluid\n\t<b>outletP</b> - the outlet pressure to compress to.\n\t<b>efficiency</b> - the ideal power needed divided by the actual power needed\n\nThe outlet expressions are:\n\t<b>out</b> - the outlet fluid flash\n\t<b>power</b> - the power required for the compression\n\t<b>polyEff</b> - the calculated polytropic efficiency\n\nAn ideal compressor is first modeled by performing an isentropic flash using the outlet pressure and the feed entropy in tool <b>IdealOut</b>.\n\nThe efficiency, e, of an non-ideal compressor is taken to be:\n\n\t<b>e = (hIout - hin) / (hAout - hin)</b>\n\nwhere:\n\t<b>hin</b> is the enthalpy of the inlet fluid\n\t<b>hIOut</b> is the enthalpy of the outlet for the ideal (isentropic) process\n\t<b>hAout</b> is the enthalpy of the outlet for tne nonideal process\n\nThe desired efficiency is supplied in the input expression <b>Efficiency</b> so by rearranging, the expression <b>H</b> can calculate the nonideal outlet enthalpy, which is used with the outlet pressure to perform an isenthalpic flash in <b>OutFluid</b>.\n\nThe power required for the compressor can then be calculated in expression <b>Power</b> by multiplying the flow by the difference between the outlet fluid enthalpy and the inlet fluid enthalpy.",
-						"DiagramX": 240,
-						"DiagramY": 330,
+						"DiagramX": 120,
+						"DiagramY": 140,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -2328,7 +2254,7 @@
 				"name": "Expander",
 				"Notes": "Basic expander calculation.",
 				"DiagramX": 235,
-				"DiagramY": 220,
+				"DiagramY": 225,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
 				"HtmlNotes": "n",
@@ -2338,7 +2264,7 @@
 					{
 						"name": "Feed",
 						"DiagramX": 120,
-						"DiagramY": 145,
+						"DiagramY": 165,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2365,7 +2291,7 @@
 					{
 						"name": "OutletP",
 						"DiagramX": 120,
-						"DiagramY": 170,
+						"DiagramY": 190,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2379,7 +2305,7 @@
 					{
 						"name": "Efficiency",
 						"DiagramX": 120,
-						"DiagramY": 195,
+						"DiagramY": 215,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2420,7 +2346,7 @@
 						"name": "OutFluid",
 						"Notes": "",
 						"DiagramX": 120,
-						"DiagramY": 250,
+						"DiagramY": 270,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2457,7 +2383,7 @@
 						"name": "IdealOut",
 						"Notes": "Ideal expansion is isentropic",
 						"DiagramX": 120,
-						"DiagramY": 220,
+						"DiagramY": 240,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "n",
@@ -2522,7 +2448,7 @@
 						"name": "feedH",
 						"Notes": "",
 						"DiagramX": 120,
-						"DiagramY": 310,
+						"DiagramY": 330,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2535,7 +2461,7 @@
 						"name": "polytropic",
 						"Notes": "",
 						"DiagramX": 120,
-						"DiagramY": 280,
+						"DiagramY": 300,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2740,8 +2666,8 @@
 					{
 						"name": "Overview",
 						"Notes": "<h3>Expander Overview</h3>This model represents a thermodynamic model of an expander, which is a device that extracts work from the expansion of a fluid.  It is essentially a compressor in reverse.\n\nThe input expressions are:\n\n\t<b>feed</b> - a flash result or similar representing the inlet fluid</li>\n\t<b>outletP</b> - the outlet pressure that the fluid will be reduced to.\n\t<b>efficiency</b> - the actual power produced divided by the ideal power produced.\n\nThe outlet expressions are:\n\n\t<b>out</b> - the outlet fluid flash</li>\n\t<b>power</b> - the power produced by the expansion\n  \t<b>polyEff</b> - the calculated polytropic efficiency\n\nAn ideal expander is first modeled by performing an isentropic flash using the outlet pressure and the feed entropy in tool <b>IdealOut</b>.\n\nThe efficiency, e, of an non-ideal expander is taken to be:\n\n\t<b>e = (hAout - hin) / (hIout - hin)</b>\n\nwhere:\n\n\t<b>hin</b> is the enthalpy of the inlet fluid.\n\t<b>hIOut</b> is the enthalpy of the outlet for the ideal (isentropic) process.\n\t<b>hAout</b> is the enthalpy of the outlet for tne nonideal process.\n\nThe desired efficiency is supplied in the input expression <b>Efficiency</b> so by rearranging, the expression <b>H</b> can calculate the nonideal outlet enthalpy, which is used with the outlet pressure to perform an isenthalpic flash in <b>OutFluid</b>.\n\nThe power produced by the expander can then be calculated in expression <b>Power</b> by multiplying the flow by the difference between the inlet fluid enthalpy and the outlet fluid enthalpy.",
-						"DiagramX": 230,
-						"DiagramY": 320,
+						"DiagramX": 120,
+						"DiagramY": 135,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -2755,8 +2681,8 @@
 			{
 				"name": "Mix3",
 				"Notes": "Takes three flash results and produces thermo, p, f, h and x values for the combined fluid.",
-				"DiagramX": 235,
-				"DiagramY": 250,
+				"DiagramX": 315,
+				"DiagramY": 260,
 				"HideInfo": "n",
 				"DiagramNotes": "y",
 				"HtmlNotes": "n",
@@ -2766,7 +2692,7 @@
 					{
 						"name": "Feed1",
 						"DiagramX": 100,
-						"DiagramY": 55,
+						"DiagramY": 85,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2780,7 +2706,7 @@
 					{
 						"name": "Feed2",
 						"DiagramX": 100,
-						"DiagramY": 90,
+						"DiagramY": 120,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2847,7 +2773,7 @@
 						"name": "thermo",
 						"Notes": "",
 						"DiagramX": 100,
-						"DiagramY": 155,
+						"DiagramY": 185,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2860,7 +2786,7 @@
 						"name": "Feed3",
 						"Notes": "",
 						"DiagramX": 100,
-						"DiagramY": 125,
+						"DiagramY": 155,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -2874,8 +2800,8 @@
 					{
 						"name": "Overview",
 						"Notes": "<h3>Mix3 Overview</h3>From the mixing of three fluids this model calculates the properties required as <b>flash tool</b> inputs.\n\nThe input expressions are:\n\t<b>feed1</b> - a flash result or similar representing the inlet fluid. Must have thermo, pressure, flow and mole fraction properties.\n\t<b>feed2</b> - second feed with same requirements as feed1, except thermo is not used.\n\t<b>feed3</b> - third feed with same requirements as feed1, except thermo is not used.\n\nThe outlet expressions are:\n\t<b>thermo</b> - thermo definition copied from feed1.\n\t<b>p</b> - the outlet pressure, which is assumed to be the lessor of the two feed pressures.\n  \t<b>f</b> - the combined molar flow.\n  \t<b>h</b> - the mixture enthalpy.\n  \t<b>x</b> - the mixture mole fraction.",
-						"DiagramX": 200,
-						"DiagramY": 155,
+						"DiagramX": 100,
+						"DiagramY": 55,
 						"HideInfo": "n",
 						"DiagramNotes": "n",
 						"HtmlNotes": "y",
@@ -2888,9 +2814,9 @@
 			},
 			{
 				"name": "Overview",
-				"Notes": "<h3>Tool Box</h3>This model has a collection of models that might be useful when modelling fluid systems.  Just copy and paste them into your session as needed. Each model contains a brief description of how to use it.\n\nThe refrigeration model makes a pretty good introduction to doing flash calculations.",
-				"DiagramX": 230,
-				"DiagramY": 300,
+				"Notes": "<h3>Tool Box</h3>This model has a collection of models that might be useful when modelling fluid systems.  Just copy and paste them into your session as needed. Each model contains a brief description of how to use it.  While these can be useful as is, consider them as templates that can be adapted as necessary.\n\nThe refrigeration model makes a pretty good introduction to doing flash calculations.",
+				"DiagramX": 155,
+				"DiagramY": 190,
 				"HideInfo": "n",
 				"DiagramNotes": "n",
 				"HtmlNotes": "y",
@@ -2898,6 +2824,683 @@
 				"Formula": {
 					"Formula": ""
 				}
+			},
+			{
+				"name": "CmpSplitter",
+				"Notes": "Component Splitter",
+				"DiagramX": 315,
+				"DiagramY": 190,
+				"HideInfo": "n",
+				"DiagramNotes": "y",
+				"HtmlNotes": "n",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "topFractions",
+						"Notes": "",
+						"DiagramX": 235,
+						"DiagramY": 215,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{cc 1, 1, 1, .9, .8, .5, .4, .1, 0, 0,}"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "Composition",
+						"Notes": "",
+						"DiagramX": 235,
+						"DiagramY": 190,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{cc 70, 20, 10, 9, 8, 7, 6, 7, 4, 3}"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "top",
+						"Notes": "",
+						"DiagramX": 325,
+						"DiagramY": 160,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "composition * topFractions\n/\n{sum composition * topFractions}"
+						}
+					},
+					{
+						"name": "btm",
+						"Notes": "",
+						"DiagramX": 325,
+						"DiagramY": 190,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "composition * (1 - topFractions)\n/\n{sum composition * (1 - topFractions)}"
+						}
+					},
+					{
+						"name": "Overview",
+						"Notes": "<h3>Component Splitter</h3>This model simply apportions an array, presumably a <b>composition</b>, into a <b>top</b> and a <b>btm</b> array according to a supplied array of fractions <b>topFractions</b>.",
+						"DiagramX": 235,
+						"DiagramY": 160,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ""
+						}
+					}
+				]
+			},
+			{
+				"name": "Reactor",
+				"Notes": "A conversion extent reaction calculation.",
+				"DiagramX": 315,
+				"DiagramY": 225,
+				"HideInfo": "n",
+				"DiagramNotes": "y",
+				"HtmlNotes": "n",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "Feed",
+						"Notes": "Feed stream reference from upstream model",
+						"DiagramX": 100,
+						"DiagramY": 150,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ""
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "FeedFlash",
+						"Notes": "Equilibrium flash of the inlet reactor feed stream",
+						"DiagramX": 240,
+						"DiagramY": 115,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Flash",
+						"thermo": {
+							"Formula": "Feed.thermo"
+						},
+						"firstprop": {
+							"Formula": "feed.p"
+						},
+						"secondprop": {
+							"Formula": "feed.h"
+						},
+						"molefrac": {
+							"Formula": "feed.x"
+						},
+						"massfrac": {
+							"Formula": ""
+						},
+						"flow": {
+							"Formula": "feed.f"
+						},
+						"displayUnits": [],
+						"formatStrings": {
+							"t": ".2f",
+							"p": ".2f",
+							"f": ".2f",
+							"h": ".2f",
+							"s": ".2f",
+							"hflow": ".1f",
+							"dmolar": ".2f"
+						}
+					},
+					{
+						"name": "ReactOut",
+						"Notes": "Equilibrium flash of the product stream at outlet temperature and pressure",
+						"DiagramX": 240,
+						"DiagramY": 360,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Flash",
+						"thermo": {
+							"Formula": "FeedFlash.thermo"
+						},
+						"firstprop": {
+							"Formula": "outletT"
+						},
+						"secondprop": {
+							"Formula": "outletP"
+						},
+						"molefrac": {
+							"Formula": "minusCheck"
+						},
+						"massfrac": {
+							"Formula": ""
+						},
+						"flow": {
+							"Formula": "{sum minusCheck}"
+						},
+						"displayUnits": [],
+						"formatStrings": {
+							"t": ".2f",
+							"p": ".2f",
+							"f": ".2f",
+							"h": ".2f",
+							"s": ".2f",
+							"hflow": ".1f",
+							"dmolar": ".2f"
+						}
+					},
+					{
+						"name": "ReactCmpF",
+						"Notes": "Component molar flow rates exiting the reaction zone",
+						"DiagramX": 240,
+						"DiagramY": 285,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "feedFlows + {dot Stoichiometry, calcExtents}"
+						}
+					},
+					{
+						"name": "OutletP",
+						"Notes": "Reactor operating pressure",
+						"DiagramX": 100,
+						"DiagramY": 375,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "1 atm"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "OutletT",
+						"Notes": "Reactor operating temperature",
+						"DiagramX": 100,
+						"DiagramY": 345,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "25 degc"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "ReactorQ",
+						"Notes": "Reactor heat duty required to maintain isothermal operation",
+						"DiagramX": 240,
+						"DiagramY": 405,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "reactOut.hflow - feedFlash.hflow + {sum HeatRxn * calcExtents}"
+						},
+						"displayUnit": "kW"
+					},
+					{
+						"name": "minusCheck",
+						"Notes": "Checks for unphysical negative component flows and alerts if present",
+						"DiagramX": 240,
+						"DiagramY": 320,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if\n\t{lt {min ReactCmpF}, 0 kmol/h},\n\t{alert \"Negative reactant flow\n\" + {join {fmt \".4f\", ReactCmpF}, \"\n\"}},\n\tReactCmpF\n}"
+						}
+					},
+					{
+						"name": "nReactions",
+						"Notes": "Number of reactions",
+						"DiagramX": 100,
+						"DiagramY": 185,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "1"
+						},
+						"showInput": "y"
+					},
+					{
+						"name": "nCmp",
+						"Notes": "",
+						"DiagramX": 240,
+						"DiagramY": 175,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{nrows feed.x}"
+						}
+					},
+					{
+						"name": "FeedFlows",
+						"Notes": "",
+						"DiagramX": 240,
+						"DiagramY": 150,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "feed.x * feed.f"
+						}
+					},
+					{
+						"name": "Extents",
+						"Notes": "Target fractional conversion of the key components",
+						"DiagramX": 100,
+						"DiagramY": 310,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Matrix",
+						"columnUnits": [
+							"Fraction",
+							null
+						],
+						"columnFormats": [
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "0",
+							"1_1": ".75",
+							"2_1": ".1"
+						},
+						"rowCount": "nReactions",
+						"columnCount": "1"
+					},
+					{
+						"name": "KeyCmps",
+						"Notes": "Index of the key components for reaction extent (1-based)",
+						"DiagramX": 100,
+						"DiagramY": 275,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Matrix",
+						"columnUnits": [
+							"Fraction",
+							null
+						],
+						"columnFormats": [
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "0",
+							"1_1": "1",
+							"2_1": "3"
+						},
+						"rowCount": "nReactions",
+						"columnCount": "1"
+					},
+					{
+						"name": "A",
+						"Notes": "",
+						"DiagramX": 240,
+						"DiagramY": 200,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Matrix",
+						"columnUnits": [
+							"Fraction",
+							null
+						],
+						"columnFormats": [
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "{if {eq {row}, {col}}\n\t{abs stoichiometry[KeyCmps[{row}], {row}]},\n\t-Extents[{row}] * {max 0, stoichiometry[KeyCmps[{row}], {col}]}\n}"
+						},
+						"rowCount": "nReactions",
+						"columnCount": "nReactions"
+					},
+					{
+						"name": "b",
+						"Notes": "",
+						"DiagramX": 240,
+						"DiagramY": 225,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Matrix",
+						"columnUnits": [
+							"kmol/h",
+							null
+						],
+						"columnFormats": [
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "Extents[{row}] * FeedFlows[keycmps[{row}]]"
+						},
+						"rowCount": "nReactions",
+						"columnCount": "1"
+					},
+					{
+						"name": "Stoichiometry",
+						"Notes": "Reaction stoichiometric coefficients (reactants negative, products positive, inerts zero). Each rows are compounds and columns are reactions.",
+						"DiagramX": 100,
+						"DiagramY": 215,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Matrix",
+						"columnUnits": [
+							"Fraction",
+							null
+						],
+						"columnFormats": [
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "0",
+							"1_1": "-1",
+							"2_1": "1",
+							"3_1": "1",
+							"4_1": "-1",
+							"1_2": "1",
+							"3_2": "-2",
+							"5_2": "1"
+						},
+						"rowCount": "ncmp",
+						"columnCount": "nReactions"
+					},
+					{
+						"name": "calcExtents",
+						"Notes": "Molar conversion rate of key component",
+						"DiagramX": 240,
+						"DiagramY": 250,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{dot {invert A}, b}"
+						}
+					},
+					{
+						"name": "HeatRxn",
+						"Notes": "Standard heat of reactions (exothermic: negative)",
+						"DiagramX": 100,
+						"DiagramY": 405,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Matrix",
+						"columnUnits": [
+							"kJ/kmol",
+							null
+						],
+						"columnFormats": [
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "0 kj/kmol",
+							"2_1": "14.1 kj/mol"
+						},
+						"rowCount": "nReactions",
+						"columnCount": "1"
+					},
+					{
+						"name": "Overview",
+						"Notes": "This model calculates component molar flows and energy duty for simultaneous reactions based on fractional conversions.\n\nFeed component flows (FeedFlows) are determined from the inlet stream. Reaction extents (calcExtents) are solved simultaneously from the linear system A * xi = b using the reaction stoichiometry, key component indices, and target conversions (Extents).\n\nProduct component flows (ReactCmpF) are calculated as FeedFlows + Stoichiometry * calcExtents and verified for non-negative values with minusCheck. The product stream (ReactOut) is flashed at OutletT and OutletP, and the net reactor heat duty (ReactorQ) is calculated from the enthalpy difference between outlet and feed streams plus the standard heats of reaction (HeatRxn).\n\nNote that the solver will fail if any of the error values never changes, so changes will be needed for components that are always zero or otherwise don't change.",
+						"DiagramX": 100,
+						"DiagramY": 120,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ""
+						}
+					}
+				]
+			},
+			{
+				"name": "Recycle",
+				"Notes": "Calculates the component and energy recycle flows for both the gas and toluene recycles.",
+				"DiagramX": 155,
+				"DiagramY": 260,
+				"HideInfo": "y",
+				"DiagramNotes": "y",
+				"HtmlNotes": "n",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "CalcRecycle",
+						"Notes": "A reference to a Flash tool representing the recycle stream calculated using the Outlet flash in this model.",
+						"DiagramX": 100,
+						"DiagramY": 190,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ""
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "Estimate",
+						"Notes": "Estimate of the recycle stream - normally a reference to a Flash tool.",
+						"DiagramX": 100,
+						"DiagramY": 150,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ""
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "Error",
+						"Notes": "The calculated errors",
+						"DiagramX": 210,
+						"DiagramY": 240,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{cc\n\t(calcRecycle.f * calcRecycle.x - cmpFlows) / estimate.f,\n\t(calcRecycle.hflow - outlet.hflow) / estimate.hflow\n}"
+						}
+					},
+					{
+						"name": "Outlet",
+						"Notes": "The calculated estimate recycle stream to be used in calculating a new recycle stream.",
+						"DiagramX": 210,
+						"DiagramY": 275,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Flash",
+						"thermo": {
+							"Formula": "Estimate.thermo"
+						},
+						"firstprop": {
+							"Formula": "Estimate.p"
+						},
+						"secondprop": {
+							"Formula": "enthapy"
+						},
+						"molefrac": {
+							"Formula": "cmpFlows"
+						},
+						"massfrac": {
+							"Formula": ""
+						},
+						"flow": {
+							"Formula": "{sum cmpFlows}"
+						},
+						"displayUnits": [],
+						"formatStrings": {
+							"t": ".2f",
+							"p": ".2f",
+							"f": ".2f",
+							"h": ".2f",
+							"s": ".2f",
+							"hflow": ".1f",
+							"dmolar": ".2f"
+						}
+					},
+					{
+						"name": "Solver",
+						"Notes": "",
+						"DiagramX": 210,
+						"DiagramY": 145,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Equation Solver",
+						"f0": "error",
+						"c0": "2 * ncmp + 2 ' 2 cmp flows and 2 flows",
+						"maxIter": 200,
+						"maxJacobians": 5
+					},
+					{
+						"name": "CmpFlows",
+						"Notes": "The calculated component flows",
+						"DiagramX": 210,
+						"DiagramY": 170,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "solver.1[1:ncmp] * CmpFRange + estimate.f * estimate.x"
+						}
+					},
+					{
+						"name": "nCmp",
+						"Notes": "",
+						"DiagramX": 210,
+						"DiagramY": 120,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{nrows estimate.x}"
+						}
+					},
+					{
+						"name": "CmpFRange",
+						"Notes": "The calculated maximum variation of component flows",
+						"DiagramX": 100,
+						"DiagramY": 300,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "Estimate.x * estimate.f * estRange"
+						}
+					},
+					{
+						"name": "EstRange",
+						"Notes": "The largest fraction of the estimate component and energy flows that can be used in the Outlet flash.  It defaults to 0.5 and must be greater than 0 and less than 1.",
+						"DiagramX": 100,
+						"DiagramY": 240,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "0.5"
+						},
+						"isInput": "y",
+						"showInput": "y"
+					},
+					{
+						"name": "Overview",
+						"Notes": "This recycle model has been modified to also calculate the recycled toluene flow rate.  Column specifications make the toluene recycle composition essentially invariant.\n\nThis model performs a simple recycle operation. An outlet stream is created by varying the values of an estimated stream until they match those of a calculated stream.  The values that are adjusted are the component flow rates and energy flow. An input parameter adjusts how big an adjustment is possible as a fraction of the estimated values.  The default is 0.5.",
+						"DiagramX": 100,
+						"DiagramY": 120,
+						"HideInfo": "n",
+						"DiagramNotes": "n",
+						"HtmlNotes": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": ""
+						}
+					},
+					{
+						"name": "Enthapy",
+						"Notes": "The calculated enthalpy of the outlet",
+						"DiagramX": 210,
+						"DiagramY": 205,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "(solver.1[ncmp + 1] * estRange * estimate.hflow + estimate.hflow)\n/  Estimate.f"
+						}
+					}
+				]
 			}
 		]
 	}
