@@ -497,7 +497,7 @@ export class MMOde extends MMTool {
 	 * @override forgetCalculated
 	 */
 	forgetCalculated() {
-		if (!this.forgetRecursionBlockIsOn) {
+		if (!this.forgetRecursionBlockIsOn && !this.isSolving) {
 			if (this.shouldAutoRun) {
 				this.forgetStep();
 				this.cachedY = null;
@@ -696,7 +696,8 @@ export class MMOde extends MMTool {
 			}
 		}
 
-		if (!this.isSolved && !this.isSolving && this._shouldAutoRun) {
+		const isStepVar = ['t', 'y', 'y0', 'endt', 'nextt', 'reltol', 'abstol'].includes(lcDescription);
+		if (!isStepVar && !this.isSolved && !this.isSolving && this._shouldAutoRun) {
 			if (this.canRun()) {
 				this.resetRecordedValues();
 				// check if dy can be calculated

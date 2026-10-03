@@ -1407,8 +1407,13 @@ export const MMMath = {
 
 			calcFx(n, x, fx);   // perform whatever calculation there is
 			
+			let hasNaN = false;
 			let f = 0.0;
 			for (let i = 0; i < n; i++) {
+				if (isNaN(fx[i]) || !isFinite(fx[i])) {
+					hasNaN = true;
+					break;
+				}
 				f += fx[i] * fx[i];
 			}
 			f *= 0.5;
@@ -1416,11 +1421,14 @@ export const MMMath = {
 			if (alam < alamin) {  // convergence on delta x. For zero finding caller should verify convergence
 				return [true, f];
 			}
-			else if (f <= fold + alf * alam * slope) {
+			else if (!hasNaN && f <= fold + alf * alam * slope) {
 				return [false, f];   // sufficient function decrease
 			}
 			else {             // back track
-				if (alam == 1.0) {
+				if (hasNaN) {
+					tmplam = 0.5 * alam;
+				}
+				else if (alam == 1.0) {
 					tmplam = -slope / ( 2.0 * (f - fold - slope) );   // first time
 				}
 				else {       // subsequent back tracks

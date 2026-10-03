@@ -452,6 +452,9 @@ export class MMSolver extends MMTool {
 	 * @override forgetCalculated
 	 */
 	forgetCalculated() {
+		if (this.isRunning) {
+			return;
+		}
 		this.forgetStep();
 		if (this.isInError && this.isEnabled) {
 			this.isInError = false;
@@ -521,7 +524,9 @@ export class MMSolver extends MMTool {
 						return;
 					},
 					setStatus: (msg) => {
-						(/** @type {any} */ (this.processor)).statusCallBack(this.t(msg));
+						if (this.processor && typeof (/** @type {any} */ (this.processor)).statusCallBack === 'function') {
+							(/** @type {any} */ (this.processor)).statusCallBack(this.t(msg));
+						}
 					}
 				}, {maxIterations: maxIterations.values[0]});
 				if (!this.isInError) {
@@ -533,9 +538,10 @@ export class MMSolver extends MMTool {
 				let eqnNo = 0;
 				for (let i = 0; i < functionCount; i++) {
 					const func = this.functions[i];
-					const outputCount = func.outputs.length;
+					const outputs = this.getOutputs(i);
+					const outputCount = outputs.length;
 					for (let j = 0; j < outputCount; j++) {
-						x[eqnNo++] = func.outputs[j];
+						x[eqnNo++] = outputs[j];
 					}
 				}
 				
@@ -575,9 +581,6 @@ export class MMSolver extends MMTool {
 								}
 								for (let j = 0; j < arraySize && eqnNo < fxCount; j++, eqnNo++) {
 									fx[eqnNo] = value.values[ j ];
-									if (isNaN(fx[eqnNo])) {
-										throw(this.t('mmcmd:solverCalcFailure'), {path: this.getPath()});
-									}
 									// console.log(`fx${eqnNo} ${fx[eqnNo]}`);
 								}
 							}
@@ -594,7 +597,9 @@ export class MMSolver extends MMTool {
 						return;
 					},
 					setStatus: (msg) => {
-						(/** @type {any} */ (this.processor)).statusCallBack(this.t(msg));
+						if (this.processor && typeof (/** @type {any} */ (this.processor)).statusCallBack === 'function') {
+							(/** @type {any} */ (this.processor)).statusCallBack(this.t(msg));
+						}
 					}
 				},
 				{

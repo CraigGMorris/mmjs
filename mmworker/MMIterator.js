@@ -220,7 +220,7 @@ export class MMIterator extends MMTool {
 	 * @override forgetCalculated
 	 */
 	forgetCalculated() {
-		if (!this.forgetRecursionBlockIsOn) {
+		if (!this.forgetRecursionBlockIsOn && !this.isSolving) {
 			this.reset();
 			if (this.shouldAutoRun) {
 				this.isSolved = false;
@@ -332,7 +332,8 @@ export class MMIterator extends MMTool {
 			}
 		}
 
-		if (!this.isSolved && !this.isSolving && this.shouldAutoRun) {
+		const isStepVar = ['i', 'x', 'while', 'initx', 'nextx'].includes(lcDescription.split('.')[0]);
+		if (!isStepVar && !this.isSolved && !this.isSolving && this.shouldAutoRun) {
 			this.resetRecordedValues();
 			this.solve();
 		}

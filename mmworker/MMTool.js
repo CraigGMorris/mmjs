@@ -432,6 +432,30 @@ export class MMTool extends MMParent {
 	}
 
 	/**
+	 * @method hasActiveUpstreamTool
+	 * @param {Set<MMTool>} [visited]
+	 * @returns {boolean} true if any tool this tool depends on is currently running or solving
+	 */
+	hasActiveUpstreamTool(visited) {
+		if (!visited) {
+			visited = new Set([]);
+		}
+		if (visited.has(this)) {
+			return false;
+		}
+		visited.add(this);
+		for (const source of this.inputSources()) {
+			if (source.isRunning || source.isSolving) {
+				return true;
+			}
+			if (source.hasActiveUpstreamTool && source.hasActiveUpstreamTool(visited)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * @method formulaList
 	 * @returns {MMFormula[]} contains formulae contained by this tool and its children
 	 */
