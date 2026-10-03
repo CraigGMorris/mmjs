@@ -1072,6 +1072,9 @@ export class MMTableValue extends MMValue {
 						}
 					}
 				}
+				if (this.isTransposed) {
+					rv = rv.transpose();
+				}
 			}
 		}
 		return rv;
