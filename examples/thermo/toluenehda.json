@@ -1488,7 +1488,7 @@
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "{cc\n\t(calcRecycle.f * calcRecycle.x - cmpFlows) / estimate.f,\n\t(calcRecycle.hflow - outlet.hflow) / estimate.hflow,\n\t(tolRecycle.f * {tr tolRecycle.x} - tolFlows) / tolEstimate.f,\n\t(tolRecycle.hflow - tolOutlet.hflow) / tolEstimate.hflow\n}"
+							"Formula": "{cc\n\t(calcRecycle.f * calcRecycle.x - cmpFlows) / estimate.f,\n\t(calcRecycle.hflow - outlet.hflow) / estimate.hflow,\n\t(tolRecycle.f * tolRecycle.x - tolFlows) / tolEstimate.f,\n\t(tolRecycle.hflow - tolOutlet.hflow) / tolEstimate.hflow\n}"
 						}
 					},
 					{
@@ -1542,18 +1542,18 @@
 						"f0": "error",
 						"c0": "2 * ncmp + 2 ' 2 cmp flows and 2 flows",
 						"o0": [
-							0.7068869099411552,
-							1.4071036889422428,
-							0.5057040608783903,
-							14.665162625145186,
-							-0.6194303558598184,
-							-0.5039899927565421,
+							0.7068869099411512,
+							1.4071036889422521,
+							0.5057040608783907,
+							14.665162625145154,
+							-0.6194303558599197,
+							-0.5039899927565638,
 							-0.000003988020782340308,
 							-0.000003988020782340331,
-							0.19763882351817216,
-							0.10753193139108054,
-							-0.7494637691769545,
-							-0.06835931523987525
+							0.1976388235180812,
+							0.1075319313911062,
+							-0.7494637691836404,
+							-0.06835931523988406
 						],
 						"maxIter": 200,
 						"maxJacobians": 5,
