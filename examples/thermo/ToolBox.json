@@ -3413,7 +3413,7 @@
 						"HtmlNotes": "n",
 						"Type": "Equation Solver",
 						"f0": "error",
-						"c0": "2 * ncmp + 2 ' 2 cmp flows and 2 flows",
+						"c0": "ncmp + 1 ' cmp flows and hflow",
 						"maxIter": 200,
 						"maxJacobians": 5
 					},
