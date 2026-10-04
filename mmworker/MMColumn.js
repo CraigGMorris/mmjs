@@ -149,6 +149,8 @@ export class MMColumn extends MMTool {
 		this.isInError = false;
 		/** @type {boolean} */
 		this.isLoadingCase = false;
+		/** @type {boolean} */
+		this.solveAttempted = false;
 
 
 		// Thermodynamic objects
@@ -376,6 +378,7 @@ export class MMColumn extends MMTool {
 				this.forgetRecursionBlockIsOn = true;
 				this.isSolved = false;
 				this.isInError = false;
+				this.solveAttempted = false;
 				this.broydenWarmState = null;
 				this.lastErrorKey = null;
 				this.lastErrorArgs = null;
@@ -593,13 +596,7 @@ export class MMColumn extends MMTool {
 			const feedVal = /** @type {any} */ (feed.formula.value());
 			if (!feedVal) continue;
 
-			// Extract stream properties: t, p, f (flow in mol/s), h (J/mol), x (mole fractions)
 			let fFlow = 0.0;
-			let fP = 101325.0;
-			let fT = 298.15;
-			let fH = 0.0;
-			let fZ = new Float64Array(nComp);
-
 			const target = (feedVal instanceof MMToolValue && feedVal.valueCount > 0) ? feedVal.values[0] : feedVal;
 
 			if (target && typeof target.valueDescribedBy === 'function') {
@@ -609,6 +606,27 @@ export class MMColumn extends MMTool {
 				if (flowVal instanceof MMNumberValue && flowVal.valueCount > 0) {
 					fFlow = flowVal.values[0];
 				}
+			}
+
+			if (fFlow <= 0.0 && target && target.flowFormula) {
+				const fv = target.flowFormula.value();
+				if (fv instanceof MMNumberValue && fv.valueCount > 0) {
+					fFlow = fv.values[0];
+				}
+			}
+			if (fFlow <= 0.0 && feedVal instanceof MMNumberValue && feedVal.valueCount > 0) {
+				fFlow = feedVal.values[0];
+			}
+
+			if (fFlow <= 0.0) continue;
+
+			// Extract stream properties: t, p, h, x only for feeds with positive flow
+			let fP = 101325.0;
+			let fT = 298.15;
+			let fH = 0.0;
+			let fZ = new Float64Array(nComp);
+
+			if (target && typeof target.valueDescribedBy === 'function') {
 				let pVal = target.valueDescribedBy('p');
 				if (!pVal) pVal = target.valueDescribedBy('b.p');
 				if (pVal instanceof MMNumberValue && pVal.valueCount > 0) {
@@ -633,16 +651,6 @@ export class MMColumn extends MMTool {
 				}
 			}
 
-			if (fFlow <= 0.0 && target && target.flowFormula) {
-				const fv = target.flowFormula.value();
-				if (fv instanceof MMNumberValue && fv.valueCount > 0) {
-					fFlow = fv.values[0];
-				}
-			}
-			if (fFlow <= 0.0 && feedVal instanceof MMNumberValue && feedVal.valueCount > 0) {
-				fFlow = feedVal.values[0];
-			}
-
 			let sumZ = 0.0;
 			for (let i = 0; i < nComp; i++) sumZ += fZ[i];
 			if (sumZ <= 0.0 && target && target.moleFracFormula) {
@@ -663,7 +671,6 @@ export class MMColumn extends MMTool {
 				fZ.fill(1.0 / nComp);
 			}
 
-			if (fFlow <= 0.0) continue;
 			const stageIdx = Math.max(0, Math.min(N - 1, feed.stage - 1));
 			const stageP = this.P[stageIdx];
 
@@ -694,7 +701,6 @@ export class MMColumn extends MMTool {
 		}
 
 		if (totalFeedFlow <= 0.0) {
-			this.setError('thermo:columnNoFeedsError', { path: this.getPath() });
 			return false;
 		}
 
@@ -1568,6 +1574,7 @@ export class MMColumn extends MMTool {
 	solve() {
 		if (this.isSolving) return;
 		this.isSolving = true;
+		this.solveAttempted = true;
 		this.isInError = false;
 		this.lastErrorKey = null;
 		this.lastErrorArgs = null;
@@ -1576,7 +1583,9 @@ export class MMColumn extends MMTool {
 			// Cold or warm initialization
 			if (!this.isSolved) {
 				if (!this.initScratch()) {
-					this.isInError = true;
+					if (this.lastErrorKey) {
+						this.isInError = true;
+					}
 					return;
 				}
 			}
@@ -1750,7 +1759,7 @@ export class MMColumn extends MMTool {
 		}
 
 		// Auto-trigger solve on query if not solved
-		if (!this.isSolved && !this.isSolving) {
+		if (!this.isSolved && !this.isSolving && !this.solveAttempted && !this.isInError) {
 			this.solve();
 		}
 
@@ -2327,6 +2336,7 @@ export class MMColumn extends MMTool {
 			delete d.ratio;
 		}
 		this.isInError = false;
+		this.solveAttempted = false;
 		this.lastErrorKey = null;
 		this.lastErrorArgs = null;
 		command.results = 'reset done';
@@ -2337,6 +2347,7 @@ export class MMColumn extends MMTool {
 	 * @param {MMCommand} command
 	 */
 	solveCommand(command) {
+		this.solveAttempted = false;
 		this.solve();
 		command.results = this.isSolved ? 'converged' : 'failed';
 	}
@@ -2640,7 +2651,7 @@ export class MMColumn extends MMTool {
 		if (requestor) {
 			this.addRequestor(requestor);
 		}
-		if (!this.isSolved && !this.isSolving) {
+		if (!this.isSolved && !this.isSolving && !this.solveAttempted && !this.isInError) {
 			this.solve();
 		}
 		if (!this.isSolved) {
