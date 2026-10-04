@@ -24868,7 +24868,7 @@
 							{
 								"name": "Recycle",
 								"Notes": "Calculates the component and energy recycle flows for both the gas and toluene recycles.",
-								"DiagramX": 155,
+								"DiagramX": 160,
 								"DiagramY": 260,
 								"HideInfo": "y",
 								"DiagramNotes": "y",
@@ -24969,7 +24969,7 @@
 										"HtmlNotes": "n",
 										"Type": "Equation Solver",
 										"f0": "error",
-										"c0": "2 * ncmp + 2 ' 2 cmp flows and 2 flows",
+										"c0": "ncmp + 1 ' cmp flows and hflow",
 										"maxIter": 200,
 										"maxJacobians": 5
 									},

@@ -328,7 +328,7 @@ export class MMSession extends MMParent {
 		this.savedStorageVersionId = '(storageVersion)';
 		this.aiKey = '(aiKey)';
 		this.aiModel = '(aiModel)'
-		this.lastNews = '20261003';
+		this.lastNews = '20261004';
 		this.newSession();
 	}
 
