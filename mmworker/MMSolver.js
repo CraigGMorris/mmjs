@@ -606,7 +606,8 @@ export class MMSolver extends MMTool {
 					maxIterations: maxIterations.values[0],
 					maxJacobians: maxJacobians.values[0],
 					varNames: varNames,
-					eqnNames: eqnNames
+					eqnNames: eqnNames,
+					fTolerance: 1e-8
 				});
 				if (!this.isInError) {
 					this.isConverged = true;
