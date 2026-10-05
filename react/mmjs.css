@@ -747,6 +747,7 @@ a:hover {
 }
 
 .formula-input-field {
+	position: relative;
 	display: grid;
 	grid-template-columns: 20px minmax(0, 1fr) 20px;
 	grid-template-rows: 1fr;
@@ -761,6 +762,55 @@ a:hover {
 .formula-input-field input {
 	min-width: 0;
 	grid-area: formula-display;
+}
+
+.formula-field__autocomplete {
+	position: absolute;
+	top: 100%;
+	left: 20px;
+	right: 20px;
+	z-index: 1000;
+	max-height: 180px;
+	overflow-y: auto;
+	background-color: var(--input--bgcolor);
+	color: var(--body--color);
+	border: 1px solid var(--border--color);
+	border-radius: 4px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+	cursor: pointer;
+	box-sizing: border-box;
+}
+
+.formula-field__autocomplete--func-desc {
+	padding: 6px;
+	cursor: default;
+	color: var(--body--color);
+}
+
+.formula-field__autocomplete-item {
+	padding: 4px 8px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-family: monospace;
+	font-size: 13px;
+	color: var(--link--color);
+}
+
+.formula-field__autocomplete-item:hover,
+.formula-field__autocomplete-item--selected {
+	background-color: var(--selected__list--bgcolor);
+	color: var(--link--color-hover);
+}
+
+.formula-func-name {
+	cursor: pointer;
+	text-decoration: underline;
+	color: var(--link--color);
+}
+
+.formula-func-name:hover {
+	color: var(--link--color-hover);
 }
 
 #column__tabs::-webkit-scrollbar {

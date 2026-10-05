@@ -84,16 +84,304 @@ const replaceSmartQuotes = (f) => {
 }
 
 /**
+ * @param {string} targetValue
+ * @param {number} selStart
+ * @param {string} value
+ * @returns {{ newFormula: string, newSelection: number }}
+ */
+function calculateInsertedParam(targetValue, selStart, value) {
+	if (!value || value.length === 0) {
+		return { newFormula: targetValue, newSelection: selStart };
+	}
+	if (value.startsWith('{')) {
+		let braceIndex = -1;
+		for (let i = selStart - 1; i >= 0; i--) {
+			if (targetValue[i] === '{') {
+				braceIndex = i;
+				break;
+			}
+			if (targetValue[i] === '}' || targetValue[i] === '\n') {
+				break;
+			}
+		}
+		if (braceIndex >= 0) {
+			const parts = [
+				targetValue.substring(0, braceIndex),
+				value,
+				targetValue.substring(selStart)
+			];
+			const newFormula = parts.join('');
+			let newSelection = parts[0].length + 1;
+			while (newSelection < newFormula.length && /[\w]/.test(newFormula[newSelection])) {
+				newSelection++;
+			}
+			if (newSelection < newFormula.length && newFormula[newSelection] === ' ') {
+				newSelection++;
+			}
+			return { newFormula, newSelection };
+		}
+	}
+	let selectionStart = selStart;
+	const selectionEnd = Math.max(selectionStart - 1, 0);
+	const parts = ['', '', ''];
+	if (selectionStart !== 0) {
+		while (selectionStart >= 0) {
+			const prevChar = targetValue[--selectionStart];
+			if (!prevChar || prevChar.match(/[ \t\n+*:%.(/\-^[{}]/)) {
+				if (prevChar === '{' && selectionStart >= 0) {
+					selectionStart--;
+				}
+				break;
+			}
+		}
+		parts[0] = targetValue.substring(0, selectionEnd + 1);
+		parts[1] = value.substring(selectionEnd - selectionStart);
+		parts[2] = targetValue.substring(selectionEnd + 1);
+	}
+	else {
+		parts[1] = value;
+		parts[2] = targetValue;
+	}
+
+	const newFormula = parts.join('');
+	const newSelection = parts[0].length + parts[1].length;
+	return { newFormula, newSelection };
+}
+
+/**
+ * @param {string[] | null} previewParam
+ * @returns {string | null}
+ */
+function getFunctionFromPreview(previewParam) {
+	if (!previewParam || !previewParam.length) {
+		return null;
+	}
+	if (typeof previewParam[0] === 'string' && previewParam[0].startsWith('<')) {
+		const match = previewParam[0].match(/<b[^>]*>(.*?)<\/b>/);
+		if (match) {
+			return match[1];
+		}
+	}
+	return null;
+}
+
+/**
+ * @param {string[] | null} list
+ * @param {string} [prefix]
+ * @returns {string[] | null}
+ */
+function sortCompletions(list, prefix = '') {
+	if (!list || list.length <= 1 || list[0].startsWith('<')) {
+		return list;
+	}
+	const pLower = prefix.toLowerCase();
+	return [...list].sort((a, b) => {
+		const aExact = a === prefix;
+		const bExact = b === prefix;
+		if (aExact !== bExact) {
+			return aExact ? -1 : 1;
+		}
+		const aExactCi = a.toLowerCase() === pLower;
+		const bExactCi = b.toLowerCase() === pLower;
+		if (aExactCi !== bExactCi) {
+			return aExactCi ? -1 : 1;
+		}
+		if (a.length !== b.length) {
+			return a.length - b.length;
+		}
+		return a.localeCompare(b);
+	});
+}
+
+/**
+ * @param {string} targetValue
+ * @param {number} selStart
+ * @param {number} selEnd
+ * @param {any} actions
+ * @param {string} nameSpace
+ * @param {(results: string[] | null) => void} callback
+ */
+function fetchFormulaCompletions(targetValue, selStart, selEnd, actions, nameSpace, callback) {
+	if (targetValue === undefined || targetValue === null || (targetValue.length && targetValue[0] === "'") || selStart !== selEnd) {
+		callback(null);
+		return;
+	}
+
+	const currentChar = targetValue[selStart - 1];
+
+	// see if in conversion unit
+	if (targetValue.length) {
+		const unitRegex = /[\w^/-]+/;
+		let selTemp = selStart - 1;
+		while (selTemp >= 0 && targetValue[selTemp].match(unitRegex)) {
+			selTemp--;
+		}
+		if (selTemp >= 0 && targetValue[selTemp] === ' ') {
+			selTemp--;
+			if (selTemp >= 0 && targetValue[selTemp].match(/[\d.]/)) {
+				// probably in unit
+				let selTemp2 = selStart - 1;
+				while (selTemp2 >= 0 && targetValue[selTemp2].match(/[\w]/)) {
+					selTemp2--;
+				}
+				const prefix = targetValue.substring(selTemp2 + 1, selStart);
+				if (actions) {
+					actions.doCommand('/unitsys.units list', (/** @type {any} */ results) => {
+						if (results && results.length && results[0].results) {
+							const units = results[0].results;
+							let eligible = [];
+							if (prefix) {
+								for (const unit of units) {
+									if (unit.toLowerCase().startsWith(prefix.toLowerCase())) {
+										eligible.push(unit);
+									}
+								}
+							}
+							else {
+								eligible = units;
+							}
+							if (eligible.length) {
+								callback(sortCompletions(eligible, prefix));
+								return;
+							}
+						}
+						callback(null);
+					});
+				}
+				else {
+					callback(null);
+				}
+				return;
+			}
+		}
+	}
+
+	if (currentChar === '?') {
+		// maybe looking for function description
+		let selTemp = selStart - 2;
+		while (selTemp >= 0 && targetValue[selTemp].match(/[\s\w]/)) {
+			selTemp--;
+		}
+		if (selTemp >= 0 && targetValue[selTemp] === '{') {
+			// is function
+			const fName = targetValue.substring(selTemp + 1, selStart - 1).trim().toLowerCase();
+			const data = functionPickerData();
+			// search for name
+			const re = new RegExp(`^\\{${fName}[ }]`);
+			for (const header of data.sections) {
+				for (const func of header.functions) {
+					if (func.f.match(re)) {
+						callback([`<p><b class="formula-func-name" title="Click to insert">${func.f}</b></p>${func.desc}`]);
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	const makeParamPreview = (/** @type {string} */ path, /** @type {string} */ start) => {
+		if (nameSpace && actions) {
+			actions.doCommand(`${nameSpace}.${path} parampreview ${path}:${start}`, (/** @type {any} */ results) => {
+				if (results && results.length && results[0].results) {
+					const eligible = JSON.parse(results[0].results);
+					if (eligible.length) {
+						callback(sortCompletions(eligible, start));
+						return;
+					}
+				}
+				callback(null);
+			});
+		}
+		else {
+			callback(null);
+		}
+	};
+
+	if (currentChar && currentChar.match(/[,+*:%(/\-^[]/)) {
+		// operator or paren or bracket etc - show all
+		makeParamPreview('', '');
+		return;
+	}
+
+	let curPos = selStart;
+	const pathChars = [];
+	const pathRegex = /[\w.]/;
+	while (curPos-- > 0) {
+		const char = targetValue[curPos];
+		if (char.match(pathRegex)) {
+			pathChars.push(char);
+		}
+		else {
+			break;
+		}
+	}
+	const originalCurPos = curPos;
+	while (curPos >= 0 && targetValue[curPos].match(/\s/)) {
+		curPos--;
+	}
+	if (curPos < originalCurPos) {
+		// check to see if in function. if so restore a whitespace
+		let fCheck = curPos;
+		while (fCheck >= 0 && targetValue[fCheck].match(/\w/)) {
+			fCheck--;
+		}
+		if (fCheck >= 0 && targetValue[fCheck] === '{') {
+			curPos++;
+		}
+	}
+
+	const prevChar = curPos >= 0 ? targetValue[curPos] : '';
+	const pathTokens = pathChars.reverse().join('').split('.');
+	const start = (/** @type {string} */ (pathTokens.pop())).toLowerCase();
+	const path = pathTokens.join('.');
+
+	// ensure the path is preceded by appropriate operator
+	if (prevChar === '{') {
+		const data = functionPickerData();
+		const prefix = '{' + start;
+		const functions = new Set();
+		for (const header of data.sections) {
+			for (const func of header.functions) {
+				if (func.f.startsWith(prefix)) {
+					functions.add(func.f);
+				}
+			}
+		}
+		if (functions.size) {
+			callback(sortCompletions(Array.from(functions), prefix));
+		}
+		else {
+			callback(null);
+		}
+		return;
+	}
+
+	if (prevChar && !prevChar.match(/[,\s+*:%(/\-^[]/)) {
+		callback(null);
+		return;
+	}
+
+	makeParamPreview(path, start);
+}
+
+/**
  * @param {FormulaFieldProps} props
  */
 export function FormulaField(props) {
 	const [formula, setFormula] = useState(/** @type {string} */ (props.formula !== undefined ? props.formula : props.viewInfo.formula));
 	const [initialFormula, setInitialFormula] = useState('');
-	const [nameSpace, setNameSpace] = useState('');
+	const initialModelPath = props.viewInfo?.updateResults?.[0]?.results?.modelPath || '';
+	const [nameSpace, setNameSpace] = useState(initialModelPath);
+	const [previewParam, setPreviewParam] = useState(/** @type {any} */ (null));
+	const [selectedIndex, setSelectedIndex] = useState(-1);
+	const [selection, setSelection] = useState(/** @type {[number, number] | null} */ (null));
+	const [eventHitCount, setEventHitCount] = useState(0);
+	const [isFocused, setIsFocused] = useState(false);
 
 	const isExpression = props.viewInfo.viewKey === 'Expression';
-	const pFormula = props.formula
+	const pFormula = props.formula;
 	const pViewInfo = props.viewInfo;
+	const pActions = props.actions ? props.actions : (/** @type {any} */ (pViewInfo))?.actions;
 	const pApplyChanges = props.applyChanges ? props.applyChanges : props.viewInfo.applyChanges;
 
 	useEffect(() => {
@@ -113,24 +401,31 @@ export function FormulaField(props) {
 	}, [pFormula, pViewInfo]);
 
 	useEffect(() => {
-		const results = props.viewInfo.updateResults[0]
+		const results = props.viewInfo?.updateResults?.[0];
 		if (results && results.results) {
 			const modelPath = results.results.modelPath;
-			setNameSpace(modelPath);
+			if (modelPath && modelPath !== nameSpace) {
+				setNameSpace(modelPath);
+			}
 		}
-		
-	}, [props.viewInfo.updateResults]);
+	}, [props.viewInfo?.updateResults, nameSpace]);
+
+	useEffect(() => {
+		if (selection && fieldInputRef.current) {
+			fieldInputRef.current.setSelectionRange(selection[0], selection[1]);
+		}
+	}, [selection]);
 
 	/** @type {React.MutableRefObject<any>} */
 	const latestFormula = React.useRef(null);
-  useEffect(() => {
-    latestFormula.current = formula;
-  }, [formula]);
+	useEffect(() => {
+		latestFormula.current = formula;
+	}, [formula]);
 	/** @type {React.MutableRefObject<any>} */
 	const latestInitial = React.useRef(null);
-  useEffect(() => {
-    latestInitial.current = initialFormula;
-  }, [initialFormula]);
+	useEffect(() => {
+		latestInitial.current = initialFormula;
+	}, [initialFormula]);
 
 	const isSwitchingToEditor = React.useRef(false);
 	useEffect(() => {
@@ -145,13 +440,39 @@ export function FormulaField(props) {
 	/** @type {React.MutableRefObject<any>} */
 	const fieldInputRef = React.useRef(null);
 
+	const fieldQueryIdRef = React.useRef(0);
+	useEffect(() => {
+		if (!isFocused || !fieldInputRef.current || document.activeElement !== fieldInputRef.current) {
+			setPreviewParam(null);
+			setSelectedIndex(-1);
+			return;
+		}
+		const target = fieldInputRef.current;
+		const selStart = target.selectionStart;
+		const selEnd = target.selectionEnd;
+		const queryId = ++fieldQueryIdRef.current;
+		fetchFormulaCompletions(formula, selStart, selEnd, pActions, nameSpace, (results) => {
+			if (queryId === fieldQueryIdRef.current && fieldInputRef.current && document.activeElement === fieldInputRef.current) {
+				setPreviewParam(results);
+				setSelectedIndex(results && results.length && !results[0].startsWith('<') ? 0 : -1);
+			}
+		});
+	}, [isFocused, eventHitCount, formula, nameSpace, pActions]);
+
+	/** @type {React.MutableRefObject<any>} */
+	const appliedFormula = React.useRef(props.formula);
+	useEffect(() => {
+		appliedFormula.current = props.formula;
+	}, [props.formula]);
+
 	/** @param {string} formula */
 	const applyChanges = (formula) => {
 		formula = replaceSmartQuotes(formula);
-		if (formula !== initialFormula) { // only apply if changed
+		if (formula !== appliedFormula.current) { // only apply if changed
+			appliedFormula.current = formula;
 			pApplyChanges(formula);
 		}
-	}
+	};
 
 	/** @type {{ formula: string, initialFormula: string, nameSpace: string, selectionStart?: number, selectionEnd?: number }} */
 	const editOptions = {
@@ -160,12 +481,91 @@ export function FormulaField(props) {
 		nameSpace: nameSpace,
 	};
 
+	/** @param {string} value */
+	const insertParam = (value) => {
+		if (!value || value.length === 0 || !fieldInputRef.current) {
+			return;
+		}
+		const { newFormula, newSelection } = calculateInsertedParam(
+			fieldInputRef.current.value,
+			fieldInputRef.current.selectionStart,
+			value
+		);
+		setFormula(newFormula);
+		setSelection([newSelection, newSelection]);
+		if (!value.endsWith('.')) {
+			setPreviewParam(null);
+			setSelectedIndex(-1);
+		}
+		else {
+			setEventHitCount((c) => c + 1);
+		}
+		fieldInputRef.current.focus();
+	};
+
 	let showEditor = false;
+
+	let autocompleteCmp = null;
+	if (isFocused && previewParam && previewParam.length > 0) {
+		if (previewParam[0].startsWith('<')) {
+			const funcToInsert = getFunctionFromPreview(previewParam);
+			autocompleteCmp = e(
+				'div', {
+					className: 'formula-field__autocomplete formula-field__autocomplete--func-desc',
+					onMouseDown: (/** @type {any} */ e) => e.preventDefault(),
+					onClick: (/** @type {any} */ e) => {
+						if (funcToInsert) {
+							const b = e.target.closest('b') || e.target.closest('.formula-func-name');
+							if (b || (e.target.tagName === 'P' && e.target.querySelector('b'))) {
+								e.stopPropagation();
+								insertParam(funcToInsert);
+							}
+						}
+					},
+					dangerouslySetInnerHTML: { __html: previewParam[0] }
+				}
+			);
+		}
+		else {
+			const items = previewParam.map((/** @type {string} */ p, /** @type {number} */ idx) => {
+				const isSelected = idx === selectedIndex;
+				return e(
+					'div', {
+						key: p,
+						className: 'formula-field__autocomplete-item' + (isSelected ? ' formula-field__autocomplete-item--selected' : ''),
+						onMouseDown: (/** @type {any} */ e) => e.preventDefault(),
+						onClick: (/** @type {any} */ e) => {
+							e.stopPropagation();
+							insertParam(p);
+						},
+						onMouseEnter: () => {
+							setSelectedIndex(idx);
+						},
+						ref: (/** @type {any} */ el) => {
+							if (isSelected && el) {
+								el.scrollIntoView({ block: 'nearest' });
+							}
+						}
+					},
+					p
+				);
+			});
+			autocompleteCmp = e(
+				'div', {
+					className: 'formula-field__autocomplete',
+					onMouseDown: (/** @type {any} */ e) => e.preventDefault(),
+				},
+				items
+			);
+		}
+	}
+
 	return e(
 		'div', {
 			className: 'formula-input-field',
 			onBlur: () => {
-				applyChanges(formula);
+				const currentVal = fieldInputRef.current ? fieldInputRef.current.value : formula;
+				applyChanges(currentVal);
 			},
 			tabIndex: -1,
 			onClick: (/** @type {any} */ event) => {
@@ -180,15 +580,34 @@ export function FormulaField(props) {
 				ref: fieldInputRef,
 				value: formula,
 				onChange: (/** @type {any} */ event) => {
-					// keeps input field in sync
 					setFormula(event.target.value);
+					setEventHitCount((c) => c + 1);
+				},
+				onClick: () => {
+					setEventHitCount((c) => c + 1);
 				},
 				onKeyDown: (/** @type {any} */ e) => {
-					if (e.code == 'Enter') {
-						if (e.shiftKey ) {
+					if (e.code === 'ArrowDown') {
+						if (previewParam && previewParam.length && !previewParam[0].startsWith('<')) {
+							e.preventDefault();
+							setSelectedIndex((prev) => (prev + 1) % previewParam.length);
+							return;
+						}
+					}
+					else if (e.code === 'ArrowUp') {
+						if (previewParam && previewParam.length && !previewParam[0].startsWith('<')) {
+							e.preventDefault();
+							setSelectedIndex((prev) => (prev - 1 + previewParam.length) % previewParam.length);
+							return;
+						}
+					}
+					else if (e.code === 'Enter') {
+						if (e.shiftKey) {
 							// watches for Shift Enter and sends command when it see it
 							e.preventDefault();
 							e.stopPropagation();
+							setPreviewParam(null);
+							setSelectedIndex(-1);
 							let selStart = e.target.selectionStart;
 							editOptions.selectionStart = Math.max(0, selStart);
 							let selEnd = fieldInputRef.current.selectionEnd;
@@ -200,23 +619,79 @@ export function FormulaField(props) {
 							return;
 						}
 						else {
-							// watches for Enter and applys changes when it see it
 							e.preventDefault();
-							// just blur and let the onBlur catch it
-							fieldInputRef.current.blur();
+							let finalFormula = fieldInputRef.current ? fieldInputRef.current.value : formula;
+							const funcToInsert = getFunctionFromPreview(previewParam);
+							if (previewParam && previewParam.length) {
+								let toInsert = null;
+								if (selectedIndex >= 0 && !previewParam[0].startsWith('<')) {
+									toInsert = previewParam[selectedIndex];
+								}
+								else if (funcToInsert) {
+									toInsert = funcToInsert;
+								}
+								if (toInsert) {
+									const { newFormula } = calculateInsertedParam(
+										fieldInputRef.current.value,
+										fieldInputRef.current.selectionStart,
+										toInsert
+									);
+									finalFormula = newFormula;
+									setFormula(newFormula);
+									fieldInputRef.current.value = newFormula;
+								}
+							}
+							setPreviewParam(null);
+							setSelectedIndex(-1);
+							applyChanges(finalFormula);
+							if (fieldInputRef.current) {
+								fieldInputRef.current.blur();
+							}
 							if (e.ctrlKey) {
 								if (props.ctrlEnterAction) {
-									e.preventDefault();
 									e.stopPropagation();
-										props.ctrlEnterAction();
+									props.ctrlEnterAction();
 								}
 							}
 							return;
 						}
 					}
+					else if (e.code === 'Tab') {
+						const funcToInsert = getFunctionFromPreview(previewParam);
+						if (previewParam && previewParam.length) {
+							if (selectedIndex >= 0 && !previewParam[0].startsWith('<')) {
+								e.preventDefault();
+								insertParam(previewParam[selectedIndex]);
+								return;
+							}
+							else if (funcToInsert) {
+								e.preventDefault();
+								insertParam(funcToInsert);
+								return;
+							}
+						}
+					}
+					else if (e.code === 'Period' && previewParam && previewParam.length && selectedIndex >= 0 && !previewParam[0].startsWith('<')) {
+						e.preventDefault();
+						insertParam(previewParam[selectedIndex] + '.');
+						return;
+					}
+					else if (e.code === 'Escape') {
+						if (previewParam) {
+							e.preventDefault();
+							e.stopPropagation();
+							setPreviewParam(null);
+							setSelectedIndex(-1);
+							return;
+						}
+					}
+					else if (e.code.startsWith('Arrow')) {
+						setEventHitCount((c) => c + 1);
+					}
 				},
 
 				onFocus: (/** @type {any} */ e) => {
+					setIsFocused(true);
 					if (!showEditor) {
 						// focus not from clicking in field
 						if (formula?.length > 100 || formula?.includes('\n')) {
@@ -226,11 +701,17 @@ export function FormulaField(props) {
 							}
 						}
 						else {
+							setEventHitCount((c) => c + 1);
 							if (props.gotFocusAction) {
 								props.gotFocusAction();
 							}
 						}
 					}
+				},
+				onBlur: () => {
+					setIsFocused(false);
+					setPreviewParam(null);
+					setSelectedIndex(-1);
 				},
 				onPointerDown: () => {
 					if (props.editAction && (formula?.length > 100 || formula?.includes('\n'))) {
@@ -244,7 +725,7 @@ export function FormulaField(props) {
 						// we need to switch to editor because of pointer click
 						// get the selection start so it is maintained in editor
 						let selStart = Math.max(0, fieldInputRef.current.selectionStart);
-						let newLineCount = 0
+						let newLineCount = 0;
 						for (let i = 0; i < selStart; i++) {
 							if (formula[i] === '\n') {
 								newLineCount++;
@@ -254,7 +735,7 @@ export function FormulaField(props) {
 						props.editAction(editOptions);
 					}
 				}
-			},
+			}
 		),
 		e(
 			'div', {
@@ -284,7 +765,8 @@ export function FormulaField(props) {
 				},
 			},
 			'⤢'			
-		)
+		),
+		autocompleteCmp
 	);
 }
 
@@ -529,167 +1011,22 @@ export function FormulaEditor(props) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selection]);
 
-	const makeParamPreview = React.useCallback((path, start='') => {
-		if (pEditOptions.nameSpace) {
-			pActions.doCommand(`${pEditOptions.nameSpace}.${path} parampreview ${path}:${start}`, (results) => {
-				if (results.length && results[0].results) {
-					const eligible = JSON.parse(results[0].results);
-					if (eligible.length) {
-						setPreviewParam(eligible);
-						return;
-					}
-				}
-				setPreviewParam(null);
-			});
-		}
-	}, [pActions, pEditOptions]);
-
-	const makeUnitPreview = React.useCallback((prefix) => {
-		pActions.doCommand('/unitsys.units list', (results) => {
-			if (results.length && results[0].results) {
-				const units = results[0].results;
-				let eligible = [];
-				if (prefix) {
-					for (const unit of units) {
-						if (unit.toLowerCase().startsWith(prefix.toLowerCase())) {
-							eligible.push(unit);
-						}
-					}
-				}
-				else {
-					eligible = units;
-				}
-				if (eligible.length) {
-					setPreviewParam(eligible);
-					return;
-				}
-			}
-			setPreviewParam(null);
-		});	
-	},[pActions]);
-
-	const makeFunctionPreview = (/** @type {string} */ start) => {
-		const data = functionPickerData();
-		const prefix = '{' + start;
-		const functions = new Set();
-		for (const header of data.sections) {
-			for (const func of header.functions) {
-				if (func.f.startsWith(prefix)) {
-					functions.add(func.f);
-				}
-			}
-		}
-		if (functions.size) {
-			setPreviewParam(Array.from(functions).sort());
-		}
-		else {
-			setPreviewParam(null);
-		}
-	}
-
+	const editorQueryIdRef = React.useRef(0);
 	useEffect(() => {
 		const target = editInputRef.current;
+		if (!target) {
+			return;
+		}
 		let selStart = target.selectionStart;
-		const targetValue = target.value;
-		// check that it isn't all string and there is no selection
-		if ((targetValue.length && targetValue[0] === "'") || selStart !== target.selectionEnd) {
-			setPreviewParam(null);
-			return;
-		}
+		let selEnd = target.selectionEnd;
+		const queryId = ++editorQueryIdRef.current;
+		fetchFormulaCompletions(target.value, selStart, selEnd, pActions, pEditOptions.nameSpace, (results) => {
+			if (queryId === editorQueryIdRef.current) {
+				setPreviewParam(results);
+			}
+		});
+	}, [eventHitCount, formula, pActions, pEditOptions.nameSpace]);
 
-		const currentChar = targetValue[selStart-1];
-
-		// see if in conversion unit
-		if (targetValue.length) {
-			const unitRegex = /[\w^/-]+/;
-			let selTemp = selStart - 1;
-			while (selTemp >= 0 && targetValue[selTemp].match(unitRegex)) {
-				selTemp--;
-			}
-			if (selTemp >= 0 && targetValue[selTemp] === ' ') {
-				selTemp--;
-				if (selTemp >= 0 && targetValue[selTemp].match(/[\d.]/)) {
-					// probably in unit
-					let selTemp = selStart - 1;
-					while (selTemp >= 0 && targetValue[selTemp].match(/[\w]/)) {
-						selTemp--;
-					}
-							const prefix = targetValue.substring(selTemp+1, selStart);
-					makeUnitPreview(prefix);
-					return;
-				}
-			}
-		}
-		
-		if (currentChar === '?') {
-			// maybe looking for function description
-			let selTemp = selStart - 2;
-			while(selTemp >= 0 && targetValue[selTemp].match(/[\s\w]/)) {
-				selTemp--;
-			}
-			if (selTemp >= 0 && targetValue[selTemp] === '{') {
-				// is function
-				const fName = targetValue.substring(selTemp + 1, selStart - 2).trim().toLowerCase();
-				const data = functionPickerData();
-				// search for name
-				const re = new RegExp(`^\\{${fName}[ }]`);
-				for (const header of data.sections) {
-					for (const func of header.functions) {
-						if (func.f.match(re)) {
-							setPreviewParam([`<p><b>${func.f}</b></p>${func.desc}`]);
-							return;
-						}
-					}
-				}
-			}
-		}
-		if (currentChar && currentChar.match(/[,+*:%(/\-^[]/)) {
-			// operator or paren or bracket etc - show all
-			makeParamPreview('','');
-			return;
-		}
-		
-		const pathChars = [];
-		const pathRegex = /[\w.]/;
-		while (selStart-- > 0) {
-			const char = targetValue[selStart];
-			if (char.match(pathRegex)) {
-				pathChars.push(char);
-			}
-			else {
-				break;
-			}
-		}
-		const originalSelStart = selStart;
-		while (selStart >= 0 && targetValue[selStart].match(/\s/)) {
-			selStart--;
-		}
-		if (selStart < originalSelStart) {
-			// check to see if in function. if so restore a whitespace
-			let fCheck = selStart;
-			while (fCheck >= 0 && targetValue[fCheck].match(/\w/)) {
-				fCheck--;
-			}
-			if (fCheck >= 0 && targetValue[fCheck] === '{') {
-				selStart++; 
-			}
-		}
-
-		const prevChar = selStart >= 0 ? targetValue[selStart] : '';
-		const pathTokens = pathChars.reverse().join('').split('.');
-		const start = (/** @type {string} */ (pathTokens.pop())).toLowerCase();
-		const path = pathTokens.join('.');
-		// ensure the path is preceded by appropriate operator
-		if (prevChar === '{') {
-			makeFunctionPreview(start);
-			return;
-		}
-		if (prevChar && !prevChar.match(/[,\s+*:%(/\-^[]/)) {
-			setPreviewParam(null);
-			return;
-		}
-		makeParamPreview(path, start);
-	},[eventHitCount, formula, makeParamPreview, makeUnitPreview]);
 
 	/** @param {string} formula */
 	const applyChanges = (formula) => {
@@ -748,7 +1085,9 @@ export function FormulaEditor(props) {
 
 	const onFocusHandler = (/** @type {any} */ event) => {
 		if (!event.target.value.length) {
-			makeParamPreview('','');
+			fetchFormulaCompletions('', 0, 0, pActions, pEditOptions.nameSpace, (results) => {
+				setPreviewParam(results);
+			});
 		}
 	}
 
@@ -784,6 +1123,12 @@ export function FormulaEditor(props) {
 				return;
 			}
 			else {
+				const funcToInsert = getFunctionFromPreview(previewParam);
+				if (funcToInsert) {
+					event.preventDefault();
+					insertParam(funcToInsert);
+					return;
+				}
 				const selStart = event.target.selectionStart;
 				const selEnd = event.target.selectionEnd;
 				if (selStart === selEnd) {
@@ -836,8 +1181,16 @@ export function FormulaEditor(props) {
 			if (selStart === selEnd) {
 				// These single character operations are undoable
 				if (!event.shiftKey) {
-					if (previewParam && previewParam.length && selStart > 0 && text[selStart-1].match(/[{\w]/)) {
+					const funcToInsert = getFunctionFromPreview(previewParam);
+					if (funcToInsert) {
+						event.preventDefault();
+						insertParam(funcToInsert);
+						return;
+					}
+					else if (previewParam && previewParam.length && selStart > 0 && text[selStart-1].match(/[{\w]/)) {
 						insertParam(previewParam[0]);
+						event.preventDefault();
+						return;
 					}
 					else {
 						const insertPoint = selStart
@@ -906,10 +1259,20 @@ export function FormulaEditor(props) {
 	let previewComponent;
 	if (previewParam) {
 		if (previewParam[0].startsWith('<')) {
+			const funcToInsert = getFunctionFromPreview(previewParam);
 			// function description
 			previewComponent = e(
 				'div', {
 					id: 'formula-editor__preview-func-desc',
+					onClick: (/** @type {any} */ e) => {
+						if (funcToInsert) {
+							const b = e.target.closest('b') || e.target.closest('.formula-func-name');
+							if (b || (e.target.tagName === 'P' && e.target.querySelector('b'))) {
+								e.stopPropagation();
+								insertParam(funcToInsert);
+							}
+						}
+					},
 					dangerouslySetInnerHTML: {__html: previewParam[0]}
 				}
 			)
@@ -1137,47 +1500,18 @@ export function FormulaEditor(props) {
 
 	/** @param {string} value */
 	const insertParam = (value) => {
-		if (!value || value.length === 0) {
+		if (!value || value.length === 0 || !editInputRef.current) {
 			return;
 		}
-		const targetValue = editInputRef.current.value;
-		let selectionStart = editInputRef.current.selectionStart;
-		const selectionEnd = Math.max(selectionStart - 1, 0);
-		const parts = ['','',''];
-		if (selectionStart !== 0) {
-			while (selectionStart >= 0) {
-				const prevChar = targetValue[--selectionStart];
-				if (!prevChar || prevChar.match(/[ \t\n+*:%.(/\-^[{}]/)) {
-					if (prevChar === '{' && selectionStart >= 0) {
-						selectionStart--;
-					}
-					break;
-				}			
-			}
-			parts[0] = targetValue.substring(0, selectionEnd + 1);
-			parts[1] = value.substring(selectionEnd - selectionStart);
-			parts[2] = targetValue.substring(selectionEnd + 1);
-		}
-		else {
-			parts[1] = value;
-			parts[2] = targetValue;
-		}
-
-		const newFormula = parts.join('');
+		const { newFormula, newSelection } = calculateInsertedParam(
+			editInputRef.current.value,
+			editInputRef.current.selectionStart,
+			value
+		);
 		editInputRef.current.focus();
 		setFormula(newFormula);
-		let newSelection
-		if (value.startsWith('{')) {
-			// function - set before first argument
-			newSelection = parts[0].length;
-			while(newFormula[newSelection].match(/\w/)) { newSelection++; }
-			newSelection++;
-		}
-		else {
-			// parameter
-			newSelection = parts[0].length + parts[1].length;
-		}
 		setSelection([newSelection, newSelection]);
+		setPreviewParam(null);
 	}
 
 

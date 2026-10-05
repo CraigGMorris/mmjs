@@ -4,3 +4,6 @@ downloads
 MMIcon2.pxd
 node_modules
 NodeStaticServer.js
+GEMINI.md
+.DS_Store
+.gitignore
