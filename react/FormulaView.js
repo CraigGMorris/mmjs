@@ -442,7 +442,7 @@ export function FormulaField(props) {
 
 	const fieldQueryIdRef = React.useRef(0);
 	useEffect(() => {
-		if (!isFocused || !fieldInputRef.current || document.activeElement !== fieldInputRef.current) {
+		if (!isFocused || !fieldInputRef.current || document.activeElement !== fieldInputRef.current || !formula || formula.trim().length === 0) {
 			setPreviewParam(null);
 			setSelectedIndex(-1);
 			return;
@@ -506,7 +506,7 @@ export function FormulaField(props) {
 	let showEditor = false;
 
 	let autocompleteCmp = null;
-	if (isFocused && previewParam && previewParam.length > 0) {
+	if (isFocused && formula && formula.trim().length > 0 && previewParam && previewParam.length > 0) {
 		if (previewParam[0].startsWith('<')) {
 			const funcToInsert = getFunctionFromPreview(previewParam);
 			autocompleteCmp = e(
