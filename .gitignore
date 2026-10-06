@@ -6,4 +6,5 @@ node_modules
 NodeStaticServer.js
 GEMINI.md
 .DS_Store
-.gitignore
+.gemini
+.tmp
