@@ -287,7 +287,7 @@ export class MMTool extends MMParent {
 		const [path, start] = command.args.split(':');
 				
 		command.results = '';
-		const list = this.parameters();
+		const list = (/** @type {any} */ (this)).parametersForPath ? (/** @type {any} */ (this)).parametersForPath(path) : this.parameters();
 		if (path.length === 0) {
 			// this is owner of formula
 			list.shift(); list.shift(); // remove html and notes

@@ -167,7 +167,7 @@ class MMFlashPhaseValue extends MMValue {
 	 * @returns {string[]}
 	 */
 	parameters() {
-		return this.flash.parameters();
+		return this.flash.phaseParameters(this.phase);
 	}
 
 	/**
@@ -491,10 +491,13 @@ class MMFlash extends MMTool {
 	 * @method parameters
 	 */
 	/**
-	 * @override
+	 * @param {string} [path]
 	 * @returns {string[]}
 	 */
-	parameters() {
+	parameters(path) {
+		if (path) {
+			return this.parametersForPath(path);
+		}
 		let p = super.parameters();
 		if (!MMFlashPropertyDefinitions) {
 			MMFlash.createPropertyDefinitions();
@@ -508,6 +511,8 @@ class MMFlash extends MMTool {
 		p.push('fluids');
 		p.push('f');
 		p.push('massf');
+		p.push('hflow');
+		p.push('phaseFraction');
 		p.push('x');
 		p.push('massx');
 		p.push('xt');
@@ -517,6 +522,68 @@ class MMFlash extends MMTool {
 			p.push(propName);
 		}
 		return p;
+	}
+
+	/**
+	 * @method phaseParameters
+	 * @param {string} [phase]
+	 * @returns {string[]}
+	 */
+	// eslint-disable-next-line no-unused-vars
+	phaseParameters(phase) {
+		if (!MMFlashPropertyDefinitions) {
+			MMFlash.createPropertyDefinitions();
+		}
+		const p = [
+			'f', 'massf', 'hflow', 'phaseFraction',
+			'x', 'massx', 'xt', 'massxt',
+			'fugacities', 'thermo', 'fluids'
+		];
+		for (const propName of Object.keys(MMFlashPropertyDefinitions)) {
+			p.push(propName);
+		}
+		if (this.additionalProperties && this.additionalProperties.length > 0) {
+			for (const prop of this.additionalProperties) {
+				if (!p.includes(prop)) {
+					p.push(prop);
+				}
+			}
+		}
+		return p;
+	}
+
+	/**
+	 * @method parametersForPath
+	 * @param {string} path
+	 * @returns {string[]}
+	 */
+	parametersForPath(path) {
+		if (!path || path.trim().length === 0) {
+			return this.parameters();
+		}
+		const parts = path.split('.');
+		const first = parts[0].toLowerCase();
+		if (first === 'b' || first === 'v' || first === 'l' || first === 'l2') {
+			if (parts.length === 1) {
+				return this.phaseParameters(first);
+			}
+			if (parts.length === 2 && (parts[1].toLowerCase() === 'xt' || parts[1].toLowerCase() === 'massxt')) {
+				if (!this.componentNames) {
+					this.initThermo();
+				}
+				return this.componentNames ? this.componentNames.slice() : [];
+			}
+		}
+		else if (first === 'xt' || first === 'massxt') {
+			if (!this.componentNames) {
+				this.initThermo();
+			}
+			return this.componentNames ? this.componentNames.slice() : [];
+		}
+		else if (first === 'envelope' && parts.length === 1) {
+			return ['t', 'p'];
+		}
+		return [];
 	}
 
 	/**
@@ -834,6 +901,11 @@ class MMFlash extends MMTool {
 				const resultPhase = this.flashResults[phase];
 				if (resultPhase) {
 					let prop = resultPhase[/** @type {string} */ (property)];
+					if (!prop && (property === 'phasefraction' || property === 'phaseFraction')) {
+						if (resultPhase.phaseFraction !== undefined) {
+							prop = MMNumberValue.scalarValue(resultPhase.phaseFraction);
+						}
+					}
 					if (!prop && (property === 'f' || property === 'massf' || property === 'hflow')) {
 						this.calculateFlows();
 						prop = resultPhase[/** @type {string} */ (property)];

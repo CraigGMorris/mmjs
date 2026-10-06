@@ -281,7 +281,11 @@ function fetchFormulaCompletions(targetValue, selStart, selEnd, actions, nameSpa
 
 	const makeParamPreview = (/** @type {string} */ path, /** @type {string} */ start) => {
 		if (nameSpace && actions) {
-			actions.doCommand(`${nameSpace}.${path} parampreview ${path}:${start}`, (/** @type {any} */ results) => {
+			const pathTokens = path ? path.split('.') : [];
+			const toolName = pathTokens[0] || '';
+			const subPath = pathTokens.slice(1).join('.');
+			const target = toolName ? `${nameSpace}.${toolName}` : `${nameSpace}.`;
+			actions.doCommand(`${target} parampreview ${subPath}:${start}`, (/** @type {any} */ results) => {
 				if (results && results.length && results[0].results) {
 					const eligible = JSON.parse(results[0].results);
 					if (eligible.length) {

@@ -225,6 +225,28 @@ export class MMModel extends MMTool {
 		return p;
 	}
 
+	/**
+	 * @override
+	 * @method parameterPreview
+	 * @param {MMCommand} command
+	 * @returns {void}
+	 */
+	parameterPreview(command) {
+		const [path, start] = command.args.split(':');
+		if (path && path.length > 0) {
+			const parts = path.split('.');
+			const toolName = parts[0];
+			const child = this.childNamed(toolName);
+			if (child && child instanceof MMTool) {
+				const subPath = parts.slice(1).join('.');
+				command.args = `${subPath}:${start}`;
+				child.parameterPreview(command);
+				return;
+			}
+		}
+		super.parameterPreview(command);
+	}
+
 	/** @method addToolCommand
 	 * creates new Tool with supplied type and name
 	 * @param {MMCommand} command
