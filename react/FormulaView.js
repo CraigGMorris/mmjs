@@ -625,26 +625,6 @@ export function FormulaField(props) {
 						else {
 							e.preventDefault();
 							let finalFormula = fieldInputRef.current ? fieldInputRef.current.value : formula;
-							const funcToInsert = getFunctionFromPreview(previewParam);
-							if (previewParam && previewParam.length) {
-								let toInsert = null;
-								if (selectedIndex >= 0 && !previewParam[0].startsWith('<')) {
-									toInsert = previewParam[selectedIndex];
-								}
-								else if (funcToInsert) {
-									toInsert = funcToInsert;
-								}
-								if (toInsert) {
-									const { newFormula } = calculateInsertedParam(
-										fieldInputRef.current.value,
-										fieldInputRef.current.selectionStart,
-										toInsert
-									);
-									finalFormula = newFormula;
-									setFormula(newFormula);
-									fieldInputRef.current.value = newFormula;
-								}
-							}
 							setPreviewParam(null);
 							setSelectedIndex(-1);
 							applyChanges(finalFormula);
