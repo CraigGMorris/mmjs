@@ -3296,7 +3296,7 @@
 					},
 					{
 						"name": "Overview",
-						"Notes": "This model calculates component molar flows and energy duty for simultaneous reactions based on fractional conversions.\n\nFeed component flows (FeedFlows) are determined from the inlet stream. Reaction extents (calcExtents) are solved simultaneously from the linear system A * xi = b using the reaction stoichiometry, key component indices, and target conversions (Extents).\n\nProduct component flows (ReactCmpF) are calculated as FeedFlows + Stoichiometry * calcExtents and verified for non-negative values with minusCheck. The product stream (ReactOut) is flashed at OutletT and OutletP, and the net reactor heat duty (ReactorQ) is calculated from the enthalpy difference between outlet and feed streams plus the standard heats of reaction (HeatRxn).\n\nNote that the solver will fail if any of the error values never changes, so changes will be needed for components that are always zero or otherwise don't change.",
+						"Notes": "This model calculates component molar flows and energy duty for simultaneous reactions based on fractional conversions.\n\nFeed component flows (FeedFlows) are determined from the inlet stream. Reaction extents (calcExtents) are solved simultaneously from the linear system A * xi = b using the reaction stoichiometry, key component indices, and target conversions (Extents).\n\nProduct component flows (ReactCmpF) are calculated as FeedFlows + Stoichiometry * calcExtents and verified for non-negative values with minusCheck. The product stream (ReactOut) is flashed at OutletT and OutletP, and the net reactor heat duty (ReactorQ) is calculated from the enthalpy difference between outlet and feed streams plus the standard heats of reaction (HeatRxn).",
 						"DiagramX": 100,
 						"DiagramY": 120,
 						"HideInfo": "n",
@@ -3475,7 +3475,7 @@
 					},
 					{
 						"name": "Overview",
-						"Notes": "This recycle model has been modified to also calculate the recycled toluene flow rate.  Column specifications make the toluene recycle composition essentially invariant.\n\nThis model performs a simple recycle operation. An outlet stream is created by varying the values of an estimated stream until they match those of a calculated stream.  The values that are adjusted are the component flow rates and energy flow. An input parameter adjusts how big an adjustment is possible as a fraction of the estimated values.  The default is 0.5.",
+						"Notes": "This recycle model has been modified to also calculate the recycled toluene flow rate.  Column specifications make the toluene recycle composition essentially invariant.\n\nThis model performs a simple recycle operation. An outlet stream is created by varying the values of an estimated stream until they match those of a calculated stream.  The values that are adjusted are the component flow rates and energy flow. An input parameter adjusts how big an adjustment is possible as a fraction of the estimated values.  The default is 0.5.\n\nNote that the solver will fail if any of the compositions are invariant, such as always being zero. In such cases modifications will be necessary.",
 						"DiagramX": 100,
 						"DiagramY": 120,
 						"HideInfo": "n",
