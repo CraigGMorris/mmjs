@@ -274,12 +274,10 @@ export class MMSolver extends MMTool {
 	 * @param {boolean} newState
 	 */
 	setEnabled(newState) {
-		if (this._isEnabled !== newState) {
-			this._isEnabled = newState;
-			if (!this.isLoadingCase && newState && !this.isConverged) {
-				this.isInError = false;
-				this.solve();
-			}
+		this._isEnabled = newState;
+		if (!this.isLoadingCase && newState && !this.isConverged) {
+			this.isInError = false;
+			this.solve();
 		}
 	}
 
@@ -458,8 +456,12 @@ export class MMSolver extends MMTool {
 		this.forgetStep();
 		if (this.isInError && this.isEnabled) {
 			this.isInError = false;
-			this.resetOutputs();
-			this.setEnabled(true);
+			const nFunctions = this.functions.length;
+			for (let i = 0; i < nFunctions; i++) {
+				const func = this.functions[i];
+				func.outputs = [0];
+				this.getOutputs(i);
+			}
 		}
 		else {
 			this.isInError = false;

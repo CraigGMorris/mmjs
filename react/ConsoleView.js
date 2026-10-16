@@ -280,11 +280,12 @@ export function ConsoleView(props) {
 				cmd,
 				(/** @type {any} */ result) => {
 					// Only resolve with result if there was no error
-					if (!result?.error) {
+					const err = result?.error || result?.[0]?.error;
+					if (!err) {
 						resolve(result);
 					}
 					else {
-						reject(result.error);
+						reject(err);
 					}
 				},
 				(/** @type {any} */ error) => {
@@ -391,6 +392,7 @@ export function ConsoleView(props) {
 			const body = {
 				model: aiValues.model,
 				temperature: 0.2,
+				response_format: { type: "json_object" },
 				messages: aiValues.messages
 			};
 
@@ -413,18 +415,17 @@ export function ConsoleView(props) {
 					aiValues.resetCount++;
 					updateOutput(t('react:consoleRateLimitExceeded'));	
 					aiValues.messages = [];
-					await doCommandPromise('. dgmInfo', async (/** @type {any} */ result) => {
-						let dgminfo = result?.[0].results;
-						try {
-							dgminfo = JSON.stringify(dgminfo, null, 2);
-						}
-						catch (err) {
-							updateOutput(t('react:consoleFailedToStringify'));
-							return;
-						}
-						const resetPrompt = `Rate limit reset\nCurrent model dgminfo:\n${dgminfo}`;
-						await aiChat.sendPrompt(resetPrompt);
-					});
+					const result = await doCommandPromise('. dgmInfo');
+					let dgminfo = result?.[0]?.results;
+					try {
+						dgminfo = JSON.stringify(dgminfo, null, 2);
+					}
+					catch (err) {
+						updateOutput(t('react:consoleFailedToStringify'));
+						return;
+					}
+					const resetPrompt = `Rate limit reset\nCurrent model dgminfo:\n${dgminfo}`;
+					return await aiChat.sendPrompt(resetPrompt);
 				}
 				else {
 					updateOutput(t('react:consoleResetLimitExceeded'));
@@ -435,13 +436,20 @@ export function ConsoleView(props) {
 			if(isMounted.current) { setInputPlaceholder(t('react:consoleReadPlaceHolder')); }
 			const raw = data?.choices?.[0]?.message?.content;
 			if (!raw) {
+				if (data?.choices?.[0]?.native_finish_reason === 'MALFORMED_FUNCTION_CALL' && aiValues.retryCount < 2) {
+					aiValues.retryCount++;
+					aiValues.messages.pop();
+					return await aiChat.sendPrompt(
+						`${promptText}\n\nIMPORTANT: Do NOT invoke native tool calls, function calls, or code execution. Respond ONLY with a plain text JSON object containing "comments" and "commands".`
+					);
+				}
 				console.log(`aiChat: no assistant output ${JSON.stringify(data)}`);
 				updateOutput(t('react:consoleNoAssistantOutput', { msg: JSON.stringify(data) }));
 				return;
 			}
 			aiValues.messages.push({ role: "assistant", content: raw });
 			// Remove code block formatting
-			const clean = raw.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+			const clean = raw.replace(/^```(?:json)?\s*/i, "").replace(/```$/, "").trim();
 	
 			try {
 				let parsed = JSON.parse(clean);
@@ -479,8 +487,9 @@ export function ConsoleView(props) {
 						result = await performCommand(cmd)
 						updateOutput(t('react:consoleQueryResult', { cmd:cmd, result: JSON.stringify(result) }));
 					} catch(/** @type {any} */ error) {
-						updateOutput(t('react:consoleErrorInQuery', { cmd:cmd, error: error.message }));
-						result = { error: error.message };
+						const errMsg = (typeof error === 'string') ? error : (error?.message || JSON.stringify(error));
+						updateOutput(t('react:consoleErrorInQuery', { cmd:cmd, error: errMsg }));
+						result = { error: errMsg, message: errMsg };
 					}
 					if (!result?.error) {
 						results[cmd] = result;
@@ -534,8 +543,12 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 			pushOutput(t('react:consoleUserPrompt', { prompt: userPrompt }));
 			try {
 				aiValues.retryCount = 0;
-				const pathPrompt = t('You are currently in model ', { path: props.viewInfo.path });
+				const pathPrompt = t('react:consoleCurrentModelPath', { path: props.viewInfo.path });
 				const parsed = await aiChat.sendPrompt(pathPrompt + userPrompt);
+				if (!parsed) {
+					failureCallback(t('react:consoleCommandFailed'));
+					return;
+				}
 				if (parsed.commands) {
 					try {
 						const result = await aiChat.executeCommands(parsed.commands, userPrompt);
@@ -607,8 +620,9 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 	
 				try {
 					const result = await performCommand(cmd);
-					if (result.error) {
-						return await cmdError(result);
+					const cmdErr = result?.error || result?.[0]?.error;
+					if (cmdErr) {
+						return await cmdError(cmdErr);
 					}
 	
 					if (result.v) {
@@ -620,11 +634,10 @@ Please suggest a corrected version. Respond ONLY with a JSON array of valid MM q
 							updateOutput(t('react:consoleCmdSuccessJson', { cmd:cmd, output: JSON.stringify(output) }))
 						}
 					}
-					const runNextResult = await runNext();
-					return runNextResult;
 				} catch(error) {
-					return cmdError(error);
+					return await cmdError(error);
 				}
+				return await runNext();
 			};
 
 			const result = await runNext();

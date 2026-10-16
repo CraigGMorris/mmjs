@@ -20,6 +20,7 @@
 	"consoleCommandFailed": "Command failed",
 	"consoleCommandResult": "=> {{result}}",
 	"consoleComments": "Comments:",
+	"consoleCurrentModelPath": "You are currently in model {{path}}\n",
 	"consoleErrorInCmd": "❌ Error in: {{cmd}}\n{{message}}",
 	"consoleErrorInExecuteCommands": "❌ Error in executeCommands",
 	"consoleErrorInQuery": "❌ Error in query: {{cmd}}\n{{error}}",

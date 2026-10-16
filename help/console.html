@@ -25,12 +25,12 @@
 			<div id="overview" class="section">
 				<h3>Overview</h3>
 				<p>
-					The console is a text-based interface for interacting with Math Minion. It has two modes selected by the
-					button at the bottom of the information view:
+					The console is a text-based interface for interacting with Math Minion. It is opened and closed by the
+					button at the bottom of the information view and has two modes selected by the dropdown menu at the bottom left of the console:
 					<ul>
 						<li>
 							Console: This is a text-based interface for interacting with Math Minion by means of the commands the Math Minion user interface uses
-							communicate with the Math Minion calculation engine.  Most users will never use this mode.
+							to communicate with the Math Minion calculation engine.  Most users will never use this mode.
 						</li>
 						<li>AI: This is an experimental chat interface using the OpenAI completion API.  By
 							default the Open Router service is used, but other providers support this API including of course OpenAI.
@@ -59,7 +59,7 @@
 					Use the up and down arrow keys to navigate the history of commands.
 				</p>
 				<p>
-					Each input creates a new page of output.  You can use the <b>Shift-Up</b> and <b>Shift-`Down</b> arrow keys to navigate between pages.
+					Each input creates a new page of output.  You can use the <b>Shift-Up</b> and <b>Shift-Down</b> arrow keys to navigate between pages.
 				</p>
 				<p>
 					You can also use the <b>Read Command File</b> button to read a file of commands.
@@ -83,7 +83,7 @@
 				<h3>Console Mode</h3>
 				<p>
 					When in console mode, the commands you enter are sent directly to the calculation
-					process and and the results it returns are displayed in the text area above. For example:
+					process and the results it returns are displayed in the text area above. For example:
 				</p>
 				<p class="formula">
 					.Records get notes
@@ -134,18 +134,18 @@
 					but you only need to add a few dollars to your account and $10 will go a long way depending on your model choice.
 				</p>
 				<p>
-					You can obtain an Open Router API key from <a href="https://openrouter.ai">https://openrouter.ai</a>. Once you have the key, you
-					will have to enter it into the console using the <b>aikey</b> command. Note this is using the Console view, not the AI view
+					You can obtain an Open Router API key from <a href="https://openrouter.ai">https://openrouter.ai</a>. Once you have the key,
+					switch the dropdown at the bottom left of the console from <b>AI</b> to <b>Console</b> and enter it using the <b>aikey</b> command:
 				</p>
 				<p class="formula">
 					/ aikey &lt;your api key&gt; [optional completion url]
 				</p>
 				<p>
-					The completion url is only needed if you are not using Open Router. If omited, it will default to https://openrouter.ai/api/v1/chat/completions.
+					The completion url is only needed if you are not using Open Router. If omitted, it will default to https://openrouter.ai/api/v1/chat/completions.
 				</p>
 				<p>
 					By default the latest Google Gemini Flash model is used. 
-					To change the model, use the aimodel command:
+					To change the model, use the aimodel command in Console mode:
 				</p>
 				<p class="formula">
 					/ aimodel &lt;model name&gt;
@@ -171,7 +171,7 @@
 					refresh the browser. Refreshing will also clear the saved conversation and start fresh.
 				</p>
 				<p>
-					The assistant's instructions includes all functions and formula syntax and how to
+					The assistant's instructions include all functions and formula syntax and how to
 					create and manipulate all Math Minion tools, with the exception of the imported model tools.
 				</p>
 				<p>

@@ -12,7 +12,9 @@ Note: Each user prompt will begin by telling you the path of the current model. 
 
 # Response Formats and Execution Rules
 
-You must respond with a **strict JSON object** in one of two distinct modes:
+You must respond with a **strict JSON object** in your plain text message content in one of two distinct modes.
+- ❌ Do **NOT** invoke native `tool_calls`, function calls, or built-in Python/code execution tools. No native tools are declared in the API; emitting a native function call will cause an immediate `MALFORMED_FUNCTION_CALL` error.
+- ✅ Let Math Minion's calculation tools (`Expression`, `Flash`, `Solver`, etc.) perform all numerical, thermodynamic, and recycle-loop calculations via `commands` rather than attempting to run external code during reasoning.
 
 ---
 
@@ -50,6 +52,7 @@ I will execute these inspection commands and return:
     - `. dgminfo`
     - `. list` / `.toolName list`
     - `.toolName toolviewinfo`
+    - `.toolName value <paramName>` (with a space before `<paramName>`)
     - `.toolName.childFormulaName value`
     - `/ aiquery <topic>`
 
@@ -65,8 +68,10 @@ usageNote: |
 		Example: .optimizer toolviewinfo
 		Example: .feed toolviewinfo
 	CRITICAL INSPECTION RULE:
-	- Always run `.toolName list` or `.toolName toolviewinfo` to discover the exact names of a tool's children before querying them with `value`.
-	- The `value` verb applies ONLY to child `MMFormula` objects (e.g. `.feed.thermoFormula value`), NEVER directly to tool parameter names (e.g. `.feed.thermo value` fails because `thermo` is a parameter, not a child object; the child object is `thermoFormula`).
+	- To inspect a tool's calculated parameter (such as `f`, `t`, `p`, `x` on a Flash tool, or `f1`, `1` on a Solver), either run `.toolName toolviewinfo` OR pass the parameter name as an argument to `value` with a **space**:
+		- ✅ Correct: `.VaporPhase value f` or `.RecycleSolver value f1`
+		- ❌ Incorrect: `.VaporPhase.f value` or `.RecycleSolver.f1 value` (parameters are NOT child objects)
+	- Dot notation before `value` (`.toolName.childFormulaName value`) applies ONLY to child `MMFormula` objects (e.g. `.feed.thermoFormula value`, `.RecycleSolver.formula_1 value`).
 
 # Errors
 
@@ -96,7 +101,7 @@ usageNote: |
 
 		I will run these commands and send their responses to you as:
 		{
-			"queryResponse": { "/ aiquery iterator": {"iterator": "<iterator instructions>", "database": "<database instructions>"} }
+			"queryResponse": { "/ aiquery iterator database": {"iterator": "<iterator instructions>", "database": "<database instructions>"} }
 		}
 
 
@@ -586,7 +591,7 @@ usageNote: |
 						
 						- **Any other content**  
 							→ The content will be interpreted as a string and assigned to the formula of a new `MMExpression` tool
-			usageMote:
+			usageNote:
 				When adding tools to a model, only use a maximum of three columns, with x coordinates of 100, 200 and 300.
 				Tools are represented by rectangles that are 60 units wide and 20 units high.
 				Connections are drawn from a corner of the source to the middle of the vertical side of the target tool as a splined curve.
@@ -835,13 +840,16 @@ desc: >
 		usageNote:  After adding the solver, assign your first equation to `formula_1`. Then call `addfunction` once for each additional equation you need to solve. Each call will create a new formula slot (`formula_2`, `formula_3`, etc.).
 		
 		usageNote: >
-			MMSolver starts with initial values of 0 for all output variables.
+			MMSolver starts with initial values of 0 for all output variables and explores steps of roughly -1 to +1 during root bracketing.
 			If an initial guess is used, then it should be added to the output variable expression like:
 				.x.formula set formula solver.1 + 50
 			This causes the first evaluation of the solver to occur near 0.1 instead of 0.
 			If a scale is suggested, then the output variable should be multiplied by it. For example with both a scale and a guess:
 				.x.formula set formula solver.1*100 + 50
-			The solver will then update X based on its iteration logic.					
+			The solver will then update X based on its iteration logic.
+			For temperatures driving thermodynamic Flash tools, use `degC` for the base temperature guess and `deltaC` (or `K`) with a moderate scale (e.g. 10 to 20 deltaC) so initial solver steps stay inside the two-phase envelope and do not add 273.15 K twice:
+				.T_guess.formula set formula -15 degC + solver.1 * 15 deltaC
+			⚠️ When clamping a vector of solver variables (such as component molar flows in a recycle tear stream) to positive values, NEVER use `{max 1e-6, vec}` because `{max}` and `{min}` collapse all elements into a single 1x1 scalar! Instead, use element-wise `{if {gt vec, 1e-6 kmol/h}, vec, 1e-6 kmol/h}`.
 
 	MMOptimizer:
 		extends: MMTool
@@ -1163,12 +1171,12 @@ desc: >
 					For single-component thermo definitions, molar density can also be used.
 			secondPropFormula:
 				desc: >
-					Second intensive property formula. Inferred by conversion unit type: vapour fraction, temperature, pressure,
-					mole-based enthalpy, or mole-based entropy (must not be the same property type as `torp`).
+					Second intensive property formula. Inferred by conversion unit type: vapour fraction (dimensionless `0` for bubble point / saturated liquid, `1` for dew point / saturated vapour, or `0..1` two-phase quality), temperature, pressure,
+					mole-based enthalpy, or mole-based entropy (must not be the same property type as `firstPropFormula`).
 			flowFormula:
 				desc: >
-					Optional flow rate formula. Evaluates to molar flow or mass flow based on conversion unit type.
-					Calculates phase flows when the fluid is two-phase.
+					Flow rate formula. Evaluates to molar flow or mass flow based on conversion unit type.
+					Calculates phase flows and energy flows (`hflow`) when assigned.
 			moleFracFormula:
 				desc: >
 					A single coloum array of component mole fractions matching the component count in the thermo definition.
@@ -1191,21 +1199,26 @@ desc: >
 				- `b`: bulk phase
 				- `v`: vapour phase
 				- `l`: liquid phase
+				- `l2`: second liquid phase
 
 				Always-calculated properties:
 				- `q`: vapour fraction
 				- `t`: temperature
 				- `p`: pressure
 				- `f`: molar flow rate
-				h`: mole-based sensible enthalpy (Math Minion uses arbitrary component reference states; does NOT include heat of formation).
+				- `h`: mole-based sensible enthalpy (Math Minion uses arbitrary component reference states; does NOT include heat of formation).
 				- `s`: mole-based entropy
 				- `dmolar`: mole-based density
 				- `mwt`: molecular weight
 				- `x`: mole fractions
+				- `xt`: table of component names and mole fractions (individual component accessible via `someFlash.xt.ComponentName`)
+				- `fugacities`: component fugacities
+				- `phaseFraction`: phase mole fraction
 
 				Optional properties (available when included in the thermo definition string):
 				- `massf`: mass flow rate
 				- `massx`: mass fractions
+				- `massxt`: table of component names and mass fractions
 				- `hflow`: energy flow (relative sensible energy only; does NOT include heat of formation).
 				- `cpmolar`: mole-based constant-pressure specific heat
 				- `cp0molar`: mole-based ideal-gas constant-pressure specific heat
@@ -1221,13 +1234,29 @@ desc: >
 				- `tmin`: minimum temperature limit
 				- `tmax`: maximum temperature limit
 				- `pmin`: minimum pressure limit
+				- `pmax`: maximum pressure limit
 				- `viscosity`: dynamic viscosity
 				- `conductivity`: thermal conductivity
 				- `surfacetension`: surface tension
 				- `prandtl`: Prandtl number
 
+		verbs:
+			setpropunit:
+				desc: Sets the display unit for a property in the Flash display table.
+				args:
+					- property name (e.g. `t`, `p`, `f`, `h`, `s`, `hflow`, `dmolar`)
+					- unit name (e.g. `degC`, `kPa`, `kmol/h`)
+			setpropformat:
+				desc: Sets the numeric format string for a property in the Flash display table.
+				args:
+					- property name
+					- format string (e.g. `.2f`)
+
 		usageNote: >
-			- Property types for `torp`, `secondprop`, and `flow` are inferred automatically from their conversion unit types (e.g., `degC`, `kPa`, `kJ/mol`, `kg/s`).
+			- Property types for `firstPropFormula`, `secondPropFormula`, and `flowFormula` are inferred automatically from their conversion unit types (e.g., `degC`, `kPa`, `kJ/mol`, `kg/s`, or dimensionless `0`..`1` for vapour fraction `q`).
+			- Always assign a valid flow rate (`flowFormula`) to every Flash tool so extensive properties (`f`, `massf`, `hflow`) are populated on all streams.
+			- Intensive flash properties (`t`, `p`, `q`, `h`, `s`, `x`) are evaluated before `flowFormula`. A Flash tool's `flowFormula` can reference its own intensive properties using `$.` (e.g., `.CompIn.flowFormula set formula Duty / ($.h - CondOut.h)`).
+			- When modeling a chiller or evaporator with a refrigerant pressure drop and a temperature approach to the process outlet, apply the temperature approach at the chiller refrigerant outlet (`CompIn` at `T_process_out - T_approach` and `q = 1`), and set the chiller refrigerant inlet pressure to `CompIn.p + dP_chiller` with enthalpy `CondOut.h`.
 			- Use dot notation to extract phase-specific values in downstream formulas (e.g., `feed.v.x`, `feed.l.f`, `feed.p`).
 			- Available fluids can be queried from any flash tool using its `fluids` parameter (e.g., `myFlash.fluids`).
 			- Formula child names for Flash tools are: `thermoFormula`, `firstPropFormula`, `secondPropFormula`, `flowFormula`, `moleFracFormula`, `massFracFormula`.
@@ -1261,24 +1290,24 @@ desc: >
 					String formula specifying the fluid components and optional property package (e.g. `'Propane,n-Butane,Isobutane'`
 					or `'PR::Ethanol,Water'`), following the same syntax as the Flash tool.
 					Set via `.myCol.thermo set formula 'Propane,n-Butane`
-			stageCountFormula:
+			nstages:
 				desc: >
 					Formula for the number of theoretical stages (integer >= 2, default 10).
 					Can also be set via the verb: `.myCol setstages 15` or `.myCol.nstages set formula 15`
-			pTopFormula:
+			ptop:
 				desc: >
 					Formula for operating pressure at stage 1 (top stage). Defaults to `101.325 kPa`.
 					Set via `.myCol.ptop set formula 120 kPa`
-			pBottomFormula:
+			pbottom:
 				desc: >
 					Formula for operating pressure at stage N (bottom stage). Defaults to `101.325 kPa`.
 					The column establishes a linear pressure profile across stages between top and bottom.
 					Set via `.myCol.pbottom set formula 135 kPa`
-			tTopEstFormula:
+			ttopest:
 				desc: >
 					Optional formula for initial temperature estimate at the top stage (e.g. `45 degC`).
 					Set via `.myCol.ttopest set formula 45 degC`
-			tBotEstFormula:
+			tbotest:
 				desc: >
 					Optional formula for initial temperature estimate at the bottom stage (e.g. `95 degC`).
 					Set via `.myCol.tbotest set formula 95 degC`
@@ -1604,7 +1633,7 @@ Formulas:
 				- Named tool outputs (e.g., `Revenue`)
 				- Expression values (e.g., `Bob.Ted`)
 				- Table columns (e.g., `mytable.total`)
-				- $ is a built-in symbol representing the name of the tool in which the formula appears.
+				- `$` is a built-in symbol representing the tool in which the formula appears (`$.param` accesses a parameter of the current tool, e.g., `$.h` in a Flash tool's `flowFormula`).
 		
 			Strings in Math Minion have to be in double quotes ("...") or backticks (`...`) unless the single quote (') is the first character of the formula, in which case the rest is taken as a string literal.
 			A single quote (') appearing anywhere other than the first character of a formula starts a comment!
@@ -1642,12 +1671,8 @@ Formulas:
 
 		function_strictness:
 			- Only use functions explicitly defined in the **Function List**.
-			- DO NOT assume existence of math-style functions (e.g., `{sqrt x}`) unless explicitly defined.
+			- DO NOT assume existence of functions unless explicitly defined in the **Function List**.
 			- If a function doesn’t exist, use an operator if available.
-
-		commonMistakes:
-			- ❌ Incorrect: `{mod a, b}` → `mod` is an operator, not a function
-			- ✅ Correct: `a % b`
 
 		regexTips:
 			- Use `$1`, `$2` etc. for backreferences in regex
@@ -1664,6 +1689,12 @@ Formulas:
 		If a function is missing from the following list, do not assume it exists.
 		
 		Function List:	
+			func: {sqrt x}
+			desc: Returns the square root of the value(s) in x (dimensions must have even powers).
+
+			func: {mod x, d}
+			desc: Returns the remainder after division of x by d (equivalent to `x % d`).
+
 			func: {log x}
 			desc: Returns the base 10 logarithm of the value(s) in x
 			
@@ -1776,10 +1807,10 @@ Formulas:
 			desc: Returns the inverse hyperbolic tangent of the complex value z.
 			
 			func: {max x}
-			desc: Returns the maximum of the values in x. If additional arguments are supplied, the maximum value of all their elements is returned.
+			desc: Returns a single 1x1 scalar containing the maximum of all elements in x (and any additional arguments). Does NOT perform an element-wise vector maximum; for element-wise maximum or clamping of arrays, use `{if {gt a, b}, a, b}`.
 			
 			func: {min x}
-			desc: Returns the minimum of the values in x. If additional arguments are supplied, the minimum value of all their elements is returned.
+			desc: Returns a single 1x1 scalar containing the minimum of all elements in x (and any additional arguments). Does NOT perform an element-wise vector minimum; for element-wise minimum or clamping of arrays, use `{if {lt a, b}, a, b}`.
 			
 			func: {maxrows x}
 			desc: Returns a column array with the maximums of the values in each row of x. If x is a table value, then all the numeric columns must have the same unit dimensions, but string columns are simply ignored.

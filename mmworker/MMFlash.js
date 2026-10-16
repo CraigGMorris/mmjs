@@ -359,6 +359,8 @@ class MMFlash extends MMTool {
 		this.flowFormula = new MMFormula('flowFormula', this);
 		/** @type {string[]} */
 		this.additionalProperties = [];
+		/** @type {string[]} */
+		this.propList = ['q', 't', 'p', 'f', 'h', 's', 'hflow', 'x'];
 		this.formatStrings = this.defaultFormatStrings();
 		/** @type {string[]} */
 		this.displayUnits = [];
@@ -413,6 +415,7 @@ class MMFlash extends MMTool {
 	setPropUnitCommand(command) {
 		const parts = command.args.split(/\s/);
 		if (parts.length === 2) {
+			this.initThermo();
 			const propName = parts[0];
 			for (let i = 0; i < (/** @type {string[]} */ (this.propList)).length; i++) {
 				if ((/** @type {string[]} */ (this.propList))[i] === propName) {
@@ -432,6 +435,7 @@ class MMFlash extends MMTool {
 	setPropFormatCommand(command) {
 		const parts = command.args.split(/\s/);
 		if (parts.length > 0) {
+			this.initThermo();
 			const propName = parts[0];
 			for (let i = 0; i < (/** @type {string[]} */ (this.propList)).length; i++) {
 				if ((/** @type {string[]} */ (this.propList))[i] === propName) {
@@ -607,6 +611,7 @@ class MMFlash extends MMTool {
 			this.eos = null;
 			this.engine = null;
 			this.additionalProperties = [];
+			this.propList = ['q', 't', 'p', 'f', 'h', 's', 'hflow', 'x'];
 			this.mwts = null;
 			return false;
 		}
@@ -640,6 +645,7 @@ class MMFlash extends MMTool {
 		this.nComponents = this.componentNames.length;
 		this.componentString = this.componentNames.join(',');
 		this.additionalProperties = parsed.properties;
+		this.propList = ['q', 't', 'p', 'f', 'h', 's', 'hflow', 'x'].concat(this.additionalProperties);
 
 		thermoEngine.defaultRegistry.loadAll();
 		const compounds = [];

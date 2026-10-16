@@ -292,13 +292,13 @@ export class MMExpression extends MMTool {
 		if (!this.forgetRecursionBlockIsOn) {
 			this.forgetRecursionBlockIsOn = true;
 			try {
+				this.cachedValue = null;
+				this.formula.parseFormula();
 				for (let requestor of this.valueRequestors) {
 					requestor.forgetCalculated();
 				}
 				this.valueRequestors.clear();
 				super.forgetCalculated();
-				this.cachedValue = null;
-				this.formula.parseFormula();
 			}
 			finally {
 				this.forgetRecursionBlockIsOn = false;
