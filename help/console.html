@@ -35,8 +35,7 @@
 						<li>AI: This is an experimental chat interface using the OpenAI completion API.  By
 							default the Open Router service is used, but other providers support this API including of course OpenAI.
 							The AI can be asked to create models to solve problems or do
-							things like annotating tools. Its ability to succeed at the requested task varies by model, but higher
-							mid tier ones do a reasonable job. The default model is the latest Gemini Flash model.
+							things like annotating tools.
 						</li>
 					</ul>
 				</p>
@@ -144,7 +143,9 @@
 					The completion url is only needed if you are not using Open Router. If omitted, it will default to https://openrouter.ai/api/v1/chat/completions.
 				</p>
 				<p>
-					By default the latest Google Gemini Flash model is used. 
+					AI models change rapidly and have different costs.
+					By default whatever model I was most recently enamored with is used, so
+					I strongly advise you to check the costs and capabilities of the various models and choose one appropriate to your needs.
 					To change the model, use the aimodel command in Console mode:
 				</p>
 				<p class="formula">
