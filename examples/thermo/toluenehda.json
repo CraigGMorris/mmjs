@@ -92,7 +92,7 @@
 						"name": "ReactOut",
 						"Notes": "Equilibrium flash of the product stream at outlet temperature and pressure",
 						"DiagramX": 240,
-						"DiagramY": 360,
+						"DiagramY": 370,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -131,14 +131,14 @@
 						"name": "ReactCmpF",
 						"Notes": "Component molar flow rates exiting the reaction zone",
 						"DiagramX": 240,
-						"DiagramY": 285,
+						"DiagramY": 295,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
 						"isOutput": "y",
 						"Type": "Expression",
 						"Formula": {
-							"Formula": "feedFlows + {dot Stoichiometry, calcExtents}"
+							"Formula": "feedFlows + {dot adjStoich, calcExtents}"
 						}
 					},
 					{
@@ -175,7 +175,7 @@
 						"name": "ReactorQ",
 						"Notes": "Reactor heat duty required to maintain isothermal operation",
 						"DiagramX": 240,
-						"DiagramY": 405,
+						"DiagramY": 415,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -190,7 +190,7 @@
 						"name": "minusCheck",
 						"Notes": "Checks for unphysical negative component flows and alerts if present",
 						"DiagramX": 240,
-						"DiagramY": 320,
+						"DiagramY": 330,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -267,34 +267,8 @@
 						"columnCount": "1"
 					},
 					{
-						"name": "KeyCmps",
-						"Notes": "Index of the key components for reaction extent (1-based)",
-						"DiagramX": 105,
-						"DiagramY": 275,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Matrix",
-						"columnUnits": [
-							"Fraction",
-							null
-						],
-						"columnFormats": [
-							null,
-							null
-						],
-						"CellInputs": {
-							"0_0": "0",
-							"1_1": "4",
-							"2_1": "3"
-						},
-						"rowCount": "nReactions",
-						"columnCount": "1"
-					},
-					{
 						"name": "A",
-						"Notes": "",
+						"Notes": "Coefficient matrix for solving simultaneous reaction extents from fractional conversions. Diagonal elements represent key component stoichiometric consumption, while off-diagonal elements account for key component production from other reactions. Used with vector b to solve A * calcExtents = b.",
 						"DiagramX": 240,
 						"DiagramY": 200,
 						"HideInfo": "y",
@@ -312,16 +286,16 @@
 							null
 						],
 						"CellInputs": {
-							"0_0": "{if {eq {row}, {col}}\n\t{abs stoichiometry[KeyCmps[{row}], {row}]},\n\t-Extents[{row}] * {max 0, stoichiometry[KeyCmps[{row}], {col}]}\n}"
+							"0_0": "{if {eq {row}, {col}}\n\t{abs adjStoich[KeyCmps[{row}], {row}]},\n\t-Extents[{row}] * {max 0, adjStoich[KeyCmps[{row}], {col}]}\n}"
 						},
 						"rowCount": "nReactions",
 						"columnCount": "nReactions"
 					},
 					{
 						"name": "b",
-						"Notes": "",
+						"Notes": "Right-hand side target vector calculated as fractional conversion (Extents) multiplied by feed flow (FeedFlows) for each key component. Used with matrix A to solve A * calcExtents = b for reaction extents.",
 						"DiagramX": 240,
-						"DiagramY": 225,
+						"DiagramY": 230,
 						"HideInfo": "y",
 						"DiagramNotes": "n",
 						"HtmlNotes": "n",
@@ -341,43 +315,10 @@
 						"columnCount": "1"
 					},
 					{
-						"name": "Stoichiometry",
-						"Notes": "Reaction stoichiometric coefficients (reactants negative, products positive, inerts zero). Each rows are compounds and columns are reactions.",
-						"DiagramX": 105,
-						"DiagramY": 215,
-						"HideInfo": "y",
-						"DiagramNotes": "y",
-						"HtmlNotes": "y",
-						"isOutput": "y",
-						"Type": "Matrix",
-						"columnUnits": [
-							"Fraction",
-							null,
-							null
-						],
-						"columnFormats": [
-							null,
-							null,
-							null
-						],
-						"CellInputs": {
-							"0_0": "0",
-							"1_1": "-1",
-							"2_1": "1",
-							"3_1": "1",
-							"4_1": "-1",
-							"1_2": "1",
-							"3_2": "-2",
-							"5_2": "1"
-						},
-						"rowCount": "ncmp",
-						"columnCount": "nReactions"
-					},
-					{
 						"name": "calcExtents",
 						"Notes": "Molar conversion rate of key component",
 						"DiagramX": 240,
-						"DiagramY": 250,
+						"DiagramY": 260,
 						"HideInfo": "y",
 						"DiagramNotes": "y",
 						"HtmlNotes": "y",
@@ -424,6 +365,105 @@
 						"Type": "Expression",
 						"Formula": {
 							"Formula": ""
+						}
+					},
+					{
+						"name": "KeyCmps",
+						"Notes": "Index of the key components for reaction extent (1-based)",
+						"DiagramX": 105,
+						"DiagramY": 275,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Matrix",
+						"columnUnits": [
+							"Fraction",
+							null
+						],
+						"columnFormats": [
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "0",
+							"1_1": "4",
+							"2_1": "3"
+						},
+						"rowCount": "nReactions",
+						"columnCount": "1"
+					},
+					{
+						"name": "Stoichiometry",
+						"Notes": "Reaction stoichiometric coefficients (reactants negative, products positive, inerts zero). Each rows are compounds and columns are reactions.",
+						"DiagramX": 105,
+						"DiagramY": 215,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Matrix",
+						"columnUnits": [
+							"Fraction",
+							null,
+							null
+						],
+						"columnFormats": [
+							null,
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "0",
+							"1_1": "-1",
+							"2_1": "1",
+							"3_1": "1",
+							"4_1": "-1",
+							"1_2": "1",
+							"3_2": "-2",
+							"5_2": "1"
+						},
+						"rowCount": "ncmp",
+						"columnCount": "nReactions"
+					},
+					{
+						"name": "scaleFactors",
+						"Notes": "Factors to scale stoichiometry so key component is -1",
+						"DiagramX": 105,
+						"DiagramY": 445,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Matrix",
+						"columnUnits": [
+							"Fraction",
+							null,
+							null
+						],
+						"columnFormats": [
+							null,
+							null,
+							null
+						],
+						"CellInputs": {
+							"0_0": "-stoichiometry[keycmps[{col}],{col}]"
+						},
+						"rowCount": "1",
+						"columnCount": "nreactions"
+					},
+					{
+						"name": "adjStoich",
+						"Notes": "The adjusted stoichiometry",
+						"DiagramX": 105,
+						"DiagramY": 490,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "{if {le {min scaleFactors}, 0},\n\t{alert \"Key component must be a reactant\"},\n\tstoichiometry / scaleFactors\n}"
 						}
 					}
 				]
@@ -1542,18 +1582,18 @@
 						"f0": "error",
 						"c0": "2 * ncmp + 2 ' 2 cmp flows and 2 flows",
 						"o0": [
-							0.7068869099411512,
-							1.4071036889422521,
-							0.5057040608783907,
-							14.665162625145154,
-							-0.6194303558599197,
-							-0.5039899927565638,
-							-0.000003988020782340308,
+							0.7068869099410775,
+							1.4071036889422441,
+							0.5057040608783815,
+							14.665162625145193,
+							-0.6194303558598676,
+							-0.5039899949073932,
+							-0.000003988020782340309,
 							-0.000003988020782340331,
-							0.1976388235180812,
-							0.1075319313911062,
-							-0.7494637691836404,
-							-0.06835931523988406
+							0.19763882351770326,
+							0.1075319313910755,
+							-0.7494637691803875,
+							-0.06835931523988069
 						],
 						"maxIter": 200,
 						"maxJacobians": 5,
@@ -1753,6 +1793,609 @@
 						},
 						"isInput": "y",
 						"showInput": "y"
+					}
+				]
+			},
+			{
+				"name": "EqReactions",
+				"Notes": "Test of two reaction equilibrium reactor model.",
+				"DiagramX": 205,
+				"DiagramY": 485,
+				"HideInfo": "n",
+				"DiagramNotes": "y",
+				"HtmlNotes": "y",
+				"Type": "Model",
+				"diagramScale": 1,
+				"Objects": [
+					{
+						"name": "Feed",
+						"Notes": "",
+						"DiagramX": 110,
+						"DiagramY": 205,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "ReactorFeed"
+						},
+						"isInput": "y"
+					},
+					{
+						"name": "ConvOutFlows",
+						"Notes": "",
+						"DiagramX": 215,
+						"DiagramY": 165,
+						"HideInfo": "y",
+						"DiagramNotes": "n",
+						"HtmlNotes": "n",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "reactor.reactOut.x * reactor.reactout.f"
+						},
+						"isInput": "y"
+					},
+					{
+						"name": "flowDiff",
+						"Notes": "The difference between the conversion and equilibrium reactor outlet component flows. Note it may be necessary to reset the solver in the EquilReactor model and set it back to solve to ensure a new calculation.",
+						"DiagramX": 215,
+						"DiagramY": 195,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "EquilReactor.Reactout.x * EquilReactor.reactOut.f - ConvOutFlows"
+						}
+					},
+					{
+						"name": "QDiff",
+						"Notes": "The difference between the conversion and equilibrium reactor heat flows",
+						"DiagramX": 215,
+						"DiagramY": 270,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "Reactor.ReactorQ - EqReactions.EquilReactor.ReactorQ"
+						},
+						"isInput": "y",
+						"displayUnit": "kW"
+					},
+					{
+						"name": "EquilReactor",
+						"Notes": "A equilibrium reaction calculation.",
+						"DiagramX": 110,
+						"DiagramY": 165,
+						"HideInfo": "n",
+						"DiagramNotes": "y",
+						"HtmlNotes": "n",
+						"Type": "Model",
+						"diagramScale": 1,
+						"Objects": [
+							{
+								"name": "Feed",
+								"Notes": "Feed stream reference from upstream model",
+								"DiagramX": 100,
+								"DiagramY": 150,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "Feed"
+								},
+								"isInput": "y",
+								"showInput": "y"
+							},
+							{
+								"name": "FeedFlash",
+								"Notes": "Equilibrium flash of the inlet reactor feed stream",
+								"DiagramX": 240,
+								"DiagramY": 115,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "Feed.thermo"
+								},
+								"firstprop": {
+									"Formula": "feed.p"
+								},
+								"secondprop": {
+									"Formula": "feed.h"
+								},
+								"molefrac": {
+									"Formula": "feed.x"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "feed.f"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "ReactOut",
+								"Notes": "Equilibrium flash of the product stream at outlet temperature and pressure",
+								"DiagramX": 240,
+								"DiagramY": 535,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Flash",
+								"thermo": {
+									"Formula": "FeedFlash.thermo"
+								},
+								"firstprop": {
+									"Formula": "outletT"
+								},
+								"secondprop": {
+									"Formula": "outletP"
+								},
+								"molefrac": {
+									"Formula": "reactCmpF"
+								},
+								"massfrac": {
+									"Formula": ""
+								},
+								"flow": {
+									"Formula": "{sum reactCmpF}"
+								},
+								"displayUnits": [],
+								"formatStrings": {
+									"t": ".2f",
+									"p": ".2f",
+									"f": ".2f",
+									"h": ".2f",
+									"s": ".2f",
+									"hflow": ".1f",
+									"dmolar": ".2f"
+								}
+							},
+							{
+								"name": "ReactCmpF",
+								"Notes": "Component molar flow rates exiting the reaction zone",
+								"DiagramX": 240,
+								"DiagramY": 365,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "feedFlows + alphaMax*deltaN"
+								}
+							},
+							{
+								"name": "OutletP",
+								"Notes": "Reactor operating pressure",
+								"DiagramX": 100,
+								"DiagramY": 345,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "33.5 bar"
+								},
+								"isInput": "y",
+								"showInput": "y"
+							},
+							{
+								"name": "OutletT",
+								"Notes": "Reactor operating temperature",
+								"DiagramX": 100,
+								"DiagramY": 310,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "620 degC"
+								},
+								"isInput": "y",
+								"showInput": "y"
+							},
+							{
+								"name": "ReactorQ",
+								"Notes": "Reactor heat duty required to maintain isothermal operation",
+								"DiagramX": 240,
+								"DiagramY": 580,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "reactOut.hflow - feedFlash.hflow + {sum HeatRxn * calcExtents}"
+								},
+								"displayUnit": "kW"
+							},
+							{
+								"name": "nReactions",
+								"Notes": "Number of reactions",
+								"DiagramX": 100,
+								"DiagramY": 185,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "2"
+								},
+								"showInput": "y"
+							},
+							{
+								"name": "nCmp",
+								"Notes": "",
+								"DiagramX": 240,
+								"DiagramY": 175,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{nrows feed.x}"
+								}
+							},
+							{
+								"name": "FeedFlows",
+								"Notes": "",
+								"DiagramX": 240,
+								"DiagramY": 150,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "feed.x * feed.f"
+								}
+							},
+							{
+								"name": "A",
+								"Notes": "Coefficient matrix for solving simultaneous reaction extents from fractional conversions. Diagonal elements represent key component stoichiometric consumption, while off-diagonal elements account for key component production from other reactions. Used with vector b to solve A * calcExtents = b.",
+								"DiagramX": 240,
+								"DiagramY": 200,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Matrix",
+								"columnUnits": [
+									"Fraction",
+									null,
+									null
+								],
+								"columnFormats": [
+									null,
+									null,
+									null
+								],
+								"CellInputs": {
+									"0_0": "{if {eq {row}, {col}}\n\t{abs adjStoich[KeyCmps[{row}], {row}]},\n\t-Extents[{row}] * {max 0, adjStoich[KeyCmps[{row}], {col}]}\n}"
+								},
+								"rowCount": "nReactions",
+								"columnCount": "nReactions"
+							},
+							{
+								"name": "b",
+								"Notes": "Right-hand side target vector calculated as fractional conversion (Extents) multiplied by feed flow (FeedFlows) for each key component. Used with matrix A to solve A * calcExtents = b for reaction extents.",
+								"DiagramX": 240,
+								"DiagramY": 230,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Matrix",
+								"columnUnits": [
+									"kmol/h",
+									null
+								],
+								"columnFormats": [
+									null,
+									null
+								],
+								"CellInputs": {
+									"0_0": "Extents[{row}] * FeedFlows[keycmps[{row}]]"
+								},
+								"rowCount": "nReactions",
+								"columnCount": "1"
+							},
+							{
+								"name": "calcExtents",
+								"Notes": "Molar conversion rate of key component",
+								"DiagramX": 240,
+								"DiagramY": 260,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{dot {invert A}, b}"
+								}
+							},
+							{
+								"name": "HeatRxn",
+								"Notes": "Standard heat of reactions (exothermic: negative)",
+								"DiagramX": 100,
+								"DiagramY": 420,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Matrix",
+								"columnUnits": [
+									"kJ/kmol",
+									null
+								],
+								"columnFormats": [
+									null,
+									null
+								],
+								"CellInputs": {
+									"0_0": "-92 kj/mol",
+									"2_1": "14.1 kj/mol",
+									"1_1": "-42.11 kJ/mol"
+								},
+								"rowCount": "nReactions",
+								"columnCount": "1"
+							},
+							{
+								"name": "Overview",
+								"Notes": "This model calculates component molar flows and energy duty for simultaneous reactions based on equilibrium conversions.\n\nFeed component flows (FeedFlows) are determined from the inlet stream. Reaction extents (calcExtents) are solved simultaneously from the linear system A * xi = b using the reaction stoichiometry, key component indices, while a solver varies the extent fractions to meet the equilibrium condition.\n\nThe product stream (ReactOut) is flashed at OutletT and OutletP, and the net reactor heat duty (ReactorQ) is calculated from the enthalpy difference between outlet and feed streams plus the standard heats of reaction (HeatRxn).",
+								"DiagramX": 100,
+								"DiagramY": 120,
+								"HideInfo": "n",
+								"DiagramNotes": "n",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": ""
+								}
+							},
+							{
+								"name": "BaseP",
+								"Notes": "",
+								"DiagramX": 100,
+								"DiagramY": 455,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "1 atm"
+								}
+							},
+							{
+								"name": "activities",
+								"Notes": "Activity coefficients calculated from fugacities",
+								"DiagramX": 240,
+								"DiagramY": 405,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "ReactOut.v.fugacities/baseP"
+								}
+							},
+							{
+								"name": "lnK",
+								"Notes": "Reaction equilibrium factors - must be for the stoichiometry as defined.",
+								"DiagramX": 100,
+								"DiagramY": 375,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "lnK"
+								},
+								"isInput": "y"
+							},
+							{
+								"name": "residuals",
+								"Notes": "Errors",
+								"DiagramX": 240,
+								"DiagramY": 440,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{numeric {tr lnK/scalefactors - {sumcols adjStoich*{ln activities}}}}"
+								}
+							},
+							{
+								"name": "Extents",
+								"Notes": "Extents as function of solver output",
+								"DiagramX": 240,
+								"DiagramY": 500,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "solver.1 / 2.01 + 0.5 'EstExtents * (solver.1 + 1)"
+								}
+							},
+							{
+								"name": "Solver",
+								"Notes": "",
+								"DiagramX": 240,
+								"DiagramY": 470,
+								"HideInfo": "y",
+								"DiagramNotes": "n",
+								"HtmlNotes": "n",
+								"Type": "Equation Solver",
+								"f0": "residuals",
+								"c0": "nReactions",
+								"maxIter": 200,
+								"maxJacobians": 5,
+								"Enabled": "y"
+							},
+							{
+								"name": "deltaN",
+								"Notes": "Calculated change in component moles",
+								"DiagramX": 240,
+								"DiagramY": 295,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{dot adjStoich, calcExtents}"
+								}
+							},
+							{
+								"name": "alphaMax",
+								"Notes": "limits extents to prevent negative compositions",
+								"DiagramX": 240,
+								"DiagramY": 330,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{min 1, 0.98 * {min\n\t{if\n\t\t{lt deltaN, 0 kmol/h},\n\t\t-feedFlows/deltaN,\n\t\t2\n\t}}\n}"
+								}
+							},
+							{
+								"name": "scaleFactors",
+								"Notes": "Factors to scale stoichiometry so key component is -1",
+								"DiagramX": 100,
+								"DiagramY": 480,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Matrix",
+								"columnUnits": [
+									"Fraction",
+									null,
+									null
+								],
+								"columnFormats": [
+									null,
+									null,
+									null
+								],
+								"CellInputs": {
+									"0_0": "-stoichiometry[keycmps[{col}],{col}]"
+								},
+								"rowCount": "1",
+								"columnCount": "nreactions"
+							},
+							{
+								"name": "adjStoich",
+								"Notes": "The adjusted stoichiometry",
+								"DiagramX": 100,
+								"DiagramY": 525,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Expression",
+								"Formula": {
+									"Formula": "{if {le {min scaleFactors}, 0},\n\t{alert \"Key component must be a reactant\"},\n\tstoichiometry / scaleFactors\n}"
+								}
+							},
+							{
+								"name": "KeyCmps",
+								"Notes": "Index of the key components for reaction extent (1-based)",
+								"DiagramX": 100,
+								"DiagramY": 275,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Matrix",
+								"columnUnits": [
+									"Fraction",
+									null
+								],
+								"columnFormats": [
+									null,
+									null
+								],
+								"CellInputs": {
+									"0_0": "0",
+									"1_1": "4",
+									"2_1": "3"
+								},
+								"rowCount": "nReactions",
+								"columnCount": "1"
+							},
+							{
+								"name": "Stoichiometry",
+								"Notes": "Reaction stoichiometric coefficients (reactants negative, products positive, inerts zero). Each rows are compounds and columns are reactions.",
+								"DiagramX": 100,
+								"DiagramY": 215,
+								"HideInfo": "y",
+								"DiagramNotes": "y",
+								"HtmlNotes": "y",
+								"isOutput": "y",
+								"Type": "Matrix",
+								"columnUnits": [
+									"Fraction",
+									null,
+									null
+								],
+								"columnFormats": [
+									null,
+									null,
+									null
+								],
+								"CellInputs": {
+									"0_0": "0",
+									"1_1": "-1",
+									"2_1": "1",
+									"3_1": "1",
+									"4_1": "-1",
+									"1_2": "1",
+									"3_2": "-2",
+									"5_2": "1"
+								},
+								"rowCount": "ncmp",
+								"columnCount": "nReactions"
+							}
+						]
+					},
+					{
+						"name": "lnK",
+						"Notes": "Get the fugacities from the conversion reactor in the parent model and use them to calculate lnK values to be used in this test of the equilibrium reactor.",
+						"DiagramX": 110,
+						"DiagramY": 230,
+						"HideInfo": "y",
+						"DiagramNotes": "y",
+						"HtmlNotes": "y",
+						"isOutput": "y",
+						"Type": "Expression",
+						"Formula": {
+							"Formula": "Reactor.scalefactors *\n\t{sumcols \n\t\tReactor.adjStoich * \n\t\t{ln reactor.reactOut.v.fugacities / 1 atm}\n\t}"
+						},
+						"isInput": "y"
 					}
 				]
 			}
