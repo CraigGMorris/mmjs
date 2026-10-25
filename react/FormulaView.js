@@ -507,7 +507,7 @@ export function FormulaField(props) {
 		fieldInputRef.current.focus();
 	};
 
-	let showEditor = false;
+	const showEditorRef = React.useRef(false);
 
 	let autocompleteCmp = null;
 	if (isFocused && formula && formula.trim().length > 0 && previewParam && previewParam.length > 0) {
@@ -676,11 +676,12 @@ export function FormulaField(props) {
 
 				onFocus: (/** @type {any} */ e) => {
 					setIsFocused(true);
-					if (!showEditor) {
+					if (!showEditorRef.current) {
 						// focus not from clicking in field
 						if (formula?.length > 100 || formula?.includes('\n')) {
 							if (props.editAction) {
 								e.stopPropagation();
+								isSwitchingToEditor.current = true;
 								props.editAction(editOptions);
 							}
 						}
@@ -696,16 +697,18 @@ export function FormulaField(props) {
 					setIsFocused(false);
 					setPreviewParam(null);
 					setSelectedIndex(-1);
+					showEditorRef.current = false;
 				},
 				onPointerDown: () => {
 					if (props.editAction && (formula?.length > 100 || formula?.includes('\n'))) {
 						// set so focus knows it is because of a click in the field
 						// need to get to pointer up where the selection start is known
-						showEditor = true;
+						showEditorRef.current = true;
 					}
 				},
 				onPointerUp: () => {
-					if (showEditor && props.editAction) {
+					if (showEditorRef.current && props.editAction) {
+						showEditorRef.current = false;
 						// we need to switch to editor because of pointer click
 						// get the selection start so it is maintained in editor
 						let selStart = Math.max(0, fieldInputRef.current.selectionStart);
@@ -716,6 +719,7 @@ export function FormulaField(props) {
 							}
 						}
 						editOptions.selectionStart = selStart + newLineCount;
+						isSwitchingToEditor.current = true;
 						props.editAction(editOptions);
 					}
 				}
